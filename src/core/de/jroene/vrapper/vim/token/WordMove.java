@@ -46,23 +46,23 @@ public abstract class WordMove extends AbstractRepeatableHorizontalMove {
 
         public int getTarget(VimEmulator vim, int times, boolean stopAtNewline) {
             Platform p = vim.getPlatform();
-            int index = p.getPosition();
             int end = p.getLineInformation(p.getNumberOfLines()-1).getEndOffset();
+            int index = Math.min(p.getPosition()+1, end);
             boolean found = false;
             int n = 0;
             while (n < times) {
                 while (index < end) {
-                    index += 1;
                     String s = p.getText(index, 1);
                     boolean isTerminator = isTerminator(s);
                     if (!found && isTerminator) {
-                        if(stopAtNewline && isNewLine(s)) {
+                        if(n == times-1 && stopAtNewline && isNewLine(s)) {
                             return index;
                         }
                         found = true;
                     } else if (found && !isTerminator) {
                         break;
                     }
+                    index += 1;
                 }
                 n += 1;
                 found = false;

@@ -41,7 +41,7 @@ public abstract class AbstractLineAwareToken extends AbstractToken {
         if (next == null) {
             return false;
         }
-        if (next instanceof WordMove.NextBegin && times == 1) {
+        if (next instanceof WordMove.NextBegin) {
             // this is an exception
             // if a newline follows the word, stop there
             WordMove.NextBegin move = (WordMove.NextBegin)next;
