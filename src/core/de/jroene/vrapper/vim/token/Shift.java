@@ -11,7 +11,7 @@ import de.jroene.vrapper.vim.action.Action;
  *
  * @author Matthias Radig
  */
-public class Shift extends AbstractLineAwareToken implements Repeatable {
+public class Shift extends AbstractLineAwareToken {
 
     private final int modifier;
 

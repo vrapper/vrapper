@@ -11,7 +11,7 @@ import de.jroene.vrapper.vim.action.Action;
  *
  * @author Matthias Radig
  */
-public abstract class AbstractLineAwareToken extends AbstractToken {
+public abstract class AbstractLineAwareToken extends AbstractToken implements Repeatable {
 
     private int target;
     private Move subject;

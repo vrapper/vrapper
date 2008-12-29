@@ -9,7 +9,7 @@ import de.jroene.vrapper.vim.action.Action;
  *
  * @author Matthias Radig
  */
-public class Delete extends AbstractLineAwareEdit implements Repeatable {
+public class Delete extends AbstractLineAwareEdit {
 
     @Override
     public Action getAction() {
