@@ -18,6 +18,8 @@ public class VimTestCase extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+        // prevent use of user-specific configuration
+        System.setProperty("user.home", "");
         platform = new TestPlatform();
         vim = new VimEmulator(platform);
     }
