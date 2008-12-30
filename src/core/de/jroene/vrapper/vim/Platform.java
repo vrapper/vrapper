@@ -142,4 +142,16 @@ public interface Platform {
      */
     void setDefaultSpace();
 
+    /**
+     * @return the current selection or null if nothing is selected
+     */
+    Selection getSelection();
+
+    /**
+     * Sets the selection.
+     * 
+     * @param s
+     *            the new selection
+     */
+    void setSelection(Selection s);
 }

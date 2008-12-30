@@ -2,6 +2,7 @@ package de.jroene.vrapper.test;
 
 import de.jroene.vrapper.vim.LineInformation;
 import de.jroene.vrapper.vim.Platform;
+import de.jroene.vrapper.vim.Selection;
 import de.jroene.vrapper.vim.Space;
 import de.jroene.vrapper.vim.VimConstants;
 
@@ -157,6 +158,16 @@ public class TestPlatform implements Platform {
 
     public String getBuffer() {
         return buffer.toString();
+    }
+
+    public Selection getSelection() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public void setSelection(Selection s) {
+        // TODO Auto-generated method stub
+
     }
 
 }

@@ -2,7 +2,9 @@ package de.jroene.vrapper.vim;
 
 import java.util.HashMap;
 
+import de.jroene.vrapper.vim.token.AbstractLineAwareToken;
 import de.jroene.vrapper.vim.token.KeyStrokeToken;
+import de.jroene.vrapper.vim.token.Move;
 import de.jroene.vrapper.vim.token.Token;
 import de.jroene.vrapper.vim.token.TokenException;
 
@@ -29,6 +31,10 @@ public class NormalMode extends AbstractMode {
         return new KeyStrokeMode();
     }
 
+    public Mode getVisualMode(boolean lineWise) {
+        return new VisualMode(lineWise);
+    }
+
     public boolean type(VimInputEvent e) {
         if (keyMappings.containsKey(e)) {
             e = keyMappings.get(e);
@@ -49,13 +55,18 @@ public class NormalMode extends AbstractMode {
 
     private void processToken(Token t) {
         vim.getRegisterManager().activateDefaultRegister();
+        Platform platform = vim.getPlatform();
         if (t != null) {
             try {
                 if (startToken == null ) {
                     startToken = t;
                     t = null;
+                    if (platform.getSelection() != null && startToken instanceof AbstractLineAwareToken) {
+                        t = platform.getSelection();
+                        vim.toNormalMode();
+                    }
                 }
-                vim.getPlatform().setSpace(startToken.getSpace());
+                platform.setSpace(startToken.getSpace());
                 if (startToken.evaluate(vim, t)) {
                     startToken.getAction().execute(vim);
                     if(vim.inNormalMode()) {
@@ -67,7 +78,7 @@ public class NormalMode extends AbstractMode {
                 cleanUp();
             }
         }
-        vim.getPlatform().setDefaultSpace();
+        platform.setDefaultSpace();
     }
 
     void cleanUp() {
@@ -90,6 +101,48 @@ public class NormalMode extends AbstractMode {
         @Override
         public int hashCode() {
             return getParent().hashCode();
+        }
+
+    }
+
+    private class VisualMode implements Mode {
+
+        private final int start;
+        private final boolean lineWise;
+
+        public VisualMode(boolean lineWise) {
+            super();
+            this.lineWise = lineWise;
+            int pos = vim.getPlatform().getPosition();
+            if (lineWise) {
+                start = vim.getPlatform().getLineInformationOfOffset(pos).getBeginOffset();
+            } else {
+                this.start = pos;
+            }
+        }
+
+        public boolean type(VimInputEvent e) {
+            Platform platform = vim.getPlatform();
+            if (keyMappings.containsKey(e)) {
+                e = keyMappings.get(e);
+            }
+            if (VimInputEvent.ESCAPE.equals(e)) {
+                platform.setSelection(null);
+                vim.toNormalMode();
+            }
+            Token t = TokenFactory.create(e);
+            if (t instanceof Move || t instanceof Number || t instanceof AbstractLineAwareToken) {
+                processToken(t);
+            }
+            int end;
+            int pos = platform.getPosition();
+            if (lineWise) {
+                end = platform.getLineInformationOfOffset(pos).getEndOffset();
+            } else {
+                end = pos;
+            }
+            platform.setSelection(Selection.fromOffsets(start, end));
+            return false;
         }
 
     }

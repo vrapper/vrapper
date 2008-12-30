@@ -7,13 +7,16 @@ import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.ITextViewerExtension5;
 import org.eclipse.jface.text.ITextViewerExtension6;
 import org.eclipse.jface.text.IUndoManager;
+import org.eclipse.jface.text.TextSelection;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Caret;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 
 import de.jroene.vrapper.vim.LineInformation;
 import de.jroene.vrapper.vim.Platform;
+import de.jroene.vrapper.vim.Selection;
 import de.jroene.vrapper.vim.Space;
 
 /**
@@ -267,6 +270,21 @@ public class EclipsePlatform implements Platform {
                     region.getLength());
         default:
             throw new IllegalStateException("unknown space: " + space);
+        }
+    }
+
+    public Selection getSelection() {
+        Point selectedRange = textViewer.getSelectedRange();
+        return new Selection(selectedRange.x, selectedRange.y);
+    }
+
+    public void setSelection(Selection s) {
+        if (s == null) {
+            textViewer.setSelectedRange(0, 0);
+        } else {
+            //            textViewer.setSelectedRange(s.getStart(), s.getLength());
+            TextSelection ts = new TextSelection(s.getStart(), s.getLength());
+            textViewer.getSelectionProvider().setSelection(ts);
         }
     }
 }

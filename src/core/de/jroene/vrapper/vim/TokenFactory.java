@@ -7,6 +7,7 @@ import de.jroene.vrapper.vim.action.CompositeAction;
 import de.jroene.vrapper.vim.action.InsertLine;
 import de.jroene.vrapper.vim.action.InsertModeAction;
 import de.jroene.vrapper.vim.action.TokenWrapper;
+import de.jroene.vrapper.vim.action.VisualModeAction;
 import de.jroene.vrapper.vim.token.BeginOfLineMove;
 import de.jroene.vrapper.vim.token.Change;
 import de.jroene.vrapper.vim.token.CompositeToken;
@@ -121,6 +122,9 @@ public class TokenFactory {
         put('U', new History.Redo());
         // command line
         put(':', new CommandLineAction());
+        // visual mode
+        put('v', new VisualModeAction(false));
+        put('V', new VisualModeAction(true));
     }
 
     public static final Token create(VimInputEvent e) {

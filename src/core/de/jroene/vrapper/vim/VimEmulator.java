@@ -60,6 +60,10 @@ public class VimEmulator {
         mode = normalMode.getKeystrokeMode();
     }
 
+    public void toVisualMode(boolean lineWise) {
+        mode = normalMode.getVisualMode(lineWise);
+    }
+
     public boolean inInsertMode() {
         return mode.equals(insertMode);
     }
@@ -108,4 +112,5 @@ public class VimEmulator {
             e.printStackTrace();
         }
     }
+
 }
