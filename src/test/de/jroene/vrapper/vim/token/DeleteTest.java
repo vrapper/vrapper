@@ -45,7 +45,7 @@ public class DeleteTest extends VimTestCase {
         platform.setPosition(0);
         assertEdit("2dw", 0, "\n another word");
         platform.setPosition(0);
-        // not working yet
-        //assertEdit("d2w", 0, "\n another word");
+        platform.setBuffer("word word\n another word");
+        assertEdit("d2w", 0, "\n another word");
     }
 }

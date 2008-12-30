@@ -14,12 +14,10 @@ public class Number extends AbstractToken implements Token {
     private final String number;
     private Number successor;
     private Repeatable token;
-    private int multiplier;
 
     public Number(String number) {
         super();
         this.number = number;
-        this.multiplier = 1;
     }
 
     public boolean evaluate(VimEmulator vim, Token next) throws TokenException {
@@ -44,8 +42,8 @@ public class Number extends AbstractToken implements Token {
         throw new TokenException();
     }
 
-    private int evaluateNumber() {
-        return multiplier * Integer.parseInt(concatNumber());
+    public int evaluateNumber() {
+        return Integer.parseInt(concatNumber());
     }
 
     String concatNumber() {
@@ -60,70 +58,10 @@ public class Number extends AbstractToken implements Token {
         return token.getAction();
     }
 
-    public NumberMove asMove() {
-        return new NumberMove(this);
-    }
-
     public Space getSpace() {
         if (token != null) {
             return token.getSpace();
         }
         return Space.MODEL;
     }
-
-    private static class NumberMove extends AbstractToken implements RepeatableMove {
-
-        private final Number delegate;
-
-        public NumberMove(Number delegate) {
-            super();
-            if(!(delegate.token == null || delegate.token instanceof Move)) {
-                throw new IllegalArgumentException("delegate must be of type Move");
-            }
-            this.delegate = delegate;
-        }
-
-        public boolean evaluate(VimEmulator vim, Token next) throws TokenException {
-            delegate.multiplier = 1;
-            return evaluate0(vim, next);
-        }
-
-        public int getTarget() {
-            return ((Move)delegate.token).getTarget();
-        }
-
-        public boolean isHorizontal() {
-            return ((Move)delegate.token).isHorizontal();
-        }
-
-        public Action getAction() {
-            return delegate.getAction();
-        }
-
-        public boolean repeat(VimEmulator vim, int times, Token next)
-        throws TokenException {
-            delegate.multiplier = times;
-            return evaluate0(vim, next);
-        }
-
-        private boolean evaluate0(VimEmulator vim, Token next)
-        throws TokenException {
-            if(next instanceof Move) {
-                return delegate.evaluate(vim, next);
-            }
-            if(next == null) {
-                return false;
-            }
-            throw new TokenException();
-        }
-
-        public Space getSpace() {
-            return delegate.getSpace();
-        }
-
-        public boolean includesTarget() {
-            return ((Move)delegate.token).includesTarget();
-        }
-    }
-
 }

@@ -15,6 +15,7 @@ public abstract class AbstractLineAwareToken extends AbstractToken implements Re
 
     private int target;
     private Move subject;
+    private Number multiplier;
 
     public AbstractLineAwareToken() {
         super();
@@ -35,6 +36,9 @@ public abstract class AbstractLineAwareToken extends AbstractToken implements Re
 
     public boolean repeat(VimEmulator vim, int times, Token next)
     throws TokenException {
+        if (multiplier != null) {
+            times *= multiplier.evaluateNumber();
+        }
         if(subject != null) {
             return evaluateSubject(vim, times, next);
         }
@@ -61,8 +65,12 @@ public abstract class AbstractLineAwareToken extends AbstractToken implements Re
             return evaluateSubject(vim, times, null);
         }
         if (next instanceof Number) {
-            subject = ((Number)next).asMove();
-            return evaluateSubject(vim, times, null);
+            if (multiplier == null) {
+                multiplier = (Number)next;
+            } else {
+                multiplier.evaluate(vim, next);
+            }
+            return false;
         }
         throw new TokenException();
     }
