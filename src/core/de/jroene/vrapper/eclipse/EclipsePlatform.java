@@ -68,10 +68,10 @@ public class EclipsePlatform implements Platform {
             if(index > doc.getLength()) {
                 index = doc.getLength();
             }
+            doc.replace(index, length, s);
             if (setUndoMark) {
                 setUndoMark();
             }
-            doc.replace(index, length, s);
         } catch (BadLocationException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

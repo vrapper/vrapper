@@ -13,7 +13,7 @@ import de.jroene.vrapper.vim.VimEmulator;
  */
 public abstract class WordMove extends AbstractRepeatableHorizontalMove {
 
-    private final Set<String> terminators;
+    final Set<String> terminators;
 
     WordMove(Set<String> terminators) {
         super();
@@ -69,6 +69,10 @@ public abstract class WordMove extends AbstractRepeatableHorizontalMove {
             }
             return index;
         }
+
+        public Token createNextEndMove() {
+            return new NextEnd(terminators);
+        }
     }
 
     /**
@@ -105,6 +109,11 @@ public abstract class WordMove extends AbstractRepeatableHorizontalMove {
                 n += 1;
             }
             return index;
+        }
+
+        @Override
+        public boolean includesTarget() {
+            return true;
         }
     }
 

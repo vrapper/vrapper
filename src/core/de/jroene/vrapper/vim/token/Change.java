@@ -19,6 +19,16 @@ public class Change extends Delete {
         return isLineDeletion() ? new LineChangeAction() : new ChangeAction();
     }
 
+    @Override
+    public boolean repeat(VimEmulator vim, int times, Token next)
+    throws TokenException {
+        // cw behaves like ce
+        if (next instanceof WordMove.NextBegin) {
+            next = ((WordMove.NextBegin)next).createNextEndMove();
+        }
+        return super.repeat(vim, times, next);
+    }
+
     public class ChangeAction extends DeleteAction {
 
         @Override
