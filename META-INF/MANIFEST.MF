@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Vrapper
-Bundle-SymbolicName: vrapper; singleton:=true
+Bundle-SymbolicName: de.jroene.vrapper;singleton:=true
 Bundle-Version: 0.1.0
 Bundle-Activator: de.jroene.vrapper.eclipse.Activator
 Bundle-Vendor: JROENE
