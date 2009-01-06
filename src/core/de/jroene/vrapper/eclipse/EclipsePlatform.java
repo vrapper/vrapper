@@ -275,7 +275,7 @@ public class EclipsePlatform implements Platform {
 
     public Selection getSelection() {
         Point selectedRange = textViewer.getSelectedRange();
-        return new Selection(selectedRange.x, selectedRange.y);
+        return selectedRange.y > 0 ? new Selection(selectedRange.x, selectedRange.y) : null;
     }
 
     public void setSelection(Selection s) {
