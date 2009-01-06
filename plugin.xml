@@ -9,7 +9,7 @@
             visible="true"
             id="vrapper.actionSet">
          <menu
-               label="Vrapper Menu"
+               label="Vrapper"
                id="vrapperMenu">
             <separator
                   name="group">
