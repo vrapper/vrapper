@@ -1,10 +1,11 @@
 package de.jroene.vrapper.vim;
 
 import de.jroene.vrapper.vim.action.Action;
+import de.jroene.vrapper.vim.action.CompositeAction;
 import de.jroene.vrapper.vim.register.RegisterContent;
 import de.jroene.vrapper.vim.token.AbstractToken;
-import de.jroene.vrapper.vim.token.Number;
 import de.jroene.vrapper.vim.token.Put;
+import de.jroene.vrapper.vim.token.Repeatable;
 import de.jroene.vrapper.vim.token.Token;
 import de.jroene.vrapper.vim.token.TokenException;
 
@@ -25,13 +26,13 @@ public class InsertMode extends AbstractMode {
     }
     public boolean type(VimInputEvent e) {
         if(VimInputEvent.ESCAPE.equals(e)) {
+            afterEdit();
             Platform p = vim.getPlatform();
             LineInformation line = p.getLineInformation();
             int position = p.getPosition();
             if(position > line.getBeginOffset()) {
                 p.setPosition(position-1);
             }
-            afterEdit();
             vim.toNormalMode();
         } else if(!allowed(e)) {
             clean = false;
@@ -44,22 +45,27 @@ public class InsertMode extends AbstractMode {
         || VimInputEvent.RETURN.equals(e);
     }
     private void afterEdit() {
+        Platform platform = vim.getPlatform();
+        int start = parameters.start;
+        int end = platform.getPosition();
+        clean = clean && start < end;
         if (clean) {
-            Platform platform = vim.getPlatform();
-            int start = parameters.start;
-            int end = platform.getPosition()+1;
             String input = platform.getText(start, end-start);
             RegisterContent content = new RegisterContent(parameters.lineWise, input);
             vim.getRegisterManager().getLastEditRegister().setContent(content);
-            Token number = new Number(String.valueOf(parameters.times));
-            try {
-                number.evaluate(vim, new Put(parameters.preCursor));
-            } catch (TokenException e) {
-                throw new IllegalStateException(e);
+
+            Repeatable token = new UseLastEditRegister(parameters.token, new Put(parameters.preCursor));
+            Repeatable repeater = new DefaultRepeater(parameters.times, token);
+            vim.getVariables().setLastEdit(repeater);
+
+            if (parameters.times > 1) {
+                try {
+                    repeater.repeat(vim, parameters.times-1, null);
+                } catch (TokenException e) {
+                    throw new IllegalStateException(e);
+                }
+                repeater.getAction().execute(vim);
             }
-            Token token = new UseLastEditRegister(number);
-            vim.getVariables().setLastEdit(token);
-            token.getAction().execute(vim);
         }
     }
 
@@ -74,31 +80,88 @@ public class InsertMode extends AbstractMode {
         private final boolean preCursor;
         private final int times;
         private final int start;
+        private final Token token;
 
         public Parameters(boolean lineWise, boolean preCursor,
                 int times, int start) {
-            super();
+            this(lineWise, preCursor, times, start, null);
+        }
+
+        public Parameters(boolean lineWise, boolean preCursor,
+                int times, int start, Token token) {
             this.lineWise = lineWise;
             this.preCursor = preCursor;
             this.times = times;
             this.start = start;
+            this.token = token;
         }
 
     }
 
-    private static final class UseLastEditRegister extends AbstractToken {
+    private static final class UseLastEditRegister extends AbstractToken implements Repeatable {
 
-        private final Token token;
+        private final Token first;
+        private final Token second;
 
-        public UseLastEditRegister(Token token) {
+        public UseLastEditRegister(Token first, Token token) {
             super();
-            this.token = token;
+            this.second = token;
+            this.first = first;
         }
 
         public boolean evaluate(VimEmulator vim, Token next)
         throws TokenException {
             vim.getRegisterManager().activateLastEditRegister();
-            return token.evaluate(vim, next);
+            boolean result = true;
+            if (first != null) {
+                result = result && first.evaluate(vim, next);
+            }
+            return result && second.evaluate(vim, next);
+        }
+
+        public boolean repeat(VimEmulator vim, int times, Token next)
+        throws TokenException {
+            vim.getRegisterManager().activateLastEditRegister();
+            if(second instanceof Repeatable) {
+                boolean result = true;
+                if (first != null) {
+                    result = result && first.evaluate(vim, next);
+                }
+                return result && ((Repeatable)second).repeat(vim, times, next);
+            } else {
+                throw new TokenException();
+            }
+        }
+
+        public Action getAction() {
+            return first == null ? second.getAction() : new CompositeAction(first.getAction(), second.getAction());
+        }
+
+        public Space getSpace() {
+            return second.getSpace();
+        }
+
+    }
+
+    private static class DefaultRepeater extends AbstractToken implements Repeatable {
+
+        private final int defaultTimes;
+        private final Repeatable token;
+
+        public DefaultRepeater(int defaultTimes, Repeatable token) {
+            super();
+            this.token = token;
+            this.defaultTimes = defaultTimes;
+        }
+
+        public boolean repeat(VimEmulator vim, int times, Token next)
+        throws TokenException {
+            return token.repeat(vim, times, next);
+        }
+
+        public boolean evaluate(VimEmulator vim, Token next)
+        throws TokenException {
+            return token.repeat(vim, defaultTimes, next);
         }
 
         public Action getAction() {
@@ -108,7 +171,6 @@ public class InsertMode extends AbstractMode {
         public Space getSpace() {
             return token.getSpace();
         }
-
     }
 
 }

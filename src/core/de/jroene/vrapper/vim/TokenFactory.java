@@ -3,11 +3,9 @@ package de.jroene.vrapper.vim;
 import java.util.HashMap;
 
 import de.jroene.vrapper.vim.action.CommandLineAction;
-import de.jroene.vrapper.vim.action.CompositeAction;
 import de.jroene.vrapper.vim.action.InsertLine;
 import de.jroene.vrapper.vim.action.InsertModeAction;
 import de.jroene.vrapper.vim.action.RepeatLastEditToken;
-import de.jroene.vrapper.vim.action.TokenWrapper;
 import de.jroene.vrapper.vim.action.VisualModeAction;
 import de.jroene.vrapper.vim.token.BeginOfLineMove;
 import de.jroene.vrapper.vim.token.Change;
@@ -80,14 +78,10 @@ public class TokenFactory {
         put(',', new RepeatFindMove(true));
         put('%', new ParenthesesMove());
         // Insert Actions
-        InsertModeAction insert = new InsertModeAction();
-        CompositeAction append = new CompositeAction(new TokenWrapper(right), insert);
-        CompositeAction beginInsert = new CompositeAction(new TokenWrapper(beginOfLine), insert);
-        CompositeAction endAppend = new CompositeAction(new TokenWrapper(endOfLine), insert);
-        put('i', insert);
-        put('a', append);
-        put('I', beginInsert);
-        put('A', endAppend);
+        put('i', new InsertModeAction.Insert());
+        put('a', new InsertModeAction.Append());
+        put('I', new InsertModeAction.BeginOfLineInsert());
+        put('A', new InsertModeAction.EndOfLineAppend());
         put('r', new Replace());
         put('O', new InsertLine.PreCursor());
         put('o', new InsertLine.PostCursor());
