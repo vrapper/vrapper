@@ -60,4 +60,8 @@ public class KeyStrokeToken implements Token {
         return null;
     }
 
+    public boolean isOperator() {
+        return false;
+    }
+
 }

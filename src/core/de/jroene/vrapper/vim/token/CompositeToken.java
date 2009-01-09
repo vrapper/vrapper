@@ -55,4 +55,8 @@ public class CompositeToken implements Repeatable {
         return first.getSpace();
     }
 
+    public boolean isOperator() {
+        return first.isOperator();
+    }
+
 }

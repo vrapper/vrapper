@@ -35,4 +35,6 @@ public interface Token extends Cloneable {
     Token clone();
 
     Space getSpace();
+
+    boolean isOperator();
 }

@@ -25,4 +25,8 @@ public abstract class TokenAndAction extends AbstractToken implements Action, To
         return Space.MODEL;
     }
 
+    public boolean isOperator() {
+        return true;
+    }
+
 }

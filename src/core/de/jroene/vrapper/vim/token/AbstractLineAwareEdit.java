@@ -17,6 +17,11 @@ public abstract class AbstractLineAwareEdit extends AbstractLineAwareToken {
         super();
     }
 
+    @Override
+    public boolean isOperator() {
+        return true;
+    }
+
     public abstract class LineEditAction extends LineAwareLineAction implements Action {
 
         @Override

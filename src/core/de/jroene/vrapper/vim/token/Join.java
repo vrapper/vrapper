@@ -43,6 +43,11 @@ public class Join extends AbstractToken implements Repeatable {
         return Space.MODEL;
     }
 
+    @Override
+    public boolean isOperator() {
+        return true;
+    }
+
     public class JoinAction implements Action {
 
         public void execute(VimEmulator vim) {

@@ -64,4 +64,9 @@ public class Number extends AbstractToken implements Token {
         }
         return Space.MODEL;
     }
+
+    @Override
+    public boolean isOperator() {
+        return token.isOperator();
+    }
 }

@@ -6,6 +6,7 @@ import de.jroene.vrapper.vim.action.CommandLineAction;
 import de.jroene.vrapper.vim.action.CompositeAction;
 import de.jroene.vrapper.vim.action.InsertLine;
 import de.jroene.vrapper.vim.action.InsertModeAction;
+import de.jroene.vrapper.vim.action.RepeatLastEditToken;
 import de.jroene.vrapper.vim.action.TokenWrapper;
 import de.jroene.vrapper.vim.action.VisualModeAction;
 import de.jroene.vrapper.vim.token.BeginOfLineMove;
@@ -117,6 +118,7 @@ public class TokenFactory {
         put('>', new Shift(1));
         put('<', new Shift(-1));
         put('J', new Join());
+        put('.', new RepeatLastEditToken());
         // history
         put('u', new History.Undo());
         put('U', new History.Redo());

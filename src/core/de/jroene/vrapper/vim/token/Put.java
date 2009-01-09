@@ -79,4 +79,9 @@ public class Put extends AbstractToken implements Repeatable {
         return Space.MODEL;
     }
 
+    @Override
+    public boolean isOperator() {
+        return true;
+    }
+
 }

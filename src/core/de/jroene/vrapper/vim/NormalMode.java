@@ -3,6 +3,7 @@ package de.jroene.vrapper.vim;
 import java.util.HashMap;
 
 import de.jroene.vrapper.vim.token.AbstractLineAwareToken;
+import de.jroene.vrapper.vim.token.CompositeToken;
 import de.jroene.vrapper.vim.token.KeyStrokeToken;
 import de.jroene.vrapper.vim.token.Move;
 import de.jroene.vrapper.vim.token.Token;
@@ -69,6 +70,10 @@ public class NormalMode extends AbstractMode {
                 platform.setSpace(startToken.getSpace());
                 if (startToken.evaluate(vim, t)) {
                     startToken.getAction().execute(vim);
+                    if(startToken.isOperator()) {
+                        CompositeToken change = new CompositeToken(startToken, t);
+                        vim.getVariables().setLastEdit(change);
+                    }
                     if(vim.inNormalMode()) {
                         afterExecute();
                     }

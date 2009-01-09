@@ -20,4 +20,8 @@ public abstract class AbstractToken implements Token {
         }
     }
 
+    public boolean isOperator() {
+        return false;
+    }
+
 }
