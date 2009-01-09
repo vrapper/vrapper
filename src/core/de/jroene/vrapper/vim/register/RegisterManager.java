@@ -10,6 +10,8 @@ public interface RegisterManager {
     Register getRegister(String name);
     Register getDefaultRegister();
     Register getActiveRegister();
+    Register getLastEditRegister();
     void setActiveRegister(String name);
     void activateDefaultRegister();
+    void activateLastEditRegister();
 }

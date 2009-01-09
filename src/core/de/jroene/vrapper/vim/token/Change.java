@@ -1,5 +1,6 @@
 package de.jroene.vrapper.vim.token;
 
+import de.jroene.vrapper.vim.InsertMode;
 import de.jroene.vrapper.vim.LineInformation;
 import de.jroene.vrapper.vim.Platform;
 import de.jroene.vrapper.vim.VimConstants;
@@ -34,7 +35,7 @@ public class Change extends Delete {
         @Override
         protected void afterEdit(VimEmulator vim, int start, int end) {
             super.afterEdit(vim, start, end);
-            vim.toInsertMode();
+            vim.toInsertMode(new InsertMode.Parameters(false, false, 1, start));
         }
 
     }
@@ -57,7 +58,7 @@ public class Change extends Delete {
             int position = p.getPosition();
             p.replace(position, 0, indent+VimConstants.NEWLINE, false);
             p.setPosition(position+indent.length());
-            vim.toInsertMode();
+            vim.toInsertMode(new InsertMode.Parameters(true, false, 1, startLine.getBeginOffset()));
         }
 
         @Override

@@ -11,15 +11,16 @@ import java.util.Map;
  */
 public class DefaultRegisterManager implements RegisterManager {
 
-    private static final String DEFAULT = DefaultRegisterManager.class
-    .getCanonicalName() + ".DEFAULT_REGISTER";
-
     private final Map<String, Register> registers;
-    private String activeRegister;
+    private Register activeRegister;
+    private final Register defaultRegister;
+    private final Register lastEditRegister;
 
     public DefaultRegisterManager() {
         this.registers = new HashMap<String, Register>();
-        this.activeRegister = DEFAULT;
+        this.defaultRegister = new SimpleRegister();
+        this.lastEditRegister = new SimpleRegister();
+        this.activeRegister = defaultRegister;
     }
 
     public Register getRegister(String name) {
@@ -30,18 +31,26 @@ public class DefaultRegisterManager implements RegisterManager {
     }
 
     public Register getDefaultRegister() {
-        return getRegister(DEFAULT);
+        return defaultRegister;
     }
 
     public Register getActiveRegister() {
-        return getRegister(activeRegister);
+        return activeRegister;
     }
 
     public void setActiveRegister(String name) {
-        this.activeRegister = name;
+        this.activeRegister = getRegister(name);
     }
 
     public void activateDefaultRegister() {
-        this.activeRegister = DEFAULT;
+        this.activeRegister = defaultRegister;
+    }
+
+    public void activateLastEditRegister() {
+        this.activeRegister = lastEditRegister;
+    }
+
+    public Register getLastEditRegister() {
+        return lastEditRegister;
     }
 }

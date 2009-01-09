@@ -1,5 +1,6 @@
 package de.jroene.vrapper.vim.action;
 
+import de.jroene.vrapper.vim.InsertMode;
 import de.jroene.vrapper.vim.LineInformation;
 import de.jroene.vrapper.vim.Platform;
 import de.jroene.vrapper.vim.VimConstants;
@@ -18,8 +19,10 @@ public abstract class InsertLine extends TokenAndAction {
         LineInformation line = p.getLineInformation();
         String indent = vim.getVariables().isAutoIndent() ? VimUtils.getIndent(vim, line) : "";
         doEdit(p, line, indent);
-        vim.toInsertMode();
+        vim.toInsertMode(getParameters(line));
     }
+
+    abstract InsertMode.Parameters getParameters(LineInformation line);
 
     protected abstract void doEdit(Platform p, LineInformation line, String indent);
 
@@ -29,6 +32,11 @@ public abstract class InsertLine extends TokenAndAction {
         protected void doEdit(Platform p, LineInformation currentLine, String indent) {
             p.replace(currentLine.getBeginOffset(), 0, indent+VimConstants.NEWLINE, true);
             p.setPosition(currentLine.getBeginOffset()+indent.length());
+        }
+
+        @Override
+        InsertMode.Parameters getParameters(LineInformation line) {
+            return new InsertMode.Parameters(true, true, 1, line.getBeginOffset());
         }
     }
 
@@ -42,6 +50,11 @@ public abstract class InsertLine extends TokenAndAction {
             }
             p.replace(begin, 0, VimConstants.NEWLINE+indent, true);
             p.setPosition(begin+indent.length()+1);
+        }
+
+        @Override
+        InsertMode.Parameters getParameters(LineInformation line) {
+            return new InsertMode.Parameters(true, false, 1, line.getEndOffset()+1);
         }
 
     }
