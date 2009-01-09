@@ -32,7 +32,7 @@ public abstract class BeginOfLineMove extends AbstractMove implements Move {
      */
     public static class Absolute extends Number implements Move {
 
-        private int target;
+        private int target = -1;
 
         public Absolute() {
             super("0");
@@ -44,6 +44,11 @@ public abstract class BeginOfLineMove extends AbstractMove implements Move {
 
         public boolean isHorizontal() {
             return true;
+        }
+
+        @Override
+        public boolean isOperator() {
+            return target == -1 && super.isOperator();
         }
 
         @Override
