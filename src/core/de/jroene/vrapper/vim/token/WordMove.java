@@ -1,6 +1,6 @@
 package de.jroene.vrapper.vim.token;
 
-import java.util.Set;
+import java.util.regex.Pattern;
 
 import de.jroene.vrapper.vim.Platform;
 import de.jroene.vrapper.vim.VimConstants;
@@ -13,19 +13,23 @@ import de.jroene.vrapper.vim.VimEmulator;
  */
 public abstract class WordMove extends AbstractRepeatableHorizontalMove {
 
-    final Set<String> terminators;
+    protected final Pattern pattern;
 
-    WordMove(Set<String> terminators) {
+    WordMove(String regex) {
         super();
-        this.terminators = terminators;
+        pattern = Pattern.compile(regex);
     }
 
-    protected boolean isTerminator(String s) {
-        return terminators.contains(s);
+    protected boolean isCharacter(String s) {
+        return pattern.matcher(s).find();
     }
 
     protected static boolean isNewLine(String s) {
         return VimConstants.NEWLINE.equals(s);
+    }
+
+    public boolean isWhiteSpace(String s) {
+        return VimConstants.WHITESPACE.contains(s);
     }
 
     /**
@@ -35,8 +39,8 @@ public abstract class WordMove extends AbstractRepeatableHorizontalMove {
      */
     public static class NextBegin extends WordMove {
 
-        public NextBegin(Set<String> terminators) {
-            super(terminators);
+        public NextBegin(String regex) {
+            super(regex);
         }
 
         @Override
@@ -47,19 +51,25 @@ public abstract class WordMove extends AbstractRepeatableHorizontalMove {
         public int getTarget(VimEmulator vim, int times, boolean stopAtNewline) {
             Platform p = vim.getPlatform();
             int end = p.getLineInformation(p.getNumberOfLines()-1).getEndOffset();
-            int index = Math.min(p.getPosition()+1, end);
+            int index = p.getPosition();
             boolean found = false;
             int n = 0;
             while (n < times) {
+                String firstChar = index < end ? p.getText(index, 1) : "";
+                boolean isTerminatorWord = !(isCharacter(firstChar) || isWhiteSpace(firstChar));
                 while (index < end) {
                     String s = p.getText(index, 1);
-                    boolean isTerminator = isTerminator(s);
+                    boolean isWhiteSpace = isWhiteSpace(s);
+                    boolean isTerminator = !isWhiteSpace && !(isTerminatorWord ^ isCharacter(s));
                     if (!found && isTerminator) {
+                        break;
+                    } else if (!found && isWhiteSpace) {
                         if(n == times-1 && stopAtNewline && isNewLine(s)) {
                             return index;
                         }
                         found = true;
-                    } else if (found && !isTerminator) {
+                    }
+                    else if (found && !isWhiteSpace) {
                         break;
                     }
                     index += 1;
@@ -71,7 +81,7 @@ public abstract class WordMove extends AbstractRepeatableHorizontalMove {
         }
 
         public Token createNextEndMove() {
-            return new NextEnd(terminators);
+            return new NextEnd(pattern.pattern());
         }
     }
 
@@ -82,8 +92,8 @@ public abstract class WordMove extends AbstractRepeatableHorizontalMove {
      */
     public static class NextEnd extends WordMove {
 
-        public NextEnd(Set<String> terminators) {
-            super(terminators);
+        public NextEnd(String regex) {
+            super(regex);
         }
 
         @Override
@@ -94,16 +104,24 @@ public abstract class WordMove extends AbstractRepeatableHorizontalMove {
             int n = 0;
             boolean found = false;
             while (n < times) {
+                String firstChar = index < end ? p.getText(index, 1) : "";
+                boolean isTerminatorWord = !(isCharacter(firstChar) || isWhiteSpace(firstChar));
+                index = Math.min(index+1, end);
                 while (index < end) {
-                    index += 1;
                     String s = p.getText(index, 1);
-                    boolean isTerminator = isTerminator(s);
-                    if (!found && !isTerminator) {
+                    boolean isWhiteSpace = isWhiteSpace(s);
+                    if (!found && !isWhiteSpace) {
+                        firstChar = p.getText(index, 1);
+                        isTerminatorWord = !(isCharacter(firstChar) || isWhiteSpace(firstChar));
+                    }
+                    boolean isTerminator = found && (isWhiteSpace || !(isTerminatorWord ^ isCharacter(s)));
+                    if (!found && !isWhiteSpace){
                         found = true;
                     } else if (found && isTerminator) {
                         index -= 1;
                         break;
                     }
+                    index += 1;
                 }
                 found = false;
                 n += 1;
@@ -124,8 +142,8 @@ public abstract class WordMove extends AbstractRepeatableHorizontalMove {
      */
     public static class LastBegin extends WordMove {
 
-        public LastBegin(Set<String> terminators) {
-            super(terminators);
+        public LastBegin(String regex) {
+            super(regex);
         }
 
         @Override
@@ -134,17 +152,26 @@ public abstract class WordMove extends AbstractRepeatableHorizontalMove {
             int index = p.getPosition();
             int n = 0;
             boolean found = false;
+            int end = p.getLineInformation(p.getNumberOfLines()-1).getEndOffset();
             while (n < times) {
+                String firstChar = index > 0 && index < end ? p.getText(index, 1) : "";
+                boolean isTerminatorWord = !(isCharacter(firstChar) || isWhiteSpace(firstChar));
+                index = Math.max(index-1, 0);
                 while (index > 0) {
-                    index -= 1;
                     String s = p.getText(index, 1);
-                    boolean isTerminator = isTerminator(s);
-                    if (!found && !isTerminator) {
+                    boolean isWhiteSpace = isWhiteSpace(s);
+                    if (!found && !isWhiteSpace) {
+                        firstChar = p.getText(index, 1);
+                        isTerminatorWord = !(isCharacter(firstChar) || isWhiteSpace(firstChar));
+                    }
+                    boolean isTerminator = found && (isWhiteSpace || !(isTerminatorWord ^ isCharacter(s)));
+                    if (!found && !isWhiteSpace){
                         found = true;
                     } else if (found && isTerminator) {
                         index += 1;
                         break;
                     }
+                    index -= 1;
                 }
                 found = false;
                 n += 1;

@@ -6,6 +6,7 @@ import de.jroene.vrapper.vim.token.AbstractLineAwareToken;
 import de.jroene.vrapper.vim.token.CompositeToken;
 import de.jroene.vrapper.vim.token.KeyStrokeToken;
 import de.jroene.vrapper.vim.token.Move;
+import de.jroene.vrapper.vim.token.Number;
 import de.jroene.vrapper.vim.token.Token;
 import de.jroene.vrapper.vim.token.TokenException;
 
@@ -71,7 +72,11 @@ public class NormalMode extends AbstractMode {
                 if (startToken.evaluate(vim, t)) {
                     startToken.getAction().execute(vim);
                     if(startToken.isOperator()) {
-                        CompositeToken change = new CompositeToken(startToken, t);
+                        Token tok = startToken;
+                        if (tok instanceof Number) {
+                            tok = ((Number)tok).asDefaultRepeater();
+                        }
+                        CompositeToken change = new CompositeToken(tok, t);
                         vim.getVariables().setLastEdit(change);
                     }
                     if(vim.inNormalMode()) {

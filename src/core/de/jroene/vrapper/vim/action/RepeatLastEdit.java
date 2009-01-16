@@ -7,7 +7,7 @@ import de.jroene.vrapper.vim.token.Repeatable;
 import de.jroene.vrapper.vim.token.Token;
 import de.jroene.vrapper.vim.token.TokenException;
 
-public class RepeatLastEditToken extends AbstractToken implements Repeatable {
+public class RepeatLastEdit extends AbstractToken implements Repeatable {
 
     private Token token;
 

@@ -64,7 +64,7 @@ public class CommandLineMode extends AbstractMode {
                         vim.getVariables().setAutoIndent(false);
                     }
                 }
-            } else if (token.equals("nn") || token.equals("nnoremap")) {
+            } else if (token.equals("noremap")) {
                 if (nizer.hasMoreTokens()) {
                     String lhs = nizer.nextToken();
                     if (nizer.hasMoreTokens()) {

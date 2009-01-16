@@ -12,10 +12,10 @@ import java.util.Set;
  */
 public class VimConstants {
 
-    public static final Set<String> WORD_TERMINATORS = set(" ", "\t", "\n", "(", ")", ".");
     public static final Set<String> WHITESPACE = set(" ", "\t", "\n");
     public static final String NEWLINE = "\n";
     public static final String SPACE = " ";
+    public static final String WORD_CHAR_PATTERN = "[A-Za-z0-9_]";
 
     private static final <T> Set<T> set(T... content) {
         return Collections.unmodifiableSet(new HashSet<T>(Arrays.asList(content)));

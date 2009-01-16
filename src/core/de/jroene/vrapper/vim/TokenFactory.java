@@ -5,7 +5,7 @@ import java.util.HashMap;
 import de.jroene.vrapper.vim.action.CommandLineAction;
 import de.jroene.vrapper.vim.action.InsertLine;
 import de.jroene.vrapper.vim.action.InsertModeAction;
-import de.jroene.vrapper.vim.action.RepeatLastEditToken;
+import de.jroene.vrapper.vim.action.RepeatLastEdit;
 import de.jroene.vrapper.vim.action.VisualModeAction;
 import de.jroene.vrapper.vim.token.BeginOfLineMove;
 import de.jroene.vrapper.vim.token.Change;
@@ -57,12 +57,12 @@ public class TokenFactory {
         put('g', new GotoMove(false));
         put('G', new GotoMove(true));
         // word movement
-        put('w', new WordMove.NextBegin(VimConstants.WORD_TERMINATORS));
-        put('e', new WordMove.NextEnd(VimConstants.WORD_TERMINATORS));
-        put('b', new WordMove.LastBegin(VimConstants.WORD_TERMINATORS));
-        put('W', new WordMove.NextBegin(VimConstants.WHITESPACE));
-        put('E', new WordMove.NextEnd(VimConstants.WHITESPACE));
-        put('B', new WordMove.LastBegin(VimConstants.WHITESPACE));
+        put('w', new WordMove.NextBegin(VimConstants.WORD_CHAR_PATTERN));
+        put('e', new WordMove.NextEnd(VimConstants.WORD_CHAR_PATTERN));
+        put('b', new WordMove.LastBegin(VimConstants.WORD_CHAR_PATTERN));
+        put('W', new WordMove.NextBegin(""));
+        put('E', new WordMove.NextEnd(""));
+        put('B', new WordMove.LastBegin(""));
         // complex movement
         BeginOfLineMove beginOfLine = new BeginOfLineMove.FirstText();
         put('^', beginOfLine);
@@ -112,7 +112,7 @@ public class TokenFactory {
         put('>', new Shift(1));
         put('<', new Shift(-1));
         put('J', new Join());
-        put('.', new RepeatLastEditToken());
+        put('.', new RepeatLastEdit());
         // history
         put('u', new History.Undo());
         put('U', new History.Redo());

@@ -1,5 +1,6 @@
 package de.jroene.vrapper.vim.token;
 
+import de.jroene.vrapper.vim.DefaultRepeater;
 import de.jroene.vrapper.vim.Space;
 import de.jroene.vrapper.vim.VimEmulator;
 import de.jroene.vrapper.vim.action.Action;
@@ -18,6 +19,13 @@ public class Number extends AbstractToken implements Token {
     public Number(String number) {
         super();
         this.number = number;
+    }
+
+    public DefaultRepeater asDefaultRepeater() {
+        if (token == null) {
+            throw new IllegalStateException("token must be initialized");
+        }
+        return new DefaultRepeater(evaluateNumber(), token);
     }
 
     public boolean evaluate(VimEmulator vim, Token next) throws TokenException {
