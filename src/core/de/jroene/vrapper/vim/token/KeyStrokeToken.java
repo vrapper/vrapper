@@ -15,13 +15,17 @@ public class KeyStrokeToken implements Token {
 
     public static final KeyStrokeToken NOT_A_CHARACTER = new KeyStrokeToken(' ') {
         @Override
-        public char getPayload() throws TokenException {
+        public String getPayload() throws TokenException {
             throw new TokenException();
         }
     };
-    private final char payload;
+    private final String payload;
 
     private KeyStrokeToken(char payload) {
+        super();
+        this.payload = String.valueOf(payload);
+    }
+    public KeyStrokeToken(String payload) {
         super();
         this.payload = payload;
     }
@@ -30,7 +34,7 @@ public class KeyStrokeToken implements Token {
             return new KeyStrokeToken(((VimInputEvent.Character)e).getCharacter());
         }
         if (VimInputEvent.RETURN.equals(e)) {
-            return new KeyStrokeToken(VimConstants.NEWLINE.charAt(0));
+            return new KeyStrokeToken(VimConstants.NEWLINE);
         }
         return NOT_A_CHARACTER;
     }
@@ -39,7 +43,7 @@ public class KeyStrokeToken implements Token {
         throw new TokenException();
     }
 
-    public char getPayload() throws TokenException {
+    public String getPayload() throws TokenException {
         return payload;
     }
 

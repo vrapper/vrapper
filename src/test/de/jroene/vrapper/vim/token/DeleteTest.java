@@ -48,4 +48,13 @@ public class DeleteTest extends VimTestCase {
         platform.setBuffer("word word\n another word");
         assertEdit("d2w", 0, "\n another word");
     }
+
+    public void testWindowsLineBreak() {
+        platform.setBuffer("test\r\ntest\r\ntest");
+        platform.setPosition(7);
+        assertEdit("dd", 6, "test\r\ntest");
+        platform.setPosition(0);
+        assertEdit("dd", 0, "test");
+        assertEdit("dd", 0, "");
+    }
 }

@@ -21,6 +21,13 @@ public abstract class AbstractLineAwareToken extends AbstractToken implements Re
         super();
     }
 
+    public AbstractLineAwareToken(int target, Move subject, Number multiplier) {
+        super();
+        this.target = target;
+        this.subject = subject;
+        this.multiplier = multiplier;
+    }
+
     public abstract Action getAction();
 
     public boolean isLineDeletion() {

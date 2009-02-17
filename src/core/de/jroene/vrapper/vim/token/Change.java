@@ -57,7 +57,7 @@ public class Change extends Delete {
             Platform p = vim.getPlatform();
             int position = p.getPosition();
             p.replace(position, 0, indent+VimConstants.NEWLINE, false);
-            p.setPosition(position+indent.length());
+            p.setPosition(position+indent.length()+VimConstants.NEWLINE.length()-1);
             vim.toInsertMode(new InsertMode.Parameters(true, false, 1, startLine.getBeginOffset()));
         }
 

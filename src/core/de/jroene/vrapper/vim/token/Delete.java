@@ -11,6 +11,14 @@ import de.jroene.vrapper.vim.action.Action;
  */
 public class Delete extends AbstractLineAwareEdit {
 
+    public Delete() {
+        super();
+    }
+
+    public Delete(int target, Move subject, Number multiplier) {
+        super(target, subject, multiplier);
+    }
+
     @Override
     public Action getAction() {
         return isLineDeletion() ? new LineDeleteAction() : new DeleteAction();

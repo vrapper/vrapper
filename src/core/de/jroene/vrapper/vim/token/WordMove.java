@@ -25,7 +25,7 @@ public abstract class WordMove extends AbstractRepeatableHorizontalMove {
     }
 
     protected static boolean isNewLine(String s) {
-        return VimConstants.NEWLINE.equals(s);
+        return VimConstants.NEWLINE.startsWith(s);
     }
 
     public boolean isWhiteSpace(String s) {

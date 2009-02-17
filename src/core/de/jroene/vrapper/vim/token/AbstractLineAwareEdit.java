@@ -17,6 +17,10 @@ public abstract class AbstractLineAwareEdit extends AbstractLineAwareToken {
         super();
     }
 
+    public AbstractLineAwareEdit(int target, Move subject, Number multiplier) {
+        super(target, subject, multiplier);
+    }
+
     @Override
     public boolean isOperator() {
         return true;

@@ -23,7 +23,7 @@ public class Replace extends AbstractToken implements Repeatable {
 
     public boolean repeat(VimEmulator vim, int times, Token next) throws TokenException {
         if(next instanceof KeyStrokeToken) {
-            character = String.valueOf(((KeyStrokeToken)next).getPayload());
+            character = ((KeyStrokeToken)next).getPayload();
             this.times = times;
             Platform p = vim.getPlatform();
             int position = p.getPosition();
