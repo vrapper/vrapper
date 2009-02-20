@@ -62,6 +62,10 @@ public class CommandLineMode extends AbstractMode {
                         vim.getVariables().setAutoIndent(true);
                     } else if (var.equals("noautoindent")) {
                         vim.getVariables().setAutoIndent(false);
+                    } else if (var.equals("globalregisters")) {
+                        vim.useGlobalRegisters();
+                    } else if (var.equals("noglobalregisters")) {
+                        vim.useLocalRegisters();
                     }
                 }
             } else if (token.equals("noremap")) {

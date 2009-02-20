@@ -41,8 +41,12 @@ public class NormalMode extends AbstractMode {
         if (keyMappings.containsKey(e)) {
             e = keyMappings.get(e);
         }
-        Token t = TokenFactory.create(e);
-        processToken(t);
+        if(VimInputEvent.ESCAPE.equals(e)) {
+            cleanUp();
+        } else {
+            Token t = TokenFactory.create(e);
+            processToken(t);
+        }
         return false;
     }
 
@@ -77,7 +81,7 @@ public class NormalMode extends AbstractMode {
                             tok = ((Number)tok).asDefaultRepeater();
                         }
                         CompositeToken change = new CompositeToken(tok, t);
-                        vim.getVariables().setLastEdit(change);
+                        vim.getRegisterManager().setLastEdit(change);
                     }
                     if(vim.inNormalMode()) {
                         afterExecute();
@@ -86,6 +90,9 @@ public class NormalMode extends AbstractMode {
                 }
             } catch (TokenException ex) {
                 cleanUp();
+            } catch (RuntimeException e) {
+                cleanUp();
+                throw e;
             }
         }
         platform.setDefaultSpace();

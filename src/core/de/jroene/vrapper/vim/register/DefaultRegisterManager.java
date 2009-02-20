@@ -3,6 +3,9 @@ package de.jroene.vrapper.vim.register;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.jroene.vrapper.vim.token.FindMove;
+import de.jroene.vrapper.vim.token.Token;
+
 /**
  * Simple implementation of {@link RegisterManager} which holds its registers in
  * a {@link Map}, and addresses them by their names.
@@ -15,6 +18,8 @@ public class DefaultRegisterManager implements RegisterManager {
     private Register activeRegister;
     private final Register defaultRegister;
     private final Register lastEditRegister;
+    private FindMove lastCharSearch;
+    private Token lastEdit;
 
     public DefaultRegisterManager() {
         this.registers = new HashMap<String, Register>();
@@ -52,5 +57,21 @@ public class DefaultRegisterManager implements RegisterManager {
 
     public Register getLastEditRegister() {
         return lastEditRegister;
+    }
+
+    public Token getLastEdit() {
+        return lastEdit;
+    }
+
+    public void setLastEdit(Token lastChange) {
+        this.lastEdit = lastChange;
+    }
+
+    public FindMove getLastCharSearch() {
+        return (FindMove) lastCharSearch.clone();
+    }
+
+    public void setLastCharSearch(FindMove findMove) {
+        this.lastCharSearch = (FindMove) findMove.clone();
     }
 }

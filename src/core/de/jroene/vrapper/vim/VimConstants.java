@@ -12,7 +12,7 @@ import java.util.Set;
  */
 public class VimConstants {
 
-    public static final Set<String> WHITESPACE = set(" ", "\t", "\n");
+    public static final Set<String> WHITESPACE = set(" ", "\t", "\n", "\r");
     public static final String NEWLINE = System.getProperty("line.separator");
     public static final String SPACE = " ";
     public static final String WORD_CHAR_PATTERN = "[A-Za-z0-9_]";

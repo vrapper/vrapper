@@ -44,6 +44,7 @@ public class InsertMode extends AbstractMode {
         return e instanceof VimInputEvent.Character
         || VimInputEvent.RETURN.equals(e);
     }
+
     private void afterEdit() {
         Platform platform = vim.getPlatform();
         int start = parameters.start;
@@ -56,7 +57,7 @@ public class InsertMode extends AbstractMode {
 
             Repeatable token = new UseLastEditRegister(parameters.token, new Put(parameters.preCursor));
             Repeatable repeater = new DefaultRepeater(parameters.times, token);
-            vim.getVariables().setLastEdit(repeater);
+            vim.getRegisterManager().setLastEdit(repeater);
 
             if (parameters.times > 1) {
                 try {

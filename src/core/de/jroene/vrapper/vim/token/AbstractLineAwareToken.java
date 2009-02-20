@@ -3,6 +3,7 @@ package de.jroene.vrapper.vim.token;
 import de.jroene.vrapper.vim.LineInformation;
 import de.jroene.vrapper.vim.Platform;
 import de.jroene.vrapper.vim.Space;
+import de.jroene.vrapper.vim.VimConstants;
 import de.jroene.vrapper.vim.VimEmulator;
 import de.jroene.vrapper.vim.action.Action;
 
@@ -15,7 +16,9 @@ public abstract class AbstractLineAwareToken extends AbstractToken implements Re
 
     private int target;
     private Move subject;
+    private Token finalToken;
     private Number multiplier;
+    private int repeat;
 
     public AbstractLineAwareToken() {
         super();
@@ -43,6 +46,7 @@ public abstract class AbstractLineAwareToken extends AbstractToken implements Re
 
     public boolean repeat(VimEmulator vim, int times, Token next)
     throws TokenException {
+        repeat = times;
         if (multiplier != null) {
             times *= multiplier.evaluateNumber();
         }
@@ -65,6 +69,7 @@ public abstract class AbstractLineAwareToken extends AbstractToken implements Re
             LineInformation line = platform.getLineInformation();
             int lineNumber = line.getNumber() + times - 1;
             target = platform.getLineInformation(lineNumber).getBeginOffset();
+            finalToken = next;
             return true;
         }
         if (next instanceof Move) {
@@ -92,16 +97,29 @@ public abstract class AbstractLineAwareToken extends AbstractToken implements Re
         }
         if(result) {
             target = subject.getTarget();
+            finalToken = next;
         }
         return result;
     }
 
-    public int getTarget() {
+    int getTarget() {
         return target;
     }
 
-    public Move getSubject() {
+    Move getSubject() {
         return subject;
+    }
+
+    Token getFinalToken() {
+        return finalToken;
+    }
+
+    public Number getMultiplier() {
+        return multiplier;
+    }
+
+    int getRepeat() {
+        return repeat;
     }
 
     public abstract class LineAwareLineAction implements Action {
@@ -131,12 +149,12 @@ public abstract class AbstractLineAwareToken extends AbstractToken implements Re
                 LineInformation targetLine) {
             Platform p = vim.getPlatform();
             int originalPosition = startLine.getBeginOffset();
-            int start =  originalPosition - 1;
+            int start =  originalPosition - VimConstants.NEWLINE.length();
             int end = targetLine.getEndOffset();
             if (start < 0) {
                 start = 0;
                 if(targetLine.getNumber() < p.getNumberOfLines()-1) {
-                    end += 1;
+                    end += VimConstants.NEWLINE.length();
                 }
             }
             doEdit(vim, originalPosition, start, end);

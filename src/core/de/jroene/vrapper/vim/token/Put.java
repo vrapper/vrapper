@@ -52,14 +52,14 @@ public class Put extends AbstractToken implements Repeatable {
                     if(!preCursor) {
                         int begin = line.getEndOffset();
                         if (line.getNumber() == p.getNumberOfLines()-1) {
-                            begin += 1;
+                            begin += VimConstants.NEWLINE.length();
                         }
                         p.replace(begin, 0, sb.toString(), true);
-                        p.setPosition(begin+1);
+                        p.setPosition(begin+VimConstants.NEWLINE.length());
                     } else {
                         int begin = line.getBeginOffset();
                         sb.append(VimConstants.NEWLINE);
-                        p.replace(begin, 0, sb.substring(1), true);
+                        p.replace(begin, 0, sb.substring(VimConstants.NEWLINE.length()), true);
                         p.setPosition(begin);
                     }
                 } else {

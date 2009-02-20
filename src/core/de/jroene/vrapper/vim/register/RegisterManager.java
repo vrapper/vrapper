@@ -1,5 +1,8 @@
 package de.jroene.vrapper.vim.register;
 
+import de.jroene.vrapper.vim.token.FindMove;
+import de.jroene.vrapper.vim.token.Token;
+
 /**
  * Provides access to different registers.
  *
@@ -14,4 +17,9 @@ public interface RegisterManager {
     void setActiveRegister(String name);
     void activateDefaultRegister();
     void activateLastEditRegister();
+    Token getLastEdit();
+    void setLastEdit(Token edit);
+    FindMove getLastCharSearch();
+    void setLastCharSearch(FindMove edit);
+
 }

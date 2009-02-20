@@ -30,12 +30,25 @@ public class Change extends Delete {
         return super.repeat(vim, times, next);
     }
 
+    private Token createDelete() {
+        Token finalToken = getFinalToken();
+        int times = getRepeat() * (getMultiplier() != null ? getMultiplier().evaluateNumber() : 1);
+        Number multiplier = new Number(String.valueOf(times));
+        if(finalToken != null && finalToken.getClass().equals(Change.class)) {
+            Token delete = new Delete.BufferNeutral(0, null, multiplier);
+            return new CompositeToken(delete, delete);
+        }
+        Move t = new CompositeToken(getSubject(), finalToken);
+        return new Delete.BufferNeutral(0, t, multiplier);
+    }
+
     public class ChangeAction extends DeleteAction {
 
         @Override
         protected void afterEdit(VimEmulator vim, int start, int end) {
             super.afterEdit(vim, start, end);
-            vim.toInsertMode(new InsertMode.Parameters(false, false, 1, start));
+            Token delete = createDelete();
+            vim.toInsertMode(new InsertMode.Parameters(false, true, 1, start, delete));
         }
 
     }
@@ -57,8 +70,9 @@ public class Change extends Delete {
             Platform p = vim.getPlatform();
             int position = p.getPosition();
             p.replace(position, 0, indent+VimConstants.NEWLINE, false);
-            p.setPosition(position+indent.length()+VimConstants.NEWLINE.length()-1);
-            vim.toInsertMode(new InsertMode.Parameters(true, false, 1, startLine.getBeginOffset()));
+            p.setPosition(position+indent.length());
+            Token delete = createDelete();
+            vim.toInsertMode(new InsertMode.Parameters(true, true, 1, startLine.getBeginOffset(), delete));
         }
 
         @Override

@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 import de.jroene.vrapper.vim.VimEmulator;
 import de.jroene.vrapper.vim.VimInputEvent;
 import de.jroene.vrapper.vim.VimInputEvent.Character;
+import de.jroene.vrapper.vim.register.DefaultRegisterManager;
 
 /**
  * A prototype {@link TestCase} for testing various tokens
@@ -21,7 +22,7 @@ public class VimTestCase extends TestCase {
         // prevent use of user-specific configuration
         System.setProperty("user.home", "");
         platform = new TestPlatform();
-        vim = new VimEmulator(platform);
+        vim = new VimEmulator(platform, new DefaultRegisterManager());
     }
 
     /**

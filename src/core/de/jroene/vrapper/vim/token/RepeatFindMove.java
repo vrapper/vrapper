@@ -18,7 +18,7 @@ public class RepeatFindMove extends AbstractRepeatableHorizontalMove {
 
     @Override
     public int calculateTarget(VimEmulator vim, int times, Token next) {
-        FindMove original = vim.getVariables().getLastCharSearch();
+        FindMove original = vim.getRegisterManager().getLastCharSearch();
         if(reverse) {
             original = original.backwards();
         }

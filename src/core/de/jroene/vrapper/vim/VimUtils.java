@@ -32,7 +32,7 @@ public class VimUtils {
             LineInformation line) {
         Platform p = vim.getPlatform();
         int index = line.getBeginOffset();
-        int end = line.getEndOffset() - 1;
+        int end = line.getEndOffset();
         String s = p.getText(index, 1);
         while (isWhiteSpace(s) && index < end) {
             index += 1;

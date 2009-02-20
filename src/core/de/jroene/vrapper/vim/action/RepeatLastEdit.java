@@ -12,7 +12,7 @@ public class RepeatLastEdit extends AbstractToken implements Repeatable {
     private Token token;
 
     public boolean evaluate(VimEmulator vim, Token next) throws TokenException {
-        Token last = vim.getVariables().getLastEdit();
+        Token last = vim.getRegisterManager().getLastEdit();
         if (last == null) {
             throw new TokenException();
         }
@@ -25,7 +25,7 @@ public class RepeatLastEdit extends AbstractToken implements Repeatable {
 
     public boolean repeat(VimEmulator vim, int times, Token next)
     throws TokenException {
-        Token last = vim.getVariables().getLastEdit();
+        Token last = vim.getRegisterManager().getLastEdit();
         if (last == null || !(last instanceof Repeatable)) {
             throw new TokenException();
         }

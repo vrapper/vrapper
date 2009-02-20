@@ -22,17 +22,19 @@ public class VimEmulator {
     private final InsertMode insertMode;
     private final NormalMode normalMode;
     private final CommandLineMode commandLineMode;
-    private final VimVariables variables;
+    private final VimConfig variables;
     private int horizontalPosition;
-    private final RegisterManager registerManager;
+    private RegisterManager registerManager;
+    private final RegisterManager globalRegisterManager;
 
-    public VimEmulator(Platform platform) {
+    public VimEmulator(Platform platform, RegisterManager globalRegisterManager) {
         this.platform = platform;
         this.insertMode = new InsertMode(this);
         this.normalMode = new NormalMode(this);
         this.commandLineMode = new CommandLineMode(this);
-        this.variables = new VimVariables();
-        this.registerManager = new DefaultRegisterManager();
+        this.variables = new VimConfig();
+        this.registerManager = globalRegisterManager;
+        this.globalRegisterManager = globalRegisterManager;
         readConfiguration();
         toNormalMode();
     }
@@ -87,7 +89,7 @@ public class VimEmulator {
         horizontalPosition = platform.getPosition() - currLine.getBeginOffset();
     }
 
-    public VimVariables getVariables() {
+    public VimConfig getVariables() {
         return variables;
     }
 
@@ -97,6 +99,14 @@ public class VimEmulator {
 
     public NormalMode getNormalMode() {
         return normalMode;
+    }
+
+    public void useGlobalRegisters() {
+        registerManager = globalRegisterManager;
+    }
+
+    public void useLocalRegisters() {
+        registerManager = new DefaultRegisterManager();
     }
 
     private void readConfiguration() {

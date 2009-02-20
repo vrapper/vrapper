@@ -63,7 +63,7 @@ public class FindMove extends AbstractRepeatableHorizontalMove {
     public boolean repeat(VimEmulator vim, int times, Token next) throws TokenException {
         if(next instanceof KeyStrokeToken) {
             target = String.valueOf(((KeyStrokeToken)next).getPayload());
-            vim.getVariables().setLastCharSearch(this);
+            vim.getRegisterManager().setLastCharSearch(this);
             return super.repeat(vim, times, next);
         }
         if(next == null) {

@@ -1,5 +1,6 @@
 package de.jroene.vrapper.vim.token;
 
+import de.jroene.vrapper.vim.LineInformation;
 import de.jroene.vrapper.vim.Platform;
 import de.jroene.vrapper.vim.VimEmulator;
 import de.jroene.vrapper.vim.action.Action;
@@ -39,6 +40,38 @@ public class Delete extends AbstractLineAwareEdit {
         protected void doEdit(VimEmulator vim, int originalPosition, int start,
                 int end) {
             vim.getPlatform().replace(start, end - start, "", false);
+        }
+    }
+
+    static class BufferNeutral extends Delete {
+
+        public BufferNeutral() {
+            super();
+        }
+
+        public BufferNeutral(int target, Move subject, Number multiplier) {
+            super(target, subject, multiplier);
+        }
+
+        @Override
+        public Action getAction() {
+            return isLineDeletion() ? new NeutralLineDeleteAction() : new NeutralDeleteAction();
+        }
+
+        private class NeutralLineDeleteAction extends LineDeleteAction {
+
+            @Override
+            protected void beforeEdit(VimEmulator vim, LineInformation start, LineInformation end) {
+                // do nothing
+            }
+        }
+
+        private class NeutralDeleteAction extends DeleteAction {
+
+            @Override
+            protected void beforeEdit(VimEmulator vim, int start, int end) {
+                // do nothing
+            }
         }
     }
 

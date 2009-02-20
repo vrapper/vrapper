@@ -11,7 +11,7 @@ import de.jroene.vrapper.vim.action.CompositeAction;
  *
  * @author Matthias Radig
  */
-public class CompositeToken implements Repeatable {
+public class CompositeToken implements RepeatableMove {
 
     private final Token first;
     private final Token second;
@@ -57,6 +57,18 @@ public class CompositeToken implements Repeatable {
 
     public boolean isOperator() {
         return first.isOperator();
+    }
+
+    public int getTarget() {
+        return ((Move)first).getTarget();
+    }
+
+    public boolean includesTarget() {
+        return ((Move)first).includesTarget();
+    }
+
+    public boolean isHorizontal() {
+        return ((Move)first).isHorizontal();
     }
 
 }

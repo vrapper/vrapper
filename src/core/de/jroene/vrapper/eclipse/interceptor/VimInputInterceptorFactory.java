@@ -12,6 +12,8 @@ import org.eclipse.ui.texteditor.AbstractTextEditor;
 import de.jroene.vrapper.eclipse.EclipsePlatform;
 import de.jroene.vrapper.vim.VimEmulator;
 import de.jroene.vrapper.vim.VimInputEvent;
+import de.jroene.vrapper.vim.register.DefaultRegisterManager;
+import de.jroene.vrapper.vim.register.RegisterManager;
 
 /**
  * A factory for interceptors which route input events to a {@link VimEmulator}
@@ -39,12 +41,15 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
         specialKeys.put( KeyEvent.VK_HOME,       VimInputEvent.HOME);
         specialKeys.put( KeyEvent.VK_END,        VimInputEvent.END);
     }
+
+    private final RegisterManager globalRegisterManager = new DefaultRegisterManager();
+
     public InputInterceptor createInterceptor(final IWorkbenchWindow window,
             final AbstractTextEditor part, final ITextViewer textViewer) {
         return new InputInterceptor() {
 
             private final VimEmulator vim = new VimEmulator(
-                    new EclipsePlatform(window, part, textViewer));
+                    new EclipsePlatform(window, part, textViewer), globalRegisterManager);
             public void verifyKey(VerifyEvent e) {
                 VimInputEvent in;
                 if(e.keyCode == SWT.SHIFT) {
