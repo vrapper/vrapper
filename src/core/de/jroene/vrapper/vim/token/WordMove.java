@@ -3,8 +3,8 @@ package de.jroene.vrapper.vim.token;
 import java.util.regex.Pattern;
 
 import de.jroene.vrapper.vim.Platform;
-import de.jroene.vrapper.vim.VimConstants;
 import de.jroene.vrapper.vim.VimEmulator;
+import de.jroene.vrapper.vim.VimUtils;
 
 /**
  * Different moves over words.
@@ -22,14 +22,6 @@ public abstract class WordMove extends AbstractRepeatableHorizontalMove {
 
     protected boolean isCharacter(String s) {
         return pattern.matcher(s).find();
-    }
-
-    protected static boolean isNewLine(String s) {
-        return VimConstants.NEWLINE.startsWith(s);
-    }
-
-    public boolean isWhiteSpace(String s) {
-        return VimConstants.WHITESPACE.contains(s);
     }
 
     /**
@@ -56,15 +48,15 @@ public abstract class WordMove extends AbstractRepeatableHorizontalMove {
             int n = 0;
             while (n < times) {
                 String firstChar = index < end ? p.getText(index, 1) : "";
-                boolean isTerminatorWord = !(isCharacter(firstChar) || isWhiteSpace(firstChar));
+                boolean isTerminatorWord = !(isCharacter(firstChar) || VimUtils.isWhiteSpace(firstChar));
                 while (index < end) {
                     String s = p.getText(index, 1);
-                    boolean isWhiteSpace = isWhiteSpace(s);
+                    boolean isWhiteSpace = VimUtils.isWhiteSpace(s);
                     boolean isTerminator = !isWhiteSpace && !(isTerminatorWord ^ isCharacter(s));
                     if (!found && isTerminator) {
                         break;
                     } else if (!found && isWhiteSpace) {
-                        if(n == times-1 && stopAtNewline && isNewLine(s)) {
+                        if(n == times-1 && stopAtNewline && VimUtils.isNewLine(s)) {
                             return index;
                         }
                         found = true;
@@ -105,14 +97,14 @@ public abstract class WordMove extends AbstractRepeatableHorizontalMove {
             boolean found = false;
             while (n < times) {
                 String firstChar = index < end ? p.getText(index, 1) : "";
-                boolean isTerminatorWord = !(isCharacter(firstChar) || isWhiteSpace(firstChar));
+                boolean isTerminatorWord = !(isCharacter(firstChar) || VimUtils.isWhiteSpace(firstChar));
                 index = Math.min(index+1, end);
                 while (index < end) {
                     String s = p.getText(index, 1);
-                    boolean isWhiteSpace = isWhiteSpace(s);
+                    boolean isWhiteSpace = VimUtils.isWhiteSpace(s);
                     if (!found && !isWhiteSpace) {
                         firstChar = p.getText(index, 1);
-                        isTerminatorWord = !(isCharacter(firstChar) || isWhiteSpace(firstChar));
+                        isTerminatorWord = !(isCharacter(firstChar) || VimUtils.isWhiteSpace(firstChar));
                     }
                     boolean isTerminator = found && (isWhiteSpace || !(isTerminatorWord ^ isCharacter(s)));
                     if (!found && !isWhiteSpace){
@@ -155,14 +147,14 @@ public abstract class WordMove extends AbstractRepeatableHorizontalMove {
             int end = p.getLineInformation(p.getNumberOfLines()-1).getEndOffset();
             while (n < times) {
                 String firstChar = index > 0 && index < end ? p.getText(index, 1) : "";
-                boolean isTerminatorWord = !(isCharacter(firstChar) || isWhiteSpace(firstChar));
+                boolean isTerminatorWord = !(isCharacter(firstChar) || VimUtils.isWhiteSpace(firstChar));
                 index = Math.max(index-1, 0);
                 while (index > 0) {
                     String s = p.getText(index, 1);
-                    boolean isWhiteSpace = isWhiteSpace(s);
+                    boolean isWhiteSpace = VimUtils.isWhiteSpace(s);
                     if (!found && !isWhiteSpace) {
                         firstChar = p.getText(index, 1);
-                        isTerminatorWord = !(isCharacter(firstChar) || isWhiteSpace(firstChar));
+                        isTerminatorWord = !(isCharacter(firstChar) || VimUtils.isWhiteSpace(firstChar));
                     }
                     boolean isTerminator = found && (isWhiteSpace || !(isTerminatorWord ^ isCharacter(s)));
                     if (!found && !isWhiteSpace){

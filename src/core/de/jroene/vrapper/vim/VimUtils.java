@@ -1,11 +1,15 @@
 package de.jroene.vrapper.vim;
 
+import java.util.regex.Pattern;
+
 /**
  * Commonly used methods.
  * 
  * @author Matthias Radig
  */
 public class VimUtils {
+
+    public static final Pattern COMPILED_WORD_CHAR_PATTERN = Pattern.compile(VimConstants.WORD_CHAR_PATTERN);
 
     private VimUtils() {
         // no instance
@@ -65,6 +69,14 @@ public class VimUtils {
         Platform p = vim.getPlatform();
         int offset = getFirstNonWhiteSpaceOffset(vim, info);
         return p.getText(offset, info.getEndOffset() - offset);
+    }
+
+    public static boolean isNewLine(String s) {
+        return VimConstants.NEWLINE.startsWith(s);
+    }
+
+    public static boolean isWordCharacter(String s) {
+        return VimUtils.COMPILED_WORD_CHAR_PATTERN.matcher(s).find();
     }
 
 }
