@@ -145,21 +145,25 @@ public class NormalMode extends AbstractMode {
                 e = keyMappings.get(e);
             }
             if (VimInputEvent.ESCAPE.equals(e)) {
-                platform.setSelection(null);
+                int pos = platform.getPosition();
+                platform.setSelection(new Selection(pos, 0));
                 vim.toNormalMode();
-            }
-            Token t = TokenFactory.create(e);
-            if (t instanceof Move || t instanceof Number || t instanceof AbstractLineAwareToken) {
-                processToken(t);
-            }
-            int end;
-            int pos = platform.getPosition();
-            if (lineWise) {
-                end = platform.getLineInformationOfOffset(pos).getEndOffset();
             } else {
-                end = pos;
+                Token t = TokenFactory.create(e);
+                if (t instanceof Move || t instanceof Number
+                        || t instanceof AbstractLineAwareToken) {
+                    processToken(t);
+                }
+                int pos = platform.getPosition();
+                int end;
+                if (lineWise) {
+                    end = platform.getLineInformationOfOffset(pos)
+                    .getEndOffset();
+                } else {
+                    end = pos;
+                }
+                platform.setSelection(Selection.fromOffsets(start, end));
             }
-            platform.setSelection(Selection.fromOffsets(start, end));
             return false;
         }
 

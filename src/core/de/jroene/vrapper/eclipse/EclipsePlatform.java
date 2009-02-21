@@ -278,7 +278,7 @@ public class EclipsePlatform implements Platform {
 
     public void setSelection(Selection s) {
         if (s == null) {
-            textViewer.setSelectedRange(0, 0);
+            textViewer.getSelectionProvider().setSelection(TextSelection.emptySelection());
         } else {
             //            textViewer.setSelectedRange(s.getStart(), s.getLength());
             TextSelection ts = new TextSelection(s.getStart(), s.getLength());
