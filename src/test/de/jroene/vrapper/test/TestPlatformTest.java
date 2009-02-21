@@ -88,15 +88,15 @@ public class TestPlatformTest extends TestCase {
         String s4 = "nice work";
         String s5 = "nice work!";
         assertEquals("", platform.getBuffer());
-        platform.replace(0, 0, s, true);
+        platform.replace(0, 0, s);
         assertEquals(s, platform.getBuffer());
-        platform.replace(0, 4, "work", true);
+        platform.replace(0, 4, "work");
         assertEquals(s2, platform.getBuffer());
-        platform.replace(4, 8, "", true);
+        platform.replace(4, 8, "");
         assertEquals(s3, platform.getBuffer());
-        platform.replace(0, 0, "nice ", true);
+        platform.replace(0, 0, "nice ");
         assertEquals(s4, platform.getBuffer());
-        platform.replace(9, 0, "!", true);
+        platform.replace(9, 0, "!");
         assertEquals(s5, platform.getBuffer());
     }
 

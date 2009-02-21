@@ -35,6 +35,7 @@ public class InsertMode extends AbstractMode {
             }
             vim.toNormalMode();
         } else if(!allowed(e)) {
+            vim.getPlatform().endChange();
             clean = false;
         }
         return true;
@@ -67,6 +68,7 @@ public class InsertMode extends AbstractMode {
                 }
                 repeater.getAction().execute(vim);
             }
+            vim.getPlatform().endChange();
         }
     }
 

@@ -41,7 +41,7 @@ public abstract class InsertLine extends TokenAndAction implements Repeatable {
 
         @Override
         protected void doEdit(Platform p, LineInformation currentLine, String indent) {
-            p.replace(currentLine.getBeginOffset(), 0, indent+VimConstants.NEWLINE, true);
+            p.replace(currentLine.getBeginOffset(), 0, indent+VimConstants.NEWLINE);
             p.setPosition(currentLine.getBeginOffset()+indent.length());
         }
 
@@ -59,7 +59,7 @@ public abstract class InsertLine extends TokenAndAction implements Repeatable {
             if (currentLine.getNumber() == p.getNumberOfLines()-1) {
                 begin += 1;
             }
-            p.replace(begin, 0, VimConstants.NEWLINE+indent, true);
+            p.replace(begin, 0, VimConstants.NEWLINE+indent);
             p.setPosition(begin+indent.length()+1);
         }
 

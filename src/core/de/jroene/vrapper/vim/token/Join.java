@@ -75,7 +75,7 @@ public class Join extends AbstractToken implements Repeatable {
             }
             p.replace(line.getEndOffset(),
                     other.getEndOffset()-line.getEndOffset()+1,
-                    sb.toString(), false);
+                    sb.toString());
         }
 
     }

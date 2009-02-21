@@ -35,8 +35,7 @@ public class VimTestCase extends TestCase {
             VimInputEvent e = new VimInputEvent.Character(c);
             boolean doit = vim.type(e);
             if (doit) {
-                platform.replace(platform.getPosition(), 0, String.valueOf(c),
-                        false);
+                platform.replace(platform.getPosition(), 0, String.valueOf(c));
             }
         }
     }
@@ -50,8 +49,7 @@ public class VimTestCase extends TestCase {
             boolean doit = vim.type(e);
             if (doit && e instanceof VimInputEvent.Character) {
                 platform.replace(platform.getPosition(), 0,
-                        String .valueOf(((VimInputEvent.Character) e).getCharacter()),
-                        false);
+                        String .valueOf(((VimInputEvent.Character) e).getCharacter()));
             }
         }
     }

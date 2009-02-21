@@ -82,13 +82,10 @@ public class TestPlatform implements Platform {
 
     }
 
-    public void replace(int index, int length, String s, boolean undoMark) {
+    public void replace(int index, int length, String s) {
         buffer.replace(index, index+length, s);
         if (caretPosition > buffer.length()) {
             caretPosition = buffer.length();
-        }
-        if(undoMark) {
-            setUndoMark();
         }
     }
 
@@ -153,7 +150,7 @@ public class TestPlatform implements Platform {
 
     public void setBuffer(String s) {
         buffer.setLength(0);
-        replace(0, 0, s, true);
+        replace(0, 0, s);
     }
 
     public String getBuffer() {
@@ -166,6 +163,16 @@ public class TestPlatform implements Platform {
     }
 
     public void setSelection(Selection s) {
+        // TODO Auto-generated method stub
+
+    }
+
+    public void beginChange() {
+        // TODO Auto-generated method stub
+
+    }
+
+    public void endChange() {
         // TODO Auto-generated method stub
 
     }

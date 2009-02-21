@@ -69,7 +69,7 @@ public class Change extends Delete {
             super.afterEdit(vim, startLine, endLine);
             Platform p = vim.getPlatform();
             int position = p.getPosition();
-            p.replace(position, 0, indent+VimConstants.NEWLINE, false);
+            p.replace(position, 0, indent+VimConstants.NEWLINE);
             p.setPosition(position+indent.length());
             Token delete = createDelete();
             vim.toInsertMode(new InsertMode.Parameters(true, true, 1, startLine.getBeginOffset(), delete));

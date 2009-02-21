@@ -27,11 +27,12 @@ import de.jroene.vrapper.vim.Space;
  */
 public class EclipsePlatform implements Platform {
 
+    @SuppressWarnings("unused")
     private final IWorkbenchWindow window;
     private final AbstractTextEditor part;
     private final ITextViewer textViewer;
     private final ITextViewerExtension5 textViewerExtension5;
-    private final IUndoManager undoManager;
+    private final UndoManager undoManager;
     private final StatusLine statusLine;
     private Space space;
 
@@ -41,10 +42,17 @@ public class EclipsePlatform implements Platform {
         this.window = window;
         this.part = part;
         this.textViewer = textViewer;
-        this.undoManager = getUndoManager();
         this.textViewerExtension5 = textViewer instanceof ITextViewerExtension5
         ? (ITextViewerExtension5) textViewer
                 : null;
+        if (textViewer instanceof ITextViewerExtension6) {
+            IUndoManager delegate = ((ITextViewerExtension6)textViewer).getUndoManager();
+            UndoManager manager = new UndoManager(delegate);
+            textViewer.setUndoManager(manager);
+            this.undoManager = manager;
+        } else {
+            this.undoManager = new UndoManager.Dummy();
+        }
         setDefaultSpace();
         statusLine = new StatusLine(textViewer.getTextWidget());
     }
@@ -64,7 +72,7 @@ public class EclipsePlatform implements Platform {
         }
     }
 
-    public void replace(int index, int length, String s, boolean setUndoMark) {
+    public void replace(int index, int length, String s) {
         checkForModelSpace("replace()");
         try {
             IDocument doc = textViewer.getDocument();
@@ -72,9 +80,6 @@ public class EclipsePlatform implements Platform {
                 index = doc.getLength();
             }
             doc.replace(index, length, s);
-            if (setUndoMark) {
-                setUndoMark();
-            }
         } catch (BadLocationException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -217,13 +222,6 @@ public class EclipsePlatform implements Platform {
         space = Space.MODEL;
     }
 
-    private IUndoManager getUndoManager() {
-        if(textViewer instanceof ITextViewerExtension6) {
-            return ((ITextViewerExtension6)textViewer).getUndoManager();
-        }
-        return null;
-    }
-
     private void setCaretWidth(int width) {
         Caret caret = textViewer.getTextWidget().getCaret();
         caret.setSize(width, caret.getSize().y);
@@ -286,5 +284,15 @@ public class EclipsePlatform implements Platform {
             TextSelection ts = new TextSelection(s.getStart(), s.getLength());
             textViewer.getSelectionProvider().setSelection(ts);
         }
+    }
+
+    public void beginChange() {
+        undoManager.beginCompoundChange();
+        undoManager.lock();
+    }
+
+    public void endChange() {
+        undoManager.unlock();
+        undoManager.endCompoundChange();
     }
 }

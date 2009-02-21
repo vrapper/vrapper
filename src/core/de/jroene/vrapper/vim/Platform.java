@@ -65,10 +65,8 @@ public interface Platform {
      *            length of the text to replace.
      * @param s
      *            the replacement.
-     * @param undoMark
-     *            whether to set an undo mark after the operation or not.
      */
-    void replace(int index, int length, String s, boolean undoMark);
+    void replace(int index, int length, String s);
 
     /**
      * Sets an undo mark.
@@ -154,4 +152,15 @@ public interface Platform {
      *            the new selection
      */
     void setSelection(Selection s);
+
+    /**
+     * Signals that following changes until {@link #endChange()} is called are
+     * to be handled as a single change.
+     */
+    void beginChange();
+
+    /**
+     * Signals the end of a change.
+     */
+    void endChange();
 }

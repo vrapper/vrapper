@@ -38,6 +38,7 @@ public class CommandLineMode extends AbstractMode {
             }
             vim.toNormalMode();
             buffer.setLength(0);
+            vim.getPlatform().endChange();
         }
         vim.getPlatform().setCommandLine(buffer.toString());
         return false;

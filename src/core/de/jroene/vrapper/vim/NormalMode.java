@@ -74,7 +74,6 @@ public class NormalMode extends AbstractMode {
                 }
                 platform.setSpace(startToken.getSpace());
                 if (startToken.evaluate(vim, t)) {
-                    startToken.getAction().execute(vim);
                     if(startToken.isOperator()) {
                         Token tok = startToken;
                         if (tok instanceof Number) {
@@ -83,6 +82,8 @@ public class NormalMode extends AbstractMode {
                         CompositeToken change = new CompositeToken(tok, t);
                         vim.getRegisterManager().setLastEdit(change);
                     }
+                    platform.beginChange();
+                    startToken.getAction().execute(vim);
                     if(vim.inNormalMode()) {
                         afterExecute();
                     }
@@ -173,5 +174,7 @@ public class NormalMode extends AbstractMode {
             position -= 1;
             platform.setPosition(position);
         }
+        // end change
+        platform.endChange();
     }
 }

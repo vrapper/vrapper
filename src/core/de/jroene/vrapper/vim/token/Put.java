@@ -54,12 +54,12 @@ public class Put extends AbstractToken implements Repeatable {
                         if (line.getNumber() == p.getNumberOfLines()-1) {
                             begin += VimConstants.NEWLINE.length();
                         }
-                        p.replace(begin, 0, sb.toString(), true);
+                        p.replace(begin, 0, sb.toString());
                         p.setPosition(begin+VimConstants.NEWLINE.length());
                     } else {
                         int begin = line.getBeginOffset();
                         sb.append(VimConstants.NEWLINE);
-                        p.replace(begin, 0, sb.substring(VimConstants.NEWLINE.length()), true);
+                        p.replace(begin, 0, sb.substring(VimConstants.NEWLINE.length()));
                         p.setPosition(begin);
                     }
                 } else {
@@ -68,7 +68,7 @@ public class Put extends AbstractToken implements Repeatable {
                         position += 1;
                     }
                     String text = sb.toString();
-                    p.replace(position, 0, text, true);
+                    p.replace(position, 0, text);
                     p.setPosition(position+text.length()-1);
                 }
             }

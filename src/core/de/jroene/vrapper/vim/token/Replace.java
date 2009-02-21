@@ -57,7 +57,7 @@ public class Replace extends AbstractToken implements Repeatable {
                     s.append(character);
                 }
             }
-            p.replace(position, times, s.toString(), true);
+            p.replace(position, times, s.toString());
             p.setPosition(position + times - 1);
         }
 

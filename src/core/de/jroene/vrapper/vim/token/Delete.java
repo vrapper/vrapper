@@ -30,7 +30,7 @@ public class Delete extends AbstractLineAwareEdit {
         protected void doEdit(VimEmulator vim, int originalPosition, int start,
                 int end) {
             Platform pl = vim.getPlatform();
-            pl.replace(start, end - start, "", false);
+            pl.replace(start, end - start, "");
             pl.setPosition(originalPosition);
         }
     }
@@ -39,7 +39,7 @@ public class Delete extends AbstractLineAwareEdit {
         @Override
         protected void doEdit(VimEmulator vim, int originalPosition, int start,
                 int end) {
-            vim.getPlatform().replace(start, end - start, "", false);
+            vim.getPlatform().replace(start, end - start, "");
         }
     }
 
