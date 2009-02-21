@@ -1,8 +1,12 @@
 package de.jroene.vrapper.vim.token;
 
-import de.jroene.vrapper.test.VimTestCase;
+import de.jroene.vrapper.test.SnapshotTestCase;
 
-public class DeleteTest extends VimTestCase {
+public class DeleteTest extends SnapshotTestCase {
+
+    public DeleteTest() {
+        super("text.txt", "Delete");
+    }
 
     public void testDelete() {
         platform.setBuffer("aaaabbbbccccdddd");

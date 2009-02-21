@@ -41,17 +41,22 @@ public abstract class AbstractLineAwareToken extends AbstractToken implements Re
     }
 
     public boolean evaluate(VimEmulator vim, Token next) throws TokenException {
-        return repeat(vim, 1, next);
+        return evaluate0(vim, 1, next, getMultiplier() != null);
     }
 
     public boolean repeat(VimEmulator vim, int times, Token next)
     throws TokenException {
+        return evaluate0(vim, times, next, true);
+    }
+
+    public boolean evaluate0(VimEmulator vim, int times, Token next,
+            boolean useRepeat) throws TokenException {
         repeat = times;
         if (multiplier != null) {
             times *= multiplier.evaluateNumber();
         }
-        if(subject != null) {
-            return evaluateSubject(vim, times, next);
+        if (subject != null) {
+            return evaluateSubject(vim, times, next, useRepeat);
         }
         if (next == null) {
             return false;
@@ -74,7 +79,7 @@ public abstract class AbstractLineAwareToken extends AbstractToken implements Re
         }
         if (next instanceof Move) {
             subject = (Move) next;
-            return evaluateSubject(vim, times, null);
+            return evaluateSubject(vim, times, null, useRepeat);
         }
         if (next instanceof Number) {
             if (multiplier == null) {
@@ -87,10 +92,10 @@ public abstract class AbstractLineAwareToken extends AbstractToken implements Re
         throw new TokenException();
     }
 
-    private boolean evaluateSubject(VimEmulator vim, int times, Token next)
+    private boolean evaluateSubject(VimEmulator vim, int times, Token next, boolean useRepeat)
     throws TokenException {
         boolean result;
-        if(subject instanceof RepeatableMove) {
+        if(useRepeat && subject instanceof RepeatableMove) {
             result = ((RepeatableMove)subject).repeat(vim, times, next);
         } else {
             result = subject.evaluate(vim, next);
