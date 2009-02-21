@@ -3,6 +3,7 @@ package de.jroene.vrapper.vim.register;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.jroene.vrapper.vim.Search;
 import de.jroene.vrapper.vim.token.FindMove;
 import de.jroene.vrapper.vim.token.Token;
 
@@ -20,6 +21,7 @@ public class DefaultRegisterManager implements RegisterManager {
     private final Register lastEditRegister;
     private FindMove lastCharSearch;
     private Token lastEdit;
+    private Search search;
 
     public DefaultRegisterManager() {
         this.registers = new HashMap<String, Register>();
@@ -73,5 +75,13 @@ public class DefaultRegisterManager implements RegisterManager {
 
     public void setLastCharSearch(FindMove findMove) {
         this.lastCharSearch = (FindMove) findMove.clone();
+    }
+
+    public Search getSearch() {
+        return search;
+    }
+
+    public void setSearch(Search search) {
+        this.search = search;
     }
 }

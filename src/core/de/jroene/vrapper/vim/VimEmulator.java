@@ -22,6 +22,7 @@ public class VimEmulator {
     private final InsertMode insertMode;
     private final NormalMode normalMode;
     private final CommandLineMode commandLineMode;
+    private final SearchMode searchMode;
     private final VimConfig variables;
     private int horizontalPosition;
     private RegisterManager registerManager;
@@ -32,6 +33,7 @@ public class VimEmulator {
         this.insertMode = new InsertMode(this);
         this.normalMode = new NormalMode(this);
         this.commandLineMode = new CommandLineMode(this);
+        this.searchMode = new SearchMode(this);
         this.variables = new VimConfig();
         this.registerManager = globalRegisterManager;
         this.globalRegisterManager = globalRegisterManager;
@@ -57,6 +59,13 @@ public class VimEmulator {
     public void toCommandLineMode() {
         mode = commandLineMode;
         commandLineMode.type(new VimInputEvent.Character(':'));
+        platform.toCommandLineMode();
+    }
+
+    public void toSearchMode(boolean backwards) {
+        mode = searchMode;
+        char character = backwards ? '?' : '/';
+        searchMode.type(new VimInputEvent.Character(character));
         platform.toCommandLineMode();
     }
 
@@ -116,7 +125,7 @@ public class VimEmulator {
             BufferedReader reader = new BufferedReader(new FileReader(config));
             String line;
             while((line = reader.readLine()) != null) {
-                commandLineMode.parseAndExecute(line.trim());
+                commandLineMode.parseAndExecute(null, line.trim());
             }
         } catch (FileNotFoundException e) {
             // ignore

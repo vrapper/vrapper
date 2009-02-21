@@ -16,6 +16,8 @@ import org.eclipse.ui.texteditor.AbstractTextEditor;
 
 import de.jroene.vrapper.vim.LineInformation;
 import de.jroene.vrapper.vim.Platform;
+import de.jroene.vrapper.vim.Search;
+import de.jroene.vrapper.vim.SearchResult;
 import de.jroene.vrapper.vim.Selection;
 import de.jroene.vrapper.vim.Space;
 
@@ -294,5 +296,11 @@ public class EclipsePlatform implements Platform {
     public void endChange() {
         undoManager.unlock();
         undoManager.endCompoundChange();
+    }
+
+    public SearchResult find(Search search, int offset) {
+        int index = textViewer.getFindReplaceTarget().findAndSelect(
+                offset, search.getKeyword(), !search.isBackward(), true, false);
+        return new SearchResult(index);
     }
 }

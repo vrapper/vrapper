@@ -1,5 +1,6 @@
 package de.jroene.vrapper.vim.register;
 
+import de.jroene.vrapper.vim.Search;
 import de.jroene.vrapper.vim.token.FindMove;
 import de.jroene.vrapper.vim.token.Token;
 
@@ -21,5 +22,7 @@ public interface RegisterManager {
     void setLastEdit(Token edit);
     FindMove getLastCharSearch();
     void setLastCharSearch(FindMove edit);
+    Search getSearch();
+    void setSearch(Search search);
 
 }

@@ -16,7 +16,7 @@ public class CommandLineMode extends AbstractCommandMode {
     }
 
     @Override
-    public void parseAndExecute(String command) {
+    public void parseAndExecute(String first, String command) {
         StringTokenizer nizer = new StringTokenizer(command);
         if (nizer.hasMoreTokens()) {
             String token = nizer.nextToken();

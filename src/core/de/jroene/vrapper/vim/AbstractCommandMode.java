@@ -39,14 +39,14 @@ public abstract class AbstractCommandMode extends AbstractMode {
 
     /**
      * Parses and executes the given command if possible.
-     * 
+     * @param first TODO
      * @param command
      *            the command to execute.
      */
-    public abstract void parseAndExecute(String command);
+    public abstract void parseAndExecute(String first, String command);
 
     private void parseAndExecute() {
-        parseAndExecute(buffer.substring(1, buffer.length()));
+        parseAndExecute(buffer.substring(0,1), buffer.substring(1, buffer.length()));
     }
 
 }

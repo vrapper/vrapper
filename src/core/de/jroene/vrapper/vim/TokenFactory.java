@@ -6,6 +6,8 @@ import de.jroene.vrapper.vim.action.CommandLineAction;
 import de.jroene.vrapper.vim.action.InsertLine;
 import de.jroene.vrapper.vim.action.InsertModeAction;
 import de.jroene.vrapper.vim.action.RepeatLastEdit;
+import de.jroene.vrapper.vim.action.SearchAction;
+import de.jroene.vrapper.vim.action.SearchModeAction;
 import de.jroene.vrapper.vim.action.VisualModeAction;
 import de.jroene.vrapper.vim.token.BeginOfLineMove;
 import de.jroene.vrapper.vim.token.Change;
@@ -116,8 +118,12 @@ public class TokenFactory {
         // history
         put('u', new History.Undo());
         put('U', new History.Redo());
-        // command line
+        // command line / search
         put(':', new CommandLineAction());
+        put('/', new SearchModeAction(false));
+        put('?', new SearchModeAction(true));
+        put('n', new SearchAction(false));
+        put('N', new SearchAction(true));
         // visual mode
         put('v', new VisualModeAction(false));
         put('V', new VisualModeAction(true));

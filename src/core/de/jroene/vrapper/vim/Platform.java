@@ -163,4 +163,15 @@ public interface Platform {
      * Signals the end of a change.
      */
     void endChange();
+
+    /**
+     * Searches for the a keyword.
+     * 
+     * @param search
+     *            the parameters of the search.
+     * @param offset
+     *            where to start searching.
+     * @return the index of the searched string.
+     */
+    SearchResult find(Search search, int offset);
 }
