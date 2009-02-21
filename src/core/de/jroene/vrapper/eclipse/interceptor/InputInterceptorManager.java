@@ -34,7 +34,6 @@ public class InputInterceptorManager implements IPartListener {
     }
 
     public void partOpened(IWorkbenchPart part) {
-        System.out.println(part.getClass());
         if (part instanceof AbstractTextEditor) {
             AbstractTextEditor editor = (AbstractTextEditor) part;
             try {
