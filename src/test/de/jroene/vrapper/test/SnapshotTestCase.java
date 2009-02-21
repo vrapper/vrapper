@@ -2,6 +2,7 @@ package de.jroene.vrapper.test;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
@@ -26,7 +27,9 @@ public class SnapshotTestCase extends VimTestCase {
         String startState = readFile(start);
         platform.setBuffer(startState);
         String lastNumber = "0";
-        for (File snapshot : getStates()) {
+        File[] states = getStates();
+        assertTrue(states.length > 0);
+        for (File snapshot : states) {
             String s = snapshot.getName();
             String number = s.substring(0, 1);
             String command = s.substring(1);
@@ -61,7 +64,12 @@ public class SnapshotTestCase extends VimTestCase {
 
     private File[] getStates() {
         File baseDir = new File(SNAPSHOT_DIRECTORY, testSetName);
-        Arrays.sort(baseDir.listFiles());
-        return baseDir.listFiles();
+        File[] listFiles = baseDir.listFiles(new FileFilter() {
+            public boolean accept(File pathname) {
+                return !pathname.isDirectory();
+            }
+        });
+        Arrays.sort(listFiles);
+        return listFiles;
     }
 }
