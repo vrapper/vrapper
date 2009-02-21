@@ -57,5 +57,8 @@ public class VrapperToggleAction implements IWorkbenchWindowActionDelegate {
 
     public void init(IWorkbenchWindow window) {
         this.window = window;
+        //        if (Activator.getDefault().getPluginPreferences().getBoolean("action.toggle.enabled")) {
+        //        enable();
+        //        }
     }
 }
