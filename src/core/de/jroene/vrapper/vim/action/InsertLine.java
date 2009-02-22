@@ -60,7 +60,7 @@ public abstract class InsertLine extends TokenAndAction implements Repeatable {
                 begin += 1;
             }
             p.replace(begin, 0, VimConstants.NEWLINE+indent);
-            p.setPosition(begin+indent.length()+1);
+            p.setPosition(begin+indent.length()+VimConstants.NEWLINE.length());
         }
 
         @Override
