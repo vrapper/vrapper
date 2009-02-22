@@ -23,12 +23,15 @@ public class WordSearchAction extends AbstractSearchAction {
         int max = line.getEndOffset();
         int first = -1;
         int last = -1;
-        String s = p.getText(index, 1);
+        String s;
         boolean found = false;
-        if (VimUtils.isWordCharacter(s)) {
-            found = true;
-            first = index;
-            last = index;
+        if (index < max) {
+            s = p.getText(index, 1);
+            if (VimUtils.isWordCharacter(s)) {
+                found = true;
+                first = index;
+                last = index;
+            }
         }
         while (index < max-1) {
             index += 1;
