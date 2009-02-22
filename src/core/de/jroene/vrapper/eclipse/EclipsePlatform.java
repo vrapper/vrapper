@@ -300,7 +300,8 @@ public class EclipsePlatform implements Platform {
 
     public SearchResult find(Search search, int offset) {
         int index = textViewer.getFindReplaceTarget().findAndSelect(
-                offset, search.getKeyword(), !search.isBackward(), true, false);
+                offset, search.getKeyword(), !search.isBackward(),
+                true, search.isWholeWord());
         return new SearchResult(index);
     }
 }

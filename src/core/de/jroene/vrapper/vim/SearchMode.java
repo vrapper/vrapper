@@ -12,10 +12,8 @@ public class SearchMode extends AbstractCommandMode {
 
     @Override
     public void parseAndExecute(String first, String command) {
-        System.out.println(first);
         boolean backward = first.equals(BACKWARD_SEARCH_CHAR);
-        System.out.println(backward);
-        Search search = new Search(command, backward);
+        Search search = new Search(command, backward, false);
         vim.getRegisterManager().setSearch(search);
         new SearchAction(backward).execute(vim);
     }

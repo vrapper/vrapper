@@ -59,7 +59,7 @@ public class WordSearchAction extends AbstractSearchAction {
             }
             keyword = p.getText(first, last-first+1);
         }
-        return new Search(keyword, false);
+        return new Search(keyword, false, true);
     }
 
 }
