@@ -1,6 +1,7 @@
 package de.jroene.vrapper.vim;
 
 import de.jroene.vrapper.vim.action.SearchAction;
+import de.jroene.vrapper.vim.action.TokenAndAction;
 
 public class SearchMode extends AbstractCommandMode {
 
@@ -15,7 +16,9 @@ public class SearchMode extends AbstractCommandMode {
         boolean backward = first.equals(BACKWARD_SEARCH_CHAR);
         Search search = new Search(command, backward, false);
         vim.getRegisterManager().setSearch(search);
-        new SearchAction(backward).execute(vim);
+        TokenAndAction a = new SearchAction(backward);
+        vim.getPlatform().setSpace(a.getSpace());
+        a.execute(vim);
     }
 
 }

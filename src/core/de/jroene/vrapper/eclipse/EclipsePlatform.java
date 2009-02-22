@@ -299,6 +299,9 @@ public class EclipsePlatform implements Platform {
     }
 
     public SearchResult find(Search search, int offset) {
+        if (!space.equals(Space.VIEW)) {
+            throw new IllegalStateException("Search can only be performed in view space");
+        }
         int index = textViewer.getFindReplaceTarget().findAndSelect(
                 offset, search.getKeyword(), !search.isBackward(),
                 true, search.isWholeWord());

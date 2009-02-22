@@ -3,6 +3,7 @@ package de.jroene.vrapper.vim.action;
 import de.jroene.vrapper.vim.Platform;
 import de.jroene.vrapper.vim.Search;
 import de.jroene.vrapper.vim.SearchResult;
+import de.jroene.vrapper.vim.Space;
 import de.jroene.vrapper.vim.VimEmulator;
 
 public abstract class AbstractSearchAction extends TokenAndAction {
@@ -14,6 +15,11 @@ public abstract class AbstractSearchAction extends TokenAndAction {
         this.reverse = reverse;
     }
 
+    @Override
+    public Space getSpace() {
+        return Space.VIEW;
+    }
+
     public void execute(VimEmulator vim) {
         Search search = getSearch(vim);
         Platform p = vim.getPlatform();
@@ -23,6 +29,9 @@ public abstract class AbstractSearchAction extends TokenAndAction {
         }
         if (!search.isBackward()) {
             position += 1;
+        } else if (search.getKeyword().length() == 1) {
+            position -= 1;
+            position = Math.max(0, position);
         }
         SearchResult result = p.find(search, position);
         if (result.isFound()) {
