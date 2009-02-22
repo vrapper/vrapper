@@ -65,5 +65,8 @@ public class ChangeTest extends VimTestCase {
         platform.setBuffer("word word\n another word");
         assertEdit("c2w", 0, "\n another word");
         type(VimInputEvent.ESCAPE);
+        platform.setBuffer("word word\n another word");
+        assertEdit("cw", 0, " word\n another word");
+        type(VimInputEvent.ESCAPE);
     }
 }

@@ -21,13 +21,13 @@ public class Change extends Delete {
     }
 
     @Override
-    public boolean repeat(VimEmulator vim, int times, Token next)
+    public boolean evaluate0(VimEmulator vim, int times, Token next, boolean useRepeat)
     throws TokenException {
         // cw behaves like ce
         if (next instanceof WordMove.NextBegin) {
             next = ((WordMove.NextBegin)next).createNextEndMove();
         }
-        return super.repeat(vim, times, next);
+        return super.evaluate0(vim, times, next, useRepeat);
     }
 
     private Token createDelete() {
