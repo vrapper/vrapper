@@ -1,5 +1,6 @@
 package de.jroene.vrapper.vim.register;
 
+
 /**
  * Something which can hold {@link RegisterContent}.
  *

@@ -13,6 +13,7 @@ import de.jroene.vrapper.vim.register.DefaultRegisterManager;
  */
 public class VimTestCase extends TestCase {
 
+    private static final char ESCAPE_CHAR = '-';
     protected TestPlatform platform;
     protected VimEmulator vim;
 
@@ -31,11 +32,18 @@ public class VimTestCase extends TestCase {
      */
     protected void type(String s) {
         for (int i = 0; i < s.length(); i++) {
+
             char c = s.charAt(i);
-            VimInputEvent e = new VimInputEvent.Character(c);
+            VimInputEvent e;
+            if (c == ESCAPE_CHAR) {
+                e = VimInputEvent.ESCAPE;
+            } else {
+                e = new VimInputEvent.Character(c);
+            }
             boolean doit = vim.type(e);
             if (doit) {
                 platform.replace(platform.getPosition(), 0, String.valueOf(c));
+                platform.setPosition(platform.getPosition()+1);
             }
         }
     }
@@ -50,6 +58,7 @@ public class VimTestCase extends TestCase {
             if (doit && e instanceof VimInputEvent.Character) {
                 platform.replace(platform.getPosition(), 0,
                         String .valueOf(((VimInputEvent.Character) e).getCharacter()));
+                platform.setPosition(platform.getPosition()+1);
             }
         }
     }

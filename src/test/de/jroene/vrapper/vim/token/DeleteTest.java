@@ -5,7 +5,7 @@ import de.jroene.vrapper.test.SnapshotTestCase;
 public class DeleteTest extends SnapshotTestCase {
 
     public DeleteTest() {
-        super("text.txt", "Delete");
+        super("text.txt", "Delete", null);
     }
 
     public void testDelete() {

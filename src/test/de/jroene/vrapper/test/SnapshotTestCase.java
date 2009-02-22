@@ -15,11 +15,13 @@ public class SnapshotTestCase extends VimTestCase {
     private static final String SNAPSHOT_DIRECTORY = "src/test-resources/snapshots/";
     private final String textName;
     private final String testSetName;
+    private final String specialChar;
 
-    public SnapshotTestCase(String textName, String testSetName) {
+    public SnapshotTestCase(String textName, String testSetName, String specialchar) {
         super();
         this.testSetName = testSetName;
         this.textName = textName;
+        this.specialChar = specialchar;
     }
 
     public void testSnapshot() throws IOException {
@@ -41,7 +43,7 @@ public class SnapshotTestCase extends VimTestCase {
 
     private void assertTransition(String number, String lastNumber,
             String command, String state) {
-        type(command);
+        type(command.replace("_", specialChar));
         TestCase.assertEquals(lastNumber + "->" + number, state,
                 platform.getBuffer());
     }
@@ -55,6 +57,7 @@ public class SnapshotTestCase extends VimTestCase {
             sb.append(VimConstants.NEWLINE);
         }
         reader.close();
+        sb.delete(sb.length()-VimConstants.NEWLINE.length(), sb.length());
         return sb.toString();
     }
 

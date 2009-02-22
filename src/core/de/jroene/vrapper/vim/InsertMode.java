@@ -34,7 +34,9 @@ public class InsertMode extends AbstractMode {
                 p.setPosition(position-1);
             }
             vim.toNormalMode();
-        } else if(!allowed(e)) {
+            return false;
+        }
+        if(!allowed(e)) {
             vim.getPlatform().endChange();
             clean = false;
         }

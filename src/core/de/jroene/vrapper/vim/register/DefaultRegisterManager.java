@@ -28,13 +28,30 @@ public class DefaultRegisterManager implements RegisterManager {
         this.defaultRegister = new SimpleRegister();
         this.lastEditRegister = new SimpleRegister();
         this.activeRegister = defaultRegister;
+        Register lastInsertRegister = new ReadOnlyRegister() {
+            public RegisterContent getContent() {
+                return lastEditRegister.getContent();
+            }
+        };
+        registers.put(".", lastInsertRegister);
+        Register searchRegister = new ReadOnlyRegister() {
+            public RegisterContent getContent() {
+                return new RegisterContent(false, search.getKeyword());
+            }
+        };
+        registers.put("/", searchRegister);
     }
 
     public Register getRegister(String name) {
-        if (!registers.containsKey(name)) {
-            registers.put(name, new SimpleRegister());
+        String key = name.toLowerCase();
+        if (!registers.containsKey(key)) {
+            registers.put(key, new NamedRegister(defaultRegister));
         }
-        return registers.get(name);
+        Register r = registers.get(key);
+        if (!name.equals(key)) {
+            r = new AppendRegister(r);
+        }
+        return r;
     }
 
     public Register getDefaultRegister() {
