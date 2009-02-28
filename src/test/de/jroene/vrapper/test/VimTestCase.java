@@ -70,7 +70,9 @@ public class VimTestCase extends TestCase {
 
     protected void assertEdit(String edit, int pos, String bufferContent) {
         type(edit);
-        assertEquals(bufferContent, platform.getBuffer());
+        String expected = bufferContent.replace("\r", "\\r").replace("\n", "\\n");
+        String actual = platform.getBuffer().replace("\r", "\\r").replace("\n", "\\n");
+        assertEquals(expected, actual);
         assertEquals(pos, platform.getPosition());
     }
 

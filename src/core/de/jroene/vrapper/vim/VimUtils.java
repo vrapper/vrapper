@@ -72,7 +72,7 @@ public class VimUtils {
     }
 
     public static boolean isNewLine(String s) {
-        return VimConstants.NEWLINE.startsWith(s);
+        return VimConstants.NEWLINE.contains(s);
     }
 
     public static boolean isWordCharacter(String s) {

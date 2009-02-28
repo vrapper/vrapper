@@ -1,5 +1,6 @@
 package de.jroene.vrapper.vim.token;
 
+import de.jroene.vrapper.vim.LineInformation;
 import de.jroene.vrapper.vim.VimEmulator;
 import de.jroene.vrapper.vim.action.Action;
 
@@ -25,7 +26,7 @@ public class Yank extends AbstractLineAwareEdit {
 
     public class LineYankAction extends LineEditAction {
         @Override
-        protected void doEdit(VimEmulator vim, int originalPosition, int start,
+        protected void doEdit(VimEmulator vim, LineInformation originalLine, int start,
                 int end) {
             // no change necessary
         }

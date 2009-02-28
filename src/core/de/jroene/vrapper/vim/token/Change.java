@@ -3,7 +3,6 @@ package de.jroene.vrapper.vim.token;
 import de.jroene.vrapper.vim.InsertMode;
 import de.jroene.vrapper.vim.LineInformation;
 import de.jroene.vrapper.vim.Platform;
-import de.jroene.vrapper.vim.VimConstants;
 import de.jroene.vrapper.vim.VimEmulator;
 import de.jroene.vrapper.vim.VimUtils;
 import de.jroene.vrapper.vim.action.Action;
@@ -69,7 +68,7 @@ public class Change extends Delete {
             super.afterEdit(vim, startLine, endLine);
             Platform p = vim.getPlatform();
             int position = p.getPosition();
-            p.replace(position, 0, indent+VimConstants.NEWLINE);
+            p.replace(position, 0, indent+vim.getVariables().getNewLine().nl);
             p.setPosition(position+indent.length());
             Token delete = createDelete();
             vim.toInsertMode(new InsertMode.Parameters(true, true, 1, startLine.getBeginOffset(), delete));

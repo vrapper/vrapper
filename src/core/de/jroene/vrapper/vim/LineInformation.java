@@ -33,4 +33,11 @@ public class LineInformation {
     public int getEndOffset() {
         return beginOffset+length;
     }
+
+    public int calculateAboveEndOffset(Platform p) {
+        if (number == 0) {
+            return -1;
+        }
+        return p.getLineInformation(number-1).getEndOffset();
+    }
 }

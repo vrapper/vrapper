@@ -3,7 +3,6 @@ package de.jroene.vrapper.vim.token;
 import de.jroene.vrapper.vim.LineInformation;
 import de.jroene.vrapper.vim.Platform;
 import de.jroene.vrapper.vim.Space;
-import de.jroene.vrapper.vim.VimConstants;
 import de.jroene.vrapper.vim.VimEmulator;
 import de.jroene.vrapper.vim.action.Action;
 
@@ -153,19 +152,19 @@ public abstract class AbstractLineAwareToken extends AbstractToken implements Re
         private void edit(VimEmulator vim, LineInformation startLine,
                 LineInformation targetLine) {
             Platform p = vim.getPlatform();
-            int originalPosition = startLine.getBeginOffset();
-            int start =  originalPosition - VimConstants.NEWLINE.length();
+            int start = startLine.calculateAboveEndOffset(p);
             int end = targetLine.getEndOffset();
             if (start < 0) {
                 start = 0;
-                if(targetLine.getNumber() < p.getNumberOfLines()-1) {
-                    end += VimConstants.NEWLINE.length();
+                int number = targetLine.getNumber();
+                if(number < p.getNumberOfLines()-1) {
+                    end = p.getLineInformation(number+1).getBeginOffset();
                 }
             }
-            doEdit(vim, originalPosition, start, end);
+            doEdit(vim, startLine, start, end);
         }
 
-        protected abstract void doEdit(VimEmulator vim, int originalPosition, int start,
+        protected abstract void doEdit(VimEmulator vim, LineInformation originalLine, int start,
                 int end);
 
     }

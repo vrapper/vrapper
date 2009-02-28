@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import junit.framework.TestCase;
-import de.jroene.vrapper.vim.VimConstants;
 
 public class SnapshotTestCase extends VimTestCase {
 
@@ -43,7 +42,10 @@ public class SnapshotTestCase extends VimTestCase {
 
     private void assertTransition(String number, String lastNumber,
             String command, String state) {
-        type(command.replace("_", specialChar));
+        if (specialChar != null) {
+            command = command.replace("_", specialChar);
+        }
+        type(command);
         TestCase.assertEquals(lastNumber + "->" + number, state,
                 platform.getBuffer());
     }
@@ -52,12 +54,15 @@ public class SnapshotTestCase extends VimTestCase {
         BufferedReader reader = new BufferedReader(new FileReader(start));
         String line;
         StringBuilder sb = new StringBuilder();
+        String newline = vim.getVariables().getNewLine().nl;
         while((line = reader.readLine()) != null) {
             sb.append(line);
-            sb.append(VimConstants.NEWLINE);
+            sb.append(newline);
         }
         reader.close();
-        sb.delete(sb.length()-VimConstants.NEWLINE.length(), sb.length());
+        if(sb.length() > 0) {
+            sb.delete(sb.length()-newline.length(), sb.length());
+        }
         return sb.toString();
     }
 

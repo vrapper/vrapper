@@ -27,11 +27,11 @@ public class Delete extends AbstractLineAwareEdit {
 
     public class LineDeleteAction extends LineEditAction {
         @Override
-        protected void doEdit(VimEmulator vim, int originalPosition, int start,
+        protected void doEdit(VimEmulator vim, LineInformation originalLine, int start,
                 int end) {
             Platform pl = vim.getPlatform();
             pl.replace(start, end - start, "");
-            pl.setPosition(originalPosition);
+            pl.setPosition(pl.getLineInformation(originalLine.getNumber()).getBeginOffset());
         }
     }
 

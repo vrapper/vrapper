@@ -20,7 +20,8 @@ public class AppendRegister implements Register {
         StringBuilder sb = new StringBuilder();
         sb.append(oldContent.getPayload());
         if (lineWise) {
-            sb.append(VimConstants.NEWLINE);
+            // TODO: use correct newline
+            sb.append(VimConstants.REGISTER_NEWLINE);
         }
         sb.append(content.getPayload());
         RegisterContent newContent = new RegisterContent(

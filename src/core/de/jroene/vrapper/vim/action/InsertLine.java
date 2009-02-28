@@ -3,7 +3,6 @@ package de.jroene.vrapper.vim.action;
 import de.jroene.vrapper.vim.InsertMode;
 import de.jroene.vrapper.vim.LineInformation;
 import de.jroene.vrapper.vim.Platform;
-import de.jroene.vrapper.vim.VimConstants;
 import de.jroene.vrapper.vim.VimEmulator;
 import de.jroene.vrapper.vim.VimUtils;
 import de.jroene.vrapper.vim.token.Repeatable;
@@ -23,7 +22,7 @@ public abstract class InsertLine extends TokenAndAction implements Repeatable {
         Platform p = vim.getPlatform();
         LineInformation line = p.getLineInformation();
         String indent = vim.getVariables().isAutoIndent() ? VimUtils.getIndent(vim, line) : "";
-        doEdit(p, line, indent);
+        doEdit(vim, line, indent);
         vim.toInsertMode(getParameters(line, times));
     }
 
@@ -35,13 +34,15 @@ public abstract class InsertLine extends TokenAndAction implements Repeatable {
 
     abstract InsertMode.Parameters getParameters(LineInformation line, int times);
 
-    protected abstract void doEdit(Platform p, LineInformation line, String indent);
+    protected abstract void doEdit(VimEmulator vim, LineInformation line, String indent);
 
     public static class PreCursor extends InsertLine {
 
         @Override
-        protected void doEdit(Platform p, LineInformation currentLine, String indent) {
-            p.replace(currentLine.getBeginOffset(), 0, indent+VimConstants.NEWLINE);
+        protected void doEdit(VimEmulator vim, LineInformation currentLine, String indent) {
+            Platform p = vim.getPlatform();
+            String newline = vim.getVariables().getNewLine().nl;
+            p.replace(currentLine.getBeginOffset(), 0, indent+newline);
             p.setPosition(currentLine.getBeginOffset()+indent.length());
         }
 
@@ -54,13 +55,16 @@ public abstract class InsertLine extends TokenAndAction implements Repeatable {
     public static class PostCursor extends InsertLine {
 
         @Override
-        protected void doEdit(Platform p, LineInformation currentLine, String indent) {
+        protected void doEdit(VimEmulator vim, LineInformation currentLine, String indent) {
+            Platform p = vim.getPlatform();
             int begin = currentLine.getEndOffset();
             if (currentLine.getNumber() == p.getNumberOfLines()-1) {
+                // there is a character at the end offset, which belongs to the line
                 begin += 1;
             }
-            p.replace(begin, 0, VimConstants.NEWLINE+indent);
-            p.setPosition(begin+indent.length()+VimConstants.NEWLINE.length());
+            String newline = vim.getVariables().getNewLine().nl;
+            p.replace(begin, 0, newline+indent);
+            p.setPosition(begin+indent.length()+newline.length());
         }
 
         @Override

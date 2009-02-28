@@ -6,7 +6,7 @@ import de.jroene.vrapper.vim.Search;
 import de.jroene.vrapper.vim.SearchResult;
 import de.jroene.vrapper.vim.Selection;
 import de.jroene.vrapper.vim.Space;
-import de.jroene.vrapper.vim.VimConstants;
+import de.jroene.vrapper.vim.VimUtils;
 
 /**
  * A simple {@link Platform} implementation for unit tests.
@@ -17,6 +17,7 @@ public class TestPlatform implements Platform {
 
     StringBuilder buffer = new StringBuilder();
     int caretPosition = 0;
+
 
     public LineInformation getLineInformation() {
         return getLineInformationOfOffset(getPosition());
@@ -29,7 +30,13 @@ public class TestPlatform implements Platform {
             while (index < buffer.length()) {
                 String c = buffer.substring(index, index+1);
                 index += 1;
-                if(c.equals(VimConstants.NEWLINE)) {
+                if(VimUtils.isNewLine(c)) {
+                    if (index < buffer.length()) {
+                        c = buffer.substring(index-1, index+1);
+                        if(VimUtils.isNewLine(c)) {
+                            index += 1;
+                        }
+                    }
                     break;
                 }
             }
@@ -38,7 +45,7 @@ public class TestPlatform implements Platform {
         int startIndex = index;
         while(index < buffer.length()) {
             String c = buffer.substring(index, index+1);
-            if(c.equals(VimConstants.NEWLINE)) {
+            if(VimUtils.isNewLine(c)) {
                 break;
             }
             index += 1;
@@ -52,7 +59,13 @@ public class TestPlatform implements Platform {
         int currLine = 0;
         while(index < offset) {
             String c = buffer.substring(index, index+1);
-            if(c.equals(VimConstants.NEWLINE)) {
+            if(VimUtils.isNewLine(c)) {
+                if (index < offset-1) {
+                    c = buffer.substring(index, index+2);
+                    if(VimUtils.isNewLine(c)) {
+                        index += 1;
+                    }
+                }
                 currLine += 1;
             }
             index += 1;
@@ -64,7 +77,13 @@ public class TestPlatform implements Platform {
         int lines = 1;
         for (int i = 0; i < buffer.length(); i++) {
             String c = buffer.substring(i, i+1);
-            if(c.equals(VimConstants.NEWLINE)) {
+            if(VimUtils.isNewLine(c)) {
+                if (i > 1 && i < buffer.length()) {
+                    c = buffer.substring(i-1, i+1);
+                    if(VimUtils.isNewLine(c)) {
+                        i += 1;
+                    }
+                }
                 lines += 1;
             }
         }
@@ -112,7 +131,14 @@ public class TestPlatform implements Platform {
     }
 
     public void setPosition(int index) {
+        if (index < 0 || index > buffer.length()) {
+            throw new IllegalArgumentException("invalid position: "+index+", buffer content: "+readableBuffer());
+        }
         caretPosition = index;
+    }
+
+    private String readableBuffer() {
+        return buffer.toString().replace("\r", "\\r").replace("\n", "\\n");
     }
 
     public void setSpace(Space space) {

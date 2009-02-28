@@ -3,7 +3,6 @@ package de.jroene.vrapper.vim.token;
 import de.jroene.vrapper.vim.LineInformation;
 import de.jroene.vrapper.vim.Platform;
 import de.jroene.vrapper.vim.Space;
-import de.jroene.vrapper.vim.VimConstants;
 import de.jroene.vrapper.vim.VimEmulator;
 import de.jroene.vrapper.vim.action.Action;
 import de.jroene.vrapper.vim.register.Register;
@@ -41,9 +40,10 @@ public class Put extends AbstractToken implements Repeatable {
                 RegisterContent content = reg.getContent();
                 Platform p = vim.getPlatform();
                 StringBuilder sb = new StringBuilder();
+                String newline = vim.getVariables().getNewLine().nl;
                 for (int i = 0; i < times; i++) {
                     if(content.isLineWise()) {
-                        sb.append(VimConstants.NEWLINE);
+                        sb.append(newline);
                     }
                     sb.append(content.getPayload());
                 }
@@ -52,14 +52,15 @@ public class Put extends AbstractToken implements Repeatable {
                     if(!preCursor) {
                         int begin = line.getEndOffset();
                         if (line.getNumber() == p.getNumberOfLines()-1) {
-                            begin += VimConstants.NEWLINE.length();
+                            // there is a character at the end offset, which belongs to the line
+                            begin += 1;
                         }
                         p.replace(begin, 0, sb.toString());
-                        p.setPosition(begin+VimConstants.NEWLINE.length());
+                        p.setPosition(begin+newline.length());
                     } else {
                         int begin = line.getBeginOffset();
-                        sb.append(VimConstants.NEWLINE);
-                        p.replace(begin, 0, sb.substring(VimConstants.NEWLINE.length()));
+                        sb.append(newline);
+                        p.replace(begin, 0, sb.substring(newline.length()));
                         p.setPosition(begin);
                     }
                 } else {

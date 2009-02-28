@@ -106,7 +106,7 @@ public class NormalMode extends AbstractMode {
     private class KeyStrokeMode implements Mode {
 
         public boolean type(VimInputEvent e) {
-            processToken(KeyStrokeToken.from(e));
+            processToken(KeyStrokeToken.from(vim, e));
             vim.toNormalMode();
             return false;
         }

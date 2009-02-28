@@ -1,7 +1,6 @@
 package de.jroene.vrapper.vim.token;
 
 import de.jroene.vrapper.vim.Space;
-import de.jroene.vrapper.vim.VimConstants;
 import de.jroene.vrapper.vim.VimEmulator;
 import de.jroene.vrapper.vim.VimInputEvent;
 import de.jroene.vrapper.vim.action.Action;
@@ -29,12 +28,12 @@ public class KeyStrokeToken implements Token {
         super();
         this.payload = payload;
     }
-    public static KeyStrokeToken from(VimInputEvent e) {
+    public static KeyStrokeToken from(VimEmulator vim, VimInputEvent e) {
         if(e instanceof VimInputEvent.Character) {
             return new KeyStrokeToken(((VimInputEvent.Character)e).getCharacter());
         }
         if (VimInputEvent.RETURN.equals(e)) {
-            return new KeyStrokeToken(VimConstants.NEWLINE);
+            return new KeyStrokeToken(vim.getVariables().getNewLine().nl);
         }
         return NOT_A_CHARACTER;
     }

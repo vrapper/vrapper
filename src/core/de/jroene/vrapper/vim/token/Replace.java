@@ -3,8 +3,8 @@ package de.jroene.vrapper.vim.token;
 import de.jroene.vrapper.vim.LineInformation;
 import de.jroene.vrapper.vim.Platform;
 import de.jroene.vrapper.vim.Space;
-import de.jroene.vrapper.vim.VimConstants;
 import de.jroene.vrapper.vim.VimEmulator;
+import de.jroene.vrapper.vim.VimUtils;
 import de.jroene.vrapper.vim.action.Action;
 
 /**
@@ -50,7 +50,7 @@ public class Replace extends AbstractToken implements Repeatable {
             Platform p = vim.getPlatform();
             int position = p.getPosition();
             StringBuilder s = new StringBuilder();
-            if (character.equals(VimConstants.NEWLINE)) {
+            if (VimUtils.isNewLine(character)) {
                 s.append(character);
             } else {
                 for(int i = 0; i < times; i++) {
