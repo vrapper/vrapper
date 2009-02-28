@@ -79,7 +79,7 @@ public class InputInterceptorManager implements IPartListener {
             getEditor.setAccessible(true);
             MultiPageEditorPart mPart = (MultiPageEditorPart) part;
             int pageCount = ((Integer) getPageCount.invoke(part)).intValue();
-            for (int i = 1; i <= pageCount; i++) {
+            for (int i = 0; i < pageCount; i++) {
                 IEditorPart subPart = (IEditorPart) getEditor.invoke(mPart, i);
                 partOpened(subPart);
             }
