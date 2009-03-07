@@ -1,5 +1,2 @@
 > - shift left
 < - shift right
-. - repeat a change
-* - search word under the cursor
-# - like *, backwards
