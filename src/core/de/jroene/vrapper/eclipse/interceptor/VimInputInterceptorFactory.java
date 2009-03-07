@@ -42,7 +42,7 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
         specialKeys.put( KeyEvent.VK_END,        VimInputEvent.END);
     }
 
-    private final RegisterManager globalRegisterManager = new DefaultRegisterManager();
+    private static final RegisterManager globalRegisterManager = new DefaultRegisterManager();
 
     public InputInterceptor createInterceptor(final IWorkbenchWindow window,
             final AbstractTextEditor part, final ITextViewer textViewer) {

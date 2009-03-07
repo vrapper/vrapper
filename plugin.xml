@@ -2,7 +2,7 @@
 <?eclipse version="3.2"?>
 <plugin>
 
-   <extension
+   <!-- <extension
          point="org.eclipse.ui.actionSets">
       <actionSet
             label="Vrapper Action Set"
@@ -18,14 +18,59 @@
          <action
                label="Emulate Vim"
                icon="icons/icon.png"
-               class="de.jroene.vrapper.eclipse.actions.VrapperToggleAction"
+               class="org.example.actions.ExampleActionDelegate"
                tooltip="Toggle Vim Emulation"
                menubarPath="vrapperMenu/group"
                toolbarPath="group"
                state="false"
+               definitionId="de.jroene.vrapper.commands.toggle"
                id="de.jroene.vrapper.eclipse.actions.VrapperToggleAction">
          </action>
       </actionSet>
-   </extension>
+      
+   </extension> -->
+   <extension
+       point="org.eclipse.ui.commands">
+    <category
+          description="Commands for Vrapper"
+          id="de.jroene.vrapper.commands"
+          name="Vrapper">
+    </category>
+    <command
+          categoryId="de.jroene.vrapper.commands"
+          description="Toggles Vrapper"
+          id="de.jroene.vrapper.commands.toggle"
+          defaultHandler="de.jroene.vrapper.eclipse.actions.VrapperToggleHandler"
+          name="Toggle Vrapper">
+          
+    </command>
+    </extension>
+
+
+    <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="menu:edit?after=additions">
+         <command
+               commandId="de.jroene.vrapper.commands.toggle" style="toggle"
+               mnemonic="%contributions.view.count.mnemonic">
+         </command>
+      </menuContribution>
+       <menuContribution
+            locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
+         <toolbar
+               id="de.jroene.vrapper.toolbar">
+            <command
+               commandId="de.jroene.vrapper.commands.toggle" style="toggle"
+                  icon="icons/icon.png">
+            </command>
+            <separator
+                  name="additions"
+                  visible="false">
+            </separator>
+         </toolbar>
+      </menuContribution>
+
+    </extension>
 
 </plugin>
