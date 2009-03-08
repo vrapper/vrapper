@@ -45,7 +45,8 @@ public class InsertMode extends AbstractMode {
 
     private boolean allowed(VimInputEvent e) {
         return e instanceof VimInputEvent.Character
-        || VimInputEvent.RETURN.equals(e);
+        || VimInputEvent.RETURN.equals(e)
+        || VimInputEvent.BACKSPACE.equals(e);
     }
 
     private void afterEdit() {
