@@ -101,6 +101,9 @@ public abstract class AbstractLineAwareToken extends AbstractToken implements Re
         }
         if(result) {
             target = subject.getTarget();
+            if (target == -1) {
+                throw new TokenException();
+            }
             finalToken = next;
         }
         return result;
@@ -183,7 +186,7 @@ public abstract class AbstractLineAwareToken extends AbstractToken implements Re
                 edit(vim, start, end);
                 afterEdit(vim, start, end);
             } else {
-                if(getSubject().includesTarget()) {
+                if (getSubject().includesTarget()) {
                     start += 1;
                 }
                 beforeEdit(vim, end, start);

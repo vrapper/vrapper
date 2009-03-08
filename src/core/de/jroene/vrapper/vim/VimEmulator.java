@@ -54,6 +54,7 @@ public class VimEmulator {
     public void toNormalMode() {
         mode = normalMode;
         platform.toNormalMode();
+        updateHorizontalPosition();
     }
 
     public void toCommandLineMode() {

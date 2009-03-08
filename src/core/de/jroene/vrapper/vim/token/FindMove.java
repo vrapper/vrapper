@@ -33,7 +33,6 @@ public class FindMove extends AbstractRepeatableHorizontalMove {
     public int calculateTarget(VimEmulator vim, int times, Token next) {
         Platform p = vim.getPlatform();
         int index = p.getPosition();
-        int oldPos = index;
         LineInformation line = p.getLineInformation();
         int end = backwards ? line.getBeginOffset() : line.getEndOffset();
         int modifier = backwards ? -1 : 1;
@@ -46,9 +45,9 @@ public class FindMove extends AbstractRepeatableHorizontalMove {
             }
         }
         if(!p.getText(index, 1).equals(target)) {
-            return oldPos;
+            return -1;
         }
-        if(stopBeforeTarget && index != end) {
+        if(stopBeforeTarget) {
             index -= modifier;
         }
         return index;
@@ -71,6 +70,11 @@ public class FindMove extends AbstractRepeatableHorizontalMove {
             return false;
         }
         throw new TokenException();
+    }
+
+    @Override
+    public boolean includesTarget() {
+        return !backwards;
     }
 
 }

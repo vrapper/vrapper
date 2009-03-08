@@ -25,9 +25,11 @@ public class ChangeTest extends VimTestCase {
         type(VimInputEvent.ESCAPE);
         platform.setBuffer("aaaabbbb");
         platform.setPosition(7);
-        assertEdit("ch", 7, "aaaabbb");
+        assertEdit("ch", 6, "aaaabbb");
         type(VimInputEvent.ESCAPE);
-        assertEdit("4ch", 3, "aab");
+        // back to insert mode sets the cursor back
+        assertEquals(5, platform.getPosition());
+        assertEdit("4ch", 1, "abb");
         type(VimInputEvent.ESCAPE);
     }
 

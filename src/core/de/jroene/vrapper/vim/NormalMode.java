@@ -107,7 +107,10 @@ public class NormalMode extends AbstractMode {
 
         public boolean type(VimInputEvent e) {
             processToken(KeyStrokeToken.from(vim, e));
-            vim.toNormalMode();
+            // do NOT leave insert mode
+            if (!vim.inInsertMode()) {
+                vim.toNormalMode();
+            }
             return false;
         }
 
@@ -180,5 +183,9 @@ public class NormalMode extends AbstractMode {
         }
         // end change
         platform.endChange();
+        // set horizontal position after change
+        if (startToken.isOperator()) {
+            vim.updateHorizontalPosition();
+        }
     }
 }
