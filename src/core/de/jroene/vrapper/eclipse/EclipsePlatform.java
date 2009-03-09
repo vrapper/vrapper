@@ -37,6 +37,7 @@ public class EclipsePlatform implements Platform {
     private final UndoManager undoManager;
     private final StatusLine statusLine;
     private Space space;
+    private final int defaultCaretWidth;
 
     public EclipsePlatform(IWorkbenchWindow window, AbstractTextEditor part,
             final ITextViewer textViewer) {
@@ -44,6 +45,7 @@ public class EclipsePlatform implements Platform {
         this.window = window;
         this.part = part;
         this.textViewer = textViewer;
+        this.defaultCaretWidth = textViewer.getTextWidget().getCaret().getSize().x;
         this.textViewerExtension5 = textViewer instanceof ITextViewerExtension5
         ? (ITextViewerExtension5) textViewer
                 : null;
@@ -172,7 +174,7 @@ public class EclipsePlatform implements Platform {
     }
 
     public void toInsertMode() {
-        setCaretWidth(1);
+        setCaretWidth(defaultCaretWidth);
         statusLine.setEnabled(false);
     }
 
