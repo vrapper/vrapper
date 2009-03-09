@@ -165,6 +165,14 @@ public interface Platform {
     void endChange();
 
     /**
+     * Controls whether the editor component will be repainted.
+     * 
+     * @param repaint
+     *            whether repaints will be done or not.
+     */
+    void setRepaint(boolean repaint);
+
+    /**
      * Searches for the a keyword.
      * 
      * @param search

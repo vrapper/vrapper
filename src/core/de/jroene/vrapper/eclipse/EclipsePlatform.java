@@ -307,4 +307,8 @@ public class EclipsePlatform implements Platform {
                 true, search.isWholeWord());
         return new SearchResult(index);
     }
+
+    public void setRepaint(boolean repaint) {
+        textViewer.getTextWidget().setRedraw(repaint);
+    }
 }

@@ -210,4 +210,9 @@ public class TestPlatform implements Platform {
         return null;
     }
 
+    public void setRepaint(boolean repaint) {
+        // TODO Auto-generated method stub
+
+    }
+
 }

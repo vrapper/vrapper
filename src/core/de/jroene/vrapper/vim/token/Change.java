@@ -70,6 +70,7 @@ public class Change extends Delete {
             int position = p.getPosition();
             p.replace(position, 0, indent+vim.getVariables().getNewLine().nl);
             p.setPosition(position+indent.length());
+            vim.getPlatform().setRepaint(true);
             Token delete = createDelete();
             vim.toInsertMode(new InsertMode.Parameters(true, true, 1, startLine.getBeginOffset(), delete));
         }
@@ -78,6 +79,7 @@ public class Change extends Delete {
         protected void beforeEdit(VimEmulator vim, LineInformation startLine,
                 LineInformation endLine) {
             super.beforeEdit(vim, startLine, endLine);
+            vim.getPlatform().setRepaint(false);
             indent = vim.getVariables().isAutoIndent() ? VimUtils.getIndent(vim, startLine) : "";
         }
     }
