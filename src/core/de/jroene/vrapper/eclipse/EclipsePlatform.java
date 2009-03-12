@@ -185,6 +185,14 @@ public class EclipsePlatform implements Platform {
         statusLine.setEnabled(false);
     }
 
+    public void toVisualMode() {
+        GC gc = new GC(textViewer.getTextWidget());
+        setCaretWidth(-gc.getFontMetrics().getAverageCharWidth());
+        gc.dispose();
+        setPosition(getPosition()+1);
+        textViewer.getTextWidget().redraw();
+    }
+
     public void redo() {
         if(undoManager != null && undoManager.undoable()) {
             undoManager.undo();

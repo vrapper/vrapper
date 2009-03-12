@@ -126,7 +126,7 @@ public class NormalMode extends AbstractMode {
 
     }
 
-    private class VisualMode implements Mode {
+    class VisualMode implements Mode {
 
         private final int start;
         private final boolean lineWise;
@@ -149,15 +149,26 @@ public class NormalMode extends AbstractMode {
             }
             if (VimInputEvent.ESCAPE.equals(e)) {
                 int pos = platform.getPosition();
+                pos = Math.max(pos-1, platform.getLineInformation().getBeginOffset());
                 platform.setSelection(new Selection(pos, 0));
                 vim.toNormalMode();
             } else {
+                int pos;
                 Token t = TokenFactory.create(e);
-                if (t instanceof Move || t instanceof Number
-                        || t instanceof AbstractLineAwareToken) {
+                if (t instanceof Move) {
+                    platform.setPosition(Math.max(
+                            platform.getLineInformation().getBeginOffset(),
+                            platform.getPosition()-1));
                     processToken(t);
+                    pos = Math.min(
+                            platform.getLineInformation().getEndOffset(),
+                            platform.getPosition()+1);
+                } else {
+                    if (t instanceof Number || t instanceof AbstractLineAwareToken) {
+                        processToken(t);
+                    }
+                    pos = platform.getPosition();
                 }
-                int pos = platform.getPosition();
                 int end;
                 if (lineWise) {
                     end = platform.getLineInformationOfOffset(pos)
@@ -165,7 +176,7 @@ public class NormalMode extends AbstractMode {
                 } else {
                     end = pos;
                 }
-                platform.setSelection(Selection.fromOffsets(start, end));
+                platform.setSelection(Selection.fromOffsets(start, end, lineWise));
             }
             return false;
         }

@@ -100,6 +100,11 @@ public interface Platform {
     void toCommandLineMode();
 
     /**
+     * Notices the platform that the vim emulator switched to visual mode.
+     */
+    void toVisualMode();
+
+    /**
      * Undos all changes since the last undo mark was set.
      */
     void undo();

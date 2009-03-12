@@ -17,6 +17,7 @@ public class TestPlatform implements Platform {
 
     StringBuilder buffer = new StringBuilder();
     int caretPosition = 0;
+    private Selection selection;
 
 
     public LineInformation getLineInformation() {
@@ -186,13 +187,11 @@ public class TestPlatform implements Platform {
     }
 
     public Selection getSelection() {
-        // TODO Auto-generated method stub
-        return null;
+        return selection;
     }
 
     public void setSelection(Selection s) {
-        // TODO Auto-generated method stub
-
+        selection = s;
     }
 
     public void beginChange() {
@@ -211,6 +210,11 @@ public class TestPlatform implements Platform {
     }
 
     public void setRepaint(boolean repaint) {
+        // TODO Auto-generated method stub
+
+    }
+
+    public void toVisualMode() {
         // TODO Auto-generated method stub
 
     }
