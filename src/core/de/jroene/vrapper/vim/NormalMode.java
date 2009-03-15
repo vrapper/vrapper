@@ -33,7 +33,7 @@ public class NormalMode extends AbstractMode {
         return new KeyStrokeMode();
     }
 
-    public Mode getVisualMode(boolean lineWise) {
+    public VisualMode getVisualMode(boolean lineWise) {
         return new VisualMode(lineWise);
     }
 
@@ -128,18 +128,12 @@ public class NormalMode extends AbstractMode {
 
     class VisualMode implements Mode {
 
-        private final int start;
+        private int start;
         private final boolean lineWise;
 
         public VisualMode(boolean lineWise) {
             super();
             this.lineWise = lineWise;
-            int pos = vim.getPlatform().getPosition();
-            if (lineWise) {
-                start = vim.getPlatform().getLineInformationOfOffset(pos).getBeginOffset();
-            } else {
-                this.start = pos;
-            }
         }
 
         public boolean type(VimInputEvent e) {
@@ -149,38 +143,78 @@ public class NormalMode extends AbstractMode {
             }
             if (VimInputEvent.ESCAPE.equals(e)) {
                 int pos = platform.getPosition();
-                pos = Math.max(pos-1, platform.getLineInformation().getBeginOffset());
+                if (start < pos) {
+                    // in case of forward selection, move 1 char backward
+                    pos = Math.max(pos-1, platform.getLineInformation().getBeginOffset());
+                }
                 platform.setSelection(new Selection(pos, 0));
                 vim.toNormalMode();
             } else {
-                int pos;
+                int pos = platform.getPosition();
                 Token t = TokenFactory.create(e);
                 if (t instanceof Move) {
-                    platform.setPosition(Math.max(
-                            platform.getLineInformation().getBeginOffset(),
-                            platform.getPosition()-1));
+                    // when moving forward, the real position is right of
+                    // the selection
+                    boolean forward = start < pos;
+                    if (forward) {
+                        // this simulates that the position is on the last char
+                        // of the selection
+                        platform.setPosition(Math.max(
+                                platform.getLineInformation().getBeginOffset(),
+                                platform.getPosition()-1));
+                    }
                     processToken(t);
-                    pos = Math.min(
-                            platform.getLineInformation().getEndOffset(),
-                            platform.getPosition()+1);
+                    pos = platform.getPosition();
+                    if (forward) {
+                        // set position to the right of what we want to have selected
+                        pos = Math.min(
+                                platform.getLineInformation().getEndOffset(),
+                                platform.getPosition()+1);
+                    }
+                    updateSelection(platform, pos);
                 } else {
                     if (t instanceof Number || t instanceof AbstractLineAwareToken) {
                         processToken(t);
                     }
                     pos = platform.getPosition();
                 }
-                int end;
-                if (lineWise) {
-                    end = platform.getLineInformationOfOffset(pos)
-                    .getEndOffset();
-                } else {
-                    end = pos;
-                }
-                platform.setSelection(Selection.fromOffsets(start, end, lineWise));
             }
             return false;
         }
 
+        private void updateSelection(Platform platform, int pos) {
+            int end;
+            int begin;
+            if (lineWise) {
+                LineInformation beginLine = platform.getLineInformationOfOffset(start);
+                LineInformation endLine = platform.getLineInformationOfOffset(pos);
+                if (start < pos) {
+                    begin = beginLine.getBeginOffset();
+                    end   = endLine.getEndOffset();
+                } else {
+                    begin = beginLine.getEndOffset();
+                    end   = endLine.getBeginOffset();
+                }
+            } else {
+                begin = start;
+                end = pos;
+                if (begin >= end) {
+                    // start has to be included, even on selecting backwards
+                    begin += 1;
+                }
+            }
+            platform.setSelection(Selection.fromOffsets(begin, end, lineWise));
+        }
+
+        public void initialize() {
+            Platform platform = vim.getPlatform();
+            start = platform.getPosition();
+            int pos = start;
+            if (pos < platform.getLineInformation().getEndOffset()) {
+                pos += 1;
+            }
+            updateSelection(platform, pos);
+        }
     }
 
     private void afterExecute() {

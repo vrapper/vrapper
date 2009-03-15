@@ -38,6 +38,7 @@ public class EclipsePlatform implements Platform {
     private final StatusLine statusLine;
     private Space space;
     private final int defaultCaretWidth;
+    private boolean lineWiseSelection;
 
     public EclipsePlatform(IWorkbenchWindow window, AbstractTextEditor part,
             final ITextViewer textViewer) {
@@ -176,6 +177,7 @@ public class EclipsePlatform implements Platform {
     public void toInsertMode() {
         setCaretWidth(defaultCaretWidth);
         statusLine.setEnabled(false);
+        lineWiseSelection = false;
     }
 
     public void toNormalMode() {
@@ -183,14 +185,15 @@ public class EclipsePlatform implements Platform {
         setCaretWidth(gc.getFontMetrics().getAverageCharWidth());
         gc.dispose();
         statusLine.setEnabled(false);
+        lineWiseSelection = false;
     }
 
     public void toVisualMode() {
-        GC gc = new GC(textViewer.getTextWidget());
-        setCaretWidth(-gc.getFontMetrics().getAverageCharWidth());
-        gc.dispose();
-        setPosition(getPosition()+1);
-        textViewer.getTextWidget().redraw();
+        //        GC gc = new GC(textViewer.getTextWidget());
+        //        setCaretWidth(-gc.getFontMetrics().getAverageCharWidth());
+        //        gc.dispose();
+        setCaretWidth(1);
+        lineWiseSelection = false;
     }
 
     public void redo() {
@@ -285,7 +288,8 @@ public class EclipsePlatform implements Platform {
 
     public Selection getSelection() {
         Point selectedRange = textViewer.getSelectedRange();
-        return selectedRange.y > 0 ? new Selection(selectedRange.x, selectedRange.y) : null;
+        return selectedRange.y > 0 ? new Selection(selectedRange.x,
+                selectedRange.y, lineWiseSelection) : null;
     }
 
     public void setSelection(Selection s) {
@@ -295,6 +299,7 @@ public class EclipsePlatform implements Platform {
             //            textViewer.setSelectedRange(s.getStart(), s.getLength());
             TextSelection ts = new TextSelection(s.getStart(), s.getLength());
             textViewer.getSelectionProvider().setSelection(ts);
+            lineWiseSelection = s.isLineWise();
         }
     }
 

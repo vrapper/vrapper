@@ -32,12 +32,11 @@ public class Selection extends AbstractMove {
         return start+length;
     }
 
+    public boolean isLineWise() {
+        return lineWise;
+    }
+
     public static Selection fromOffsets(int i1, int i2, boolean lineWise) {
-        if ( i1 > i2) {
-            int temp = i1;
-            i1 = i2;
-            i2 = temp;
-        }
         return new Selection(i1, i2-i1, lineWise);
     }
 

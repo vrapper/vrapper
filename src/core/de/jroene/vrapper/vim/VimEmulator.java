@@ -75,8 +75,10 @@ public class VimEmulator {
     }
 
     public void toVisualMode(boolean lineWise) {
-        mode = normalMode.getVisualMode(lineWise);
+        NormalMode.VisualMode visual = normalMode.getVisualMode(lineWise);
+        mode = visual;
         platform.toVisualMode();
+        visual.initialize();
     }
 
     public boolean inInsertMode() {
