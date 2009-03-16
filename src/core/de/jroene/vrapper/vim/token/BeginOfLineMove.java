@@ -54,6 +54,9 @@ public abstract class BeginOfLineMove extends AbstractMove implements Move {
         @Override
         public boolean evaluate(VimEmulator vim, Token next)
         throws TokenException {
+            if (next != null) {
+                return super.evaluate(vim, next);
+            }
             target = vim.getPlatform().getLineInformation().getBeginOffset();
             return true;
         }
