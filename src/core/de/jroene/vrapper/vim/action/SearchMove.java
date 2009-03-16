@@ -4,9 +4,9 @@ import de.jroene.vrapper.vim.Search;
 import de.jroene.vrapper.vim.VimEmulator;
 
 
-public class SearchAction extends AbstractSearchAction {
+public class SearchMove extends AbstractSearchMove {
 
-    public SearchAction(boolean reversed) {
+    public SearchMove(boolean reversed) {
         super(reversed);
     }
 

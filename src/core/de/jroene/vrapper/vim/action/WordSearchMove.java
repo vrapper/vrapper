@@ -7,9 +7,9 @@ import de.jroene.vrapper.vim.Search;
 import de.jroene.vrapper.vim.VimEmulator;
 import de.jroene.vrapper.vim.VimUtils;
 
-public class WordSearchAction extends AbstractSearchAction {
+public class WordSearchMove extends AbstractSearchMove {
 
-    public WordSearchAction(boolean reverse) {
+    public WordSearchMove(boolean reverse) {
         super(reverse);
     }
 

@@ -314,12 +314,18 @@ public class EclipsePlatform implements Platform {
     }
 
     public SearchResult find(Search search, int offset) {
-        if (!space.equals(Space.VIEW)) {
-            throw new IllegalStateException("Search can only be performed in view space");
+        int position = getPosition();
+        if (space.equals(Space.MODEL)) {
+            offset = modelOffset2WidgetOffset(offset);
         }
         int index = textViewer.getFindReplaceTarget().findAndSelect(
                 offset, search.getKeyword(), !search.isBackward(),
                 true, search.isWholeWord());
+        if (space.equals(Space.MODEL)) {
+            index = widgetOffset2ModelOffset(index);
+        }
+        // findAndSelect changes position, reset
+        setPosition(position);
         return new SearchResult(index);
     }
 

@@ -3,27 +3,34 @@ package de.jroene.vrapper.vim.action;
 import de.jroene.vrapper.vim.Platform;
 import de.jroene.vrapper.vim.Search;
 import de.jroene.vrapper.vim.SearchResult;
-import de.jroene.vrapper.vim.Space;
 import de.jroene.vrapper.vim.VimEmulator;
+import de.jroene.vrapper.vim.token.AbstractRepeatableHorizontalMove;
+import de.jroene.vrapper.vim.token.Token;
 
-public abstract class AbstractSearchAction extends TokenAndAction {
+public abstract class AbstractSearchMove extends AbstractRepeatableHorizontalMove {
 
     protected final boolean reverse;
 
-    public AbstractSearchAction(boolean reverse) {
+    public AbstractSearchMove(boolean reverse) {
         super();
         this.reverse = reverse;
     }
 
     @Override
-    public Space getSpace() {
-        return Space.VIEW;
-    }
-
-    public void execute(VimEmulator vim) {
+    public int calculateTarget(VimEmulator vim, int times, Token next) {
         Search search = getSearch(vim);
         Platform p = vim.getPlatform();
         int position = p.getPosition();
+        for (int i = 0; i < times; i++) {
+            position = doSearch(search, p, position);
+            if (position == -1) {
+                return -1;
+            }
+        }
+        return position;
+    }
+
+    private int doSearch(Search search, Platform p, int position) {
         if (reverse) {
             search = search.reverse();
         }
@@ -35,15 +42,16 @@ public abstract class AbstractSearchAction extends TokenAndAction {
         }
         SearchResult result = p.find(search, position);
         if (result.isFound()) {
-            p.setPosition(result.getIndex());
+            return result.getIndex();
         } else {
             // redo search from beginning / end of document
             int index = search.isBackward() ? p.getLineInformation(p.getNumberOfLines()-1).getEndOffset()-1 : 0;
             result = p.find(search, index);
             if (result.isFound()) {
-                p.setPosition(result.getIndex());
+                return result.getIndex();
             }
         }
+        return -1;
     }
 
     protected abstract Search getSearch(VimEmulator vim);

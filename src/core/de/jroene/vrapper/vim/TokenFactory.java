@@ -6,10 +6,10 @@ import de.jroene.vrapper.vim.action.CommandLineAction;
 import de.jroene.vrapper.vim.action.InsertLine;
 import de.jroene.vrapper.vim.action.InsertModeAction;
 import de.jroene.vrapper.vim.action.RepeatLastEdit;
-import de.jroene.vrapper.vim.action.SearchAction;
+import de.jroene.vrapper.vim.action.SearchMove;
 import de.jroene.vrapper.vim.action.SearchModeAction;
 import de.jroene.vrapper.vim.action.VisualModeAction;
-import de.jroene.vrapper.vim.action.WordSearchAction;
+import de.jroene.vrapper.vim.action.WordSearchMove;
 import de.jroene.vrapper.vim.token.BeginOfLineMove;
 import de.jroene.vrapper.vim.token.Change;
 import de.jroene.vrapper.vim.token.CompositeToken;
@@ -123,10 +123,10 @@ public class TokenFactory {
         put(':', new CommandLineAction());
         put('/', new SearchModeAction(false));
         put('?', new SearchModeAction(true));
-        put('n', new SearchAction(false));
-        put('N', new SearchAction(true));
-        put('*', new WordSearchAction(false));
-        put('#', new WordSearchAction(true));
+        put('n', new SearchMove(false));
+        put('N', new SearchMove(true));
+        put('*', new WordSearchMove(false));
+        put('#', new WordSearchMove(true));
         // visual mode
         put('v', new VisualModeAction(false));
         put('V', new VisualModeAction(true));

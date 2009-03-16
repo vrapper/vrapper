@@ -6,7 +6,7 @@ import java.lang.reflect.Method;
 import de.jroene.vrapper.test.VimTestCase;
 import de.jroene.vrapper.vim.Search;
 import de.jroene.vrapper.vim.VimEmulator;
-import de.jroene.vrapper.vim.action.WordSearchAction;
+import de.jroene.vrapper.vim.action.WordSearchMove;
 
 public class WordSearchActionTest extends VimTestCase {
 
@@ -37,10 +37,10 @@ public class WordSearchActionTest extends VimTestCase {
     IllegalAccessException, InvocationTargetException,
     SecurityException, NoSuchMethodException {
         platform.setPosition(offset);
-        Method getSearch = WordSearchAction.class
+        Method getSearch = WordSearchMove.class
         .getDeclaredMethod("getSearch", VimEmulator.class);
         getSearch.setAccessible(true);
-        WordSearchAction a = new WordSearchAction(false);
+        WordSearchMove a = new WordSearchMove(false);
         Search s = (Search) getSearch.invoke(a, vim);
         assertEquals(string, s.getKeyword());
     }
