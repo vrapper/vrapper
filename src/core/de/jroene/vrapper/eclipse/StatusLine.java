@@ -39,11 +39,11 @@ public class StatusLine implements PaintListener {
         if (horScroll == parent.getHorizontalBar().getSelection()
                 && verScroll == parent.getVerticalBar().getSelection()) {
             e.gc.setLineWidth(1);
-            //            Color color = e.gc.getForeground();
-            //            e.gc.setForeground(new Color(e.display, 0, 0, 0));
+//            Color color = e.gc.getForeground();
+//            e.gc.setForeground(new Color(e.display, 0, 0, 0));
             e.gc.fillRectangle(rect);
             e.gc.drawRectangle(rect);
-            //            e.gc.setForeground(color);
+//            e.gc.setForeground(color);
             e.gc.drawString(content, 5, bottom - height + offset);
         } else {
             parent.redraw();
