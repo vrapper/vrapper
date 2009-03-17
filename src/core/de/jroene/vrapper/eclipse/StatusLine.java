@@ -3,7 +3,6 @@ package de.jroene.vrapper.eclipse;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Rectangle;
 
 /**
@@ -40,12 +39,12 @@ public class StatusLine implements PaintListener {
         if (horScroll == parent.getHorizontalBar().getSelection()
                 && verScroll == parent.getVerticalBar().getSelection()) {
             e.gc.setLineWidth(1);
-            Color color = e.gc.getForeground();
-            e.gc.setForeground(new Color(e.display, 0, 0, 0));
+            //            Color color = e.gc.getForeground();
+            //            e.gc.setForeground(new Color(e.display, 0, 0, 0));
             e.gc.fillRectangle(rect);
             e.gc.drawRectangle(rect);
+            //            e.gc.setForeground(color);
             e.gc.drawString(content, 5, bottom - height + offset);
-            e.gc.setForeground(color);
         } else {
             parent.redraw();
             horScroll = parent.getHorizontalBar().getSelection();
