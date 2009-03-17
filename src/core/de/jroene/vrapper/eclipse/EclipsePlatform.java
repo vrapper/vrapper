@@ -1,5 +1,6 @@
 package de.jroene.vrapper.eclipse;
 
+import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
@@ -11,8 +12,10 @@ import org.eclipse.jface.text.TextSelection;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Caret;
+import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
+import org.eclipse.ui.texteditor.StatusLineContributionItem;
 
 import de.jroene.vrapper.vim.LineInformation;
 import de.jroene.vrapper.vim.Platform;
@@ -29,6 +32,10 @@ import de.jroene.vrapper.vim.Space;
  */
 public class EclipsePlatform implements Platform {
 
+    private static final String MESSAGE_INSERT_MODE = "-- INSERT --";
+    private static final String MESSAGE_VISUAL_MODE = "-- VISUAL --";
+    private static final String MESSAGE_NORMAL_MODE = "-- NORMAL --";
+
     @SuppressWarnings("unused")
     private final IWorkbenchWindow window;
     private final AbstractTextEditor part;
@@ -38,6 +45,7 @@ public class EclipsePlatform implements Platform {
     private final StatusLine statusLine;
     private Space space;
     private final int defaultCaretWidth;
+    private final StatusLineContributionItem vimInputModeItem;
     private boolean lineWiseSelection;
 
     public EclipsePlatform(IWorkbenchWindow window, AbstractTextEditor part,
@@ -60,6 +68,15 @@ public class EclipsePlatform implements Platform {
         }
         setDefaultSpace();
         statusLine = new StatusLine(textViewer.getTextWidget());
+        vimInputModeItem = new StatusLineContributionItem(
+                "VimInputMode", true, 15);
+        try {
+            part.getEditorSite().getActionBars().getStatusLineManager()
+            .insertBefore( "ElementState", vimInputModeItem);
+        } catch (IllegalArgumentException e) {
+            part.getEditorSite().getActionBars().getStatusLineManager()
+            .add(vimInputModeItem);
+        }
     }
 
     public String getText(int index, int length) {
@@ -178,6 +195,7 @@ public class EclipsePlatform implements Platform {
         setCaretWidth(defaultCaretWidth);
         statusLine.setEnabled(false);
         lineWiseSelection = false;
+        setStatusLine(MESSAGE_INSERT_MODE);
     }
 
     public void toNormalMode() {
@@ -186,6 +204,7 @@ public class EclipsePlatform implements Platform {
         gc.dispose();
         statusLine.setEnabled(false);
         lineWiseSelection = false;
+        setStatusLine(MESSAGE_NORMAL_MODE);
     }
 
     public void toVisualMode() {
@@ -194,6 +213,8 @@ public class EclipsePlatform implements Platform {
         //        gc.dispose();
         setCaretWidth(1);
         lineWiseSelection = false;
+        setStatusLine(MESSAGE_VISUAL_MODE);
+
     }
 
     public void redo() {
@@ -235,6 +256,66 @@ public class EclipsePlatform implements Platform {
 
     public void setDefaultSpace() {
         space = Space.MODEL;
+    }
+
+    public Selection getSelection() {
+        Point selectedRange = textViewer.getSelectedRange();
+        return selectedRange.y > 0 ? new Selection(selectedRange.x,
+                selectedRange.y, lineWiseSelection) : null;
+    }
+
+    public void setSelection(Selection s) {
+        if (s == null) {
+            textViewer.getSelectionProvider().setSelection(TextSelection.emptySelection());
+        } else {
+            //            textViewer.setSelectedRange(s.getStart(), s.getLength());
+            TextSelection ts = new TextSelection(s.getStart(), s.getLength());
+            textViewer.getSelectionProvider().setSelection(ts);
+            lineWiseSelection = s.isLineWise();
+        }
+    }
+
+    public void beginChange() {
+        undoManager.beginCompoundChange();
+        undoManager.lock();
+    }
+
+    public void endChange() {
+        undoManager.unlock();
+        undoManager.endCompoundChange();
+    }
+
+    public SearchResult find(Search search, int offset) {
+        int position = getPosition();
+        if (space.equals(Space.MODEL)) {
+            offset = modelOffset2WidgetOffset(offset);
+        }
+        int index = textViewer.getFindReplaceTarget().findAndSelect(
+                offset, search.getKeyword(), !search.isBackward(),
+                true, search.isWholeWord());
+        if (space.equals(Space.MODEL)) {
+            index = widgetOffset2ModelOffset(index);
+        }
+        // findAndSelect changes position, reset
+        setPosition(position);
+        return new SearchResult(index);
+    }
+
+    public void setRepaint(boolean repaint) {
+        textViewer.getTextWidget().setRedraw(repaint);
+    }
+
+    private void setStatusLine(String message) {
+        vimInputModeItem.setText(message);
+        IActionBars bars = part.getEditorSite().getActionBars();
+        //        bars.getStatusLineManager().setMessage(message);
+        //        IContributionItem item = new ContributionItem("VimInputMode") {
+        //
+        //        };
+        //        bars.getStatusLineManager().insertBefore("InputMode", item);
+        for (IContributionItem i :bars.getStatusLineManager().getItems()) {
+            System.out.println(i.getId());
+        }
     }
 
     private void setCaretWidth(int width) {
@@ -286,50 +367,4 @@ public class EclipsePlatform implements Platform {
         }
     }
 
-    public Selection getSelection() {
-        Point selectedRange = textViewer.getSelectedRange();
-        return selectedRange.y > 0 ? new Selection(selectedRange.x,
-                selectedRange.y, lineWiseSelection) : null;
-    }
-
-    public void setSelection(Selection s) {
-        if (s == null) {
-            textViewer.getSelectionProvider().setSelection(TextSelection.emptySelection());
-        } else {
-            //            textViewer.setSelectedRange(s.getStart(), s.getLength());
-            TextSelection ts = new TextSelection(s.getStart(), s.getLength());
-            textViewer.getSelectionProvider().setSelection(ts);
-            lineWiseSelection = s.isLineWise();
-        }
-    }
-
-    public void beginChange() {
-        undoManager.beginCompoundChange();
-        undoManager.lock();
-    }
-
-    public void endChange() {
-        undoManager.unlock();
-        undoManager.endCompoundChange();
-    }
-
-    public SearchResult find(Search search, int offset) {
-        int position = getPosition();
-        if (space.equals(Space.MODEL)) {
-            offset = modelOffset2WidgetOffset(offset);
-        }
-        int index = textViewer.getFindReplaceTarget().findAndSelect(
-                offset, search.getKeyword(), !search.isBackward(),
-                true, search.isWholeWord());
-        if (space.equals(Space.MODEL)) {
-            index = widgetOffset2ModelOffset(index);
-        }
-        // findAndSelect changes position, reset
-        setPosition(position);
-        return new SearchResult(index);
-    }
-
-    public void setRepaint(boolean repaint) {
-        textViewer.getTextWidget().setRedraw(repaint);
-    }
 }
