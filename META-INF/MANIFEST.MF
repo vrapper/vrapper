@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Vrapper
 Bundle-SymbolicName: de.jroene.vrapper;singleton:=true
-Bundle-Version: 0.4.4
+Bundle-Version: 0.4.5
 Bundle-Activator: de.jroene.vrapper.eclipse.Activator
 Bundle-Vendor: JROENE
 Require-Bundle: org.eclipse.ui,
