@@ -2,6 +2,8 @@ package de.jroene.vrapper.eclipse.interceptor;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.ITextViewerExtension;
@@ -23,11 +25,13 @@ public class InputInterceptorManager implements IPartListener {
 
     private final InputInterceptorFactory factory;
     private final IWorkbenchWindow window;
+    private final Map<IWorkbenchPart, InputInterceptor> interceptors;
 
     public InputInterceptorManager(InputInterceptorFactory factory, IWorkbenchWindow window) {
         super();
         this.factory = factory;
         this.window = window;
+        this.interceptors = new HashMap<IWorkbenchPart, InputInterceptor>();
     }
 
     public void partDeactivated(IWorkbenchPart arg0) {
@@ -43,7 +47,9 @@ public class InputInterceptorManager implements IPartListener {
                 Object viewer = me.invoke(editor);
                 // test for needed interfaces
                 ITextViewerExtension textViewer = (ITextViewerExtension) viewer;
-                textViewer.appendVerifyKeyListener(factory.createInterceptor(window, editor, (ITextViewer)textViewer));
+                InputInterceptor interceptor = factory.createInterceptor(window, editor, (ITextViewer)textViewer);
+                textViewer.appendVerifyKeyListener(interceptor);
+                interceptors.put(part, interceptor);
             } catch (SecurityException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -98,8 +104,7 @@ public class InputInterceptorManager implements IPartListener {
     }
 
     public void partClosed(IWorkbenchPart arg0) {
-        // TODO Auto-generated method stub
-
+        interceptors.remove(arg0);
     }
 
     protected void clean() {
@@ -107,8 +112,9 @@ public class InputInterceptorManager implements IPartListener {
     }
 
     public void partActivated(IWorkbenchPart arg0) {
-        // TODO Auto-generated method stub
-
+        if (interceptors.containsKey(arg0)) {
+            interceptors.get(arg0).partActivated(arg0);
+        }
     }
 
     public void partBroughtToTop(IWorkbenchPart arg0) {

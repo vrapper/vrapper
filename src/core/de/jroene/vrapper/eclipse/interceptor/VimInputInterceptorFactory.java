@@ -6,6 +6,7 @@ import java.util.HashMap;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.VerifyEvent;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 
@@ -48,8 +49,9 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
             final AbstractTextEditor part, final ITextViewer textViewer) {
         return new InputInterceptor() {
 
+            private final EclipsePlatform platform = new EclipsePlatform(window, part, textViewer);
             private final VimEmulator vim = new VimEmulator(
-                    new EclipsePlatform(window, part, textViewer), globalRegisterManager);
+                    platform, globalRegisterManager);
             public void verifyKey(VerifyEvent e) {
                 VimInputEvent in;
                 if(e.keyCode == SWT.SHIFT) {
@@ -61,6 +63,10 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
                     in = new VimInputEvent.Character(e.character);
                 }
                 e.doit = vim.type(in);
+            }
+
+            public void partActivated(IWorkbenchPart arg0) {
+                platform.activate();
             }
 
         };

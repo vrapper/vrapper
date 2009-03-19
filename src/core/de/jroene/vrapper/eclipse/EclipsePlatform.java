@@ -35,7 +35,7 @@ public class EclipsePlatform implements Platform {
     private static final String CONTRIBUTION_ITEM_NAME = "VimInputMode";
     private static final String MESSAGE_INSERT_MODE = "-- INSERT --";
     private static final String MESSAGE_VISUAL_MODE = "-- VISUAL --";
-    private static final String MESSAGE_NORMAL_MODE = "";
+    private static final String MESSAGE_NORMAL_MODE = "-- NORMAL --";
 
     @SuppressWarnings("unused")
     private final IWorkbenchWindow window;
@@ -48,6 +48,7 @@ public class EclipsePlatform implements Platform {
     private final int defaultCaretWidth;
     private final StatusLineContributionItem vimInputModeItem;
     private boolean lineWiseSelection;
+    private String currentMode;
 
     public EclipsePlatform(IWorkbenchWindow window, AbstractTextEditor part,
             final ITextViewer textViewer) {
@@ -300,9 +301,13 @@ public class EclipsePlatform implements Platform {
         textViewer.getTextWidget().setRedraw(repaint);
     }
 
+    public void activate() {
+        vimInputModeItem.setText(currentMode);
+    }
+
     private void setStatusLine(String message) {
         vimInputModeItem.setText(message);
-        vimInputModeItem.setVisible(true);
+        currentMode = message;
     }
 
     private void setCaretWidth(int width) {
