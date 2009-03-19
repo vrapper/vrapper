@@ -1,6 +1,5 @@
 package de.jroene.vrapper.eclipse;
 
-import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
@@ -12,7 +11,6 @@ import org.eclipse.jface.text.TextSelection;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Caret;
-import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 import org.eclipse.ui.texteditor.StatusLineContributionItem;
@@ -307,15 +305,6 @@ public class EclipsePlatform implements Platform {
 
     private void setStatusLine(String message) {
         vimInputModeItem.setText(message);
-        IActionBars bars = part.getEditorSite().getActionBars();
-        //        bars.getStatusLineManager().setMessage(message);
-        //        IContributionItem item = new ContributionItem("VimInputMode") {
-        //
-        //        };
-        //        bars.getStatusLineManager().insertBefore("InputMode", item);
-        for (IContributionItem i :bars.getStatusLineManager().getItems()) {
-            System.out.println(i.getId());
-        }
     }
 
     private void setCaretWidth(int width) {
