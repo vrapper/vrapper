@@ -1,7 +1,11 @@
-package de.jroene.vrapper.vim;
+package de.jroene.vrapper.vim.commandline;
 
 import java.util.Arrays;
 import java.util.List;
+
+import de.jroene.vrapper.vim.AbstractMode;
+import de.jroene.vrapper.vim.VimEmulator;
+import de.jroene.vrapper.vim.VimInputEvent;
 
 public abstract class AbstractCommandMode extends AbstractMode {
 

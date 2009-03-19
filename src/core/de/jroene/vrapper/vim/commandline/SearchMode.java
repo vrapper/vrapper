@@ -1,5 +1,7 @@
-package de.jroene.vrapper.vim;
+package de.jroene.vrapper.vim.commandline;
 
+import de.jroene.vrapper.vim.Search;
+import de.jroene.vrapper.vim.VimEmulator;
 import de.jroene.vrapper.vim.action.SearchMove;
 import de.jroene.vrapper.vim.token.Token;
 import de.jroene.vrapper.vim.token.TokenException;

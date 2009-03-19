@@ -1,6 +1,8 @@
-package de.jroene.vrapper.vim;
+package de.jroene.vrapper.vim.commandline;
 
 import java.util.StringTokenizer;
+
+import de.jroene.vrapper.vim.VimEmulator;
 
 
 /**

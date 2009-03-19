@@ -7,6 +7,8 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import de.jroene.vrapper.vim.InsertMode.Parameters;
+import de.jroene.vrapper.vim.commandline.CommandLineMode;
+import de.jroene.vrapper.vim.commandline.SearchMode;
 import de.jroene.vrapper.vim.register.DefaultRegisterManager;
 import de.jroene.vrapper.vim.register.RegisterManager;
 
