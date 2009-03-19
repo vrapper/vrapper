@@ -26,7 +26,7 @@ public class FindMove extends AbstractRepeatableHorizontalMove {
     }
 
     public FindMove backwards() {
-        return new FindMove(target, backwards, stopBeforeTarget);
+        return new FindMove(target, !backwards, stopBeforeTarget);
     }
 
     @Override
