@@ -1,5 +1,6 @@
 package de.jroene.vrapper.eclipse;
 
+import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
@@ -30,9 +31,11 @@ import de.jroene.vrapper.vim.Space;
  */
 public class EclipsePlatform implements Platform {
 
+    private static final int MESSAGE_WIDTH = 15;
+    private static final String CONTRIBUTION_ITEM_NAME = "VimInputMode";
     private static final String MESSAGE_INSERT_MODE = "-- INSERT --";
     private static final String MESSAGE_VISUAL_MODE = "-- VISUAL --";
-    private static final String MESSAGE_NORMAL_MODE = "-- NORMAL --";
+    private static final String MESSAGE_NORMAL_MODE = "";
 
     @SuppressWarnings("unused")
     private final IWorkbenchWindow window;
@@ -66,16 +69,10 @@ public class EclipsePlatform implements Platform {
         }
         setDefaultSpace();
         statusLine = new StatusLine(textViewer.getTextWidget());
-        vimInputModeItem = new StatusLineContributionItem(
-                "VimInputMode", true, 15);
-        try {
-            part.getEditorSite().getActionBars().getStatusLineManager()
-            .insertBefore( "ElementState", vimInputModeItem);
-        } catch (IllegalArgumentException e) {
-            part.getEditorSite().getActionBars().getStatusLineManager()
-            .add(vimInputModeItem);
-        }
+        vimInputModeItem = getContributionItem();
+        setStatusLine(MESSAGE_NORMAL_MODE);
     }
+
 
     public String getText(int index, int length) {
         try {
@@ -305,6 +302,7 @@ public class EclipsePlatform implements Platform {
 
     private void setStatusLine(String message) {
         vimInputModeItem.setText(message);
+        vimInputModeItem.setVisible(true);
     }
 
     private void setCaretWidth(int width) {
@@ -354,6 +352,21 @@ public class EclipsePlatform implements Platform {
         default:
             throw new IllegalStateException("unknown space: " + space);
         }
+    }
+
+    private StatusLineContributionItem getContributionItem() {
+        String name = CONTRIBUTION_ITEM_NAME+part.getEditorSite().getId();
+        IStatusLineManager manager = part.getEditorSite().getActionBars().getStatusLineManager();
+        StatusLineContributionItem item = (StatusLineContributionItem) manager.find(name);
+        if (item == null) {
+            item = new StatusLineContributionItem(name, true, MESSAGE_WIDTH);
+            try {
+                manager.insertBefore("ElementState", item);
+            } catch (IllegalArgumentException e) {
+                manager.add(item);
+            }
+        }
+        return item;
     }
 
 }
