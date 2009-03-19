@@ -149,4 +149,8 @@ public class InsertMode extends AbstractMode {
 
     }
 
+    public void toKeystrokeMode() {
+        // do nothing
+    }
+
 }

@@ -84,8 +84,8 @@ public class VimEmulator {
         platform.toCommandLineMode();
     }
 
-    public void toCharacterNormalMode() {
-        mode = normalMode.getKeystrokeMode();
+    public void toCharacterMode() {
+        mode.toKeystrokeMode();
     }
 
     public void toVisualMode(boolean lineWise) {
@@ -126,6 +126,10 @@ public class VimEmulator {
 
     public NormalMode getNormalMode() {
         return normalMode;
+    }
+
+    public Mode getMode() {
+        return mode;
     }
 
     public void useGlobalRegisters() {

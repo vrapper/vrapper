@@ -34,7 +34,7 @@ public class Replace extends AbstractToken implements Repeatable {
             throw new TokenException();
         }
         if(next == null) {
-            vim.toCharacterNormalMode();
+            vim.toCharacterMode();
             return false;
         }
         throw new TokenException();

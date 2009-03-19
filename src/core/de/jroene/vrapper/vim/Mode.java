@@ -15,4 +15,10 @@ public interface Mode {
      * @return whether the keystroke should be passed to the underlying editor or not.
      */
     boolean type(VimInputEvent e);
+
+    /**
+     * Notifies the mode that the next input event should be handled as a
+     * character.
+     */
+    void toKeystrokeMode();
 }

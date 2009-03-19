@@ -49,6 +49,11 @@ public abstract class AbstractCommandMode extends AbstractMode {
      */
     public abstract void parseAndExecute(String first, String command);
 
+
+    public void toKeystrokeMode() {
+        // do nothing
+    }
+
     private void parseAndExecute() {
         parseAndExecute(buffer.substring(0,1), buffer.substring(1, buffer.length()));
     }

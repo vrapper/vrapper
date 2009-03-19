@@ -17,6 +17,9 @@ public abstract class AbstractRepeatableMove extends AbstractMove implements Rep
 
     public boolean repeat(VimEmulator vim, int times, Token next) throws TokenException {
         setTarget(calculateTarget(vim, times, next));
+        if (getTarget() == -1) {
+            throw new TokenException();
+        }
         return true;
     }
 

@@ -25,7 +25,7 @@ public class UseRegister extends AbstractToken {
             return action.evaluate(vim, next);
         } else {
             if (next == null) {
-                vim.toCharacterNormalMode();
+                vim.toCharacterMode();
                 return false;
             } else if (next instanceof KeyStrokeToken) {
                 registerName = String.valueOf(((KeyStrokeToken) next).getPayload());

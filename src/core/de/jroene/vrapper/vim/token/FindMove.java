@@ -66,7 +66,7 @@ public class FindMove extends AbstractRepeatableHorizontalMove {
             return super.repeat(vim, times, next);
         }
         if(next == null) {
-            vim.toCharacterNormalMode();
+            vim.toCharacterMode();
             return false;
         }
         throw new TokenException();

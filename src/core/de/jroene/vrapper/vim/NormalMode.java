@@ -19,18 +19,16 @@ public class NormalMode extends AbstractMode {
 
     private final HashMap<VimInputEvent, VimInputEvent> keyMappings;
     private Token startToken;
+    private boolean keyStrokeMode;
 
     public NormalMode(VimEmulator vim) {
         super(vim);
         keyMappings = new HashMap<VimInputEvent, VimInputEvent>();
+        keyStrokeMode = false;
     }
 
-    private NormalMode getParent() {
-        return this;
-    }
-
-    public Mode getKeystrokeMode() {
-        return new KeyStrokeMode();
+    public void toKeystrokeMode() {
+        keyStrokeMode = true;
     }
 
     public VisualMode getVisualMode(boolean lineWise) {
@@ -38,13 +36,19 @@ public class NormalMode extends AbstractMode {
     }
 
     public boolean type(VimInputEvent e) {
-        if (keyMappings.containsKey(e)) {
-            e = keyMappings.get(e);
-        }
-        if(VimInputEvent.ESCAPE.equals(e)) {
-            cleanUp();
+        if (!keyStrokeMode) {
+            if (keyMappings.containsKey(e)) {
+                e = keyMappings.get(e);
+            }
+            if(VimInputEvent.ESCAPE.equals(e)) {
+                cleanUp();
+            } else {
+                Token t = TokenFactory.create(e);
+                processToken(t);
+            }
         } else {
-            Token t = TokenFactory.create(e);
+            Token t = KeyStrokeToken.from(vim, e);
+            keyStrokeMode = false;
             processToken(t);
         }
         return false;
@@ -101,29 +105,7 @@ public class NormalMode extends AbstractMode {
 
     void cleanUp() {
         startToken = null;
-    }
-
-    private class KeyStrokeMode implements Mode {
-
-        public boolean type(VimInputEvent e) {
-            processToken(KeyStrokeToken.from(vim, e));
-            // do NOT leave insert mode
-            if (!vim.inInsertMode()) {
-                vim.toNormalMode();
-            }
-            return false;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            return getParent().equals(obj);
-        }
-
-        @Override
-        public int hashCode() {
-            return getParent().hashCode();
-        }
-
+        keyStrokeMode = false;
     }
 
     class VisualMode implements Mode {
@@ -138,7 +120,7 @@ public class NormalMode extends AbstractMode {
 
         public boolean type(VimInputEvent e) {
             Platform platform = vim.getPlatform();
-            if (keyMappings.containsKey(e)) {
+            if (keyMappings.containsKey(e) && !keyStrokeMode) {
                 e = keyMappings.get(e);
             }
             if (VimInputEvent.ESCAPE.equals(e)) {
@@ -151,8 +133,8 @@ public class NormalMode extends AbstractMode {
                 vim.toNormalMode();
             } else {
                 int pos = platform.getPosition();
-                Token t = TokenFactory.create(e);
-                if (t instanceof Move) {
+                Token t = keyStrokeMode ? KeyStrokeToken.from(vim, e) : TokenFactory.create(e);
+                if (t instanceof Move || keyStrokeMode) {
                     // when moving forward, the real position is right of
                     // the selection
                     boolean forward = start < pos;
@@ -214,6 +196,10 @@ public class NormalMode extends AbstractMode {
                 pos += 1;
             }
             updateSelection(platform, pos);
+        }
+
+        public void toKeystrokeMode() {
+            keyStrokeMode = true;
         }
     }
 
