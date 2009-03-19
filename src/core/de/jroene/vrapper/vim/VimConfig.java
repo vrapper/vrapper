@@ -9,14 +9,18 @@ package de.jroene.vrapper.vim;
 public class VimConfig {
 
     private boolean autoIndent;
-    private NewLine newLine = NewLine.SYSTEM;
+    private String newLine = NewLine.SYSTEM.nl;
 
-    public NewLine getNewLine() {
+    public String getNewLine() {
         return newLine;
     }
 
-    public void setNewLine(NewLine newLine) {
+    public void setNewLine(String newLine) {
         this.newLine = newLine;
+    }
+
+    public void setNewLine(NewLine newLine) {
+        this.newLine = newLine.nl;
     }
 
     public boolean isAutoIndent() {
@@ -28,8 +32,8 @@ public class VimConfig {
     }
 
     public static enum NewLine {
-        MAC("\r"), UNIX("\n"), WINDOWS("\r\n"), SYSTEM(System.getProperty("line.separator"));
-
+        MAC("\r"), UNIX("\n"), WINDOWS("\r\n"), SYSTEM(System
+                .getProperty("line.separator")), UNKNOWN("\n");
         public final String nl;
         private NewLine(String nl) {
             this.nl = nl;

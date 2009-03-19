@@ -71,7 +71,7 @@ public class Join extends AbstractToken implements Repeatable {
             sb.append(content);
             if(sb.length() == 0 ||
                     !VimUtils.isNewLine(sb.substring(sb.length()-1, sb.length()))) {
-                sb.append(vim.getVariables().getNewLine().nl);
+                sb.append(vim.getVariables().getNewLine());
             }
             p.replace(line.getEndOffset(),
                     other.getEndOffset()-line.getEndOffset()+1,

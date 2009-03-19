@@ -33,7 +33,7 @@ public class KeyStrokeToken implements Token {
             return new KeyStrokeToken(((VimInputEvent.Character)e).getCharacter());
         }
         if (VimInputEvent.RETURN.equals(e)) {
-            return new KeyStrokeToken(vim.getVariables().getNewLine().nl);
+            return new KeyStrokeToken(vim.getVariables().getNewLine());
         }
         return NOT_A_CHARACTER;
     }

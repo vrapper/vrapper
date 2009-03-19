@@ -40,7 +40,7 @@ public class Put extends AbstractToken implements Repeatable {
                 RegisterContent content = reg.getContent();
                 Platform p = vim.getPlatform();
                 StringBuilder sb = new StringBuilder();
-                String newline = vim.getVariables().getNewLine().nl;
+                String newline = vim.getVariables().getNewLine();
                 for (int i = 0; i < times; i++) {
                     if(content.isLineWise()) {
                         sb.append(newline);

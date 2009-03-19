@@ -68,7 +68,7 @@ public class Change extends Delete {
             super.afterEdit(vim, startLine, endLine);
             Platform p = vim.getPlatform();
             int position = p.getPosition();
-            p.replace(position, 0, indent+vim.getVariables().getNewLine().nl);
+            p.replace(position, 0, indent+vim.getVariables().getNewLine());
             p.setPosition(position+indent.length());
             vim.getPlatform().setRepaint(true);
             Token delete = createDelete();

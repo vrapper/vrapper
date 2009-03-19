@@ -40,7 +40,19 @@ public class VimEmulator {
         this.registerManager = globalRegisterManager;
         this.globalRegisterManager = globalRegisterManager;
         readConfiguration();
+        autoDetectNewline();
         toNormalMode();
+    }
+
+    private void autoDetectNewline() {
+        if (platform.getNumberOfLines() > 1) {
+            LineInformation first = platform.getLineInformation(0);
+            LineInformation second = platform.getLineInformation(1);
+            int start = first.getEndOffset();
+            int length = second.getBeginOffset()-start;
+            String newLine = platform.getText(start, length);
+            variables.setNewLine(newLine);
+        }
     }
 
     public boolean type(VimInputEvent e) {

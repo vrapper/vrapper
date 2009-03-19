@@ -54,7 +54,7 @@ public class SnapshotTestCase extends VimTestCase {
         BufferedReader reader = new BufferedReader(new FileReader(start));
         String line;
         StringBuilder sb = new StringBuilder();
-        String newline = vim.getVariables().getNewLine().nl;
+        String newline = vim.getVariables().getNewLine();
         while((line = reader.readLine()) != null) {
             sb.append(line);
             sb.append(newline);

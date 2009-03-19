@@ -41,7 +41,7 @@ public abstract class InsertLine extends TokenAndAction implements Repeatable {
         @Override
         protected void doEdit(VimEmulator vim, LineInformation currentLine, String indent) {
             Platform p = vim.getPlatform();
-            String newline = vim.getVariables().getNewLine().nl;
+            String newline = vim.getVariables().getNewLine();
             p.replace(currentLine.getBeginOffset(), 0, indent+newline);
             p.setPosition(currentLine.getBeginOffset()+indent.length());
         }
@@ -62,7 +62,7 @@ public abstract class InsertLine extends TokenAndAction implements Repeatable {
                 // there is a character at the end offset, which belongs to the line
                 begin += 1;
             }
-            String newline = vim.getVariables().getNewLine().nl;
+            String newline = vim.getVariables().getNewLine();
             p.replace(begin, 0, newline+indent);
             p.setPosition(begin+indent.length()+newline.length());
         }
