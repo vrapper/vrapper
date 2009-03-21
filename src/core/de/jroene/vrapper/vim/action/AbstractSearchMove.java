@@ -4,12 +4,14 @@ import de.jroene.vrapper.vim.Platform;
 import de.jroene.vrapper.vim.Search;
 import de.jroene.vrapper.vim.SearchResult;
 import de.jroene.vrapper.vim.VimEmulator;
+import de.jroene.vrapper.vim.VimUtils;
 import de.jroene.vrapper.vim.token.AbstractRepeatableHorizontalMove;
 import de.jroene.vrapper.vim.token.Token;
 
 public abstract class AbstractSearchMove extends AbstractRepeatableHorizontalMove {
 
     protected final boolean reverse;
+    private Token afterSearch;
 
     public AbstractSearchMove(boolean reverse) {
         super();
@@ -19,8 +21,10 @@ public abstract class AbstractSearchMove extends AbstractRepeatableHorizontalMov
     @Override
     public int calculateTarget(VimEmulator vim, int times, Token next) {
         Search search = getSearch(vim);
+        afterSearch = search.getAfterSearch();
         Platform p = vim.getPlatform();
         int position = p.getPosition();
+        position = VimUtils.calculatePositionForOffset(p, position, -search.getSearchOffset());
         for (int i = 0; i < times; i++) {
             position = doSearch(search, p, position);
             if (position == -1) {
@@ -52,6 +56,13 @@ public abstract class AbstractSearchMove extends AbstractRepeatableHorizontalMov
             }
         }
         return -1;
+    }
+
+    @Override
+    public Action getAction() {
+        Action search = super.getAction();
+        return afterSearch == null ? search : new CompositeAction(search,
+                new TokenWrapper(afterSearch));
     }
 
     protected abstract Search getSearch(VimEmulator vim);

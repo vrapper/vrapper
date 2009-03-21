@@ -79,4 +79,51 @@ public class VimUtils {
         return VimUtils.COMPILED_WORD_CHAR_PATTERN.matcher(s).find();
     }
 
+    public static boolean isBlank(String s) {
+        return s == null || s.trim().equals("");
+    }
+
+    /**
+     * Calculates an offset position. Line breaks are not counted.
+     * @param position TODO
+     */
+    public static int calculatePositionForOffset(Platform p, int position, int offset) {
+        LineInformation line = p.getLineInformationOfOffset(position);
+        if (offset < 0) {
+            int i = -offset;
+            while (i > 0) {
+                if(position > line.getBeginOffset()) {
+                    position -=1;
+                } else {
+                    int nextLine = line.getNumber()-1;
+                    if (nextLine < 0) {
+                        break;
+                    }
+                    line = p.getLineInformation(nextLine);
+                    position = Math.max(line.getBeginOffset(), line.getEndOffset()-1);
+                }
+                i -= 1;
+            }
+        } else if (offset > 0) {
+            int i = offset;
+            int end = Math.max(line.getBeginOffset(), line.getEndOffset()-1);
+            while (i > 0) {
+                if(position < end) {
+                    position +=1;
+                } else {
+                    int nextLine = line.getNumber()+1;
+                    if (nextLine > p.getNumberOfLines()-1) {
+                        break;
+                    }
+                    line = p.getLineInformation(nextLine);
+                    end = Math.max(line.getBeginOffset(), line.getEndOffset()-1);
+                    position = line.getBeginOffset();
+                }
+                i -= 1;
+            }
+
+        }
+        return position;
+    }
+
 }
