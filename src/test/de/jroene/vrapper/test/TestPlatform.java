@@ -219,4 +219,14 @@ public class TestPlatform implements Platform {
 
     }
 
+    public void setLineWiseMouseSelection(boolean lineWise) {
+        // TODO Auto-generated method stub
+
+    }
+
+    public boolean close(boolean force) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
 }

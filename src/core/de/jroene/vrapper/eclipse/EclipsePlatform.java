@@ -49,6 +49,7 @@ public class EclipsePlatform implements Platform {
     private final StatusLineContributionItem vimInputModeItem;
     private boolean lineWiseSelection;
     private String currentMode;
+    private boolean lineWiseMouseSelection;
 
     public EclipsePlatform(IWorkbenchWindow window, AbstractTextEditor part,
             final ITextViewer textViewer) {
@@ -190,7 +191,7 @@ public class EclipsePlatform implements Platform {
     public void toInsertMode() {
         setCaretWidth(defaultCaretWidth);
         statusLine.setEnabled(false);
-        lineWiseSelection = false;
+        lineWiseSelection = lineWiseMouseSelection;
         setStatusLine(MESSAGE_INSERT_MODE);
     }
 
@@ -199,7 +200,7 @@ public class EclipsePlatform implements Platform {
         setCaretWidth(gc.getFontMetrics().getAverageCharWidth());
         gc.dispose();
         statusLine.setEnabled(false);
-        lineWiseSelection = false;
+        lineWiseSelection = lineWiseMouseSelection;
         setStatusLine(MESSAGE_NORMAL_MODE);
     }
 
@@ -372,6 +373,19 @@ public class EclipsePlatform implements Platform {
             }
         }
         return item;
+    }
+
+
+    public void setLineWiseMouseSelection(boolean lineWise) {
+        this.lineWiseMouseSelection = lineWise;
+    }
+
+    public boolean close(boolean force) {
+        if(force || !part.isDirty()) {
+            part.close(false);
+            return true;
+        }
+        return false;
     }
 
 }

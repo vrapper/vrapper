@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import de.jroene.vrapper.vim.VimEmulator;
+import de.jroene.vrapper.vim.action.Action;
+import de.jroene.vrapper.vim.action.CloseAction;
+import de.jroene.vrapper.vim.action.CompositeAction;
 import de.jroene.vrapper.vim.action.ConfigAction;
 import de.jroene.vrapper.vim.action.SaveAction;
 
@@ -19,10 +22,14 @@ public class CommandLineMode extends AbstractCommandMode {
     private static final EvaluatorMapping mapping;
     static {
         mapping = new EvaluatorMapping();
-        Evaluator save = new ActionWrapper(new SaveAction());
+        Action save = new SaveAction();
         mapping.add("w", save);
-        mapping.add("wq", save);
-        mapping.add("x", save);
+        CloseAction close = new CloseAction(false);
+        Action saveAndClose = new CompositeAction(save, close);
+        mapping.add("wq", saveAndClose);
+        mapping.add("x", saveAndClose);
+        mapping.add("q", close);
+        mapping.add("q!", new CloseAction(true));
         mapping.add("set", buildConfigEvaluator());
         Evaluator remap = new KeyMapper();
         mapping.add("no", remap);
@@ -35,6 +42,8 @@ public class CommandLineMode extends AbstractCommandMode {
         config.add("noautoindent", ConfigAction.NO_AUTO_INDENT);
         config.add("globalregisters", ConfigAction.GLOBAL_REGISTERS);
         config.add("noglobalregisters", ConfigAction.LOCAL_REGISTERS);
+        config.add("linewisemouse", ConfigAction.LINE_WISE_MOUSE_SELECTION);
+        config.add("nolinewisemouse", ConfigAction.NO_LINE_WISE_MOUSE_SELECTION);
         return config;
     }
 

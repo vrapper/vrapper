@@ -187,4 +187,18 @@ public interface Platform {
      * @return the index of the searched string.
      */
     SearchResult find(Search search, int offset);
+
+    /**
+     * Tells the platform whether to use line wise or character wise selection
+     * when the mouse is used.
+     * @param lineWise
+     */
+    void setLineWiseMouseSelection(boolean lineWise);
+
+    /**
+     * Tells the platform that the editor should be closed.
+     * @param force TODO
+     * @return TODO
+     */
+    boolean close(boolean force);
 }

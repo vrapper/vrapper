@@ -23,6 +23,16 @@ public enum ConfigAction implements Action {
         public void execute(VimEmulator vim) {
             vim.getVariables().setAutoIndent(false);
         }
+    },
+    LINE_WISE_MOUSE_SELECTION {
+        public void execute(VimEmulator vim) {
+            vim.getPlatform().setLineWiseMouseSelection(true);
+        }
+    },
+    NO_LINE_WISE_MOUSE_SELECTION {
+        public void execute(VimEmulator vim) {
+            vim.getPlatform().setLineWiseMouseSelection(false);
+        }
     };
 
 }
