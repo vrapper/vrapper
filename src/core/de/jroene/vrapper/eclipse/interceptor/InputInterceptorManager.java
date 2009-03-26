@@ -48,7 +48,7 @@ public class InputInterceptorManager implements IPartListener {
                 // test for needed interfaces
                 ITextViewerExtension textViewer = (ITextViewerExtension) viewer;
                 InputInterceptor interceptor = factory.createInterceptor(window, editor, (ITextViewer)textViewer);
-                textViewer.appendVerifyKeyListener(interceptor);
+                textViewer.prependVerifyKeyListener(interceptor);
                 interceptors.put(part, interceptor);
             } catch (SecurityException e) {
                 // TODO Auto-generated catch block
