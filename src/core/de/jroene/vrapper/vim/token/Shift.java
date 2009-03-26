@@ -4,6 +4,7 @@ package de.jroene.vrapper.vim.token;
 import de.jroene.vrapper.vim.LineInformation;
 import de.jroene.vrapper.vim.Platform;
 import de.jroene.vrapper.vim.VimEmulator;
+import de.jroene.vrapper.vim.VimUtils;
 import de.jroene.vrapper.vim.action.Action;
 
 /**
@@ -22,7 +23,12 @@ public class Shift extends AbstractLineAwareToken {
 
     @Override
     public Action getAction() {
-        return new ShiftAction(isLineDeletion() ? getTarget() : -1);
+        return new ShiftAction(getTarget());
+    }
+
+    @Override
+    public boolean isOperator() {
+        return true;
     }
 
     public class ShiftAction implements Action {
@@ -42,15 +48,19 @@ public class Shift extends AbstractLineAwareToken {
             }
             LineInformation start;
             LineInformation end;
+            LineInformation line = p.getLineInformation();
             if (position < target) {
-                start = p.getLineInformation();
+                start = line;
                 end = p.getLineInformationOfOffset(target);
             } else {
-                end = p.getLineInformation();
+                end = line;
                 start = p.getLineInformationOfOffset(target);
             }
             int count = end.getNumber() - start.getNumber() + 1;
             p.shift(start.getNumber(), count, modifier);
+            // fetch new line info
+            line = p.getLineInformation(line.getNumber());
+            p.setPosition(VimUtils.getFirstNonWhiteSpaceOffset(vim, line));
         }
 
     }

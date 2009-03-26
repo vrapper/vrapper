@@ -4,6 +4,7 @@ import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
+import org.eclipse.jface.text.ITextOperationTarget;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.ITextViewerExtension5;
 import org.eclipse.jface.text.ITextViewerExtension6;
@@ -205,9 +206,6 @@ public class EclipsePlatform implements Platform {
     }
 
     public void toVisualMode() {
-        //        GC gc = new GC(textViewer.getTextWidget());
-        //        setCaretWidth(-gc.getFontMetrics().getAverageCharWidth());
-        //        gc.dispose();
         setCaretWidth(1);
         lineWiseSelection = false;
         setStatusLine(MESSAGE_VISUAL_MODE);
@@ -240,14 +238,23 @@ public class EclipsePlatform implements Platform {
     }
 
     public void shift(int line, int lineCount, int shift) {
-        int indent = textViewer.getTextWidget().getLineIndent(line);
-        int count = indent + shift;
-        textViewer.getTextWidget().setLineIndent(line, lineCount, count);
-        setUndoMark();
+        if (!space.equals(Space.MODEL)) {
+            throw new IllegalStateException("shift cannot be used in view space");
+        }
+        int op = shift < 0 ? ITextOperationTarget.SHIFT_LEFT : ITextOperationTarget.SHIFT_RIGHT;
+        shift = Math.abs(shift);
+        int start = getLineInformation(line+lineCount-1).getEndOffset();
+        int end = getLineInformation(line).getBeginOffset();
+        undoManager.lock();
+        System.out.println(start + " " + end);
+        setSelection(Selection.fromOffsets(start, end, false));
+        for (int i = 0; i < shift; i++) {
+            textViewer.getTextOperationTarget().doOperation(op);
+        }
+        undoManager.unlock();
     }
 
     public void setSpace(Space space) {
-
         this.space = space;
     }
 
@@ -262,6 +269,9 @@ public class EclipsePlatform implements Platform {
     }
 
     public void setSelection(Selection s) {
+        if (!space.equals(Space.MODEL)) {
+            throw new IllegalStateException("selection must be set in model space");
+        }
         if (s == null) {
             textViewer.getSelectionProvider().setSelection(TextSelection.emptySelection());
         } else {
