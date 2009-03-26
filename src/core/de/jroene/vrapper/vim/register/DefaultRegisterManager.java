@@ -40,6 +40,7 @@ public class DefaultRegisterManager implements RegisterManager {
             }
         };
         registers.put("/", searchRegister);
+        registers.put("*", new ClipboardRegister());
     }
 
     public Register getRegister(String name) {

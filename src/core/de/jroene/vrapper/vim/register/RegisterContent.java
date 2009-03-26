@@ -9,6 +9,7 @@ public class RegisterContent {
 
     private final boolean lineWise;
     private final String payload;
+    public static final RegisterContent DEFAULT_CONTENT = new RegisterContent(false, "");
     public RegisterContent(boolean lineWise, String payload) {
         super();
         this.lineWise = lineWise;

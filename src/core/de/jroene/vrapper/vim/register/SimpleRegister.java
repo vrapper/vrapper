@@ -7,8 +7,7 @@ package de.jroene.vrapper.vim.register;
  */
 public class SimpleRegister implements Register {
 
-    private static final RegisterContent DEFAULT_CONTENT = new RegisterContent(false, "");
-    private RegisterContent content = DEFAULT_CONTENT;
+    private RegisterContent content = RegisterContent.DEFAULT_CONTENT;
 
     public RegisterContent getContent() {
         return content;
