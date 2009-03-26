@@ -75,7 +75,7 @@ public class SearchMode extends AbstractCommandMode {
         return offset != 0 ? new OffsetToken(offset) : null;
     }
 
-    public class LineOffsetToken extends AbstractMove {
+    public static class LineOffsetToken extends AbstractMove {
 
         private final int offset;
 
@@ -100,7 +100,7 @@ public class SearchMode extends AbstractCommandMode {
         }
     }
 
-    public class OffsetToken extends AbstractMove {
+    public static class OffsetToken extends AbstractMove {
 
         private final int offset;
 

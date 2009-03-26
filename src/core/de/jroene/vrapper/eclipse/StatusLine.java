@@ -24,7 +24,7 @@ public class StatusLine implements PaintListener {
     }
 
     public void paintControl(PaintEvent e) {
-        if (content.trim() == "") {
+        if ("".equals(content.trim())) {
             return;
         }
         StyledText parent = (StyledText) e.widget;

@@ -11,7 +11,7 @@ import de.jroene.vrapper.vim.action.CompositeAction;
  *
  * @author Matthias Radig
  */
-public class CompositeToken implements RepeatableMove {
+public final class CompositeToken implements RepeatableMove {
 
     private final Token first;
     private final Token second;

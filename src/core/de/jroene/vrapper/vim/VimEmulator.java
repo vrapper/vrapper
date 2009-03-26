@@ -145,8 +145,9 @@ public class VimEmulator {
     private void readConfiguration() {
         File homeDir = new File(System.getProperty("user.home"));
         File config = new File(homeDir, ".vrapperrc");
+        BufferedReader reader = null;
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(config));
+            reader = new BufferedReader(new FileReader(config));
             String line;
             while((line = reader.readLine()) != null) {
                 commandLineMode.parseAndExecute(null, line.trim());
@@ -155,6 +156,14 @@ public class VimEmulator {
             // ignore
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+        	if(reader != null) {
+        		try {
+							reader.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+        	}
         }
     }
 
