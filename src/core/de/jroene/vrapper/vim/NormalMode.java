@@ -71,10 +71,6 @@ public class NormalMode extends AbstractMode {
                 if (startToken == null ) {
                     startToken = t;
                     t = null;
-                    if (platform.getSelection() != null && startToken instanceof AbstractLineAwareToken) {
-                        t = platform.getSelection();
-                        vim.toNormalMode();
-                    }
                 }
                 platform.setSpace(startToken.getSpace());
                 if (startToken.evaluate(vim, t)) {
@@ -133,8 +129,14 @@ public class NormalMode extends AbstractMode {
                 vim.toNormalMode();
             } else {
                 int pos = platform.getPosition();
-                Token t = keyStrokeMode ? KeyStrokeToken.from(vim, e) : TokenFactory.create(e);
-                if (t instanceof Move || keyStrokeMode) {
+                Token t;
+                if (keyStrokeMode) {
+                    t = KeyStrokeToken.from(vim, e);
+                    keyStrokeMode = false;
+                } else {
+                    t = TokenFactory.create(e);
+                }
+                if (t instanceof Move || t instanceof KeyStrokeToken) {
                     // when moving forward, the real position is right of
                     // the selection
                     boolean forward = start < pos;
@@ -155,10 +157,11 @@ public class NormalMode extends AbstractMode {
                     }
                     updateSelection(platform, pos);
                 } else {
-                    if (t instanceof Number || t instanceof AbstractLineAwareToken) {
-                        processToken(t);
+                    processToken(t);
+                    if (platform.getSelection() != null && t instanceof AbstractLineAwareToken) {
+                        processToken(platform.getSelection());
+                        vim.toNormalMode();
                     }
-                    pos = platform.getPosition();
                 }
             }
             return false;
