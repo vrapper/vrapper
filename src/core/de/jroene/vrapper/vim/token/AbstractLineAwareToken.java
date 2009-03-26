@@ -33,10 +33,7 @@ public abstract class AbstractLineAwareToken extends AbstractToken implements Re
     public abstract Action getAction();
 
     public boolean isLineDeletion() {
-        if(subject != null) {
-            return !subject.isHorizontal();
-        }
-        return true;
+        return subject == null || !subject.isHorizontal();
     }
 
     public boolean evaluate(VimEmulator vim, Token next) throws TokenException {
