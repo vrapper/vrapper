@@ -38,7 +38,7 @@ public abstract class AbstractMove extends AbstractToken implements Move {
         : new MoveToAction(target);
     }
 
-    public Space getSpace() {
+    public Space getSpace(Token next) {
         return Space.VIEW;
     }
 

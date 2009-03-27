@@ -1,6 +1,5 @@
 package de.jroene.vrapper.eclipse.interceptor;
 
-import java.awt.event.KeyEvent;
 import java.util.HashMap;
 
 import org.eclipse.jface.text.ITextViewer;
@@ -28,19 +27,19 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
     private static final HashMap<Integer, VimInputEvent> specialKeys;
     static {
         specialKeys = new HashMap<Integer, VimInputEvent>();
-        specialKeys.put( KeyEvent.VK_ESCAPE,     VimInputEvent.ESCAPE);
+        specialKeys.put( (int)SWT.ESC,           VimInputEvent.ESCAPE);
         specialKeys.put( SWT.ARROW_LEFT,         VimInputEvent.ARROW_LEFT);
         specialKeys.put( SWT.ARROW_RIGHT,        VimInputEvent.ARROW_RIGHT);
         specialKeys.put( SWT.ARROW_UP,           VimInputEvent.ARROW_UP);
         specialKeys.put( SWT.ARROW_DOWN,         VimInputEvent.ARROW_DOWN);
-        specialKeys.put( KeyEvent.VK_BACK_SPACE, VimInputEvent.BACKSPACE);
+        specialKeys.put( (int)SWT.BS,            VimInputEvent.BACKSPACE);
         specialKeys.put( (int)SWT.CR,            VimInputEvent.RETURN);
-        specialKeys.put( KeyEvent.VK_DELETE,     VimInputEvent.DELETE);
-        specialKeys.put( KeyEvent.VK_INSERT,     VimInputEvent.INSERT);
-        specialKeys.put( KeyEvent.VK_PAGE_DOWN,  VimInputEvent.PAGE_DOWN);
-        specialKeys.put( KeyEvent.VK_PAGE_UP,    VimInputEvent.PAGE_UP);
-        specialKeys.put( KeyEvent.VK_HOME,       VimInputEvent.HOME);
-        specialKeys.put( KeyEvent.VK_END,        VimInputEvent.END);
+        specialKeys.put( (int)SWT.DEL,           VimInputEvent.DELETE);
+        specialKeys.put( SWT.INSERT,             VimInputEvent.INSERT);
+        specialKeys.put( SWT.PAGE_DOWN,          VimInputEvent.PAGE_DOWN);
+        specialKeys.put( SWT.PAGE_UP,            VimInputEvent.PAGE_UP);
+        specialKeys.put( SWT.HOME,               VimInputEvent.HOME);
+        specialKeys.put( SWT.END,                VimInputEvent.END);
     }
 
     private static final RegisterManager globalRegisterManager = new DefaultRegisterManager();
@@ -58,6 +57,7 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
                     return;
                 }
                 if(specialKeys.containsKey(e.keyCode)) {
+                    System.out.println(e.keyCode);
                     in = specialKeys.get(e.keyCode);
                 } else {
                     in = new VimInputEvent.Character(e.character);

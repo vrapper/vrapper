@@ -67,7 +67,7 @@ public abstract class BeginOfLineMove extends AbstractMove implements Move {
         }
 
         @Override
-        public Space getSpace() {
+        public Space getSpace(Token next) {
             return Space.VIEW;
         }
 

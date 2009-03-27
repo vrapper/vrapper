@@ -21,7 +21,7 @@ public class History {
             };
         }
 
-        public Space getSpace() {
+        public Space getSpace(Token next) {
             return Space.MODEL;
         }
     }
@@ -36,7 +36,7 @@ public class History {
             };
         }
 
-        public Space getSpace() {
+        public Space getSpace(Token next) {
             return Space.MODEL;
         }
     }

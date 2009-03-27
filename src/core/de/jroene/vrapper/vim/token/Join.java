@@ -39,7 +39,7 @@ public class Join extends AbstractToken implements Repeatable {
         return true;
     }
 
-    public Space getSpace() {
+    public Space getSpace(Token next) {
         return Space.MODEL;
     }
 

@@ -34,7 +34,13 @@ public interface Token extends Cloneable {
 
     Token clone();
 
-    Space getSpace();
+    /**
+     * @param next
+     *            the {@link Token} following this one, or null if there is no
+     *            such token yet.
+     * @return the space this token works in.
+     */
+    Space getSpace(Token next);
 
     boolean isOperator();
 }

@@ -27,6 +27,7 @@ import de.jroene.vrapper.vim.token.Put;
 import de.jroene.vrapper.vim.token.RepeatFindMove;
 import de.jroene.vrapper.vim.token.Replace;
 import de.jroene.vrapper.vim.token.RightMove;
+import de.jroene.vrapper.vim.token.Scroll;
 import de.jroene.vrapper.vim.token.Shift;
 import de.jroene.vrapper.vim.token.Token;
 import de.jroene.vrapper.vim.token.UpMove;
@@ -57,8 +58,13 @@ public class TokenFactory {
         tokens.put(VimInputEvent.ARROW_RIGHT, right);
         tokens.put(VimInputEvent.ARROW_DOWN, down);
         tokens.put(VimInputEvent.ARROW_UP, up);
+        // line and page movement
         put('g', new GotoMove(false));
         put('G', new GotoMove(true));
+        put('\u0006', new Scroll(false));
+        put('\u0002', new Scroll(true));
+        tokens.put(VimInputEvent.PAGE_DOWN, new Scroll(false));
+        tokens.put(VimInputEvent.PAGE_UP, new Scroll(true));
         // word movement
         put('w', new WordMove.NextBegin(VimConstants.WORD_CHAR_PATTERN));
         put('e', new WordMove.NextEnd(VimConstants.WORD_CHAR_PATTERN));
@@ -96,7 +102,9 @@ public class TokenFactory {
         put('0', new BeginOfLineMove.Absolute());
         // delete, yank, put
         Delete delete = new Delete();
-        put('x', new CompositeToken(delete, right));
+        CompositeToken delRight = new CompositeToken(delete, right);
+        put('x', delRight);
+        tokens.put(VimInputEvent.DELETE, delRight);
         put('X', new CompositeToken(delete, left));
         put('d', delete);
         put('D', new CompositeToken(delete, endOfLine));
@@ -108,7 +116,9 @@ public class TokenFactory {
         Yank yank = new Yank();
         put('y', yank);
         put('Y', new CompositeToken(yank, yank));
-        put('p', new Put(false));
+        Put put = new Put(false);
+        put('p', put);
+        tokens.put(VimInputEvent.INSERT, put);
         put('P', new Put(true));
         put('"', new UseRegister());
         // other edits

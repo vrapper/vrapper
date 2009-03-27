@@ -6,6 +6,7 @@ import de.jroene.vrapper.vim.Search;
 import de.jroene.vrapper.vim.SearchResult;
 import de.jroene.vrapper.vim.Selection;
 import de.jroene.vrapper.vim.Space;
+import de.jroene.vrapper.vim.ViewPortInformation;
 import de.jroene.vrapper.vim.VimUtils;
 
 /**
@@ -231,6 +232,16 @@ public class TestPlatform implements Platform {
 
     public void insert(String s) {
         replace(getPosition(), 0, s);
+    }
+
+    public ViewPortInformation getViewPortInformation() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public void setTopLine(int number) {
+        // TODO Auto-generated method stub
+
     }
 
 }

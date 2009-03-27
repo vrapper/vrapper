@@ -51,8 +51,8 @@ public final class CompositeToken implements RepeatableMove {
         return new CompositeToken(newFirst, newSecond);
     }
 
-    public Space getSpace() {
-        return first.getSpace();
+    public Space getSpace(Token next) {
+        return first.getSpace(next);
     }
 
     public boolean isOperator() {

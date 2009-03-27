@@ -40,7 +40,7 @@ public class RepeatLastEdit extends AbstractToken implements Repeatable {
         return token.getAction();
     }
 
-    public Space getSpace() {
+    public Space getSpace(Token next) {
         return Space.MODEL;
     }
 }

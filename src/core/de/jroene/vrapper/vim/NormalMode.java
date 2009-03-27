@@ -80,7 +80,7 @@ public class NormalMode extends AbstractMode {
                     // a Token to be used as argument for startToken
                     return;
                 }
-                platform.setSpace(startToken.getSpace());
+                platform.setSpace(startToken.getSpace(t));
                 if (startToken.evaluate(vim, t)) {
                     if(startToken.isOperator()) {
                         Token tok = startToken;

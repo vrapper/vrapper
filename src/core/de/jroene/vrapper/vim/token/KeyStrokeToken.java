@@ -59,7 +59,7 @@ public class KeyStrokeToken implements Token {
             return null;
         }
     }
-    public Space getSpace() {
+    public Space getSpace(Token next) {
         return null;
     }
 

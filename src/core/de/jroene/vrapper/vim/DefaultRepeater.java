@@ -34,7 +34,7 @@ public class DefaultRepeater extends AbstractToken implements Repeatable {
         return token.getAction();
     }
 
-    public Space getSpace() {
-        return token.getSpace();
+    public Space getSpace(Token next) {
+        return token.getSpace(next);
     }
 }

@@ -66,9 +66,12 @@ public class Number extends AbstractToken implements Token {
         return token.getAction();
     }
 
-    public Space getSpace() {
+    public Space getSpace(Token next) {
         if (token != null) {
-            return token.getSpace();
+            return token.getSpace(next);
+        }
+        if (next != null) {
+            return next.getSpace(null);
         }
         return Space.MODEL;
     }

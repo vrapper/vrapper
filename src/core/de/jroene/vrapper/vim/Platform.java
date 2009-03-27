@@ -59,6 +59,19 @@ public interface Platform {
     int getNumberOfLines();
 
     /**
+     * @return the current state of the platform's viewport.
+     */
+    ViewPortInformation getViewPortInformation();
+
+    /**
+     * Sets the first line of the view port.
+     * 
+     * @param number
+     *            the number of the smallest line which should be visible.
+     */
+    void setTopLine(int number);
+
+    /**
      * @param index
      *            start of the text to replace.
      * @param length
@@ -67,11 +80,11 @@ public interface Platform {
      *            the replacement.
      */
     void replace(int index, int length, String s);
-    
+
     /**
      * Inserts text at caret's position.
      * 
-     * @param s the text which gets inserted 
+     * @param s the text which gets inserted
      */
     void insert(String s);
 

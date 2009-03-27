@@ -143,8 +143,8 @@ public class InsertMode extends AbstractMode {
             return first == null ? second.getAction() : new CompositeAction(first.getAction(), second.getAction());
         }
 
-        public Space getSpace() {
-            return second.getSpace();
+        public Space getSpace(Token next) {
+            return second.getSpace(next);
         }
 
     }

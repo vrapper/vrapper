@@ -21,7 +21,7 @@ public abstract class TokenAndAction extends AbstractToken implements Action, To
         return this;
     }
 
-    public Space getSpace() {
+    public Space getSpace(Token next) {
         return Space.MODEL;
     }
 

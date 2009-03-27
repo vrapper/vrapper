@@ -128,8 +128,11 @@ public class VimUtils {
     }
 
     public static int getSOLAwarePositionAtLine(VimEmulator vim, int line) {
+        Platform platform = vim.getPlatform();
+        line = Math.max(line, 0);
+        line = Math.min(line, platform.getNumberOfLines()-1);
         if( vim.getVariables().isStartOfLine()) {
-            LineInformation lineInfo = vim.getPlatform().getLineInformation(line);
+            LineInformation lineInfo = platform.getLineInformation(line);
             return getFirstNonWhiteSpaceOffset(vim, lineInfo);
         }
         return VimUtils.getPositionAtLine(vim, line);

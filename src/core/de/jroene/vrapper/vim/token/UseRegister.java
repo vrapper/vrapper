@@ -40,9 +40,9 @@ public class UseRegister extends AbstractToken {
         return action.getAction();
     }
 
-    public Space getSpace() {
+    public Space getSpace(Token next) {
         if(action != null) {
-            return action.getSpace();
+            return action.getSpace(next);
         }
         return Space.MODEL;
     }

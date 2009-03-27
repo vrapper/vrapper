@@ -63,7 +63,7 @@ public class Replace extends AbstractToken implements Repeatable {
 
     }
 
-    public Space getSpace() {
+    public Space getSpace(Token next) {
         return Space.MODEL;
     }
 

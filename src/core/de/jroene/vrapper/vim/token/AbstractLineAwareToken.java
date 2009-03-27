@@ -204,7 +204,7 @@ public abstract class AbstractLineAwareToken extends AbstractToken implements Re
         protected abstract void doEdit(VimEmulator vim, int originalPosition, int start, int end);
     }
 
-    public Space getSpace() {
+    public Space getSpace(Token next) {
         return Space.MODEL;
     }
 

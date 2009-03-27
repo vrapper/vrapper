@@ -23,6 +23,7 @@ import de.jroene.vrapper.vim.Search;
 import de.jroene.vrapper.vim.SearchResult;
 import de.jroene.vrapper.vim.Selection;
 import de.jroene.vrapper.vim.Space;
+import de.jroene.vrapper.vim.ViewPortInformation;
 
 /**
  * Eclipse specific implementation of {@link Platform}.
@@ -316,6 +317,37 @@ public class EclipsePlatform implements Platform {
         vimInputModeItem.setText(currentMode);
     }
 
+
+    public void setLineWiseMouseSelection(boolean lineWise) {
+        this.lineWiseMouseSelection = lineWise;
+    }
+
+    public boolean close(boolean force) {
+        if(force || !part.isDirty()) {
+            part.close(false);
+            return true;
+        }
+        return false;
+    }
+
+    public void insert(String s) {
+        textViewer.getTextWidget().insert(s);
+    }
+
+    public ViewPortInformation getViewPortInformation() {
+        return new ViewPortInformation(
+                textViewer.getTopIndex(),
+                textViewer.getBottomIndex());
+    }
+
+    public void setTopLine(int number) {
+        if (space.equals(Space.MODEL)) {
+            throw new IllegalArgumentException("the viewport cannot be changed in model space");
+        }
+        textViewer.setTopIndex(number);
+
+    }
+
     private void setStatusLine(String message) {
         vimInputModeItem.setText(message);
         currentMode = message;
@@ -383,24 +415,6 @@ public class EclipsePlatform implements Platform {
             }
         }
         return item;
-    }
-
-
-    public void setLineWiseMouseSelection(boolean lineWise) {
-        this.lineWiseMouseSelection = lineWise;
-    }
-
-    public boolean close(boolean force) {
-        if(force || !part.isDirty()) {
-            part.close(false);
-            return true;
-        }
-        return false;
-    }
-
-
-    public void insert(String s) {
-        textViewer.getTextWidget().insert(s);
     }
 
 }
