@@ -33,6 +33,16 @@ public enum ConfigAction implements Action {
         public void execute(VimEmulator vim) {
             vim.getPlatform().setLineWiseMouseSelection(false);
         }
+    },
+    START_OF_LINE {
+        public void execute(VimEmulator vim) {
+            vim.getVariables().setStartOfLine(true);
+        }
+    },
+    NO_START_OF_LINE {
+        public void execute(VimEmulator vim) {
+            vim.getVariables().setStartOfLine(false);
+        }
     };
 
 }

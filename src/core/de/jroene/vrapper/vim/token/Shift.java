@@ -58,9 +58,7 @@ public class Shift extends AbstractLineAwareToken {
             }
             int count = end.getNumber() - start.getNumber() + 1;
             p.shift(start.getNumber(), count, modifier);
-            // fetch new line info
-            line = p.getLineInformation(line.getNumber());
-            p.setPosition(VimUtils.getFirstNonWhiteSpaceOffset(vim, line));
+            p.setPosition(VimUtils.getSOLAwarePositionAtLine(vim, line.getNumber()));
         }
 
     }

@@ -3,6 +3,7 @@ package de.jroene.vrapper.vim.token;
 import de.jroene.vrapper.vim.LineInformation;
 import de.jroene.vrapper.vim.Platform;
 import de.jroene.vrapper.vim.VimEmulator;
+import de.jroene.vrapper.vim.VimUtils;
 
 /**
  * Moves the position down.
@@ -16,7 +17,7 @@ public class DownMove extends AbstractRepeatableVerticalMove {
         Platform p = vim.getPlatform();
         LineInformation currLine = p.getLineInformation();
         int number = currLine.getNumber()+times;
-        return getPositionAtLine(vim, number);
+        return VimUtils.getPositionAtLine(vim, number);
     }
 
 }

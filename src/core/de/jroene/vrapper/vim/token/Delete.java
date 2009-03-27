@@ -3,6 +3,7 @@ package de.jroene.vrapper.vim.token;
 import de.jroene.vrapper.vim.LineInformation;
 import de.jroene.vrapper.vim.Platform;
 import de.jroene.vrapper.vim.VimEmulator;
+import de.jroene.vrapper.vim.VimUtils;
 import de.jroene.vrapper.vim.action.Action;
 
 /**
@@ -32,7 +33,7 @@ public class Delete extends AbstractLineAwareEdit {
             Platform pl = vim.getPlatform();
             pl.replace(start, end - start, "");
             // re-fetch line information after change
-            pl.setPosition(pl.getLineInformation(originalLine.getNumber()).getBeginOffset());
+            pl.setPosition(VimUtils.getSOLAwarePositionAtLine(vim, originalLine.getNumber()));
         }
     }
 

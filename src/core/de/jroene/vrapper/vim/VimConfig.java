@@ -8,8 +8,17 @@ package de.jroene.vrapper.vim;
  */
 public class VimConfig {
 
-    private boolean autoIndent;
+    private boolean autoIndent      = false;
+    private boolean startOfLine     = true;
     private String newLine = NewLine.SYSTEM.nl;
+
+    public boolean isStartOfLine() {
+        return startOfLine;
+    }
+
+    public void setStartOfLine(boolean startOfLine) {
+        this.startOfLine = startOfLine;
+    }
 
     public String getNewLine() {
         return newLine;

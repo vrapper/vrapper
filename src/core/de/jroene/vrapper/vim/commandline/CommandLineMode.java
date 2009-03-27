@@ -48,6 +48,10 @@ public class CommandLineMode extends AbstractCommandMode {
         config.add("noglobalregisters", ConfigAction.LOCAL_REGISTERS);
         config.add("linewisemouse", ConfigAction.LINE_WISE_MOUSE_SELECTION);
         config.add("nolinewisemouse", ConfigAction.NO_LINE_WISE_MOUSE_SELECTION);
+        config.add("startofline", ConfigAction.START_OF_LINE);
+        config.add("nostartofline", ConfigAction.NO_START_OF_LINE);
+        config.add("sol", ConfigAction.START_OF_LINE);
+        config.add("nosol", ConfigAction.NO_START_OF_LINE);
         return config;
     }
 

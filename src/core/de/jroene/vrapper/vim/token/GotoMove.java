@@ -1,7 +1,7 @@
 package de.jroene.vrapper.vim.token;
 
-import de.jroene.vrapper.vim.Platform;
 import de.jroene.vrapper.vim.VimEmulator;
+import de.jroene.vrapper.vim.VimUtils;
 
 /**
  * Moves to the beginning of a specific line.
@@ -18,11 +18,11 @@ public class GotoMove extends AbstractRepeatableMove {
     }
 
     @Override
-    public int calculateTarget(VimEmulator vim, int times, Token next) {
-        times -= 1;
-        times = Math.max(times, 0);
-        times = Math.min(times, vim.getPlatform().getNumberOfLines()-1);
-        return vim.getPlatform().getLineInformation(times).getBeginOffset();
+    public int calculateTarget(VimEmulator vim, int line, Token next) {
+        line -= 1;
+        line = Math.max(line, 0);
+        line = Math.min(line, vim.getPlatform().getNumberOfLines()-1);
+        return VimUtils.getSOLAwarePositionAtLine(vim, line);
     }
 
     @Override
@@ -32,8 +32,8 @@ public class GotoMove extends AbstractRepeatableMove {
 
     @Override
     public boolean evaluate(VimEmulator vim, Token next) throws TokenException {
-        Platform p = vim.getPlatform();
-        setTarget(defaultToLastLine ? p.getLineInformation(p.getNumberOfLines()-1).getBeginOffset() : 0);
+        int line = defaultToLastLine ? vim.getPlatform().getNumberOfLines()-1 : 0;
+        setTarget(calculateTarget(vim, line, next));
         return true;
     }
 

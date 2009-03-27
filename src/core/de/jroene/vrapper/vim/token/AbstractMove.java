@@ -1,7 +1,5 @@
 package de.jroene.vrapper.vim.token;
 
-import de.jroene.vrapper.vim.LineInformation;
-import de.jroene.vrapper.vim.Platform;
 import de.jroene.vrapper.vim.Space;
 import de.jroene.vrapper.vim.VimEmulator;
 import de.jroene.vrapper.vim.action.Action;
@@ -26,17 +24,6 @@ public abstract class AbstractMove extends AbstractToken implements Move {
 
     protected abstract int calculateTarget(VimEmulator vim, Token next);
     public abstract boolean isHorizontal();
-
-    protected static int getPositionAtLine(VimEmulator vim, int number) {
-        Platform p = vim.getPlatform();
-        number = Math.max(number, 0);
-        number = Math.min(number, p.getNumberOfLines()-1);
-        LineInformation targetLine = p.getLineInformation(number);
-        int horPosition = vim.getHorizontalPosition();
-        horPosition = Math.min(horPosition, targetLine.getLength()-1);
-        horPosition = Math.max(horPosition, 0);
-        return targetLine.getBeginOffset() + horPosition;
-    }
 
     public boolean evaluate(VimEmulator vim, Token next) throws TokenException {
         target = calculateTarget(vim, next);

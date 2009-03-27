@@ -2,6 +2,7 @@ package de.jroene.vrapper.vim;
 
 import java.util.regex.Pattern;
 
+
 /**
  * Commonly used methods.
  * 
@@ -124,6 +125,25 @@ public class VimUtils {
 
         }
         return position;
+    }
+
+    public static int getSOLAwarePositionAtLine(VimEmulator vim, int line) {
+        if( vim.getVariables().isStartOfLine()) {
+            LineInformation lineInfo = vim.getPlatform().getLineInformation(line);
+            return getFirstNonWhiteSpaceOffset(vim, lineInfo);
+        }
+        return VimUtils.getPositionAtLine(vim, line);
+    }
+
+    public static int getPositionAtLine(VimEmulator vim, int number) {
+        Platform p = vim.getPlatform();
+        number = Math.max(number, 0);
+        number = Math.min(number, p.getNumberOfLines()-1);
+        LineInformation targetLine = p.getLineInformation(number);
+        int horPosition = vim.getHorizontalPosition();
+        horPosition = Math.min(horPosition, targetLine.getLength()-1);
+        horPosition = Math.max(horPosition, 0);
+        return targetLine.getBeginOffset() + horPosition;
     }
 
 }
