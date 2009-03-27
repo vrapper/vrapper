@@ -229,4 +229,8 @@ public class TestPlatform implements Platform {
         return false;
     }
 
+    public void insert(String s) {
+        replace(getPosition(), 0, s);
+    }
+
 }

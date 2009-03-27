@@ -67,6 +67,13 @@ public interface Platform {
      *            the replacement.
      */
     void replace(int index, int length, String s);
+    
+    /**
+     * Inserts text at caret's position.
+     * 
+     * @param s the text which gets inserted 
+     */
+    void insert(String s);
 
     /**
      * Sets an undo mark.

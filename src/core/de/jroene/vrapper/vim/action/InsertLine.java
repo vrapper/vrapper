@@ -42,8 +42,17 @@ public abstract class InsertLine extends TokenAndAction implements Repeatable {
         protected void doEdit(VimEmulator vim, LineInformation currentLine, String indent) {
             Platform p = vim.getPlatform();
             String newline = vim.getVariables().getNewLine();
-            p.replace(currentLine.getBeginOffset(), 0, indent+newline);
-            p.setPosition(currentLine.getBeginOffset()+indent.length());
+            
+            if(currentLine.getNumber() != 0) {
+                int index = currentLine.calculateAboveEndOffset(p);
+                p.setPosition(index);
+                p.insert(newline);
+                p.setPosition(p.getLineInformation(p.getLineInformation().getNumber()+1).getEndOffset());
+            } else {
+                p.setPosition(0);
+                p.insert("\n");
+                p.setPosition(0);
+            }
         }
 
         @Override
@@ -56,15 +65,13 @@ public abstract class InsertLine extends TokenAndAction implements Repeatable {
 
         @Override
         protected void doEdit(VimEmulator vim, LineInformation currentLine, String indent) {
-            Platform p = vim.getPlatform();
-            int begin = currentLine.getEndOffset();
-            if (currentLine.getNumber() == p.getNumberOfLines()-1) {
-                // there is a character at the end offset, which belongs to the line
-                begin += 1;
-            }
             String newline = vim.getVariables().getNewLine();
-            p.replace(begin, 0, newline+indent);
-            p.setPosition(begin+indent.length()+newline.length());
+            Platform p = vim.getPlatform();
+            
+            int begin = currentLine.getEndOffset();
+            p.setPosition(begin);
+            p.insert(newline);
+            p.setPosition(p.getLineInformation(p.getLineInformation().getNumber()+1).getEndOffset());
         }
 
         @Override

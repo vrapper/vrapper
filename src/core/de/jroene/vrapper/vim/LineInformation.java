@@ -18,6 +18,13 @@ public class LineInformation {
         this.length = length;
     }
 
+    /**
+     * Returns the line absolute number.
+     * 
+     * Starting at 0
+     * 
+     * @return the line number
+     */
     public int getNumber() {
         return number;
     }

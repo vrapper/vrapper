@@ -398,4 +398,9 @@ public class EclipsePlatform implements Platform {
         return false;
     }
 
+
+    public void insert(String s) {
+        textViewer.getTextWidget().insert(s);
+    }
+
 }

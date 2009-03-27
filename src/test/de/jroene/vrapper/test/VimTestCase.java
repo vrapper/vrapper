@@ -68,6 +68,13 @@ public class VimTestCase extends TestCase {
         assertEquals(i, platform.getPosition());
     }
 
+    /**
+     * Checks buffer content and cursor position after applying the operation.
+     * 
+     * @param edit operation (vim command) to apply
+     * @param pos cursor position after the operation
+     * @param bufferContent buffer content after the operation
+     */
     protected void assertEdit(String edit, int pos, String bufferContent) {
         type(edit);
         String expected = bufferContent.replace("\r", "\\r").replace("\n", "\\n");
