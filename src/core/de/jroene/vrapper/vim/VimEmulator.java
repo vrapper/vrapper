@@ -11,6 +11,7 @@ import de.jroene.vrapper.vim.commandline.CommandLineMode;
 import de.jroene.vrapper.vim.commandline.SearchMode;
 import de.jroene.vrapper.vim.register.DefaultRegisterManager;
 import de.jroene.vrapper.vim.register.RegisterManager;
+import de.jroene.vrapper.vim.token.Token;
 
 /**
  * Manages the different modes, configuration and registers.
@@ -63,6 +64,13 @@ public class VimEmulator {
         mode = insertMode;
         insertMode.initializeWithParams(params);
         platform.toInsertMode();
+    }
+
+    public void toNormalMode(Token token) {
+        toNormalMode();
+        if (token != null) {
+            normalMode.processToken(token);
+        }
     }
 
     public void toNormalMode() {
@@ -157,13 +165,13 @@ public class VimEmulator {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-        	if(reader != null) {
-        		try {
-							reader.close();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-        	}
+            if(reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 

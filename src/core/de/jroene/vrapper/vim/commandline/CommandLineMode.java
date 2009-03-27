@@ -10,6 +10,10 @@ import de.jroene.vrapper.vim.action.CloseAction;
 import de.jroene.vrapper.vim.action.CompositeAction;
 import de.jroene.vrapper.vim.action.ConfigAction;
 import de.jroene.vrapper.vim.action.SaveAction;
+import de.jroene.vrapper.vim.token.CompositeToken;
+import de.jroene.vrapper.vim.token.GotoMove;
+import de.jroene.vrapper.vim.token.Number;
+import de.jroene.vrapper.vim.token.Token;
 
 
 /**
@@ -52,12 +56,19 @@ public class CommandLineMode extends AbstractCommandMode {
     }
 
     @Override
-    public void parseAndExecute(String first, String command) {
+    public Token parseAndExecute(String first, String command) {
+        try {
+            // if the command is a number, jump to the given line
+            Integer.parseInt(command);
+            return new CompositeToken(new Number(command), new GotoMove(true));
+        } catch (NumberFormatException e) {
+            // do nothing
+        }
         StringTokenizer nizer = new StringTokenizer(command);
         List<String> tokens = new ArrayList<String>();
         while (nizer.hasMoreTokens()) {
             tokens.add(nizer.nextToken().trim());
         }
-        mapping.evaluate(vim, tokens.iterator());
+        return mapping.evaluate(vim, tokens.iterator());
     }
 }

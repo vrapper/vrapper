@@ -60,15 +60,24 @@ public final class CompositeToken implements RepeatableMove {
     }
 
     public int getTarget() {
-        return ((Move)first).getTarget();
+        return getMove().getTarget();
     }
 
     public boolean includesTarget() {
-        return ((Move)first).includesTarget();
+        return getMove().includesTarget();
     }
 
     public boolean isHorizontal() {
-        return ((Move)first).isHorizontal();
+        return getMove().isHorizontal();
     }
 
+    private Move getMove() {
+        if (first instanceof Move) {
+            return (Move)first;
+        } else if (second instanceof Move) {
+            return (Move) second;
+        } else {
+            throw new UnsupportedOperationException("this instance is not a Move");
+        }
+    }
 }

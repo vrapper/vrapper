@@ -4,6 +4,7 @@ import java.util.Iterator;
 
 import de.jroene.vrapper.vim.VimEmulator;
 import de.jroene.vrapper.vim.action.Action;
+import de.jroene.vrapper.vim.token.Token;
 
 public class ActionWrapper implements Evaluator {
 
@@ -14,9 +15,9 @@ public class ActionWrapper implements Evaluator {
         this.action = action;
     }
 
-    public boolean evaluate(VimEmulator vim, Iterator<String> command) {
+    public Token evaluate(VimEmulator vim, Iterator<String> command) {
         action.execute(vim);
-        return true;
+        return null;
     }
 
 }

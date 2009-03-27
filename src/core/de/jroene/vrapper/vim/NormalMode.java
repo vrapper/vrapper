@@ -2,6 +2,9 @@ package de.jroene.vrapper.vim;
 
 import java.util.HashMap;
 
+import de.jroene.vrapper.vim.action.Action;
+import de.jroene.vrapper.vim.action.CommandLineAction;
+import de.jroene.vrapper.vim.action.SearchModeAction;
 import de.jroene.vrapper.vim.token.AbstractLineAwareToken;
 import de.jroene.vrapper.vim.token.CompositeToken;
 import de.jroene.vrapper.vim.token.KeyStrokeToken;
@@ -63,7 +66,7 @@ public class NormalMode extends AbstractMode {
         }
     }
 
-    private void processToken(Token t) {
+    void processToken(Token t) {
         vim.getRegisterManager().activateDefaultRegister();
         Platform platform = vim.getPlatform();
         if (t != null) {
@@ -71,6 +74,12 @@ public class NormalMode extends AbstractMode {
                 if (startToken == null ) {
                     startToken = t;
                     t = null;
+                } else if (t instanceof CommandLineAction
+                        || t instanceof SearchModeAction) {
+                    ((Action)t).execute(vim);
+                    // do NOT clean up - search and command line may return
+                    // a Token to be used as argument for startToken
+                    return;
                 }
                 platform.setSpace(startToken.getSpace());
                 if (startToken.evaluate(vim, t)) {
@@ -99,7 +108,7 @@ public class NormalMode extends AbstractMode {
         platform.setDefaultSpace();
     }
 
-    void cleanUp() {
+    private void cleanUp() {
         startToken = null;
         keyStrokeMode = false;
     }

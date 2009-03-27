@@ -4,9 +4,18 @@ import java.util.Arrays;
 import java.util.List;
 
 import de.jroene.vrapper.vim.AbstractMode;
+import de.jroene.vrapper.vim.NormalMode;
+import de.jroene.vrapper.vim.Platform;
 import de.jroene.vrapper.vim.VimEmulator;
 import de.jroene.vrapper.vim.VimInputEvent;
+import de.jroene.vrapper.vim.token.Token;
 
+/**
+ * Base class for modes which parse strings given by the user.<br>
+ * Shows the input in the {@link Platform}'s command line.
+ *
+ * @author Matthias Radig
+ */
 public abstract class AbstractCommandMode extends AbstractMode {
 
     private static final List<VimInputEvent> abortEvents = Arrays.asList(
@@ -30,10 +39,11 @@ public abstract class AbstractCommandMode extends AbstractMode {
             buffer.deleteCharAt(buffer.length() - 1);
         }
         if (buffer.length() == 0 || abortEvents.contains(e)) {
+            Token t = null;
             if (VimInputEvent.RETURN.equals(e)) {
-                parseAndExecute();
+                t = parseAndExecute();
             }
-            vim.toNormalMode();
+            vim.toNormalMode(t);
             buffer.setLength(0);
             vim.getPlatform().endChange();
         }
@@ -43,19 +53,25 @@ public abstract class AbstractCommandMode extends AbstractMode {
 
     /**
      * Parses and executes the given command if possible.
-     * @param first TODO
+     * 
+     * @param first
+     *            character used to activate the mode.
      * @param command
      *            the command to execute.
+     * @return a Token which is given to the {@link NormalMode} instance. May be
+     *         null.
      */
-    public abstract void parseAndExecute(String first, String command);
+    public abstract Token parseAndExecute(String first, String command);
 
 
     public void toKeystrokeMode() {
         // do nothing
     }
 
-    private void parseAndExecute() {
-        parseAndExecute(buffer.substring(0,1), buffer.substring(1, buffer.length()));
+    private Token parseAndExecute() {
+        String first = buffer.substring(0,1);
+        String command = buffer.substring(1, buffer.length());
+        return parseAndExecute(first, command);
     }
 
 }

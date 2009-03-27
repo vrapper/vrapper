@@ -1,27 +1,25 @@
 package de.jroene.vrapper.vim;
 
-import de.jroene.vrapper.vim.token.Token;
+import de.jroene.vrapper.vim.commandline.SearchOffset;
 
 public class Search {
 
     private final String keyword;
     private final boolean backward;
     private final boolean wholeWord;
-    private final Token afterSearch;
-    private final int searchOffset;
+    private final SearchOffset afterSearch;
 
     public Search(String keyword, boolean backward, boolean wholeWord) {
-        this(keyword, backward, wholeWord, null, 0);
+        this(keyword, backward, wholeWord, SearchOffset.NONE);
     }
 
     public Search(String keyword, boolean backward, boolean wholeWord,
-            Token afterSearch, int searchOffset) {
+            SearchOffset afterSearch) {
         super();
         this.keyword = keyword;
         this.backward = backward;
         this.wholeWord = wholeWord;
         this.afterSearch = afterSearch;
-        this.searchOffset = searchOffset;
     }
 
     public Search reverse() {
@@ -40,11 +38,7 @@ public class Search {
         return wholeWord;
     }
 
-    public Token getAfterSearch() {
+    public SearchOffset getSearchOffset() {
         return afterSearch;
-    }
-
-    public int getSearchOffset() {
-        return searchOffset;
     }
 }
