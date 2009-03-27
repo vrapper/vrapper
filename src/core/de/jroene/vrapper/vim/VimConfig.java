@@ -11,6 +11,7 @@ public class VimConfig {
     private boolean autoIndent      = false;
     private boolean startOfLine     = true;
     private String newLine = NewLine.SYSTEM.nl;
+    private boolean smartIndent     = true;
 
     public boolean isStartOfLine() {
         return startOfLine;
@@ -47,6 +48,14 @@ public class VimConfig {
         private NewLine(String nl) {
             this.nl = nl;
         }
+    }
+
+    public boolean isSmartIndent() {
+        return smartIndent;
+    }
+    
+    public void setSmartIndent(boolean smartIndent) {
+        this.smartIndent = smartIndent;
     }
 
 }

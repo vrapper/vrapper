@@ -86,8 +86,8 @@ public class TokenFactory {
         put('I', new InsertModeAction.BeginOfLineInsert());
         put('A', new InsertModeAction.EndOfLineAppend());
         put('r', new Replace());
-        put('O', new InsertLine.PreCursor());
-        put('o', new InsertLine.PostCursor());
+        put('O', new InsertLine(InsertLine.Type.PRE_CURSOR));
+        put('o', new InsertLine(InsertLine.Type.POST_CURSOR));
         // numbers / multipliers
         for(int i = 0; i < 9; i++) {
             String digit = String.valueOf(i);

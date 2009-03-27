@@ -43,6 +43,15 @@ public enum ConfigAction implements Action {
         public void execute(VimEmulator vim) {
             vim.getVariables().setStartOfLine(false);
         }
+    },
+    SMART_INDENT {
+        public void execute(VimEmulator vim) {
+            vim.getVariables().setSmartIndent(true);
+        }
+    },
+    NO_SMART_INDENT{
+        public void execute(VimEmulator vim) {
+            vim.getVariables().setSmartIndent(false);
+        }
     };
-
 }

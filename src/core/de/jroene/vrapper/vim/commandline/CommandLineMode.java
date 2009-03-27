@@ -44,6 +44,8 @@ public class CommandLineMode extends AbstractCommandMode {
         EvaluatorMapping config = new EvaluatorMapping();
         config.add("autoindent", ConfigAction.AUTO_INDENT);
         config.add("noautoindent", ConfigAction.NO_AUTO_INDENT);
+        config.add("smartindent", ConfigAction.SMART_INDENT);
+        config.add("nosmartindent", ConfigAction.NO_SMART_INDENT);
         config.add("globalregisters", ConfigAction.GLOBAL_REGISTERS);
         config.add("noglobalregisters", ConfigAction.LOCAL_REGISTERS);
         config.add("linewisemouse", ConfigAction.LINE_WISE_MOUSE_SELECTION);
