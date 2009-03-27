@@ -140,9 +140,6 @@ public class TokenFactory {
     }
 
     private static void put(char c, Token t) {
-        put(c, t, false);
-    }
-    private static void put(char c, Token t, boolean ctrl) {
-        tokens.put(new VimInputEvent.Character(c, ctrl), t);
+        tokens.put(new VimInputEvent.Character(c), t);
     }
 }

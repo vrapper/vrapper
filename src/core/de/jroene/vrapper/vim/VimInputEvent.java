@@ -32,12 +32,10 @@ public class VimInputEvent {
     public static class Character extends VimInputEvent {
 
         private final char character;
-        private final boolean control;
 
-        public Character(char character, boolean ctrlPressed) {
+        public Character(char character) {
             super();
             this.character = character;
-            this.control = ctrlPressed;
         }
 
         public char getCharacter() {
@@ -48,14 +46,14 @@ public class VimInputEvent {
         public boolean equals(Object other) {
             if (other instanceof Character) {
                 Character vie = (Character) other;
-                return character == vie.character && control == vie.control;
+                return character == vie.character;
             }
             return false;
         }
 
         @Override
         public int hashCode() {
-            return (character * 37 + 57) * (control ? 57 : 1);
+            return character * 37 * 57;
         }
     }
 }

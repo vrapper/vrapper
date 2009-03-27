@@ -13,8 +13,8 @@ public class KeyMapper implements Evaluator {
         String rhs = command.next();
         if (lhs != null && rhs != null) {
             vim.getNormalMode().overrideMapping(
-                    new VimInputEvent.Character(lhs.charAt(0), false),
-                    new VimInputEvent.Character(rhs.charAt(0), false));
+                    new VimInputEvent.Character(lhs.charAt(0)),
+                    new VimInputEvent.Character(rhs.charAt(0)));
 
         }
         return null;
