@@ -54,13 +54,14 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
                     platform, globalRegisterManager);
             public void verifyKey(VerifyEvent e) {
                 VimInputEvent in;
-                if(e.keyCode == SWT.SHIFT) {
+                if(e.keyCode == SWT.SHIFT || e.keyCode == SWT.CTRL) {
                     return;
                 }
+                boolean ctrl = (e.stateMask & SWT.CTRL) > 0;
                 if(specialKeys.containsKey(e.keyCode)) {
                     in = specialKeys.get(e.keyCode);
                 } else {
-                    in = new VimInputEvent.Character(e.character);
+                    in = new VimInputEvent.Character(e.character, ctrl);
                 }
                 e.doit = vim.type(in);
             }

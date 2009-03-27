@@ -6,8 +6,8 @@ import de.jroene.vrapper.vim.action.CommandLineAction;
 import de.jroene.vrapper.vim.action.InsertLine;
 import de.jroene.vrapper.vim.action.InsertModeAction;
 import de.jroene.vrapper.vim.action.RepeatLastEdit;
-import de.jroene.vrapper.vim.action.SearchMove;
 import de.jroene.vrapper.vim.action.SearchModeAction;
+import de.jroene.vrapper.vim.action.SearchMove;
 import de.jroene.vrapper.vim.action.VisualModeAction;
 import de.jroene.vrapper.vim.action.WordSearchMove;
 import de.jroene.vrapper.vim.token.BeginOfLineMove;
@@ -140,6 +140,9 @@ public class TokenFactory {
     }
 
     private static void put(char c, Token t) {
-        tokens.put(new VimInputEvent.Character(c), t);
+        put(c, t, false);
+    }
+    private static void put(char c, Token t, boolean ctrl) {
+        tokens.put(new VimInputEvent.Character(c, ctrl), t);
     }
 }

@@ -38,7 +38,7 @@ public class VimTestCase extends TestCase {
             if (c == ESCAPE_CHAR) {
                 e = VimInputEvent.ESCAPE;
             } else {
-                e = new VimInputEvent.Character(c);
+                e = new VimInputEvent.Character(c, false);
             }
             boolean doit = vim.type(e);
             if (doit) {

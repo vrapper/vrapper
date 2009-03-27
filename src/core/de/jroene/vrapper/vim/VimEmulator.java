@@ -82,7 +82,7 @@ public class VimEmulator {
     public void toCommandLineMode() {
         mode = commandLineMode;
         commandLineMode.type(new VimInputEvent.Character(
-                VimConstants.COMMAND_LINE_CHAR.charAt(0)));
+                VimConstants.COMMAND_LINE_CHAR.charAt(0), false));
         platform.toCommandLineMode();
     }
 
@@ -90,7 +90,7 @@ public class VimEmulator {
         mode = searchMode;
         String character = backwards ? VimConstants.BACKWARD_SEARCH_CHAR
                 : VimConstants.FORWARD_SEARCH_CHAR;
-        searchMode.type(new VimInputEvent.Character(character.charAt(0)));
+        searchMode.type(new VimInputEvent.Character(character.charAt(0), false));
         platform.toCommandLineMode();
     }
 

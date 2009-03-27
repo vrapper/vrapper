@@ -57,12 +57,11 @@ public class NormalMode extends AbstractMode {
         return false;
     }
 
-    public void overrideMapping(char c, char d) {
-        if (c == d) {
-            keyMappings.remove(new VimInputEvent.Character(c));
+    public void overrideMapping(VimInputEvent c, VimInputEvent d) {
+        if (c.equals(d)) {
+            keyMappings.remove(c);
         } else {
-            keyMappings.put(new VimInputEvent.Character(c),
-                    new VimInputEvent.Character(d));
+            keyMappings.put(c, d);
         }
     }
 
