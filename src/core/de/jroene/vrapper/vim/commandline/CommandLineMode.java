@@ -9,6 +9,7 @@ import de.jroene.vrapper.vim.action.Action;
 import de.jroene.vrapper.vim.action.CloseAction;
 import de.jroene.vrapper.vim.action.CompositeAction;
 import de.jroene.vrapper.vim.action.ConfigAction;
+import de.jroene.vrapper.vim.action.FormatAllAction;
 import de.jroene.vrapper.vim.action.SaveAction;
 import de.jroene.vrapper.vim.token.CompositeToken;
 import de.jroene.vrapper.vim.token.GotoMove;
@@ -38,6 +39,10 @@ public class CommandLineMode extends AbstractCommandMode {
         Evaluator remap = new KeyMapper();
         mapping.add("no", remap);
         mapping.add("noremap", remap);
+        Action formatAll = new FormatAllAction();
+        mapping.add("formatall", formatAll);
+        mapping.add("format", formatAll);
+        mapping.add("fm", formatAll);
     }
 
     private static Evaluator buildConfigEvaluator() {

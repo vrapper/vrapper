@@ -244,4 +244,8 @@ public class TestPlatform implements Platform {
 
     }
 
+    public void formatAll() {
+        //do nothing
+    }
+
 }

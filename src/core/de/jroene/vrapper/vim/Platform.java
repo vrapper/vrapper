@@ -221,4 +221,9 @@ public interface Platform {
      * @return TODO
      */
     boolean close(boolean force);
+
+    /**
+     * Formats the entire document according to the user's settings.
+     */
+    void formatAll();
 }

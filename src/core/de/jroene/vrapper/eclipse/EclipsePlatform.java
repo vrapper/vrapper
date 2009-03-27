@@ -10,6 +10,7 @@ import org.eclipse.jface.text.ITextViewerExtension5;
 import org.eclipse.jface.text.ITextViewerExtension6;
 import org.eclipse.jface.text.IUndoManager;
 import org.eclipse.jface.text.TextSelection;
+import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Caret;
@@ -416,5 +417,8 @@ public class EclipsePlatform implements Platform {
         }
         return item;
     }
-
+    
+    public void formatAll() {
+        textViewer.getTextOperationTarget().doOperation(ISourceViewer.FORMAT);
+    }
 }
