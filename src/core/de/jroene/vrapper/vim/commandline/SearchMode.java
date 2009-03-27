@@ -27,7 +27,7 @@ public class SearchMode extends AbstractCommandMode {
     public void parseAndExecute(String first, String command) {
         Search search = createSearch(first, command);
         vim.getRegisterManager().setSearch(search);
-        Token t = new SearchMove(search.isBackward());
+        Token t = new SearchMove(false);
         vim.getPlatform().setSpace(t.getSpace());
         try {
             t.evaluate(vim, null);
