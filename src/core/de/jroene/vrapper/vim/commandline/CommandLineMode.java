@@ -16,7 +16,6 @@ import de.jroene.vrapper.vim.token.GotoMove;
 import de.jroene.vrapper.vim.token.Number;
 import de.jroene.vrapper.vim.token.Token;
 
-
 /**
  * Command Line Mode, activated with ':'.
  * 

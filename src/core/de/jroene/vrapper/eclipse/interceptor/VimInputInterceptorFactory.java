@@ -57,7 +57,6 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
                     return;
                 }
                 if(specialKeys.containsKey(e.keyCode)) {
-                    System.out.println(e.keyCode);
                     in = specialKeys.get(e.keyCode);
                 } else {
                     in = new VimInputEvent.Character(e.character);

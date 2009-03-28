@@ -248,7 +248,6 @@ public class EclipsePlatform implements Platform {
         int start = getLineInformation(line+lineCount-1).getEndOffset();
         int end = getLineInformation(line).getBeginOffset();
         undoManager.lock();
-        System.out.println(start + " " + end);
         setSelection(Selection.fromOffsets(start, end, false));
         for (int i = 0; i < shift; i++) {
             textViewer.getTextOperationTarget().doOperation(op);
@@ -417,7 +416,7 @@ public class EclipsePlatform implements Platform {
         }
         return item;
     }
-    
+
     public void formatAll() {
         textViewer.getTextOperationTarget().doOperation(ISourceViewer.FORMAT);
     }
