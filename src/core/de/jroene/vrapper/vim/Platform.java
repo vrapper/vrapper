@@ -125,6 +125,11 @@ public interface Platform {
     void toVisualMode();
 
     /**
+     * Notices the platform that there is now an operator pending in normal mode.
+     */
+    void toOperatorPendingMode();
+
+    /**
      * Undos all changes since the last undo mark was set.
      */
     void undo();

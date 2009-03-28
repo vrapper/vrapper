@@ -75,6 +75,7 @@ public class NormalMode extends AbstractMode {
                     startToken = t;
                     t = null;
                     startTokenAssigned = true;
+                    platform.toOperatorPendingMode();
                 } else if (t instanceof CommandLineAction
                         || t instanceof SearchModeAction) {
                     ((Action)t).execute(vim);
@@ -121,6 +122,10 @@ public class NormalMode extends AbstractMode {
     private void cleanUp() {
         startToken = null;
         keyStrokeMode = false;
+        // back to normal mode (could be in operator pending mode)
+        if (vim.inNormalMode()) {
+            vim.getPlatform().toNormalMode();
+        }
     }
 
     class VisualMode implements Mode {

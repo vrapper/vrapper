@@ -248,4 +248,9 @@ public class TestPlatform implements Platform {
         //do nothing
     }
 
+    public void toOperatorPendingMode() {
+        // TODO Auto-generated method stub
+
+    }
+
 }

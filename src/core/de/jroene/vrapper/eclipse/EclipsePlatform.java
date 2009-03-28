@@ -192,23 +192,38 @@ public class EclipsePlatform implements Platform {
     }
 
     public void toInsertMode() {
-        setCaretWidth(defaultCaretWidth);
+        GC gc = new GC(textViewer.getTextWidget());
+        Caret c = textViewer.getTextWidget().getCaret();
+        c.setSize(defaultCaretWidth, gc.getFontMetrics().getHeight());
         statusLine.setEnabled(false);
         lineWiseSelection = lineWiseMouseSelection;
         setStatusLine(MESSAGE_INSERT_MODE);
     }
 
     public void toNormalMode() {
+        Caret c = textViewer.getTextWidget().getCaret();
         GC gc = new GC(textViewer.getTextWidget());
-        setCaretWidth(gc.getFontMetrics().getAverageCharWidth());
+        int width = gc.getFontMetrics().getAverageCharWidth();
+        int height = gc.getFontMetrics().getHeight();
+        c.setSize(width, height);
         gc.dispose();
         statusLine.setEnabled(false);
         lineWiseSelection = lineWiseMouseSelection;
         setStatusLine(MESSAGE_NORMAL_MODE);
     }
 
+    public void toOperatorPendingMode() {
+        Caret c = textViewer.getTextWidget().getCaret();
+        GC gc = new GC(textViewer.getTextWidget());
+        int width = gc.getFontMetrics().getAverageCharWidth();
+        int height = gc.getFontMetrics().getHeight()/2;
+        c.setSize(width, height);
+        gc.dispose();
+    }
+
     public void toVisualMode() {
-        setCaretWidth(1);
+        Caret c = textViewer.getTextWidget().getCaret();
+        c.setSize(1, c.getSize().y);
         lineWiseSelection = false;
         setStatusLine(MESSAGE_VISUAL_MODE);
 
@@ -357,11 +372,6 @@ public class EclipsePlatform implements Platform {
     private void setStatusLine(String message) {
         vimInputModeItem.setText(message);
         currentMode = message;
-    }
-
-    private void setCaretWidth(int width) {
-        Caret caret = textViewer.getTextWidget().getCaret();
-        caret.setSize(width, caret.getSize().y);
     }
 
     private void checkForModelSpace(String operation) {
