@@ -244,7 +244,7 @@ public class TestPlatform implements Platform {
 
     }
 
-    public void formatAll() {
+    public void format(Selection s) {
         //do nothing
     }
 

@@ -217,13 +217,13 @@ public interface Platform {
 
     /**
      * Tells the platform that the editor should be closed.
-     * @param force TODO
-     * @return TODO
+     * @param force if set to true, closes unsaved documents.
+     * @return whether the editor was closed or not.
      */
     boolean close(boolean force);
 
     /**
      * Formats the entire document according to the user's settings.
      */
-    void formatAll();
+    void format(Selection s);
 }

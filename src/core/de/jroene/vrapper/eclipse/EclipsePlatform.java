@@ -345,7 +345,13 @@ public class EclipsePlatform implements Platform {
             throw new IllegalArgumentException("the viewport cannot be changed in model space");
         }
         textViewer.setTopIndex(number);
+    }
 
+    public void format(Selection s) {
+        if (s != null) {
+            setSelection(s);
+        }
+        textViewer.getTextOperationTarget().doOperation(ISourceViewer.FORMAT);
     }
 
     private void setStatusLine(String message) {
@@ -415,9 +421,5 @@ public class EclipsePlatform implements Platform {
             }
         }
         return item;
-    }
-
-    public void formatAll() {
-        textViewer.getTextOperationTarget().doOperation(ISourceViewer.FORMAT);
     }
 }
