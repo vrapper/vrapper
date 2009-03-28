@@ -67,9 +67,21 @@ public class Change extends Delete {
         protected void afterEdit(VimEmulator vim, LineInformation startLine, LineInformation endLine) {
             super.afterEdit(vim, startLine, endLine);
             Platform p = vim.getPlatform();
-            int position = startLine.getBeginOffset();
-            p.replace(position, 0, indent+vim.getVariables().getNewLine());
-            p.setPosition(position+indent.length());
+            if (vim.getVariables().isSmartIndent()) {
+                int position = startLine.calculateAboveEndOffset(p);
+                if (position == -1) {
+                    startLine.getBeginOffset();
+                }
+                p.setPosition(position);
+                p.insert(vim.getVariables().getNewLine());
+                // update line info
+                LineInformation info = p.getLineInformation(startLine.getNumber());
+                p.setPosition(VimUtils.getFirstNonWhiteSpaceOffset(vim, info));
+            } else {
+                int position = startLine.getBeginOffset();
+                p.replace(position, 0, indent+vim.getVariables().getNewLine());
+                p.setPosition(position+indent.length());
+            }
             vim.getPlatform().setRepaint(true);
             Token delete = createDelete();
             vim.toInsertMode(new InsertMode.Parameters(true, true, 1, startLine.getBeginOffset(), delete));
