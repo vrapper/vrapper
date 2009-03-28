@@ -1,7 +1,7 @@
 package de.jroene.vrapper.vim.commandline;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.StringTokenizer;
 
 import de.jroene.vrapper.vim.VimEmulator;
@@ -75,10 +75,11 @@ public class CommandLineMode extends AbstractCommandMode {
             // do nothing
         }
         StringTokenizer nizer = new StringTokenizer(command);
-        List<String> tokens = new ArrayList<String>();
+        Queue<String> tokens = new LinkedList<String>();
         while (nizer.hasMoreTokens()) {
             tokens.add(nizer.nextToken().trim());
         }
-        return mapping.evaluate(vim, tokens.iterator());
+        Object result = mapping.evaluate(vim, tokens);
+        return result instanceof Token ? (Token) result : null;
     }
 }

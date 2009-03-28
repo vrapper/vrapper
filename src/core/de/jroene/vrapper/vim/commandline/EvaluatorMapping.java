@@ -1,20 +1,19 @@
 package de.jroene.vrapper.vim.commandline;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
+import java.util.Queue;
 
 import de.jroene.vrapper.vim.VimEmulator;
 import de.jroene.vrapper.vim.action.Action;
-import de.jroene.vrapper.vim.token.Token;
 
 public class EvaluatorMapping implements Evaluator {
 
     private final Map<String, Evaluator> actions = new HashMap<String, Evaluator>();
 
-    public Token evaluate(VimEmulator vim, Iterator<String> command) {
-        if (command.hasNext()) {
-            Evaluator a = actions.get(command.next());
+    public Object evaluate(VimEmulator vim, Queue<String> command) {
+        if (!command.isEmpty()) {
+            Evaluator a = actions.get(command.poll());
             if (a != null) {
                 return a.evaluate(vim, command);
             }

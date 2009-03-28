@@ -1,23 +1,22 @@
 package de.jroene.vrapper.vim.commandline;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
+import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.jroene.vrapper.vim.VimEmulator;
 import de.jroene.vrapper.vim.VimInputEvent;
-import de.jroene.vrapper.vim.token.Token;
 
 public class KeyMapper implements Evaluator {
 
     private static final Pattern pattern = Pattern.compile("<(.+)>");
     private static final Map<String, VimInputEvent> keymap = createKeyMap();
 
-    public Token evaluate(VimEmulator vim, Iterator<String> command) {
-        String lhs = command.next();
-        String rhs = command.next();
+    public Object evaluate(VimEmulator vim, Queue<String> command) {
+        String lhs = command.poll();
+        String rhs = command.poll();
         if (lhs != null && rhs != null) {
             vim.getNormalMode().overrideMapping(
                     parseInputEvent(lhs),
