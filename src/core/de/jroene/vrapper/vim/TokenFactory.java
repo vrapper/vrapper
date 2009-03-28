@@ -32,6 +32,7 @@ import de.jroene.vrapper.vim.token.Shift;
 import de.jroene.vrapper.vim.token.Token;
 import de.jroene.vrapper.vim.token.UpMove;
 import de.jroene.vrapper.vim.token.UseRegister;
+import de.jroene.vrapper.vim.token.ViewPortMove;
 import de.jroene.vrapper.vim.token.WordMove;
 import de.jroene.vrapper.vim.token.Yank;
 
@@ -65,6 +66,9 @@ public class TokenFactory {
         put('\u0002', new Scroll(true));
         tokens.put(VimInputEvent.PAGE_DOWN, new Scroll(false));
         tokens.put(VimInputEvent.PAGE_UP, new Scroll(true));
+        put('H', new ViewPortMove(ViewPortMove.Type.HIGH));
+        put('M', new ViewPortMove(ViewPortMove.Type.MIDDLE));
+        put('L', new ViewPortMove(ViewPortMove.Type.LOW));
         // word movement
         put('w', new WordMove.NextBegin(VimConstants.WORD_CHAR_PATTERN));
         put('e', new WordMove.NextEnd(VimConstants.WORD_CHAR_PATTERN));
