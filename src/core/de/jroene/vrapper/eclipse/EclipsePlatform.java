@@ -230,8 +230,8 @@ public class EclipsePlatform implements Platform {
     }
 
     public void redo() {
-        if(undoManager != null && undoManager.undoable()) {
-            undoManager.undo();
+        if(undoManager != null && undoManager.redoable()) {
+            undoManager.redo();
         }
     }
 

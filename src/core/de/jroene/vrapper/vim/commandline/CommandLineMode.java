@@ -13,6 +13,7 @@ import de.jroene.vrapper.vim.action.FormatAllAction;
 import de.jroene.vrapper.vim.action.SaveAction;
 import de.jroene.vrapper.vim.token.CompositeToken;
 import de.jroene.vrapper.vim.token.GotoMove;
+import de.jroene.vrapper.vim.token.History;
 import de.jroene.vrapper.vim.token.Number;
 import de.jroene.vrapper.vim.token.Token;
 
@@ -42,6 +43,10 @@ public class CommandLineMode extends AbstractCommandMode {
         mapping.add("formatall", formatAll);
         mapping.add("format", formatAll);
         mapping.add("fm", formatAll);
+        mapping.add("red", History.RedoAction);
+        mapping.add("redo", History.RedoAction);
+        mapping.add("undo", History.UndoAction);
+        mapping.add("u", History.UndoAction);
     }
 
     private static Evaluator buildConfigEvaluator() {

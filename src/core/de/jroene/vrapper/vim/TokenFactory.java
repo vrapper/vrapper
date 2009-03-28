@@ -132,7 +132,7 @@ public class TokenFactory {
         put('.', new RepeatLastEdit());
         // history
         put('u', new History.Undo());
-        put('U', new History.Redo());
+        put('\u0012', new History.Redo());
         // command line / search
         put(':', new CommandLineAction());
         put('/', new SearchModeAction(false));

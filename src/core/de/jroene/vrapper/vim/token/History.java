@@ -9,35 +9,35 @@ import de.jroene.vrapper.vim.action.Action;
  *
  * @author Matthias Radig
  */
-public class History {
+public abstract class History extends AbstractRepeatable {
 
-    public static class Undo extends AbstractRepeatable {
+    public static final Action UndoAction = new Action() {
+        public void execute(VimEmulator vim) {
+            vim.getPlatform().undo();
+        }
+    };
+
+    public static final Action RedoAction = new Action() {
+        public void execute(VimEmulator vim) {
+            vim.getPlatform().redo();
+        }
+    };
+
+    public Space getSpace(Token next) {
+        return Space.MODEL;
+    }
+
+    public static class Undo extends History {
         @Override
         protected Action createAction() {
-            return new Action() {
-                public void execute(VimEmulator vim) {
-                    vim.getPlatform().undo();
-                }
-            };
-        }
-
-        public Space getSpace(Token next) {
-            return Space.MODEL;
+            return UndoAction;
         }
     }
 
-    public static class Redo extends AbstractRepeatable {
+    public static class Redo extends History {
         @Override
         protected Action createAction() {
-            return new Action() {
-                public void execute(VimEmulator vim) {
-                    vim.getPlatform().redo();
-                }
-            };
-        }
-
-        public Space getSpace(Token next) {
-            return Space.MODEL;
+            return RedoAction;
         }
     }
 }
