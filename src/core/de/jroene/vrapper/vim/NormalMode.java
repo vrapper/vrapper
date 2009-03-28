@@ -69,10 +69,12 @@ public class NormalMode extends AbstractMode {
         vim.getRegisterManager().activateDefaultRegister();
         Platform platform = vim.getPlatform();
         if (t != null) {
+            boolean startTokenAssigned = false;
             try {
                 if (startToken == null ) {
                     startToken = t;
                     t = null;
+                    startTokenAssigned = true;
                 } else if (t instanceof CommandLineAction
                         || t instanceof SearchModeAction) {
                     ((Action)t).execute(vim);
@@ -96,6 +98,8 @@ public class NormalMode extends AbstractMode {
                         afterExecute();
                     }
                     cleanUp();
+                } else if (processSelection(t, platform, startTokenAssigned)) {
+                    processToken(platform.getSelection());
                 }
             } catch (TokenException ex) {
                 cleanUp();
@@ -105,6 +109,13 @@ public class NormalMode extends AbstractMode {
             }
         }
         platform.setDefaultSpace();
+    }
+
+    private boolean processSelection(Token t, Platform platform,
+            boolean startTokenAssigned) {
+        return vim.inNormalMode() && platform.getSelection() != null &&
+        (startTokenAssigned && startToken instanceof AbstractLineAwareToken
+                || !startTokenAssigned && t instanceof AbstractLineAwareToken);
     }
 
     private void cleanUp() {
