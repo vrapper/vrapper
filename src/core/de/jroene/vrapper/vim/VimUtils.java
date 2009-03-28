@@ -38,10 +38,12 @@ public class VimUtils {
         Platform p = vim.getPlatform();
         int index = line.getBeginOffset();
         int end = line.getEndOffset();
-        String s = p.getText(index, 1);
-        while (isWhiteSpace(s) && index < end) {
+        while (index < end) {
+            String s = p.getText(index, 1);
+            if (!isWhiteSpace(s)) {
+                break;
+            }
             index += 1;
-            s = p.getText(index, 1);
         }
         return index;
     }
