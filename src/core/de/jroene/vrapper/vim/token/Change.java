@@ -67,7 +67,7 @@ public class Change extends Delete {
         protected void afterEdit(VimEmulator vim, LineInformation startLine, LineInformation endLine) {
             super.afterEdit(vim, startLine, endLine);
             Platform p = vim.getPlatform();
-            int position = p.getPosition();
+            int position = startLine.getBeginOffset();
             p.replace(position, 0, indent+vim.getVariables().getNewLine());
             p.setPosition(position+indent.length());
             vim.getPlatform().setRepaint(true);

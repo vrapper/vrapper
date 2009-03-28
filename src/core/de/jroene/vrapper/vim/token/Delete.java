@@ -27,11 +27,19 @@ public class Delete extends AbstractLineAwareEdit {
     }
 
     public class LineDeleteAction extends LineEditAction {
+        LineInformation originalLine;
         @Override
         protected void doEdit(VimEmulator vim, LineInformation originalLine, int start,
                 int end) {
             Platform pl = vim.getPlatform();
             pl.replace(start, end - start, "");
+            this.originalLine = originalLine;
+        }
+        @Override
+        protected void afterEdit(VimEmulator vim, LineInformation startLine,
+                LineInformation endLine) {
+            super.afterEdit(vim, startLine, endLine);
+            Platform pl = vim.getPlatform();
             // re-fetch line information after change
             pl.setPosition(VimUtils.getSOLAwarePositionAtLine(vim, originalLine.getNumber()));
         }
@@ -42,6 +50,11 @@ public class Delete extends AbstractLineAwareEdit {
         protected void doEdit(VimEmulator vim, int originalPosition, int start,
                 int end) {
             vim.getPlatform().replace(start, end - start, "");
+        }
+
+        @Override
+        protected void afterEdit(VimEmulator vim, int start, int end) {
+            super.afterEdit(vim, start, end);
             vim.getPlatform().setPosition(start);
         }
     }
