@@ -1,5 +1,6 @@
 package de.jroene.vrapper.vim.action;
 
+import de.jroene.vrapper.vim.Platform;
 import de.jroene.vrapper.vim.Space;
 import de.jroene.vrapper.vim.VimEmulator;
 import de.jroene.vrapper.vim.token.AbstractToken;
@@ -37,7 +38,16 @@ public class RepeatLastEdit extends AbstractToken implements Repeatable {
     }
 
     public Action getAction() {
-        return token.getAction();
+        return new Action() {
+            public void execute(VimEmulator vim) {
+                Platform p = vim.getPlatform();
+                p.beginChange();
+                p.setRepaint(false);
+                token.getAction().execute(vim);
+                p.setRepaint(true);
+                p.endChange();
+            }
+        };
     }
 
     public Space getSpace(Token next) {
