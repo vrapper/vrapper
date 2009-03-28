@@ -50,15 +50,30 @@ public class Replace extends AbstractToken implements Repeatable {
             Platform p = vim.getPlatform();
             int position = p.getPosition();
             StringBuilder s = new StringBuilder();
+            p.beginChange();
+            p.setRepaint(false);
             if (VimUtils.isNewLine(character)) {
-                s.append(character);
+                if (vim.getVariables().isSmartIndent()) {
+                    p.replace(position, times, "");
+                    p.insert(vim.getVariables().getNewLine());
+                } else {
+                    s.append(vim.getVariables().getNewLine());
+                    if (vim.getVariables().isAutoIndent()) {
+                        LineInformation line = p.getLineInformationOfOffset(position);
+                        s.append(VimUtils.getIndent(vim, line));
+                    }
+                    p.replace(position, times, s.toString());
+                    p.setPosition(position + times - 1);
+                }
             } else {
                 for(int i = 0; i < times; i++) {
                     s.append(character);
                 }
+                p.replace(position, times, s.toString());
+                p.setPosition(position + times - 1);
             }
-            p.replace(position, times, s.toString());
-            p.setPosition(position + times - 1);
+            p.setRepaint(true);
+            p.endChange();
         }
 
     }
