@@ -54,6 +54,9 @@ public class NormalMode extends AbstractMode {
             keyStrokeMode = false;
             processToken(t);
         }
+        if (startToken != null) {
+            vim.getPlatform().toOperatorPendingMode();
+        }
         return false;
     }
 
@@ -75,7 +78,6 @@ public class NormalMode extends AbstractMode {
                     startToken = t;
                     t = null;
                     startTokenAssigned = true;
-                    platform.toOperatorPendingMode();
                 } else if (t instanceof CommandLineAction
                         || t instanceof SearchModeAction) {
                     ((Action)t).execute(vim);
