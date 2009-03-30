@@ -11,6 +11,7 @@ import de.jroene.vrapper.vim.action.CompositeAction;
 import de.jroene.vrapper.vim.action.ConfigAction;
 import de.jroene.vrapper.vim.action.FormatAllAction;
 import de.jroene.vrapper.vim.action.SaveAction;
+import de.jroene.vrapper.vim.action.TokenWrapper;
 import de.jroene.vrapper.vim.token.CompositeToken;
 import de.jroene.vrapper.vim.token.GotoMove;
 import de.jroene.vrapper.vim.token.History;
@@ -47,6 +48,7 @@ public class CommandLineMode extends AbstractCommandMode {
         mapping.add("redo", History.RedoAction);
         mapping.add("undo", History.UndoAction);
         mapping.add("u", History.UndoAction);
+        mapping.add("$", new TokenWrapper(new GotoMove(true)));
     }
 
     private static Evaluator buildConfigEvaluator() {

@@ -32,7 +32,7 @@ public class GotoMove extends AbstractRepeatableMove {
 
     @Override
     public boolean evaluate(VimEmulator vim, Token next) throws TokenException {
-        int line = defaultToLastLine ? vim.getPlatform().getNumberOfLines()-1 : 0;
+        int line = defaultToLastLine ? vim.getPlatform().getNumberOfLines() : 0;
         setTarget(calculateTarget(vim, line, next));
         return true;
     }
