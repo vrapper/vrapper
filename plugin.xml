@@ -72,5 +72,8 @@
       </menuContribution>
 
     </extension>
+    <extension point="org.eclipse.ui.startup">
+          <startup/>
+    </extension>
 
 </plugin>

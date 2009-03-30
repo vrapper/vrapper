@@ -15,6 +15,8 @@ import org.eclipse.ui.part.MultiEditor;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 
+import de.jroene.vrapper.eclipse.Activator;
+
 /**
  * Listener which adds an {@link InputInterceptor} from the underlying factory
  * to editors which are opened.
@@ -26,18 +28,28 @@ public class InputInterceptorManager implements IPartListener {
     private final InputInterceptorFactory factory;
     private final IWorkbenchWindow window;
     private final Map<IWorkbenchPart, InputInterceptor> interceptors;
+    private boolean active;
 
     public InputInterceptorManager(InputInterceptorFactory factory, IWorkbenchWindow window) {
         super();
         this.factory = factory;
         this.window = window;
         this.interceptors = new HashMap<IWorkbenchPart, InputInterceptor>();
+        this.active = true;
+    }
+
+    public void deactivate() {
+        active = false;
+        removeIfNecessary();
     }
 
     public void partDeactivated(IWorkbenchPart arg0) {
     }
 
     public void partOpened(IWorkbenchPart part) {
+        if (!active) {
+            return;
+        }
         if (part instanceof AbstractTextEditor) {
             AbstractTextEditor editor = (AbstractTextEditor) part;
             try {
@@ -50,6 +62,7 @@ public class InputInterceptorManager implements IPartListener {
                 InputInterceptor interceptor = factory.createInterceptor(window, editor, (ITextViewer)textViewer);
                 textViewer.prependVerifyKeyListener(interceptor);
                 interceptors.put(part, interceptor);
+                Activator.getDefault().registerEditor(editor);
             } catch (SecurityException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -105,6 +118,10 @@ public class InputInterceptorManager implements IPartListener {
 
     public void partClosed(IWorkbenchPart arg0) {
         interceptors.remove(arg0);
+        if (arg0 instanceof IEditorPart) {
+            Activator.getDefault().unregisterEditor((IEditorPart)arg0);
+        }
+        removeIfNecessary();
     }
 
     protected void clean() {
@@ -119,4 +136,11 @@ public class InputInterceptorManager implements IPartListener {
 
     public void partBroughtToTop(IWorkbenchPart arg0) {
     }
+
+    private void removeIfNecessary() {
+        if (!active && interceptors.isEmpty()) {
+            window.getPartService().removePartListener(this);
+        }
+    }
+
 }

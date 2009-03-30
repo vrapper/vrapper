@@ -49,15 +49,16 @@ public class VrapperToggleHandler extends AbstractHandler implements IElementUpd
     }
 
     private void disable() {
-        IPartService service = window.getPartService();
-        service.removePartListener(manager);
+        manager.deactivate();
         manager = null;
+        Activator.setVrapperEnabled(false);
     }
 
     private void enable() {
         IPartService service = window.getPartService();
         manager = new InputInterceptorManager(new VimInputInterceptorFactory(), window);
         service.addPartListener(manager);
+        Activator.setVrapperEnabled(true);
     }
 
     @SuppressWarnings("unchecked")
