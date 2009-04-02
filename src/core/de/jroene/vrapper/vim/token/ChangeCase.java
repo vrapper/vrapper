@@ -27,7 +27,7 @@ public class ChangeCase extends AbstractToken implements Repeatable {
         Platform p = vim.getPlatform();
         LineInformation l = p.getLineInformation();
         if(p.getPosition()+times > l.getEndOffset()) {
-            changes = p.getPosition()+times-l.getEndOffset();
+            changes = l.getEndOffset()-p.getPosition();
         } else {
             changes = times;
         }
