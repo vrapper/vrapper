@@ -53,8 +53,15 @@ public class Activator extends AbstractUIPlugin implements IStartup {
         getWorkbench().getDisplay().asyncExec(new Runnable() {
             public void run() {
                 restoreVimEmulationInActiveEditors();
-                toggleVrapper();
                 addShutdownListener();
+            }
+        });
+    }
+
+    public void earlyStartup() {
+        getWorkbench().getDisplay().asyncExec(new Runnable() {
+            public void run() {
+                toggleVrapper();
             }
         });
     }
@@ -104,10 +111,6 @@ public class Activator extends AbstractUIPlugin implements IStartup {
 
     public static void setVrapperEnabled(boolean vrapperEnabled) {
         Activator.vrapperEnabled = vrapperEnabled;
-    }
-
-    public void earlyStartup() {
-        // do nothing
     }
 
     private void restoreVimEmulationInActiveEditors() {
