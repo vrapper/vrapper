@@ -13,7 +13,7 @@ import de.jroene.vrapper.vim.action.Action;
  */
 public class ChangeCase extends AbstractToken implements Repeatable {
     private int changes;
-    
+
     public Action getAction() {
         return new ChangeCaseAction();
     }
@@ -27,9 +27,10 @@ public class ChangeCase extends AbstractToken implements Repeatable {
         Platform p = vim.getPlatform();
         LineInformation l = p.getLineInformation();
         if(p.getPosition()+times > l.getEndOffset()) {
-            throw new TokenException();
+            changes = p.getPosition()+times-l.getEndOffset();
+        } else {
+            changes = times;
         }
-        changes = times;
         return true;
     }
 
@@ -53,15 +54,15 @@ public class ChangeCase extends AbstractToken implements Repeatable {
 
         private void changeCase(VimEmulator vim) {
             Platform p = vim.getPlatform();
-            
+
             char c = p.getText(p.getPosition(), 1).charAt(0);
-            
+
             if(Character.isUpperCase(c)) {
                 c = Character.toLowerCase(c);
             } else {
                 c = Character.toUpperCase(c);
             }
-            
+
             p.replace(p.getPosition(), 1, ""+c);
             p.setPosition(p.getPosition()+1);
         }
