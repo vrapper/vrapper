@@ -24,6 +24,12 @@ public class SearchMode extends AbstractCommandMode {
         super(vim);
     }
 
+    /**
+     * Parses and executes a search.
+     * 
+     * @param first contains the "command", probably '/' or '?' when searching
+     * @param command contains the string to search for
+     */
     @Override
     public Token parseAndExecute(String first, String command) {
         Search search = createSearch(first, command);
@@ -35,7 +41,7 @@ public class SearchMode extends AbstractCommandMode {
         boolean backward = first.equals(VimConstants.BACKWARD_SEARCH_CHAR);
         StringTokenizer nizer = new StringTokenizer(command, first);
         StringBuilder sb = new StringBuilder();
-        // check wether a keyword was given
+        // check whether a keyword was given
         if (!command.startsWith(first)) {
             while (nizer.hasMoreTokens()) {
                 String token = nizer.nextToken();

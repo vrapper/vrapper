@@ -14,7 +14,6 @@ import de.jroene.vrapper.vim.VimEmulator;
  * @author Matthias Radig
  */
 public class ParenthesesMove extends AbstractRepeatableMove {
-
     private static final Map<String, ParenthesesPair> PARENTHESES;
 
     static {
@@ -34,13 +33,12 @@ public class ParenthesesMove extends AbstractRepeatableMove {
         LineInformation info = p.getLineInformation();
         int index = position;
         ParenthesesPair pair = null;
-        while (index < info.getEndOffset()) {
+        for(index=position; index<info.getEndOffset(); index++) {
             String c = p.getText(index, 1);
             if (PARENTHESES.containsKey(c)) {
                 pair = PARENTHESES.get(c);
                 break;
             }
-            index += 1;
         }
         if (pair != null) {
             int depth = 1;
