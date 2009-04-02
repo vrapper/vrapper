@@ -12,6 +12,7 @@ import de.jroene.vrapper.vim.action.VisualModeAction;
 import de.jroene.vrapper.vim.action.WordSearchMove;
 import de.jroene.vrapper.vim.token.BeginOfLineMove;
 import de.jroene.vrapper.vim.token.Change;
+import de.jroene.vrapper.vim.token.ChangeCase;
 import de.jroene.vrapper.vim.token.CompositeToken;
 import de.jroene.vrapper.vim.token.Delete;
 import de.jroene.vrapper.vim.token.DownMove;
@@ -130,6 +131,7 @@ public class TokenFactory {
         put('<', new Shift(-1));
         put('J', new Join());
         put('.', new RepeatLastEdit());
+        put('~', new ChangeCase());
         // history
         put('u', new History.Undo());
         put('\u0012', new History.Redo());
