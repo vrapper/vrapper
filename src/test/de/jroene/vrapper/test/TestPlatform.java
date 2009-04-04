@@ -1,6 +1,7 @@
 package de.jroene.vrapper.test;
 
 import de.jroene.vrapper.vim.LineInformation;
+import de.jroene.vrapper.vim.Mark;
 import de.jroene.vrapper.vim.Platform;
 import de.jroene.vrapper.vim.Search;
 import de.jroene.vrapper.vim.SearchResult;
@@ -249,6 +250,16 @@ public class TestPlatform implements Platform {
     }
 
     public void toOperatorPendingMode() {
+        // TODO Auto-generated method stub
+
+    }
+
+    public Mark getMark(String name) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public void setMark(String name) {
         // TODO Auto-generated method stub
 
     }

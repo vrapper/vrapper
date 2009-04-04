@@ -1,5 +1,8 @@
 package de.jroene.vrapper.eclipse;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
@@ -9,6 +12,7 @@ import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.ITextViewerExtension5;
 import org.eclipse.jface.text.ITextViewerExtension6;
 import org.eclipse.jface.text.IUndoManager;
+import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.swt.graphics.GC;
@@ -19,6 +23,7 @@ import org.eclipse.ui.texteditor.AbstractTextEditor;
 import org.eclipse.ui.texteditor.StatusLineContributionItem;
 
 import de.jroene.vrapper.vim.LineInformation;
+import de.jroene.vrapper.vim.Mark;
 import de.jroene.vrapper.vim.Platform;
 import de.jroene.vrapper.vim.Search;
 import de.jroene.vrapper.vim.SearchResult;
@@ -53,6 +58,7 @@ public class EclipsePlatform implements Platform {
     private boolean lineWiseSelection;
     private String currentMode;
     private boolean lineWiseMouseSelection;
+    private final Map<String, Position> marks;
 
     public EclipsePlatform(IWorkbenchWindow window, AbstractTextEditor part,
             final ITextViewer textViewer) {
@@ -76,6 +82,7 @@ public class EclipsePlatform implements Platform {
         statusLine = new StatusLine(textViewer.getTextWidget());
         vimInputModeItem = getContributionItem();
         setStatusLine(MESSAGE_NORMAL_MODE);
+        marks = new HashMap<String, Position>();
     }
 
 
@@ -431,5 +438,34 @@ public class EclipsePlatform implements Platform {
             }
         }
         return item;
+    }
+
+
+    public Mark getMark(String name) {
+        Position p = marks.get(name);
+        if (p == null || p.isDeleted) {
+            marks.remove(name);
+            return null;
+        }
+        int offset = p.getOffset();
+        if(space.equals(Space.VIEW)) {
+            offset = modelOffset2WidgetOffset(offset);
+        }
+        return new Mark(getLineInformationOfOffset(offset), offset);
+    }
+
+
+    public void setMark(String name) {
+        int offset = getPosition();
+        if(space.equals(Space.VIEW)) {
+            offset = widgetOffset2ModelOffset(offset);
+        }
+        Position p = new Position(offset);
+        try {
+            textViewer.getDocument().addPosition(p);
+            marks.put(name, p);
+        } catch (BadLocationException e) {
+            e.printStackTrace();
+        }
     }
 }

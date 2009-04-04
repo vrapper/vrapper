@@ -231,4 +231,20 @@ public interface Platform {
      * Formats the entire document according to the user's settings.
      */
     void format(Selection s);
+
+    /**
+     * Sets a named mark at the current position.
+     * 
+     * @param name the name of the mark.
+     */
+    void setMark(String name);
+
+    /**
+     * Returns the specified mark.
+     * 
+     * @param name
+     *            the name of the mark.
+     * @return the mark with the given name.
+     */
+    Mark getMark(String name);
 }

@@ -22,6 +22,7 @@ import de.jroene.vrapper.vim.token.GotoMove;
 import de.jroene.vrapper.vim.token.History;
 import de.jroene.vrapper.vim.token.Join;
 import de.jroene.vrapper.vim.token.LeftMove;
+import de.jroene.vrapper.vim.token.MarkMove;
 import de.jroene.vrapper.vim.token.Number;
 import de.jroene.vrapper.vim.token.ParenthesesMove;
 import de.jroene.vrapper.vim.token.Put;
@@ -29,6 +30,7 @@ import de.jroene.vrapper.vim.token.RepeatFindMove;
 import de.jroene.vrapper.vim.token.Replace;
 import de.jroene.vrapper.vim.token.RightMove;
 import de.jroene.vrapper.vim.token.Scroll;
+import de.jroene.vrapper.vim.token.SetMark;
 import de.jroene.vrapper.vim.token.Shift;
 import de.jroene.vrapper.vim.token.Token;
 import de.jroene.vrapper.vim.token.UpMove;
@@ -91,6 +93,10 @@ public class TokenFactory {
         put(';', new RepeatFindMove(false));
         put(',', new RepeatFindMove(true));
         put('%', new ParenthesesMove());
+        // Marks
+        put('m', new SetMark());
+        put('\'', new MarkMove(true));
+        put('`', new MarkMove(false));
         // Insert Actions
         put('i', new InsertModeAction.Insert());
         put('a', new InsertModeAction.Append());
