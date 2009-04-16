@@ -1,0 +1,92 @@
+package de.jroene.vrapper.vim.commandline;
+
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.StringTokenizer;
+
+import de.jroene.vrapper.vim.VimEmulator;
+import de.jroene.vrapper.vim.action.Action;
+import de.jroene.vrapper.vim.action.CloseAction;
+import de.jroene.vrapper.vim.action.CompositeAction;
+import de.jroene.vrapper.vim.action.ConfigAction;
+import de.jroene.vrapper.vim.action.FormatAllAction;
+import de.jroene.vrapper.vim.action.SaveAction;
+import de.jroene.vrapper.vim.action.TokenWrapper;
+import de.jroene.vrapper.vim.token.CompositeToken;
+import de.jroene.vrapper.vim.token.GotoMove;
+import de.jroene.vrapper.vim.token.History;
+import de.jroene.vrapper.vim.token.Number;
+import de.jroene.vrapper.vim.token.Token;
+
+/**
+ * Command Line Mode, activated with ':'.
+ * 
+ * @author Matthias Radig
+ */
+public class CommandLineMode extends AbstractCommandMode {
+
+    private static final EvaluatorMapping mapping;
+    static {
+        mapping = new EvaluatorMapping();
+        Action save = new SaveAction();
+        mapping.add("w", save);
+        CloseAction close = new CloseAction(false);
+        Action saveAndClose = new CompositeAction(save, close);
+        mapping.add("wq", saveAndClose);
+        mapping.add("x", saveAndClose);
+        mapping.add("q", close);
+        mapping.add("q!", new CloseAction(true));
+        mapping.add("set", buildConfigEvaluator());
+        Evaluator remap = new KeyMapper();
+        mapping.add("no", remap);
+        mapping.add("noremap", remap);
+        Action formatAll = new FormatAllAction();
+        mapping.add("formatall", formatAll);
+        mapping.add("format", formatAll);
+        mapping.add("fm", formatAll);
+        mapping.add("red", History.RedoAction);
+        mapping.add("redo", History.RedoAction);
+        mapping.add("undo", History.UndoAction);
+        mapping.add("u", History.UndoAction);
+        mapping.add("$", new TokenWrapper(new GotoMove(true)));
+    }
+
+    private static Evaluator buildConfigEvaluator() {
+        EvaluatorMapping config = new EvaluatorMapping();
+        config.add("autoindent", ConfigAction.AUTO_INDENT);
+        config.add("noautoindent", ConfigAction.NO_AUTO_INDENT);
+        config.add("smartindent", ConfigAction.SMART_INDENT);
+        config.add("nosmartindent", ConfigAction.NO_SMART_INDENT);
+        config.add("globalregisters", ConfigAction.GLOBAL_REGISTERS);
+        config.add("noglobalregisters", ConfigAction.LOCAL_REGISTERS);
+        config.add("linewisemouse", ConfigAction.LINE_WISE_MOUSE_SELECTION);
+        config.add("nolinewisemouse", ConfigAction.NO_LINE_WISE_MOUSE_SELECTION);
+        config.add("startofline", ConfigAction.START_OF_LINE);
+        config.add("nostartofline", ConfigAction.NO_START_OF_LINE);
+        config.add("sol", ConfigAction.START_OF_LINE);
+        config.add("nosol", ConfigAction.NO_START_OF_LINE);
+        return config;
+    }
+
+    public CommandLineMode(VimEmulator vim) {
+        super(vim);
+    }
+
+    @Override
+    public Token parseAndExecute(String first, String command) {
+        try {
+            // if the command is a number, jump to the given line
+            Integer.parseInt(command);
+            return new CompositeToken(new Number(command), new GotoMove(true));
+        } catch (NumberFormatException e) {
+            // do nothing
+        }
+        StringTokenizer nizer = new StringTokenizer(command);
+        Queue<String> tokens = new LinkedList<String>();
+        while (nizer.hasMoreTokens()) {
+            tokens.add(nizer.nextToken().trim());
+        }
+        Object result = mapping.evaluate(vim, tokens);
+        return result instanceof Token ? (Token) result : null;
+    }
+}

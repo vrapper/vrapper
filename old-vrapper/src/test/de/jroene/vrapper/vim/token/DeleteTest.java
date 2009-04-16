@@ -1,0 +1,102 @@
+package de.jroene.vrapper.vim.token;
+
+import de.jroene.vrapper.test.SnapshotTestCase;
+import de.jroene.vrapper.vim.VimConfig.NewLine;
+
+public class DeleteTest extends SnapshotTestCase {
+
+    public DeleteTest() {
+        super("text.txt", "Delete", null);
+    }
+
+    public void testDelete() {
+        platform.setBuffer("aaaabbbbccccdddd");
+        assertEdit("dl", 0, "aaabbbbccccdddd");
+        assertEdit("3dl", 0, "bbbbccccdddd");
+        assertEdit("4dl", 0, "ccccdddd");
+        assertEdit("d4l", 0, "dddd");
+        assertEdit("2d2l", 0, "");
+
+        platform.setBuffer("aaaabbbb");
+        assertEdit("dh", 0, "aaaabbbb");
+        assertEdit("4dh", 0, "aaaabbbb");
+        platform.setBuffer("aaaabbbb");
+        platform.setPosition(7);
+        assertEdit("dh", 6, "aaaabbb");
+        assertEdit("4dh", 2, "aab");
+    }
+
+    public void testLineDelete() {
+        platform.setBuffer("aaaa\nbbbb\ncccc\ndddd\n");
+        platform.setPosition(2);
+        assertEdit("dd", 0, "bbbb\ncccc\ndddd\n");
+        assertEdit("2dd", 0, "dddd\n");
+        platform.setBuffer("bbbb\ncccc\ndddd\n");
+        platform.setPosition(2);
+        assertEdit("dj", 0, "dddd\n");
+        platform.setBuffer("bbbb\ncccc\ndddd\n");
+        platform.setPosition(2);
+        assertEdit("2dj", 0, "");
+        platform.setBuffer("aaaa\nbbbb\ncccc\ndddd\n");
+        platform.setPosition(17);
+        assertEdit("2dk", 5, "aaaa\n");
+    }
+
+    public void testWordDelete() {
+        platform.setBuffer("word word\n another word");
+        platform.setPosition(5);
+        assertEdit("dw", 4, "word \n another word");
+        platform.setBuffer("word word\n another word");
+        platform.setPosition(0);
+        assertEdit("2dw", 0, "\n another word");
+        platform.setPosition(0);
+        platform.setBuffer("word word\n another word");
+        assertEdit("d2w", 0, "\n another word");
+    }
+
+    public void testWindowsLineBreak() {
+        vim.getVariables().setNewLine(NewLine.WINDOWS);
+        platform.setBuffer("test\r\ntest\r\ntest");
+        platform.setPosition(7);
+        assertEdit("dd", 6, "test\r\ntest");
+        platform.setPosition(0);
+        assertEdit("dd", 0, "test");
+        assertEdit("dd", 0, "");
+    }
+
+    public void testMacLineBreak() {
+        vim.getVariables().setNewLine(NewLine.MAC);
+        platform.setBuffer("test\rtest\rtest");
+        platform.setPosition(7);
+        assertEdit("dd", 5, "test\rtest");
+        platform.setPosition(0);
+        assertEdit("dd", 0, "test");
+        assertEdit("dd", 0, "");
+    }
+
+    public void testMixedLineBreaks() {
+        platform.setBuffer("aaaa\rbbbb\ncccc\r\ndddd\n");
+        platform.setPosition(2);
+        assertEdit("dd", 0, "bbbb\ncccc\r\ndddd\n");
+        assertEdit("2dd", 0, "dddd\n");
+        platform.setBuffer("bbbb\r\ncccc\rdddd\n");
+        platform.setPosition(2);
+        assertEdit("dj", 0, "dddd\n");
+        platform.setBuffer("bbbb\ncccc\r\ndddd\r\n");
+        platform.setPosition(2);
+        assertEdit("2dj", 0, "");
+        platform.setBuffer("aaaa\r\nbbbb\ncccc\rdddd\n");
+        platform.setPosition(17);
+        assertEdit("2dk", 5, "aaaa\n");
+
+        platform.setBuffer("word word\r another word");
+        platform.setPosition(5);
+        assertEdit("dw", 4, "word \r another word");
+        platform.setBuffer("word word\r\n another word");
+        platform.setPosition(0);
+        assertEdit("2dw", 0, "\r\n another word");
+        platform.setPosition(0);
+        platform.setBuffer("word word\n another word");
+        assertEdit("d2w", 0, "\n another word");
+    }
+}
