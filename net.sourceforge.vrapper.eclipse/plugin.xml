@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+  <extension
+       point="org.eclipse.ui.commands">
+    <category
+          description="Commands for Vrapper"
+          id="net.sourceforge.vrapper.eclipse.commands"
+          name="Vrapper">
+    </category>
+    <command
+          categoryId="net.sourceforge.vrapper.eclipse.commands"
+          defaultHandler="net.sourceforge.vrapper.eclipse.actions.VrapperToggleHandler"
+          description="Toggles Vrapper"
+          id="net.sourceforge.vrapper.eclipse.commands.toggle"
+          name="Toggle Vrapper">
+
+    </command>
+    </extension>
+
+
+    <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="menu:edit?after=additions">
+         <command
+               commandId="net.sourceforge.vrapper.eclipse.commands.toggle" style="toggle"
+               mnemonic="%contributions.view.count.mnemonic">
+         </command>
+      </menuContribution>
+       <menuContribution
+            locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
+         <toolbar
+               id="net.sourceforge.vrapper.toolbar">
+            <command
+               commandId="net.sourceforge.vrapper.eclipse.commands.toggle" style="toggle"
+                  icon="icons/icon.png">
+            </command>
+            <separator
+                  name="additions"
+                  visible="false">
+            </separator>
+         </toolbar>
+      </menuContribution>
+
+    </extension>
+    <extension point="org.eclipse.ui.startup">
+          <startup
+                class="net.sourceforge.vrapper.eclipse.activator.Activator"/>
+    </extension>
+
+
+
+   <extension point="org.eclipse.ui.bindings">
+      <key
+            sequence="ESC CTRL+C"
+            contextId="org.eclipse.jdt.ui.javaEditorScope"
+            commandId=""
+            schemeId="kg.totality.core.insert_mode"/>
+      <key
+            sequence="ESC CTRL+F"
+            contextId="org.eclipse.jdt.ui.javaEditorScope"
+            commandId=""
+            schemeId="kg.totality.core.insert_mode"/>
+	  <scheme
+          description="Vim&apos;s insert mode emulation"
+          id="kg.totality.core.insert_mode"
+          name="Vim&apos;s key bindings"
+          parentId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+     </extension>
+</plugin>
+

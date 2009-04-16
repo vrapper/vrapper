@@ -7,7 +7,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
 
-import junit.framework.TestCase;
+import junit.framework.Assert;
 
 public class SnapshotTestCase extends VimTestCase {
 
@@ -46,7 +46,7 @@ public class SnapshotTestCase extends VimTestCase {
             command = command.replace("_", specialChar);
         }
         type(command);
-        TestCase.assertEquals(lastNumber + "->" + number, state,
+        Assert.assertEquals(lastNumber + "->" + number, state,
                 platform.getBuffer());
     }
 

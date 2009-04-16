@@ -42,7 +42,8 @@ public class KeyStrokeToken implements Token {
         throw new TokenException();
     }
 
-    public String getPayload() throws TokenException {
+    @SuppressWarnings("unused")
+	public String getPayload() throws TokenException {
         return payload;
     }
 

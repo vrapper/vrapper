@@ -26,7 +26,7 @@ public class SearchMode extends AbstractCommandMode {
 
     /**
      * Parses and executes a search.
-     * 
+     *
      * @param first contains the "command", probably '/' or '?' when searching
      * @param command contains the string to search for
      */
@@ -37,7 +37,8 @@ public class SearchMode extends AbstractCommandMode {
         return new SearchMove(false);
     }
 
-    private Search createSearch(String first, String command) {
+    @SuppressWarnings("null")
+	private Search createSearch(String first, String command) {
         boolean backward = first.equals(VimConstants.BACKWARD_SEARCH_CHAR);
         StringTokenizer nizer = new StringTokenizer(command, first);
         StringBuilder sb = new StringBuilder();

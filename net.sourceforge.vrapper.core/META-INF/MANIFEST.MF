@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Core Plug-in
+Bundle-SymbolicName: net.sourceforge.vrapper.core;singleton:=true
+Bundle-Version: 0.7.0
+Bundle-Activator: net.sourceforge.vrapper.core.activator.Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Export-Package: net.sourceforge.vrapper.core.activator,
+ net.sourceforge.vrapper.keymap,
+ net.sourceforge.vrapper.keymap.vim,
+ net.sourceforge.vrapper.log,
+ net.sourceforge.vrapper.platform,
+ net.sourceforge.vrapper.utils,
+ net.sourceforge.vrapper.vim,
+ net.sourceforge.vrapper.vim.commands,
+ net.sourceforge.vrapper.vim.commands.motions,
+ net.sourceforge.vrapper.vim.modes,
+ net.sourceforge.vrapper.vim.register

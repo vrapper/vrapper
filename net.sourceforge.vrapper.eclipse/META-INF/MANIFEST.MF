@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Eclipse Plug-in
+Bundle-SymbolicName: net.sourceforge.vrapper.eclipse;singleton:=true
+Bundle-Version: 0.7.0
+Bundle-Activator: net.sourceforge.vrapper.eclipse.activator.Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ net.sourceforge.vrapper.core;bundle-version="0.7.0",
+ org.eclipse.jface.text;bundle-version="3.4.1",
+ org.eclipse.ui.editors;bundle-version="3.4.0"
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
