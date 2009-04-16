@@ -23,9 +23,6 @@ import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.modes.VisualMode;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
 
-import org.eclipse.swt.events.VerifyEvent;
-import org.eclipse.ui.IWorkbenchPart;
-
 public class DefaultEditorAdaptor implements EditorAdaptor {
 
 	private EditorMode currentMode;

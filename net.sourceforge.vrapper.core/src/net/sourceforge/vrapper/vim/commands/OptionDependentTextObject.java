@@ -6,6 +6,7 @@ import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.motions.Motion;
 
+// FIXME: fix it when new settings subsystem is done
 public class OptionDependentTextObject extends AbstractTextObject {
 
 	private final TextObject onTrue;
@@ -32,16 +33,6 @@ public class OptionDependentTextObject extends AbstractTextObject {
 //			return onTrue.getContentType();
 //		else
 //			return onFalse.getContentType();
-	}
-
-	@Override
-	public TextRange getRegion(EditorAdaptor editorMode) {
-		VrapperLog.info("OptionDependentTextObject.getRegion not implemented");
-		return onFalse.getRegion(editorMode);
-//		if (TotalityCorePlugin.getDefault().getPreferenceStore().getBoolean(option))
-//			return onTrue.getRegion(editorMode);
-//		else
-//			return onFalse.getRegion(editorMode);
 	}
 
 	@Override

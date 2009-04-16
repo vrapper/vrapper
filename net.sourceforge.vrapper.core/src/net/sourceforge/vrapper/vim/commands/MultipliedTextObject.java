@@ -20,11 +20,6 @@ public class MultipliedTextObject implements TextObject {
 	}
 
 	@Override
-	public TextRange getRegion(EditorAdaptor editorMode) {
-		return textObject.getRegion(editorMode, count);
-	}
-
-	@Override
 	public TextRange getRegion(EditorAdaptor editorMode, int count) {
 		return textObject.getRegion(editorMode, count);
 	}

@@ -18,16 +18,11 @@ public class MotionPairTextObject extends AbstractTextObject {
 	}
 
 	@Override
-	public TextRange getRegion(EditorAdaptor editorMode) {
-		Position from = toBeginning.destination(editorMode);
-		Position to = toEnd.destination(editorMode);
-		return new StartEndTextRange(from, to);
-	}
-
-	@Override
 	public TextRange getRegion(EditorAdaptor editorMode, int count) {
 		Position from = toBeginning.destination(editorMode);
 		Position to = toEnd.withCount(count).destination(editorMode);
+		if (toEnd.borderPolicy() == BorderPolicy.INCLUSIVE)
+			to = to.addModelOffset(1);
 		return new StartEndTextRange(from, to);
 	}
 
