@@ -36,9 +36,14 @@ public class PasteAfterCommand extends CountAwareCommand {
 			offset = Math.min(content.getTextLength(), offset + 1);
 			position = offset + text.length() * count - 1;
 		}
-		content.replace(offset, 0, StringUtils.multiply(text, count));
-		Position destination = editorAdaptor.getCursorService().newPositionForModelOffset(position);
-		editorAdaptor.setPosition(destination, true);
+		try {
+			editorAdaptor.getHistory().beginCompoundChange();
+			content.replace(offset, 0, StringUtils.multiply(text, count));
+			Position destination = editorAdaptor.getCursorService().newPositionForModelOffset(position);
+			editorAdaptor.setPosition(destination, true);
+		} finally {
+			editorAdaptor.getHistory().endCompoundChange();
+		}
 	}
 
 	@Override

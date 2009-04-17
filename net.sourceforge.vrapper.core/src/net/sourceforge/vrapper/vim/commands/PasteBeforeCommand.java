@@ -23,10 +23,15 @@ public class PasteBeforeCommand extends CountAwareCommand {
 		int position = offset;
 		if (registerContent.getPayloadType() == ContentType.LINES)
 			offset = content.getLineInformationOfOffset(offset).getBeginOffset();
-		content.replace(offset, 0, StringUtils.multiply(text, count));
-		// TODO: compatibility option: position vs. offset for destination
-		Position destination = editorAdaptor.getCursorService().newPositionForModelOffset(position);
-		editorAdaptor.setPosition(destination, true);
+		try {
+			editorAdaptor.getHistory().beginCompoundChange();
+			content.replace(offset, 0, StringUtils.multiply(text, count));
+			// TODO: compatibility option: position vs. offset for destination
+			Position destination = editorAdaptor.getCursorService().newPositionForModelOffset(position);
+			editorAdaptor.setPosition(destination, true);
+		} finally {
+			editorAdaptor.getHistory().endCompoundChange();
+		}
 	}
 
 	@Override
