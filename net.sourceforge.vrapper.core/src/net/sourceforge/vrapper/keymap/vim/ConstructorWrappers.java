@@ -28,20 +28,28 @@ import net.sourceforge.vrapper.vim.commands.motions.Motion;
  * @author Krzysiek Goj
  */
 public class ConstructorWrappers {
-	public static KeyStroke key(char key) {
-		return new SimpleKeyStroke(0, key);
-	}
-
 	public static KeyStroke key(int modifiers, char key) {
 		return new SimpleKeyStroke(modifiers, key);
 	}
 
-	public static KeyStroke key(SpecialKey key) {
-		return new SimpleKeyStroke(0, key);
+	private static int maybeShift(char key) {
+		int modifiers = 0;
+		String autoShifted = "~!@#$%^&*()_+{}:\"|<>?";
+		if (Character.isUpperCase(key) || autoShifted.indexOf(key) != -1)
+			modifiers |= KeyStroke.SHIFT;
+		return modifiers;
+	}
+
+	public static KeyStroke key(char key) {
+		return new SimpleKeyStroke(maybeShift(key), key);
 	}
 
 	public static KeyStroke ctrlKey(char key) {
-		return new SimpleKeyStroke(KeyStroke.CTRL, key);
+		return new SimpleKeyStroke(maybeShift(key) | KeyStroke.CTRL, key);
+	}
+
+	public static KeyStroke key(SpecialKey key) {
+		return new SimpleKeyStroke(0, key);
 	}
 
 	public static<T> KeyBinding<T> binding(char k, Transition<T> transition) {

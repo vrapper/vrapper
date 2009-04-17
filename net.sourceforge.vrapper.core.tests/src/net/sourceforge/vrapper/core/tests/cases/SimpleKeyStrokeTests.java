@@ -6,6 +6,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import net.sourceforge.vrapper.keymap.KeyStroke;
+import static net.sourceforge.vrapper.keymap.KeyStroke.*;
 
 import org.junit.Test;
 
@@ -36,6 +37,21 @@ public class SimpleKeyStrokeTests {
 
 	static void assertToStringReturns(String expected, Object obj) {
 		assertEquals(expected, obj.toString());
+	}
+
+	@Test
+	public void testAutomaticShiftModifier() {
+		String notShifted = "`1234567890-=[];'\\,./" + "abc";
+		String autoShifted = "~!@#$%^&*()_+{}:\"|<>?" + "ABC";
+		for (int i = 0; i < notShifted.length(); i++) {
+			assertEquals(0, key(notShifted.charAt(i)).getModifiers());
+			assertEquals(CTRL, ctrlKey(notShifted.charAt(i)).getModifiers());
+		}
+		for (int i = 0; i < autoShifted.length(); i++) {
+			assertEquals(0, key(0, autoShifted.charAt(i)).getModifiers());
+			assertEquals(SHIFT, key(autoShifted.charAt(i)).getModifiers());
+			assertEquals(SHIFT|CTRL, ctrlKey(autoShifted.charAt(i)).getModifiers());
+		}
 	}
 
 	@Test
