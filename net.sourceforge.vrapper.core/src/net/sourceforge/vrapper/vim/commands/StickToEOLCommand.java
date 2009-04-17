@@ -10,6 +10,7 @@ public class StickToEOLCommand extends CountAwareCommand {
 
 	@Override
 	public void execute(EditorAdaptor editorAdaptor, int count) {
+		if (count == NO_COUNT_GIVEN) count = 1;
 		CursorService cursorService = editorAdaptor.getCursorService();
 		int offset = cursorService.getPosition().getModelOffset();
 		TextContent content = editorAdaptor.getModelContent();
