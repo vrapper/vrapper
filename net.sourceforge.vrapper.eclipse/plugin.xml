@@ -24,8 +24,10 @@
       <menuContribution
             locationURI="menu:edit?after=additions">
          <command
-               commandId="net.sourceforge.vrapper.eclipse.commands.toggle" style="toggle"
-               mnemonic="%contributions.view.count.mnemonic">
+               commandId="net.sourceforge.vrapper.eclipse.commands.toggle"
+               icon="icons/icon.png"
+               mnemonic="%contributions.view.count.mnemonic"
+               style="toggle">
          </command>
       </menuContribution>
        <menuContribution
@@ -33,8 +35,9 @@
          <toolbar
                id="net.sourceforge.vrapper.toolbar">
             <command
-               commandId="net.sourceforge.vrapper.eclipse.commands.toggle" style="toggle"
-                  icon="icons/icon.png">
+                  commandId="net.sourceforge.vrapper.eclipse.commands.toggle"
+                  icon="icons/icon.png"
+                  style="toggle">
             </command>
             <separator
                   name="additions"
