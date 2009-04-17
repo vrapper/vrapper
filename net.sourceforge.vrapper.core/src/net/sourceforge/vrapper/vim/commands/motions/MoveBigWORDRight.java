@@ -1,7 +1,7 @@
 package net.sourceforge.vrapper.vim.commands.motions;
 
 
-public class MoveWORDRight extends MoveWordRight {
+public class MoveBigWORDRight extends MoveWordRight {
 	@Override
 	protected boolean atBoundary(char c1, char c2) {
 		if (c1 == '\n' && c2 == '\n')

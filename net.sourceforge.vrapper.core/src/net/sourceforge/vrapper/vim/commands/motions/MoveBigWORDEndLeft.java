@@ -1,6 +1,6 @@
 package net.sourceforge.vrapper.vim.commands.motions;
 
-public class MoveWORDEndLeft extends MoveWordEndLeft {
+public class MoveBigWORDEndLeft extends MoveWordEndLeft {
 
 	@Override
 	protected boolean atBoundary(char c1, char c2) {
