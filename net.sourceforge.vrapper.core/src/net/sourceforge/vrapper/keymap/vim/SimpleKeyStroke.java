@@ -38,7 +38,7 @@ public class SimpleKeyStroke implements KeyStroke {
 
 	@Override
 	public int hashCode() {
-		return 31 * modifiers + character;
+		return modifiers ^ (character << 16);
 	}
 
 	@Override

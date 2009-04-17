@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Tests Plug-in for Vrapper core
+Bundle-SymbolicName: net.sourceforge.vrapper.core.tests
+Bundle-Version: 0.7.0
+Bundle-Activator: net.sourceforge.vrapper.core.tests.Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.junit4,
+ net.sourceforge.vrapper.core;bundle-version="0.7.0"
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
