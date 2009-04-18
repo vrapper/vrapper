@@ -47,11 +47,7 @@
       </menuContribution>
 
     </extension>
-    <extension point="org.eclipse.ui.startup">
-          <startup
-                class="net.sourceforge.vrapper.eclipse.activator.Activator"/>
-    </extension>
-
+    <extension point="org.eclipse.ui.startup"/>
 
 
    <extension point="org.eclipse.ui.bindings">

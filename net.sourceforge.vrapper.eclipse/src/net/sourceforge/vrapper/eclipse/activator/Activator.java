@@ -38,6 +38,8 @@ public class Activator extends AbstractUIPlugin implements IStartup {
 
     private static final String KEY_VRAPPER_ENABLED = "vrapperEnabled";
 
+    private static final String COMMAND_TOGGLE_VRAPPER = "net.sourceforge.vrapper.eclipse.commands.toggle";
+
     /**
      * The constructor
      */
@@ -137,12 +139,11 @@ public class Activator extends AbstractUIPlugin implements IStartup {
     }
 
     private void toggleVrapper() {
-        // FIXME: this causes NullPointerException to be thrown
         boolean enable = getPluginPreferences().getBoolean(KEY_VRAPPER_ENABLED);
         if (enable) {
             IHandlerService s = (IHandlerService) getWorkbench().getService(IHandlerService.class);
             try {
-                s.executeCommand("de.jroene.vrapper.commands.toggle", null);
+                s.executeCommand(COMMAND_TOGGLE_VRAPPER, null);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
