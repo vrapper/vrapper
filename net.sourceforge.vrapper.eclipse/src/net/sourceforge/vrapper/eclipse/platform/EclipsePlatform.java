@@ -7,6 +7,7 @@ import net.sourceforge.vrapper.platform.Platform;
 import net.sourceforge.vrapper.platform.SelectionService;
 import net.sourceforge.vrapper.platform.ServiceProvider;
 import net.sourceforge.vrapper.platform.TextContent;
+import net.sourceforge.vrapper.platform.UserInterfaceService;
 import net.sourceforge.vrapper.platform.ViewportService;
 
 import org.eclipse.jface.text.ITextViewer;
@@ -22,6 +23,7 @@ public class EclipsePlatform implements Platform {
     private final EclipseViewportService viewportService;
     private HistoryService historyService;
     private final EclipseServiceProvider serviceProvider;
+    private final EclipseUserInterfaceService userInterfaceService;
 
     public EclipsePlatform(AbstractTextEditor abstractTextEditor, ITextViewer textViewer) {
         cursorAndSelection = new EclipseCursorAndSelection(textViewer);
@@ -29,6 +31,7 @@ public class EclipsePlatform implements Platform {
         fileService = new EclipseFileService(textViewer);
         viewportService = new EclipseViewportService(textViewer);
         serviceProvider = new EclipseServiceProvider(abstractTextEditor);
+        userInterfaceService = new EclipseUserInterfaceService(abstractTextEditor, textViewer);
         if (textViewer instanceof ITextViewerExtension6) {
             IUndoManager delegate = ((ITextViewerExtension6)textViewer).getUndoManager();
             EclipseHistoryService manager = new EclipseHistoryService(textViewer.getTextWidget(), delegate);
@@ -69,6 +72,10 @@ public class EclipsePlatform implements Platform {
 
     public ServiceProvider getServiceProvider() {
         return serviceProvider;
+    }
+
+    public UserInterfaceService getUserInterfaceService() {
+        return userInterfaceService;
     }
 
 }

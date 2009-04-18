@@ -32,15 +32,12 @@ import net.sourceforge.vrapper.vim.commands.motions.MoveWordLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordRight;
 import net.sourceforge.vrapper.vim.commands.motions.ParenthesesMove;
 
-public abstract class CommandBasedMode implements EditorMode {
+public abstract class CommandBasedMode extends AbstractMode {
 
     protected final State<Command> initialState;
     protected State<Command> currentState;
-    protected boolean isEnabled = false;
-    protected final EditorAdaptor editorAdaptor;
-
     public CommandBasedMode(EditorAdaptor editorAdaptor) {
-        this.editorAdaptor = editorAdaptor;
+        super(editorAdaptor);
         currentState = initialState = getInitialState();
     }
 

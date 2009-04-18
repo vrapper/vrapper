@@ -14,9 +14,11 @@ import net.sourceforge.vrapper.platform.Platform;
 import net.sourceforge.vrapper.platform.SelectionService;
 import net.sourceforge.vrapper.platform.ServiceProvider;
 import net.sourceforge.vrapper.platform.TextContent;
+import net.sourceforge.vrapper.platform.UserInterfaceService;
 import net.sourceforge.vrapper.platform.ViewportService;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.TextRange;
+import net.sourceforge.vrapper.vim.modes.CommandLineMode;
 import net.sourceforge.vrapper.vim.modes.EditorMode;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
@@ -35,6 +37,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     private final RegisterManager registerManager;
     private final ViewportService viewportService;
     private final HistoryService historyService;
+    private final UserInterfaceService userInterfaceService;
     private final ServiceProvider serviceProvider;
 
     public DefaultEditorAdaptor(Platform editor, RegisterManager registerManager) {
@@ -46,12 +49,14 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         this.registerManager = registerManager;
         this.serviceProvider = editor.getServiceProvider();
         viewportService = editor.getViewportService();
+        userInterfaceService = editor.getUserInterfaceService();
 
         fileService = editor.getFileService();
         EditorMode[] modes = {
                 new NormalMode(this),
                 new VisualMode(this),
-                new InsertMode(this) };
+                new InsertMode(this),
+                new CommandLineMode(this)};
         for (EditorMode mode: modes) {
             modeMap.put(mode.getName(), mode);
         }
@@ -71,7 +76,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
             currentMode = newMode;
             newMode.enterMode();
         }
-        // TODO: we may set "-- MODE NAME --" message here
+        userInterfaceService.setEditorMode(newMode.getName());
     }
 
     public boolean handleKey(KeyStroke key) {
@@ -115,6 +120,10 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
 
     public ViewportService getViewportService() {
         return viewportService;
+    }
+
+    public UserInterfaceService getUserInterfaceService() {
+        return userInterfaceService;
     }
 
     public RegisterManager getRegisterManager() {

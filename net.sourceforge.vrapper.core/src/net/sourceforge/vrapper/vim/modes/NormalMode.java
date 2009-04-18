@@ -131,6 +131,7 @@ public class NormalMode extends CommandBasedMode {
                         leafBind('a', (Command) new ChangeToInsertModeCommand(moveRight)),
                         leafBind('I', (Command) new ChangeToInsertModeCommand(bol)),
                         leafBind('A', (Command) new ChangeToInsertModeCommand(eol)),
+                        leafBind(':', (Command) new ChangeModeCommand(CommandLineMode.NAME)),
                         leafBind('o', seq(new ChangeToInsertModeCommand(), editText("smartEnter"))), // FIXME: use Vrapper's code; repetition
                         leafBind('O', seq(new ChangeToInsertModeCommand(), editText("smartEnterInverse"))), // FIXME: use Vrapper's code; repetition
                         leafBind('v', visualMode),
