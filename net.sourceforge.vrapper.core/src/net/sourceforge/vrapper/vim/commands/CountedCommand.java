@@ -4,35 +4,32 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 
 public class CountedCommand implements Command {
 
-	private final int count;
-	protected final CountAwareCommand command;
+    private final int count;
+    protected final CountAwareCommand command;
 
-	public CountedCommand(int count, CountAwareCommand command) {
-		this.count = count;
-		this.command = command;
-	}
+    public CountedCommand(int count, CountAwareCommand command) {
+        this.count = count;
+        this.command = command;
+    }
 
-	@Override
-	public void execute(EditorAdaptor editorAdaptor) {
-		command.execute(editorAdaptor, count);
-	}
+    public void execute(EditorAdaptor editorAdaptor) {
+        command.execute(editorAdaptor, count);
+    }
 
-	@Override
-	public Command repetition() {
-		CountAwareCommand repetition = command.repetition();
-		if (repetition != null)
-			return new CountedCommand(count, repetition);
-		return repetition;
-	}
+    public Command repetition() {
+        CountAwareCommand repetition = command.repetition();
+        if (repetition != null) {
+            return new CountedCommand(count, repetition);
+        }
+        return repetition;
+    }
 
-	@Override
-	public int getCount() {
-		return count;
-	}
+    public int getCount() {
+        return count;
+    }
 
-	@Override
-	public Command withCount(int count) {
-		return new CountedCommand(count, command);
-	}
+    public Command withCount(int count) {
+        return new CountedCommand(count, command);
+    }
 
 }

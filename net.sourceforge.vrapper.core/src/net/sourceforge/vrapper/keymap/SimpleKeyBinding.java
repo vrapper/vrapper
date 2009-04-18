@@ -2,22 +2,20 @@ package net.sourceforge.vrapper.keymap;
 
 public class SimpleKeyBinding<T> implements KeyBinding<T> {
 
-	private Transition<T> transition;
-	private KeyStroke key;
+    private final Transition<T> transition;
+    private final KeyStroke key;
 
-	public SimpleKeyBinding(KeyStroke key, Transition<T> transition) {
-		this.key = key;
-		this.transition = transition;
-	}
+    public SimpleKeyBinding(KeyStroke key, Transition<T> transition) {
+        this.key = key;
+        this.transition = transition;
+    }
 
-	@Override
-	public KeyStroke getKeyPress() {
-		return key;
-	}
+    public KeyStroke getKeyPress() {
+        return key;
+    }
 
-	@Override
-	public Transition<T> getTransition() {
-		return transition;
-	}
+    public Transition<T> getTransition() {
+        return transition;
+    }
 
 }

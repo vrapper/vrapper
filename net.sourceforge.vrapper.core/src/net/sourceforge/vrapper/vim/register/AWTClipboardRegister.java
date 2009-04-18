@@ -12,7 +12,6 @@ import net.sourceforge.vrapper.vim.VimConstants;
 // it's a little bit evil ;-)
 public class AWTClipboardRegister implements Register {
 
-	@Override
     public RegisterContent getContent() {
         Clipboard c = Toolkit.getDefaultToolkit().getSystemClipboard();
         for (DataFlavor df : c.getAvailableDataFlavors()) {
@@ -33,7 +32,6 @@ public class AWTClipboardRegister implements Register {
         return RegisterContent.DEFAULT_CONTENT;
     }
 
-	@Override
     public void setContent(RegisterContent content) {
         Clipboard c = Toolkit.getDefaultToolkit().getSystemClipboard();
         String s = content.getText();

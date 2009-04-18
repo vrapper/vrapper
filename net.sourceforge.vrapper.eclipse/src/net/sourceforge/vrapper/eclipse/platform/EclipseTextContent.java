@@ -37,7 +37,6 @@ public class EclipseTextContent {
 
     protected class ModelSideTextContent implements TextContent {
 
-        @Override
         public LineInformation getLineInformation(int line) {
             try {
                 IRegion region = textViewer.getDocument().getLineInformation(
@@ -50,7 +49,6 @@ public class EclipseTextContent {
 
         }
 
-        @Override
         public LineInformation getLineInformationOfOffset(int offset) {
             int line;
             try {
@@ -61,17 +59,14 @@ public class EclipseTextContent {
             return getLineInformation(line);
         }
 
-        @Override
         public int getNumberOfLines() {
             return textViewer.getDocument().getNumberOfLines();
         }
 
-        @Override
         public int getTextLength() {
             return textViewer.getDocument().getLength();
         }
 
-        @Override
         public String getText(int index, int length) {
             try {
                 return textViewer.getDocument().get(index, length);
@@ -92,7 +87,6 @@ public class EclipseTextContent {
             }
         }
 
-        @Override
         public Space getSpace() {
             return Space.MODEL;
         }
@@ -101,7 +95,6 @@ public class EclipseTextContent {
 
     protected class ViewSideTextContent implements TextContent  {
 
-        @Override
         public LineInformation getLineInformation(int line) {
             line = converter.widgetLine2ModelLine(line);
             IRegion region;
@@ -114,34 +107,28 @@ public class EclipseTextContent {
                     converter.modelOffset2WidgetOffset(region.getOffset()), region.getLength());
         }
 
-        @Override
         public LineInformation getLineInformationOfOffset(int offset) {
             int line = textViewer.getTextWidget().getLineAtOffset(offset);
             return getLineInformation(line);
         }
 
-        @Override
         public int getNumberOfLines() {
             return textViewer.getTextWidget().getLineCount();
         }
 
-        @Override
         public int getTextLength() {
             return textViewer.getTextWidget().getCharCount();
         }
 
-        @Override
         public String getText(int index, int length) {
             return textViewer.getTextWidget().getText(index, index + length - 1);
         }
 
-        @Override
         public void replace(int index, int length, String text) {
             // XXX: it was illegal in Vrapper. Why?
             textViewer.getTextWidget().replaceTextRange(index, length, text);
         }
 
-        @Override
         public Space getSpace() {
             return Space.VIEW;
         }

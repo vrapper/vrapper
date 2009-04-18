@@ -16,67 +16,59 @@ import org.eclipse.ui.texteditor.AbstractTextEditor;
 
 public class EclipsePlatform implements Platform {
 
-	private EclipseCursorAndSelection cursorAndSelection;
-	private EclipseTextContent textContent;
-	private EclipseFileService fileService;
-	private EclipseViewportService viewportService;
-	private HistoryService historyService;
-	private EclipseServiceProvider serviceProvider;
+    private final EclipseCursorAndSelection cursorAndSelection;
+    private final EclipseTextContent textContent;
+    private final EclipseFileService fileService;
+    private final EclipseViewportService viewportService;
+    private HistoryService historyService;
+    private final EclipseServiceProvider serviceProvider;
 
-	public EclipsePlatform(AbstractTextEditor abstractTextEditor, ITextViewer textViewer) {
-		cursorAndSelection = new EclipseCursorAndSelection(textViewer);
-		textContent = new EclipseTextContent(textViewer);
-		fileService = new EclipseFileService(textViewer);
-		viewportService = new EclipseViewportService(textViewer);
-		serviceProvider = new EclipseServiceProvider(abstractTextEditor);
-		if (textViewer instanceof ITextViewerExtension6) {
-			IUndoManager delegate = ((ITextViewerExtension6)textViewer).getUndoManager();
-			EclipseHistoryService manager = new EclipseHistoryService(textViewer.getTextWidget(), delegate);
-			textViewer.setUndoManager(manager);
-			this.historyService = manager;
-		} else {
-			this.historyService = new DummyHistoryService();
-		}
-	}
+    public EclipsePlatform(AbstractTextEditor abstractTextEditor, ITextViewer textViewer) {
+        cursorAndSelection = new EclipseCursorAndSelection(textViewer);
+        textContent = new EclipseTextContent(textViewer);
+        fileService = new EclipseFileService(textViewer);
+        viewportService = new EclipseViewportService(textViewer);
+        serviceProvider = new EclipseServiceProvider(abstractTextEditor);
+        if (textViewer instanceof ITextViewerExtension6) {
+            IUndoManager delegate = ((ITextViewerExtension6)textViewer).getUndoManager();
+            EclipseHistoryService manager = new EclipseHistoryService(textViewer.getTextWidget(), delegate);
+            textViewer.setUndoManager(manager);
+            this.historyService = manager;
+        } else {
+            this.historyService = new DummyHistoryService();
+        }
+    }
 
-	@Override
-	public CursorService getCursorService() {
-		return cursorAndSelection;
-	}
+    public CursorService getCursorService() {
+        return cursorAndSelection;
+    }
 
-	@Override
-	public TextContent getModelContent() {
-		return textContent.getModelContent();
-	}
+    public TextContent getModelContent() {
+        return textContent.getModelContent();
+    }
 
-	@Override
-	public SelectionService getSelectionService() {
-		return cursorAndSelection;
-	}
+    public SelectionService getSelectionService() {
+        return cursorAndSelection;
+    }
 
-	@Override
-	public TextContent getViewContent() {
-		return textContent.getViewContent();
-	}
+    public TextContent getViewContent() {
+        return textContent.getViewContent();
+    }
 
-	@Override
-	public FileService getFileService() {
-		return fileService;
-	}
+    public FileService getFileService() {
+        return fileService;
+    }
 
-	@Override
-	public ViewportService getViewportService() {
-		return viewportService;
-	}
+    public ViewportService getViewportService() {
+        return viewportService;
+    }
 
-	@Override
-	public HistoryService getHistoryService() {
-		return historyService;
-	}
+    public HistoryService getHistoryService() {
+        return historyService;
+    }
 
-	@Override
-	public ServiceProvider getServiceProvider() {
-		return serviceProvider;
-	}
+    public ServiceProvider getServiceProvider() {
+        return serviceProvider;
+    }
 
 }

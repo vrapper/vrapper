@@ -6,15 +6,14 @@ import org.eclipse.jface.text.ITextViewer;
 
 public class EclipseViewportService implements ViewportService {
 
-	private final ITextViewer textViewer;
+    private final ITextViewer textViewer;
 
-	public EclipseViewportService(ITextViewer textViewer) {
-		this.textViewer = textViewer;
-	}
+    public EclipseViewportService(ITextViewer textViewer) {
+        this.textViewer = textViewer;
+    }
 
-	@Override
-	public void setRepaint(boolean redraw) {
-		textViewer.getTextWidget().setRedraw(redraw);
-	}
+    public void setRepaint(boolean redraw) {
+        textViewer.getTextWidget().setRedraw(redraw);
+    }
 
 }

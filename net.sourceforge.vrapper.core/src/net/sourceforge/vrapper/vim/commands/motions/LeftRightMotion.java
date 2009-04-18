@@ -4,14 +4,13 @@ import net.sourceforge.vrapper.vim.commands.BorderPolicy;
 
 public abstract class LeftRightMotion extends AbstractModelSideMotion {
 
-	@Override
-	public BorderPolicy borderPolicy() {
-		return BorderPolicy.EXCLUSIVE;
-	}
+    public BorderPolicy borderPolicy() {
+        return BorderPolicy.EXCLUSIVE;
+    }
 
-	@Override
-	public boolean updateStickyColumn() {
-		return true;
-	}
+    @Override
+    public boolean updateStickyColumn() {
+        return true;
+    }
 
 }

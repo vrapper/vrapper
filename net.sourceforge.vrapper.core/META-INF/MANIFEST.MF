@@ -7,7 +7,7 @@ Bundle-Activator: net.sourceforge.vrapper.core.activator.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Export-Package: net.sourceforge.vrapper.core.activator,
  net.sourceforge.vrapper.keymap,
  net.sourceforge.vrapper.keymap.vim,

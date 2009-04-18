@@ -6,11 +6,10 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 
 public class SwapSelectionSidesCommand extends CountIgnoringNonRepeatableCommand {
 
-	@Override
-	public void execute(EditorAdaptor editorAdaptor) {
-		TextRange selection = editorAdaptor.getSelection();
-		editorAdaptor.setPosition(selection.getEnd(), true);
-		editorAdaptor.setSelection(new StartEndTextRange(selection.getEnd(), selection.getStart()));
-	}
+    public void execute(EditorAdaptor editorAdaptor) {
+        TextRange selection = editorAdaptor.getSelection();
+        editorAdaptor.setPosition(selection.getEnd(), true);
+        editorAdaptor.setSelection(new StartEndTextRange(selection.getEnd(), selection.getStart()));
+    }
 
 }

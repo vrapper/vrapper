@@ -30,9 +30,9 @@ public class ParenthesesMove extends AbstractModelSideMotion {
         PARENTHESES = Collections.unmodifiableMap(op);
     }
 
-	@Override
-	protected int destination(int offset, TextContent content, int count) {
-		LineInformation info = content.getLineInformationOfOffset(offset);
+    @Override
+    protected int destination(int offset, TextContent content, int count) {
+        LineInformation info = content.getLineInformationOfOffset(offset);
         int index = offset;
         ParenthesesPair pair = null;
         for(index=offset; index<info.getEndOffset(); index++) {
@@ -70,12 +70,11 @@ public class ParenthesesMove extends AbstractModelSideMotion {
             }
         }
         return offset;
-	}
+    }
 
-	@Override
-	public BorderPolicy borderPolicy() {
-		return BorderPolicy.INCLUSIVE;
-	}
+    public BorderPolicy borderPolicy() {
+        return BorderPolicy.INCLUSIVE;
+    }
 
     private static class ParenthesesPair {
         private final String left;

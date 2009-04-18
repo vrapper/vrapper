@@ -11,44 +11,43 @@ import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
 
 class MakeSelectionBasedTextObjectCommand implements Function<Command, TextObject> {
 
-	private final Command operator;
+    private final Command operator;
 
-	public MakeSelectionBasedTextObjectCommand(Command operator) {
-		this.operator = operator;
-	}
+    public MakeSelectionBasedTextObjectCommand(Command operator) {
+        this.operator = operator;
+    }
 
-	@Override
-	public Command call(TextObject textObject) {
-		if (textObject != null)
-			return new SelectionBasedTextObjectCommand(operator, textObject);
-		return null;
-	}
+    public Command call(TextObject textObject) {
+        if (textObject != null) {
+            return new SelectionBasedTextObjectCommand(operator, textObject);
+        }
+        return null;
+    }
 }
 
 
 class MakeSimpleTextObjectCommand implements Function<Command, TextObject> {
 
-	private final TextOperation command;
+    private final TextOperation command;
 
-	public MakeSimpleTextObjectCommand(TextOperation command) {
-		this.command = command;
-	}
+    public MakeSimpleTextObjectCommand(TextOperation command) {
+        this.command = command;
+    }
 
-	@Override
-	public Command call(TextObject textObject) {
-		return new TextOperationTextObjectCommand(command, textObject);
-	}
+    public Command call(TextObject textObject) {
+        return new TextOperationTextObjectCommand(command, textObject);
+    }
 
 }
 
 
 public class OperatorCommandState extends ConvertingState<Command, TextObject> {
 
-	public OperatorCommandState(Command operator, State<TextObject> wrapped) {
-		super(new MakeSelectionBasedTextObjectCommand(operator), wrapped);
-	}
+    public OperatorCommandState(Command operator, State<TextObject> wrapped) {
+        super(new MakeSelectionBasedTextObjectCommand(operator), wrapped);
+    }
 
-	public OperatorCommandState(TextOperation command, State<TextObject> textObjects) {
-		super(new MakeSimpleTextObjectCommand(command), textObjects);
-	}
+    public OperatorCommandState(TextOperation command, State<TextObject> textObjects) {
+        super(new MakeSimpleTextObjectCommand(command), textObjects);
+    }
 }

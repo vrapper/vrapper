@@ -12,47 +12,45 @@ import org.eclipse.ui.handlers.IHandlerService;
 
 public class EclipseCommand extends AbstractCommand {
 
-	private String action;
+    private final String action;
 
-	public EclipseCommand(String action) {
-		this.action = action;
-	}
+    public EclipseCommand(String action) {
+        this.action = action;
+    }
 
-	@Override
-	public void execute(EditorAdaptor editorAdaptor) {
-		doIt(1, action, editorAdaptor);
-	}
+    public void execute(EditorAdaptor editorAdaptor) {
+        doIt(1, action, editorAdaptor);
+    }
 
-	public String getCommandName() {
-		return action;
-	}
+    public String getCommandName() {
+        return action;
+    }
 
-	@Override
-	public Command repetition() {
-		return this;
-	}
+    public Command repetition() {
+        return this;
+    }
 
-	public static void doIt(int count, String action, EditorAdaptor editorAdaptor) {
-		try {
-			IHandlerService handlerService = editorAdaptor.getService(IHandlerService.class);
-			if (handlerService != null)
-				handlerService.executeCommand(action, null);
-			else
-				VrapperLog.error("No handler service, cannot execute: " + action);
-		} catch (ExecutionException e) {
-			VrapperLog.error("Error when executing command: " + action, e);
-		} catch (NotDefinedException e) {
-			VrapperLog.error("Command not defined: " + action, e);
-		} catch (NotEnabledException e) {
-			VrapperLog.error("Command not enabled: " + action, e);
-		} catch (NotHandledException e) {
-			VrapperLog.error("Command not handled: " + action, e);
-		}
-	}
+    public static void doIt(int count, String action, EditorAdaptor editorAdaptor) {
+        try {
+            IHandlerService handlerService = editorAdaptor.getService(IHandlerService.class);
+            if (handlerService != null) {
+                handlerService.executeCommand(action, null);
+            } else {
+                VrapperLog.error("No handler service, cannot execute: " + action);
+            }
+        } catch (ExecutionException e) {
+            VrapperLog.error("Error when executing command: " + action, e);
+        } catch (NotDefinedException e) {
+            VrapperLog.error("Command not defined: " + action, e);
+        } catch (NotEnabledException e) {
+            VrapperLog.error("Command not enabled: " + action, e);
+        } catch (NotHandledException e) {
+            VrapperLog.error("Command not handled: " + action, e);
+        }
+    }
 
-	@Override
-	public Command withCount(int count) {
-		return new MultipleExecutionCommand(count, this);
-	}
+    public Command withCount(int count) {
+        return new MultipleExecutionCommand(count, this);
+    }
 
 }

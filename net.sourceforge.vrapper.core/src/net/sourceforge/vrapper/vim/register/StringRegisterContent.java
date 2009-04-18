@@ -10,18 +10,16 @@ import net.sourceforge.vrapper.utils.ContentType;
 public class StringRegisterContent implements RegisterContent {
 
     private final String payload;
-	private final ContentType contentType;
+    private final ContentType contentType;
     public StringRegisterContent(ContentType contentType, String payload) {
         this.contentType = contentType;
-		this.payload = payload;
+        this.payload = payload;
     }
 
-    @Override
     public ContentType getPayloadType() {
-		return contentType;
-	}
+        return contentType;
+    }
 
-    @Override
     public String getText() {
         return payload;
     }

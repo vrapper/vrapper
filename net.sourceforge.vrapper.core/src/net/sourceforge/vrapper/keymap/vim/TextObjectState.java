@@ -8,16 +8,15 @@ import net.sourceforge.vrapper.vim.commands.TextObject;
 import net.sourceforge.vrapper.vim.commands.motions.Motion;
 
 class Move2TextObject implements Function<TextObject, Motion> {
-	@Override
-	public TextObject call(Motion arg) {
-		return new MotionTextObject(arg);
-	}
+    public TextObject call(Motion arg) {
+        return new MotionTextObject(arg);
+    }
 }
 
 public class TextObjectState extends ConvertingState<TextObject, Motion>  {
 
-	public TextObjectState(State<Motion> wrapped) {
-		super(new Move2TextObject(), wrapped);
-	}
+    public TextObjectState(State<Motion> wrapped) {
+        super(new Move2TextObject(), wrapped);
+    }
 
 }

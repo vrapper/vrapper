@@ -27,61 +27,63 @@ import net.sourceforge.vrapper.vim.commands.YankOperation;
 
 public class VisualMode extends CommandBasedMode {
 
-	public static final String NAME = "visual mode";
+    public static final String NAME = "visual mode";
 
-	public VisualMode(EditorAdaptor editorAdaptor) {
-		super(editorAdaptor);
-	}
+    public VisualMode(EditorAdaptor editorAdaptor) {
+        super(editorAdaptor);
+    }
 
-	@Override protected void placeCursor() {
-		if (!isEnabled) {
-			Position leftSidePosition = editorAdaptor.getSelection().getLeftBound();
-			editorAdaptor.setPosition(leftSidePosition, false);
-		}
-	}
+    @Override
+    protected void placeCursor() {
+        if (!isEnabled) {
+            Position leftSidePosition = editorAdaptor.getSelection().getLeftBound();
+            editorAdaptor.setPosition(leftSidePosition, false);
+        }
+    }
 
-	@Override public void enterMode() {
-		if (isEnabled) return;
-		isEnabled = true;
-		editorAdaptor.getCursorService().setCaret(CaretType.STANDARD);
-	}
+    public void enterMode() {
+        if (isEnabled) {
+            return;
+        }
+        isEnabled = true;
+        editorAdaptor.getCursorService().setCaret(CaretType.STANDARD);
+    }
 
-	@Override public void leaveMode() {
-		isEnabled = false;
-		editorAdaptor.setSelection(null);
-	}
+    public void leaveMode() {
+        isEnabled = false;
+        editorAdaptor.setSelection(null);
+    }
 
-	@Override
-	protected State<Command> getInitialState() {
-		Command leaveVisual = new LeaveVisualModeCommand();
-		Command swapSides = new SwapSelectionSidesCommand();
-		Command yank   = dontRepeat(seq(new SelectionBasedTextOperation(new YankOperation()), leaveVisual));
-		Command delete = dontRepeat(seq(new SelectionBasedTextOperation(new DeleteOperation()), leaveVisual));
-		Command change = new SelectionBasedTextOperation(new ChangeOperation());
-		State<Command> visualMotions = new VisualMotionState(motions());
-		@SuppressWarnings("unchecked")
-		State<Command> commands = CountingState.wrap(union(state(
-				leafBind(key(KeyStroke.CTRL, '['), leaveVisual),
-				leafBind(SpecialKey.ESC, leaveVisual),
-				leafBind('v', leaveVisual),
-				leafBind('y', yank),
-				leafBind('s', change),
-				leafBind('c', change),
-				leafBind('d', delete),
-				leafBind('x', delete),
-				leafBind('X', delete),
-				leafBind('o', swapSides),
-				transitionBind('g',
-						leafBind('c', seq(editText("toggle.comment"), leaveVisual)),
-						leafBind('U', seq(editText("upperCase"),      leaveVisual)),
-						leafBind('u', seq(editText("lowerCase"),      leaveVisual)))
-		), visualMotions));
-		return commands;
-	}
+    @Override
+    protected State<Command> getInitialState() {
+        Command leaveVisual = new LeaveVisualModeCommand();
+        Command swapSides = new SwapSelectionSidesCommand();
+        Command yank   = dontRepeat(seq(new SelectionBasedTextOperation(new YankOperation()), leaveVisual));
+        Command delete = dontRepeat(seq(new SelectionBasedTextOperation(new DeleteOperation()), leaveVisual));
+        Command change = new SelectionBasedTextOperation(new ChangeOperation());
+        State<Command> visualMotions = new VisualMotionState(motions());
+        @SuppressWarnings("unchecked")
+        State<Command> commands = CountingState.wrap(union(state(
+                leafBind(key(KeyStroke.CTRL, '['), leaveVisual),
+                leafBind(SpecialKey.ESC, leaveVisual),
+                leafBind('v', leaveVisual),
+                leafBind('y', yank),
+                leafBind('s', change),
+                leafBind('c', change),
+                leafBind('d', delete),
+                leafBind('x', delete),
+                leafBind('X', delete),
+                leafBind('o', swapSides),
+                transitionBind('g',
+                        leafBind('c', seq(editText("toggle.comment"), leaveVisual)),
+                        leafBind('U', seq(editText("upperCase"),      leaveVisual)),
+                        leafBind('u', seq(editText("lowerCase"),      leaveVisual)))
+        ), visualMotions));
+        return commands;
+    }
 
-	@Override
-	public String getName() {
-		return NAME;
-	}
+    public String getName() {
+        return NAME;
+    }
 
 }

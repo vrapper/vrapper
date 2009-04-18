@@ -5,21 +5,18 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 
 public abstract class CountAwareMotion implements Motion {
 
-	public abstract Position destination(EditorAdaptor editorAdaptor, int noCountGiven);
+    public abstract Position destination(EditorAdaptor editorAdaptor, int noCountGiven);
 
-	@Override
-	public Position destination(EditorAdaptor editorAdaptor) {
-		return destination(editorAdaptor, 1);
-	}
+    public Position destination(EditorAdaptor editorAdaptor) {
+        return destination(editorAdaptor, 1);
+    }
 
-	@Override
-	public int getCount() {
-		return 1;
-	}
+    public int getCount() {
+        return 1;
+    }
 
-	@Override
-	public Motion withCount(int count) {
-		return new CountedMotion(count, this);
-	}
+    public Motion withCount(int count) {
+        return new CountedMotion(count, this);
+    }
 
 }

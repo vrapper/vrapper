@@ -5,15 +5,14 @@ import net.sourceforge.vrapper.vim.commands.Counted;
 
 public class ApplyCount<T> implements Function<T, Counted<T>> {
 
-	private final int count;
+    private final int count;
 
-	public ApplyCount(int count) {
-		this.count = count;
-	}
+    public ApplyCount(int count) {
+        this.count = count;
+    }
 
-	@Override
-	public T call(Counted<T> arg) {
-		return arg.withCount(count);
-	}
+    public T call(Counted<T> arg) {
+        return arg.withCount(count);
+    }
 
 }

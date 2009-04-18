@@ -8,20 +8,19 @@ import net.sourceforge.vrapper.vim.commands.motions.Motion;
 
 public class GoThereState extends ConvertingState<Command, Motion> {
 
-	private static final MakeExecutableMotion converter = new MakeExecutableMotion();
+    private static final MakeExecutableMotion converter = new MakeExecutableMotion();
 
-	static class MakeExecutableMotion implements net.sourceforge.vrapper.utils.Function<Command, Motion> {
-		@Override
-		public Command call(Motion motion) {
-			return new MotionCommand(motion);
-		}
-	}
+    static class MakeExecutableMotion implements net.sourceforge.vrapper.utils.Function<Command, Motion> {
+        public Command call(Motion motion) {
+            return new MotionCommand(motion);
+        }
+    }
 
-	public GoThereState(State<Motion> wrapped) {
-		super(converter, wrapped);
-	}
+    public GoThereState(State<Motion> wrapped) {
+        super(converter, wrapped);
+    }
 
-	public static Command motion2command(Motion motion) {
-		return converter.call(motion);
-	}
+    public static Command motion2command(Motion motion) {
+        return converter.call(motion);
+    }
 }
