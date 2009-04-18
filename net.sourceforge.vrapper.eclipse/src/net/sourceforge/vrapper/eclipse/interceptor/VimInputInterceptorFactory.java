@@ -10,6 +10,7 @@ import net.sourceforge.vrapper.eclipse.platform.EclipsePlatform;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.vim.SimpleKeyStroke;
+import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.vim.DefaultEditorAdaptor;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
@@ -86,7 +87,11 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
     }
 
 	protected char convertCharacter(int modifiers, char character) {
-		return character; // FIXME: SHIFT+5 == '%', etc.
+		if (0 <= character && character <= 0x1F && (modifiers & KeyStroke.CTRL) != 0)
+			character += 0x40;
+		if (Character.isLetter(character) && (modifiers & KeyStroke.SHIFT) == 0)
+			character = Character.toLowerCase(character);
+		return character;
 	}
 
 	protected int convertModifiers(int stateMask) {

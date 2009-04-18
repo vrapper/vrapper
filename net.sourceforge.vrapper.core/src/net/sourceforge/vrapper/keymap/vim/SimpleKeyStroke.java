@@ -38,7 +38,7 @@ public class SimpleKeyStroke implements KeyStroke {
 
 	@Override
 	public int hashCode() {
-		return modifiers ^ (character << 16);
+		return modifiers ^ (character << 16) ^ (specialKey == null ? 0 : specialKey.hashCode());
 	}
 
 	@Override
@@ -51,6 +51,8 @@ public class SimpleKeyStroke implements KeyStroke {
 			return false;
 		KeyStroke other = (KeyStroke) obj;
 		if (character != other.getCharacter())
+			return false;
+		if (specialKey != other.getSpecialKey())
 			return false;
 		if (modifiers != other.getModifiers())
 			return false;

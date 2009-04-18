@@ -32,6 +32,10 @@ public class ConstructorWrappers {
 		return new SimpleKeyStroke(modifiers, key);
 	}
 
+	public static KeyStroke key(int modifiers, SpecialKey key) {
+		return new SimpleKeyStroke(modifiers, key);
+	}
+
 	private static int maybeShift(char key) {
 		int modifiers = 0;
 		String autoShifted = "~!@#$%^&*()_+{}:\"|<>?";

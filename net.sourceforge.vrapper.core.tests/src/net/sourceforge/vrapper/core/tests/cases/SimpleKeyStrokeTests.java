@@ -2,10 +2,12 @@ package net.sourceforge.vrapper.core.tests.cases;
 
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.ctrlKey;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.key;
+import static net.sourceforge.vrapper.keymap.SpecialKey.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import net.sourceforge.vrapper.keymap.KeyStroke;
+import net.sourceforge.vrapper.keymap.SpecialKey;
 import static net.sourceforge.vrapper.keymap.KeyStroke.*;
 
 import org.junit.Test;
@@ -28,11 +30,17 @@ public class SimpleKeyStrokeTests {
 		assertEqualsAndHashAsWell(key('A'), key('A'));
 		assertEqualsAndHashAsWell(ctrlKey('a'), ctrlKey('a'));
 		assertEqualsAndHashAsWell(ctrlKey('A'), ctrlKey('A'));
+		assertEqualsAndHashAsWell(key(ARROW_LEFT), key(ARROW_LEFT));
+		assertEqualsAndHashAsWell(key(CTRL, ARROW_LEFT), key(CTRL, ARROW_LEFT));
 
 		assertNotEqualAndHashAsWell(key('a'), key('A'));
 		assertNotEqualAndHashAsWell(ctrlKey('a'), key('a'));
 		assertNotEqualAndHashAsWell(ctrlKey('a'), key('A'));
 		assertNotEqualAndHashAsWell(ctrlKey('A'), ctrlKey('a'));
+		assertNotEqualAndHashAsWell(key(CTRL, ARROW_LEFT), key(ARROW_LEFT));
+		assertNotEqualAndHashAsWell(key(ARROW_LEFT), key(CTRL, ARROW_LEFT));
+		assertNotEqualAndHashAsWell(key(ARROW_LEFT), key(ARROW_RIGHT));
+		assertNotEqualAndHashAsWell(key(ARROW_LEFT), key(CTRL, ARROW_RIGHT));
 	}
 
 	static void assertToStringReturns(String expected, Object obj) {
