@@ -1,24 +1,36 @@
 package net.sourceforge.vrapper.core.tests.utils;
 
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.key;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 import net.sourceforge.vrapper.keymap.vim.GoThereState;
+import net.sourceforge.vrapper.platform.FileService;
+import net.sourceforge.vrapper.platform.HistoryService;
 import net.sourceforge.vrapper.platform.Platform;
+import net.sourceforge.vrapper.platform.UserInterfaceService;
+import net.sourceforge.vrapper.platform.ViewportService;
 import net.sourceforge.vrapper.vim.DefaultEditorAdaptor;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.Command;
+import net.sourceforge.vrapper.vim.commands.CountIgnoringNonRepeatableCommand;
 import net.sourceforge.vrapper.vim.commands.motions.Motion;
 import net.sourceforge.vrapper.vim.modes.EditorMode;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
 
 import org.junit.Before;
 import org.mockito.Mock;
-import static org.mockito.Mockito.*;
 import org.mockito.MockitoAnnotations;
 
 public class CommandTestCase {
 	@Mock protected Platform platform;
 	@Mock protected RegisterManager registerManager;
+	@Mock protected ViewportService viewportService;
+	@Mock protected UserInterfaceService userInterfaceService;
+	@Mock protected FileService fileService;
+	@Mock protected HistoryService historyService;
 	protected TestTextContent content;
 	protected TestCursorAndSelection cursorAndSelection;
 	protected EditorAdaptor adaptor;
@@ -27,13 +39,17 @@ public class CommandTestCase {
 
 	public void initMocks() {
 		MockitoAnnotations.initMocks(this);
-		content = new TestTextContent();
 		cursorAndSelection = new TestCursorAndSelection();
+		content = new TestTextContent(cursorAndSelection);
 		when(platform.getCursorService()).thenReturn(cursorAndSelection);
 		when(platform.getSelectionService()).thenReturn(cursorAndSelection);
 		when(platform.getModelContent()).thenReturn(content);
 		when(platform.getViewContent()).thenReturn(content);
-		adaptor = new DefaultEditorAdaptor(platform, registerManager);
+		when(platform.getViewportService()).thenReturn(viewportService);
+		when(platform.getUserInterfaceService()).thenReturn(userInterfaceService);
+		when(platform.getFileService()).thenReturn(fileService);
+		when(platform.getHistoryService()).thenReturn(historyService);
+		adaptor = spy(new DefaultEditorAdaptor(platform, registerManager));
 	}
 
 	@Before
@@ -97,8 +113,14 @@ public class CommandTestCase {
 		checkCommand(command, false, beforeCursor1, atCursor1, afterCursor1, beforeCursor2, atCursor2, afterCursor2);
 	}
 
-	public Command forKeySeq(String keyNames) {
-		throw new UnsupportedOperationException();
+	public Command forKeySeq(final String keyNames) {
+		return new CountIgnoringNonRepeatableCommand() {
+			public void execute(EditorAdaptor editorAdaptor) {
+				assertSame(adaptor, editorAdaptor);
+				for (int i = 0; i < keyNames.length(); i++)
+					mode.handleKey(key(keyNames.charAt(i)));
+			}
+		};
 	}
 
 }

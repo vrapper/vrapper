@@ -65,14 +65,6 @@ public class StateAndTransitionTests {
 
 
 	@Test
-	public void SimpleKeyStrokeShouldHaveProperHashAndEqual() {
-		assertEquals(key('a'), key('a'));
-		assertFalse(key('a').equals(key('b')));
-		assertEquals(key('a').hashCode(), key('a').hashCode());
-		assertFalse(key('a').hashCode() != key('z').hashCode());
-	}
-
-	@Test
 	public void unionShouldHandleCommonPrefix() {
 		@SuppressWarnings("unchecked")
 		State other = state(

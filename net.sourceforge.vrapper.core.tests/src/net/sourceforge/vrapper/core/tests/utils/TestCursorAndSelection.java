@@ -11,6 +11,7 @@ public class TestCursorAndSelection implements CursorService, SelectionService {
 
 	private Position position = new DumbPosition(0);
 	private TextRange selection;
+	private CaretType caretType;
 
 	public Position getPosition() {
 		return position;
@@ -30,7 +31,11 @@ public class TestCursorAndSelection implements CursorService, SelectionService {
 	}
 
 	public void setCaret(CaretType caretType) {
-		// TODO Auto-generated method stub
+		this.caretType = caretType;
+	}
+
+	public CaretType getCaret() {
+		return caretType;
 	}
 
 	public void stickToEOL() {

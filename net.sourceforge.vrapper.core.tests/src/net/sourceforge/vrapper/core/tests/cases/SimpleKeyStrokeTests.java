@@ -26,6 +26,11 @@ public class SimpleKeyStrokeTests {
 
 	@Test
 	public void testEqualsAndHashCode() {
+		assertEquals(key('a'), key('a'));
+		assertFalse(key('a').equals(key('b')));
+		assertEquals(key('a').hashCode(), key('a').hashCode());
+		assertFalse(key('a').hashCode() == key('z').hashCode());
+
 		assertEqualsAndHashAsWell(key('a'), key('a'));
 		assertEqualsAndHashAsWell(key('A'), key('A'));
 		assertEqualsAndHashAsWell(ctrlKey('a'), ctrlKey('a'));

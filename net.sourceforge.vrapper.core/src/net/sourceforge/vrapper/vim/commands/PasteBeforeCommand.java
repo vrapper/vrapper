@@ -20,9 +20,9 @@ public class PasteBeforeCommand extends CountAwareCommand {
 		String text = registerContent.getText();
 		TextContent content = editorAdaptor.getModelContent();
 		int offset = editorAdaptor.getPosition().getModelOffset();
-		int position = offset;
 		if (registerContent.getPayloadType() == ContentType.LINES)
 			offset = content.getLineInformationOfOffset(offset).getBeginOffset();
+		int position = offset;
 		try {
 			editorAdaptor.getHistory().beginCompoundChange();
 			content.replace(offset, 0, StringUtils.multiply(text, count));

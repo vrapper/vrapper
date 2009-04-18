@@ -1,5 +1,6 @@
 package net.sourceforge.vrapper.core.tests.utils;
 
+import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Space;
@@ -13,8 +14,13 @@ import net.sourceforge.vrapper.utils.VimUtils;
 public class TestTextContent implements TextContent {
 
     StringBuilder buffer = new StringBuilder();
+	private final CursorService cursorService;
 
-    public LineInformation getLineInformation(int line) {
+    public TestTextContent(CursorService cursorService) {
+		this.cursorService = cursorService;
+	}
+
+	public LineInformation getLineInformation(int line) {
         int index = 0;
         int currLine = 0;
         while(currLine < line && index < buffer.length()) {
@@ -87,6 +93,7 @@ public class TestTextContent implements TextContent {
 
     public void replace(int index, int length, String s) {
 		buffer.replace(index, index+length, s);
+		cursorService.setPosition(new DumbPosition(index + s.length()), false);
     }
 
 	public Space getSpace() {
