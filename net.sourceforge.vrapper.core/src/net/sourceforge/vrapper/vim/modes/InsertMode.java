@@ -71,7 +71,7 @@ public class InsertMode implements EditorMode {
 
 	@Override
 	public boolean handleKey(KeyStroke stroke) {
-		if (stroke.equals(SpecialKey.ESC) || stroke.equals(key(KeyStroke.CTRL, '['))) {
+		if (stroke.equals(key(SpecialKey.ESC)) || stroke.equals(key(KeyStroke.CTRL, '['))) {
 			editorAdaptor.changeMode(NormalMode.NAME);
 			return true;
 		}
@@ -82,6 +82,9 @@ public class InsertMode implements EditorMode {
 
 
 	private boolean allowed(KeyStroke stroke) {
+		// TODO: option to allow arrows
+		if (stroke.getSpecialKey() != null)
+			return false;
 		if ((stroke.getModifiers() & KeyStroke.CTRL) == 0)
 			return true; // FIXME: look one line below
 //			return Character.isLetterOrDigit(event.character); // FIXME: no enter, no backspace

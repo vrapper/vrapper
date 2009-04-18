@@ -47,10 +47,6 @@ public class SimpleKeyStroke implements KeyStroke {
 			return true;
 		if (obj == null)
 			return false;
-		if (obj instanceof Character)
-			obj = new SimpleKeyStroke(0, ((Character) obj).charValue());
-		if (obj instanceof SpecialKey)
-			obj = new SimpleKeyStroke(0, (SpecialKey) obj);
 		if (!(obj instanceof KeyStroke))
 			return false;
 		KeyStroke other = (KeyStroke) obj;
