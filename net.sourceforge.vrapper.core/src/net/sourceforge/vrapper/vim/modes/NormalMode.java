@@ -4,11 +4,13 @@ import static java.lang.Math.min;
 import static net.sourceforge.vrapper.keymap.StateUtils.union;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafCtrlBind;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafState;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.operatorCmds;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.operatorCmdsWithUpperCase;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.prefixedOperatorCmds;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionState;
 import static net.sourceforge.vrapper.keymap.vim.GoThereState.motion2command;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.cmd;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.dontRepeat;
@@ -17,13 +19,18 @@ import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.editText;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.go;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.javaEditText;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
+
+import java.util.Stack;
+
 import net.sourceforge.vrapper.keymap.KeyStroke;
+import net.sourceforge.vrapper.keymap.Remapper;
 import net.sourceforge.vrapper.keymap.RemappingState;
 import net.sourceforge.vrapper.keymap.SimpleRemapping;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.vim.CountingState;
 import net.sourceforge.vrapper.keymap.vim.GoThereState;
 import net.sourceforge.vrapper.keymap.vim.TextObjectState;
+import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
@@ -61,7 +68,7 @@ public class NormalMode extends CommandBasedMode {
 
     public static final String NAME = "normal mode";
 
-    private RemappingState<Command> keymap;
+    private Remapper keymap;
 
     public NormalMode(EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
@@ -170,8 +177,8 @@ public class NormalMode extends CommandBasedMode {
                                         leafCtrlBind('i', dontRepeat(cmd("org.eclipse.ui.navigate.forwardHistory"))),
                                         leafCtrlBind('o', dontRepeat(cmd("org.eclipse.ui.navigate.backwardHistory"))))));
 
-        keymap = new RemappingState<Command>(commands);
-        return keymap;
+        keymap = RemappingState.wrap(commands);
+        return keymap.getState();
     }
 
     @Override
@@ -216,8 +223,19 @@ public class NormalMode extends CommandBasedMode {
     /*
      * FIXME: does not really belong here
      */
-    public void overrideMapping(KeyStroke key, KeyStroke mapping) {
-        keymap.addMapping(new SimpleRemapping(key, mapping));
+    public void overrideMapping(Iterable<? extends KeyStroke> iterable, Iterable<KeyStroke> iterable2) {
+        StringBuilder from = new StringBuilder();
+        StringBuilder to = new StringBuilder();
+        for (KeyStroke ks: iterable) from.append(ks.getCharacter());
+        for (KeyStroke ks: iterable2) to.append(ks.getCharacter());
+        VrapperLog.info("remapping " + from + " to " + to);
+    	Stack<KeyStroke> strokes = new Stack<KeyStroke>();
+    	for (KeyStroke key: iterable)
+    		strokes.push(key);
+    	State<SimpleRemapping> state = leafState(strokes.pop(), new SimpleRemapping(iterable2));
+    	while (!strokes.empty())
+    		state = transitionState(strokes.pop(), state);
+        keymap.addMapping(state);
     }
 
 }

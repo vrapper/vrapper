@@ -3,6 +3,12 @@ package net.sourceforge.vrapper.keymap.vim;
 import static java.util.Arrays.asList;
 import static net.sourceforge.vrapper.keymap.StateUtils.union;
 import static net.sourceforge.vrapper.vim.commands.BorderPolicy.LINE_WISE;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import net.sourceforge.vrapper.keymap.CovariantState;
 import net.sourceforge.vrapper.keymap.HashMapState;
 import net.sourceforge.vrapper.keymap.KeyBinding;
@@ -35,6 +41,23 @@ public class ConstructorWrappers {
 	public static KeyStroke key(int modifiers, SpecialKey key) {
 		return new SimpleKeyStroke(modifiers, key);
 	}
+
+    private static final Pattern pattern = Pattern.compile("<(.+)>");
+
+    public static Iterable<KeyStroke> parseKeyStrokes(String s) {
+        List<KeyStroke> result = new ArrayList<KeyStroke>();
+        Matcher m = pattern.matcher(s);
+        if (m.matches()) {
+            String key = m.group(1).toLowerCase();
+            if (key.startsWith("c-")) {
+                result.add(ctrlKey(key.charAt(2)));
+            }
+        }
+        if (result.isEmpty())
+            result.add(key(s.charAt(0)));
+        return result;
+    }
+
 
 	private static int maybeShift(char key) {
 		int modifiers = 0;
@@ -104,6 +127,10 @@ public class ConstructorWrappers {
 		return binding(k, transition(state));
 	}
 
+	public static<T> KeyBinding<T> transitionBind(KeyStroke k, State<T> state) {
+		return binding(k, transition(state));
+	}
+
 	public static<T> KeyBinding<T> transitionBind(char k, T value, State<T> state) {
 		return binding(k, transition(value, state));
 	}
@@ -118,7 +145,17 @@ public class ConstructorWrappers {
 	}
 
 	@SuppressWarnings("unchecked")
+	public static<T> State<T> leafState(KeyStroke k, T value) {
+		return state(leafBind(k, value));
+	}
+
+	@SuppressWarnings("unchecked")
 	public static<T> State<T> transitionState(char k, State<T> state) {
+		return state(transitionBind(k, state));
+	}
+
+	@SuppressWarnings("unchecked")
+	public static<T> State<T> transitionState(KeyStroke k, State<T> state) {
 		return state(transitionBind(k, state));
 	}
 

@@ -1,57 +1,81 @@
 package net.sourceforge.vrapper.keymap;
 
-import java.util.HashSet;
-
-import net.sourceforge.vrapper.utils.Function;
+import net.sourceforge.vrapper.log.VrapperLog;
+import net.sourceforge.vrapper.utils.StringUtils;
 
 /**
  * Wraps another state to support remapping of keystrokes.
- *
- * @author Matthias Radig
  */
-public class RemappingState<T> extends ConvertingState<T, Remapping> implements Function<T, Remapping>{
 
-    private final State<T> wrappedState;
+public class RemappingState<T> implements State<T>, Remapper<T> {
 
-    public RemappingState(State<T> wrapped) {
-        super(null, new EmptyState<Remapping>());
-        wrappedState = wrapped;
+    State<Remapping> remappings;
+    State<T> wrapped;
+
+    private RemappingState(State<T> wrapped) {
+        this(wrapped, new EmptyState<Remapping>());
     }
 
-    public T call(Remapping remapping) {
-        State<T> state = remapping.isRecursive() ? this : wrappedState;
-        for (KeyStroke stroke : remapping.getKeyStrokes()) {
-            Transition<T> trans = state.press(stroke);
-            if (trans == null) {
-                return null;
-            }
-            state = trans.getNextState();
-            if (state == null) {
-                T value = trans.getValue();
-                return value;
-            }
-        }
-        return null;
+    private RemappingState(State<T> wrapped, State<Remapping> remappings) {
+        this.wrapped = wrapped;
+        this.remappings = remappings;
     }
 
-    public void addMapping(Remapping mapping) {
-        super.addMapping(this, mapping);
-    }
-
-    @Override
     public Transition<T> press(KeyStroke key) {
-        Transition<T> t = super.press(key);
-        return t == null ? wrappedState.press(key) : t;
+        Transition<Remapping> transition = remappings.press(key);
+        if (transition == null)
+            return null;
+        Transition<T> keysTransition = getIt(transition.getValue());
+        State<Remapping> keysState = transition.getNextState();
+        State<T> follow = null;
+        if (keysState != null)
+            follow = new RemappingState<T>(wrapped, keysState);
+        if(follow != null) {
+            if (keysTransition == null)
+                return new SimpleTransition<T>(follow);
+            @SuppressWarnings("unchecked")
+            State<T> nextState = StateUtils.union(keysTransition.getNextState(), follow);
+            return new SimpleTransition<T>(keysTransition.getValue(), nextState);
+        }
+        return keysTransition;
     }
 
-    @Override
-    public Iterable<KeyStroke> supportedKeys() {
-        HashSet<KeyStroke> set = new HashSet<KeyStroke>();
-        set.addAll(map.keySet());
-        for (KeyStroke stroke : wrappedState.supportedKeys()) {
-            set.add(stroke);
+    private Transition<T> getIt(Remapping remapping) {
+        if (remapping == null)
+            return null;
+        State<T> nextState = remapping.isRecursive() ? this : wrapped;
+        Transition<T> result = null;
+        for (KeyStroke stroke : remapping.getKeyStrokes()) {
+            if (nextState == null)
+                return null;
+            result = nextState.press(stroke);
+            if (result == null)
+                return null;
+            nextState = result.getNextState();
         }
-        return set;
+        return result;
+    }
+
+    public static<T> Remapper<T> wrap(State<T> wrapped) {
+        return new RemappingState<T>(wrapped);
+    }
+
+    public Iterable<KeyStroke> supportedKeys() {
+        return remappings.supportedKeys();
+    }
+
+    public State<T> union(State<T> other) {
+        return new UnionState<T>(this, other);
+    }
+
+    public void addMapping(State<? extends Remapping> mappings) {
+        @SuppressWarnings("unchecked")
+        State<Remapping> castState = (State<Remapping>) mappings;
+        remappings = castState.union(remappings);
+    }
+
+    public State<T> getState() {
+        return new UnionState<T>(this, wrapped);
     }
 
 }

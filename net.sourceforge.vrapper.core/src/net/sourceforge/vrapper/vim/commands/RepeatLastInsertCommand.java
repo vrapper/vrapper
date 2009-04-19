@@ -28,6 +28,8 @@ public class RepeatLastInsertCommand extends CountAwareCommand {
 	public static void doIt(EditorAdaptor editorAdaptor, Motion motion, int count) {
 		if (motion != null)
 			MotionCommand.doIt(editorAdaptor, motion);
+		if (count == NO_COUNT_GIVEN)
+		    count = 1;
 		Position position = editorAdaptor.getCursorService().getPosition();
 		RegisterContent registerContent = editorAdaptor.getRegisterManager().getLastEditRegister().getContent();
 		if (registerContent != null) {

@@ -1,5 +1,6 @@
 package net.sourceforge.vrapper.utils;
 
+
 public class StringUtils {
 	public static String multiply(String str, int count) {
 		StringBuilder builder = new StringBuilder();
@@ -7,4 +8,15 @@ public class StringUtils {
 			builder.append(str);
 		return builder.toString();
 	}
+
+    public static String join(String separator, Iterable<?> items) {
+        StringBuilder builder = new StringBuilder();
+        String sep = "";
+        for (Object item: items) {
+            builder.append(sep);
+            builder.append(item);
+            sep = separator;
+        }
+        return builder.toString();
+    }
 }

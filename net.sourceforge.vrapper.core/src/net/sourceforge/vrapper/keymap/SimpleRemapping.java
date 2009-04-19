@@ -9,16 +9,13 @@ import java.util.Arrays;
  */
 public class SimpleRemapping implements Remapping {
 
-    private final KeyStroke key;
     private final Iterable<KeyStroke> keystrokes;
 
-    public SimpleRemapping(KeyStroke key, KeyStroke mapped) {
-        this(key, Arrays.asList(mapped));
+    public SimpleRemapping(KeyStroke mapped) {
+        this(Arrays.asList(mapped));
     }
 
-    public SimpleRemapping(KeyStroke key, Iterable<KeyStroke> mapped) {
-        super();
-        this.key = key;
+    public SimpleRemapping(Iterable<KeyStroke> mapped) {
         this.keystrokes = mapped;
     }
 
@@ -28,18 +25,6 @@ public class SimpleRemapping implements Remapping {
 
     public boolean isRecursive() {
         return false;
-    }
-
-    public Transition<Remapping> press(KeyStroke key) {
-        return new SimpleTransition<Remapping>(this);
-    }
-
-    public Iterable<KeyStroke> supportedKeys() {
-        return Arrays.asList(key);
-    }
-
-    public State<Remapping> union(State<Remapping> other) {
-        throw new UnsupportedOperationException("union not supported");
     }
 
 }

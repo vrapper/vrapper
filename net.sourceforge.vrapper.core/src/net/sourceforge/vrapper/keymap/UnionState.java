@@ -8,12 +8,13 @@ import java.util.Set;
 
 public class UnionState<T> implements State<T> {
 
-    private final State<T> state1;
-    private final State<T> state2;
+    protected final State<T> state1;
+    protected final State<T> state2;
 
-    public UnionState(State<T> state1, State<T> state2) {
-        this.state1 = state1;
-        this.state2 = state2;
+    @SuppressWarnings("unchecked")
+	public UnionState(State<? extends T> state1, State<? extends T> other) {
+        this.state1 = (State<T>) state1;
+        this.state2 = (State<T>) other;
     }
 
     public Transition<T> press(KeyStroke key) {

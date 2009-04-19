@@ -35,13 +35,14 @@ public class HashMapState<T> implements State<T> {
         return map.keySet();
     }
 
-    public State<T> union(State<T> other) {
+	public State<T> union(State<T> other) {
         HashMapState<T> result = new HashMapState<T>(new HashMap<KeyStroke, Transition<T>>(map));
         for(KeyStroke key: other.supportedKeys()) {
+        	Transition<T> others = other.press(key);
             if (result.map.containsKey(key)) {
-                result.map.put(key, transitionUnion(result.map.get(key), other.press(key)));
+				result.map.put(key, transitionUnion(result.map.get(key), others));
             } else {
-                result.map.put(key, other.press(key));
+                result.map.put(key, others);
             }
         }
         return result;

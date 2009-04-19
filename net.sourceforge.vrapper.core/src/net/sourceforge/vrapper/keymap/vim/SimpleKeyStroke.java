@@ -1,7 +1,11 @@
 package net.sourceforge.vrapper.keymap.vim;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SpecialKey;
+import net.sourceforge.vrapper.utils.StringUtils;
 
 public class SimpleKeyStroke implements KeyStroke {
 
@@ -36,6 +40,20 @@ public class SimpleKeyStroke implements KeyStroke {
     @Override
     public int hashCode() {
         return modifiers ^ character << 16 ^ (specialKey == null ? 0 : specialKey.hashCode());
+    }
+
+    @Override
+    public String toString() {
+        // this is mainly for debugging
+        List<String> pieces = new ArrayList<String>();
+        if ((modifiers & SHIFT) != 0)
+            pieces.add("SHIFT");
+        if ((modifiers & ALT) != 0)
+            pieces.add("ALT");
+        if ((modifiers & CTRL) != 0)
+            pieces.add("CTRL");
+        pieces.add(specialKey == null ? Character.toString(character) : specialKey.toString());
+        return "SimpleKeyStroke(" + StringUtils.join("+", pieces) + ")";
     }
 
     @Override

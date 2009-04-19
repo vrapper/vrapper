@@ -12,7 +12,7 @@ public class EmptyState<T> implements State<T> {
         return new ArrayList<KeyStroke>();
     }
 
-    public State<T> union(State<T> other) {
+	public State<T> union(State<T> other) {
         return other;
     }
 
