@@ -138,5 +138,9 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         return serviceProvider.getService(serviceClass);
     }
 
+    public EditorMode getMode(String name) {
+        return modeMap.get(name);
+    }
+
 }
 

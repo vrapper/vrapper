@@ -17,6 +17,9 @@ import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.editText;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.go;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.javaEditText;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
+import net.sourceforge.vrapper.keymap.KeyStroke;
+import net.sourceforge.vrapper.keymap.RemappingState;
+import net.sourceforge.vrapper.keymap.SimpleRemapping;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.vim.CountingState;
 import net.sourceforge.vrapper.keymap.vim.GoThereState;
@@ -57,6 +60,9 @@ import net.sourceforge.vrapper.vim.commands.motions.MoveWordRight;
 public class NormalMode extends CommandBasedMode {
 
     public static final String NAME = "normal mode";
+
+    private RemappingState<Command> keymap;
+
     public NormalMode(EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
     }
@@ -164,7 +170,8 @@ public class NormalMode extends CommandBasedMode {
                                         leafCtrlBind('i', dontRepeat(cmd("org.eclipse.ui.navigate.forwardHistory"))),
                                         leafCtrlBind('o', dontRepeat(cmd("org.eclipse.ui.navigate.backwardHistory"))))));
 
-        return commands;
+        keymap = new RemappingState<Command>(commands);
+        return keymap;
     }
 
     @Override
@@ -204,6 +211,13 @@ public class NormalMode extends CommandBasedMode {
 
     public String getName() {
         return NAME;
+    }
+
+    /*
+     * FIXME: does not really belong here
+     */
+    public void overrideMapping(KeyStroke key, KeyStroke mapping) {
+        keymap.addMapping(new SimpleRemapping(key, mapping));
     }
 
 }

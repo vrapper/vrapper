@@ -28,9 +28,9 @@ public class CommandLineParser extends AbstractCommandParser {
         //        mapping.add("q", close);
         //        mapping.add("q!", new CloseAction(true));
         //        mapping.add("set", buildConfigEvaluator());
-        //        Evaluator remap = new KeyMapper();
-        //        mapping.add("no", remap);
-        //        mapping.add("noremap", remap);
+        Evaluator remap = new KeyMapper();
+        mapping.add("no", remap);
+        mapping.add("noremap", remap);
         //        Action formatAll = new FormatAllAction();
         //        mapping.add("formatall", formatAll);
         //        mapping.add("format", formatAll);

@@ -9,10 +9,12 @@ import net.sourceforge.vrapper.platform.UserInterfaceService;
 import net.sourceforge.vrapper.platform.ViewportService;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.TextRange;
+import net.sourceforge.vrapper.vim.modes.EditorMode;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
 
 public interface EditorAdaptor {
     void changeMode(String modeName);
+    EditorMode getMode(String name);
     public boolean handleKey(KeyStroke key);
 
     TextContent getModelContent();

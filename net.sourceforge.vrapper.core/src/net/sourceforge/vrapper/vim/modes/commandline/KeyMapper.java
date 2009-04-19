@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.vim.SimpleKeyStroke;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.modes.NormalMode;
 
 public class KeyMapper implements Evaluator {
 
@@ -16,11 +17,10 @@ public class KeyMapper implements Evaluator {
         String lhs = command.poll();
         String rhs = command.poll();
         if (lhs != null && rhs != null) {
-            // TODO: change mapping
-            //            vim.getNormalMode().overrideMapping(
-            //                    parseInputEvent(lhs),
-            //                    parseInputEvent(rhs));
-
+            NormalMode mode = (NormalMode) vim.getMode(NormalMode.NAME);
+            mode.overrideMapping(
+                    parseKeyStroke(lhs),
+                    parseKeyStroke(rhs));
         }
         return null;
     }
