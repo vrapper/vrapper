@@ -36,5 +36,4 @@ public class CommandLineMode extends AbstractMode {
         editorAdaptor.getUserInterfaceService().setCommandLine(buffer);
         return true;
     }
-
 }

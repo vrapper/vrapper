@@ -2,6 +2,11 @@ package net.sourceforge.vrapper.vim;
 
 import static java.lang.String.format;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,10 +28,12 @@ import net.sourceforge.vrapper.vim.modes.EditorMode;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.modes.VisualMode;
+import net.sourceforge.vrapper.vim.modes.commandline.CommandLineParser;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
 
 public class DefaultEditorAdaptor implements EditorAdaptor {
 
+    private static final String CONFIG_FILE_NAME = ".vrapperrc";
     private EditorMode currentMode;
     private final Map<String, EditorMode> modeMap = new HashMap<String, EditorMode>();
     private final TextContent modelContent;
@@ -60,8 +67,36 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         for (EditorMode mode: modes) {
             modeMap.put(mode.getName(), mode);
         }
+        readConfiguration();
         changeMode(NormalMode.NAME);
     }
+
+    private void readConfiguration() {
+        File homeDir = new File(System.getProperty("user.home"));
+        File config = new File(homeDir, CONFIG_FILE_NAME);
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new FileReader(config));
+            String line;
+            CommandLineParser parser = new CommandLineParser(this);
+            while((line = reader.readLine()) != null) {
+                parser.parseAndExecute(null, line.trim());
+            }
+        } catch (FileNotFoundException e) {
+            // ignore
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if(reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
 
     public void changeMode(String modeName) {
         EditorMode newMode = modeMap.get(modeName);
