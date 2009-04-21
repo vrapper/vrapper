@@ -9,6 +9,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Queue;
 
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.log.VrapperLog;
@@ -46,6 +47,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     private final HistoryService historyService;
     private final UserInterfaceService userInterfaceService;
     private final ServiceProvider serviceProvider;
+    private final KeyStrokeTranslator keyStrokeTranslator;
 
     public DefaultEditorAdaptor(Platform editor, RegisterManager registerManager) {
         this.modelContent = editor.getModelContent();
@@ -57,6 +59,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         this.serviceProvider = editor.getServiceProvider();
         viewportService = editor.getViewportService();
         userInterfaceService = editor.getUserInterfaceService();
+        keyStrokeTranslator = new KeyStrokeTranslator();
 
         fileService = editor.getFileService();
         EditorMode[] modes = {
@@ -116,6 +119,22 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
 
     public boolean handleKey(KeyStroke key) {
         if (currentMode != null) {
+            if (currentMode instanceof NormalMode) {
+                boolean inMapping = keyStrokeTranslator.processKeyStroke(
+                        ((NormalMode) currentMode).getKeyMap(), key);
+                if (inMapping) {
+                    Queue<RecursiveKeyStroke> resultingKeyStrokes = keyStrokeTranslator.resultingKeyStrokes();
+                    while (!resultingKeyStrokes.isEmpty()) {
+                        RecursiveKeyStroke next = resultingKeyStrokes.poll();
+                        if (next.isRecursive()) {
+                            handleKey(next);
+                        } else {
+                            currentMode.handleKey(next);
+                        }
+                    }
+                    return true;
+                }
+            }
             return currentMode.handleKey(key);
         }
         return false;
