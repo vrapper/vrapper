@@ -7,7 +7,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import net.sourceforge.vrapper.keymap.KeyStroke;
-import net.sourceforge.vrapper.keymap.SpecialKey;
 import static net.sourceforge.vrapper.keymap.KeyStroke.*;
 
 import org.junit.Test;
