@@ -9,6 +9,7 @@ import net.sourceforge.vrapper.platform.ServiceProvider;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.platform.UserInterfaceService;
 import net.sourceforge.vrapper.platform.ViewportService;
+import net.sourceforge.vrapper.utils.DefaultKeyMapProvider;
 
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.ITextViewerExtension6;
@@ -24,6 +25,7 @@ public class EclipsePlatform implements Platform {
     private HistoryService historyService;
     private final EclipseServiceProvider serviceProvider;
     private final EclipseUserInterfaceService userInterfaceService;
+    private final DefaultKeyMapProvider keyMapProvider;
 
     public EclipsePlatform(AbstractTextEditor abstractTextEditor, ITextViewer textViewer) {
         cursorAndSelection = new EclipseCursorAndSelection(textViewer);
@@ -32,6 +34,7 @@ public class EclipsePlatform implements Platform {
         viewportService = new EclipseViewportService(textViewer);
         serviceProvider = new EclipseServiceProvider(abstractTextEditor);
         userInterfaceService = new EclipseUserInterfaceService(abstractTextEditor, textViewer);
+        keyMapProvider = new DefaultKeyMapProvider();
         if (textViewer instanceof ITextViewerExtension6) {
             IUndoManager delegate = ((ITextViewerExtension6)textViewer).getUndoManager();
             EclipseHistoryService manager = new EclipseHistoryService(textViewer.getTextWidget(), delegate);
@@ -78,4 +81,7 @@ public class EclipsePlatform implements Platform {
         return userInterfaceService;
     }
 
+    public DefaultKeyMapProvider getKeyMapProvider() {
+        return keyMapProvider;
+    }
 }
