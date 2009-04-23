@@ -4,11 +4,9 @@ import static java.util.Arrays.asList;
 import static net.sourceforge.vrapper.keymap.StateUtils.union;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.key;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
-import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafState;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.parseKeyStrokes;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
-import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionState;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -21,9 +19,6 @@ import net.sourceforge.vrapper.keymap.ConvertingState;
 import net.sourceforge.vrapper.keymap.EmptyState;
 import net.sourceforge.vrapper.keymap.HashMapState;
 import net.sourceforge.vrapper.keymap.KeyStroke;
-import net.sourceforge.vrapper.keymap.Remapper;
-import net.sourceforge.vrapper.keymap.RemappingState;
-import net.sourceforge.vrapper.keymap.SimpleRemapping;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.UnionState;
 import net.sourceforge.vrapper.keymap.vim.CountingState;
@@ -36,12 +31,12 @@ import org.junit.Test;
 
 public class StateAndTransitionTests {
 
-    private Integer obj1 = 1;
-    private Integer obj2 = 2;
-    private Integer answer = 42;
+    private final Integer obj1 = 1;
+    private final Integer obj2 = 2;
+    private final Integer answer = 42;
 
     @SuppressWarnings("unchecked")
-    private State<Integer> state = state(leafBind('1', obj1), leafBind('2',
+    private final State<Integer> state = state(leafBind('1', obj1), leafBind('2',
             obj2), transitionBind('4', leafBind('2', answer)));
 
     @Test
@@ -258,37 +253,14 @@ public class StateAndTransitionTests {
 
         State<Integer> unionState = new UnionState(state1234, state3456);
         Set<KeyStroke> expected = new HashSet<KeyStroke>();
-        for (char chr = '1'; chr <= '6'; chr++)
+        for (char chr = '1'; chr <= '6'; chr++) {
             expected.add(key(chr));
+        }
         assertEquals(expected, unionState.supportedKeys());
-        for (char chr = '7'; chr <= '9'; chr++)
+        for (char chr = '7'; chr <= '9'; chr++) {
             expected.add(key(chr));
+        }
         assertEquals(expected, unionState.union(state789).supportedKeys());
-    }
-
-    @Test
-    public void testRemappingState() {
-        @SuppressWarnings("unchecked")
-        State<Integer> wrapped = state(
-                leafBind('1', 1),
-                leafBind('2', 2),
-                leafBind('3', 3),
-                transitionBind('4', leafBind('2', 42)));
-        Remapper<Integer> remap = RemappingState.wrap(wrapped);
-        State<Integer> remappingState = remap.getState();
-        remap.addMapping(leafState('7', new SimpleRemapping(asList(key('4'), key('2')))));
-        remap.addMapping(leafState('1', new SimpleRemapping(asList(key('3')))));
-        remap.addMapping(transitionState('4', leafState('9', new SimpleRemapping(asList(key('1'))))));
-        remap.addMapping(leafState('5', new SimpleRemapping(asList(key('4')))));
-        remap.addMapping(transitionState('4', leafState('0', new SimpleRemapping(asList(key('4'))))));
-
-        assertReturnsValue(2,   remappingState,   "2");
-        assertReturnsValue(42,  remappingState,  "42");
-        assertReturnsValue(42,  remappingState,   "7");
-        assertReturnsValue(3,   remappingState,   "1");
-        assertReturnsValue(1,   remappingState,  "49");
-        assertReturnsValue(42,  remappingState,  "52");
-        assertReturnsValue(42,  remappingState, "402");
     }
 
     @Test
@@ -297,11 +269,12 @@ public class StateAndTransitionTests {
         assertEquals(asList(key(0, 'a'), key(0, 'b')), parseKeyStrokes("ab"));
     }
 
-    private static<T> void assertReturnsValue(T expected, State<T> state, String keys) {
-        int last = keys.length() - 1;
-        for (int i = 0; i < last; i++)
-            state = state.press(key(keys.charAt(i))).getNextState();
-        assertEquals(expected, state.press(key(keys.charAt(last))).getValue());
-    }
+//    private static<T> void assertReturnsValue(T expected, State<T> state, String keys) {
+//        int last = keys.length() - 1;
+//        for (int i = 0; i < last; i++) {
+//            state = state.press(key(keys.charAt(i))).getNextState();
+//        }
+//        assertEquals(expected, state.press(key(keys.charAt(last))).getValue());
+//    }
 
 }
