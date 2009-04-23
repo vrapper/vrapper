@@ -1,7 +1,9 @@
 package net.sourceforge.vrapper.vim.modes;
 
+import net.sourceforge.vrapper.keymap.KeyMap;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.vim.ConstructorWrappers;
+import net.sourceforge.vrapper.platform.KeyMapProvider;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.modes.commandline.CommandLineParser;
 
@@ -36,5 +38,9 @@ public class CommandLineMode extends AbstractMode {
         String buffer = isEnabled ? parser.getBuffer() : "";
         editorAdaptor.getUserInterfaceService().setCommandLine(buffer);
         return true;
+    }
+
+    public KeyMap resolveKeyMap(KeyMapProvider provider) {
+        return provider.getKeyMap(KEYMAP_NAME);
     }
 }

@@ -2,8 +2,10 @@
 package net.sourceforge.vrapper.vim.modes;
 
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.key;
+import net.sourceforge.vrapper.keymap.KeyMap;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SpecialKey;
+import net.sourceforge.vrapper.platform.KeyMapProvider;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.ContentType;
@@ -92,6 +94,10 @@ public class InsertMode extends AbstractMode {
         }
         //			return Character.isLetterOrDigit(event.character); // FIXME: no enter, no backspace
         return false;
+    }
+
+    public KeyMap resolveKeyMap(KeyMapProvider provider) {
+        return provider.getKeyMap(KEYMAP_NAME);
     }
 
 }

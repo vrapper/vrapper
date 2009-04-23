@@ -1,7 +1,5 @@
 package net.sourceforge.vrapper.vim.modes;
 
-import net.sourceforge.vrapper.keymap.KeyMap;
-import net.sourceforge.vrapper.platform.KeyMapProvider;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 
 public abstract class AbstractMode implements EditorMode {
@@ -12,9 +10,4 @@ public abstract class AbstractMode implements EditorMode {
     public AbstractMode(EditorAdaptor editorAdaptor) {
         this.editorAdaptor = editorAdaptor;
     }
-
-    public KeyMap resolveKeyMap(KeyMapProvider provider) {
-        return null;
-    }
-
 }

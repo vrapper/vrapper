@@ -158,7 +158,6 @@ public abstract class CommandBasedMode extends AbstractMode {
         return true;
     }
 
-    @Override
     public KeyMap resolveKeyMap(KeyMapProvider provider) {
         return provider.getKeyMap(keyMapResolver.getKeyMapName());
     }
