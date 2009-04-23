@@ -8,6 +8,7 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionB
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.dontRepeat;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.editText;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
+import net.sourceforge.vrapper.keymap.EmptyState;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.State;
@@ -28,6 +29,7 @@ import net.sourceforge.vrapper.vim.commands.YankOperation;
 public class VisualMode extends CommandBasedMode {
 
     public static final String NAME = "visual mode";
+    public static final String KEYMAP_NAME = "Visual Mode Keymap";
 
     public VisualMode(EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
@@ -84,6 +86,11 @@ public class VisualMode extends CommandBasedMode {
 
     public String getName() {
         return NAME;
+    }
+
+    @Override
+    protected KeyMapResolver buildKeyMapResolver() {
+        return new KeyMapResolver(new EmptyState<String>(), KEYMAP_NAME);
     }
 
 }

@@ -12,4 +12,5 @@ public interface Platform {
     HistoryService getHistoryService();
     UserInterfaceService getUserInterfaceService();
     ServiceProvider getServiceProvider();
+    KeyMapProvider getKeyMapProvider();
 }

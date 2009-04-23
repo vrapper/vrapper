@@ -2,6 +2,7 @@ package net.sourceforge.vrapper.vim.modes;
 
 import static java.lang.Math.min;
 import static net.sourceforge.vrapper.keymap.StateUtils.union;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.convertKeyStroke;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafCtrlBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.operatorCmds;
@@ -17,7 +18,6 @@ import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.editText;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.go;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.javaEditText;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
-import net.sourceforge.vrapper.keymap.KeyMap;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.vim.CountingState;
 import net.sourceforge.vrapper.keymap.vim.GoThereState;
@@ -40,6 +40,7 @@ import net.sourceforge.vrapper.vim.commands.OptionDependentTextObject;
 import net.sourceforge.vrapper.vim.commands.PasteAfterCommand;
 import net.sourceforge.vrapper.vim.commands.PasteBeforeCommand;
 import net.sourceforge.vrapper.vim.commands.RedoCommand;
+import net.sourceforge.vrapper.vim.commands.ReplaceCommand;
 import net.sourceforge.vrapper.vim.commands.StickToEOLCommand;
 import net.sourceforge.vrapper.vim.commands.TextObject;
 import net.sourceforge.vrapper.vim.commands.TextOperation;
@@ -57,13 +58,20 @@ import net.sourceforge.vrapper.vim.commands.motions.MoveWordRight;
 
 public class NormalMode extends CommandBasedMode {
 
+    public static final String KEYMAP_NAME = "Normal Mode Keymap";
     public static final String NAME = "normal mode";
 
-    private final KeyMap keymap;
 
     public NormalMode(EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
-        this.keymap = new KeyMap();
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    protected KeyMapResolver buildKeyMapResolver() {
+        State<String> state = state(leafBind('r', KeyMapResolver.NO_KEYMAP));
+        State<String> countEater = new CountConsumingState(state);
+        return new KeyMapResolver(countEater, KEYMAP_NAME);
     }
 
     @Override
@@ -147,27 +155,28 @@ public class NormalMode extends CommandBasedMode {
                         leafBind('x', deleteNext),
                         leafBind('X', deletePrevious),
                         leafBind('s', seq(deleteNext, new ChangeToInsertModeCommand())), // FIXME: this should be compound edit
+                        transitionBind('r', convertKeyStroke(ReplaceCommand.KEYSTROKE_CONVERTER)),
                         transitionBind('z',
                                 leafBind('o', dontRepeat(editText("folding.expand"))),
                                 leafBind('R', dontRepeat(editText("folding.expand_all"))),
                                 leafBind('c', dontRepeat(editText("folding.collapse"))),
                                 leafBind('M', dontRepeat(editText("folding.collapse_all")))),
-                                transitionBind('g',
-                                        leafBind('r', javaEditText("refactor.quickMenu")),
-                                        leafBind('R', javaEditText("rename.element")),
-                                        leafBind('t', cmd("org.eclipse.ui.window.nextEditor")),
-                                        leafBind('T', cmd("org.eclipse.ui.window.previousEditor"))),
-                                        leafBind('/', dontRepeat(edit("findIncremental"))),
-                                        leafBind('?', dontRepeat(edit("findIncrementalReverse"))),
-                                        leafBind('u', undo),
-                                        leafCtrlBind('r', redo),
-                                        leafCtrlBind('b', go("goto.pageUp")),
-                                        leafCtrlBind('f', go("goto.pageDown")),
-                                        leafCtrlBind('y', dontRepeat(editText("scroll.lineUp"))),
-                                        leafCtrlBind('e', dontRepeat(editText("scroll.lineDown"))),
-                                        leafCtrlBind(']', seq(javaEditText("open.editor"), deselectAll)), // NOTE: deselect won't work in other editor
-                                        leafCtrlBind('i', dontRepeat(cmd("org.eclipse.ui.navigate.forwardHistory"))),
-                                        leafCtrlBind('o', dontRepeat(cmd("org.eclipse.ui.navigate.backwardHistory"))))));
+                        transitionBind('g',
+                                leafBind('r', javaEditText("refactor.quickMenu")),
+                                leafBind('R', javaEditText("rename.element")),
+                                leafBind('t', cmd("org.eclipse.ui.window.nextEditor")),
+                                leafBind('T', cmd("org.eclipse.ui.window.previousEditor"))),
+                                leafBind('/', dontRepeat(edit("findIncremental"))),
+                                leafBind('?', dontRepeat(edit("findIncrementalReverse"))),
+                                leafBind('u', undo),
+                                leafCtrlBind('r', redo),
+                                leafCtrlBind('b', go("goto.pageUp")),
+                                leafCtrlBind('f', go("goto.pageDown")),
+                                leafCtrlBind('y', dontRepeat(editText("scroll.lineUp"))),
+                                leafCtrlBind('e', dontRepeat(editText("scroll.lineDown"))),
+                                leafCtrlBind(']', seq(javaEditText("open.editor"), deselectAll)), // NOTE: deselect won't work in other editor
+                                leafCtrlBind('i', dontRepeat(cmd("org.eclipse.ui.navigate.forwardHistory"))),
+                                leafCtrlBind('o', dontRepeat(cmd("org.eclipse.ui.navigate.backwardHistory"))))));
 
         return commands;
     }
@@ -210,12 +219,4 @@ public class NormalMode extends CommandBasedMode {
     public String getName() {
         return NAME;
     }
-
-    /*
-     * FIXME: does not belong here either
-     */
-    public KeyMap getKeyMap() {
-        return keymap;
-    }
-
 }

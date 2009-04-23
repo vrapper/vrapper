@@ -4,6 +4,7 @@ import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.FileService;
 import net.sourceforge.vrapper.platform.HistoryService;
+import net.sourceforge.vrapper.platform.KeyMapProvider;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.platform.UserInterfaceService;
 import net.sourceforge.vrapper.platform.ViewportService;
@@ -25,6 +26,7 @@ public interface EditorAdaptor {
     HistoryService getHistory();
     RegisterManager getRegisterManager();
     UserInterfaceService getUserInterfaceService();
+    KeyMapProvider getKeyMapProvider();
 
     Position getPosition();
     void setPosition(Position destination, boolean updateStickyColumn);

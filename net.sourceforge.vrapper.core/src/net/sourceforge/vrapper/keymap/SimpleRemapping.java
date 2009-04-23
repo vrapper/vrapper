@@ -10,13 +10,16 @@ import java.util.Arrays;
 public class SimpleRemapping implements Remapping {
 
     private final Iterable<KeyStroke> keystrokes;
+    private final boolean recursive;
 
     public SimpleRemapping(KeyStroke mapped) {
-        this(Arrays.asList(mapped));
+        this(Arrays.asList(mapped), false);
     }
 
-    public SimpleRemapping(Iterable<KeyStroke> mapped) {
-        this.keystrokes = mapped;
+    public SimpleRemapping(Iterable<KeyStroke> keystrokes, boolean recursive) {
+        super();
+        this.keystrokes = keystrokes;
+        this.recursive = recursive;
     }
 
     public Iterable<KeyStroke> getKeyStrokes() {
@@ -24,7 +27,7 @@ public class SimpleRemapping implements Remapping {
     }
 
     public boolean isRecursive() {
-        return false;
+        return recursive;
     }
 
 }

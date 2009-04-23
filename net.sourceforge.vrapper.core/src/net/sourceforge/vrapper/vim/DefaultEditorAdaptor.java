@@ -11,11 +11,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
 
+import net.sourceforge.vrapper.keymap.KeyMap;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.FileService;
 import net.sourceforge.vrapper.platform.HistoryService;
+import net.sourceforge.vrapper.platform.KeyMapProvider;
 import net.sourceforge.vrapper.platform.Platform;
 import net.sourceforge.vrapper.platform.SelectionService;
 import net.sourceforge.vrapper.platform.ServiceProvider;
@@ -48,6 +50,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     private final UserInterfaceService userInterfaceService;
     private final ServiceProvider serviceProvider;
     private final KeyStrokeTranslator keyStrokeTranslator;
+    private final KeyMapProvider keyMapProvider;
 
     public DefaultEditorAdaptor(Platform editor, RegisterManager registerManager) {
         this.modelContent = editor.getModelContent();
@@ -60,6 +63,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         viewportService = editor.getViewportService();
         userInterfaceService = editor.getUserInterfaceService();
         keyStrokeTranslator = new KeyStrokeTranslator();
+        keyMapProvider = editor.getKeyMapProvider();
 
         fileService = editor.getFileService();
         EditorMode[] modes = {
@@ -119,11 +123,12 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
 
     public boolean handleKey(KeyStroke key) {
         if (currentMode != null) {
-            if (currentMode instanceof NormalMode) {
-                boolean inMapping = keyStrokeTranslator.processKeyStroke(
-                        ((NormalMode) currentMode).getKeyMap(), key);
+            KeyMap map = currentMode.resolveKeyMap(keyMapProvider);
+            if (map != null) {
+                boolean inMapping = keyStrokeTranslator.processKeyStroke(map, key);
                 if (inMapping) {
-                    Queue<RecursiveKeyStroke> resultingKeyStrokes = keyStrokeTranslator.resultingKeyStrokes();
+                    Queue<RecursiveKeyStroke> resultingKeyStrokes =
+                        keyStrokeTranslator.resultingKeyStrokes();
                     while (!resultingKeyStrokes.isEmpty()) {
                         RecursiveKeyStroke next = resultingKeyStrokes.poll();
                         if (next.isRecursive()) {
@@ -194,6 +199,10 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
 
     public EditorMode getMode(String name) {
         return modeMap.get(name);
+    }
+
+    public KeyMapProvider getKeyMapProvider() {
+        return keyMapProvider;
     }
 
 }

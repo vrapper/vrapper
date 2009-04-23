@@ -6,11 +6,13 @@ import static net.sourceforge.vrapper.vim.commands.BorderPolicy.EXCLUSIVE;
 import static net.sourceforge.vrapper.vim.commands.BorderPolicy.LINE_WISE;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.go;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.javaGoTo;
+import net.sourceforge.vrapper.keymap.KeyMap;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.Transition;
 import net.sourceforge.vrapper.log.VrapperLog;
+import net.sourceforge.vrapper.platform.KeyMapProvider;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.EclipseMoveCommand;
@@ -36,13 +38,17 @@ public abstract class CommandBasedMode extends AbstractMode {
 
     protected final State<Command> initialState;
     protected State<Command> currentState;
+    private final KeyMapResolver keyMapResolver;
+
     public CommandBasedMode(EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
         currentState = initialState = getInitialState();
+        keyMapResolver = buildKeyMapResolver();
     }
 
     protected abstract State<Command> getInitialState();
     protected abstract void placeCursor();
+    protected abstract KeyMapResolver buildKeyMapResolver();
 
     public State<Motion> motions() {
         final Motion moveLeft = new MoveLeft();
@@ -126,9 +132,11 @@ public abstract class CommandBasedMode extends AbstractMode {
         if (currentState == null) {
             VrapperLog.error("current state was null - this shouldn't have happened!");
             currentState = initialState;
+            keyMapResolver.reset();
         }
 
         Transition<Command> transition = currentState.press(keyStroke);
+        keyMapResolver.press(keyStroke);
         if (transition != null) {
             Command command = transition.getValue();
             currentState = transition.getNextState();
@@ -138,6 +146,7 @@ public abstract class CommandBasedMode extends AbstractMode {
         }
         if (transition == null || currentState == null) {
             currentState = initialState;
+            keyMapResolver.reset();
             if (isEnabled) {
                 commandDone();
             }
@@ -147,6 +156,11 @@ public abstract class CommandBasedMode extends AbstractMode {
         placeCursor();
 
         return true;
+    }
+
+    @Override
+    public KeyMap resolveKeyMap(KeyMapProvider provider) {
+        return provider.getKeyMap(keyMapResolver.getKeyMapName());
     }
 
     /**

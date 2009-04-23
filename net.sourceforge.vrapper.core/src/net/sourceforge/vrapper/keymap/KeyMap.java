@@ -7,13 +7,13 @@ import java.util.Iterator;
  *
  * @author Matthias Radig
  */
-public class KeyMap implements State<Remapping> {
+public class KeyMap {
 
     private final KeyMapState root = new KeyMapState();
 
     /**
      * Remaps the given keystrokes.
-     * 
+     *
      * @param strokes
      *            the keystrokes to map
      * @param mapping
@@ -25,7 +25,7 @@ public class KeyMap implements State<Remapping> {
 
     /**
      * Removes the mapping of the given keystrokes if it exists.
-     * 
+     *
      * @param strokes
      *            the keystrokes to unmap
      */
@@ -35,14 +35,6 @@ public class KeyMap implements State<Remapping> {
 
     public Transition<Remapping> press(KeyStroke key) {
         return root.press(key);
-    }
-
-    public Iterable<KeyStroke> supportedKeys() {
-        return root.supportedKeys();
-    }
-
-    public State<Remapping> union(State<Remapping> other) {
-        return root.union(other);
     }
 
     private static class KeyMapState extends HashMapState<Remapping> {

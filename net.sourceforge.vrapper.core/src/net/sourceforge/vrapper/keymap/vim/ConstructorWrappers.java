@@ -17,6 +17,7 @@ import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.Transition;
 import net.sourceforge.vrapper.utils.CaretType;
+import net.sourceforge.vrapper.utils.Function;
 import net.sourceforge.vrapper.vim.commands.ChangeCaretShapeCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.MotionTextObject;
@@ -216,6 +217,10 @@ public class ConstructorWrappers {
                 transitionBind(prefix, leafBind(key, doLinewise))); // e.g. for 'g?g?'
         State<Command> operatorCmds = new OperatorCommandState(operator, textObjects);
         return transitionState(prefix, operatorPendingState(key, doubleKey, operatorCmds));
+    }
+
+    public static <T> State<T> convertKeyStroke(Function<T, KeyStroke> converter) {
+        return new KeyStrokeConvertingState<T>(converter);
     }
 
     public static<T1, T2 extends T1> State<T1> covariant(State<T2> wrapped) {

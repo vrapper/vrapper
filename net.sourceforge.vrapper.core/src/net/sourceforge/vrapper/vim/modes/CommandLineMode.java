@@ -8,6 +8,7 @@ import net.sourceforge.vrapper.vim.modes.commandline.CommandLineParser;
 public class CommandLineMode extends AbstractMode {
 
     public static final String NAME = "command mode";
+    public static final String KEYMAP_NAME = "Command Mode Keymap";
 
     private CommandLineParser parser;
 

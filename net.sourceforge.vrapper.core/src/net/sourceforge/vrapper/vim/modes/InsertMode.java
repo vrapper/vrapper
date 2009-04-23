@@ -1,3 +1,4 @@
+
 package net.sourceforge.vrapper.vim.modes;
 
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.key;
@@ -15,20 +16,21 @@ import net.sourceforge.vrapper.vim.commands.motions.MoveLeft;
 import net.sourceforge.vrapper.vim.register.Register;
 import net.sourceforge.vrapper.vim.register.RegisterContent;
 import net.sourceforge.vrapper.vim.register.StringRegisterContent;
-public class InsertMode implements EditorMode {
 
+public class InsertMode extends AbstractMode {
+
+    public static final String NAME = "insert mode";
+    public static final String KEYMAP_NAME = "Insert Mode Keymap";
     // FIXME: change this to option some day
     public static final boolean CHANGES_ARE_ATOMIC = false;
     // FIXME: change this to something saner some day
     public static boolean inChange = false;
 
-    public static final String NAME = "insert mode";
-    private boolean isEnabled;
-    private final EditorAdaptor editorAdaptor;
     private Position startEditPosition;
 
     public InsertMode(EditorAdaptor editorAdaptor) {
-        this.editorAdaptor = editorAdaptor; }
+        super(editorAdaptor);
+    }
 
     public String getName() {
         return NAME;
