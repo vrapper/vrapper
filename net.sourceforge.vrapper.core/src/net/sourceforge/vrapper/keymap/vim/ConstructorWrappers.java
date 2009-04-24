@@ -6,6 +6,7 @@ import static net.sourceforge.vrapper.vim.commands.BorderPolicy.LINE_WISE;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import net.sourceforge.vrapper.keymap.CovariantState;
 import net.sourceforge.vrapper.keymap.HashMapState;
@@ -219,8 +220,9 @@ public class ConstructorWrappers {
         return transitionState(prefix, operatorPendingState(key, doubleKey, operatorCmds));
     }
 
-    public static <T> State<T> convertKeyStroke(Function<T, KeyStroke> converter) {
-        return new KeyStrokeConvertingState<T>(converter);
+    public static <T> State<T> convertKeyStroke(Function<T,
+            KeyStroke> converter, Set<KeyStroke> keystrokes) {
+        return new KeyStrokeConvertingState<T>(converter, keystrokes);
     }
 
     public static<T1, T2 extends T1> State<T1> covariant(State<T2> wrapped) {

@@ -4,6 +4,7 @@ import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.Function;
 import net.sourceforge.vrapper.utils.LineInformation;
+import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 
 /**
@@ -31,15 +32,17 @@ public class ReplaceCommand extends CountAwareCommand {
         if (count == NO_COUNT_GIVEN) {
             count = 1;
         }
-        int position = editorAdaptor.getPosition().getModelOffset();
+        Position position = editorAdaptor.getPosition();
         TextContent c = editorAdaptor.getModelContent();
-        LineInformation line = c.getLineInformationOfOffset(position);
-        if (position + count - 1 < line.getEndOffset()) {
+        LineInformation line = c.getLineInformationOfOffset(position.getModelOffset());
+        Position targetOffset = position.addModelOffset(count - 1);
+        if (targetOffset.getModelOffset() < line.getEndOffset()) {
             StringBuilder s = new StringBuilder();
             for(int i = 0; i < count; i++) {
                 s.append(replacement);
             }
-            c.replace(position, s.length(), s.toString());
+            c.replace(position.getModelOffset(), s.length(), s.toString());
+            editorAdaptor.setPosition(targetOffset, true);
         }
     }
 

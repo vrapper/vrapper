@@ -26,6 +26,7 @@ import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
+import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.BorderPolicy;
 import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeOperation;
@@ -155,7 +156,9 @@ public class NormalMode extends CommandBasedMode {
                         leafBind('x', deleteNext),
                         leafBind('X', deletePrevious),
                         leafBind('s', seq(deleteNext, new ChangeToInsertModeCommand())), // FIXME: this should be compound edit
-                        transitionBind('r', convertKeyStroke(ReplaceCommand.KEYSTROKE_CONVERTER)),
+                        transitionBind('r', convertKeyStroke(
+                                ReplaceCommand.KEYSTROKE_CONVERTER,
+                                VimConstants.PRINTABLE_KEYSTROKES)),
                         transitionBind('z',
                                 leafBind('o', dontRepeat(editText("folding.expand"))),
                                 leafBind('R', dontRepeat(editText("folding.expand_all"))),
