@@ -14,12 +14,15 @@ public class TestCursorAndSelection implements CursorService, SelectionService {
 	private CaretType caretType;
 
 	public Position getPosition() {
+	    if (selection != null) {
+	        return selection.getEnd();
+	    }
 		return position;
 	}
 
 	public void setPosition(Position position, boolean updateColumn) {
+	    this.selection = null;
 		this.position = position;
-		// TODO: sticky column
 	}
 
 	public Position newPositionForModelOffset(int offset) {

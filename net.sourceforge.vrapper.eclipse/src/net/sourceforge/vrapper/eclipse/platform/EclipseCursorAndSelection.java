@@ -88,7 +88,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         int start, end, pos, len;
         start = end = textViewer.getSelectedRange().x;
         len = textViewer.getSelectedRange().y;
-        pos = textViewer.getTextWidget().getCaretOffset();
+        pos = converter.widgetOffset2ModelOffset(textViewer.getTextWidget().getCaretOffset());
         if (start == pos) {
             start += len;
         } else {
@@ -109,6 +109,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
             textViewer.getTextWidget().setCaretOffset(selection.getStart().getViewOffset());
             int from = selection.getStart().getModelOffset();
             int length = !selection.isReversed() ? selection.getModelLength() : -selection.getModelLength();
+            VrapperLog.info("Set selection: " + from + " --> " + length);
             textViewer.setSelectedRange(from, length);
         }
     }

@@ -37,10 +37,10 @@ public class VisualMode extends CommandBasedMode {
 
     @Override
     protected void placeCursor() {
-        if (!isEnabled) {
-            Position leftSidePosition = editorAdaptor.getSelection().getLeftBound();
-            editorAdaptor.setPosition(leftSidePosition, false);
-        }
+//        if (!isEnabled) {
+//            Position leftSidePosition = editorAdaptor.getSelection().getLeftBound();
+//            editorAdaptor.setPosition(leftSidePosition, false);
+//        }
     }
 
     public void enterMode() {
