@@ -47,7 +47,7 @@ public class InsertMode extends AbstractMode {
             editorAdaptor.getHistory().beginCompoundChange();
             editorAdaptor.getHistory().lock();
         }
-        editorAdaptor.getCursorService().setCaret(CaretType.STANDARD);
+        editorAdaptor.getCursorService().setCaret(CaretType.VERTICAL_BAR);
         startEditPosition = editorAdaptor.getCursorService().getPosition();
     }
 

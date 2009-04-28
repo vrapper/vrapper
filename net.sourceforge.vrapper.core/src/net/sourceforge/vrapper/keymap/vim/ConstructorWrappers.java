@@ -178,11 +178,16 @@ public class ConstructorWrappers {
         return CountingState.wrap(wrapped);
     }
 
+
+    public static ChangeCaretShapeCommand changeCaret(CaretType caret) {
+        return new ChangeCaretShapeCommand(caret);
+    }
+
     @SuppressWarnings("unchecked")
     private static State<Command> operatorPendingState(char key,
             State<Command> doubleKey, State<Command> operatorCmds) {
         return state(binding(key,
-                transition(new ChangeCaretShapeCommand(CaretType.HALF_RECT),
+                transition(changeCaret(CaretType.HALF_RECT),
                         counted(union(doubleKey, operatorCmds)))));
     }
 
@@ -220,8 +225,7 @@ public class ConstructorWrappers {
         return transitionState(prefix, operatorPendingState(key, doubleKey, operatorCmds));
     }
 
-    public static <T> State<T> convertKeyStroke(Function<T,
-            KeyStroke> converter, Set<KeyStroke> keystrokes) {
+    public static <T> State<T> convertKeyStroke(Function<T, KeyStroke> converter, Set<KeyStroke> keystrokes) {
         return new KeyStrokeConvertingState<T>(converter, keystrokes);
     }
 

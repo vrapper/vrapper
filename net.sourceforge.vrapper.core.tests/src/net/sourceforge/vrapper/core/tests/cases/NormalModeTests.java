@@ -19,9 +19,8 @@ import net.sourceforge.vrapper.vim.commands.motions.MoveWordRight;
 import net.sourceforge.vrapper.vim.modes.CommandBasedMode;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
-import net.sourceforge.vrapper.vim.register.Register;
-import net.sourceforge.vrapper.vim.register.SimpleRegister;
 import net.sourceforge.vrapper.vim.register.StringRegisterContent;
+
 
 import org.junit.Test;
 
@@ -130,6 +129,13 @@ public class NormalModeTests extends CommandTestCase {
 				"A",'l',"a ma kota i psa",
 				"A",'k',"ota i psa");
 	}
+
+	@Test public void test_r() {
+	    checkCommand(forKeySeq("ry"),
+	            "Ala ma kot",'a',"",
+	            "Ala ma kot",'y',"");
+	    verify(cursorAndSelection).setCaret(CaretType.UNDERLINE);
+    }
 
 	@Test public void testThereIsNoRedrawsWhenCommandIsExecuted() {
 		Command checkIt = new CountIgnoringNonRepeatableCommand() {

@@ -43,10 +43,10 @@ public class VimTestCase {
 
     public void initMocks() {
     	MockitoAnnotations.initMocks(this);
-    	cursorAndSelection = new TestCursorAndSelection();
-    	content = new TestTextContent(cursorAndSelection);
+    	cursorAndSelection = spy(new TestCursorAndSelection());
+    	content = spy(new TestTextContent(cursorAndSelection));
     	cursorAndSelection.setContent(content);
-    	keyMapProvider = new DefaultKeyMapProvider();
+    	keyMapProvider = spy(new DefaultKeyMapProvider());
     	when(platform.getCursorService()).thenReturn(cursorAndSelection);
     	when(platform.getSelectionService()).thenReturn(cursorAndSelection);
     	when(platform.getModelContent()).thenReturn(content);
@@ -58,7 +58,7 @@ public class VimTestCase {
     	when(platform.getKeyMapProvider()).thenReturn(keyMapProvider);
     	when(platform.getServiceProvider()).thenReturn(serviceProvider);
     	adaptor = spy(new DefaultEditorAdaptor(platform, registerManager));
-    	defaultRegister = new SimpleRegister();
+    	defaultRegister = spy(new SimpleRegister());
 		when(registerManager.getActiveRegister()).thenReturn(defaultRegister);
 		when(fileService.isEditable()).thenReturn(true);
 

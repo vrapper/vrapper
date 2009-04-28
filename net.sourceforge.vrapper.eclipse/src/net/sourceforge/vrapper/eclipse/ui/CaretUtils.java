@@ -25,7 +25,7 @@ public class CaretUtils {
 	    };
 
 	    switch (caretType) {
-		case STANDARD:
+		case VERTICAL_BAR:
 			caret.setSize(2, height);
 			break;
 		case RECTANGULAR:
@@ -35,7 +35,7 @@ public class CaretUtils {
 		    caret.setSize(width, height / 2);
 			break;
 		case UNDERLINE:
-		    caret.setSize(width, 2);
+		    caret.setSize(width, 3);
 		    break;
 	    }
 

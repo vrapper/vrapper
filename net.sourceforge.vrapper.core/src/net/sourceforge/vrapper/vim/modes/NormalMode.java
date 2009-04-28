@@ -2,6 +2,7 @@ package net.sourceforge.vrapper.vim.modes;
 
 import static java.lang.Math.min;
 import static net.sourceforge.vrapper.keymap.StateUtils.union;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.changeCaret;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.convertKeyStroke;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafCtrlBind;
@@ -156,9 +157,10 @@ public class NormalMode extends CommandBasedMode {
                         leafBind('x', deleteNext),
                         leafBind('X', deletePrevious),
                         leafBind('s', seq(deleteNext, new ChangeToInsertModeCommand())), // FIXME: this should be compound edit
-                        transitionBind('r', convertKeyStroke(
-                                ReplaceCommand.KEYSTROKE_CONVERTER,
-                                VimConstants.PRINTABLE_KEYSTROKES)),
+                        transitionBind('r', changeCaret(CaretType.UNDERLINE),
+                                convertKeyStroke(
+                                        ReplaceCommand.KEYSTROKE_CONVERTER,
+                                        VimConstants.PRINTABLE_KEYSTROKES)),
                         transitionBind('z',
                                 leafBind('o', dontRepeat(editText("folding.expand"))),
                                 leafBind('R', dontRepeat(editText("folding.expand_all"))),

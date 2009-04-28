@@ -48,7 +48,7 @@ public class VisualMode extends CommandBasedMode {
             return;
         }
         isEnabled = true;
-        editorAdaptor.getCursorService().setCaret(CaretType.STANDARD);
+        editorAdaptor.getCursorService().setCaret(CaretType.VERTICAL_BAR);
     }
 
     public void leaveMode() {
