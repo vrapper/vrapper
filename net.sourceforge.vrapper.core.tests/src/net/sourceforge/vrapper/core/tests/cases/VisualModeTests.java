@@ -25,15 +25,10 @@ import org.junit.Test;
 
 public class VisualModeTests extends CommandTestCase {
 
-	private Register defaultRegister;
-
     @Override
 	public void setUp() {
 		super.setUp();
 		mode = new VisualMode(adaptor);
-		defaultRegister = new SimpleRegister();
-		when(registerManager.getActiveRegister()).thenReturn(defaultRegister);
-		when(fileService.isEditable()).thenReturn(true);
 	};
 
 

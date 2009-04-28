@@ -1,6 +1,5 @@
 package net.sourceforge.vrapper.eclipse.platform;
 
-import net.sourceforge.vrapper.core.activator.Activator;
 import net.sourceforge.vrapper.eclipse.ui.StatusLine;
 import net.sourceforge.vrapper.platform.UserInterfaceService;
 
@@ -23,7 +22,7 @@ public class EclipseUserInterfaceService implements UserInterfaceService {
 
     public void setEditorMode(String modeName) {
         // TODO: integrate editor mode display from old vrapper
-        Activator.getDefault().info("Current Mode: " + modeName);
+        setInfoMessage("-- " + modeName.toUpperCase() + " --");
     }
 
     public void setErrorMessage(String content) {

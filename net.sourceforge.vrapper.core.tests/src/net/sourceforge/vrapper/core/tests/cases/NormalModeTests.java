@@ -26,15 +26,10 @@ import net.sourceforge.vrapper.vim.register.StringRegisterContent;
 import org.junit.Test;
 
 public class NormalModeTests extends CommandTestCase {
-	protected Register defaultRegister;
-
 	@Override
 	public void setUp() {
 		super.setUp();
 		mode = new NormalMode(adaptor);
-		defaultRegister = new SimpleRegister();
-		when(registerManager.getActiveRegister()).thenReturn(defaultRegister);
-		when(fileService.isEditable()).thenReturn(true);
 	};
 
 	private void assertYanked(ContentType type, String text) {
