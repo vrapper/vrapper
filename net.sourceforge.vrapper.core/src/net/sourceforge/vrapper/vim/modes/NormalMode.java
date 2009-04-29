@@ -44,6 +44,7 @@ import net.sourceforge.vrapper.vim.commands.PasteBeforeCommand;
 import net.sourceforge.vrapper.vim.commands.RedoCommand;
 import net.sourceforge.vrapper.vim.commands.ReplaceCommand;
 import net.sourceforge.vrapper.vim.commands.StickToEOLCommand;
+import net.sourceforge.vrapper.vim.commands.SwapCaseCommand;
 import net.sourceforge.vrapper.vim.commands.TextObject;
 import net.sourceforge.vrapper.vim.commands.TextOperation;
 import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
@@ -126,6 +127,7 @@ public class NormalMode extends CommandBasedMode {
         Command deleteNext = new TextOperationTextObjectCommand(delete, new MotionTextObject(moveRight));
         Command deletePrevious = seq(motion2command(moveLeft), deleteNext); // FIXME: should do nothing when on first character of buffer
         Command repeatLastOne = new DotCommand();
+        Command tildeCmd = new SwapCaseCommand();
         Command stickToEOLL = new StickToEOLCommand();
 
         State<Command> motionCommands = new GoThereState(motions);
@@ -157,6 +159,7 @@ public class NormalMode extends CommandBasedMode {
                         leafBind('J', (Command) editText("join.lines")),
                         leafBind('x', deleteNext),
                         leafBind('X', deletePrevious),
+                        leafBind('~', tildeCmd),
                         leafBind('s', seq(deleteNext, new ChangeToInsertModeCommand())), // FIXME: this should be compound edit
                         transitionBind('r', changeCaret(CaretType.UNDERLINE),
                                 convertKeyStroke(

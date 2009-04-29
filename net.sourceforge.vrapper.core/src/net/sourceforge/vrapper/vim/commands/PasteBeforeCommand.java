@@ -8,6 +8,7 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.register.RegisterContent;
 
 // TODO: use more Vrapper code here
+// TODO: convert to AbstractModelSideCommand
 public class PasteBeforeCommand extends CountAwareCommand {
 
 	@Override

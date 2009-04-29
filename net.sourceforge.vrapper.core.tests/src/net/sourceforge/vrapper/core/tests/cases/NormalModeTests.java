@@ -4,6 +4,7 @@ import static org.junit.Assert.assertSame;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import net.sourceforge.vrapper.core.tests.utils.CommandTestCase;
@@ -135,7 +136,40 @@ public class NormalModeTests extends CommandTestCase {
 	            "Ala ma kot",'a',"",
 	            "Ala ma kot",'y',"");
 	    verify(cursorAndSelection).setCaret(CaretType.UNDERLINE);
+	    verify(historyService).beginCompoundChange();
+	    verify(historyService).endCompoundChange();
+
+	    checkCommand(forKeySeq("3rx"),
+	            "This is ",'b',"ad",
+	            "This is xx",'x',"");
+	    verify(cursorAndSelection, times(2)).setCaret(CaretType.UNDERLINE);
+	    verify(historyService, times(2)).beginCompoundChange();
+	    verify(historyService, times(2)).endCompoundChange();
+
+	    checkCommand(forKeySeq("10rx"),
+	            "This is ",'b',"ad",
+	            "This is ",'b',"ad");
     }
+
+	@Test public void test_tilde() {
+	    checkCommand(forKeySeq("~"),
+	            "",'P',"ropertyName",
+	            "p",'r',"opertyName");
+	    verify(historyService).beginCompoundChange();
+	    verify(historyService).endCompoundChange();
+
+	    checkCommand(forKeySeq("2~"),
+	            "T",'c',"pConnection",
+	            "TCP",'C',"onnection");
+	    verify(historyService, times(2)).beginCompoundChange();
+	    verify(historyService, times(2)).endCompoundChange();
+
+	    checkCommand(forKeySeq("10~"),
+	            "A",'l',"a\nma\nkota",
+	            "ALA",'\n',"ma\nkota");
+	    verify(historyService, times(3)).beginCompoundChange();
+	    verify(historyService, times(3)).endCompoundChange();
+	}
 
 	@Test public void testThereIsNoRedrawsWhenCommandIsExecuted() {
 		Command checkIt = new CountIgnoringNonRepeatableCommand() {
