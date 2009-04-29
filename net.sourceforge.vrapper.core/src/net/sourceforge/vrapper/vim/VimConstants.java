@@ -1,5 +1,7 @@
 package net.sourceforge.vrapper.vim;
 
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.key;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -34,7 +36,7 @@ public class VimConstants {
     private static Set<KeyStroke> createPrintableKeyStrokes() {
         Set<KeyStroke> result = new HashSet<KeyStroke>();
         for(char c = ' '; c <= 0xFF; c++) {
-            result.add(new SimpleKeyStroke(0, c));
+            result.add(key(c));
         }
         return Collections.unmodifiableSet(result);
     }
