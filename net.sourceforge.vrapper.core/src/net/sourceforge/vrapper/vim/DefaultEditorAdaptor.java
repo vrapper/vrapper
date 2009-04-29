@@ -22,6 +22,7 @@ import net.sourceforge.vrapper.platform.Platform;
 import net.sourceforge.vrapper.platform.SelectionService;
 import net.sourceforge.vrapper.platform.ServiceProvider;
 import net.sourceforge.vrapper.platform.TextContent;
+import net.sourceforge.vrapper.platform.UnderlyingEditorSettings;
 import net.sourceforge.vrapper.platform.UserInterfaceService;
 import net.sourceforge.vrapper.platform.ViewportService;
 import net.sourceforge.vrapper.utils.Position;
@@ -30,6 +31,7 @@ import net.sourceforge.vrapper.vim.modes.CommandLineMode;
 import net.sourceforge.vrapper.vim.modes.EditorMode;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
+import net.sourceforge.vrapper.vim.modes.ReplaceMode;
 import net.sourceforge.vrapper.vim.modes.VisualMode;
 import net.sourceforge.vrapper.vim.modes.commandline.CommandLineParser;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
@@ -51,6 +53,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     private final ServiceProvider serviceProvider;
     private final KeyStrokeTranslator keyStrokeTranslator;
     private final KeyMapProvider keyMapProvider;
+    private final UnderlyingEditorSettings editorSettings;
 
     public DefaultEditorAdaptor(Platform editor, RegisterManager registerManager) {
         this.modelContent = editor.getModelContent();
@@ -60,6 +63,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         this.historyService = editor.getHistoryService();
         this.registerManager = registerManager;
         this.serviceProvider = editor.getServiceProvider();
+        this.editorSettings = editor.getUnderlyingEditorSettings();
         viewportService = editor.getViewportService();
         userInterfaceService = editor.getUserInterfaceService();
         keyStrokeTranslator = new KeyStrokeTranslator();
@@ -70,6 +74,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
                 new NormalMode(this),
                 new VisualMode(this),
                 new InsertMode(this),
+                new ReplaceMode(this),
                 new CommandLineMode(this)};
         for (EditorMode mode: modes) {
             modeMap.put(mode.getName(), mode);
@@ -203,6 +208,10 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
 
     public KeyMapProvider getKeyMapProvider() {
         return keyMapProvider;
+    }
+
+    public UnderlyingEditorSettings getEditorSettings() {
+        return editorSettings;
     }
 
 }

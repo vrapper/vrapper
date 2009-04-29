@@ -6,6 +6,7 @@ import net.sourceforge.vrapper.platform.FileService;
 import net.sourceforge.vrapper.platform.HistoryService;
 import net.sourceforge.vrapper.platform.KeyMapProvider;
 import net.sourceforge.vrapper.platform.TextContent;
+import net.sourceforge.vrapper.platform.UnderlyingEditorSettings;
 import net.sourceforge.vrapper.platform.UserInterfaceService;
 import net.sourceforge.vrapper.platform.ViewportService;
 import net.sourceforge.vrapper.utils.Position;
@@ -27,6 +28,7 @@ public interface EditorAdaptor {
     RegisterManager getRegisterManager();
     UserInterfaceService getUserInterfaceService();
     KeyMapProvider getKeyMapProvider();
+    UnderlyingEditorSettings getEditorSettings();
 
     Position getPosition();
     void setPosition(Position destination, boolean updateStickyColumn);

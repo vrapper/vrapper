@@ -7,6 +7,7 @@ import net.sourceforge.vrapper.platform.Platform;
 import net.sourceforge.vrapper.platform.SelectionService;
 import net.sourceforge.vrapper.platform.ServiceProvider;
 import net.sourceforge.vrapper.platform.TextContent;
+import net.sourceforge.vrapper.platform.UnderlyingEditorSettings;
 import net.sourceforge.vrapper.platform.UserInterfaceService;
 import net.sourceforge.vrapper.platform.ViewportService;
 import net.sourceforge.vrapper.utils.DefaultKeyMapProvider;
@@ -22,10 +23,11 @@ public class EclipsePlatform implements Platform {
     private final EclipseTextContent textContent;
     private final EclipseFileService fileService;
     private final EclipseViewportService viewportService;
-    private HistoryService historyService;
+    private final HistoryService historyService;
     private final EclipseServiceProvider serviceProvider;
     private final EclipseUserInterfaceService userInterfaceService;
     private final DefaultKeyMapProvider keyMapProvider;
+    private final UnderlyingEditorSettings underlyingEditorSettings;
 
     public EclipsePlatform(AbstractTextEditor abstractTextEditor, ITextViewer textViewer) {
         cursorAndSelection = new EclipseCursorAndSelection(textViewer);
@@ -35,6 +37,7 @@ public class EclipsePlatform implements Platform {
         serviceProvider = new EclipseServiceProvider(abstractTextEditor);
         userInterfaceService = new EclipseUserInterfaceService(abstractTextEditor, textViewer);
         keyMapProvider = new DefaultKeyMapProvider();
+        underlyingEditorSettings = new AbstractTextEditorSettings(abstractTextEditor);
         if (textViewer instanceof ITextViewerExtension6) {
             IUndoManager delegate = ((ITextViewerExtension6)textViewer).getUndoManager();
             EclipseHistoryService manager = new EclipseHistoryService(textViewer.getTextWidget(), delegate);
@@ -83,5 +86,9 @@ public class EclipsePlatform implements Platform {
 
     public DefaultKeyMapProvider getKeyMapProvider() {
         return keyMapProvider;
+    }
+
+    public UnderlyingEditorSettings getUnderlyingEditorSettings() {
+        return underlyingEditorSettings;
     }
 }

@@ -13,4 +13,5 @@ public interface Platform {
     UserInterfaceService getUserInterfaceService();
     ServiceProvider getServiceProvider();
     KeyMapProvider getKeyMapProvider();
+    UnderlyingEditorSettings getUnderlyingEditorSettings();
 }

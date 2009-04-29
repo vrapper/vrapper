@@ -11,7 +11,8 @@ public class ChangeOperation implements TextOperation {
     public void execute(EditorAdaptor editorAdaptor, TextRange range, ContentType contentType) {
         // Will get unlocked and finished when insert mode is left
         // XXX: this is a little fragile, but probably there is no better way of doing it
-        InsertMode.inChange = true; // FIXME: this is test only
+        // XXX: commenting out; this caused some history corruption
+        // InsertMode.inChange = true;
         editorAdaptor.getHistory().beginCompoundChange();
         editorAdaptor.getHistory().lock();
 

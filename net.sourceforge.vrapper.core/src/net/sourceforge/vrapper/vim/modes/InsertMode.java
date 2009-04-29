@@ -25,8 +25,6 @@ public class InsertMode extends AbstractMode {
     public static final String KEYMAP_NAME = "Insert Mode Keymap";
     // FIXME: change this to option some day
     public static final boolean CHANGES_ARE_ATOMIC = false;
-    // FIXME: change this to something saner some day
-    public static boolean inChange = false;
 
     private Position startEditPosition;
 
@@ -43,7 +41,7 @@ public class InsertMode extends AbstractMode {
             return;
         }
         isEnabled = true;
-        if (!inChange || CHANGES_ARE_ATOMIC) {
+        if (CHANGES_ARE_ATOMIC) {
             editorAdaptor.getHistory().beginCompoundChange();
             editorAdaptor.getHistory().lock();
         }
@@ -55,10 +53,9 @@ public class InsertMode extends AbstractMode {
         isEnabled = false;
         saveTypedText();
         MotionCommand.doIt(editorAdaptor, new MoveLeft());
-        if (inChange || CHANGES_ARE_ATOMIC) {
+        if (CHANGES_ARE_ATOMIC) {
             editorAdaptor.getHistory().unlock();
             editorAdaptor.getHistory().endCompoundChange();
-            inChange = false;
         }
     }
 
