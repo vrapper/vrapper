@@ -1,5 +1,6 @@
 package net.sourceforge.vrapper.vim.commands;
 
+import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.TextRange;
@@ -25,6 +26,8 @@ public class DeleteOperation implements TextOperation {
         TextContent content = editorAdaptor.getModelContent();
         if (editorAdaptor.getFileService().isEditable()) {
             content.replace(range.getLeftBound().getModelOffset(), range.getModelLength(), "");
+            CursorService cursorService = editorAdaptor.getCursorService();
+            cursorService.setPosition(cursorService.getPosition(), true);
         }
     }
 }

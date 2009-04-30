@@ -1,13 +1,19 @@
 package net.sourceforge.vrapper.core.tests.cases;
 
+import static java.util.Arrays.asList;
+import static net.sourceforge.vrapper.keymap.KeyStroke.CTRL;
+import static net.sourceforge.vrapper.keymap.KeyStroke.SHIFT;
+import static net.sourceforge.vrapper.keymap.SpecialKey.ARROW_LEFT;
+import static net.sourceforge.vrapper.keymap.SpecialKey.ARROW_RIGHT;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.ctrlKey;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.key;
-import static net.sourceforge.vrapper.keymap.SpecialKey.*;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.parseKeyStrokes;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import net.sourceforge.vrapper.keymap.KeyStroke;
-import static net.sourceforge.vrapper.keymap.KeyStroke.*;
+import net.sourceforge.vrapper.keymap.SpecialKey;
+import net.sourceforge.vrapper.keymap.vim.SimpleKeyStroke;
 
 import org.junit.Test;
 
@@ -79,5 +85,10 @@ public class SimpleKeyStrokeTests {
 	private void assertGetCharReturns(char expected, KeyStroke key) {
 		assertEquals(expected, key.getCharacter());
 	}
+
+	@Test
+    public void testPayseKeySeq() {
+	    assertEquals(asList(new SimpleKeyStroke(0, SpecialKey.ESC)), parseKeyStrokes("<Esc>"));
+    }
 
 }

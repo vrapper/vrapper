@@ -14,6 +14,7 @@ import net.sourceforge.vrapper.utils.DefaultKeyMapProvider;
 import net.sourceforge.vrapper.vim.DefaultEditorAdaptor;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.modes.EditorMode;
+import net.sourceforge.vrapper.vim.register.Register;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
 import net.sourceforge.vrapper.vim.register.SimpleRegister;
 
@@ -35,6 +36,7 @@ public class VimTestCase {
     protected EditorAdaptor adaptor;
     protected EditorMode mode;
     protected SimpleRegister defaultRegister;
+    protected SimpleRegister lastEditRegister;
     protected KeyMapProvider keyMapProvider;
 
     public VimTestCase() {
@@ -59,7 +61,9 @@ public class VimTestCase {
     	when(platform.getServiceProvider()).thenReturn(serviceProvider);
     	adaptor = spy(new DefaultEditorAdaptor(platform, registerManager));
     	defaultRegister = spy(new SimpleRegister());
+    	lastEditRegister = spy(new SimpleRegister());
 		when(registerManager.getActiveRegister()).thenReturn(defaultRegister);
+		when(registerManager.getLastEditRegister()).thenReturn(lastEditRegister);
 		when(fileService.isEditable()).thenReturn(true);
 
     }
@@ -78,8 +82,15 @@ public class VimTestCase {
     }
 
     public void type(Iterable<KeyStroke> keyStrokes) {
-        for (KeyStroke stroke: keyStrokes)
-            adaptor.handleKey(stroke);
+        for (KeyStroke stroke: keyStrokes) {
+            if(!adaptor.handleKey(stroke))
+                typeInUnderlyingEditor(stroke);
+        }
+    }
+
+    private void typeInUnderlyingEditor(KeyStroke stroke) {
+        int offset = cursorAndSelection.getPosition().getModelOffset();
+        content.replace(offset, 0, ""+stroke.getCharacter());
     }
 
 }

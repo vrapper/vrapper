@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import net.sourceforge.vrapper.keymap.KeyStroke;
-import net.sourceforge.vrapper.keymap.vim.SimpleKeyStroke;
 
 /**
  * Holds some commonly used constants.

@@ -54,7 +54,7 @@ public class TestTextContent implements TextContent {
     public LineInformation getLineInformationOfOffset(int offset) {
         int index = 0;
         int currLine = 0;
-        while(index < offset) {
+        while(index < offset && index < buffer.length()) {
             String c = buffer.substring(index, index+1);
             if(VimUtils.isNewLine(c)) {
                 if (index < offset-1) {

@@ -28,6 +28,11 @@ public class TestCursorAndSelection implements CursorService, SelectionService {
 	public void setPosition(Position position, boolean updateColumn) {
 	    this.selection = null;
 		this.position = position;
+		if (updateColumn) {
+		    int offset = position.getModelOffset();
+            int beginOffset = content.getLineInformationOfOffset(offset).getBeginOffset();
+            stickyColumnNo = offset - beginOffset;
+        }
 	}
 
 	public Position newPositionForModelOffset(int offset) {

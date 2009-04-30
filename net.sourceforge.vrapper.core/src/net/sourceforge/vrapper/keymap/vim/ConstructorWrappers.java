@@ -5,7 +5,10 @@ import static net.sourceforge.vrapper.keymap.StateUtils.union;
 import static net.sourceforge.vrapper.vim.commands.BorderPolicy.LINE_WISE;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import net.sourceforge.vrapper.keymap.CovariantState;
@@ -34,6 +37,21 @@ import net.sourceforge.vrapper.vim.commands.motions.Motion;
  * @author Krzysiek Goj
  */
 public class ConstructorWrappers {
+    @SuppressWarnings("serial")
+    // FIXME: this is all going to be replaced by some JLex/JFlex stuff
+    static final Map<String, SpecialKey> specialKeyNames = Collections.unmodifiableMap(new HashMap<String, SpecialKey>() {{
+        put("LEFT",  SpecialKey.ARROW_LEFT);
+        put("RIGHT", SpecialKey.ARROW_RIGHT);
+        put("UP",    SpecialKey.ARROW_UP);
+        put("DOWN",  SpecialKey.ARROW_DOWN);
+        put("CR",    SpecialKey.RETURN);
+        put("ENTER", SpecialKey.RETURN);
+        for (SpecialKey key: SpecialKey.values()) {
+            String keyName = key.toString();
+            put(keyName, key);
+        }
+    }});
+
     public static KeyStroke key(int modifiers, char key) {
         return new SimpleKeyStroke(modifiers, key);
     }
@@ -53,13 +71,16 @@ public class ConstructorWrappers {
             char next = s.charAt(i);
             if (next == '<') {
                 StringBuilder sb = new StringBuilder();
-                while (next != '>' && i < s.length()) {
+                while (next != '>' && ++i < s.length()) {
                     next = s.charAt(i);
                     sb.append(next);
                 }
                 sb.deleteCharAt(sb.length()-1);
-                String key = sb.toString().toLowerCase();
-                if (key.startsWith("c-")) {
+                String key = sb.toString();
+                SpecialKey specialKey = specialKeyNames.get(key.toUpperCase());
+                if (specialKey != null)
+                    result.add(new SimpleKeyStroke(0, specialKey)); // FIXME: <C-S-LEFT>
+                else if (key.toLowerCase().startsWith("c-")) {
                     result.add(ctrlKey(key.charAt(2)));
                 }
             } else {

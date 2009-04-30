@@ -9,6 +9,8 @@ import java.io.FileFilter;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import junit.framework.Assert;
 
@@ -21,7 +23,7 @@ public class SnapshotTestsExecutor {
         this.vimTestCase = vimTestCase;
     }
 
-    public void execute(String textName, String testSetName, String specialchar) throws IOException {
+    public void execute(String textName, String testSetName, Map<String, String> specialChars) throws IOException {
         File start = getStart(textName);
         String startState = readFile(start);
         vimTestCase.setBuffer(startState);
@@ -33,14 +35,15 @@ public class SnapshotTestsExecutor {
             String number = s.substring(0, 1);
             String command = s.substring(1);
             String expectedState = readFile(snapshot);
-            assertTransition(number, lastNumber, command, expectedState, specialchar);
+            assertTransition(number, lastNumber, command, expectedState, specialChars);
             lastNumber = number;
         }
     }
 
-    private void assertTransition(String number, String lastNumber, String command, String expectedState, String specialChar) {
-        if (specialChar != null) {
-            command = command.replace("_", specialChar);
+    private void assertTransition(String number, String lastNumber, String command, String expectedState, Map<String, String> specialChars) {
+        if (specialChars != null) {
+            for (Entry<String, String> entry: specialChars.entrySet())
+                command = command.replace(entry.getKey(), entry.getValue());
         }
         vimTestCase.type(parseKeyStrokes(command));
         Assert.assertEquals(lastNumber + "->" + number, expectedState, vimTestCase.getBuffer());

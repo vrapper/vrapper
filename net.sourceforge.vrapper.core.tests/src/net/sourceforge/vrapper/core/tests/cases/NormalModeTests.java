@@ -23,7 +23,6 @@ import net.sourceforge.vrapper.vim.modes.InsertMode;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.register.StringRegisterContent;
 
-
 import org.junit.Test;
 
 public class NormalModeTests extends CommandTestCase {
@@ -201,4 +200,14 @@ public class NormalModeTests extends CommandTestCase {
 		verify(registerManager, never()).setLastEdit(any(Command.class));
 	}
 
+	@Test
+    public void testStickyColumnOnDelete() {
+        checkCommand(forKeySeq("dbj"),
+                "a",'b',"c\nabc",
+                "bc\n",'a',"bc");
+        // this one made snapshot tests fail:
+        checkCommand(forKeySeq("dFej"),
+                "bcde ",'g',"\nabcde gabcde",
+                "bcdg\nabc",'d',"e gabcde");
+    }
 }

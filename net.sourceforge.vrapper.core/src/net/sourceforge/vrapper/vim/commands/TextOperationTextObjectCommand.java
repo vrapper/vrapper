@@ -1,5 +1,6 @@
 package net.sourceforge.vrapper.vim.commands;
 
+import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
@@ -14,8 +15,10 @@ public class TextOperationTextObjectCommand extends TextObjectCommand {
 	}
 
 	@Override
-	protected void execute(EditorAdaptor editorMode, TextRange range, ContentType contentType) throws CommandExecutionException {
-		command.execute(editorMode, range, contentType);
+	protected void execute(EditorAdaptor editorAdaptor, TextRange range, ContentType contentType) throws CommandExecutionException {
+		command.execute(editorAdaptor, range, contentType);
+        CursorService cursorService = editorAdaptor.getCursorService();
+        cursorService.setPosition(cursorService.getPosition(), true);
 	}
 
 	@Override

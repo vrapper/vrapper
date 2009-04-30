@@ -3,6 +3,7 @@ package net.sourceforge.vrapper.utils;
 import java.util.regex.Pattern;
 
 import net.sourceforge.vrapper.platform.TextContent;
+import net.sourceforge.vrapper.vim.VimConstants;
 
 
 /**
