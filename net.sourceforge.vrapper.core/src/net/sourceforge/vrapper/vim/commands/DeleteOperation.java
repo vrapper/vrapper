@@ -8,7 +8,12 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 public class DeleteOperation implements TextOperation {
 
     public void execute(EditorAdaptor editorAdaptor, TextRange region, ContentType contentType) {
-        doIt(editorAdaptor, region, contentType);
+        try {
+            editorAdaptor.getHistory().beginCompoundChange();
+            doIt(editorAdaptor, region, contentType);
+        } finally {
+            editorAdaptor.getHistory().endCompoundChange();
+        }
     }
 
     public TextOperation repetition() {

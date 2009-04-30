@@ -13,10 +13,16 @@ public class ChangeOperation implements TextOperation {
         // XXX: this is a little fragile, but probably there is no better way of doing it
         // XXX: commenting out; this caused some history corruption
         // InsertMode.inChange = true;
-        editorAdaptor.getHistory().beginCompoundChange();
-        editorAdaptor.getHistory().lock();
 
-        DeleteOperation.doIt(editorAdaptor, range, contentType);
+        try {
+            editorAdaptor.getHistory().beginCompoundChange();
+            DeleteOperation.doIt(editorAdaptor, range, contentType);
+        } finally {
+            // FIXME: change should end when leaving insert mode,
+            // however, this has some interactions with Eclipse refactorings
+            // it may need an option
+            editorAdaptor.getHistory().endCompoundChange();
+        }
         editorAdaptor.changeMode(InsertMode.NAME);
         if (contentType == ContentType.LINES) {
             editText("smartEnterInverse").execute(editorAdaptor); // FIXME: user Vrapper's code
