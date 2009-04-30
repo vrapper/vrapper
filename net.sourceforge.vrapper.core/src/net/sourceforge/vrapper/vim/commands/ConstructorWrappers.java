@@ -35,7 +35,7 @@ public class ConstructorWrappers {
             public CountAwareCommand repetition() {
                 return null;
             }
-            public void execute(EditorAdaptor editorAdaptor) {
+            public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
                 wrapped.execute(editorAdaptor);
             }
             public Command withCount(int count) {

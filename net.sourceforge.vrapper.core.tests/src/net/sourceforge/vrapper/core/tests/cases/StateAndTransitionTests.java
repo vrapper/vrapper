@@ -25,6 +25,7 @@ import net.sourceforge.vrapper.keymap.vim.CountingState;
 import net.sourceforge.vrapper.utils.Function;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.Command;
+import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.CountAwareCommand;
 
 import org.junit.Test;
@@ -159,7 +160,7 @@ public class StateAndTransitionTests {
     }
 
     @Test
-    public void testCountingState() {
+    public void testCountingState() throws CommandExecutionException {
         final StringBuilder history = new StringBuilder();
         Command command = new CountAwareCommand() {
             @Override

@@ -11,7 +11,7 @@ public class SelectionBasedTextOperation extends AbstractCommand {
         this.command = command;
     }
 
-    public void execute(EditorAdaptor editorAdaptor) {
+    public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
         command.execute(editorAdaptor, editorAdaptor.getSelection(), ContentType.TEXT);
     }
 

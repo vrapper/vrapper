@@ -16,7 +16,7 @@ public class RepeatLastInsertCommand extends CountAwareCommand {
 	}
 
 	@Override
-	public void execute(EditorAdaptor editorAdaptor, int count) {
+	public void execute(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
 		doIt(editorAdaptor, motion, count);
 	}
 
@@ -25,9 +25,9 @@ public class RepeatLastInsertCommand extends CountAwareCommand {
 		return this;
 	}
 
-	public static void doIt(EditorAdaptor editorAdaptor, Motion motion, int count) {
+	public static void doIt(EditorAdaptor editorAdaptor, Motion motion, int count) throws CommandExecutionException {
 		if (motion != null)
-			MotionCommand.doIt(editorAdaptor, motion);
+            MotionCommand.doIt(editorAdaptor, motion);
 		if (count == NO_COUNT_GIVEN)
 		    count = 1;
 		Position position = editorAdaptor.getCursorService().getPosition();

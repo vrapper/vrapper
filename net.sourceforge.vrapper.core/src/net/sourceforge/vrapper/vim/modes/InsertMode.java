@@ -13,6 +13,7 @@ import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.commands.motions.MoveLeft;
 import net.sourceforge.vrapper.vim.register.Register;
@@ -52,7 +53,11 @@ public class InsertMode extends AbstractMode {
     public void leaveMode() {
         isEnabled = false;
         saveTypedText();
-        MotionCommand.doIt(editorAdaptor, new MoveLeft());
+        try {
+            MotionCommand.doIt(editorAdaptor, new MoveLeft());
+        } catch (CommandExecutionException e) {
+            // silently ignore it
+        }
         if (CHANGES_ARE_ATOMIC) {
             editorAdaptor.getHistory().unlock();
             editorAdaptor.getHistory().endCompoundChange();

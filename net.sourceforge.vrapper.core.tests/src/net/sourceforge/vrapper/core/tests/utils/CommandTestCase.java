@@ -7,6 +7,7 @@ import static org.junit.Assert.fail;
 import net.sourceforge.vrapper.keymap.vim.GoThereState;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.Command;
+import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.CountIgnoringNonRepeatableCommand;
 import net.sourceforge.vrapper.vim.commands.motions.Motion;
 
@@ -30,7 +31,11 @@ public class CommandTestCase extends VimTestCase {
 
 		content.setText(initialContent);
 		cursorAndSelection.setPosition(new DumbPosition(initalOffset), true);
-		command.execute(adaptor);
+		try {
+            command.execute(adaptor);
+        } catch (CommandExecutionException e) {
+            fail("Cought command execution exception: " + e);
+        }
 		int actualFinalOffset = cursorAndSelection.getPosition().getModelOffset();
 		String actualFinalContent = content.getText();
 

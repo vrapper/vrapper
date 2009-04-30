@@ -12,6 +12,7 @@ import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.Command;
+import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.CountIgnoringNonRepeatableCommand;
 import net.sourceforge.vrapper.vim.commands.DeleteOperation;
 import net.sourceforge.vrapper.vim.commands.MotionTextObject;
@@ -171,7 +172,7 @@ public class NormalModeTests extends CommandTestCase {
 	    verify(historyService, times(3)).endCompoundChange();
 	}
 
-	@Test public void testThereIsNoRedrawsWhenCommandIsExecuted() {
+	@Test public void testThereIsNoRedrawsWhenCommandIsExecuted() throws CommandExecutionException {
 		Command checkIt = new CountIgnoringNonRepeatableCommand() {
 			public void execute(EditorAdaptor editorAdaptor) {
 				assertSame(adaptor, editorAdaptor);
@@ -182,7 +183,7 @@ public class NormalModeTests extends CommandTestCase {
 		normalMode.executeCommand(checkIt);
 	}
 
-	@Test public void testLastCommandRegistrationWhenThereIsRepetition() {
+	@Test public void testLastCommandRegistrationWhenThereIsRepetition() throws CommandExecutionException {
 		Command repetition = mock(Command.class);
 		Command cmd = mock(Command.class);
 		when(cmd.repetition()).thenReturn(repetition);
@@ -191,7 +192,7 @@ public class NormalModeTests extends CommandTestCase {
 		verify(registerManager).setLastEdit(repetition);
 	}
 
-	@Test public void testThereIsNoCommandRegistrationWhenThereIsNoRepetition() {
+	@Test public void testThereIsNoCommandRegistrationWhenThereIsNoRepetition() throws CommandExecutionException {
 		Command cmd = mock(Command.class);
 		when(cmd.repetition()).thenReturn(null);
 		CommandBasedMode normalMode = (CommandBasedMode) mode;

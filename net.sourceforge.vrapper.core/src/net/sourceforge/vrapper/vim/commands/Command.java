@@ -6,6 +6,7 @@ public interface Command extends Repeatable<Command>, Counted<Command> {
 	/**
 	 * Executes this command. This may have some side effects.
 	 * @param editorAdaptor adaptor of editor this command was executed on
+	 * @throws CommandExecutionException
 	 */
-	public void execute(EditorAdaptor editorAdaptor);
+	public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException;
 }

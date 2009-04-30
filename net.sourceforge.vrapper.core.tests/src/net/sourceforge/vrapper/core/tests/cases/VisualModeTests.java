@@ -7,7 +7,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import net.sourceforge.vrapper.core.tests.utils.CommandTestCase;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.SelectionService;
@@ -15,11 +14,10 @@ import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.commands.Command;
+import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.modes.VisualMode;
-import net.sourceforge.vrapper.vim.register.Register;
-import net.sourceforge.vrapper.vim.register.SimpleRegister;
 
 import org.junit.Test;
 
@@ -53,7 +51,11 @@ public class VisualModeTests extends CommandTestCase {
 		selectionService.setSelection(new StartEndTextRange(
 		                cursorService.newPositionForModelOffset(selectFrom),
 		                cursorService.newPositionForModelOffset(selectTo)));
-		command.execute(adaptor);
+		try {
+            command.execute(adaptor);
+        } catch (CommandExecutionException e) {
+            fail("exception during command execution: " + e.getMessage());
+        }
 		String actualFinalContent = content.getText();
 		int actSelFrom;
 		int actSelTo;

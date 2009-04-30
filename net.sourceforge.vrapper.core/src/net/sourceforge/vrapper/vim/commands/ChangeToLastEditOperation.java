@@ -6,7 +6,7 @@ import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 
 public class ChangeToLastEditOperation implements TextOperation {
-    public void execute(EditorAdaptor editorAdapter, TextRange range, ContentType contentType) {
+    public void execute(EditorAdaptor editorAdapter, TextRange range, ContentType contentType) throws CommandExecutionException {
         editorAdapter.getHistory().beginCompoundChange();
         DeleteOperation.doIt(editorAdapter, range, contentType);
         if (contentType == ContentType.LINES) {

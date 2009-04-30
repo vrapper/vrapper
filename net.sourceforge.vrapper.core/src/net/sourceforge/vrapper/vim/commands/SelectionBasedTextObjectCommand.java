@@ -13,7 +13,7 @@ public class SelectionBasedTextObjectCommand extends TextObjectCommand {
 	}
 
 	@Override
-	protected void execute(EditorAdaptor editorMode, TextRange range, ContentType contentType) {
+	protected void execute(EditorAdaptor editorMode, TextRange range, ContentType contentType) throws CommandExecutionException {
 		// TODO: move cursor - compatibility option
 		editorMode.setSelection(range);
 		command.execute(editorMode);

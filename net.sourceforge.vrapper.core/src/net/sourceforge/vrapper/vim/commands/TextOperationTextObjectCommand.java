@@ -14,7 +14,7 @@ public class TextOperationTextObjectCommand extends TextObjectCommand {
 	}
 
 	@Override
-	protected void execute(EditorAdaptor editorMode, TextRange range, ContentType contentType) {
+	protected void execute(EditorAdaptor editorMode, TextRange range, ContentType contentType) throws CommandExecutionException {
 		command.execute(editorMode, range, contentType);
 	}
 

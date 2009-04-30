@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.sourceforge.vrapper.vim.commands.Command;
-import net.sourceforge.vrapper.vim.commands.motions.Motion;
+import net.sourceforge.vrapper.vim.commands.motions.FindMotion;
 
 
 /**
@@ -21,8 +21,7 @@ public class DefaultRegisterManager implements RegisterManager {
     private final Register lastEditRegister;
     //    private Search search;
     private Command lastEdit;
-    private Motion forwardMotion;
-    private Motion backwardMotion;
+    private FindMotion findMotion;
 
     public DefaultRegisterManager() {
         this.registers = new HashMap<String, Register>();
@@ -89,18 +88,6 @@ public class DefaultRegisterManager implements RegisterManager {
     //        this.search = search;
     //    }
     //
-    public Motion getForwardMotion() {
-        return forwardMotion;
-    }
-
-    public Motion getBackwardMotion() {
-        return backwardMotion;
-    }
-
-    public void setMotionPair(Motion forwardMotion, Motion backwardMotion) {
-        this.forwardMotion = forwardMotion;
-        this.backwardMotion = backwardMotion;
-    }
 
     public Command getLastEdit() {
         return lastEdit;
@@ -108,6 +95,14 @@ public class DefaultRegisterManager implements RegisterManager {
 
     public void setLastEdit(Command lastEdit) {
         this.lastEdit = lastEdit;
+    }
+
+    public FindMotion getLastFindMotion() {
+        return findMotion;
+    }
+
+    public void setLastFindMotion(FindMotion motion) {
+        findMotion = motion;
     }
 
 }

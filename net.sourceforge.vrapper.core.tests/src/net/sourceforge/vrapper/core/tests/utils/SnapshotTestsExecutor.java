@@ -32,18 +32,18 @@ public class SnapshotTestsExecutor {
             String s = snapshot.getName();
             String number = s.substring(0, 1);
             String command = s.substring(1);
-            String state = readFile(snapshot);
-            assertTransition(number, lastNumber, command, state, specialchar);
+            String expectedState = readFile(snapshot);
+            assertTransition(number, lastNumber, command, expectedState, specialchar);
             lastNumber = number;
         }
     }
 
-    private void assertTransition(String number, String lastNumber, String command, String state, String specialChar) {
+    private void assertTransition(String number, String lastNumber, String command, String expectedState, String specialChar) {
         if (specialChar != null) {
             command = command.replace("_", specialChar);
         }
         vimTestCase.type(parseKeyStrokes(command));
-        Assert.assertEquals(lastNumber + "->" + number, state, vimTestCase.getBuffer());
+        Assert.assertEquals(lastNumber + "->" + number, expectedState, vimTestCase.getBuffer());
     }
 
     private String readFile(File start) throws IOException {

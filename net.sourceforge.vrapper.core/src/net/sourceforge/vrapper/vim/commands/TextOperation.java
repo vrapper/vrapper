@@ -6,7 +6,7 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 
 public interface TextOperation {
 
-	void execute(EditorAdaptor editorAdaptor, TextRange range, ContentType contentType);
+	void execute(EditorAdaptor editorAdaptor, TextRange range, ContentType contentType) throws CommandExecutionException;
 
 	TextOperation repetition();
 

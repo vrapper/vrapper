@@ -18,7 +18,7 @@ public class MultipliedTextObject implements TextObject {
         return textObject.getContentType();
     }
 
-    public TextRange getRegion(EditorAdaptor editorMode, int count) {
+    public TextRange getRegion(EditorAdaptor editorMode, int count) throws CommandExecutionException {
         return textObject.getRegion(editorMode, count);
     }
 

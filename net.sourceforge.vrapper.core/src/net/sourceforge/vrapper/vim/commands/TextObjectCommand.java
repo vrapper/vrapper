@@ -7,14 +7,14 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 public abstract class TextObjectCommand extends CountAwareCommand {
 	protected TextObject textObject;
 
-	protected abstract void execute(EditorAdaptor editorMode, TextRange range, ContentType contentType);
+	protected abstract void execute(EditorAdaptor editorMode, TextRange range, ContentType contentType) throws CommandExecutionException;
 
 	public TextObjectCommand(TextObject textObject) {
 		this.textObject = textObject;
 	}
 
 	@Override
-	public void execute(EditorAdaptor editorMode, int count) {
+	public void execute(EditorAdaptor editorMode, int count) throws CommandExecutionException {
 		TextRange range = textObject.getRegion(editorMode, count);
 		ContentType contentType = textObject.getContentType();
 		execute(editorMode, range, contentType);

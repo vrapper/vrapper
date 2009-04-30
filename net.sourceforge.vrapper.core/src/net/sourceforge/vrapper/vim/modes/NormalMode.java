@@ -128,7 +128,7 @@ public class NormalMode extends CommandBasedMode {
         Command deletePrevious = seq(motion2command(moveLeft), deleteNext); // FIXME: should do nothing when on first character of buffer
         Command repeatLastOne = new DotCommand();
         Command tildeCmd = new SwapCaseCommand();
-        Command stickToEOLL = new StickToEOLCommand();
+        Command stickToEOL = new StickToEOLCommand();
 
         State<Command> motionCommands = new GoThereState(motions);
 
@@ -141,7 +141,7 @@ public class NormalMode extends CommandBasedMode {
                 prefixedOperatorCmds('g', 'c', seq(javaEditText("toggle.comment"), deselectAll), textObjects),
                 prefixedOperatorCmds('g', 'u', seq(editText("lowerCase"), deselectAll), textObjects),
                 prefixedOperatorCmds('g', 'U', seq(editText("upperCase"), deselectAll), textObjects),
-                state(leafBind('$', stickToEOLL)),
+                state(leafBind('$', stickToEOL)),
                 motionCommands,
                 state(
                         leafBind('i', (Command) new ChangeToInsertModeCommand()),

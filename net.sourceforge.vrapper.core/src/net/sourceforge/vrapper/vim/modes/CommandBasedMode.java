@@ -1,4 +1,5 @@
 package net.sourceforge.vrapper.vim.modes;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.convertKeyStroke;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
@@ -14,9 +15,13 @@ import net.sourceforge.vrapper.keymap.Transition;
 import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.KeyMapProvider;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.Command;
+import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.EclipseMoveCommand;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
+import net.sourceforge.vrapper.vim.commands.motions.ContinueFindingMotion;
+import net.sourceforge.vrapper.vim.commands.motions.FindMotion;
 import net.sourceforge.vrapper.vim.commands.motions.LineEndMotion;
 import net.sourceforge.vrapper.vim.commands.motions.LineStartMotion;
 import net.sourceforge.vrapper.vim.commands.motions.Motion;
@@ -71,6 +76,8 @@ public abstract class CommandBasedMode extends AbstractMode {
         final Motion column0 = new LineStartMotion(false);
         final Motion lineEnd = new LineEndMotion(EXCLUSIVE); // NOTE: it's not INCLUSIVE; bug in Vim documentation
         final Motion parenthesesMove = new ParenthesesMove();
+        final Motion findForward = new ContinueFindingMotion(false);
+        final Motion findBackward = new ContinueFindingMotion(true);
 
         @SuppressWarnings("unchecked")
         State<Motion> motions = state(
@@ -82,13 +89,27 @@ public abstract class CommandBasedMode extends AbstractMode {
                 leafBind(SpecialKey.ARROW_DOWN,  moveDown),
                 leafBind(SpecialKey.ARROW_UP,    moveUp),
                 leafBind(SpecialKey.ARROW_RIGHT, moveRight),
+                leafBind(';', findForward),
+                leafBind(',', findBackward),
+                transitionBind('t', convertKeyStroke(
+                        FindMotion.keyConverter(false, false),
+                        VimConstants.PRINTABLE_KEYSTROKES)),
+                transitionBind('T', convertKeyStroke(
+                        FindMotion.keyConverter(false, true),
+                        VimConstants.PRINTABLE_KEYSTROKES)),
+                transitionBind('f', convertKeyStroke(
+                        FindMotion.keyConverter(true, false),
+                        VimConstants.PRINTABLE_KEYSTROKES)),
+                transitionBind('F', convertKeyStroke(
+                        FindMotion.keyConverter(true, true),
+                        VimConstants.PRINTABLE_KEYSTROKES)),
                 leafBind('w', wordRight),
                 leafBind('W', WORDRight),
                 leafBind('e', wordEndRight),
                 leafBind('E', WORDEndRight),
                 leafBind('b', wordLeft),
                 leafBind('B', WORDLeft),
-                leafBind('G', go("textEnd",           LINE_WISE)),
+                leafBind('G', go("textEnd",           LINE_WISE)), // XXX: counts
                 leafBind('n', findNext),
                 leafBind('N', findPrevious),
                 leafBind('0', column0),
@@ -100,7 +121,7 @@ public abstract class CommandBasedMode extends AbstractMode {
                 //					leafBind(KEY("SHIFT+["), paragraphBackward), // '[' FIXME: doesn't worl
                 //					leafBind(KEY("SHIFT+]"), paragraphForward),  // ']'
                 transitionBind('g',
-                        leafBind('g', go("textStart", LINE_WISE)),
+                        leafBind('g', go("textStart", LINE_WISE)), // XXX: counts
                         leafBind('w', eclipseWordRight),
                         leafBind('b', eclipseWordLeft),
                         leafBind('e', wordEndLeft),
@@ -108,7 +129,7 @@ public abstract class CommandBasedMode extends AbstractMode {
         return motions;
     }
 
-    public void executeCommand(Command command) {
+    public void executeCommand(Command command) throws CommandExecutionException {
         try {
             if (!(command instanceof MotionCommand)) {
                 editorAdaptor.getViewportService().setRepaint(false);
@@ -141,7 +162,11 @@ public abstract class CommandBasedMode extends AbstractMode {
             Command command = transition.getValue();
             currentState = transition.getNextState();
             if (command != null) {
-                executeCommand(command);
+                try {
+                    executeCommand(command);
+                } catch (CommandExecutionException e) {
+                    VrapperLog.info(e.getMessage());
+                }
             }
         }
         if (transition == null || currentState == null) {

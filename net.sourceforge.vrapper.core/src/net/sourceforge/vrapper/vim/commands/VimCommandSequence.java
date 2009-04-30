@@ -10,7 +10,7 @@ public class VimCommandSequence extends SimpleRepeatableCommand {
         this.commands = commands;
     }
 
-    public void execute(EditorAdaptor editorMode) {
+    public void execute(EditorAdaptor editorMode) throws CommandExecutionException {
         for (Command command: commands) {
             command.execute(editorMode);
         }

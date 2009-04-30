@@ -5,7 +5,7 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 public class DotCommand extends CountAwareCommand {
 
 	@Override
-	public void execute(EditorAdaptor editorAdaptor, int count) {
+	public void execute(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
 		Command lastCommand = editorAdaptor.getRegisterManager().getLastEdit();
 		if (lastCommand != null) {
 			if (count != NO_COUNT_GIVEN)

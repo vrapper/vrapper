@@ -12,7 +12,7 @@ public class CountedCommand implements Command {
         this.command = command;
     }
 
-    public void execute(EditorAdaptor editorAdaptor) {
+    public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
         command.execute(editorAdaptor, count);
     }
 

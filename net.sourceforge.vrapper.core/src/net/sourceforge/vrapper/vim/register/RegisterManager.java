@@ -1,7 +1,7 @@
 package net.sourceforge.vrapper.vim.register;
 
 import net.sourceforge.vrapper.vim.commands.Command;
-import net.sourceforge.vrapper.vim.commands.motions.Motion;
+import net.sourceforge.vrapper.vim.commands.motions.FindMotion;
 
 /**
  * Provides access to different registers.
@@ -19,9 +19,8 @@ public interface RegisterManager {
     void activateLastEditRegister();
     Command getLastEdit();
     void setLastEdit(Command edit);
-    Motion getForwardMotion();
-    Motion getBackwardMotion();
-    void setMotionPair(Motion forward, Motion backward);
+    void setLastFindMotion(FindMotion motion);
+    FindMotion getLastFindMotion();
 //    Search getSearch();
 //    void setSearch(Search search);
 }

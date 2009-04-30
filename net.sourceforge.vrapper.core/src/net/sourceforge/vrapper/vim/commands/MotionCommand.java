@@ -15,11 +15,11 @@ public class MotionCommand extends CountAwareCommand {
 	}
 
 	@Override
-	public void execute(EditorAdaptor editorAdaptor, int count) {
+	public void execute(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
 		doIt(editorAdaptor, motion.withCount(count));
 	}
 
-	public static void doIt(EditorAdaptor editorAdaptor, Motion motion) {
+	public static void doIt(EditorAdaptor editorAdaptor, Motion motion) throws CommandExecutionException {
 		final Position destination = motion.destination(editorAdaptor);
 		editorAdaptor.setPosition(destination, motion.updateStickyColumn());
 	}

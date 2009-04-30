@@ -34,7 +34,7 @@ public class OptionDependentTextObject extends AbstractTextObject {
         //			return onFalse.getContentType();
     }
 
-    public TextRange getRegion(EditorAdaptor editorMode, int count) {
+    public TextRange getRegion(EditorAdaptor editorMode, int count) throws CommandExecutionException {
         VrapperLog.info("OptionDependentTextObject.getRegion not implemented");
         return onFalse.getRegion(editorMode, count);
         //		if (TotalityCorePlugin.getDefault().getPreferenceStore().getBoolean(option))

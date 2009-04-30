@@ -12,7 +12,7 @@ public class MultipleExecutionCommand implements Command {
         this.command = command;
     }
 
-    public void execute(EditorAdaptor editorAdaptor) {
+    public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
         for (int i = 0; i < count; i++) {
             command.execute(editorAdaptor);
         }

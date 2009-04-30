@@ -7,6 +7,7 @@ import java.util.Map;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.vim.commands.BorderPolicy;
+import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 
 // TODO: can we use underlying eclipse to do extra-smart stuff
 // like matching XML tags, LaTeX \begin{paragraph}\end{paragraph},
@@ -31,7 +32,7 @@ public class ParenthesesMove extends AbstractModelSideMotion {
     }
 
     @Override
-    protected int destination(int offset, TextContent content, int count) {
+    protected int destination(int offset, TextContent content, int count) throws CommandExecutionException {
         LineInformation info = content.getLineInformationOfOffset(offset);
         int index = offset;
         ParenthesesPair pair = null;
@@ -42,31 +43,32 @@ public class ParenthesesMove extends AbstractModelSideMotion {
                 break;
             }
         }
-        if (pair != null) {
-            int depth = 1;
-            int leftModifier, rightModifier, limit, indexModifier;
-            if (pair.backwards) {
-                leftModifier = -1;
-                rightModifier = 1;
-                limit = 0;
-                indexModifier = -1;
-            } else {
-                leftModifier = 1;
-                rightModifier = -1;
-                limit = content.getLineInformation(content.getNumberOfLines()-1).getEndOffset();
-                indexModifier = 1;
+        if (pair == null)
+            throw new CommandExecutionException("no parentheses to jump found");
+
+        int depth = 1;
+        int leftModifier, rightModifier, limit, indexModifier;
+        if (pair.backwards) {
+            leftModifier = -1;
+            rightModifier = 1;
+            limit = 0;
+            indexModifier = -1;
+        } else {
+            leftModifier = 1;
+            rightModifier = -1;
+            limit = content.getLineInformation(content.getNumberOfLines()-1).getEndOffset();
+            indexModifier = 1;
+        }
+        while (index != limit) {
+            index += indexModifier;
+            String c = content.getText(index, 1);
+            if (c.equals(pair.right)) {
+                depth += rightModifier;
+            } else if (c.equals(pair.left)) {
+                depth += leftModifier;
             }
-            while (index != limit) {
-                index += indexModifier;
-                String c = content.getText(index, 1);
-                if (c.equals(pair.right)) {
-                    depth += rightModifier;
-                } else if (c.equals(pair.left)) {
-                    depth += leftModifier;
-                }
-                if (depth == 0) {
-                    return index;
-                }
+            if (depth == 0) {
+                return index;
             }
         }
         return offset;

@@ -1,6 +1,8 @@
 package net.sourceforge.vrapper.core.tests.cases;
 
+import static org.mockito.Mockito.when;
 import net.sourceforge.vrapper.core.tests.utils.CommandTestCase;
+import net.sourceforge.vrapper.vim.commands.motions.FindMotion;
 import net.sourceforge.vrapper.vim.commands.motions.Motion;
 import net.sourceforge.vrapper.vim.commands.motions.MoveBigWORDEndLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveBigWORDEndRight;
@@ -12,6 +14,9 @@ import net.sourceforge.vrapper.vim.commands.motions.MoveWordEndLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordEndRight;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordRight;
+import net.sourceforge.vrapper.vim.modes.NormalMode;
+import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
+import net.sourceforge.vrapper.vim.register.RegisterManager;
 
 import org.junit.Test;
 
@@ -546,5 +551,64 @@ public class MotionTests extends CommandTestCase {
 				"",'w',"hile(true) ++aw3rs0meness;");
 	}
 
+	@Test
+	public void test_f_motionWorks() {
+	    Motion fa = new FindMotion('a', true, false);
+	    checkMotion(fa,
+	            "",'A',"la ma kota",
+	            "Al",'a'," ma kota");
+	    checkMotion(fa,
+	            "Al",'a'," ma kota",
+	            "Ala m",'a'," kota");
+	    checkMotion(fa,
+	            "Ala m",'a'," kota",
+	            "Ala ma kot",'a',"");
+	    // TODO: assert raises
+	}
+
+	@Test
+	public void test_F_motionWorks() {
+	    Motion Fa = new FindMotion('a', true, true);
+	    checkMotion(Fa,
+	            "Ala ",'m',"a kota",
+	            "Al",'a'," ma kota");
+	    checkMotion(Fa,
+	            "Ala m",'a'," kota",
+	            "Al",'a'," ma kota");
+	    checkMotion(Fa,
+	            "Ala ma kot",'a',"",
+	            "Ala m",'a'," kota");
+	    // TODO: assert raises
+	}
+
+	@Test
+	public void test_ftFT_getParsed() {
+	    mode = new NormalMode(adaptor);
+	    checkCommand(forKeySeq("fa"),
+	            "",'A',"la ma kota",
+	            "Al",'a'," ma kota");
+	    checkCommand(forKeySeq("ta"),
+	            "",'A',"la ma kota",
+	            "A",'l',"a ma kota");
+	    checkCommand(forKeySeq("Fl"),
+	            "Ala m",'a'," kota",
+	            "A",'l',"a ma kota");
+	    checkCommand(forKeySeq("TA"),
+	            "Ala m",'a'," kota",
+	            "A",'l',"a ma kota");
+	}
+
+	@Test
+    public void test_semicolon_and_comma() {
+		mode = new NormalMode(adaptor);
+		RegisterManager manager = new DefaultRegisterManager();
+		when(adaptor.getRegisterManager()).thenReturn(manager);
+        checkCommand(forKeySeq("2fa;"),
+                "",'A',"la ma kota",
+                "Ala ma kot",'a',"");
+        checkCommand(forKeySeq("3fa,"),
+                "",'A',"la ma kota",
+                "Ala m",'a'," kota");
+    }
 
 }

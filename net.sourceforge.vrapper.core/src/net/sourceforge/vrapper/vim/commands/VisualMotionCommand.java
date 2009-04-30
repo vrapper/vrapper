@@ -13,7 +13,7 @@ public class VisualMotionCommand extends MotionCommand {
 	}
 
 	@Override
-	public void execute(EditorAdaptor editorAdaptor, int count) {
+	public void execute(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
 		TextRange oldSelection = getSelection(editorAdaptor);
 		super.execute(editorAdaptor, count);
 		extendSelection(editorAdaptor, oldSelection);
