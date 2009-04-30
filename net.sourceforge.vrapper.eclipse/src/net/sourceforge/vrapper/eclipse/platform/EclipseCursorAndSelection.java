@@ -109,7 +109,6 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
             textViewer.getTextWidget().setCaretOffset(selection.getStart().getViewOffset());
             int from = selection.getStart().getModelOffset();
             int length = !selection.isReversed() ? selection.getModelLength() : -selection.getModelLength();
-            VrapperLog.info("Set selection: " + from + " --> " + length);
             textViewer.setSelectedRange(from, length);
         }
     }

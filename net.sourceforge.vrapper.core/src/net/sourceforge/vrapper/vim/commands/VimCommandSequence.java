@@ -17,7 +17,7 @@ public class VimCommandSequence extends SimpleRepeatableCommand {
     }
 
     public Command repetition() {
-        Command[] repeated = new CountAwareCommand[commands.length];
+        Command[] repeated = new Command[commands.length];
         for (int i = 0; i < commands.length; i++) {
             Command rep = commands[i].repetition();
             if (rep != null) {
