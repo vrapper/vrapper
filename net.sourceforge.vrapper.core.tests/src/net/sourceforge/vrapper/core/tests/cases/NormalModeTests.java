@@ -210,4 +210,11 @@ public class NormalModeTests extends CommandTestCase {
                 "bcde ",'g',"\nabcde gabcde",
                 "bcdg\nabc",'d',"e gabcde");
     }
+
+	@Test
+    public void testMultipliedCount() {
+	    checkCommand(forKeySeq("2d3d"),
+	            "0\n",'1',"\n2\n3\n4\n5\n6\n7\n",
+	            "0\n",'7',"\n");
+    }
 }

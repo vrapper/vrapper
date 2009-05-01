@@ -3,6 +3,7 @@ package net.sourceforge.vrapper.core.tests.cases;
 import static org.mockito.Mockito.when;
 import net.sourceforge.vrapper.core.tests.utils.CommandTestCase;
 import net.sourceforge.vrapper.vim.commands.motions.FindMotion;
+import net.sourceforge.vrapper.vim.commands.motions.GoToLineMotion;
 import net.sourceforge.vrapper.vim.commands.motions.Motion;
 import net.sourceforge.vrapper.vim.commands.motions.MoveBigWORDEndLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveBigWORDEndRight;
@@ -609,6 +610,28 @@ public class MotionTests extends CommandTestCase {
         checkCommand(forKeySeq("3fa,"),
                 "",'A',"la ma kota",
                 "Ala m",'a'," kota");
+    }
+
+	@Test
+	public void test_gg() {
+	    checkMotion(GoToLineMotion.FIRST_LINE,
+	            "  Ala ma kota\n  Ala ",'m',"a kota\n  Ala ma kota",
+	            "  ",'A',"la ma kota\n  Ala ma kota\n  Ala ma kota");
+
+	    checkMotion(GoToLineMotion.FIRST_LINE, 2,
+	            "  Ala ma kota\n  Ala ",'m',"a kota\n  Ala ma kota",
+	            "  Ala ma kota\n  ",'A',"la ma kota\n  Ala ma kota");
+	}
+
+	@Test
+    public void test_G() {
+	    checkMotion(GoToLineMotion.LAST_LINE,
+	            "  Ala ma kota\n  Ala ",'m',"a kota\n  Ala ma kota",
+	            "  Ala ma kota\n  Ala ma kota\n  ",'A',"la ma kota");
+
+	    checkMotion(GoToLineMotion.LAST_LINE, 2,
+	            "  Ala ma kota\n  Ala ",'m',"a kota\n  Ala ma kota",
+	            "  Ala ma kota\n  ",'A',"la ma kota\n  Ala ma kota");
     }
 
 }

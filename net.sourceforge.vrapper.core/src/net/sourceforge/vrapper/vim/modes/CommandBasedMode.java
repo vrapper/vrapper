@@ -22,6 +22,7 @@ import net.sourceforge.vrapper.vim.commands.EclipseMoveCommand;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.commands.motions.ContinueFindingMotion;
 import net.sourceforge.vrapper.vim.commands.motions.FindMotion;
+import net.sourceforge.vrapper.vim.commands.motions.GoToLineMotion;
 import net.sourceforge.vrapper.vim.commands.motions.LineEndMotion;
 import net.sourceforge.vrapper.vim.commands.motions.LineStartMotion;
 import net.sourceforge.vrapper.vim.commands.motions.Motion;
@@ -109,7 +110,7 @@ public abstract class CommandBasedMode extends AbstractMode {
                 leafBind('E', WORDEndRight),
                 leafBind('b', wordLeft),
                 leafBind('B', WORDLeft),
-                leafBind('G', go("textEnd",           LINE_WISE)), // XXX: counts
+                leafBind('G', GoToLineMotion.LAST_LINE), // XXX: counts
                 leafBind('n', findNext),
                 leafBind('N', findPrevious),
                 leafBind('0', column0),
@@ -121,7 +122,7 @@ public abstract class CommandBasedMode extends AbstractMode {
                 //					leafBind(KEY("SHIFT+["), paragraphBackward), // '[' FIXME: doesn't worl
                 //					leafBind(KEY("SHIFT+]"), paragraphForward),  // ']'
                 transitionBind('g',
-                        leafBind('g', go("textStart", LINE_WISE)), // XXX: counts
+                        leafBind('g', GoToLineMotion.FIRST_LINE),
                         leafBind('w', eclipseWordRight),
                         leafBind('b', eclipseWordLeft),
                         leafBind('e', wordEndLeft),

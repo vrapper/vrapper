@@ -13,7 +13,7 @@ public abstract class CountAwareCommand implements Command {
     public abstract CountAwareCommand repetition();
 
     public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
-        execute(editorAdaptor, NO_COUNT_GIVEN);
+        execute(editorAdaptor, getCount());
     }
 
     public int getCount() {

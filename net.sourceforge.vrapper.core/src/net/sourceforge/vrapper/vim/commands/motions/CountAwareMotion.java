@@ -9,11 +9,11 @@ public abstract class CountAwareMotion implements Motion {
     public abstract Position destination(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException;
 
     public Position destination(EditorAdaptor editorAdaptor) throws CommandExecutionException {
-        return destination(editorAdaptor, 1);
+        return destination(editorAdaptor, getCount());
     }
 
     public int getCount() {
-        return 1;
+        return NO_COUNT_GIVEN;
     }
 
     public Motion withCount(int count) {

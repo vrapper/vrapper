@@ -70,9 +70,16 @@ public class CommandTestCase extends VimTestCase {
 	}
 
 	public void checkMotion(Motion motion,
+	        String beforeCursor1, char atCursor1, String afterCursor1,
+	        String beforeCursor2, char atCursor2, String afterCursor2) {
+	    Command command = GoThereState.motion2command(motion);
+	    checkCommand(command, false, beforeCursor1, atCursor1, afterCursor1, beforeCursor2, atCursor2, afterCursor2);
+	}
+
+	public void checkMotion(Motion motion, int count,
 			String beforeCursor1, char atCursor1, String afterCursor1,
 			String beforeCursor2, char atCursor2, String afterCursor2) {
-		Command command = GoThereState.motion2command(motion);
+		Command command = GoThereState.motion2command(motion).withCount(count);
 		checkCommand(command, false, beforeCursor1, atCursor1, afterCursor1, beforeCursor2, atCursor2, afterCursor2);
 	}
 
