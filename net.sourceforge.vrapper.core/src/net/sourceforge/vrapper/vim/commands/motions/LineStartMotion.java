@@ -2,6 +2,7 @@ package net.sourceforge.vrapper.vim.commands.motions;
 
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.LineInformation;
+import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.commands.BorderPolicy;
 
 public class LineStartMotion extends AbstractModelSideMotion {
@@ -23,13 +24,7 @@ public class LineStartMotion extends AbstractModelSideMotion {
         LineInformation lineInfo = content.getLineInformationOfOffset(position);
         int result = lineInfo.getBeginOffset();
         if (goToFirstNonWS) {
-            String line = content.getText(lineInfo.getBeginOffset(), lineInfo.getLength());
-            int indent;
-            for (indent = 0; indent < line.length(); indent++) {
-                if (!Character.isWhitespace(line.charAt(indent))) {
-                    break;
-                }
-            }
+            int indent = VimUtils.getIndent(content, lineInfo).length();
             result += indent;
         }
         return result;
