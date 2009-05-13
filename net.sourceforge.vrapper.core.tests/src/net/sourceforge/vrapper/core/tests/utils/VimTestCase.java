@@ -14,7 +14,6 @@ import net.sourceforge.vrapper.utils.DefaultKeyMapProvider;
 import net.sourceforge.vrapper.vim.DefaultEditorAdaptor;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.modes.EditorMode;
-import net.sourceforge.vrapper.vim.register.Register;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
 import net.sourceforge.vrapper.vim.register.SimpleRegister;
 
@@ -83,8 +82,9 @@ public class VimTestCase {
 
     public void type(Iterable<KeyStroke> keyStrokes) {
         for (KeyStroke stroke: keyStrokes) {
-            if(!adaptor.handleKey(stroke))
+            if(!adaptor.handleKey(stroke)) {
                 typeInUnderlyingEditor(stroke);
+            }
         }
     }
 
