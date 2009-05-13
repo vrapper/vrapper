@@ -33,4 +33,12 @@ public class StickyColumnPosition implements Position {
         return stickyColumn;
     }
 
+    public Position setModelOffset(int offset) {
+        throw new UnsupportedOperationException("setting of offsets not supported");
+    }
+
+    public Position setViewOffset(int offset) {
+        throw new UnsupportedOperationException("setting of offsets not supported");
+    }
+
 }

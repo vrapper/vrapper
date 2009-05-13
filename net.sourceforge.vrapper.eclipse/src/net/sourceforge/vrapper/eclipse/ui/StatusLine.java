@@ -7,7 +7,7 @@ import org.eclipse.swt.graphics.Rectangle;
 
 /**
  * A PaintListener which paints a line of text at the bottom of a component.
- * 
+ *
  * @author Matthias Radig
  */
 public class StatusLine implements PaintListener {
@@ -28,6 +28,8 @@ public class StatusLine implements PaintListener {
             return;
         }
         StyledText parent = (StyledText) e.widget;
+        e.gc.setForeground(parent.getForeground());
+        e.gc.setBackground(parent.getBackground());
         int bottom = parent.getBounds().height
         - parent.getHorizontalBar().getSize().y;
         int right = parent.getBounds().width

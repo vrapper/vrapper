@@ -34,7 +34,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     }
 
     public void setPosition(Position position, boolean updateColumn) {
-        textViewer.getTextWidget().setCaretOffset(position.getViewOffset());
+        textViewer.getTextWidget().setSelection(position.getViewOffset());
         if (updateColumn) {
             stickToEOL = false;
             stickyColumn = textViewer.getTextWidget().getLocationAtOffset(position.getViewOffset()).x;

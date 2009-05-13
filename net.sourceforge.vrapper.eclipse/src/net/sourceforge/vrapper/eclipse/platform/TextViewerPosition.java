@@ -50,4 +50,12 @@ public class TextViewerPosition implements Position {
         }
     }
 
+    public Position setModelOffset(int offset) {
+        return new TextViewerPosition(converter, Space.MODEL, offset);
+    }
+
+    public Position setViewOffset(int offset) {
+        return new TextViewerPosition(converter, Space.VIEW, offset);
+    }
+
 }

@@ -26,4 +26,12 @@ public class DumbPosition implements Position {
 		return position;
 	}
 
+    public Position setModelOffset(int offset) {
+        return new DumbPosition(offset);
+    }
+
+    public Position setViewOffset(int offset) {
+        return new DumbPosition(offset);
+    }
+
 }
