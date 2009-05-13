@@ -21,6 +21,9 @@ public class MotionCommand extends CountAwareCommand {
 
 	public static void doIt(EditorAdaptor editorAdaptor, Motion motion) throws CommandExecutionException {
 		final Position destination = motion.destination(editorAdaptor);
+		if (destination.getViewOffset() < 0) {
+            editorAdaptor.getViewportService().exposeModelPosition(destination);
+        }
 		editorAdaptor.setPosition(destination, motion.updateStickyColumn());
 	}
 

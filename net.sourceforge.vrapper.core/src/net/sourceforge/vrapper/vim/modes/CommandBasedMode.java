@@ -18,7 +18,6 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
-import net.sourceforge.vrapper.vim.commands.EclipseMoveCommand;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.commands.motions.ContinueFindingMotion;
 import net.sourceforge.vrapper.vim.commands.motions.FindMotion;
@@ -39,6 +38,7 @@ import net.sourceforge.vrapper.vim.commands.motions.MoveWordEndRight;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordRight;
 import net.sourceforge.vrapper.vim.commands.motions.ParenthesesMove;
+import net.sourceforge.vrapper.vim.commands.motions.SearchResultMotion;
 
 public abstract class CommandBasedMode extends AbstractMode {
 
@@ -61,8 +61,10 @@ public abstract class CommandBasedMode extends AbstractMode {
         final Motion moveRight = new MoveRight();
         final Motion moveUp = new MoveUp();
         final Motion moveDown = new MoveDown();
-        final Motion findNext = new EclipseMoveCommand("org.eclipse.ui.edit.findNext", EXCLUSIVE);
-        final Motion findPrevious = new EclipseMoveCommand("org.eclipse.ui.edit.findPrevious", EXCLUSIVE);
+//        final Motion findNext = new EclipseMoveCommand("org.eclipse.ui.edit.findNext", EXCLUSIVE);
+//        final Motion findPrevious = new EclipseMoveCommand("org.eclipse.ui.edit.findPrevious", EXCLUSIVE);
+        final Motion findNext = new SearchResultMotion(false);
+        final Motion findPrevious = new SearchResultMotion(true);
         final Motion wordRight = new MoveWordRight();
         final Motion WORDRight = new MoveBigWORDRight();
         final Motion wordLeft = new MoveWordLeft();

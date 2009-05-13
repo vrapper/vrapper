@@ -14,7 +14,6 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionB
 import static net.sourceforge.vrapper.keymap.vim.GoThereState.motion2command;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.cmd;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.dontRepeat;
-import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.edit;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.editText;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.go;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.javaEditText;
@@ -149,6 +148,8 @@ public class NormalMode extends CommandBasedMode {
                         leafBind('I', (Command) new ChangeToInsertModeCommand(bol)),
                         leafBind('A', (Command) new ChangeToInsertModeCommand(eol)),
                         leafBind(':', (Command) new ChangeModeCommand(CommandLineMode.NAME)),
+                        leafBind('?', (Command) new ChangeModeCommand(SearchMode.Backward.NAME)),
+                        leafBind('/', (Command) new ChangeModeCommand(SearchMode.Forward.NAME)),
                         leafBind('R', (Command) new ChangeModeCommand(ReplaceMode.NAME)),
                         leafBind('o', seq(new ChangeToInsertModeCommand(), editText("smartEnter"))), // FIXME: use Vrapper's code; repetition
                         leafBind('O', seq(new ChangeToInsertModeCommand(), editText("smartEnterInverse"))), // FIXME: use Vrapper's code; repetition
@@ -175,17 +176,15 @@ public class NormalMode extends CommandBasedMode {
                                 leafBind('R', javaEditText("rename.element")),
                                 leafBind('t', cmd("org.eclipse.ui.window.nextEditor")),
                                 leafBind('T', cmd("org.eclipse.ui.window.previousEditor"))),
-                                leafBind('/', dontRepeat(edit("findIncremental"))),
-                                leafBind('?', dontRepeat(edit("findIncrementalReverse"))),
-                                leafBind('u', undo),
-                                leafCtrlBind('r', redo),
-                                leafCtrlBind('b', go("goto.pageUp")),
-                                leafCtrlBind('f', go("goto.pageDown")),
-                                leafCtrlBind('y', dontRepeat(editText("scroll.lineUp"))),
-                                leafCtrlBind('e', dontRepeat(editText("scroll.lineDown"))),
-                                leafCtrlBind(']', seq(javaEditText("open.editor"), deselectAll)), // NOTE: deselect won't work in other editor
-                                leafCtrlBind('i', dontRepeat(cmd("org.eclipse.ui.navigate.forwardHistory"))),
-                                leafCtrlBind('o', dontRepeat(cmd("org.eclipse.ui.navigate.backwardHistory"))))));
+                        leafBind('u', undo),
+                        leafCtrlBind('r', redo),
+                        leafCtrlBind('b', go("goto.pageUp")),
+                        leafCtrlBind('f', go("goto.pageDown")),
+                        leafCtrlBind('y', dontRepeat(editText("scroll.lineUp"))),
+                        leafCtrlBind('e', dontRepeat(editText("scroll.lineDown"))),
+                        leafCtrlBind(']', seq(javaEditText("open.editor"), deselectAll)), // NOTE: deselect won't work in other editor
+                        leafCtrlBind('i', dontRepeat(cmd("org.eclipse.ui.navigate.forwardHistory"))),
+                        leafCtrlBind('o', dontRepeat(cmd("org.eclipse.ui.navigate.backwardHistory"))))));
 
         return commands;
     }

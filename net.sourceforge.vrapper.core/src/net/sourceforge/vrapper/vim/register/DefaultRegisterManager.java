@@ -3,6 +3,8 @@ package net.sourceforge.vrapper.vim.register;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.sourceforge.vrapper.utils.ContentType;
+import net.sourceforge.vrapper.utils.Search;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.motions.FindMotion;
 
@@ -19,7 +21,7 @@ public class DefaultRegisterManager implements RegisterManager {
     private Register activeRegister;
     private final Register defaultRegister;
     private final Register lastEditRegister;
-    //    private Search search;
+    private Search search;
     private Command lastEdit;
     private FindMotion findMotion;
 
@@ -34,12 +36,12 @@ public class DefaultRegisterManager implements RegisterManager {
             }
         };
         registers.put(".", lastInsertRegister);
-        //        Register searchRegister = new ReadOnlyRegister() {
-        //            public RegisterContent getContent() {
-        //                return new StringRegisterContent(ContentType.TEXT, search.getKeyword());
-        //            }
-        //        };
-        //        registers.put("/", searchRegister);
+        Register searchRegister = new ReadOnlyRegister() {
+            public RegisterContent getContent() {
+                return new StringRegisterContent(ContentType.TEXT, search.getKeyword());
+            }
+        };
+        registers.put("/", searchRegister);
         // FIXME: AWTClipboardRegister is obviously underlying platform dependency
         registers.put("*", new AWTClipboardRegister());
     }
@@ -80,14 +82,13 @@ public class DefaultRegisterManager implements RegisterManager {
         return lastEditRegister;
     }
 
-    //    public Search getSearch() {
-    //        return search;
-    //    }
-    //
-    //    public void setSearch(Search search) {
-    //        this.search = search;
-    //    }
-    //
+    public Search getSearch() {
+        return search;
+    }
+
+    public void setSearch(Search search) {
+        this.search = search;
+    }
 
     public Command getLastEdit() {
         return lastEdit;

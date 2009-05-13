@@ -32,6 +32,7 @@ import net.sourceforge.vrapper.vim.modes.EditorMode;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.modes.ReplaceMode;
+import net.sourceforge.vrapper.vim.modes.SearchMode;
 import net.sourceforge.vrapper.vim.modes.VisualMode;
 import net.sourceforge.vrapper.vim.modes.commandline.CommandLineParser;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
@@ -75,7 +76,9 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
                 new VisualMode(this),
                 new InsertMode(this),
                 new ReplaceMode(this),
-                new CommandLineMode(this)};
+                new CommandLineMode(this),
+                new SearchMode.Forward(this),
+                new SearchMode.Backward(this)};
         for (EditorMode mode: modes) {
             modeMap.put(mode.getName(), mode);
         }
