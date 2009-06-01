@@ -12,6 +12,7 @@ import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.vim.CountingState;
+import net.sourceforge.vrapper.keymap.vim.RegisterState;
 import net.sourceforge.vrapper.keymap.vim.VisualMotionState;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
@@ -66,7 +67,7 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
         Command change = new SelectionBasedTextOperation(new ChangeOperation());
         State<Command> visualMotions = getVisualMotionState();
         @SuppressWarnings("unchecked")
-        State<Command> commands = CountingState.wrap(union(state(
+        State<Command> commands = new RegisterState(CountingState.wrap(union(state(
                 leafBind(key(KeyStroke.CTRL, '['), leaveVisual),
                 leafBind(SpecialKey.ESC, leaveVisual),
                 leafBind('v', leaveVisual),
@@ -81,7 +82,7 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
                         leafBind('c', seq(editText("toggle.comment"), leaveVisual)),
                         leafBind('U', seq(editText("upperCase"),      leaveVisual)),
                         leafBind('u', seq(editText("lowerCase"),      leaveVisual)))
-        ), visualMotions));
+        ), visualMotions)));
         return commands;
     }
 

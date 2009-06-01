@@ -20,6 +20,7 @@ import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.vim.CountingState;
 import net.sourceforge.vrapper.keymap.vim.GoThereState;
+import net.sourceforge.vrapper.keymap.vim.RegisterState;
 import net.sourceforge.vrapper.keymap.vim.TextObjectState;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.CaretType;
@@ -140,7 +141,7 @@ public class NormalMode extends CommandBasedMode {
         State<Command> motionCommands = new GoThereState(motions);
 
         @SuppressWarnings("unchecked")
-        State<Command> commands = CountingState.wrap(union(
+        State<Command> commands = new RegisterState(CountingState.wrap(union(
                 operatorCmdsWithUpperCase('d', delete, toEol,     textObjects),
                 operatorCmdsWithUpperCase('y', yank,   toEolForY, textObjects),
                 operatorCmdsWithUpperCase('c', change, toEol,     textObjectsForChange),
@@ -194,7 +195,7 @@ public class NormalMode extends CommandBasedMode {
                         leafCtrlBind('e', dontRepeat(editText("scroll.lineDown"))),
                         leafCtrlBind(']', seq(javaEditText("open.editor"), deselectAll)), // NOTE: deselect won't work in other editor
                         leafCtrlBind('i', dontRepeat(cmd("org.eclipse.ui.navigate.forwardHistory"))),
-                        leafCtrlBind('o', dontRepeat(cmd("org.eclipse.ui.navigate.backwardHistory"))))));
+                        leafCtrlBind('o', dontRepeat(cmd("org.eclipse.ui.navigate.backwardHistory")))))));
 
         return commands;
     }
@@ -216,6 +217,7 @@ public class NormalMode extends CommandBasedMode {
     protected void commandDone() {
         super.commandDone();
         editorAdaptor.getCursorService().setCaret(CaretType.RECTANGULAR);
+        editorAdaptor.getRegisterManager().activateDefaultRegister();
     }
 
     public void enterMode(Object... args) {

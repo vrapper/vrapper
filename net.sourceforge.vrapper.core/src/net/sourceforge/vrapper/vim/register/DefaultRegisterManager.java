@@ -106,4 +106,12 @@ public class DefaultRegisterManager implements RegisterManager {
         findMotion = motion;
     }
 
+    public void setActiveRegister(Register register) {
+        activeRegister = register;
+    }
+
+    public boolean isDefaultRegisterActive() {
+        return activeRegister == defaultRegister;
+    }
+
 }

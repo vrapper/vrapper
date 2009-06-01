@@ -19,6 +19,8 @@ import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
+import net.sourceforge.vrapper.vim.commands.SwitchRegisterCommand;
+import net.sourceforge.vrapper.vim.commands.VimCommandSequence;
 import net.sourceforge.vrapper.vim.commands.motions.ContinueFindingMotion;
 import net.sourceforge.vrapper.vim.commands.motions.FindMotion;
 import net.sourceforge.vrapper.vim.commands.motions.GoToLineMotion;
@@ -41,6 +43,7 @@ import net.sourceforge.vrapper.vim.commands.motions.ParenthesesMove;
 import net.sourceforge.vrapper.vim.commands.motions.SearchResultMotion;
 import net.sourceforge.vrapper.vim.commands.motions.ViewPortMotion;
 import net.sourceforge.vrapper.vim.commands.motions.ViewPortMotion.Type;
+import net.sourceforge.vrapper.vim.register.RegisterManager;
 
 public abstract class CommandBasedMode extends AbstractMode {
 
@@ -148,7 +151,14 @@ public abstract class CommandBasedMode extends AbstractMode {
             command.execute(editorAdaptor);
             Command repetition = command.repetition();
             if (repetition != null) {
-                editorAdaptor.getRegisterManager().setLastEdit(repetition);
+                RegisterManager registerManager = editorAdaptor.getRegisterManager();
+                if (!registerManager.isDefaultRegisterActive()) {
+                    repetition = new VimCommandSequence(
+                            new SwitchRegisterCommand(
+                                        registerManager.getActiveRegister()),
+                            repetition);
+                }
+               registerManager.setLastEdit(repetition);
             }
         } finally {
             editorAdaptor.getViewportService().setRepaint(true);

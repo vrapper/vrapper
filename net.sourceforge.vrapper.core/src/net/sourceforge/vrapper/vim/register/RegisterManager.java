@@ -16,6 +16,7 @@ public interface RegisterManager {
     Register getActiveRegister();
     Register getLastEditRegister();
     void setActiveRegister(String name);
+    void setActiveRegister(Register register);
     void activateDefaultRegister();
     void activateLastEditRegister();
     Command getLastEdit();
@@ -24,4 +25,5 @@ public interface RegisterManager {
     FindMotion getLastFindMotion();
     Search getSearch();
     void setSearch(Search search);
+    boolean isDefaultRegisterActive();
 }

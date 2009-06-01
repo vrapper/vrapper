@@ -6,7 +6,7 @@ public class VimCommandSequence extends SimpleRepeatableCommand {
 
     private final Command[] commands;
 
-    public VimCommandSequence(Command[] commands) {
+    public VimCommandSequence(Command... commands) {
         this.commands = commands;
     }
 
