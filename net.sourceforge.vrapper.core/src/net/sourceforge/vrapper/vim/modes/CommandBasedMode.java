@@ -199,4 +199,13 @@ public abstract class CommandBasedMode extends AbstractMode {
     // TODO: better name
     protected void commandDone() { }
 
+    @SuppressWarnings("unchecked")
+    protected State<String> getKeyMapsForMotions() {
+        return state(
+                leafBind('f', KeyMapResolver.NO_KEYMAP),
+                leafBind('t', KeyMapResolver.NO_KEYMAP),
+                leafBind('T', KeyMapResolver.NO_KEYMAP),
+                leafBind('F', KeyMapResolver.NO_KEYMAP));
+    }
+
 }

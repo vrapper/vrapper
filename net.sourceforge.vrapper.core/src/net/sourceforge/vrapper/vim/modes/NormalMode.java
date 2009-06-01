@@ -72,7 +72,10 @@ public class NormalMode extends CommandBasedMode {
     @Override
     @SuppressWarnings("unchecked")
     protected KeyMapResolver buildKeyMapResolver() {
-        State<String> state = state(leafBind('r', KeyMapResolver.NO_KEYMAP));
+        State<String> state = union(
+                state(
+                    leafBind('r', KeyMapResolver.NO_KEYMAP)),
+                getKeyMapsForMotions());
         State<String> countEater = new CountConsumingState(state);
         return new KeyMapResolver(countEater, KEYMAP_NAME);
     }

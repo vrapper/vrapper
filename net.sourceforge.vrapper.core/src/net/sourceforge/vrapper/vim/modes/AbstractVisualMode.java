@@ -8,7 +8,6 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionB
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.dontRepeat;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.editText;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
-import net.sourceforge.vrapper.keymap.EmptyState;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.State;
@@ -34,7 +33,7 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
 
     @Override
     protected KeyMapResolver buildKeyMapResolver() {
-        return new KeyMapResolver(new EmptyState<String>(), KEYMAP_NAME);
+        return new KeyMapResolver(getKeyMapsForMotions(), KEYMAP_NAME);
     }
 
     @Override
