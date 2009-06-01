@@ -2,6 +2,7 @@ package net.sourceforge.vrapper.eclipse.platform;
 
 import net.sourceforge.vrapper.platform.ViewportService;
 import net.sourceforge.vrapper.utils.Position;
+import net.sourceforge.vrapper.utils.ViewPortInformation;
 
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.ITextViewerExtension5;
@@ -27,5 +28,17 @@ public class EclipseViewportService implements ViewportService {
             textViewer5.exposeModelRange(new Region(position.getModelOffset(), 1));
         }
     }
+
+    public ViewPortInformation getViewPortInformation() {
+        return new ViewPortInformation(
+                textViewer.getTopIndex(),
+                textViewer.getBottomIndex());
+    }
+
+    public void setTopLine(int line) {
+        textViewer.setTopIndex(line);
+    }
+
+
 
 }

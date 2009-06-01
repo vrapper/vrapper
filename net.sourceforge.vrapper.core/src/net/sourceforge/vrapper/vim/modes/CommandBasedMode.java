@@ -39,6 +39,8 @@ import net.sourceforge.vrapper.vim.commands.motions.MoveWordLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordRight;
 import net.sourceforge.vrapper.vim.commands.motions.ParenthesesMove;
 import net.sourceforge.vrapper.vim.commands.motions.SearchResultMotion;
+import net.sourceforge.vrapper.vim.commands.motions.ViewPortMotion;
+import net.sourceforge.vrapper.vim.commands.motions.ViewPortMotion.Type;
 
 public abstract class CommandBasedMode extends AbstractMode {
 
@@ -82,6 +84,9 @@ public abstract class CommandBasedMode extends AbstractMode {
         final Motion findForward = new ContinueFindingMotion(false);
         final Motion findBackward = new ContinueFindingMotion(true);
 
+        final Motion highMove = new ViewPortMotion(Type.HIGH);
+        final Motion middleMove = new ViewPortMotion(Type.MIDDLE);
+        final Motion lowMove = new ViewPortMotion(Type.LOW);
         @SuppressWarnings("unchecked")
         State<Motion> motions = state(
                 leafBind('h', moveLeft),
@@ -113,6 +118,9 @@ public abstract class CommandBasedMode extends AbstractMode {
                 leafBind('b', wordLeft),
                 leafBind('B', WORDLeft),
                 leafBind('G', GoToLineMotion.LAST_LINE), // XXX: counts
+                leafBind('H', highMove),
+                leafBind('M', middleMove),
+                leafBind('L', lowMove),
                 leafBind('n', findNext),
                 leafBind('N', findPrevious),
                 leafBind('0', column0),
