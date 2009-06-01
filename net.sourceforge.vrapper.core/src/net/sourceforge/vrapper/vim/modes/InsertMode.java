@@ -15,6 +15,7 @@ import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
+import net.sourceforge.vrapper.vim.commands.motions.Motion;
 import net.sourceforge.vrapper.vim.commands.motions.MoveLeft;
 import net.sourceforge.vrapper.vim.register.Register;
 import net.sourceforge.vrapper.vim.register.RegisterContent;
@@ -37,9 +38,20 @@ public class InsertMode extends AbstractMode {
         return NAME;
     }
 
+    /**
+     * @param args motion to perform on entering insert mode
+     */
     public void enterMode(Object... args) {
         if (isEnabled) {
             return;
+        }
+        if (args.length > 0) {
+            Motion m = (Motion) args[0];
+            try {
+                MotionCommand.doIt(editorAdaptor, m);
+            } catch (CommandExecutionException e) {
+                editorAdaptor.getUserInterfaceService().setErrorMessage(e.getMessage());
+            }
         }
         isEnabled = true;
         if (CHANGES_ARE_ATOMIC) {
@@ -56,7 +68,7 @@ public class InsertMode extends AbstractMode {
         try {
             MotionCommand.doIt(editorAdaptor, new MoveLeft());
         } catch (CommandExecutionException e) {
-            // silently ignore it
+            editorAdaptor.getUserInterfaceService().setErrorMessage(e.getMessage());
         }
         if (CHANGES_ARE_ATOMIC) {
             editorAdaptor.getHistory().unlock();

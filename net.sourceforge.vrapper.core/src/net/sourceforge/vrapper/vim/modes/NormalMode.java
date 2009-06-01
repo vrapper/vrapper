@@ -30,7 +30,6 @@ import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.BorderPolicy;
 import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeOperation;
-import net.sourceforge.vrapper.vim.commands.ChangeToInsertModeCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CountIgnoringNonRepeatableCommand;
 import net.sourceforge.vrapper.vim.commands.DeleteOperation;
@@ -146,16 +145,16 @@ public class NormalMode extends CommandBasedMode {
                 state(leafBind('$', stickToEOL)),
                 motionCommands,
                 state(
-                        leafBind('i', (Command) new ChangeToInsertModeCommand()),
-                        leafBind('a', (Command) new ChangeToInsertModeCommand(moveRight)),
-                        leafBind('I', (Command) new ChangeToInsertModeCommand(bol)),
-                        leafBind('A', (Command) new ChangeToInsertModeCommand(eol)),
+                        leafBind('i', (Command) new ChangeModeCommand(InsertMode.NAME)),
+                        leafBind('a', (Command) new ChangeModeCommand(InsertMode.NAME, moveRight)),
+                        leafBind('I', (Command) new ChangeModeCommand(InsertMode.NAME, bol)),
+                        leafBind('A', (Command) new ChangeModeCommand(InsertMode.NAME, eol)),
                         leafBind(':', (Command) new ChangeModeCommand(CommandLineMode.NAME)),
                         leafBind('?', (Command) new ChangeModeCommand(SearchMode.NAME, SearchMode.Direction.BACKWARD)),
                         leafBind('/', (Command) new ChangeModeCommand(SearchMode.NAME, SearchMode.Direction.FORWARD)),
                         leafBind('R', (Command) new ChangeModeCommand(ReplaceMode.NAME)),
-                        leafBind('o', seq(new ChangeToInsertModeCommand(), editText("smartEnter"))), // FIXME: use Vrapper's code; repetition
-                        leafBind('O', seq(new ChangeToInsertModeCommand(), editText("smartEnterInverse"))), // FIXME: use Vrapper's code; repetition
+                        leafBind('o', seq(new ChangeModeCommand(InsertMode.NAME), editText("smartEnter"))), // FIXME: use Vrapper's code; repetition
+                        leafBind('O', seq(new ChangeModeCommand(InsertMode.NAME), editText("smartEnterInverse"))), // FIXME: use Vrapper's code; repetition
                         leafBind('v', seq(visualMode, new VisualMotionCommand(moveRight))),
                         leafBind('V', seq(linewiseVisualMode, new LinewiseVisualMotionCommand(moveRight))),
                         leafBind('p', pasteAfter),
@@ -165,7 +164,7 @@ public class NormalMode extends CommandBasedMode {
                         leafBind('x', deleteNext),
                         leafBind('X', deletePrevious),
                         leafBind('~', tildeCmd),
-                        leafBind('s', seq(deleteNext, new ChangeToInsertModeCommand())), // FIXME: this should be compound edit
+                        leafBind('s', seq(deleteNext, new ChangeModeCommand(InsertMode.NAME))), // FIXME: this should be compound edit
                         transitionBind('r', changeCaret(CaretType.UNDERLINE),
                                 convertKeyStroke(
                                         ReplaceCommand.KEYSTROKE_CONVERTER,

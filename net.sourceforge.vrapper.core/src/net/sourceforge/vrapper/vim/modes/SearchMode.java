@@ -16,6 +16,9 @@ public class SearchMode extends AbstractCommandLineMode {
         super(editorAdaptor);
     }
 
+    /**
+     * @param args {@link Direction} of the search
+     */
     @Override
     public void enterMode(Object... args) {
         super.enterMode(args);
@@ -36,12 +39,13 @@ public class SearchMode extends AbstractCommandLineMode {
         return forward ? '/' : '?';
     }
 
+    public String getName() {
+        return NAME;
+    }
+
     public enum Direction {
         FORWARD, BACKWARD;
     }
 
-    public String getName() {
-        return NAME;
-    }
 
 }
