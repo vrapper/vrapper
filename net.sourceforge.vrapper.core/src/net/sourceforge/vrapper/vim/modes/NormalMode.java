@@ -11,7 +11,6 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.operatorCmd
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.prefixedOperatorCmds;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
-import static net.sourceforge.vrapper.keymap.vim.GoThereState.motion2command;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.cmd;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.dontRepeat;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.editText;
@@ -129,10 +128,14 @@ public class NormalMode extends CommandBasedMode {
         Command pasteAfter  = new PasteAfterCommand();
         Command pasteBefore = new PasteBeforeCommand();
         Command deleteNext = new TextOperationTextObjectCommand(delete, new MotionTextObject(moveRight));
-        Command deletePrevious = seq(motion2command(moveLeft), deleteNext); // FIXME: should do nothing when on first character of buffer
+        Command deletePrevious = new TextOperationTextObjectCommand(delete, new MotionTextObject(moveLeft));
+//        Command deletePrevious = seq(motion2command(moveLeft), deleteNext); // FIXME: should do nothing when on first character of buffer
         Command repeatLastOne = new DotCommand();
         Command tildeCmd = new SwapCaseCommand();
         Command stickToEOL = new StickToEOLCommand();
+        LineEndMotion lineEndMotion = new LineEndMotion(BorderPolicy.LINE_WISE);
+        Command substituteLine = new TextOperationTextObjectCommand(change, new MotionTextObject(lineEndMotion));
+        Command substituteChar = new TextOperationTextObjectCommand(change, new MotionTextObject(moveRight));
 
         State<Command> motionCommands = new GoThereState(motions);
 
@@ -167,7 +170,8 @@ public class NormalMode extends CommandBasedMode {
                         leafBind('x', deleteNext),
                         leafBind('X', deletePrevious),
                         leafBind('~', tildeCmd),
-                        leafBind('s', seq(deleteNext, new ChangeModeCommand(InsertMode.NAME))), // FIXME: this should be compound edit
+                        leafBind('S', substituteLine),
+                        leafBind('s', substituteChar),
                         transitionBind('r', changeCaret(CaretType.UNDERLINE),
                                 convertKeyStroke(
                                         ReplaceCommand.KEYSTROKE_CONVERTER,
