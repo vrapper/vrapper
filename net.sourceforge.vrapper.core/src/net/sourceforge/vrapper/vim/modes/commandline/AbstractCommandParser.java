@@ -49,7 +49,7 @@ public abstract class AbstractCommandParser {
 
     /**
      * Parses and executes the given command if possible.
-     * 
+     *
      * @param first
      *            character used to activate the mode.
      * @param command

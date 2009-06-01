@@ -155,8 +155,7 @@ public abstract class CommandBasedMode extends AbstractMode {
 
         if (currentState == null) {
             VrapperLog.error("current state was null - this shouldn't have happened!");
-            currentState = initialState;
-            keyMapResolver.reset();
+            reset();
         }
 
         Transition<Command> transition = currentState.press(keyStroke);
@@ -173,8 +172,7 @@ public abstract class CommandBasedMode extends AbstractMode {
             }
         }
         if (transition == null || currentState == null) {
-            currentState = initialState;
-            keyMapResolver.reset();
+            reset();
             if (isEnabled) {
                 commandDone();
             }
@@ -184,6 +182,11 @@ public abstract class CommandBasedMode extends AbstractMode {
         placeCursor();
 
         return true;
+    }
+
+    private void reset() {
+        currentState = initialState;
+        keyMapResolver.reset();
     }
 
     public KeyMap resolveKeyMap(KeyMapProvider provider) {

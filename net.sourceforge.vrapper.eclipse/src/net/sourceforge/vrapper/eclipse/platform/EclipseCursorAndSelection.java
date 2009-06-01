@@ -1,20 +1,22 @@
 package net.sourceforge.vrapper.eclipse.platform;
 
 import net.sourceforge.vrapper.eclipse.ui.CaretUtils;
-import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.SelectionService;
 import net.sourceforge.vrapper.utils.CaretType;
+import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Space;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
-import net.sourceforge.vrapper.utils.TextRange;
+import net.sourceforge.vrapper.vim.commands.Selection;
 
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.ITextViewerExtension5;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
 
 public class EclipseCursorAndSelection implements CursorService, SelectionService {
@@ -23,10 +25,14 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     private int stickyColumn;
     private boolean stickToEOL = false;
     private final ITextViewerExtension5 converter;
+    private Selection selection;
+    private final SelectionChangeListener selectionChangeListener;
 
     public EclipseCursorAndSelection(ITextViewer textViewer) {
         this.textViewer = textViewer;
         converter = OffsetConverter.create(textViewer);
+        selectionChangeListener = new SelectionChangeListener();
+        textViewer.getTextWidget().addSelectionListener(selectionChangeListener);
     }
 
     public Position getPosition() {
@@ -84,37 +90,51 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         }
     }
 
-    public TextRange getSelection() {
+    public Selection getSelection() {
+        if (selection != null) {
+            return selection;
+        }
         int start, end, pos, len;
         start = end = textViewer.getSelectedRange().x;
         len = textViewer.getSelectedRange().y;
         pos = converter.widgetOffset2ModelOffset(textViewer.getTextWidget().getCaretOffset());
-        if (start == pos) {
-            start += len;
-        } else {
-            end += len;
-        }
+            if (start == pos) {
+                start += len+1;
+            } else {
+                end += len;
+            }
 
 
         Position from = new TextViewerPosition(textViewer, Space.MODEL, start);
         Position to =   new TextViewerPosition(textViewer, Space.MODEL, end);
-        return new StartEndTextRange(from, to);
+        return new Selection(new StartEndTextRange(from, to), ContentType.TEXT);
     }
 
-    public void setSelection(TextRange selection) {
-        if (selection == null) {
+    public void setSelection(Selection newSelection) {
+        if (newSelection == null) {
             int cursorPos = converter.widgetOffset2ModelOffset(textViewer.getTextWidget().getCaretOffset());
             textViewer.setSelectedRange(cursorPos, 0);
+            selection = null;
         } else {
-            textViewer.getTextWidget().setCaretOffset(selection.getStart().getViewOffset());
-            int from = selection.getStart().getModelOffset();
-            int length = !selection.isReversed() ? selection.getModelLength() : -selection.getModelLength();
+            textViewer.getTextWidget().setCaretOffset(newSelection.getStart().getViewOffset());
+            int from = newSelection.getStart().getModelOffset();
+            int length = !newSelection.isReversed() ? newSelection.getModelLength() : -newSelection.getModelLength();
+            // linewise selection includes final newline, this means the cursor
+            // is placed in the line below the selection by eclipse. this
+            // corrects that behaviour
+            if (ContentType.LINES.equals(newSelection.getContentType())) {
+                if (newSelection.isReversed()) {
+                    from -= 1;
+                    length += 1;
+                } else {
+                    length -=1;
+                }
+            }
+            selection = newSelection;
+            selectionChangeListener.disable();
             textViewer.setSelectedRange(from, length);
+            selectionChangeListener.enable();
         }
-    }
-
-    public void setLineWiseSelection(boolean lineWise) {
-        VrapperLog.error("line wise selection not implemented");
     }
 
     public Position newPositionForModelOffset(int offset) {
@@ -133,5 +153,29 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     public void stickToEOL() {
         stickToEOL = true;
     }
+
+    private final class SelectionChangeListener implements SelectionListener {
+        boolean enabled = true;
+        public void widgetDefaultSelected(SelectionEvent arg0) {
+            if (enabled) {
+                selection = null;
+            }
+        }
+
+        public void widgetSelected(SelectionEvent arg0) {
+            if (enabled) {
+                selection = null;
+            }
+        }
+
+        public void enable() {
+            enabled = true;
+        }
+
+        public void disable() {
+            enabled = false;
+        }
+    }
+
 
 }

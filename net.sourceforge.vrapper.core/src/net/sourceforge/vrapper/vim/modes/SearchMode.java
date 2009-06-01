@@ -6,10 +6,20 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.modes.commandline.AbstractCommandParser;
 import net.sourceforge.vrapper.vim.modes.commandline.SearchCommandParser;
 
-public abstract class SearchMode extends AbstractCommandLineMode {
+public class SearchMode extends AbstractCommandLineMode {
+
+    public static final String NAME = "search mode";
+
+    private boolean forward;
 
     public SearchMode(EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
+    }
+
+    @Override
+    public void enterMode(Object... args) {
+        super.enterMode(args);
+        forward = args[0].equals(Direction.FORWARD);
     }
 
     @Override
@@ -21,40 +31,17 @@ public abstract class SearchMode extends AbstractCommandLineMode {
         return null;
     }
 
-    public static class Backward extends SearchMode {
-
-        public Backward(EditorAdaptor editorAdaptor) {
-            super(editorAdaptor);
-        }
-
-        public static final String NAME = "Backward Search Mode";
-
         @Override
-        protected char activationChar() {
-            return '?';
-        }
-
-        public String getName() {
-            return NAME;
-        }
+    protected char activationChar() {
+        return forward ? '/' : '?';
     }
 
-    public static class Forward extends SearchMode {
+    public enum Direction {
+        FORWARD, BACKWARD;
+    }
 
-        public Forward(EditorAdaptor editorAdaptor) {
-            super(editorAdaptor);
-        }
-
-        public static final String NAME = "Forward Search Mode";
-
-        @Override
-        protected char activationChar() {
-            return '/';
-        }
-
-        public String getName() {
-            return NAME;
-        }
+    public String getName() {
+        return NAME;
     }
 
 }

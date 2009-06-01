@@ -1,6 +1,6 @@
 package net.sourceforge.vrapper.platform;
 
-import net.sourceforge.vrapper.utils.TextRange;
+import net.sourceforge.vrapper.vim.commands.Selection;
 
 public interface SelectionService {
     /**
@@ -8,17 +8,11 @@ public interface SelectionService {
      * On some implementations (including Eclipse) this also moves cursor to selection's start.
      * @param selection - new selection; null to deselect all
      */
-    void setSelection(TextRange selection);
+    void setSelection(Selection selection);
 
     /**
      * @return new selection; null if nothing is selected
      */
-    TextRange getSelection();
-
-    /**
-     * Tells the platform whether to use line wise or character wise selection
-     * @param lineWise
-     */
-    void setLineWiseSelection(boolean lineWise);
+    Selection getSelection();
 
 }

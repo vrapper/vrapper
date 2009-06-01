@@ -10,11 +10,13 @@ import static org.mockito.Mockito.verify;
 import net.sourceforge.vrapper.core.tests.utils.CommandTestCase;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.SelectionService;
+import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
+import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.modes.VisualMode;
@@ -40,17 +42,19 @@ public class VisualModeTests extends CommandTestCase {
 		content.setText(initialContent);
 		int selectFrom, selectTo;
 		selectFrom = selectTo = beforeSelection1.length();
-		if (!inverted1)
-			selectTo += selected1.length();
-		else
-			selectFrom += selected1.length();
+		if (!inverted1) {
+            selectTo += selected1.length();
+        } else {
+            selectFrom += selected1.length();
+        }
 
 		adaptor.changeMode(VisualMode.NAME);
 		CursorService cursorService = platform.getCursorService();
 		SelectionService selectionService = platform.getSelectionService();
-		selectionService.setSelection(new StartEndTextRange(
+		selectionService.setSelection(new Selection(new StartEndTextRange(
 		                cursorService.newPositionForModelOffset(selectFrom),
-		                cursorService.newPositionForModelOffset(selectTo)));
+		                cursorService.newPositionForModelOffset(selectTo)),
+		                ContentType.TEXT));
 		try {
             command.execute(adaptor);
         } catch (CommandExecutionException e) {
@@ -68,10 +72,11 @@ public class VisualModeTests extends CommandTestCase {
         }
 		int expSelTo, expSelFrom;
 		expSelFrom = expSelTo = beforeSelection2.length();
-		if (!inverted2)
-			expSelTo += selected2.length();
-		else
-			expSelFrom += selected2.length();
+		if (!inverted2) {
+            expSelTo += selected2.length();
+        } else {
+            expSelFrom += selected2.length();
+        }
 
 		String msg = "";
 		boolean selectionMishmash = false;
@@ -88,15 +93,17 @@ public class VisualModeTests extends CommandTestCase {
 				max(actSelFrom, actSelTo)) + "\n";// + cursorLine(offset);
 
 		msg += String.format("STARTING FROM:\n%s\nEXPECTED:\n%s\nGOT:\n%s\n", initialLine, expectedLine, actualLine);
-		if (!actualFinalContent.equals(expectedFinalContent) || selectionMishmash) // || offset != expSelTo)
-			fail(msg);
+		if (!actualFinalContent.equals(expectedFinalContent) || selectionMishmash) {
+            fail(msg);
+        }
 	}
 
 	protected static String cursorLine(int offset) {
 		StringBuilder cursorLine = new StringBuilder(">");
-		int start = (offset == 0 ? 1 : 0);
-		for (int i=start; i<=offset; i++)
-			cursorLine.append(' ');
+		int start = offset == 0 ? 1 : 0;
+		for (int i=start; i<=offset; i++) {
+            cursorLine.append(' ');
+        }
 		cursorLine.append("^\n");
 		return cursorLine.toString();
 	}

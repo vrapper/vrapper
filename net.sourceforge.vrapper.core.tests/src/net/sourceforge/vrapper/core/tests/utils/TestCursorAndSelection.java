@@ -7,13 +7,13 @@ import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
-import net.sourceforge.vrapper.utils.TextRange;
+import net.sourceforge.vrapper.vim.commands.Selection;
 
 // TODO: currently caret can point behind the content
 public class TestCursorAndSelection implements CursorService, SelectionService {
 
 	private Position position = new DumbPosition(0);
-	private TextRange selection;
+	private Selection selection;
 	private CaretType caretType;
     private TextContent content;
     private int stickyColumnNo;
@@ -65,11 +65,11 @@ public class TestCursorAndSelection implements CursorService, SelectionService {
         return new DumbPosition(offset);
 	}
 
-	public TextRange getSelection() {
+	public Selection getSelection() {
 		return selection;
 	}
 
-	public void setSelection(TextRange selection) {
+	public void setSelection(Selection selection) {
 		this.selection = selection;
 	}
 

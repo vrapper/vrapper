@@ -35,6 +35,7 @@ import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CountIgnoringNonRepeatableCommand;
 import net.sourceforge.vrapper.vim.commands.DeleteOperation;
 import net.sourceforge.vrapper.vim.commands.DotCommand;
+import net.sourceforge.vrapper.vim.commands.LinewiseVisualMotionCommand;
 import net.sourceforge.vrapper.vim.commands.MotionPairTextObject;
 import net.sourceforge.vrapper.vim.commands.MotionTextObject;
 import net.sourceforge.vrapper.vim.commands.OptionDependentTextObject;
@@ -48,6 +49,7 @@ import net.sourceforge.vrapper.vim.commands.TextObject;
 import net.sourceforge.vrapper.vim.commands.TextOperation;
 import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
 import net.sourceforge.vrapper.vim.commands.UndoCommand;
+import net.sourceforge.vrapper.vim.commands.VisualMotionCommand;
 import net.sourceforge.vrapper.vim.commands.YankOperation;
 import net.sourceforge.vrapper.vim.commands.motions.LineEndMotion;
 import net.sourceforge.vrapper.vim.commands.motions.LineStartMotion;
@@ -79,6 +81,7 @@ public class NormalMode extends CommandBasedMode {
     @Override
     protected State<Command> getInitialState() {
         Command visualMode = new ChangeModeCommand(VisualMode.NAME);
+        Command linewiseVisualMode = new ChangeModeCommand(LinewiseVisualMode.NAME);
 
         Command deselectAll = new CountIgnoringNonRepeatableCommand() {
             public void execute(EditorAdaptor editorMode) {
@@ -148,12 +151,13 @@ public class NormalMode extends CommandBasedMode {
                         leafBind('I', (Command) new ChangeToInsertModeCommand(bol)),
                         leafBind('A', (Command) new ChangeToInsertModeCommand(eol)),
                         leafBind(':', (Command) new ChangeModeCommand(CommandLineMode.NAME)),
-                        leafBind('?', (Command) new ChangeModeCommand(SearchMode.Backward.NAME)),
-                        leafBind('/', (Command) new ChangeModeCommand(SearchMode.Forward.NAME)),
+                        leafBind('?', (Command) new ChangeModeCommand(SearchMode.NAME, SearchMode.Direction.BACKWARD)),
+                        leafBind('/', (Command) new ChangeModeCommand(SearchMode.NAME, SearchMode.Direction.FORWARD)),
                         leafBind('R', (Command) new ChangeModeCommand(ReplaceMode.NAME)),
                         leafBind('o', seq(new ChangeToInsertModeCommand(), editText("smartEnter"))), // FIXME: use Vrapper's code; repetition
                         leafBind('O', seq(new ChangeToInsertModeCommand(), editText("smartEnterInverse"))), // FIXME: use Vrapper's code; repetition
-                        leafBind('v', visualMode),
+                        leafBind('v', seq(visualMode, new VisualMotionCommand(moveRight))),
+                        leafBind('V', seq(linewiseVisualMode, new LinewiseVisualMotionCommand(moveRight))),
                         leafBind('p', pasteAfter),
                         leafBind('.', repeatLastOne),
                         leafBind('P', pasteBefore),
@@ -208,7 +212,7 @@ public class NormalMode extends CommandBasedMode {
         editorAdaptor.getCursorService().setCaret(CaretType.RECTANGULAR);
     }
 
-    public void enterMode() {
+    public void enterMode(Object... args) {
         if (isEnabled) {
             return;
         }

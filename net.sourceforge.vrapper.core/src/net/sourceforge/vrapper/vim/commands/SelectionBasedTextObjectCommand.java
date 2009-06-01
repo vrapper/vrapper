@@ -15,15 +15,16 @@ public class SelectionBasedTextObjectCommand extends TextObjectCommand {
 	@Override
 	protected void execute(EditorAdaptor editorMode, TextRange range, ContentType contentType) throws CommandExecutionException {
 		// TODO: move cursor - compatibility option
-		editorMode.setSelection(range);
+		editorMode.setSelection(new Selection(range, contentType));
 		command.execute(editorMode);
 	}
 
 	@Override
 	public CountAwareCommand repetition() {
 		Command wrappedRepetition = command.repetition();
-		if (wrappedRepetition != null)
-			return new SelectionBasedTextObjectCommand(wrappedRepetition, textObject);
+		if (wrappedRepetition != null) {
+            return new SelectionBasedTextObjectCommand(wrappedRepetition, textObject);
+        }
 		return null;
 	}
 

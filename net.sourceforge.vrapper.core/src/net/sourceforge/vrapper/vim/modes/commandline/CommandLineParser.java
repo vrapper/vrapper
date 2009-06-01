@@ -7,8 +7,8 @@ import java.util.StringTokenizer;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.RedoCommand;
 import net.sourceforge.vrapper.vim.commands.UndoCommand;
+import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
-import net.sourceforge.vrapper.vim.modes.VisualMode;
 
 /**
  * Command Line Mode, activated with ':'.
@@ -31,9 +31,9 @@ public class CommandLineParser extends AbstractCommandParser {
         //        mapping.add("q!", new CloseAction(true));
         //        mapping.add("set", buildConfigEvaluator());
         Evaluator noremap = new KeyMapper(false,
-                VisualMode.KEYMAP_NAME, NormalMode.KEYMAP_NAME);
+                AbstractVisualMode.KEYMAP_NAME, NormalMode.KEYMAP_NAME);
         Evaluator map = new KeyMapper(true,
-                VisualMode.KEYMAP_NAME, NormalMode.KEYMAP_NAME);
+                AbstractVisualMode.KEYMAP_NAME, NormalMode.KEYMAP_NAME);
         Evaluator nnoremap = new KeyMapper(false, NormalMode.KEYMAP_NAME);
         Evaluator nmap = new KeyMapper(true, NormalMode.KEYMAP_NAME);
         mapping.add("map", map);

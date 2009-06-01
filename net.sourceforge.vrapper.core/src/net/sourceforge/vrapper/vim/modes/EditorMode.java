@@ -6,7 +6,7 @@ import net.sourceforge.vrapper.platform.KeyMapProvider;
 
 public interface EditorMode {
     String getName();
-    void enterMode();
+    void enterMode(Object... args);
     void leaveMode();
     boolean handleKey(KeyStroke stroke);
     KeyMap resolveKeyMap(KeyMapProvider provider);

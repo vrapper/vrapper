@@ -1,6 +1,5 @@
 package net.sourceforge.vrapper.vim.commands;
 
-import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 
 public class SelectionBasedTextOperation extends AbstractCommand {
@@ -12,7 +11,8 @@ public class SelectionBasedTextOperation extends AbstractCommand {
     }
 
     public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
-        command.execute(editorAdaptor, editorAdaptor.getSelection(), ContentType.TEXT);
+        TextObject selection = editorAdaptor.getSelection();
+        command.execute(editorAdaptor, selection.getRegion(editorAdaptor, 1), selection.getContentType());
     }
 
     public Command repetition() {

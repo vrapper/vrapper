@@ -37,7 +37,7 @@ public class InsertMode extends AbstractMode {
         return NAME;
     }
 
-    public void enterMode() {
+    public void enterMode(Object... args) {
         if (isEnabled) {
             return;
         }

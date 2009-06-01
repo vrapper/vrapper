@@ -17,7 +17,7 @@ public abstract class AbstractCommandLineMode extends AbstractMode {
         super(editorAdaptor);
     }
 
-    public void enterMode() {
+    public void enterMode(Object... args) {
         isEnabled = true;
         parser = createParser();
         handleKey(ConstructorWrappers.key(activationChar()));

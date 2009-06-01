@@ -4,22 +4,21 @@ import net.sourceforge.vrapper.keymap.vim.VisualMotionState;
 import net.sourceforge.vrapper.keymap.vim.VisualMotionState.Motion2VMC;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 
+public class LinewiseVisualMode extends AbstractVisualMode {
 
-public class VisualMode extends AbstractVisualMode {
+    public static final String NAME = "linewise visual mode";
 
-    public static final String NAME = "visual mode";
-
-    public VisualMode(EditorAdaptor editorAdaptor) {
+    public LinewiseVisualMode(EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
-    }
-
-    public String getName() {
-        return NAME;
     }
 
     @Override
     protected VisualMotionState getVisualMotionState() {
-        return new VisualMotionState(Motion2VMC.CHARWISE, motions());
+        return new VisualMotionState(Motion2VMC.LINEWISE, motions());
+    }
+
+    public String getName() {
+        return NAME;
     }
 
 }

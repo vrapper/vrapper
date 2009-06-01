@@ -26,10 +26,11 @@ import net.sourceforge.vrapper.platform.UnderlyingEditorSettings;
 import net.sourceforge.vrapper.platform.UserInterfaceService;
 import net.sourceforge.vrapper.platform.ViewportService;
 import net.sourceforge.vrapper.utils.Position;
-import net.sourceforge.vrapper.utils.TextRange;
+import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.modes.CommandLineMode;
 import net.sourceforge.vrapper.vim.modes.EditorMode;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
+import net.sourceforge.vrapper.vim.modes.LinewiseVisualMode;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.modes.ReplaceMode;
 import net.sourceforge.vrapper.vim.modes.SearchMode;
@@ -74,11 +75,11 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         EditorMode[] modes = {
                 new NormalMode(this),
                 new VisualMode(this),
+                new LinewiseVisualMode(this),
                 new InsertMode(this),
                 new ReplaceMode(this),
                 new CommandLineMode(this),
-                new SearchMode.Forward(this),
-                new SearchMode.Backward(this)};
+                new SearchMode(this)};
         for (EditorMode mode: modes) {
             modeMap.put(mode.getName(), mode);
         }
@@ -113,7 +114,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     }
 
 
-    public void changeMode(String modeName) {
+    public void changeMode(String modeName, Object... args) {
         EditorMode newMode = modeMap.get(modeName);
         if (newMode == null) {
             VrapperLog.error(format("There is no mode named '%s'",  modeName));
@@ -169,11 +170,11 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         cursorService.setPosition(destination, updateStickyColumn);
     }
 
-    public TextRange getSelection() {
+    public Selection getSelection() {
         return selectionService.getSelection();
     }
 
-    public void setSelection(TextRange selection) {
+    public void setSelection(Selection selection) {
         selectionService.setSelection(selection);
     }
 

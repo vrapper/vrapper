@@ -13,10 +13,12 @@ public class PasteAfterCommand extends CountAwareCommand {
 
 	@Override
 	public void execute(EditorAdaptor editorAdaptor, int count) {
-		if (!editorAdaptor.getFileService().isEditable()) // TODO: test
-			return;
-		if (count == NO_COUNT_GIVEN)
-			count = 1;
+		if (!editorAdaptor.getFileService().isEditable()) {
+            return;
+        }
+		if (count == NO_COUNT_GIVEN) {
+            count = 1;
+        }
 		RegisterContent registerContent = editorAdaptor.getRegisterManager().getActiveRegister().getContent();
 		String text = registerContent.getText();
 		TextContent content = editorAdaptor.getModelContent();

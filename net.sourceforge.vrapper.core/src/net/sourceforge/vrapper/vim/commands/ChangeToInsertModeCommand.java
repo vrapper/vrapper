@@ -19,10 +19,12 @@ public class ChangeToInsertModeCommand extends CountAwareCommand {
 
 	@Override
 	public void execute(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
-		if (count != NO_COUNT_GIVEN)
-			VrapperLog.error("counted inserts not yet supported");
-		if (motion != null)
-			MotionCommand.doIt(editorAdaptor, motion);
+		if (count != NO_COUNT_GIVEN) {
+            VrapperLog.error("counted inserts not yet supported");
+        }
+		if (motion != null) {
+            MotionCommand.doIt(editorAdaptor, motion);
+        }
 		editorAdaptor.changeMode(InsertMode.NAME);
 	}
 
