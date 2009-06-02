@@ -42,6 +42,7 @@ import net.sourceforge.vrapper.vim.commands.motions.MoveWordRight;
 import net.sourceforge.vrapper.vim.commands.motions.ParenthesesMove;
 import net.sourceforge.vrapper.vim.commands.motions.SearchResultMotion;
 import net.sourceforge.vrapper.vim.commands.motions.ViewPortMotion;
+import net.sourceforge.vrapper.vim.commands.motions.WordSearchMotion;
 import net.sourceforge.vrapper.vim.commands.motions.ViewPortMotion.Type;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
 
@@ -72,6 +73,8 @@ public abstract class CommandBasedMode extends AbstractMode {
 //        final Motion findPrevious = new EclipseMoveCommand("org.eclipse.ui.edit.findPrevious", EXCLUSIVE);
         final Motion findNext = new SearchResultMotion(false);
         final Motion findPrevious = new SearchResultMotion(true);
+        final Motion findWordNext = new WordSearchMotion(false);
+        final Motion findWordPrevious = new WordSearchMotion(true);
         final Motion wordRight = new MoveWordRight();
         final Motion WORDRight = new MoveBigWORDRight();
         final Motion wordLeft = new MoveWordLeft();
@@ -128,6 +131,8 @@ public abstract class CommandBasedMode extends AbstractMode {
                 leafBind('L', lowMove),
                 leafBind('n', findNext),
                 leafBind('N', findPrevious),
+                leafBind('*', findWordNext),
+                leafBind('#', findWordPrevious),
                 leafBind('0', column0),
                 leafBind('$', lineEnd),
                 leafBind('%', parenthesesMove),
