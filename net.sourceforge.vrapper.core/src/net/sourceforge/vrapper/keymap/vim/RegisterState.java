@@ -22,7 +22,6 @@ public class RegisterState implements State<Command> {
     }
 
     public Transition<Command> press(KeyStroke key) {
-        System.out.println(key.getCharacter());
         if ('"' == key.getCharacter() && (key.getModifiers() & KeyStroke.CTRL) == 0) {
             return new SimpleTransition<Command>(selectState);
         }
