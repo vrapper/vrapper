@@ -8,6 +8,7 @@ import net.sourceforge.vrapper.utils.SearchResult;
 import net.sourceforge.vrapper.utils.Space;
 
 import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.FindReplaceDocumentAdapter;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
@@ -96,11 +97,11 @@ public class EclipseTextContent {
 
         public SearchResult find(Search search, Position start) {
             try {
-                // TODO: find non-deprecated API
-                int result = textViewer.getDocument().search(
+                FindReplaceDocumentAdapter adapter = new FindReplaceDocumentAdapter(textViewer.getDocument());
+                IRegion result = adapter.find(
                             start.getModelOffset(), search.getKeyword(),
-                            !search.isBackward(), true, search.isWholeWord());
-                Position resultPosition = result >= 0 ? start.setModelOffset(result) : null;
+                            !search.isBackward(), true, search.isWholeWord(), false);
+                Position resultPosition = result != null ? start.setModelOffset(result.getOffset()) : null;
                 return new SearchResult(resultPosition);
             } catch (BadLocationException e) {
                 return new SearchResult(null);
