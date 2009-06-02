@@ -186,7 +186,6 @@ public abstract class CommandBasedMode extends AbstractMode {
         Transition<Command> transition = currentState.press(keyStroke);
         keyMapResolver.press(keyStroke);
         commandBuffer.append(keyStroke.getCharacter());
-        editorAdaptor.getUserInterfaceService().setInfoMessage(commandBuffer.toString());
         if (transition != null) {
             Command command = transition.getValue();
             currentState = transition.getNextState();
@@ -194,7 +193,7 @@ public abstract class CommandBasedMode extends AbstractMode {
                 try {
                     executeCommand(command);
                 } catch (CommandExecutionException e) {
-                    VrapperLog.info(e.getMessage());
+                    editorAdaptor.getUserInterfaceService().setErrorMessage(e.getMessage());
                 }
             }
         }
@@ -204,6 +203,8 @@ public abstract class CommandBasedMode extends AbstractMode {
                 commandDone();
             }
         }
+
+        editorAdaptor.getUserInterfaceService().setInfoMessage(commandBuffer.toString());
 
         // FIXME: has some issues with sticky column
         placeCursor();
@@ -220,11 +221,19 @@ public abstract class CommandBasedMode extends AbstractMode {
         return provider.getKeyMap(keyMapResolver.getKeyMapName());
     }
 
+    public void leaveMode() {
+        resetCommandBuffer();
+    }
+
     /**
      * this is a hook method which is called when command execution is done
      */
     // TODO: better name
     protected void commandDone() {
+        resetCommandBuffer();
+    }
+
+    private void resetCommandBuffer() {
         commandBuffer.delete(0, commandBuffer.length());
         editorAdaptor.getUserInterfaceService().setInfoMessage("");
     }

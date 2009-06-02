@@ -229,7 +229,9 @@ public class NormalMode extends CommandBasedMode {
         editorAdaptor.getCursorService().setCaret(CaretType.RECTANGULAR);
     }
 
+    @Override
     public void leaveMode() {
+        super.leaveMode();
         if (!isEnabled) {
             return;
         }

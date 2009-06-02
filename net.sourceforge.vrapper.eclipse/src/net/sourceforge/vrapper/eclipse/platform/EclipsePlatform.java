@@ -32,7 +32,7 @@ public class EclipsePlatform implements Platform {
     public EclipsePlatform(AbstractTextEditor abstractTextEditor, ITextViewer textViewer) {
         cursorAndSelection = new EclipseCursorAndSelection(textViewer);
         textContent = new EclipseTextContent(textViewer);
-        fileService = new EclipseFileService(textViewer);
+        fileService = new EclipseFileService(abstractTextEditor);
         viewportService = new EclipseViewportService(textViewer);
         serviceProvider = new EclipseServiceProvider(abstractTextEditor);
         userInterfaceService = new EclipseUserInterfaceService(abstractTextEditor, textViewer);

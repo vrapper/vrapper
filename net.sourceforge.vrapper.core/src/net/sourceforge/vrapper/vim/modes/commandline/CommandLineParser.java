@@ -5,8 +5,12 @@ import java.util.Queue;
 import java.util.StringTokenizer;
 
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.CloseCommand;
+import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.RedoCommand;
+import net.sourceforge.vrapper.vim.commands.SaveCommand;
 import net.sourceforge.vrapper.vim.commands.UndoCommand;
+import net.sourceforge.vrapper.vim.commands.VimCommandSequence;
 import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 
@@ -21,14 +25,14 @@ public class CommandLineParser extends AbstractCommandParser {
     private static final EvaluatorMapping mapping;
     static {
         mapping = new EvaluatorMapping();
-        //        Action save = new SaveAction();
-        //        mapping.add("w", save);
-        //        CloseAction close = new CloseAction(false);
-        //        Action saveAndClose = new CompositeAction(save, close);
-        //        mapping.add("wq", saveAndClose);
-        //        mapping.add("x", saveAndClose);
-        //        mapping.add("q", close);
-        //        mapping.add("q!", new CloseAction(true));
+        Command save = new SaveCommand();
+        mapping.add("w", save);
+        CloseCommand close = new CloseCommand(false);
+        Command saveAndClose = new VimCommandSequence(save, close);
+        mapping.add("wq", saveAndClose);
+        mapping.add("x", saveAndClose);
+        mapping.add("q", close);
+        mapping.add("q!", new CloseCommand(true));
         //        mapping.add("set", buildConfigEvaluator());
         Evaluator noremap = new KeyMapper(false,
                 AbstractVisualMode.KEYMAP_NAME, NormalMode.KEYMAP_NAME);
