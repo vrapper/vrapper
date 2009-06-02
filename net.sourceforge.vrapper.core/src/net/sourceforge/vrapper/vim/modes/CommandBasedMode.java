@@ -50,11 +50,13 @@ public abstract class CommandBasedMode extends AbstractMode {
     protected final State<Command> initialState;
     protected State<Command> currentState;
     private final KeyMapResolver keyMapResolver;
+    private final StringBuilder commandBuffer;
 
     public CommandBasedMode(EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
         currentState = initialState = getInitialState();
         keyMapResolver = buildKeyMapResolver();
+        commandBuffer = new StringBuilder();
     }
 
     protected abstract State<Command> getInitialState();
@@ -178,6 +180,8 @@ public abstract class CommandBasedMode extends AbstractMode {
 
         Transition<Command> transition = currentState.press(keyStroke);
         keyMapResolver.press(keyStroke);
+        commandBuffer.append(keyStroke.getCharacter());
+        editorAdaptor.getUserInterfaceService().setInfoMessage(commandBuffer.toString());
         if (transition != null) {
             Command command = transition.getValue();
             currentState = transition.getNextState();
@@ -215,7 +219,10 @@ public abstract class CommandBasedMode extends AbstractMode {
      * this is a hook method which is called when command execution is done
      */
     // TODO: better name
-    protected void commandDone() { }
+    protected void commandDone() {
+        commandBuffer.delete(0, commandBuffer.length());
+        editorAdaptor.getUserInterfaceService().setInfoMessage("");
+    }
 
     @SuppressWarnings("unchecked")
     protected State<String> getKeyMapsForMotions() {
