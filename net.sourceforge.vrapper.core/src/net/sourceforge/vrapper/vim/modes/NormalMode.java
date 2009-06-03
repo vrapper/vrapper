@@ -1,6 +1,5 @@
 package net.sourceforge.vrapper.vim.modes;
 
-import static java.lang.Math.min;
 import static net.sourceforge.vrapper.keymap.StateUtils.union;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.changeCaret;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.convertKeyStroke;
@@ -22,8 +21,9 @@ import net.sourceforge.vrapper.keymap.vim.CountingState;
 import net.sourceforge.vrapper.keymap.vim.GoThereState;
 import net.sourceforge.vrapper.keymap.vim.RegisterState;
 import net.sourceforge.vrapper.keymap.vim.TextObjectState;
-import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.CaretType;
+import net.sourceforge.vrapper.utils.LineInformation;
+import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.VimConstants;
@@ -202,14 +202,11 @@ public class NormalMode extends CommandBasedMode {
 
     @Override
     protected void placeCursor() {
-        TextContent content = editorAdaptor.getViewContent();
-        int checkFrom = editorAdaptor.getPosition().getViewOffset() - 1;
-        int checkTo   = min(checkFrom + 2, content.getTextLength());
-        if (isEnabled && checkFrom >= 0) {
-            String around = content.getText(checkFrom, checkTo - checkFrom);
-            if (!around.startsWith("\n") && (around.endsWith("\n") || around.length() == 1)) {
-                editorAdaptor.setPosition(editorAdaptor.getPosition().addViewOffset(-1), false);
-            }
+        Position pos = editorAdaptor.getPosition();
+        int offset = pos.getViewOffset();
+        LineInformation line = editorAdaptor.getViewContent().getLineInformationOfOffset(offset);
+        if (isEnabled && line.getEndOffset() == offset && line.getLength() > 0) {
+            editorAdaptor.setPosition(pos.addViewOffset(-1), false);
         }
     }
 

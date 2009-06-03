@@ -6,10 +6,8 @@ public class MoveRight extends LeftRightMotion {
 
 	@Override
 	protected int destination(int offset, TextContent content, int count) {
-		int to = Math.min(offset + count, content.getTextLength());
-		String text = content.getText(offset, to - offset);
-		int i = text.indexOf('\n');
-		return i == -1 ? to : offset + i;
+	    int lineEnd = content.getLineInformationOfOffset(offset).getEndOffset();
+		return Math.min(lineEnd, offset+count);
 	}
 
 }
