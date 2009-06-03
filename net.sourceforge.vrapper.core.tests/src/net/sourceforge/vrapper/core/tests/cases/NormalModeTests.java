@@ -186,6 +186,7 @@ public class NormalModeTests extends CommandTestCase {
 		Command repetition = mock(Command.class);
 		Command cmd = mock(Command.class);
 		when(cmd.repetition()).thenReturn(repetition);
+		when(registerManager.isDefaultRegisterActive()).thenReturn(true);
 		CommandBasedMode normalMode = (CommandBasedMode) mode;
 		normalMode.executeCommand(cmd);
 		verify(registerManager).setLastEdit(repetition);
