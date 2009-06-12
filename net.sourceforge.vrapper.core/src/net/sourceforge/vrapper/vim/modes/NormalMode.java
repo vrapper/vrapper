@@ -162,7 +162,7 @@ public class NormalMode extends CommandBasedMode {
                         leafBind('R', (Command) new ChangeModeCommand(ReplaceMode.NAME)),
                         leafBind('o', seq(new ChangeModeCommand(InsertMode.NAME), editText("smartEnter"))), // FIXME: use Vrapper's code; repetition
                         leafBind('O', seq(new ChangeModeCommand(InsertMode.NAME), editText("smartEnterInverse"))), // FIXME: use Vrapper's code; repetition
-                        leafBind('v', seq(visualMode, new VisualMotionCommand(moveRight))),
+                        leafBind('v', visualMode),
                         leafBind('V', seq(linewiseVisualMode, new LinewiseVisualMotionCommand(moveRight))),
                         leafBind('p', pasteAfter),
                         leafBind('.', repeatLastOne),
