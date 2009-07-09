@@ -79,4 +79,8 @@ public class SWTKeyStroke implements KeyStroke {
         return null; // FIXME: it's broken
     }
 
+    public boolean isVirtual() {
+        return false;
+    }
+
 }

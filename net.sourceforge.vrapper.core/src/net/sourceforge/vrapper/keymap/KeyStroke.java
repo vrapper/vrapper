@@ -9,4 +9,5 @@ public interface KeyStroke {
 	int getModifiers();
 	char getCharacter();
 	SpecialKey getSpecialKey();
+	boolean isVirtual();
 }

@@ -13,7 +13,9 @@ import net.sourceforge.vrapper.vim.commands.SaveCommand;
 import net.sourceforge.vrapper.vim.commands.UndoCommand;
 import net.sourceforge.vrapper.vim.commands.VimCommandSequence;
 import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
+import net.sourceforge.vrapper.vim.modes.InsertMode;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
+import net.sourceforge.vrapper.vim.modes.VisualMode;
 
 /**
  * Command Line Mode, activated with ':'.
@@ -41,12 +43,22 @@ public class CommandLineParser extends AbstractCommandParser {
                 AbstractVisualMode.KEYMAP_NAME, NormalMode.KEYMAP_NAME);
         Evaluator nnoremap = new KeyMapper(false, NormalMode.KEYMAP_NAME);
         Evaluator nmap = new KeyMapper(true, NormalMode.KEYMAP_NAME);
-        mapping.add("map", map);
-        mapping.add("nmap", nmap);
-        mapping.add("no", noremap);
+        Evaluator vnoremap = new KeyMapper(false, VisualMode.KEYMAP_NAME);
+        Evaluator vmap = new KeyMapper(true, VisualMode.KEYMAP_NAME);
+        Evaluator inoremap = new KeyMapper(false, InsertMode.KEYMAP_NAME);
+        Evaluator imap = new KeyMapper(true, InsertMode.KEYMAP_NAME);
         mapping.add("noremap", noremap);
-        mapping.add("nno", nnoremap);
+        mapping.add("no", noremap);
+        mapping.add("map", map);
         mapping.add("nnoremap", nnoremap);
+        mapping.add("nno", nnoremap);
+        mapping.add("nmap", nmap);
+        mapping.add("inoremap", inoremap);
+        mapping.add("ino", inoremap);
+        mapping.add("imap", imap);
+        mapping.add("vnoremap", vnoremap);
+        mapping.add("vno", vnoremap);
+        mapping.add("vmap", vmap);
         //        Action formatAll = new FormatAllAction();
         //        mapping.add("formatall", formatAll);
         //        mapping.add("format", formatAll);

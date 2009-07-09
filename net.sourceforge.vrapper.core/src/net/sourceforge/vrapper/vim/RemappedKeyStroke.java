@@ -9,12 +9,12 @@ import net.sourceforge.vrapper.keymap.SpecialKey;
  *
  * @author Matthias Radig
  */
-public class RecursiveKeyStroke implements KeyStroke {
+public class RemappedKeyStroke implements KeyStroke {
 
     private final KeyStroke delegate;
     private final boolean recursive;
 
-    public RecursiveKeyStroke(KeyStroke delegate, boolean recursive) {
+    public RemappedKeyStroke(KeyStroke delegate, boolean recursive) {
         super();
         this.delegate = delegate;
         this.recursive = recursive;
@@ -44,5 +44,9 @@ public class RecursiveKeyStroke implements KeyStroke {
     @Override
     public int hashCode() {
         return delegate.hashCode();
+    }
+
+    public boolean isVirtual() {
+        return true;
     }
 }

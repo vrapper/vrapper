@@ -21,12 +21,12 @@ public class KeyStrokeTranslator {
 
     private State<Remapping> currentState;
     private Remapping lastValue;
-    private final List<RecursiveKeyStroke> unconsumedKeyStrokes;
-    private final LinkedList<RecursiveKeyStroke> resultingKeyStrokes;
+    private final List<RemappedKeyStroke> unconsumedKeyStrokes;
+    private final LinkedList<RemappedKeyStroke> resultingKeyStrokes;
 
     public KeyStrokeTranslator() {
-        unconsumedKeyStrokes = new LinkedList<RecursiveKeyStroke>();
-        resultingKeyStrokes  = new LinkedList<RecursiveKeyStroke>();
+        unconsumedKeyStrokes = new LinkedList<RemappedKeyStroke>();
+        resultingKeyStrokes  = new LinkedList<RemappedKeyStroke>();
     }
 
     public boolean processKeyStroke(KeyMap keymap, KeyStroke key) {
@@ -48,7 +48,7 @@ public class KeyStrokeTranslator {
                 // as long as no preliminary result is found, keystrokes
                 // should not be evaluated again
                 boolean recursive = lastValue != null;
-                unconsumedKeyStrokes.add(new RecursiveKeyStroke(key, recursive));
+                unconsumedKeyStrokes.add(new RemappedKeyStroke(key, recursive));
             }
             if (trans.getNextState() == null) {
                 prependUnconsumed();
@@ -60,7 +60,7 @@ public class KeyStrokeTranslator {
         } else {
             // mapping ends here
             boolean recursive = lastValue != null;
-            unconsumedKeyStrokes.add(new RecursiveKeyStroke(key, recursive));
+            unconsumedKeyStrokes.add(new RemappedKeyStroke(key, recursive));
             prependUnconsumed();
             prependLastValue();
             currentState = null;
@@ -68,7 +68,7 @@ public class KeyStrokeTranslator {
         return true;
     }
 
-    public Queue<RecursiveKeyStroke> resultingKeyStrokes() {
+    public Queue<RemappedKeyStroke> resultingKeyStrokes() {
         return resultingKeyStrokes;
     }
 
@@ -84,7 +84,7 @@ public class KeyStrokeTranslator {
         boolean recursive = lastValue.isRecursive();
         int i = 0;
         for (KeyStroke key : lastValue.getKeyStrokes()) {
-            resultingKeyStrokes.add(i++, new RecursiveKeyStroke(key, recursive));
+            resultingKeyStrokes.add(i++, new RemappedKeyStroke(key, recursive));
         }
         lastValue = null;
     }

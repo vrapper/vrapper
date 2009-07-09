@@ -46,12 +46,15 @@ public class SimpleKeyStroke implements KeyStroke {
     public String toString() {
         // this is mainly for debugging
         List<String> pieces = new ArrayList<String>();
-        if ((modifiers & SHIFT) != 0)
+        if ((modifiers & SHIFT) != 0) {
             pieces.add("SHIFT");
-        if ((modifiers & ALT) != 0)
+        }
+        if ((modifiers & ALT) != 0) {
             pieces.add("ALT");
-        if ((modifiers & CTRL) != 0)
+        }
+        if ((modifiers & CTRL) != 0) {
             pieces.add("CTRL");
+        }
         pieces.add(specialKey == null ? Character.toString(character) : specialKey.toString());
         return "SimpleKeyStroke(" + StringUtils.join("+", pieces) + ")";
     }
@@ -78,6 +81,10 @@ public class SimpleKeyStroke implements KeyStroke {
             return false;
         }
         return true;
+    }
+
+    public boolean isVirtual() {
+        return false;
     }
 
 }

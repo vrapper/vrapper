@@ -155,10 +155,10 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
             if (map != null) {
                 boolean inMapping = keyStrokeTranslator.processKeyStroke(map, key);
                 if (inMapping) {
-                    Queue<RecursiveKeyStroke> resultingKeyStrokes =
+                    Queue<RemappedKeyStroke> resultingKeyStrokes =
                         keyStrokeTranslator.resultingKeyStrokes();
                     while (!resultingKeyStrokes.isEmpty()) {
-                        RecursiveKeyStroke next = resultingKeyStrokes.poll();
+                        RemappedKeyStroke next = resultingKeyStrokes.poll();
                         if (next.isRecursive()) {
                             handleKey(next);
                         } else {
