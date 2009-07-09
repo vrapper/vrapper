@@ -1,9 +1,9 @@
 package net.sourceforge.vrapper.vim.commands;
 
-import static java.lang.Math.min;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.ContentType;
+import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
@@ -34,16 +34,35 @@ public class MotionTextObject extends AbstractTextObject {
         }
     }
 
-    private static TextRange lines(EditorAdaptor editorMode, Position from, Position to) {
-        TextRange range = new StartEndTextRange(from, to);
-        TextContent content = editorMode.getModelContent();
-        int start = range.getLeftBound().getModelOffset();
-        int end   = range.getRightBound().getModelOffset();
-        start = content.getLineInformationOfOffset(start).getBeginOffset();
-        end = content.getLineInformationOfOffset(end).getEndOffset() + 1;
-        end = min(end, content.getTextLength());
-        CursorService cs = editorMode.getCursorService();
-        return new StartEndTextRange(cs.newPositionForModelOffset(start), cs.newPositionForModelOffset(end));
+    private static TextRange lines(EditorAdaptor editor, Position from, Position to) {
+        TextContent vc = editor.getModelContent();
+        LineInformation sLine = vc.getLineInformationOfOffset(from.getModelOffset());
+        LineInformation eLine = vc.getLineInformationOfOffset(to.getModelOffset());
+        CursorService cs = editor.getCursorService();
+        if (sLine.getNumber() < eLine.getNumber()) {
+            int endIndex = eLine.getNumber() < vc.getNumberOfLines()
+                    ? vc.getLineInformation(eLine.getNumber()+1).getBeginOffset()
+                    : eLine.getEndOffset();
+            return new StartEndTextRange(
+                    cs.newPositionForModelOffset(sLine.getBeginOffset()),
+                    cs.newPositionForModelOffset(endIndex));
+        } else {
+            int startIndex = sLine.getNumber() < vc.getNumberOfLines()
+                    ? vc.getLineInformation(sLine.getNumber()+1).getBeginOffset()
+                    : sLine.getEndOffset();
+            return new StartEndTextRange(
+                    cs.newPositionForModelOffset(startIndex),
+                    cs.newPositionForModelOffset(eLine.getBeginOffset()));
+        }
+//        TextRange range = new StartEndTextRange(from, to);
+//        TextContent content = editorMode.getModelContent();
+//        int start = range.getLeftBound().getModelOffset();
+//        int end   = range.getRightBound().getModelOffset();
+//        start = content.getLineInformationOfOffset(start).getBeginOffset();
+//        end = content.getLineInformationOfOffset(end).getEndOffset() + 1;
+//        end = min(end, content.getTextLength());
+//        CursorService cs = editorMode.getCursorService();
+//        return new StartEndTextRange(cs.newPositionForModelOffset(start), cs.newPositionForModelOffset(end));
     }
 
     public ContentType getContentType() {

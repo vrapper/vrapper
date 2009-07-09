@@ -5,60 +5,32 @@ import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 
-public class Selection implements TextObject, TextRange {
+public interface Selection extends TextObject, TextRange {
 
-    private final ContentType contentType;
-    private final TextRange range;
+    public abstract boolean isReversed();
 
-    public Selection(TextRange range, ContentType contentType) {
-        super();
-        this.contentType = contentType;
-        this.range = range;
-    }
+    public abstract int getViewLength();
 
-    public ContentType getContentType() {
-        return contentType;
-    }
+    public abstract Position getStart();
 
-    public TextRange getRegion(EditorAdaptor editorMode, int count)
-            throws CommandExecutionException {
-        return range;
-    }
+    public abstract Position getRightBound();
 
-    public int getCount() {
-        return 1;
-    }
+    public abstract int getModelLength();
 
-    public TextObject withCount(int count) {
-        return this;
-    }
+    public abstract Position getLeftBound();
 
-    public Position getEnd() {
-        return range.getEnd();
-    }
+    public abstract Position getEnd();
 
-    public Position getLeftBound() {
-        return range.getLeftBound();
-    }
+    public abstract TextObject withCount(int count);
 
-    public int getModelLength() {
-        return range.getModelLength();
-    }
+    public abstract int getCount();
 
-    public Position getRightBound() {
-        return range.getRightBound();
-    }
+    public abstract TextRange getRegion(EditorAdaptor editorMode, int count)
+            throws CommandExecutionException;
 
-    public Position getStart() {
-        return range.getStart();
-    }
+    public abstract ContentType getContentType();
 
-    public int getViewLength() {
-        return range.getViewLength();
-    }
+    public abstract Position getFrom();
 
-    public boolean isReversed() {
-        return range.isReversed();
-    }
-
+    public abstract Position getTo();
 }

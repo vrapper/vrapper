@@ -9,6 +9,7 @@ import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Space;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.vim.commands.Selection;
+import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IRegion;
@@ -107,7 +108,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
 
         Position from = new TextViewerPosition(textViewer, Space.MODEL, start);
         Position to =   new TextViewerPosition(textViewer, Space.MODEL, end);
-        return new Selection(new StartEndTextRange(from, to), ContentType.TEXT);
+        return new SimpleSelection(new StartEndTextRange(from, to));
     }
 
     public void setSelection(Selection newSelection) {

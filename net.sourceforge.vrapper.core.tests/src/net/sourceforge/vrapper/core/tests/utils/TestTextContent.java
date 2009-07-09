@@ -120,4 +120,8 @@ public class TestTextContent implements TextContent {
         throw new UnsupportedOperationException("find not supported");
     }
 
+    public void smartInsert(int index, String s) {
+        replace(index, 0, s);
+    }
+
 }

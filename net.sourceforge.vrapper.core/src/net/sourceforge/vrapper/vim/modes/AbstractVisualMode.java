@@ -53,6 +53,7 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
         editorAdaptor.getCursorService().setCaret(CaretType.VERTICAL_BAR);
     }
 
+    @Override
     public void leaveMode() {
         isEnabled = false;
         editorAdaptor.setSelection(null);

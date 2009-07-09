@@ -17,6 +17,7 @@ public abstract class AbstractVisualMotionCommand extends MotionCommand {
     public void execute(EditorAdaptor editorAdaptor, int count)
             throws CommandExecutionException {
             	Selection oldSelection = getSelection(editorAdaptor);
+            	editorAdaptor.setPosition(oldSelection.getTo(), false);
             	super.execute(editorAdaptor, count);
             	extendSelection(editorAdaptor, oldSelection);
             }

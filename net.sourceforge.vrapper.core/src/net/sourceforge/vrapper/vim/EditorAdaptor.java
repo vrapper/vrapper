@@ -1,6 +1,7 @@
 package net.sourceforge.vrapper.vim;
 
 import net.sourceforge.vrapper.keymap.KeyStroke;
+import net.sourceforge.vrapper.platform.Configuration;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.FileService;
 import net.sourceforge.vrapper.platform.HistoryService;
@@ -29,11 +30,14 @@ public interface EditorAdaptor {
     UserInterfaceService getUserInterfaceService();
     KeyMapProvider getKeyMapProvider();
     UnderlyingEditorSettings getEditorSettings();
+    Configuration getConfiguration();
 
     Position getPosition();
     void setPosition(Position destination, boolean updateStickyColumn);
     void setSelection(Selection selection);
     Selection getSelection();
     <T>T getService(Class<T> serviceClass);
+    void useGlobalRegisters();
+    void useLocalRegisters();
 }
 

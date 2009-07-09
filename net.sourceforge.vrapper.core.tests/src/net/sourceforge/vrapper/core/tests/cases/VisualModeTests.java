@@ -10,13 +10,12 @@ import static org.mockito.Mockito.verify;
 import net.sourceforge.vrapper.core.tests.utils.CommandTestCase;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.SelectionService;
-import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
-import net.sourceforge.vrapper.vim.commands.Selection;
+import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.modes.VisualMode;
@@ -51,10 +50,9 @@ public class VisualModeTests extends CommandTestCase {
 		adaptor.changeMode(VisualMode.NAME);
 		CursorService cursorService = platform.getCursorService();
 		SelectionService selectionService = platform.getSelectionService();
-		selectionService.setSelection(new Selection(new StartEndTextRange(
+		selectionService.setSelection(new SimpleSelection(new StartEndTextRange(
 		                cursorService.newPositionForModelOffset(selectFrom),
-		                cursorService.newPositionForModelOffset(selectTo)),
-		                ContentType.TEXT));
+		                cursorService.newPositionForModelOffset(selectTo))));
 		try {
             command.execute(adaptor);
         } catch (CommandExecutionException e) {

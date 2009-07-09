@@ -8,9 +8,8 @@ public class SwapSelectionSidesCommand extends CountIgnoringNonRepeatableCommand
     public void execute(EditorAdaptor editorAdaptor) {
         Selection selection = editorAdaptor.getSelection();
         editorAdaptor.setPosition(selection.getEnd(), true);
-        editorAdaptor.setSelection(new Selection(
-                new StartEndTextRange(selection.getEnd(), selection.getStart()),
-                selection.getContentType()));
+        editorAdaptor.setSelection(new SimpleSelection(
+                new StartEndTextRange(selection.getEnd(), selection.getStart())));
     }
 
 }

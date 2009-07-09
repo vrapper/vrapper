@@ -1,6 +1,5 @@
 package net.sourceforge.vrapper.vim.commands;
 
-import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
@@ -16,11 +15,10 @@ public class VisualMotionCommand extends AbstractVisualMotionCommand {
     protected Selection getSelection(EditorAdaptor editorAdaptor) {
 		Selection oldSelection = editorAdaptor.getSelection();
 		if (oldSelection == null) {
-			oldSelection = new Selection(
+			oldSelection = new SimpleSelection(
 			        new StartEndTextRange(
 			                editorAdaptor.getPosition(),
-			                editorAdaptor.getPosition()),
-			        ContentType.TEXT);
+			                editorAdaptor.getPosition()));
 			editorAdaptor.setSelection(oldSelection);
 		}
 		return oldSelection;
@@ -33,9 +31,7 @@ public class VisualMotionCommand extends AbstractVisualMotionCommand {
 		if (motion.borderPolicy() == BorderPolicy.INCLUSIVE) {
             newSelectionEnd = newSelectionEnd.addViewOffset(1);
         }
-		editorAdaptor.setSelection(new Selection(
-		        new StartEndTextRange(oldSelection.getStart(), newSelectionEnd),
-		        ContentType.TEXT));
+		editorAdaptor.setSelection(new SimpleSelection(
+		        new StartEndTextRange(oldSelection.getStart(), newSelectionEnd)));
 	}
-
 }

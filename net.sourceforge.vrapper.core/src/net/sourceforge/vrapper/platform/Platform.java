@@ -14,4 +14,5 @@ public interface Platform {
     ServiceProvider getServiceProvider();
     KeyMapProvider getKeyMapProvider();
     UnderlyingEditorSettings getUnderlyingEditorSettings();
+    Configuration getConfiguration();
 }

@@ -13,6 +13,7 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.ITextViewerExtension5;
+import org.eclipse.swt.custom.StyledText;
 
 @SuppressWarnings("nls")
 public class EclipseTextContent {
@@ -91,6 +92,10 @@ public class EclipseTextContent {
             }
         }
 
+        public void smartInsert(int index, String s) {
+            viewSide.smartInsert(converter.modelOffset2WidgetOffset(index), s);
+        }
+
         public Space getSpace() {
             return Space.MODEL;
         }
@@ -144,6 +149,14 @@ public class EclipseTextContent {
         public void replace(int index, int length, String text) {
             // XXX: it was illegal in Vrapper. Why?
             textViewer.getTextWidget().replaceTextRange(index, length, text);
+        }
+
+        public void smartInsert(int index, String s) {
+            StyledText textWidget = textViewer.getTextWidget();
+            int oldIndex = textWidget.getCaretOffset();
+            textWidget.setCaretOffset(index);
+            textWidget.insert(s);
+            textWidget.setCaretOffset(oldIndex);
         }
 
         public Space getSpace() {

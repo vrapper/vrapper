@@ -34,6 +34,7 @@ import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CountIgnoringNonRepeatableCommand;
 import net.sourceforge.vrapper.vim.commands.DeleteOperation;
 import net.sourceforge.vrapper.vim.commands.DotCommand;
+import net.sourceforge.vrapper.vim.commands.InsertLineCommand;
 import net.sourceforge.vrapper.vim.commands.LinewiseVisualMotionCommand;
 import net.sourceforge.vrapper.vim.commands.MotionPairTextObject;
 import net.sourceforge.vrapper.vim.commands.MotionTextObject;
@@ -48,7 +49,6 @@ import net.sourceforge.vrapper.vim.commands.TextObject;
 import net.sourceforge.vrapper.vim.commands.TextOperation;
 import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
 import net.sourceforge.vrapper.vim.commands.UndoCommand;
-import net.sourceforge.vrapper.vim.commands.VisualMotionCommand;
 import net.sourceforge.vrapper.vim.commands.YankOperation;
 import net.sourceforge.vrapper.vim.commands.motions.LineEndMotion;
 import net.sourceforge.vrapper.vim.commands.motions.LineStartMotion;
@@ -128,6 +128,8 @@ public class NormalMode extends CommandBasedMode {
         Command redo = new RedoCommand();
         Command pasteAfter  = new PasteAfterCommand();
         Command pasteBefore = new PasteBeforeCommand();
+//        Command pasteAfter  = new PutCommand(false);
+//        Command pasteBefore = new PutCommand(true);
         Command deleteNext = new TextOperationTextObjectCommand(delete, new MotionTextObject(moveRight));
         Command deletePrevious = new TextOperationTextObjectCommand(delete, new MotionTextObject(moveLeft));
 //        Command deletePrevious = seq(motion2command(moveLeft), deleteNext); // FIXME: should do nothing when on first character of buffer
@@ -160,8 +162,8 @@ public class NormalMode extends CommandBasedMode {
                         leafBind('?', (Command) new ChangeModeCommand(SearchMode.NAME, SearchMode.Direction.BACKWARD)),
                         leafBind('/', (Command) new ChangeModeCommand(SearchMode.NAME, SearchMode.Direction.FORWARD)),
                         leafBind('R', (Command) new ChangeModeCommand(ReplaceMode.NAME)),
-                        leafBind('o', seq(new ChangeModeCommand(InsertMode.NAME), editText("smartEnter"))), // FIXME: use Vrapper's code; repetition
-                        leafBind('O', seq(new ChangeModeCommand(InsertMode.NAME), editText("smartEnterInverse"))), // FIXME: use Vrapper's code; repetition
+                        leafBind('o', seq(new ChangeModeCommand(InsertMode.NAME), new InsertLineCommand(InsertLineCommand.Type.POST_CURSOR))),
+                        leafBind('O', seq(new ChangeModeCommand(InsertMode.NAME), new InsertLineCommand(InsertLineCommand.Type.PRE_CURSOR))),
                         leafBind('v', visualMode),
                         leafBind('V', seq(linewiseVisualMode, new LinewiseVisualMotionCommand(moveRight))),
                         leafBind('p', pasteAfter),

@@ -44,6 +44,14 @@ public interface TextContent {
     void replace(int index, int length, String s);
 
     /**
+     * Uses the underlying editors smart insert if available.
+     * Inserts at the current cursor position.
+     *
+     * @param s the string to insert
+     */
+    void smartInsert(int index, String s);
+
+    /**
      * Retrieves a substring from the text.
      *
      * @param index

@@ -7,6 +7,7 @@ import java.util.StringTokenizer;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.CloseCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
+import net.sourceforge.vrapper.vim.commands.ConfigCommand;
 import net.sourceforge.vrapper.vim.commands.RedoCommand;
 import net.sourceforge.vrapper.vim.commands.SaveCommand;
 import net.sourceforge.vrapper.vim.commands.UndoCommand;
@@ -33,7 +34,7 @@ public class CommandLineParser extends AbstractCommandParser {
         mapping.add("x", saveAndClose);
         mapping.add("q", close);
         mapping.add("q!", new CloseCommand(true));
-        //        mapping.add("set", buildConfigEvaluator());
+        mapping.add("set", buildConfigEvaluator());
         Evaluator noremap = new KeyMapper(false,
                 AbstractVisualMode.KEYMAP_NAME, NormalMode.KEYMAP_NAME);
         Evaluator map = new KeyMapper(true,
@@ -58,23 +59,23 @@ public class CommandLineParser extends AbstractCommandParser {
         mapping.add("u", undo);
         //        mapping.add("$", new TokenWrapper(new GotoMove(true)));
     }
-    //
-    //    private static Evaluator buildConfigEvaluator() {
-    //        EvaluatorMapping config = new EvaluatorMapping();
-    //        config.add("autoindent", ConfigAction.AUTO_INDENT);
-    //        config.add("noautoindent", ConfigAction.NO_AUTO_INDENT);
-    //        config.add("smartindent", ConfigAction.SMART_INDENT);
-    //        config.add("nosmartindent", ConfigAction.NO_SMART_INDENT);
-    //        config.add("globalregisters", ConfigAction.GLOBAL_REGISTERS);
-    //        config.add("noglobalregisters", ConfigAction.LOCAL_REGISTERS);
-    //        config.add("linewisemouse", ConfigAction.LINE_WISE_MOUSE_SELECTION);
-    //        config.add("nolinewisemouse", ConfigAction.NO_LINE_WISE_MOUSE_SELECTION);
-    //        config.add("startofline", ConfigAction.START_OF_LINE);
-    //        config.add("nostartofline", ConfigAction.NO_START_OF_LINE);
-    //        config.add("sol", ConfigAction.START_OF_LINE);
-    //        config.add("nosol", ConfigAction.NO_START_OF_LINE);
-    //        return config;
-    //    }
+
+    private static Evaluator buildConfigEvaluator() {
+        EvaluatorMapping config = new EvaluatorMapping();
+        config.add("autoindent", ConfigCommand.AUTO_INDENT);
+        config.add("noautoindent", ConfigCommand.NO_AUTO_INDENT);
+        config.add("smartindent", ConfigCommand.SMART_INDENT);
+        config.add("nosmartindent", ConfigCommand.NO_SMART_INDENT);
+        config.add("globalregisters", ConfigCommand.GLOBAL_REGISTERS);
+        config.add("noglobalregisters", ConfigCommand.LOCAL_REGISTERS);
+        config.add("linewisemouse", ConfigCommand.LINE_WISE_MOUSE_SELECTION);
+        config.add("nolinewisemouse", ConfigCommand.NO_LINE_WISE_MOUSE_SELECTION);
+        config.add("startofline", ConfigCommand.START_OF_LINE);
+        config.add("nostartofline", ConfigCommand.NO_START_OF_LINE);
+        config.add("sol", ConfigCommand.START_OF_LINE);
+        config.add("nosol", ConfigCommand.NO_START_OF_LINE);
+        return config;
+    }
 
     public CommandLineParser(EditorAdaptor vim) {
         super(vim);

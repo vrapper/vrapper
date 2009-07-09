@@ -15,7 +15,7 @@ public class SelectionBasedTextObjectCommand extends TextObjectCommand {
 	@Override
 	protected void execute(EditorAdaptor editorMode, TextRange range, ContentType contentType) throws CommandExecutionException {
 		// TODO: move cursor - compatibility option
-		editorMode.setSelection(new Selection(range, contentType));
+		editorMode.setSelection(new SimpleSelection(range));
 		command.execute(editorMode);
 	}
 

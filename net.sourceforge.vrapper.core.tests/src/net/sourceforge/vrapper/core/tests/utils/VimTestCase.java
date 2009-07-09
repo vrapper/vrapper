@@ -3,6 +3,7 @@ package net.sourceforge.vrapper.core.tests.utils;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 import net.sourceforge.vrapper.keymap.KeyStroke;
+import net.sourceforge.vrapper.platform.Configuration;
 import net.sourceforge.vrapper.platform.FileService;
 import net.sourceforge.vrapper.platform.HistoryService;
 import net.sourceforge.vrapper.platform.KeyMapProvider;
@@ -30,6 +31,7 @@ public class VimTestCase {
     @Mock protected FileService fileService;
     @Mock protected HistoryService historyService;
     @Mock protected ServiceProvider serviceProvider;
+    @Mock protected Configuration configuration;
     protected TestTextContent content;
     protected TestCursorAndSelection cursorAndSelection;
     protected EditorAdaptor adaptor;
@@ -58,12 +60,14 @@ public class VimTestCase {
     	when(platform.getHistoryService()).thenReturn(historyService);
     	when(platform.getKeyMapProvider()).thenReturn(keyMapProvider);
     	when(platform.getServiceProvider()).thenReturn(serviceProvider);
+    	when(platform.getConfiguration()).thenReturn(configuration);
     	adaptor = spy(new DefaultEditorAdaptor(platform, registerManager));
     	defaultRegister = spy(new SimpleRegister());
     	lastEditRegister = spy(new SimpleRegister());
 		when(registerManager.getActiveRegister()).thenReturn(defaultRegister);
 		when(registerManager.getLastEditRegister()).thenReturn(lastEditRegister);
 		when(fileService.isEditable()).thenReturn(true);
+		when(configuration.getNewLine()).thenReturn("\n");
 
     }
 

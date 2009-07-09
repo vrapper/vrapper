@@ -3,6 +3,7 @@ package net.sourceforge.vrapper.utils;
 import java.util.regex.Pattern;
 
 import net.sourceforge.vrapper.platform.TextContent;
+import net.sourceforge.vrapper.platform.SimpleConfiguration.NewLine;
 import net.sourceforge.vrapper.vim.VimConstants;
 
 
@@ -123,6 +124,16 @@ public class VimUtils {
 
         }
         return position;
+    }
+
+    public static String stripLastNewline(String text) {
+        if (text.endsWith(NewLine.WINDOWS.nl)) {
+            return text.substring(0, text.length()-2);
+        }
+        if (text.endsWith(NewLine.UNIX.nl) || text.endsWith(NewLine.MAC.nl)) {
+            return text.substring(0, text.length()-1);
+        }
+        return text;
     }
 
 }

@@ -1,11 +1,13 @@
 package net.sourceforge.vrapper.eclipse.platform;
 
+import net.sourceforge.vrapper.platform.Configuration;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.FileService;
 import net.sourceforge.vrapper.platform.HistoryService;
 import net.sourceforge.vrapper.platform.Platform;
 import net.sourceforge.vrapper.platform.SelectionService;
 import net.sourceforge.vrapper.platform.ServiceProvider;
+import net.sourceforge.vrapper.platform.SimpleConfiguration;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.platform.UnderlyingEditorSettings;
 import net.sourceforge.vrapper.platform.UserInterfaceService;
@@ -28,6 +30,7 @@ public class EclipsePlatform implements Platform {
     private final EclipseUserInterfaceService userInterfaceService;
     private final DefaultKeyMapProvider keyMapProvider;
     private final UnderlyingEditorSettings underlyingEditorSettings;
+    private final Configuration configuration;
 
     public EclipsePlatform(AbstractTextEditor abstractTextEditor, ITextViewer textViewer) {
         cursorAndSelection = new EclipseCursorAndSelection(textViewer);
@@ -38,6 +41,7 @@ public class EclipsePlatform implements Platform {
         userInterfaceService = new EclipseUserInterfaceService(abstractTextEditor, textViewer);
         keyMapProvider = new DefaultKeyMapProvider();
         underlyingEditorSettings = new AbstractTextEditorSettings(abstractTextEditor);
+        configuration = new SimpleConfiguration();
         if (textViewer instanceof ITextViewerExtension6) {
             IUndoManager delegate = ((ITextViewerExtension6)textViewer).getUndoManager();
             EclipseHistoryService manager = new EclipseHistoryService(textViewer.getTextWidget(), delegate);
@@ -90,5 +94,9 @@ public class EclipsePlatform implements Platform {
 
     public UnderlyingEditorSettings getUnderlyingEditorSettings() {
         return underlyingEditorSettings;
+    }
+
+    public Configuration getConfiguration() {
+        return configuration;
     }
 }
