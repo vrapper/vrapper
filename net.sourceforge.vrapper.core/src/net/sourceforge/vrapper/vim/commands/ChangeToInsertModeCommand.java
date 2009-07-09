@@ -1,36 +1,28 @@
 package net.sourceforge.vrapper.vim.commands;
 
-import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
-import net.sourceforge.vrapper.vim.commands.motions.Motion;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
 
 public class ChangeToInsertModeCommand extends CountAwareCommand {
 
-	private final Motion motion;
+    private final Command command;
 
-	public ChangeToInsertModeCommand() {
-		motion = null;
-	}
+    public ChangeToInsertModeCommand() {
+        this(null);
+    }
 
-	public ChangeToInsertModeCommand(Motion motion) {
-		this.motion = motion;
-	}
+	public ChangeToInsertModeCommand(Command command) {
+        this.command = command;
+    }
 
-	@Override
+    @Override
 	public void execute(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
-		if (count != NO_COUNT_GIVEN) {
-            VrapperLog.error("counted inserts not yet supported");
-        }
-		if (motion != null) {
-    		editorAdaptor.changeMode(InsertMode.NAME, motion);
-		} else {
-    		editorAdaptor.changeMode(InsertMode.NAME);
-		}
+  		Integer i = Integer.valueOf(count);
+  		editorAdaptor.changeMode(InsertMode.NAME, command, i);
 	}
 
 	@Override
 	public CountAwareCommand repetition() {
-		return new RepeatLastInsertCommand(motion);
+	    return null;
 	}
 }

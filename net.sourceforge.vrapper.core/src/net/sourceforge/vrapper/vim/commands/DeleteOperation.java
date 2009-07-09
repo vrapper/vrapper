@@ -6,8 +6,9 @@ import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 
-public class DeleteOperation implements TextOperation {
+public class DeleteOperation extends SimpleTextOperation {
 
+    @Override
     public void execute(EditorAdaptor editorAdaptor, TextRange region, ContentType contentType) {
         try {
             editorAdaptor.getHistory().beginCompoundChange();

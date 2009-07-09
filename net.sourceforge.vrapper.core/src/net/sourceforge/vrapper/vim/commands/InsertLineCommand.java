@@ -11,7 +11,7 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
  *
  * @author Matthias Radig
  */
-public final class InsertLineCommand extends CountIgnoringNonRepeatableCommand {
+public final class InsertLineCommand implements Command {
     public static enum Type {
         PRE_CURSOR {
             @Override
@@ -93,6 +93,18 @@ public final class InsertLineCommand extends CountIgnoringNonRepeatableCommand {
                     .getIndent(vim.getModelContent(), line) : "";
             this.type.dumb(vim, line, indent);
         }
+    }
+
+    public Command repetition() {
+        return this;
+    }
+
+    public int getCount() {
+        return NO_COUNT_GIVEN;
+    }
+
+    public Command withCount(int count) {
+        return this;
     }
 
 }

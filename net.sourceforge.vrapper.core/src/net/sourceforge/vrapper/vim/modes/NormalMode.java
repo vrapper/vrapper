@@ -30,12 +30,14 @@ import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.BorderPolicy;
 import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeOperation;
+import net.sourceforge.vrapper.vim.commands.ChangeToInsertModeCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CountIgnoringNonRepeatableCommand;
 import net.sourceforge.vrapper.vim.commands.DeleteOperation;
 import net.sourceforge.vrapper.vim.commands.DotCommand;
 import net.sourceforge.vrapper.vim.commands.InsertLineCommand;
 import net.sourceforge.vrapper.vim.commands.LinewiseVisualMotionCommand;
+import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.commands.MotionPairTextObject;
 import net.sourceforge.vrapper.vim.commands.MotionTextObject;
 import net.sourceforge.vrapper.vim.commands.OptionDependentTextObject;
@@ -154,16 +156,16 @@ public class NormalMode extends CommandBasedMode {
                 state(leafBind('$', stickToEOL)),
                 motionCommands,
                 state(
-                        leafBind('i', (Command) new ChangeModeCommand(InsertMode.NAME)),
-                        leafBind('a', (Command) new ChangeModeCommand(InsertMode.NAME, moveRight)),
-                        leafBind('I', (Command) new ChangeModeCommand(InsertMode.NAME, bol)),
-                        leafBind('A', (Command) new ChangeModeCommand(InsertMode.NAME, eol)),
+                        leafBind('i', (Command) new ChangeToInsertModeCommand()),
+                        leafBind('a', (Command) new ChangeToInsertModeCommand(new MotionCommand(moveRight))),
+                        leafBind('I', (Command) new ChangeToInsertModeCommand(new MotionCommand(bol))),
+                        leafBind('A', (Command) new ChangeToInsertModeCommand(new MotionCommand(eol))),
                         leafBind(':', (Command) new ChangeModeCommand(CommandLineMode.NAME)),
                         leafBind('?', (Command) new ChangeModeCommand(SearchMode.NAME, SearchMode.Direction.BACKWARD)),
                         leafBind('/', (Command) new ChangeModeCommand(SearchMode.NAME, SearchMode.Direction.FORWARD)),
                         leafBind('R', (Command) new ChangeModeCommand(ReplaceMode.NAME)),
-                        leafBind('o', seq(new ChangeModeCommand(InsertMode.NAME), new InsertLineCommand(InsertLineCommand.Type.POST_CURSOR))),
-                        leafBind('O', seq(new ChangeModeCommand(InsertMode.NAME), new InsertLineCommand(InsertLineCommand.Type.PRE_CURSOR))),
+                        leafBind('o', (Command) new ChangeToInsertModeCommand(new InsertLineCommand(InsertLineCommand.Type.POST_CURSOR))),
+                        leafBind('O', (Command) new ChangeToInsertModeCommand(new InsertLineCommand(InsertLineCommand.Type.PRE_CURSOR))),
                         leafBind('v', visualMode),
                         leafBind('V', seq(linewiseVisualMode, new LinewiseVisualMotionCommand(moveRight))),
                         leafBind('p', pasteAfter),

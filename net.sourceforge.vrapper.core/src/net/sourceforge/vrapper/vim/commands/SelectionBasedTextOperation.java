@@ -12,7 +12,7 @@ public class SelectionBasedTextOperation extends AbstractCommand {
 
     public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
         TextObject selection = editorAdaptor.getSelection();
-        command.execute(editorAdaptor, selection.getRegion(editorAdaptor, 1), selection.getContentType());
+        command.execute(editorAdaptor, 1, selection);
     }
 
     public Command repetition() {

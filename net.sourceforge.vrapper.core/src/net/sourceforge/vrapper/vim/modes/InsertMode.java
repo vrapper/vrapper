@@ -14,9 +14,13 @@ import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.VimConstants;
+import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
+import net.sourceforge.vrapper.vim.commands.CountIgnoringNonRepeatableCommand;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
-import net.sourceforge.vrapper.vim.commands.motions.Motion;
+import net.sourceforge.vrapper.vim.commands.PasteBeforeCommand;
+import net.sourceforge.vrapper.vim.commands.SwitchRegisterCommand;
+import net.sourceforge.vrapper.vim.commands.VimCommandSequence;
 import net.sourceforge.vrapper.vim.commands.motions.MoveLeft;
 import net.sourceforge.vrapper.vim.register.Register;
 import net.sourceforge.vrapper.vim.register.RegisterContent;
@@ -24,12 +28,19 @@ import net.sourceforge.vrapper.vim.register.StringRegisterContent;
 
 public class InsertMode extends AbstractMode {
 
+
     public static final String NAME = "insert mode";
     public static final String KEYMAP_NAME = "Insert Mode Keymap";
     // FIXME: change this to option some day
     public static final boolean CHANGES_ARE_ATOMIC = false;
 
     private Position startEditPosition;
+
+    /**
+     * Command to be used before insertion
+     */
+    private Command command;
+    private int count;
 
     public InsertMode(EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
@@ -40,19 +51,27 @@ public class InsertMode extends AbstractMode {
     }
 
     /**
-     * @param args motion to perform on entering insert mode
+     * @param args command to perform on entering insert mode
      */
     public void enterMode(Object... args) {
         if (isEnabled) {
             return;
         }
+        count = 1;
         if (args.length > 0) {
-            Motion m = (Motion) args[0];
-            try {
-                MotionCommand.doIt(editorAdaptor, m);
-            } catch (CommandExecutionException e) {
-                editorAdaptor.getUserInterfaceService().setErrorMessage(e.getMessage());
+            command = (Command) args[0];
+            if (command != null) {
+                try {
+                    command.execute(editorAdaptor);
+                } catch (CommandExecutionException e) {
+                    editorAdaptor.getUserInterfaceService().setErrorMessage(e.getMessage());
+                }
             }
+            if (args.length > 1) {
+                count = ((Integer) args[1]).intValue();
+            }
+        } else {
+            command = null;
         }
         isEnabled = true;
         if (CHANGES_ARE_ATOMIC) {
@@ -71,9 +90,21 @@ public class InsertMode extends AbstractMode {
         } catch (CommandExecutionException e) {
             editorAdaptor.getUserInterfaceService().setErrorMessage(e.getMessage());
         }
+        repeatInsert();
         if (CHANGES_ARE_ATOMIC) {
             editorAdaptor.getHistory().unlock();
             editorAdaptor.getHistory().endCompoundChange();
+        }
+    }
+
+    private void repeatInsert() {
+        if (count > 1) {
+            try {
+                editorAdaptor.getRegisterManager().getLastEdit().withCount(
+                        count - 1).execute(editorAdaptor);
+            } catch (CommandExecutionException e) {
+                editorAdaptor.getUserInterfaceService().setErrorMessage(e.getMessage());
+            }
         }
     }
 
@@ -83,8 +114,27 @@ public class InsertMode extends AbstractMode {
         Position position = editorAdaptor.getCursorService().getPosition();
         TextRange editRange = new StartEndTextRange(startEditPosition, position);
         String text = content.getText(editRange.getLeftBound().getModelOffset(), editRange.getViewLength());
+        Command repetition;
         RegisterContent registerContent = new StringRegisterContent(ContentType.TEXT, text);
         lastEditRegister.setContent(registerContent);
+        if (command != null) {
+            Command newCommand = command.repetition();
+            if (newCommand == null) {
+                newCommand = command;
+            }
+            repetition = new VimCommandSequence(
+                    newCommand,
+                    new SwitchRegisterCommand(lastEditRegister),
+                    new PasteBeforeCommand(),
+                    new MoveRightOverLineBreak(text.length()-1));
+        } else {
+            repetition = new SimpleInsertCommandSequence(
+                    new SwitchRegisterCommand(lastEditRegister),
+                    new PasteBeforeCommand(),
+                    new MoveRightOverLineBreak(text.length()-1));
+        }
+        editorAdaptor.getRegisterManager().setLastEdit(
+                count > 1 ? repetition.withCount(count) : repetition);
     }
 
     public boolean handleKey(KeyStroke stroke) {
@@ -123,4 +173,42 @@ public class InsertMode extends AbstractMode {
         return provider.getKeyMap(KEYMAP_NAME);
     }
 
+    public class MoveRightOverLineBreak extends CountIgnoringNonRepeatableCommand {
+
+        private final int offset;
+
+        public MoveRightOverLineBreak(int offset) {
+            super();
+            this.offset = offset;
+        }
+
+        public void execute(EditorAdaptor editorAdaptor)
+                throws CommandExecutionException {
+            editorAdaptor.setPosition(
+                    editorAdaptor.getPosition().addModelOffset(offset), true);
+        }
+    }
+
+    public class SimpleInsertCommandSequence extends VimCommandSequence {
+
+        public SimpleInsertCommandSequence(Command... commands) {
+            super(commands);
+        }
+
+        @Override
+        public Command withCount(final int count) {
+            return new CountIgnoringNonRepeatableCommand() {
+
+                public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
+                    SimpleInsertCommandSequence.this.execute(editorAdaptor);
+                    for (int i = 1; i < count; i++) {
+                        Position pos = editorAdaptor.getPosition();
+                        editorAdaptor.setPosition(pos.addModelOffset(1), false);
+                        SimpleInsertCommandSequence.this.execute(editorAdaptor);
+                    }
+                }
+            };
+        }
+
+    }
 }
