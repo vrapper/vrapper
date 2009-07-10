@@ -9,7 +9,7 @@ import java.util.Iterator;
  */
 public class KeyMap {
 
-    private final KeyMapState root = new KeyMapState();
+    private KeyMapState root = new KeyMapState();
 
     /**
      * Remaps the given keystrokes.
@@ -31,6 +31,13 @@ public class KeyMap {
      */
     public void removeMapping(Iterable<KeyStroke> strokes) {
         root.removeMapping(strokes.iterator());
+    }
+
+    /**
+     * Removes all mappings from this keymap.
+     */
+    public void clear() {
+        root = new KeyMapState();
     }
 
     public Transition<Remapping> press(KeyStroke key) {

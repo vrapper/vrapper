@@ -7,11 +7,14 @@ import java.util.StringTokenizer;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.CloseCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
+import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.ConfigCommand;
+import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.commands.RedoCommand;
 import net.sourceforge.vrapper.vim.commands.SaveCommand;
 import net.sourceforge.vrapper.vim.commands.UndoCommand;
 import net.sourceforge.vrapper.vim.commands.VimCommandSequence;
+import net.sourceforge.vrapper.vim.commands.motions.GoToLineMotion;
 import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
@@ -22,44 +25,76 @@ import net.sourceforge.vrapper.vim.modes.VisualMode;
  *
  * @author Matthias Radig
  */
-// TODO: still a lot to do here :-D
 public class CommandLineParser extends AbstractCommandParser {
 
     private static final EvaluatorMapping mapping;
     static {
-        mapping = new EvaluatorMapping();
+        Evaluator noremap = new KeyMapper.Map(false,
+                AbstractVisualMode.KEYMAP_NAME, NormalMode.KEYMAP_NAME);
+        Evaluator map = new KeyMapper.Map(true,
+                AbstractVisualMode.KEYMAP_NAME, NormalMode.KEYMAP_NAME);
+        Evaluator nnoremap = new KeyMapper.Map(false, NormalMode.KEYMAP_NAME);
+        Evaluator nmap = new KeyMapper.Map(true, NormalMode.KEYMAP_NAME);
+        Evaluator vnoremap = new KeyMapper.Map(false, VisualMode.KEYMAP_NAME);
+        Evaluator vmap = new KeyMapper.Map(true, VisualMode.KEYMAP_NAME);
+        Evaluator inoremap = new KeyMapper.Map(false, InsertMode.KEYMAP_NAME);
+        Evaluator imap = new KeyMapper.Map(true, InsertMode.KEYMAP_NAME);
         Command save = new SaveCommand();
-        mapping.add("w", save);
         CloseCommand close = new CloseCommand(false);
         Command saveAndClose = new VimCommandSequence(save, close);
+        Evaluator unmap = new KeyMapper.Unmap(AbstractVisualMode.KEYMAP_NAME, NormalMode.KEYMAP_NAME);
+        Evaluator nunmap = new KeyMapper.Unmap(NormalMode.KEYMAP_NAME);
+        Evaluator vunmap = new KeyMapper.Unmap(AbstractVisualMode.KEYMAP_NAME);
+        Evaluator iunmap = new KeyMapper.Unmap(InsertMode.KEYMAP_NAME);
+        Evaluator clear = new KeyMapper.Clear(AbstractVisualMode.KEYMAP_NAME, NormalMode.KEYMAP_NAME);
+        Evaluator nclear = new KeyMapper.Clear(NormalMode.KEYMAP_NAME);
+        Evaluator vclear = new KeyMapper.Clear(AbstractVisualMode.KEYMAP_NAME);
+        Evaluator iclear = new KeyMapper.Clear(InsertMode.KEYMAP_NAME);
+        Command gotoEOF = new MotionCommand(GoToLineMotion.LAST_LINE);
+        mapping = new EvaluatorMapping();
+        // options
+        mapping.add("set", buildConfigEvaluator());
+        // save, close
+        mapping.add("w", save);
         mapping.add("wq", saveAndClose);
         mapping.add("x", saveAndClose);
         mapping.add("q", close);
         mapping.add("q!", new CloseCommand(true));
-        mapping.add("set", buildConfigEvaluator());
-        Evaluator noremap = new KeyMapper(false,
-                AbstractVisualMode.KEYMAP_NAME, NormalMode.KEYMAP_NAME);
-        Evaluator map = new KeyMapper(true,
-                AbstractVisualMode.KEYMAP_NAME, NormalMode.KEYMAP_NAME);
-        Evaluator nnoremap = new KeyMapper(false, NormalMode.KEYMAP_NAME);
-        Evaluator nmap = new KeyMapper(true, NormalMode.KEYMAP_NAME);
-        Evaluator vnoremap = new KeyMapper(false, VisualMode.KEYMAP_NAME);
-        Evaluator vmap = new KeyMapper(true, VisualMode.KEYMAP_NAME);
-        Evaluator inoremap = new KeyMapper(false, InsertMode.KEYMAP_NAME);
-        Evaluator imap = new KeyMapper(true, InsertMode.KEYMAP_NAME);
+        // non-recursive mapping
         mapping.add("noremap", noremap);
         mapping.add("no", noremap);
-        mapping.add("map", map);
         mapping.add("nnoremap", nnoremap);
-        mapping.add("nno", nnoremap);
-        mapping.add("nmap", nmap);
+        mapping.add("nn", nnoremap);
         mapping.add("inoremap", inoremap);
         mapping.add("ino", inoremap);
-        mapping.add("imap", imap);
         mapping.add("vnoremap", vnoremap);
-        mapping.add("vno", vnoremap);
+        mapping.add("vn", vnoremap);
+        // recursive mapping
+        mapping.add("map", map);
+        mapping.add("nmap", nmap);
+        mapping.add("nm", nmap);
+        mapping.add("imap", imap);
+        mapping.add("im", imap);
         mapping.add("vmap", vmap);
-        //        Action formatAll = new FormatAllAction();
+        mapping.add("vm", vmap);
+        // unmapping
+        mapping.add("unmap", unmap);
+        mapping.add("unm", unmap);
+        mapping.add("nunmap", nunmap);
+        mapping.add("nun", nunmap);
+        mapping.add("vunmap", vunmap);
+        mapping.add("vu", vunmap);
+        mapping.add("iunmap", iunmap);
+        mapping.add("iu", iunmap);
+        // clearing maps
+        mapping.add("mapclear", clear);
+        mapping.add("mapc", clear);
+        mapping.add("nmapclear", nclear);
+        mapping.add("nmapc", nclear);
+        mapping.add("vmapclear", vclear);
+        mapping.add("vmapc", vclear);
+        mapping.add("imapclear", iclear);
+        mapping.add("imapc", iclear);
         //        mapping.add("formatall", formatAll);
         //        mapping.add("format", formatAll);
         //        mapping.add("fm", formatAll);
@@ -69,7 +104,7 @@ public class CommandLineParser extends AbstractCommandParser {
         mapping.add("redo", redo);
         mapping.add("undo", undo);
         mapping.add("u", undo);
-        //        mapping.add("$", new TokenWrapper(new GotoMove(true)));
+        mapping.add("$", new CommandWrapper(gotoEOF));
     }
 
     private static Evaluator buildConfigEvaluator() {
@@ -95,12 +130,17 @@ public class CommandLineParser extends AbstractCommandParser {
 
     @Override
     public void parseAndExecute(String first, String command) {
-        //        try {
-        //            // if the command is a number, jump to the given line
-        //            Integer.parseInt(command);
-        //        } catch (NumberFormatException e) {
-        //            // do nothing
-        //        }
+        try {
+            // if the command is a number, jump to the given line
+            int line = Integer.parseInt(command);
+            new MotionCommand(GoToLineMotion.FIRST_LINE).execute(editor, line);
+            return;
+        } catch (NumberFormatException e) {
+            // do nothing
+        } catch (CommandExecutionException e) {
+            editor.getUserInterfaceService().setErrorMessage(e.getMessage());
+            return;
+        }
         StringTokenizer nizer = new StringTokenizer(command);
         Queue<String> tokens = new LinkedList<String>();
         while (nizer.hasMoreTokens()) {
