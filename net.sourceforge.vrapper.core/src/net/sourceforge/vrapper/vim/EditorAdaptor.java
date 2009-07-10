@@ -20,6 +20,14 @@ public interface EditorAdaptor {
     EditorMode getMode(String name);
     public boolean handleKey(KeyStroke key);
 
+    /**
+     * Handles a key without, but does not pass the key to the macro recorder.
+     * To be used when executing a macro.
+     * @param key the key stroke to be handled
+     * @return whether the key could be handled
+     */
+    public boolean handleKeyOffRecord(KeyStroke key);
+
     TextContent getModelContent();
     TextContent getViewContent();
     CursorService getCursorService();
@@ -31,6 +39,8 @@ public interface EditorAdaptor {
     KeyMapProvider getKeyMapProvider();
     UnderlyingEditorSettings getEditorSettings();
     Configuration getConfiguration();
+    MacroRecorder getMacroRecorder();
+    MacroPlayer getMacroPlayer();
 
     Position getPosition();
     void setPosition(Position destination, boolean updateStickyColumn);

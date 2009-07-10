@@ -39,7 +39,7 @@ import net.sourceforge.vrapper.vim.commands.motions.Motion;
 public class ConstructorWrappers {
     @SuppressWarnings("serial")
     // FIXME: this is all going to be replaced by some JLex/JFlex stuff
-    static final Map<String, SpecialKey> specialKeyNames = Collections.unmodifiableMap(new HashMap<String, SpecialKey>() {{
+    static final Map<String, SpecialKey> specialKeys = Collections.unmodifiableMap(new HashMap<String, SpecialKey>() {{
         put("LEFT",  SpecialKey.ARROW_LEFT);
         put("RIGHT", SpecialKey.ARROW_RIGHT);
         put("UP",    SpecialKey.ARROW_UP);
@@ -50,6 +50,18 @@ public class ConstructorWrappers {
             String keyName = key.toString();
             put(keyName, key);
         }
+    }});
+
+    @SuppressWarnings("serial")
+    static final Map<SpecialKey, String> specialKeyNames = Collections.unmodifiableMap(new HashMap<SpecialKey, String>() {{
+        for (SpecialKey key: SpecialKey.values()) {
+            String keyName = key.toString();
+            put(key, "<"+keyName+">");
+        }
+        put(SpecialKey.ARROW_LEFT,  "<LEFT>");
+        put(SpecialKey.ARROW_RIGHT, "<RIGHT>");
+        put(SpecialKey.ARROW_UP,    "<UP>");
+        put(SpecialKey.ARROW_DOWN,  "<DOWN>");
     }});
 
     public static KeyStroke key(int modifiers, char key) {
@@ -77,17 +89,47 @@ public class ConstructorWrappers {
                 }
                 sb.deleteCharAt(sb.length()-1);
                 String key = sb.toString();
-                SpecialKey specialKey = specialKeyNames.get(key.toUpperCase());
-                if (specialKey != null)
+                SpecialKey specialKey = specialKeys.get(key.toUpperCase());
+                if (specialKey != null) {
                     result.add(new SimpleKeyStroke(0, specialKey)); // FIXME: <C-S-LEFT>
-                else if (key.toLowerCase().startsWith("c-")) {
+                } else if (key.toLowerCase().startsWith("c-")) {
                     result.add(ctrlKey(key.charAt(2)));
+                } else if (key.toLowerCase().equals("gt")) {
+                    result.add(key('>'));
+                } else if (key.toLowerCase().equals("lt")) {
+                    result.add(key('<'));
                 }
             } else {
                 result.add(key(next));
             }
         }
         return result;
+    }
+
+    public static String keyStrokesToString(Iterable<KeyStroke> strokes) {
+        StringBuilder sb = new StringBuilder();
+        for (KeyStroke stroke : strokes) {
+            sb.append(keyStrokeToString(stroke));
+        }
+        return sb.toString();
+    }
+
+    public static String keyStrokeToString(KeyStroke stroke) {
+        if (stroke.getSpecialKey() == null) {
+            String key = String.valueOf(stroke.getCharacter());
+            if ((stroke.getModifiers() & KeyStroke.CTRL) == 0) {
+                switch (stroke.getCharacter()) {
+                case '<':
+                    return "<LT>";
+                case '>':
+                    return "<GT>";
+                default:
+                    return key;
+                }
+            }
+            return "<C-"+key+">";
+        }
+        return specialKeyNames.get(stroke.getSpecialKey());
     }
 
     private static int maybeShift(char key) {

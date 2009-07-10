@@ -29,4 +29,9 @@ public interface UserInterfaceService {
      * Error message, e.g. no search results found.
      */
     void setErrorMessage(String content);
+
+    /**
+     * Whether a macro is currently being recorded.
+     */
+    void setRecording(boolean recording);
 }

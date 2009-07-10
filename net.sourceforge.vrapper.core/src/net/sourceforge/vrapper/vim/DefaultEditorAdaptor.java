@@ -61,6 +61,8 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     private final KeyMapProvider keyMapProvider;
     private final UnderlyingEditorSettings editorSettings;
     private final Configuration configuration;
+    private MacroRecorder macroRecorder;
+    private MacroPlayer macroPlayer;
 
     public DefaultEditorAdaptor(Platform editor, RegisterManager registerManager) {
         this.modelContent = editor.getModelContent();
@@ -75,8 +77,10 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         this.configuration = editor.getConfiguration();
         viewportService = editor.getViewportService();
         userInterfaceService = editor.getUserInterfaceService();
-        keyStrokeTranslator = new KeyStrokeTranslator();
         keyMapProvider = editor.getKeyMapProvider();
+        keyStrokeTranslator = new KeyStrokeTranslator();
+        macroRecorder = new MacroRecorder(registerManager, userInterfaceService);
+        macroPlayer = null;
 
         fileService = editor.getFileService();
         EditorMode[] modes = {
@@ -150,27 +154,20 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     }
 
     public boolean handleKey(KeyStroke key) {
-        if (currentMode != null) {
-            KeyMap map = currentMode.resolveKeyMap(keyMapProvider);
-            if (map != null) {
-                boolean inMapping = keyStrokeTranslator.processKeyStroke(map, key);
-                if (inMapping) {
-                    Queue<RemappedKeyStroke> resultingKeyStrokes =
-                        keyStrokeTranslator.resultingKeyStrokes();
-                    while (!resultingKeyStrokes.isEmpty()) {
-                        RemappedKeyStroke next = resultingKeyStrokes.poll();
-                        if (next.isRecursive()) {
-                            handleKey(next);
-                        } else {
-                            currentMode.handleKey(next);
-                        }
-                    }
-                    return true;
-                }
-            }
-            return currentMode.handleKey(key);
+        macroRecorder.handleKey(key);
+        return handleKeyOffRecord(key);
+    }
+
+    public boolean handleKeyOffRecord(KeyStroke key) {
+        boolean result = handleKey0(key);
+        if (macroPlayer != null) {
+            // while playing back one macro, another macro might be called
+            // recursively. we need a fresh macro player for that.
+            MacroPlayer player = macroPlayer;
+            macroPlayer = null;
+            player.play();
         }
-        return false;
+        return result;
     }
 
     public TextContent getModelContent() {
@@ -239,14 +236,58 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
 
     public void useGlobalRegisters() {
         registerManager = globalRegisterManager;
+        swapMacroRecorder();
     }
 
     public void useLocalRegisters() {
         registerManager = new DefaultRegisterManager();
+        swapMacroRecorder();
     }
 
     public Configuration getConfiguration() {
         return configuration;
+    }
+
+    public MacroRecorder getMacroRecorder() {
+        return macroRecorder;
+    }
+
+    public MacroPlayer getMacroPlayer() {
+        if (macroPlayer == null) {
+            macroPlayer = new MacroPlayer(this);
+        }
+        return macroPlayer;
+    }
+
+    private void swapMacroRecorder() {
+        if (macroRecorder.isRecording()) {
+            macroRecorder.stopRecording();
+        }
+        macroRecorder = new MacroRecorder(registerManager, userInterfaceService);
+    }
+
+    private boolean handleKey0(KeyStroke key) {
+        if (currentMode != null) {
+            KeyMap map = currentMode.resolveKeyMap(keyMapProvider);
+            if (map != null) {
+                boolean inMapping = keyStrokeTranslator.processKeyStroke(map, key);
+                if (inMapping) {
+                    Queue<RemappedKeyStroke> resultingKeyStrokes =
+                        keyStrokeTranslator.resultingKeyStrokes();
+                    while (!resultingKeyStrokes.isEmpty()) {
+                        RemappedKeyStroke next = resultingKeyStrokes.poll();
+                        if (next.isRecursive()) {
+                            handleKey(next);
+                        } else {
+                            currentMode.handleKey(next);
+                        }
+                    }
+                    return true;
+                }
+            }
+            return currentMode.handleKey(key);
+        }
+        return false;
     }
 
 }

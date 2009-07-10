@@ -16,7 +16,10 @@ import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.editText;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.go;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.javaEditText;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
+import net.sourceforge.vrapper.keymap.KeyStroke;
+import net.sourceforge.vrapper.keymap.SimpleTransition;
 import net.sourceforge.vrapper.keymap.State;
+import net.sourceforge.vrapper.keymap.Transition;
 import net.sourceforge.vrapper.keymap.vim.CountingState;
 import net.sourceforge.vrapper.keymap.vim.GoThereState;
 import net.sourceforge.vrapper.keymap.vim.RegisterState;
@@ -43,6 +46,8 @@ import net.sourceforge.vrapper.vim.commands.MotionTextObject;
 import net.sourceforge.vrapper.vim.commands.OptionDependentTextObject;
 import net.sourceforge.vrapper.vim.commands.PasteAfterCommand;
 import net.sourceforge.vrapper.vim.commands.PasteBeforeCommand;
+import net.sourceforge.vrapper.vim.commands.PlaybackMacroCommand;
+import net.sourceforge.vrapper.vim.commands.RecordMacroCommand;
 import net.sourceforge.vrapper.vim.commands.RedoCommand;
 import net.sourceforge.vrapper.vim.commands.ReplaceCommand;
 import net.sourceforge.vrapper.vim.commands.StickToEOLCommand;
@@ -77,9 +82,16 @@ public class NormalMode extends CommandBasedMode {
         State<String> state = union(
                 state(
                     leafBind('r', KeyMapResolver.NO_KEYMAP)),
+                state(
+                    leafBind('q', KeyMapResolver.NO_KEYMAP)),
+                state(
+                    leafBind('@', KeyMapResolver.NO_KEYMAP)),
+                state(
+                    leafBind('"', KeyMapResolver.NO_KEYMAP)),
                 getKeyMapsForMotions());
-        State<String> countEater = new CountConsumingState(state);
-        return new KeyMapResolver(countEater, KEYMAP_NAME);
+        final State<String> countEater = new CountConsumingState(state);
+        State<String> registerKeymapState = new RegisterKeymapState(countEater);
+        return new KeyMapResolver(registerKeymapState, KEYMAP_NAME);
     }
 
     @Override
@@ -177,6 +189,14 @@ public class NormalMode extends CommandBasedMode {
                         leafBind('~', tildeCmd),
                         leafBind('S', substituteLine),
                         leafBind('s', substituteChar),
+                        transitionBind('q',
+                                convertKeyStroke(
+                                        RecordMacroCommand.KEYSTROKE_CONVERTER,
+                                        VimConstants.PRINTABLE_KEYSTROKES)),
+                        transitionBind('@',
+                                convertKeyStroke(
+                                        PlaybackMacroCommand.KEYSTROKE_CONVERTER,
+                                        VimConstants.PRINTABLE_KEYSTROKES)),
                         transitionBind('r', changeCaret(CaretType.UNDERLINE),
                                 convertKeyStroke(
                                         ReplaceCommand.KEYSTROKE_CONVERTER,
@@ -241,5 +261,40 @@ public class NormalMode extends CommandBasedMode {
 
     public String getName() {
         return NAME;
+    }
+
+    /**
+     * Wraps around another state to resolve the appropriate keymap when using
+     * named registers.
+     *
+     * @author Matthias Radig
+     */
+    private static final class RegisterKeymapState implements State<String> {
+
+        private final State<String> registerKeyMapState = new State<String>() {
+            public Transition<String> press(KeyStroke key) {
+                return new SimpleTransition<String>(KEYMAP_NAME, RegisterKeymapState.this);
+            }
+            public Iterable<KeyStroke> supportedKeys() { return null; }
+            public State<String> union(State<String> other) { return null; }
+        };
+
+        private final State<String> wrapped;
+
+        public RegisterKeymapState(State<String> wrapped) {
+            super();
+            this.wrapped = wrapped;
+        }
+
+        public Transition<String> press(KeyStroke key) {
+            if (key.getCharacter() == '"' && (key.getModifiers() & KeyStroke.CTRL) == 0 ) {
+                return new SimpleTransition<String>(KeyMapResolver.NO_KEYMAP, registerKeyMapState);
+            }
+            return wrapped.press(key);
+        }
+
+        public Iterable<KeyStroke> supportedKeys() { return null; }
+
+        public State<String> union(State<String> other) { return null; }
     }
 }

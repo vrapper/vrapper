@@ -78,4 +78,10 @@ public class EclipseUserInterfaceService implements UserInterfaceService {
         public void partOpened(IWorkbenchPart arg0) { }
     }
 
+    public void setRecording(boolean b) {
+        // TODO: recording status line item
+        String content = b ? "recording" : "";
+        setInfoMessage(content);
+    }
+
 }
