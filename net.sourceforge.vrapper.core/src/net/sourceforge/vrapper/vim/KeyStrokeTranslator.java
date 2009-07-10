@@ -47,7 +47,7 @@ public class KeyStrokeTranslator {
             } else {
                 // as long as no preliminary result is found, keystrokes
                 // should not be evaluated again
-                boolean recursive = lastValue != null;
+                boolean recursive = !unconsumedKeyStrokes.isEmpty() || lastValue != null;
                 unconsumedKeyStrokes.add(new RemappedKeyStroke(key, recursive));
             }
             if (trans.getNextState() == null) {
@@ -59,8 +59,7 @@ public class KeyStrokeTranslator {
             }
         } else {
             // mapping ends here
-            boolean recursive = lastValue != null;
-            unconsumedKeyStrokes.add(new RemappedKeyStroke(key, recursive));
+            unconsumedKeyStrokes.add(new RemappedKeyStroke(key, true));
             prependUnconsumed();
             prependLastValue();
             currentState = null;
