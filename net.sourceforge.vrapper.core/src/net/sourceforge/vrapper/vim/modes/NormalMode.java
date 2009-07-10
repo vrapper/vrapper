@@ -81,6 +81,10 @@ public class NormalMode extends CommandBasedMode {
     protected KeyMapResolver buildKeyMapResolver() {
         State<String> state = union(
                 state(
+                    leafBind('z', KeyMapResolver.NO_KEYMAP)),
+                state(
+                    leafBind('g', KeyMapResolver.NO_KEYMAP)),
+                state(
                     leafBind('r', KeyMapResolver.NO_KEYMAP)),
                 state(
                     leafBind('q', KeyMapResolver.NO_KEYMAP)),
