@@ -144,7 +144,7 @@ public class CommandLineParser extends AbstractCommandParser {
             tokens.add(nizer.nextToken().trim());
         }
         EvaluatorMapping platformCommands = editor.getPlatformSpecificStateProvider().getCommands();
-        if (platformCommands.contains(tokens.peek())) {
+        if (platformCommands != null && platformCommands.contains(tokens.peek())) {
             platformCommands.evaluate(editor, tokens);
         } else {
             mapping.evaluate(editor, tokens);
