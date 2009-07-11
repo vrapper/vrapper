@@ -6,6 +6,7 @@ public class SimpleConfiguration implements Configuration {
     private boolean startOfLine     = true;
     private String newLine = NewLine.SYSTEM.nl;
     private boolean smartIndent     = true;
+    private boolean atomicInsert    = true;
 
     /* (non-Javadoc)
      * @see net.sourceforge.vrapper.platform.Configuration#isStartOfLine()
@@ -77,5 +78,13 @@ public class SimpleConfiguration implements Configuration {
      */
     public void setSmartIndent(boolean smartIndent) {
         this.smartIndent = smartIndent;
+    }
+
+    public boolean isAtomicInsert() {
+        return atomicInsert;
+    }
+
+    public void setAtomicInsert(boolean atomicInsert) {
+        this.atomicInsert = atomicInsert;
     }
 }

@@ -31,8 +31,6 @@ public class InsertMode extends AbstractMode {
 
     public static final String NAME = "insert mode";
     public static final String KEYMAP_NAME = "Insert Mode Keymap";
-    // FIXME: change this to option some day
-    public static final boolean CHANGES_ARE_ATOMIC = false;
 
     private Position startEditPosition;
 
@@ -57,14 +55,23 @@ public class InsertMode extends AbstractMode {
         if (isEnabled) {
             return;
         }
+        if (editorAdaptor.getConfiguration().isAtomicInsert()) {
+            editorAdaptor.getHistory().beginCompoundChange();
+            editorAdaptor.getHistory().lock();
+        }
         count = 1;
         if (args.length > 0) {
             command = (Command) args[0];
             if (command != null) {
                 try {
+                    if (!(command instanceof MotionCommand)) {
+                        editorAdaptor.getViewportService().setRepaint(false);
+                    }
                     command.execute(editorAdaptor);
                 } catch (CommandExecutionException e) {
                     editorAdaptor.getUserInterfaceService().setErrorMessage(e.getMessage());
+                } finally {
+                    editorAdaptor.getViewportService().setRepaint(true);
                 }
             }
             if (args.length > 1) {
@@ -74,10 +81,6 @@ public class InsertMode extends AbstractMode {
             command = null;
         }
         isEnabled = true;
-        if (CHANGES_ARE_ATOMIC) {
-            editorAdaptor.getHistory().beginCompoundChange();
-            editorAdaptor.getHistory().lock();
-        }
         editorAdaptor.getCursorService().setCaret(CaretType.VERTICAL_BAR);
         startEditPosition = editorAdaptor.getCursorService().getPosition();
     }
@@ -91,7 +94,7 @@ public class InsertMode extends AbstractMode {
             editorAdaptor.getUserInterfaceService().setErrorMessage(e.getMessage());
         }
         repeatInsert();
-        if (CHANGES_ARE_ATOMIC) {
+        if (editorAdaptor.getConfiguration().isAtomicInsert()) {
             editorAdaptor.getHistory().unlock();
             editorAdaptor.getHistory().endCompoundChange();
         }

@@ -118,6 +118,10 @@ public class CommandLineParser extends AbstractCommandParser {
         config.add("nostartofline", ConfigCommand.NO_START_OF_LINE);
         config.add("sol", ConfigCommand.START_OF_LINE);
         config.add("nosol", ConfigCommand.NO_START_OF_LINE);
+        config.add("atomicinsert", ConfigCommand.ATOMIC_INSERT);
+        config.add("noatomicinsert", ConfigCommand.NO_ATOMIC_INSERT);
+        config.add("ati", ConfigCommand.ATOMIC_INSERT);
+        config.add("noati", ConfigCommand.NO_ATOMIC_INSERT);
         return config;
     }
 

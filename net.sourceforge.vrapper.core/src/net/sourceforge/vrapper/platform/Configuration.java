@@ -27,4 +27,8 @@ public interface Configuration {
 
     public abstract void setSmartIndent(boolean smartIndent);
 
+    public abstract boolean isAtomicInsert();
+
+    public abstract void setAtomicInsert(boolean atomicInsert);
+
 }

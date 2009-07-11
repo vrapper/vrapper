@@ -1,5 +1,6 @@
 package net.sourceforge.vrapper.vim.commands;
 
+import net.sourceforge.vrapper.platform.HistoryService;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 
 public class VimCommandSequence extends SimpleRepeatableCommand {
@@ -11,8 +12,16 @@ public class VimCommandSequence extends SimpleRepeatableCommand {
     }
 
     public void execute(EditorAdaptor editorMode) throws CommandExecutionException {
-        for (Command command: commands) {
-            command.execute(editorMode);
+        HistoryService history = editorMode.getHistory();
+        try {
+            history.beginCompoundChange();
+            history.lock();
+            for (Command command: commands) {
+                command.execute(editorMode);
+            }
+        } finally {
+            history.unlock();
+            history.endCompoundChange();
         }
     }
 

@@ -56,6 +56,16 @@ public enum ConfigCommand implements Command {
         public void execute(EditorAdaptor vim) {
             vim.getConfiguration().setSmartIndent(false);
         }
+    },
+    ATOMIC_INSERT {
+        public void execute(EditorAdaptor vim) {
+            vim.getConfiguration().setAtomicInsert(true);
+        }
+    },
+    NO_ATOMIC_INSERT {
+        public void execute(EditorAdaptor vim) {
+            vim.getConfiguration().setAtomicInsert(false);
+        }
     };
 
     public int getCount() {
