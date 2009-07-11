@@ -10,6 +10,7 @@ import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.dontRepea
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
 
 import java.util.HashMap;
+import java.util.Queue;
 
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.StateUtils;
@@ -19,9 +20,12 @@ import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CountIgnoringNonRepeatableCommand;
 import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
 import net.sourceforge.vrapper.vim.commands.TextObject;
+import net.sourceforge.vrapper.vim.modes.CommandLineMode;
 import net.sourceforge.vrapper.vim.modes.KeyMapResolver;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.modes.VisualMode;
+import net.sourceforge.vrapper.vim.modes.commandline.Evaluator;
+import net.sourceforge.vrapper.vim.modes.commandline.EvaluatorMapping;
 
 /**
  * Provides eclipse-specific bindings for command based modes.
@@ -36,6 +40,7 @@ public class EclipseSpecificStateProvider implements
 
     private final HashMap<String, State<Command>> states;
     private final HashMap<String, State<String>> keyMaps;
+    private final EvaluatorMapping commands;
 
     private EclipseSpecificStateProvider() {
        states = new HashMap<String, State<Command>>();
@@ -44,6 +49,13 @@ public class EclipseSpecificStateProvider implements
        keyMaps = new HashMap<String, State<String>>();
        keyMaps.put(NormalMode.NAME, normalModeKeymap());
        keyMaps.put(VisualMode.NAME, visualModeKeymap());
+       commands = new EvaluatorMapping();
+       Command formatAll = javaEditText("format");
+       commands.add("eclipseaction", new EclipseActionEvaluator(false));
+       commands.add("eclipseaction!", new EclipseActionEvaluator(true));
+       commands.add("formatall", formatAll);
+       commands.add("format", formatAll);
+       commands.add("fm", formatAll);
     }
 
     private State<Command> visualModeBindings() {
@@ -109,6 +121,10 @@ public class EclipseSpecificStateProvider implements
         return keyMaps.get(name);
     }
 
+    public EvaluatorMapping getCommands() {
+        return commands;
+    }
+
 //    private static Motion javaGoTo(String where, BorderPolicy borderPolicy) {
 //        // FIXME: this is temporary, keymap should be language-independent
 //        return new EclipseMoveCommand("org.eclipse.jdt.ui.edit.text.java.goto." + where, borderPolicy);
@@ -139,6 +155,27 @@ public class EclipseSpecificStateProvider implements
     private static Command javaEditText(String cmd) {
         // FIXME: this is temporary, keymap should be language-independent
         return new EclipseCommand("org.eclipse.jdt.ui.edit.text.java." + cmd);
+    }
+
+    private static class EclipseActionEvaluator implements Evaluator {
+
+        private final boolean force;
+
+        private EclipseActionEvaluator(boolean force) {
+            super();
+            this.force = force;
+        }
+
+        public Object evaluate(EditorAdaptor vim, Queue<String> command) {
+            String name = command.poll();
+            String action = command.poll();
+            if (name != null && action != null) {
+                CommandLineMode mode = (CommandLineMode) vim.getMode(CommandLineMode.NAME);
+                mode.addCommand(name, new EclipseCommand(action), force);
+            }
+            return null;
+        }
+
     }
 
 }

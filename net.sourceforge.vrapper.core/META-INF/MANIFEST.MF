@@ -16,5 +16,6 @@ Export-Package: net.sourceforge.vrapper.core.activator,
  net.sourceforge.vrapper.vim.commands,
  net.sourceforge.vrapper.vim.commands.motions,
  net.sourceforge.vrapper.vim.modes,
+ net.sourceforge.vrapper.vim.modes.commandline,
  net.sourceforge.vrapper.vim.register
 Require-Bundle: org.eclipse.core.runtime;bundle-version="3.4.0"

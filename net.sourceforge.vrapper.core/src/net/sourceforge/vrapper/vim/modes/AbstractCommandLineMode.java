@@ -38,4 +38,8 @@ public abstract class AbstractCommandLineMode extends AbstractMode {
         return true;
     }
 
+    protected AbstractCommandParser getParser() {
+        return parser;
+    }
+
 }

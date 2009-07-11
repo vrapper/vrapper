@@ -51,7 +51,6 @@ public class CommandLineParser extends AbstractCommandParser {
         Evaluator vclear = new KeyMapper.Clear(AbstractVisualMode.KEYMAP_NAME);
         Evaluator iclear = new KeyMapper.Clear(InsertMode.KEYMAP_NAME);
         Command gotoEOF = new MotionCommand(GoToLineMotion.LAST_LINE);
-//        Command formatAll = ConstructorWrappers.javaEditText("format");
         mapping = new EvaluatorMapping();
         // options
         mapping.add("set", buildConfigEvaluator());
@@ -96,10 +95,6 @@ public class CommandLineParser extends AbstractCommandParser {
         mapping.add("vmapc", vclear);
         mapping.add("imapclear", iclear);
         mapping.add("imapc", iclear);
-        // Formatting
-//        mapping.add("formatall", formatAll);
-//        mapping.add("format", formatAll);
-//        mapping.add("fm", formatAll);
         UndoCommand undo = new UndoCommand();
         RedoCommand redo = new RedoCommand();
         mapping.add("red", redo);
@@ -148,6 +143,19 @@ public class CommandLineParser extends AbstractCommandParser {
         while (nizer.hasMoreTokens()) {
             tokens.add(nizer.nextToken().trim());
         }
-        mapping.evaluate(editor, tokens);
+        EvaluatorMapping platformCommands = editor.getPlatformSpecificStateProvider().getCommands();
+        if (platformCommands.contains(tokens.peek())) {
+            platformCommands.evaluate(editor, tokens);
+        } else {
+            mapping.evaluate(editor, tokens);
+        }
+    }
+
+    public boolean addCommand(String commandName, Command command, boolean overwrite) {
+        if (overwrite || !mapping.contains(commandName)) {
+            mapping.add(commandName, command);
+            return true;
+        }
+        return false;
     }
 }
