@@ -15,6 +15,7 @@ public abstract class AbstractCommandLineMode extends AbstractMode {
 
     public AbstractCommandLineMode(EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
+        parser = createParser();
     }
 
     /**
