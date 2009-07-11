@@ -21,8 +21,8 @@ public class SearchMode extends AbstractCommandLineMode {
      */
     @Override
     public void enterMode(Object... args) {
-        super.enterMode(args);
         forward = args[0].equals(Direction.FORWARD);
+        super.enterMode(args);
     }
 
     @Override
