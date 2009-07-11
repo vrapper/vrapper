@@ -4,6 +4,7 @@ import static net.sourceforge.vrapper.keymap.StateUtils.union;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.key;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.dontRepeat;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
 import net.sourceforge.vrapper.keymap.KeyStroke;
@@ -14,6 +15,7 @@ import net.sourceforge.vrapper.keymap.vim.RegisterState;
 import net.sourceforge.vrapper.keymap.vim.VisualMotionState;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.CenterLineCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeOperation;
 import net.sourceforge.vrapper.vim.commands.Command;
@@ -35,8 +37,8 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
     @Override
     protected KeyMapResolver buildKeyMapResolver() {
         State<String> state = union(
-//                state(
-//                    leafBind('"', KeyMapResolver.NO_KEYMAP)),
+                state(
+                    leafBind('z', KeyMapResolver.NO_KEYMAP)),
                 getKeyMapsForMotions(),
                 editorAdaptor.getPlatformSpecificStateProvider().getKeyMaps(VisualMode.NAME));
         final State<String> countEater = new CountConsumingState(state);
@@ -73,6 +75,7 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
         Command delete = dontRepeat(seq(new SelectionBasedTextOperation(new DeleteOperation()), leaveVisual));
         Command change = new SelectionBasedTextOperation(new ChangeOperation());
         Command commandLineMode = new ChangeModeCommand(CommandLineMode.NAME);
+        Command centerLine = new CenterLineCommand();
         State<Command> visualMotions = getVisualMotionState();
         @SuppressWarnings("unchecked")
         State<Command> commands = new RegisterState(CountingState.wrap(union(state(
@@ -86,7 +89,9 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
                 leafBind('x', delete),
                 leafBind('X', delete),
                 leafBind('o', swapSides),
-                leafBind(':', commandLineMode)
+                leafBind(':', commandLineMode),
+                transitionBind('z',
+                        leafBind('z', centerLine))
         ), visualMotions,
         getPlatformSpecificState(VisualMode.NAME))));
         return commands;

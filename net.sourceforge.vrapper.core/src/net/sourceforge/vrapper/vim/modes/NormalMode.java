@@ -21,6 +21,7 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.BorderPolicy;
+import net.sourceforge.vrapper.vim.commands.CenterLineCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeOperation;
 import net.sourceforge.vrapper.vim.commands.ChangeToInsertModeCommand;
@@ -71,9 +72,9 @@ public class NormalMode extends CommandBasedMode {
         State<String> state = union(
                 state(
                     leafBind('r', KeyMapResolver.NO_KEYMAP),
+                    leafBind('z', KeyMapResolver.NO_KEYMAP),
                     leafBind('q', KeyMapResolver.NO_KEYMAP),
-                    leafBind('@', KeyMapResolver.NO_KEYMAP),
-                    leafBind('"', KeyMapResolver.NO_KEYMAP)),
+                    leafBind('@', KeyMapResolver.NO_KEYMAP)),
                 getKeyMapsForMotions(),
                 editorAdaptor.getPlatformSpecificStateProvider().getKeyMaps(NAME));
         final State<String> countEater = new CountConsumingState(state);
@@ -138,6 +139,7 @@ public class NormalMode extends CommandBasedMode {
         LineEndMotion lineEndMotion = new LineEndMotion(BorderPolicy.LINE_WISE);
         Command substituteLine = new TextOperationTextObjectCommand(change, new MotionTextObject(lineEndMotion));
         Command substituteChar = new TextOperationTextObjectCommand(change, new MotionTextObject(moveRight));
+        Command centerLine = new CenterLineCommand();
 
         State<Command> motionCommands = new GoThereState(motions);
 
@@ -183,7 +185,9 @@ public class NormalMode extends CommandBasedMode {
                                         ReplaceCommand.KEYSTROKE_CONVERTER,
                                         VimConstants.PRINTABLE_KEYSTROKES)),
                         leafBind('u', undo),
-                        leafCtrlBind('r', redo)),
+                        leafCtrlBind('r', redo),
+                        transitionBind('z',
+                                leafBind('z', centerLine))),
                 platformSpecificState)));
 
         return commands;

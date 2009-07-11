@@ -38,7 +38,7 @@ public class ViewPortMotion extends GoToLineMotion {
     public enum Type {
         HIGH {
             @Override
-            int calculateLine(ViewPortInformation view) {
+            public int calculateLine(ViewPortInformation view) {
                 return view.getTopLine();
             }
 
@@ -49,7 +49,7 @@ public class ViewPortMotion extends GoToLineMotion {
         },
         MIDDLE {
             @Override
-            int calculateLine(ViewPortInformation view) {
+            public int calculateLine(ViewPortInformation view) {
                 return view.getTopLine()+view.getNumberOfLines()/2;
             }
 
@@ -60,7 +60,7 @@ public class ViewPortMotion extends GoToLineMotion {
         },
         LOW {
             @Override
-            int calculateLine(ViewPortInformation view) {
+            public int calculateLine(ViewPortInformation view) {
                 return view.getBottomLine();
             }
 
@@ -70,7 +70,7 @@ public class ViewPortMotion extends GoToLineMotion {
             }
         };
 
-        abstract int calculateLine(ViewPortInformation view);
+        public abstract int calculateLine(ViewPortInformation view);
 
         abstract int calculateOffset(int times);
 
