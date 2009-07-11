@@ -10,7 +10,7 @@ import net.sourceforge.vrapper.keymap.Transition;
  *
  * @author Matthias Radig
  */
-final class KeyMapResolver {
+public final class KeyMapResolver {
 
     public static final String NO_KEYMAP = KeyMapResolver.class.getCanonicalName()+".NO_KEYMAP";
 

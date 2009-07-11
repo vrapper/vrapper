@@ -5,6 +5,7 @@ import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.FileService;
 import net.sourceforge.vrapper.platform.HistoryService;
 import net.sourceforge.vrapper.platform.Platform;
+import net.sourceforge.vrapper.platform.PlatformSpecificStateProvider;
 import net.sourceforge.vrapper.platform.SelectionService;
 import net.sourceforge.vrapper.platform.ServiceProvider;
 import net.sourceforge.vrapper.platform.SimpleConfiguration;
@@ -98,5 +99,9 @@ public class EclipsePlatform implements Platform {
 
     public Configuration getConfiguration() {
         return configuration;
+    }
+
+    public PlatformSpecificStateProvider getPlatformSpecificStateProvider() {
+        return EclipseSpecificStateProvider.INSTANCE;
     }
 }

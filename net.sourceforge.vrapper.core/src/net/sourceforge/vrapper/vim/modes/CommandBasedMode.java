@@ -4,9 +4,7 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
 import static net.sourceforge.vrapper.vim.commands.BorderPolicy.EXCLUSIVE;
-import static net.sourceforge.vrapper.vim.commands.BorderPolicy.LINE_WISE;
-import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.go;
-import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.javaGoTo;
+import net.sourceforge.vrapper.keymap.EmptyState;
 import net.sourceforge.vrapper.keymap.KeyMap;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SpecialKey;
@@ -64,7 +62,7 @@ public abstract class CommandBasedMode extends AbstractMode {
     protected abstract void placeCursor();
     protected abstract KeyMapResolver buildKeyMapResolver();
 
-    public State<Motion> motions() {
+    public static State<Motion> motions() {
         final Motion moveLeft = new MoveLeft();
         final Motion moveRight = new MoveRight();
         final Motion moveUp = new MoveUp();
@@ -83,8 +81,9 @@ public abstract class CommandBasedMode extends AbstractMode {
         final Motion WORDEndRight = new MoveBigWORDEndRight();
         final Motion wordEndLeft = new MoveWordEndLeft();
         final Motion WORDEndLeft = new MoveBigWORDEndLeft();
-        final Motion eclipseWordRight = go("wordNext", EXCLUSIVE);
-        final Motion eclipseWordLeft  = go("wordPrevious", EXCLUSIVE);
+        // TODO: move this to eclipse module
+//        final Motion eclipseWordRight = go("wordNext", EXCLUSIVE);
+//        final Motion eclipseWordLeft  = go("wordPrevious", EXCLUSIVE);
         final Motion lineStart = new LineStartMotion(true);
         final Motion column0 = new LineStartMotion(false);
         final Motion lineEnd = new LineEndMotion(EXCLUSIVE); // NOTE: it's not INCLUSIVE; bug in Vim documentation
@@ -137,14 +136,14 @@ public abstract class CommandBasedMode extends AbstractMode {
                 leafBind('$', lineEnd),
                 leafBind('%', parenthesesMove),
                 leafBind('^', lineStart),
-                leafBind('(', javaGoTo("previous.member",   LINE_WISE)), // XXX: vim non-compatible; XXX: make java-agnostic
-                leafBind(')', javaGoTo("next.member",       LINE_WISE)), // XXX: vim non-compatible; XXX: make java-agnostic
+//                leafBind('(', javaGoTo("previous.member",   LINE_WISE)), // XXX: vim non-compatible; XXX: make java-agnostic
+//                leafBind(')', javaGoTo("next.member",       LINE_WISE)), // XXX: vim non-compatible; XXX: make java-agnostic
                 //					leafBind(KEY("SHIFT+["), paragraphBackward), // '[' FIXME: doesn't worl
                 //					leafBind(KEY("SHIFT+]"), paragraphForward),  // ']'
                 transitionBind('g',
                         leafBind('g', GoToLineMotion.FIRST_LINE),
-                        leafBind('w', eclipseWordRight),
-                        leafBind('b', eclipseWordLeft),
+//                        leafBind('w', eclipseWordRight),
+//                        leafBind('b', eclipseWordLeft),
                         leafBind('e', wordEndLeft),
                         leafBind('E', WORDEndLeft)));
         return motions;
@@ -245,6 +244,14 @@ public abstract class CommandBasedMode extends AbstractMode {
                 leafBind('t', KeyMapResolver.NO_KEYMAP),
                 leafBind('T', KeyMapResolver.NO_KEYMAP),
                 leafBind('F', KeyMapResolver.NO_KEYMAP));
+    }
+
+    protected State<Command> getPlatformSpecificState(String mode) {
+        State<Command> platformSpecificState = editorAdaptor.getPlatformSpecificStateProvider().getState(mode);
+        if (platformSpecificState == null) {
+            platformSpecificState = new EmptyState<Command>();
+        }
+        return platformSpecificState;
     }
 
 }

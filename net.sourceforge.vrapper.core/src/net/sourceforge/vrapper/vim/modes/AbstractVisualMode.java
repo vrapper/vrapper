@@ -4,9 +4,7 @@ import static net.sourceforge.vrapper.keymap.StateUtils.union;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.key;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
-import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.dontRepeat;
-import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.editText;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SpecialKey;
@@ -32,9 +30,17 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
         super(editorAdaptor);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected KeyMapResolver buildKeyMapResolver() {
-        return new KeyMapResolver(getKeyMapsForMotions(), KEYMAP_NAME);
+        State<String> state = union(
+//                state(
+//                    leafBind('"', KeyMapResolver.NO_KEYMAP)),
+                getKeyMapsForMotions(),
+                editorAdaptor.getPlatformSpecificStateProvider().getKeyMaps(VisualMode.NAME));
+        final State<String> countEater = new CountConsumingState(state);
+        State<String> registerKeymapState = new RegisterKeymapState(KEYMAP_NAME, countEater);
+        return new KeyMapResolver(registerKeymapState, KEYMAP_NAME);
     }
 
     @Override
@@ -78,12 +84,9 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
                 leafBind('d', delete),
                 leafBind('x', delete),
                 leafBind('X', delete),
-                leafBind('o', swapSides),
-                transitionBind('g',
-                        leafBind('c', seq(editText("toggle.comment"), leaveVisual)),
-                        leafBind('U', seq(editText("upperCase"),      leaveVisual)),
-                        leafBind('u', seq(editText("lowerCase"),      leaveVisual)))
-        ), visualMotions)));
+                leafBind('o', swapSides)
+        ), visualMotions,
+        getPlatformSpecificState(VisualMode.NAME))));
         return commands;
     }
 

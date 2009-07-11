@@ -1,7 +1,9 @@
-package net.sourceforge.vrapper.vim.commands;
+package net.sourceforge.vrapper.eclipse.platform;
 
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.BorderPolicy;
+import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.motions.CountAwareMotion;
 
 public class EclipseMoveCommand extends CountAwareMotion {

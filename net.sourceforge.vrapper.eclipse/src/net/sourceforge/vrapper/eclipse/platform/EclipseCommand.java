@@ -1,7 +1,10 @@
-package net.sourceforge.vrapper.vim.commands;
+package net.sourceforge.vrapper.eclipse.platform;
 
 import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.AbstractCommand;
+import net.sourceforge.vrapper.vim.commands.Command;
+import net.sourceforge.vrapper.vim.commands.MultipleExecutionCommand;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.NotEnabledException;

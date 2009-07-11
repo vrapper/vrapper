@@ -15,4 +15,5 @@ public interface Platform {
     KeyMapProvider getKeyMapProvider();
     UnderlyingEditorSettings getUnderlyingEditorSettings();
     Configuration getConfiguration();
+    PlatformSpecificStateProvider getPlatformSpecificStateProvider();
 }

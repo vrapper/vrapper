@@ -9,7 +9,7 @@ public class ChangeOperation implements TextOperation {
     private static final DeleteOperation DELETE = new DeleteOperation();
 
     public TextOperation repetition() {
-        return new ChangeToLastEditOperation();
+        return null;
     }
 
     public void execute(EditorAdaptor editorAdaptor, int count,

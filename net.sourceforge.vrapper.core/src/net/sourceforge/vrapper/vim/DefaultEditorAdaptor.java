@@ -20,6 +20,7 @@ import net.sourceforge.vrapper.platform.FileService;
 import net.sourceforge.vrapper.platform.HistoryService;
 import net.sourceforge.vrapper.platform.KeyMapProvider;
 import net.sourceforge.vrapper.platform.Platform;
+import net.sourceforge.vrapper.platform.PlatformSpecificStateProvider;
 import net.sourceforge.vrapper.platform.SelectionService;
 import net.sourceforge.vrapper.platform.ServiceProvider;
 import net.sourceforge.vrapper.platform.TextContent;
@@ -61,6 +62,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     private final KeyMapProvider keyMapProvider;
     private final UnderlyingEditorSettings editorSettings;
     private final Configuration configuration;
+    private final PlatformSpecificStateProvider platformSpecificStateProvider;
     private MacroRecorder macroRecorder;
     private MacroPlayer macroPlayer;
 
@@ -75,6 +77,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         this.serviceProvider = editor.getServiceProvider();
         this.editorSettings = editor.getUnderlyingEditorSettings();
         this.configuration = editor.getConfiguration();
+        this.platformSpecificStateProvider = editor.getPlatformSpecificStateProvider();
         viewportService = editor.getViewportService();
         userInterfaceService = editor.getUserInterfaceService();
         keyMapProvider = editor.getKeyMapProvider();
@@ -233,6 +236,11 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     public UnderlyingEditorSettings getEditorSettings() {
         return editorSettings;
     }
+
+    public PlatformSpecificStateProvider getPlatformSpecificStateProvider() {
+        return platformSpecificStateProvider;
+    }
+
 
     public void useGlobalRegisters() {
         registerManager = globalRegisterManager;

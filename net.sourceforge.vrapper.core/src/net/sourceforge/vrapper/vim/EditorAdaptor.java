@@ -6,6 +6,7 @@ import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.FileService;
 import net.sourceforge.vrapper.platform.HistoryService;
 import net.sourceforge.vrapper.platform.KeyMapProvider;
+import net.sourceforge.vrapper.platform.PlatformSpecificStateProvider;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.platform.UnderlyingEditorSettings;
 import net.sourceforge.vrapper.platform.UserInterfaceService;
@@ -41,6 +42,7 @@ public interface EditorAdaptor {
     Configuration getConfiguration();
     MacroRecorder getMacroRecorder();
     MacroPlayer getMacroPlayer();
+    PlatformSpecificStateProvider getPlatformSpecificStateProvider();
 
     Position getPosition();
     void setPosition(Position destination, boolean updateStickyColumn);

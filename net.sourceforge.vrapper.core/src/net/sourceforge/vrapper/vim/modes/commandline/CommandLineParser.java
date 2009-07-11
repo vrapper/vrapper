@@ -9,7 +9,6 @@ import net.sourceforge.vrapper.vim.commands.CloseCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.ConfigCommand;
-import net.sourceforge.vrapper.vim.commands.ConstructorWrappers;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.commands.RedoCommand;
 import net.sourceforge.vrapper.vim.commands.SaveCommand;
@@ -52,7 +51,7 @@ public class CommandLineParser extends AbstractCommandParser {
         Evaluator vclear = new KeyMapper.Clear(AbstractVisualMode.KEYMAP_NAME);
         Evaluator iclear = new KeyMapper.Clear(InsertMode.KEYMAP_NAME);
         Command gotoEOF = new MotionCommand(GoToLineMotion.LAST_LINE);
-        Command formatAll = ConstructorWrappers.javaEditText("format");
+//        Command formatAll = ConstructorWrappers.javaEditText("format");
         mapping = new EvaluatorMapping();
         // options
         mapping.add("set", buildConfigEvaluator());
@@ -97,9 +96,10 @@ public class CommandLineParser extends AbstractCommandParser {
         mapping.add("vmapc", vclear);
         mapping.add("imapclear", iclear);
         mapping.add("imapc", iclear);
-        mapping.add("formatall", formatAll);
-        mapping.add("format", formatAll);
-        mapping.add("fm", formatAll);
+        // Formatting
+//        mapping.add("formatall", formatAll);
+//        mapping.add("format", formatAll);
+//        mapping.add("fm", formatAll);
         UndoCommand undo = new UndoCommand();
         RedoCommand redo = new RedoCommand();
         mapping.add("red", redo);
