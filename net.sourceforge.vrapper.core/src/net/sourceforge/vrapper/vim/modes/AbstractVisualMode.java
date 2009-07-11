@@ -14,6 +14,7 @@ import net.sourceforge.vrapper.keymap.vim.RegisterState;
 import net.sourceforge.vrapper.keymap.vim.VisualMotionState;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeOperation;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.DeleteOperation;
@@ -62,7 +63,6 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
     @Override
     public void leaveMode() {
         isEnabled = false;
-        editorAdaptor.setSelection(null);
     }
 
     @Override
@@ -72,6 +72,7 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
         Command yank   = dontRepeat(seq(new SelectionBasedTextOperation(new YankOperation()), leaveVisual));
         Command delete = dontRepeat(seq(new SelectionBasedTextOperation(new DeleteOperation()), leaveVisual));
         Command change = new SelectionBasedTextOperation(new ChangeOperation());
+        Command commandLineMode = new ChangeModeCommand(CommandLineMode.NAME);
         State<Command> visualMotions = getVisualMotionState();
         @SuppressWarnings("unchecked")
         State<Command> commands = new RegisterState(CountingState.wrap(union(state(
@@ -84,7 +85,8 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
                 leafBind('d', delete),
                 leafBind('x', delete),
                 leafBind('X', delete),
-                leafBind('o', swapSides)
+                leafBind('o', swapSides),
+                leafBind(':', commandLineMode)
         ), visualMotions,
         getPlatformSpecificState(VisualMode.NAME))));
         return commands;
