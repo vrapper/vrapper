@@ -114,25 +114,27 @@ public class VisualModeTests extends CommandTestCase {
 				true, "Ala ","ma k","ota");
 		checkCommand(forKeySeq("w"),
 				true,  "A","lamak","ota i psa",
-				false, "Alamak","ota ","i psa");
+				false, "Alama","kota ","i psa");
 		checkCommand(forKeySeq("e"),
 				true,  "A","lamak","ota i psa",
-				false, "Alamak","ota"," i psa");
+				false, "Alama","kota"," i psa");
 		checkCommand(forKeySeq("b"),
 				false, "Alama","kota ","i psa",
-				true,  "","Alama","kota i psa");
+				true,  "","Alamak","ota i psa");
 		checkCommand(forKeySeq("h"),
 				false, " ktoto","t","aki ",
-				true,  " ktoto","","taki ");
+				true,  " ktot","ot","aki ");
 		checkCommand(forKeySeq("h"),
 				true,  " ktoto","t","aki ",
 				true,  " ktot","ot","aki ");
 		checkCommand(forKeySeq("l"),
 				true,  " ktot","ot","aki ",
-				true,  " ktoto","t","aki ");
-		checkCommand(forKeySeq("l"),
-				true,  " ktoto","t","aki ",
-				false, " ktotot","","aki ");
+				false,  " ktoto","t","aki ");
+		// undefined behavior, inverse selection over 1 character should not
+		// happen anymore
+//		checkCommand(forKeySeq("l"),
+//				true,  " ktoto","t","aki ",
+//				false, " ktotot","","aki ");
 		checkCommand(forKeySeq("l"),
 				false, " ktoto","t","aki ",
 				false, " ktoto","ta","ki ");

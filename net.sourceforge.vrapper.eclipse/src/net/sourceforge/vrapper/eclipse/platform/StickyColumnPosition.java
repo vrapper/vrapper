@@ -1,11 +1,12 @@
 package net.sourceforge.vrapper.eclipse.platform;
 
+import net.sourceforge.vrapper.utils.AbstractPosition;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 
 import org.eclipse.jface.text.ITextViewer;
 
-public class StickyColumnPosition implements Position {
+public class StickyColumnPosition extends AbstractPosition {
 
     private final ITextViewer textViewer;
     private final Position lineBegin;

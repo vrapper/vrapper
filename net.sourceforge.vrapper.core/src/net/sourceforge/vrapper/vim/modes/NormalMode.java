@@ -46,6 +46,7 @@ import net.sourceforge.vrapper.vim.commands.TextObject;
 import net.sourceforge.vrapper.vim.commands.TextOperation;
 import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
 import net.sourceforge.vrapper.vim.commands.UndoCommand;
+import net.sourceforge.vrapper.vim.commands.VisualMotionCommand;
 import net.sourceforge.vrapper.vim.commands.YankOperation;
 import net.sourceforge.vrapper.vim.commands.motions.LineEndMotion;
 import net.sourceforge.vrapper.vim.commands.motions.LineStartMotion;
@@ -162,7 +163,7 @@ public class NormalMode extends CommandBasedMode {
                         leafBind('R', (Command) new ChangeModeCommand(ReplaceMode.NAME)),
                         leafBind('o', (Command) new ChangeToInsertModeCommand(new InsertLineCommand(InsertLineCommand.Type.POST_CURSOR))),
                         leafBind('O', (Command) new ChangeToInsertModeCommand(new InsertLineCommand(InsertLineCommand.Type.PRE_CURSOR))),
-                        leafBind('v', visualMode),
+                        leafBind('v', seq(visualMode, new VisualMotionCommand(moveRight))),
                         leafBind('V', seq(linewiseVisualMode, new LinewiseVisualMotionCommand(moveRight))),
                         leafBind('p', pasteAfter),
                         leafBind('.', repeatLastOne),

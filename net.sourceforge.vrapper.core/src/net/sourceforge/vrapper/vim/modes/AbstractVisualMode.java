@@ -13,7 +13,6 @@ import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.vim.CountingState;
 import net.sourceforge.vrapper.keymap.vim.RegisterState;
 import net.sourceforge.vrapper.keymap.vim.VisualMotionState;
-import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.CenterLineCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
@@ -59,7 +58,7 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
             return;
         }
         isEnabled = true;
-        editorAdaptor.getCursorService().setCaret(CaretType.VERTICAL_BAR);
+        editorAdaptor.setSelection(null);
     }
 
     @Override

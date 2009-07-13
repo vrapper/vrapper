@@ -1,8 +1,9 @@
 package net.sourceforge.vrapper.core.tests.utils;
 
+import net.sourceforge.vrapper.utils.AbstractPosition;
 import net.sourceforge.vrapper.utils.Position;
 
-public class DumbPosition implements Position {
+public class DumbPosition extends AbstractPosition {
 
 	private final int position;
 
@@ -33,5 +34,4 @@ public class DumbPosition implements Position {
     public Position setViewOffset(int offset) {
         return new DumbPosition(offset);
     }
-
 }

@@ -1,6 +1,6 @@
 package net.sourceforge.vrapper.utils;
 
-public interface Position {
+public interface Position extends Comparable<Position> {
 	int getModelOffset();
 	int getViewOffset();
 	// adds the given offset (model space) to this offset

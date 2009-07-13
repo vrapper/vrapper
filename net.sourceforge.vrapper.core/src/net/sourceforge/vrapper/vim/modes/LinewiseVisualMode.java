@@ -2,6 +2,7 @@ package net.sourceforge.vrapper.vim.modes;
 
 import net.sourceforge.vrapper.keymap.vim.VisualMotionState;
 import net.sourceforge.vrapper.keymap.vim.VisualMotionState.Motion2VMC;
+import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 
 public class LinewiseVisualMode extends AbstractVisualMode {
@@ -10,6 +11,12 @@ public class LinewiseVisualMode extends AbstractVisualMode {
 
     public LinewiseVisualMode(EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
+    }
+
+    @Override
+    public void enterMode(Object... args) {
+        super.enterMode(args);
+        editorAdaptor.getCursorService().setCaret(CaretType.RECTANGULAR);
     }
 
     @Override

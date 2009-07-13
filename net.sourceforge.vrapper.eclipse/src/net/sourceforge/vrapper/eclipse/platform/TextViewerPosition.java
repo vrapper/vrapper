@@ -1,12 +1,13 @@
 package net.sourceforge.vrapper.eclipse.platform;
 
+import net.sourceforge.vrapper.utils.AbstractPosition;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Space;
 
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.ITextViewerExtension5;
 
-public class TextViewerPosition implements Position {
+public class TextViewerPosition extends AbstractPosition {
 
     private final ITextViewerExtension5 converter;
     private final Space space;
