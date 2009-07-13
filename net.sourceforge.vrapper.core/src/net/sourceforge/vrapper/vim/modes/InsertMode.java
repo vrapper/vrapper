@@ -117,9 +117,16 @@ public class InsertMode extends AbstractMode {
         Position position = editorAdaptor.getCursorService().getPosition();
         TextRange editRange = new StartEndTextRange(startEditPosition, position);
         String text = content.getText(editRange.getLeftBound().getModelOffset(), editRange.getViewLength());
-        Command repetition;
         RegisterContent registerContent = new StringRegisterContent(ContentType.TEXT, text);
         lastEditRegister.setContent(registerContent);
+        Command repetition;
+        repetition = createRepetition(lastEditRegister, text);
+        editorAdaptor.getRegisterManager().setLastEdit(
+                count > 1 ? repetition.withCount(count) : repetition);
+    }
+
+    protected Command createRepetition(Register lastEditRegister, String text) {
+        Command repetition;
         if (command != null) {
             Command newCommand = command.repetition();
             if (newCommand == null) {
@@ -136,8 +143,7 @@ public class InsertMode extends AbstractMode {
                     new PasteBeforeCommand(),
                     new MoveRightOverLineBreak(text.length()-1));
         }
-        editorAdaptor.getRegisterManager().setLastEdit(
-                count > 1 ? repetition.withCount(count) : repetition);
+        return repetition;
     }
 
     public boolean handleKey(KeyStroke stroke) {

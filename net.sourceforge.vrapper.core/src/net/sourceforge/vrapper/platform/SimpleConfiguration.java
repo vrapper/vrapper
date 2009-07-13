@@ -64,6 +64,16 @@ public class SimpleConfiguration implements Configuration {
         private NewLine(String nl) {
             this.nl = nl;
         }
+        public static NewLine parse(String nl) {
+            if (nl.startsWith(WINDOWS.nl)) {
+                return WINDOWS;
+            } else if (nl.startsWith(UNIX.nl)) {
+                return UNIX;
+            } else if (nl.startsWith(MAC.nl)) {
+                return UNIX;
+            }
+            throw new IllegalArgumentException("string does not begin with a known newline");
+        }
     }
 
     /* (non-Javadoc)

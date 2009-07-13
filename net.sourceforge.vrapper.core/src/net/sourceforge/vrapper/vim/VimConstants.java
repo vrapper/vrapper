@@ -9,6 +9,7 @@ import java.util.Set;
 
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SpecialKey;
+import net.sourceforge.vrapper.platform.SimpleConfiguration.NewLine;
 
 /**
  * Holds some commonly used constants.
@@ -18,7 +19,7 @@ import net.sourceforge.vrapper.keymap.SpecialKey;
 public class VimConstants {
 
     public static final Set<String> WHITESPACE = set(" ", "\t", "\n", "\r");
-    public static final Set<String> NEWLINE = set("\r", "\n", "\r\n");
+    public static final Set<String> NEWLINE = createNewlineSet();
     public static final Set<KeyStroke> PRINTABLE_KEYSTROKES = createPrintableKeyStrokes();
     public static final Set<SpecialKey> SPECIAL_KEYS_ALLOWED_FOR_INSERT = set(SpecialKey.BACKSPACE, SpecialKey.RETURN);
     //public static final String NEWLINE = System.getProperty("line.separator");
@@ -32,6 +33,15 @@ public class VimConstants {
 
     private static final <T> Set<T> set(T... content) {
         return Collections.unmodifiableSet(new HashSet<T>(Arrays.asList(content)));
+    }
+
+    private static Set<String> createNewlineSet() {
+        NewLine[] newlines = NewLine.values();
+        String[] nl = new String[newlines.length];
+        for (int i = 0; i < nl.length; i++) {
+            nl[i] = newlines[i].nl;
+        }
+        return set(nl);
     }
 
     private static Set<KeyStroke> createPrintableKeyStrokes() {
