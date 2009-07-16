@@ -17,6 +17,7 @@ import net.sourceforge.vrapper.keymap.StateUtils;
 import net.sourceforge.vrapper.platform.PlatformSpecificStateProvider;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.Command;
+import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.CountIgnoringNonRepeatableCommand;
 import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
 import net.sourceforge.vrapper.vim.commands.TextObject;
@@ -35,6 +36,31 @@ import net.sourceforge.vrapper.vim.modes.commandline.EvaluatorMapping;
 @SuppressWarnings("unchecked")
 public class EclipseSpecificStateProvider implements
         PlatformSpecificStateProvider {
+
+    public class CountedVisualCommand implements Command {
+
+        public void execute(EditorAdaptor editorAdaptor)
+                throws CommandExecutionException {
+            // TODO Auto-generated method stub
+
+        }
+
+        public Command repetition() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public int getCount() {
+            // TODO Auto-generated method stub
+            return 0;
+        }
+
+        public Command withCount(int count) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+    }
 
     public static final EclipseSpecificStateProvider INSTANCE = new EclipseSpecificStateProvider();
 
@@ -59,13 +85,16 @@ public class EclipseSpecificStateProvider implements
     }
 
     private State<Command> visualModeBindings() {
-       Command leaveVisual = new LeaveVisualModeCommand();
-       return state(
+        Command leaveVisual = new LeaveVisualModeCommand();
+        Command shiftRight = new EclipseShiftOperation.Visual(false);
+        Command shiftLeft = new EclipseShiftOperation.Visual(true);
+        return state(
             transitionBind('g',
                     leafBind('c', seq(editText("toggle.comment"), leaveVisual)),
                     leafBind('U', seq(editText("upperCase"),      leaveVisual)),
-                    leafBind('u', seq(editText("lowerCase"),      leaveVisual)))
-       );
+                    leafBind('u', seq(editText("lowerCase"),      leaveVisual))),
+            leafBind('>', shiftRight),
+            leafBind('<', shiftLeft));
     }
 
     private State<String> normalModeKeymap() {
@@ -108,7 +137,9 @@ public class EclipseSpecificStateProvider implements
             prefixedOperatorCmds('g', 'c', seq(javaEditText("toggle.comment"), deselectAll), textObjects),
             prefixedOperatorCmds('g', 'u', seq(editText("lowerCase"), deselectAll), textObjects),
             prefixedOperatorCmds('g', 'U', seq(editText("upperCase"), deselectAll), textObjects),
-            operatorCmds('=', seq(javaEditText("indent"), deselectAll), textObjects)
+            operatorCmds('=', seq(javaEditText("indent"), deselectAll), textObjects),
+            operatorCmds('>', new EclipseShiftOperation.Normal(false), textObjects),
+            operatorCmds('<', new EclipseShiftOperation.Normal(true), textObjects)
          );
         return normalModeBindings;
     }
