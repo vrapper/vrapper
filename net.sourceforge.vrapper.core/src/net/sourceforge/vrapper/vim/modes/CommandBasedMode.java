@@ -16,7 +16,6 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
-import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.commands.SwitchRegisterCommand;
 import net.sourceforge.vrapper.vim.commands.VimCommandSequence;
 import net.sourceforge.vrapper.vim.commands.motions.ContinueFindingMotion;
@@ -154,24 +153,16 @@ public abstract class CommandBasedMode extends AbstractMode {
     }
 
     public void executeCommand(Command command) throws CommandExecutionException {
-        try {
-            if (!(command instanceof MotionCommand)) {
-                editorAdaptor.getViewportService().setRepaint(false);
+        command.execute(editorAdaptor);
+        Command repetition = command.repetition();
+        if (repetition != null) {
+            RegisterManager registerManager = editorAdaptor.getRegisterManager();
+            if (!registerManager.isDefaultRegisterActive()) {
+                repetition = new VimCommandSequence(
+                        new SwitchRegisterCommand(
+                                    registerManager.getActiveRegister()), repetition);
             }
-            command.execute(editorAdaptor);
-            Command repetition = command.repetition();
-            if (repetition != null) {
-                RegisterManager registerManager = editorAdaptor.getRegisterManager();
-                if (!registerManager.isDefaultRegisterActive()) {
-                    repetition = new VimCommandSequence(
-                            new SwitchRegisterCommand(
-                                        registerManager.getActiveRegister()),
-                            repetition);
-                }
-               registerManager.setLastEdit(repetition);
-            }
-        } finally {
-            editorAdaptor.getViewportService().setRepaint(true);
+           registerManager.setLastEdit(repetition);
         }
     }
 
