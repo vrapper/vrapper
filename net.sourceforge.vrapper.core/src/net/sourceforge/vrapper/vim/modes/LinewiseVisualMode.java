@@ -1,13 +1,16 @@
 package net.sourceforge.vrapper.vim.modes;
 
+import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.vim.VisualMotionState;
 import net.sourceforge.vrapper.keymap.vim.VisualMotionState.Motion2VMC;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.Command;
 
 public class LinewiseVisualMode extends AbstractVisualMode {
 
     public static final String NAME = "linewise visual mode";
+    private static State<Command> initialState;
 
     public LinewiseVisualMode(EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
@@ -26,6 +29,14 @@ public class LinewiseVisualMode extends AbstractVisualMode {
 
     public String getName() {
         return NAME;
+    }
+
+    @Override
+    protected State<Command> getInitialState() {
+        if (initialState == null) {
+            initialState = createInitialState();
+        }
+        return initialState;
     }
 
 }

@@ -27,7 +27,6 @@ import net.sourceforge.vrapper.vim.commands.YankOperation;
 public abstract class AbstractVisualMode extends CommandBasedMode {
 
     public static final String KEYMAP_NAME = "Visual Mode Keymap";
-    private static State<Command> initialState;
 
     public AbstractVisualMode(EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
@@ -67,35 +66,32 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
         isEnabled = false;
     }
 
-    @Override
     @SuppressWarnings("unchecked")
-    protected State<Command> getInitialState() {
-        if (initialState == null) {
-            Command leaveVisual = new LeaveVisualModeCommand();
-            Command swapSides = new SwapSelectionSidesCommand();
-            Command yank   = dontRepeat(seq(new SelectionBasedTextOperation(new YankOperation()), leaveVisual));
-            Command delete = dontRepeat(seq(new SelectionBasedTextOperation(new DeleteOperation()), leaveVisual));
-            Command change = new SelectionBasedTextOperation(new ChangeOperation());
-            Command commandLineMode = new ChangeModeCommand(CommandLineMode.NAME);
-            Command centerLine = new CenterLineCommand();
-            State<Command> visualMotions = getVisualMotionState();
-            initialState = new RegisterState(CountingState.wrap(union(state(
-                    leafBind(key(KeyStroke.CTRL, '['), leaveVisual),
-                    leafBind(SpecialKey.ESC, leaveVisual),
-                    leafBind('v', leaveVisual),
-                    leafBind('y', yank),
-                    leafBind('s', change),
-                    leafBind('c', change),
-                    leafBind('d', delete),
-                    leafBind('x', delete),
-                    leafBind('X', delete),
-                    leafBind('o', swapSides),
-                    leafBind(':', commandLineMode),
-                    transitionBind('z',
-                            leafBind('z', centerLine))
-            ), visualMotions,
-            getPlatformSpecificState(VisualMode.NAME))));
-        }
+    protected State<Command> createInitialState() {
+        Command leaveVisual = new LeaveVisualModeCommand();
+        Command swapSides = new SwapSelectionSidesCommand();
+        Command yank   = dontRepeat(seq(new SelectionBasedTextOperation(new YankOperation()), leaveVisual));
+        Command delete = dontRepeat(seq(new SelectionBasedTextOperation(new DeleteOperation()), leaveVisual));
+        Command change = new SelectionBasedTextOperation(new ChangeOperation());
+        Command commandLineMode = new ChangeModeCommand(CommandLineMode.NAME);
+        Command centerLine = new CenterLineCommand();
+        State<Command> visualMotions = getVisualMotionState();
+        State<Command> initialState = new RegisterState(CountingState.wrap(union(state(
+                leafBind(key(KeyStroke.CTRL, '['), leaveVisual),
+                leafBind(SpecialKey.ESC, leaveVisual),
+                leafBind('v', leaveVisual),
+                leafBind('y', yank),
+                leafBind('s', change),
+                leafBind('c', change),
+                leafBind('d', delete),
+                leafBind('x', delete),
+                leafBind('X', delete),
+                leafBind('o', swapSides),
+                leafBind(':', commandLineMode),
+                transitionBind('z',
+                        leafBind('z', centerLine))
+        ), visualMotions,
+        getPlatformSpecificState(VisualMode.NAME))));
         return initialState;
     }
 
