@@ -46,6 +46,8 @@ import net.sourceforge.vrapper.vim.register.RegisterManager;
 
 public abstract class CommandBasedMode extends AbstractMode {
 
+    private static State<Motion> motions;
+
     protected final State<Command> initialState;
     protected State<Command> currentState;
     private final KeyMapResolver keyMapResolver;
@@ -62,90 +64,92 @@ public abstract class CommandBasedMode extends AbstractMode {
     protected abstract void placeCursor();
     protected abstract KeyMapResolver buildKeyMapResolver();
 
+    @SuppressWarnings("unchecked")
     public static State<Motion> motions() {
-        final Motion moveLeft = new MoveLeft();
-        final Motion moveRight = new MoveRight();
-        final Motion moveUp = new MoveUp();
-        final Motion moveDown = new MoveDown();
-//        final Motion findNext = new EclipseMoveCommand("org.eclipse.ui.edit.findNext", EXCLUSIVE);
-//        final Motion findPrevious = new EclipseMoveCommand("org.eclipse.ui.edit.findPrevious", EXCLUSIVE);
-        final Motion findNext = new SearchResultMotion(false);
-        final Motion findPrevious = new SearchResultMotion(true);
-        final Motion findWordNext = new WordSearchMotion(false);
-        final Motion findWordPrevious = new WordSearchMotion(true);
-        final Motion wordRight = new MoveWordRight();
-        final Motion WORDRight = new MoveBigWORDRight();
-        final Motion wordLeft = new MoveWordLeft();
-        final Motion WORDLeft = new MoveBigWORDLeft();
-        final Motion wordEndRight = new MoveWordEndRight();
-        final Motion WORDEndRight = new MoveBigWORDEndRight();
-        final Motion wordEndLeft = new MoveWordEndLeft();
-        final Motion WORDEndLeft = new MoveBigWORDEndLeft();
-        // TODO: move this to eclipse module
-//        final Motion eclipseWordRight = go("wordNext", EXCLUSIVE);
-//        final Motion eclipseWordLeft  = go("wordPrevious", EXCLUSIVE);
-        final Motion lineStart = new LineStartMotion(true);
-        final Motion column0 = new LineStartMotion(false);
-        final Motion lineEnd = new LineEndMotion(EXCLUSIVE); // NOTE: it's not INCLUSIVE; bug in Vim documentation
-        final Motion parenthesesMove = new ParenthesesMove();
-        final Motion findForward = new ContinueFindingMotion(false);
-        final Motion findBackward = new ContinueFindingMotion(true);
+        if (motions == null) {
+            final Motion moveLeft = new MoveLeft();
+            final Motion moveRight = new MoveRight();
+            final Motion moveUp = new MoveUp();
+            final Motion moveDown = new MoveDown();
+    //        final Motion findNext = new EclipseMoveCommand("org.eclipse.ui.edit.findNext", EXCLUSIVE);
+    //        final Motion findPrevious = new EclipseMoveCommand("org.eclipse.ui.edit.findPrevious", EXCLUSIVE);
+            final Motion findNext = new SearchResultMotion(false);
+            final Motion findPrevious = new SearchResultMotion(true);
+            final Motion findWordNext = new WordSearchMotion(false);
+            final Motion findWordPrevious = new WordSearchMotion(true);
+            final Motion wordRight = new MoveWordRight();
+            final Motion WORDRight = new MoveBigWORDRight();
+            final Motion wordLeft = new MoveWordLeft();
+            final Motion WORDLeft = new MoveBigWORDLeft();
+            final Motion wordEndRight = new MoveWordEndRight();
+            final Motion WORDEndRight = new MoveBigWORDEndRight();
+            final Motion wordEndLeft = new MoveWordEndLeft();
+            final Motion WORDEndLeft = new MoveBigWORDEndLeft();
+            // TODO: move this to eclipse module
+    //        final Motion eclipseWordRight = go("wordNext", EXCLUSIVE);
+    //        final Motion eclipseWordLeft  = go("wordPrevious", EXCLUSIVE);
+            final Motion lineStart = new LineStartMotion(true);
+            final Motion column0 = new LineStartMotion(false);
+            final Motion lineEnd = new LineEndMotion(EXCLUSIVE); // NOTE: it's not INCLUSIVE; bug in Vim documentation
+            final Motion parenthesesMove = new ParenthesesMove();
+            final Motion findForward = new ContinueFindingMotion(false);
+            final Motion findBackward = new ContinueFindingMotion(true);
 
-        final Motion highMove = new ViewPortMotion(Type.HIGH);
-        final Motion middleMove = new ViewPortMotion(Type.MIDDLE);
-        final Motion lowMove = new ViewPortMotion(Type.LOW);
-        @SuppressWarnings("unchecked")
-        State<Motion> motions = state(
-                leafBind('h', moveLeft),
-                leafBind('j', moveDown),
-                leafBind('k', moveUp),
-                leafBind('l', moveRight),
-                leafBind(SpecialKey.ARROW_LEFT,  moveLeft),
-                leafBind(SpecialKey.ARROW_DOWN,  moveDown),
-                leafBind(SpecialKey.ARROW_UP,    moveUp),
-                leafBind(SpecialKey.ARROW_RIGHT, moveRight),
-                leafBind(';', findForward),
-                leafBind(',', findBackward),
-                transitionBind('t', convertKeyStroke(
-                        FindMotion.keyConverter(false, false),
-                        VimConstants.PRINTABLE_KEYSTROKES)),
-                transitionBind('T', convertKeyStroke(
-                        FindMotion.keyConverter(false, true),
-                        VimConstants.PRINTABLE_KEYSTROKES)),
-                transitionBind('f', convertKeyStroke(
-                        FindMotion.keyConverter(true, false),
-                        VimConstants.PRINTABLE_KEYSTROKES)),
-                transitionBind('F', convertKeyStroke(
-                        FindMotion.keyConverter(true, true),
-                        VimConstants.PRINTABLE_KEYSTROKES)),
-                leafBind('w', wordRight),
-                leafBind('W', WORDRight),
-                leafBind('e', wordEndRight),
-                leafBind('E', WORDEndRight),
-                leafBind('b', wordLeft),
-                leafBind('B', WORDLeft),
-                leafBind('G', GoToLineMotion.LAST_LINE), // XXX: counts
-                leafBind('H', highMove),
-                leafBind('M', middleMove),
-                leafBind('L', lowMove),
-                leafBind('n', findNext),
-                leafBind('N', findPrevious),
-                leafBind('*', findWordNext),
-                leafBind('#', findWordPrevious),
-                leafBind('0', column0),
-                leafBind('$', lineEnd),
-                leafBind('%', parenthesesMove),
-                leafBind('^', lineStart),
-//                leafBind('(', javaGoTo("previous.member",   LINE_WISE)), // XXX: vim non-compatible; XXX: make java-agnostic
-//                leafBind(')', javaGoTo("next.member",       LINE_WISE)), // XXX: vim non-compatible; XXX: make java-agnostic
-                //					leafBind(KEY("SHIFT+["), paragraphBackward), // '[' FIXME: doesn't worl
-                //					leafBind(KEY("SHIFT+]"), paragraphForward),  // ']'
-                transitionBind('g',
-                        leafBind('g', GoToLineMotion.FIRST_LINE),
-//                        leafBind('w', eclipseWordRight),
-//                        leafBind('b', eclipseWordLeft),
-                        leafBind('e', wordEndLeft),
-                        leafBind('E', WORDEndLeft)));
+            final Motion highMove = new ViewPortMotion(Type.HIGH);
+            final Motion middleMove = new ViewPortMotion(Type.MIDDLE);
+            final Motion lowMove = new ViewPortMotion(Type.LOW);
+            motions = state(
+                    leafBind('h', moveLeft),
+                    leafBind('j', moveDown),
+                    leafBind('k', moveUp),
+                    leafBind('l', moveRight),
+                    leafBind(SpecialKey.ARROW_LEFT,  moveLeft),
+                    leafBind(SpecialKey.ARROW_DOWN,  moveDown),
+                    leafBind(SpecialKey.ARROW_UP,    moveUp),
+                    leafBind(SpecialKey.ARROW_RIGHT, moveRight),
+                    leafBind(';', findForward),
+                    leafBind(',', findBackward),
+                    transitionBind('t', convertKeyStroke(
+                            FindMotion.keyConverter(false, false),
+                            VimConstants.PRINTABLE_KEYSTROKES)),
+                    transitionBind('T', convertKeyStroke(
+                            FindMotion.keyConverter(false, true),
+                            VimConstants.PRINTABLE_KEYSTROKES)),
+                    transitionBind('f', convertKeyStroke(
+                            FindMotion.keyConverter(true, false),
+                            VimConstants.PRINTABLE_KEYSTROKES)),
+                    transitionBind('F', convertKeyStroke(
+                            FindMotion.keyConverter(true, true),
+                            VimConstants.PRINTABLE_KEYSTROKES)),
+                    leafBind('w', wordRight),
+                    leafBind('W', WORDRight),
+                    leafBind('e', wordEndRight),
+                    leafBind('E', WORDEndRight),
+                    leafBind('b', wordLeft),
+                    leafBind('B', WORDLeft),
+                    leafBind('G', GoToLineMotion.LAST_LINE), // XXX: counts
+                    leafBind('H', highMove),
+                    leafBind('M', middleMove),
+                    leafBind('L', lowMove),
+                    leafBind('n', findNext),
+                    leafBind('N', findPrevious),
+                    leafBind('*', findWordNext),
+                    leafBind('#', findWordPrevious),
+                    leafBind('0', column0),
+                    leafBind('$', lineEnd),
+                    leafBind('%', parenthesesMove),
+                    leafBind('^', lineStart),
+    //                leafBind('(', javaGoTo("previous.member",   LINE_WISE)), // XXX: vim non-compatible; XXX: make java-agnostic
+    //                leafBind(')', javaGoTo("next.member",       LINE_WISE)), // XXX: vim non-compatible; XXX: make java-agnostic
+                    //					leafBind(KEY("SHIFT+["), paragraphBackward), // '[' FIXME: doesn't worl
+                    //					leafBind(KEY("SHIFT+]"), paragraphForward),  // ']'
+                    transitionBind('g',
+                            leafBind('g', GoToLineMotion.FIRST_LINE),
+    //                        leafBind('w', eclipseWordRight),
+    //                        leafBind('b', eclipseWordLeft),
+                            leafBind('e', wordEndLeft),
+                            leafBind('E', WORDEndLeft)));
+        }
         return motions;
     }
 
