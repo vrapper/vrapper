@@ -17,7 +17,6 @@ import net.sourceforge.vrapper.keymap.StateUtils;
 import net.sourceforge.vrapper.platform.PlatformSpecificStateProvider;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.Command;
-import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.CountIgnoringNonRepeatableCommand;
 import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
 import net.sourceforge.vrapper.vim.commands.TextObject;
@@ -36,31 +35,6 @@ import net.sourceforge.vrapper.vim.modes.commandline.EvaluatorMapping;
 @SuppressWarnings("unchecked")
 public class EclipseSpecificStateProvider implements
         PlatformSpecificStateProvider {
-
-    public class CountedVisualCommand implements Command {
-
-        public void execute(EditorAdaptor editorAdaptor)
-                throws CommandExecutionException {
-            // TODO Auto-generated method stub
-
-        }
-
-        public Command repetition() {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        public int getCount() {
-            // TODO Auto-generated method stub
-            return 0;
-        }
-
-        public Command withCount(int count) {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-    }
 
     public static final EclipseSpecificStateProvider INSTANCE = new EclipseSpecificStateProvider();
 
