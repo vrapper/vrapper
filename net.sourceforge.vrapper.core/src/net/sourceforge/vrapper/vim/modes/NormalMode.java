@@ -110,13 +110,14 @@ public class NormalMode extends CommandBasedMode {
 
         final Motion moveLeft = new MoveLeft();
         final Motion moveRight = new MoveRight();
-        final Motion wordRight = new MoveWordRight();
+//        final Motion wordRight = new MoveWordRight();
         final Motion wordEndRight = new MoveWordEndRight();
         final Motion bol = new LineStartMotion(true);
         final Motion eol = new LineEndMotion(BorderPolicy.EXCLUSIVE);
 
         final State<Motion> motions = motions();
-        final TextObject wordForCW = new OptionDependentTextObject(Options.STUPID_CW, wordEndRight, wordRight);
+//        final TextObject wordForCW = new OptionDependentTextObject(Options.STUPID_CW, wordEndRight, wordRight);
+        final TextObject wordForCW = new MotionTextObject(wordEndRight);
         final TextObject toEol = new MotionTextObject(eol);
         final TextObject wholeLine = new MotionTextObject(new LineEndMotion(BorderPolicy.LINE_WISE));
         final TextObject toEolForY = new OptionDependentTextObject(Options.STUPID_Y, wholeLine, toEol);
