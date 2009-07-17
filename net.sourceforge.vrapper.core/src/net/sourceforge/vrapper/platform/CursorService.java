@@ -4,6 +4,11 @@ import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.Position;
 
 public interface CursorService {
+
+    public static final String LAST_EDIT_MARK = ".";
+    public static final String LAST_INSERT_MARK = "^";
+    public static final String LAST_JUMP_MARK = "'";
+
     /**
      * Set the current position in the text, i.e. where the caret is displayed.
      *

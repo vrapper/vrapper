@@ -35,4 +35,8 @@ public class CountedMotion implements Motion {
         return new CountedMotion(count, motion);
     }
 
+    public boolean isJump() {
+        return motion.isJump();
+    }
+
 }

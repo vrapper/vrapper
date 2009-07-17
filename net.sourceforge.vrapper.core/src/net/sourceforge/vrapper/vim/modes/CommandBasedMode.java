@@ -11,6 +11,7 @@ import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.Transition;
 import net.sourceforge.vrapper.log.VrapperLog;
+import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.KeyMapProvider;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.VimConstants;
@@ -170,7 +171,8 @@ public abstract class CommandBasedMode extends AbstractMode {
                         new SwitchRegisterCommand(
                                     registerManager.getActiveRegister()), repetition);
             }
-           registerManager.setLastEdit(repetition);
+            registerManager.setLastEdit(repetition);
+            editorAdaptor.getCursorService().setMark(CursorService.LAST_EDIT_MARK, editorAdaptor.getPosition());
         }
     }
 

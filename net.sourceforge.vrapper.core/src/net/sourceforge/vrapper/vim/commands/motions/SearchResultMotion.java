@@ -85,4 +85,9 @@ public class SearchResultMotion extends CountAwareMotion {
         return null;
     }
 
+    @Override
+    public boolean isJump() {
+        return true;
+    }
+
 }

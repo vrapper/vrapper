@@ -63,4 +63,8 @@ public class GoToMarkMotion implements Motion {
         return lineWise ? BorderPolicy.LINE_WISE : BorderPolicy.EXCLUSIVE;
     }
 
+    public boolean isJump() {
+        return true;
+    }
+
 }

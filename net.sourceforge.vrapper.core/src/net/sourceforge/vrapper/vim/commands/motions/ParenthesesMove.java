@@ -43,8 +43,9 @@ public class ParenthesesMove extends AbstractModelSideMotion {
                 break;
             }
         }
-        if (pair == null)
+        if (pair == null) {
             throw new CommandExecutionException("no parentheses to jump found");
+        }
 
         int depth = 1;
         int leftModifier, rightModifier, limit, indexModifier;
@@ -76,6 +77,11 @@ public class ParenthesesMove extends AbstractModelSideMotion {
 
     public BorderPolicy borderPolicy() {
         return BorderPolicy.INCLUSIVE;
+    }
+
+    @Override
+    public boolean isJump() {
+        return true;
     }
 
     private static class ParenthesesPair {

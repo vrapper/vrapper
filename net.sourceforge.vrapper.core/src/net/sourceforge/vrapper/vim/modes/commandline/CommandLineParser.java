@@ -134,7 +134,7 @@ public class CommandLineParser extends AbstractCommandParser {
         try {
             // if the command is a number, jump to the given line
             int line = Integer.parseInt(command);
-            new MotionCommand(GoToLineMotion.FIRST_LINE).execute(editor, line);
+            MotionCommand.doIt(editor, GoToLineMotion.FIRST_LINE.withCount(line));
             return;
         } catch (NumberFormatException e) {
             // do nothing

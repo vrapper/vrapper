@@ -3,11 +3,13 @@
  */
 package net.sourceforge.vrapper.vim.commands;
 
+import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.motions.Motion;
 
 public class MotionCommand extends CountAwareCommand {
+
 	protected final Motion motion;
 
 	public MotionCommand(Motion motion) {
@@ -24,7 +26,11 @@ public class MotionCommand extends CountAwareCommand {
 		if (destination.getViewOffset() < 0) {
             editorAdaptor.getViewportService().exposeModelPosition(destination);
         }
+        Position previousPosition = editorAdaptor.getPosition();
 		editorAdaptor.setPosition(destination, motion.updateStickyColumn());
+	    if (motion.isJump()) {
+            editorAdaptor.getCursorService().setMark(CursorService.LAST_JUMP_MARK, previousPosition);
+	    }
 	}
 
 	@Override

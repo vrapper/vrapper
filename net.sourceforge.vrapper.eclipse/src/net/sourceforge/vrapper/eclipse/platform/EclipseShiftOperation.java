@@ -4,23 +4,19 @@ import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
+import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
-import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 import net.sourceforge.vrapper.vim.commands.TextObject;
 import net.sourceforge.vrapper.vim.commands.TextOperation;
-import net.sourceforge.vrapper.vim.commands.motions.GoToLineMotion;
-import net.sourceforge.vrapper.vim.commands.motions.Motion;
 
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 
 public abstract class EclipseShiftOperation implements TextOperation {
-
-    private static final Motion GO_TO_LINE = new GoToLineMotion();
 
     protected final boolean left;
 
@@ -35,13 +31,17 @@ public abstract class EclipseShiftOperation implements TextOperation {
             String action = left ? ITextEditorActionDefinitionIds.SHIFT_LEFT : ITextEditorActionDefinitionIds.SHIFT_RIGHT;
             editorAdaptor.getHistory().beginCompoundChange();
             editorAdaptor.getHistory().lock();
-            int startLine = editorAdaptor.getModelContent().getLineInformationOfOffset(region.getLeftBound().getModelOffset()).getNumber();
-            int endLine = editorAdaptor.getModelContent().getLineInformationOfOffset(region.getRightBound().getModelOffset()).getNumber();
+            TextContent modelContent = editorAdaptor.getModelContent();
+            int startLine = modelContent.getLineInformationOfOffset(region.getLeftBound().getModelOffset()).getNumber();
+            int endLine = modelContent.getLineInformationOfOffset(region.getRightBound().getModelOffset()).getNumber();
             for (int i = 0; i < count; i++) {
                 editorAdaptor.setSelection(createSelection(editorAdaptor, startLine, endLine));
                 EclipseCommand.doIt(1, action, editorAdaptor);
             }
-            MotionCommand.doIt(editorAdaptor, GO_TO_LINE.withCount(startLine+1));
+            editorAdaptor.setPosition(
+                    editorAdaptor.getCursorService().newPositionForModelOffset(
+                            VimUtils.getFirstNonWhiteSpaceOffset(
+                                    modelContent, modelContent.getLineInformation(startLine))), true);
         } finally {
             editorAdaptor.getHistory().unlock();
             editorAdaptor.getHistory().endCompoundChange();

@@ -5,6 +5,7 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.key;
 import net.sourceforge.vrapper.keymap.KeyMap;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SpecialKey;
+import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.KeyMapProvider;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.CaretType;
@@ -98,6 +99,7 @@ public class InsertMode extends AbstractMode {
             editorAdaptor.getHistory().unlock();
             editorAdaptor.getHistory().endCompoundChange();
         }
+        editorAdaptor.getCursorService().setMark(CursorService.LAST_INSERT_MARK, editorAdaptor.getPosition());
     }
 
     private void repeatInsert() {

@@ -20,4 +20,8 @@ public abstract class CountAwareMotion implements Motion {
         return new CountedMotion(count, this);
     }
 
+    public boolean isJump() {
+        return false;
+    }
+
 }

@@ -41,4 +41,9 @@ public class GoToLineMotion extends CountAwareMotion {
         return BorderPolicy.LINE_WISE;
     }
 
+    @Override
+    public boolean isJump() {
+        return true;
+    }
+
 }

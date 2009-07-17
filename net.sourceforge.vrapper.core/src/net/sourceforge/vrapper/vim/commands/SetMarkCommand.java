@@ -1,6 +1,7 @@
 package net.sourceforge.vrapper.vim.commands;
 
 import net.sourceforge.vrapper.keymap.KeyStroke;
+import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.utils.Function;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 
@@ -20,7 +21,11 @@ public class SetMarkCommand extends CountIgnoringNonRepeatableCommand {
 
     public SetMarkCommand(String id) {
         super();
-        this.id = id;
+        if (id.equals("`")) {
+            this.id = CursorService.LAST_JUMP_MARK;
+        } else {
+            this.id = id;
+        }
     }
 
     public void execute(EditorAdaptor editorAdaptor)

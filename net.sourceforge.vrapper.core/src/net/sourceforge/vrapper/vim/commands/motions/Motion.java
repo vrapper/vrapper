@@ -10,4 +10,5 @@ public interface Motion extends Counted<Motion> {
 	Position destination(EditorAdaptor editorAdaptor) throws CommandExecutionException;
 	BorderPolicy borderPolicy();
 	boolean updateStickyColumn();
+    boolean isJump();
 }
