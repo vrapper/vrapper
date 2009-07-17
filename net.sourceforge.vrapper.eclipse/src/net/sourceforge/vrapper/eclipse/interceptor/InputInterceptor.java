@@ -1,7 +1,6 @@
 package net.sourceforge.vrapper.eclipse.interceptor;
 
 import org.eclipse.swt.custom.VerifyKeyListener;
-import org.eclipse.ui.IWorkbenchPart;
 
 /**
  * Just the {@link VerifyKeyListener} interface with a more suitable name
@@ -9,7 +8,5 @@ import org.eclipse.ui.IWorkbenchPart;
  * @author Matthias Radig
  */
 public interface InputInterceptor extends VerifyKeyListener {
-
-    void partActivated(IWorkbenchPart part);
 
 }

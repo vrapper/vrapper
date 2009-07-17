@@ -1,3 +1,4 @@
+
 package net.sourceforge.vrapper.eclipse.interceptor;
 
 import static net.sourceforge.vrapper.keymap.KeyStroke.ALT;
@@ -19,7 +20,6 @@ import org.eclipse.jface.bindings.keys.SWTKeySupport;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.VerifyEvent;
-import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 
@@ -52,62 +52,63 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
 
     private static final RegisterManager globalRegisterManager = new DefaultRegisterManager();
 
-    public InputInterceptor createInterceptor(final IWorkbenchWindow window, final AbstractTextEditor abstractTextEditor, final ITextViewer textViewer) {
-
-        final EditorAdaptor editorAdaptor = new DefaultEditorAdaptor(
+    public InputInterceptor createInterceptor(IWorkbenchWindow window, AbstractTextEditor abstractTextEditor, ITextViewer textViewer) {
+        EditorAdaptor editorAdaptor = new DefaultEditorAdaptor(
                 new EclipsePlatform(abstractTextEditor, textViewer),
                 globalRegisterManager);
+        return new VimInputInterceptor(editorAdaptor);
+    }
 
-        return new InputInterceptor() {
+    private static final class VimInputInterceptor implements InputInterceptor {
 
-            public void verifyKey(VerifyEvent event) {
-                int accelerator = SWTKeySupport.convertEventToUnmodifiedAccelerator(event);
-                org.eclipse.jface.bindings.keys.KeyStroke jfaceKS = SWTKeySupport.convertAcceleratorToKeyStroke(accelerator);
-                if (!jfaceKS.isComplete()) {
-                    return;
-                }
-                int modifiers = convertModifiers(event.stateMask);
-                char character = convertCharacter(modifiers, event.character);
-                SpecialKey key = null;
-                KeyStroke keyStroke = null;
-                if (specialKeys.containsKey(event.keyCode)) {
-                    key = specialKeys.get(event.keyCode);
-                    keyStroke = new SimpleKeyStroke(modifiers, key);
-                } else {
-                    keyStroke = new SimpleKeyStroke(modifiers, character);
-                }
-                event.doit = !editorAdaptor.handleKey(keyStroke);
+        private final EditorAdaptor editorAdaptor;
+
+        private VimInputInterceptor(EditorAdaptor editorAdaptor) {
+            this.editorAdaptor = editorAdaptor;
+        }
+
+        public void verifyKey(VerifyEvent event) {
+            int accelerator = SWTKeySupport.convertEventToUnmodifiedAccelerator(event);
+            org.eclipse.jface.bindings.keys.KeyStroke jfaceKS = SWTKeySupport.convertAcceleratorToKeyStroke(accelerator);
+            if (!jfaceKS.isComplete()) {
+                return;
             }
-
-            public void partActivated(IWorkbenchPart part) {
-                // ???
+            int modifiers = convertModifiers(event.stateMask);
+            char character = convertCharacter(modifiers, event.character);
+            SpecialKey key = null;
+            KeyStroke keyStroke = null;
+            if (specialKeys.containsKey(event.keyCode)) {
+                key = specialKeys.get(event.keyCode);
+                keyStroke = new SimpleKeyStroke(modifiers, key);
+            } else {
+                keyStroke = new SimpleKeyStroke(modifiers, character);
             }
+            event.doit = !editorAdaptor.handleKey(keyStroke);
+        }
 
-        };
+        private static char convertCharacter(int modifiers, char character) {
+            if (0 <= character && character <= 0x1F && (modifiers & KeyStroke.CTRL) != 0) {
+                character += 0x40;
+            }
+            if (Character.isLetter(character) && (modifiers & KeyStroke.SHIFT) == 0) {
+                character = Character.toLowerCase(character);
+            }
+            return character;
+        }
+
+        private static int convertModifiers(int stateMask) {
+            int result = 0;
+            if ((stateMask & SWT.CTRL) != 0) {
+                result |= CTRL;
+            }
+            if ((stateMask & SWT.ALT) != 0) {
+                result |= ALT;
+            }
+            if ((stateMask & SWT.SHIFT) != 0) {
+                result |= SHIFT;
+            }
+            return result;
+        }
+
     }
-
-    protected char convertCharacter(int modifiers, char character) {
-        if (0 <= character && character <= 0x1F && (modifiers & KeyStroke.CTRL) != 0) {
-            character += 0x40;
-        }
-        if (Character.isLetter(character) && (modifiers & KeyStroke.SHIFT) == 0) {
-            character = Character.toLowerCase(character);
-        }
-        return character;
-    }
-
-    protected int convertModifiers(int stateMask) {
-        int result = 0;
-        if ((stateMask & SWT.CTRL) != 0) {
-            result |= CTRL;
-        }
-        if ((stateMask & SWT.ALT) != 0) {
-            result |= ALT;
-        }
-        if ((stateMask & SWT.SHIFT) != 0) {
-            result |= SHIFT;
-        }
-        return result;
-    }
-
-}
+};

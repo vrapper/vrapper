@@ -70,7 +70,9 @@ public class EclipseUserInterfaceService implements UserInterfaceService {
         public void partBroughtToTop(IWorkbenchPart arg0) { }
 
         public void partClosed(IWorkbenchPart arg0) {
-            editor.getSite().getWorkbenchWindow().getPartService().removePartListener(this);
+            if (arg0 == editor) {
+                editor.getSite().getWorkbenchWindow().getPartService().removePartListener(this);
+            }
         }
 
         public void partDeactivated(IWorkbenchPart arg0) { }

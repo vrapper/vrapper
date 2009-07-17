@@ -25,6 +25,9 @@ import org.eclipse.ui.texteditor.AbstractTextEditor;
  */
 public class InputInterceptorManager implements IPartListener {
 
+    private static final Method METHOD_GET_PAGE_COUNT = getMultiPartEditorMethod("getPageCount");
+    private static final Method METHOD_GET_EDITOR = getMultiPartEditorMethod("getEditor", Integer.TYPE);
+
     private final InputInterceptorFactory factory;
     private final IWorkbenchWindow window;
     private final Map<IWorkbenchPart, InputInterceptor> interceptors;
@@ -92,18 +95,12 @@ public class InputInterceptorManager implements IPartListener {
 
     private void multiPartOpened(IWorkbenchPart part) {
         try {
-            Method getPageCount = MultiPageEditorPart.class.getDeclaredMethod("getPageCount");
-            Method getEditor = MultiPageEditorPart.class.getDeclaredMethod("getEditor", Integer.TYPE);
-            getPageCount.setAccessible(true);
-            getEditor.setAccessible(true);
             MultiPageEditorPart mPart = (MultiPageEditorPart) part;
-            int pageCount = ((Integer) getPageCount.invoke(part)).intValue();
+            int pageCount = ((Integer) METHOD_GET_PAGE_COUNT.invoke(part)).intValue();
             for (int i = 0; i < pageCount; i++) {
-                IEditorPart subPart = (IEditorPart) getEditor.invoke(mPart, i);
+                IEditorPart subPart = (IEditorPart) METHOD_GET_EDITOR.invoke(mPart, i);
                 partOpened(subPart);
             }
-        } catch (NoSuchMethodException e) {
-            // TODO: handle exception
         } catch (IllegalArgumentException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -116,22 +113,69 @@ public class InputInterceptorManager implements IPartListener {
         }
     }
 
-    public void partClosed(IWorkbenchPart arg0) {
-        interceptors.remove(arg0);
-        if (arg0 instanceof IEditorPart) {
-            Activator.getDefault().unregisterEditor((IEditorPart)arg0);
+    public void partClosed(IWorkbenchPart part) {
+        InputInterceptor interceptor = interceptors.remove(part);
+        // remove the listener in case the editor gets cached
+        if (interceptor != null) {
+                try {
+                    Method me = AbstractTextEditor.class
+                        .getDeclaredMethod("getSourceViewer");
+                    me.setAccessible(true);
+                    Object viewer = me.invoke(part);
+                    // test for needed interfaces
+                    ITextViewerExtension textViewer = (ITextViewerExtension) viewer;
+                    textViewer.removeVerifyKeyListener(interceptor);
+                } catch (SecurityException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (NoSuchMethodException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (IllegalArgumentException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (InvocationTargetException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+        }
+        if (part instanceof IEditorPart) {
+            Activator.getDefault().unregisterEditor((IEditorPart)part);
+        }
+        if (part instanceof MultiPageEditorPart) {
+            multiPartClosed(part);
+        } else if (part instanceof MultiEditor) {
+            for (IEditorPart subPart : ((MultiEditor) part).getInnerEditors()) {
+                partClosed(subPart);
+            }
         }
         removeIfNecessary();
     }
 
-    protected void clean() {
-
+    private void multiPartClosed(IWorkbenchPart part) {
+        try {
+            MultiPageEditorPart mPart = (MultiPageEditorPart) part;
+            int pageCount = ((Integer) METHOD_GET_PAGE_COUNT.invoke(part)).intValue();
+            for (int i = 0; i < pageCount; i++) {
+                IEditorPart subPart = (IEditorPart) METHOD_GET_EDITOR.invoke(mPart, i);
+                partClosed(subPart);
+            }
+        } catch (IllegalArgumentException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     public void partActivated(IWorkbenchPart arg0) {
-        if (interceptors.containsKey(arg0)) {
-            interceptors.get(arg0).partActivated(arg0);
-        }
     }
 
     public void partBroughtToTop(IWorkbenchPart arg0) {
@@ -141,6 +185,21 @@ public class InputInterceptorManager implements IPartListener {
         if (!active && interceptors.isEmpty()) {
             window.getPartService().removePartListener(this);
         }
+    }
+
+    private static Method getMultiPartEditorMethod(String name, Class<?>... args) {
+        try {
+            Method m = MultiPageEditorPart.class.getDeclaredMethod(name, args);
+            m.setAccessible(true);
+            return m;
+        } catch (SecurityException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }
