@@ -19,6 +19,7 @@ import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Caret;
 
 public class EclipseCursorAndSelection implements CursorService, SelectionService {
 
@@ -148,7 +149,10 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
 
     public void setCaret(CaretType caretType) {
         StyledText styledText = textViewer.getTextWidget();
+        Caret old = styledText.getCaret();
         styledText.setCaret(CaretUtils.createCaret(caretType, styledText));
+        // old caret is not disposed automatically
+        old.dispose();
     }
 
     public void stickToEOL() {
