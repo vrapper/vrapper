@@ -39,4 +39,24 @@ public interface CursorService {
 	// split this interface or move this method
 	// elsewhere (ViewPortService?) if you feel like it's a good idea
 	void setCaret(CaretType caretType);
+
+	/**
+     * Sets a mark.
+     *
+     * @param id
+     *            name of the mark
+     * @param position
+     *            where the mark should be set
+     */
+	void setMark(String id, Position position);
+
+    /**
+     * Gets the position of a mark.
+     *
+     * @param id
+     *            name of the mark
+     * @return the position of the mark or <code>null</code> if the mark has not
+     *         been set
+     */
+    Position getMark(String id);
 }

@@ -40,6 +40,7 @@ import net.sourceforge.vrapper.vim.commands.PlaybackMacroCommand;
 import net.sourceforge.vrapper.vim.commands.RecordMacroCommand;
 import net.sourceforge.vrapper.vim.commands.RedoCommand;
 import net.sourceforge.vrapper.vim.commands.ReplaceCommand;
+import net.sourceforge.vrapper.vim.commands.SetMarkCommand;
 import net.sourceforge.vrapper.vim.commands.StickToEOLCommand;
 import net.sourceforge.vrapper.vim.commands.SwapCaseCommand;
 import net.sourceforge.vrapper.vim.commands.TextObject;
@@ -189,6 +190,10 @@ public class NormalMode extends CommandBasedMode {
                             transitionBind('r', changeCaret(CaretType.UNDERLINE),
                                     convertKeyStroke(
                                             ReplaceCommand.KEYSTROKE_CONVERTER,
+                                            VimConstants.PRINTABLE_KEYSTROKES)),
+                            transitionBind('m',
+                                    convertKeyStroke(
+                                            SetMarkCommand.KEYSTROKE_CONVERTER,
                                             VimConstants.PRINTABLE_KEYSTROKES)),
                             leafBind('u', undo),
                             leafCtrlBind('r', redo),

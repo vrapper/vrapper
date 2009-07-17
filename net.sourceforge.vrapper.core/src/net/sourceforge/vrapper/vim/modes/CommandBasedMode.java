@@ -21,6 +21,7 @@ import net.sourceforge.vrapper.vim.commands.VimCommandSequence;
 import net.sourceforge.vrapper.vim.commands.motions.ContinueFindingMotion;
 import net.sourceforge.vrapper.vim.commands.motions.FindMotion;
 import net.sourceforge.vrapper.vim.commands.motions.GoToLineMotion;
+import net.sourceforge.vrapper.vim.commands.motions.GoToMarkMotion;
 import net.sourceforge.vrapper.vim.commands.motions.LineEndMotion;
 import net.sourceforge.vrapper.vim.commands.motions.LineStartMotion;
 import net.sourceforge.vrapper.vim.commands.motions.Motion;
@@ -97,6 +98,7 @@ public abstract class CommandBasedMode extends AbstractMode {
             final Motion highMove = new ViewPortMotion(Type.HIGH);
             final Motion middleMove = new ViewPortMotion(Type.MIDDLE);
             final Motion lowMove = new ViewPortMotion(Type.LOW);
+
             motions = state(
                     leafBind('h', moveLeft),
                     leafBind('j', moveDown),
@@ -119,6 +121,12 @@ public abstract class CommandBasedMode extends AbstractMode {
                             VimConstants.PRINTABLE_KEYSTROKES)),
                     transitionBind('F', convertKeyStroke(
                             FindMotion.keyConverter(true, true),
+                            VimConstants.PRINTABLE_KEYSTROKES)),
+                    transitionBind('\'', convertKeyStroke(
+                            GoToMarkMotion.LINEWISE_CONVERTER,
+                            VimConstants.PRINTABLE_KEYSTROKES)),
+                    transitionBind('`', convertKeyStroke(
+                            GoToMarkMotion.CHARWISE_CONVERTER,
                             VimConstants.PRINTABLE_KEYSTROKES)),
                     leafBind('w', wordRight),
                     leafBind('W', WORDRight),

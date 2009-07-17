@@ -1,6 +1,10 @@
 package net.sourceforge.vrapper.eclipse.platform;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import net.sourceforge.vrapper.eclipse.ui.CaretUtils;
+import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.SelectionService;
 import net.sourceforge.vrapper.utils.CaretType;
@@ -12,6 +16,7 @@ import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 
 import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.BadPositionCategoryException;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.ITextViewerExtension5;
@@ -23,18 +28,22 @@ import org.eclipse.swt.widgets.Caret;
 
 public class EclipseCursorAndSelection implements CursorService, SelectionService {
 
+    public static final String POSITION_CATEGORY_NAME = "net.sourceforge.vrapper.position";
     private final ITextViewer textViewer;
     private int stickyColumn;
     private boolean stickToEOL = false;
     private final ITextViewerExtension5 converter;
     private Selection selection;
     private final SelectionChangeListener selectionChangeListener;
+    private final Map<String, org.eclipse.jface.text.Position> marks;
 
     public EclipseCursorAndSelection(ITextViewer textViewer) {
         this.textViewer = textViewer;
         converter = OffsetConverter.create(textViewer);
         selectionChangeListener = new SelectionChangeListener();
+        marks = new HashMap<String, org.eclipse.jface.text.Position>();
         textViewer.getTextWidget().addSelectionListener(selectionChangeListener);
+        textViewer.getDocument().addPositionCategory(POSITION_CATEGORY_NAME);
     }
 
     public Position getPosition() {
@@ -182,5 +191,26 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         }
     }
 
+    public void setMark(String id, Position position) {
+        org.eclipse.jface.text.Position p = new org.eclipse.jface.text.Position(position.getModelOffset());
+        try {
+            textViewer.getDocument().addPosition(POSITION_CATEGORY_NAME, p);
+            marks.put(id, p);
+        } catch (BadLocationException e) {
+            VrapperLog.error("could not set mark", e);
+        } catch (BadPositionCategoryException e) {
+            VrapperLog.error("could not set mark", e);
+        }
+    }
+
+    public Position getMark(String id) {
+        org.eclipse.jface.text.Position p = marks.get(id);
+        if (p == null || p.isDeleted) {
+            marks.remove(id);
+            return null;
+        }
+        int offset = p.getOffset();
+        return newPositionForModelOffset(offset);
+    }
 
 }

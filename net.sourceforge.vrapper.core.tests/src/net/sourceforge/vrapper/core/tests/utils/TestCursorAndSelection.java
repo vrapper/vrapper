@@ -82,4 +82,12 @@ public class TestCursorAndSelection implements CursorService, SelectionService {
         this.content = content;
     }
 
+    public Position getMark(String id) {
+        return null;
+    }
+
+    public void setMark(String id, Position position) {
+        // do nothing
+    }
+
 }

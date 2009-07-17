@@ -1,6 +1,7 @@
 package net.sourceforge.vrapper.vim.modes;
 
 import static net.sourceforge.vrapper.keymap.StateUtils.union;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.convertKeyStroke;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.key;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
@@ -14,6 +15,7 @@ import net.sourceforge.vrapper.keymap.vim.CountingState;
 import net.sourceforge.vrapper.keymap.vim.RegisterState;
 import net.sourceforge.vrapper.keymap.vim.VisualMotionState;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.CenterLineCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeOperation;
@@ -21,6 +23,7 @@ import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.DeleteOperation;
 import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
 import net.sourceforge.vrapper.vim.commands.SelectionBasedTextOperation;
+import net.sourceforge.vrapper.vim.commands.SetMarkCommand;
 import net.sourceforge.vrapper.vim.commands.SwapSelectionSidesCommand;
 import net.sourceforge.vrapper.vim.commands.YankOperation;
 
@@ -89,7 +92,11 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
                 leafBind('o', swapSides),
                 leafBind(':', commandLineMode),
                 transitionBind('z',
-                        leafBind('z', centerLine))
+                        leafBind('z', centerLine)),
+                transitionBind('m',
+                        convertKeyStroke(
+                                SetMarkCommand.KEYSTROKE_CONVERTER,
+                                VimConstants.PRINTABLE_KEYSTROKES))
         ), visualMotions,
         getPlatformSpecificState(VisualMode.NAME))));
         return initialState;
