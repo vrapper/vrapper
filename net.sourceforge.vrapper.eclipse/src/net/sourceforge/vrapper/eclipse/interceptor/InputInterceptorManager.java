@@ -60,12 +60,14 @@ public class InputInterceptorManager implements IPartListener {
                 .getDeclaredMethod("getSourceViewer");
                 me.setAccessible(true);
                 Object viewer = me.invoke(editor);
-                // test for needed interfaces
-                ITextViewerExtension textViewer = (ITextViewerExtension) viewer;
-                InputInterceptor interceptor = factory.createInterceptor(window, editor, (ITextViewer)textViewer);
-                textViewer.prependVerifyKeyListener(interceptor);
-                interceptors.put(part, interceptor);
-                Activator.getDefault().registerEditor(editor);
+                if (viewer != null) {
+                    // test for needed interfaces
+                    ITextViewerExtension textViewer = (ITextViewerExtension) viewer;
+                    InputInterceptor interceptor = factory.createInterceptor(window, editor, (ITextViewer)textViewer);
+                    textViewer.prependVerifyKeyListener(interceptor);
+                    interceptors.put(part, interceptor);
+                    Activator.getDefault().registerEditor(editor);
+                }
             } catch (SecurityException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
