@@ -4,7 +4,9 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.StringTokenizer;
 
+import net.sourceforge.vrapper.platform.Configuration.Option;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.CloseCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
@@ -106,22 +108,21 @@ public class CommandLineParser extends AbstractCommandParser {
 
     private static Evaluator buildConfigEvaluator() {
         EvaluatorMapping config = new EvaluatorMapping();
-        config.add("autoindent", ConfigCommand.AUTO_INDENT);
-        config.add("noautoindent", ConfigCommand.NO_AUTO_INDENT);
-        config.add("smartindent", ConfigCommand.SMART_INDENT);
-        config.add("nosmartindent", ConfigCommand.NO_SMART_INDENT);
-        config.add("globalregisters", ConfigCommand.GLOBAL_REGISTERS);
-        config.add("noglobalregisters", ConfigCommand.LOCAL_REGISTERS);
-        config.add("linewisemouse", ConfigCommand.LINE_WISE_MOUSE_SELECTION);
-        config.add("nolinewisemouse", ConfigCommand.NO_LINE_WISE_MOUSE_SELECTION);
-        config.add("startofline", ConfigCommand.START_OF_LINE);
-        config.add("nostartofline", ConfigCommand.NO_START_OF_LINE);
-        config.add("sol", ConfigCommand.START_OF_LINE);
-        config.add("nosol", ConfigCommand.NO_START_OF_LINE);
-        config.add("atomicinsert", ConfigCommand.ATOMIC_INSERT);
-        config.add("noatomicinsert", ConfigCommand.NO_ATOMIC_INSERT);
-        config.add("ati", ConfigCommand.ATOMIC_INSERT);
-        config.add("noati", ConfigCommand.NO_ATOMIC_INSERT);
+        // boolean options
+        for (Option<Boolean> o : Options.BOOLEAN_OPTIONS) {
+            ConfigCommand<Boolean> enable = new ConfigCommand<Boolean>(o, Boolean.TRUE);
+            ConfigCommand<Boolean> disable = new ConfigCommand<Boolean>(o, Boolean.FALSE);
+            config.add(o.getId(), enable);
+            config.add("no"+o.getId(), disable);
+            for (String alias : o.getAlias()) {
+                config.add(alias, enable);
+                config.add("no"+alias, disable);
+            }
+        }
+        config.add("globalregisters", ConfigAction.GLOBAL_REGISTERS);
+        config.add("noglobalregisters", ConfigAction.NO_GLOBAL_REGISTERS);
+        config.add("localregisters", ConfigAction.NO_GLOBAL_REGISTERS);
+        config.add("nolocalregisters", ConfigAction.GLOBAL_REGISTERS);
         return config;
     }
 
@@ -161,5 +162,21 @@ public class CommandLineParser extends AbstractCommandParser {
             return true;
         }
         return false;
+    }
+
+    private enum ConfigAction implements Evaluator {
+
+        GLOBAL_REGISTERS {
+            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
+                vim.useGlobalRegisters();
+                return null;
+            }
+        },
+        NO_GLOBAL_REGISTERS {
+            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
+                vim.useLocalRegisters();
+                return null;
+            }
+        };
     }
 }

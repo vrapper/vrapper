@@ -29,6 +29,10 @@ public class EvaluatorMapping implements Evaluator {
         actions.put(key, new CommandWrapper(action));
     }
 
+    Evaluator get(String key) {
+        return actions.get(key);
+    }
+
     public boolean contains(String key) {
         return actions.containsKey(key);
     }

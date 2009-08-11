@@ -9,26 +9,45 @@ import net.sourceforge.vrapper.platform.SimpleConfiguration.NewLine;
  */
 public interface Configuration {
 
-    public abstract boolean isStartOfLine();
-
-    public abstract void setStartOfLine(boolean startOfLine);
-
     public abstract String getNewLine();
 
     public abstract void setNewLine(String newLine);
 
     public abstract void setNewLine(NewLine newLine);
 
-    public abstract boolean isAutoIndent();
+    public <T> void set(Option<T> key, T value);
 
-    public abstract void setAutoIndent(boolean autoIndent);
+    public <T> T get(Option<T> key);
 
-    public abstract boolean isSmartIndent();
+    public static class Option<T> {
 
-    public abstract void setSmartIndent(boolean smartIndent);
+        private final String id;
+        private final String[] alias;
+        private final T defaultValue;
 
-    public abstract boolean isAtomicInsert();
+        private Option(String id, T defaultValue, String...alias) {
+            super();
+            this.id = id;
+            this.defaultValue = defaultValue;
+            this.alias = alias;
+        }
 
-    public abstract void setAtomicInsert(boolean atomicInsert);
+        public static final Option<Boolean> bool(String id, boolean defaultValue, String... alias) {
+            return new Option<Boolean>(id, Boolean.valueOf(defaultValue), alias);
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public T getDefaultValue() {
+            return defaultValue;
+        }
+
+        public String[] getAlias() {
+            return alias;
+        }
+
+    }
 
 }

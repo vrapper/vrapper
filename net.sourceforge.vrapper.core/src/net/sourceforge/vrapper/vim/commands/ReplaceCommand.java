@@ -9,6 +9,7 @@ import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.StringUtils;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.Options;
 
 /**
  * Replaces the character at the current position with another one.
@@ -69,8 +70,8 @@ public abstract class ReplaceCommand extends AbstractModelSideCommand {
             // hack to access the configuration
             Configuration conf = editorAdaptor.getConfiguration();
             newLine = conf.getNewLine();
-            smartIndent = conf.isSmartIndent();
-            autoIndent = conf.isAutoIndent();
+            smartIndent = conf.get(Options.SMART_INDENT);
+            autoIndent = conf.get(Options.AUTO_INDENT);
             super.execute(editorAdaptor);
         }
 

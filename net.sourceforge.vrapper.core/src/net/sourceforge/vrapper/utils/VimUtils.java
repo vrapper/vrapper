@@ -1,5 +1,9 @@
 package net.sourceforge.vrapper.utils;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import net.sourceforge.vrapper.platform.TextContent;
@@ -134,6 +138,10 @@ public class VimUtils {
             return text.substring(0, text.length()-1);
         }
         return text;
+    }
+
+    public static final <T> Set<T> set(T... content) {
+        return Collections.unmodifiableSet(new HashSet<T>(Arrays.asList(content)));
     }
 
 }

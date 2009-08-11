@@ -1,83 +1,23 @@
 package net.sourceforge.vrapper.vim.commands;
 
+import net.sourceforge.vrapper.platform.Configuration.Option;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 
 
-public enum ConfigCommand implements Command {
 
-    GLOBAL_REGISTERS {
-        public void execute(EditorAdaptor vim) {
-            vim.useGlobalRegisters();
-        }
-    },
-    LOCAL_REGISTERS {
-        public void execute(EditorAdaptor vim) {
-            vim.useLocalRegisters();
-        }
-    },
-    AUTO_INDENT {
-        public void execute(EditorAdaptor vim) {
-            vim.getConfiguration().setAutoIndent(true);
-        }
-    },
-    NO_AUTO_INDENT {
-        public void execute(EditorAdaptor vim) {
-            vim.getConfiguration().setAutoIndent(false);
-        }
-    },
-    LINE_WISE_MOUSE_SELECTION {
-        public void execute(EditorAdaptor vim) {
-            // FIXME: implement or remove
-//            vim.getPlatform().setLineWiseMouseSelection(true);
-        }
-    },
-    NO_LINE_WISE_MOUSE_SELECTION {
-        public void execute(EditorAdaptor vim) {
-            // FIXME: implement or remove
-//            vim.getPlatform().setLineWiseMouseSelection(false);
-        }
-    },
-    START_OF_LINE {
-        public void execute(EditorAdaptor vim) {
-            vim.getConfiguration().setStartOfLine(true);
-        }
-    },
-    NO_START_OF_LINE {
-        public void execute(EditorAdaptor vim) {
-            vim.getConfiguration().setStartOfLine(false);
-        }
-    },
-    SMART_INDENT {
-        public void execute(EditorAdaptor vim) {
-            vim.getConfiguration().setSmartIndent(true);
-        }
-    },
-    NO_SMART_INDENT{
-        public void execute(EditorAdaptor vim) {
-            vim.getConfiguration().setSmartIndent(false);
-        }
-    },
-    ATOMIC_INSERT {
-        public void execute(EditorAdaptor vim) {
-            vim.getConfiguration().setAtomicInsert(true);
-        }
-    },
-    NO_ATOMIC_INSERT {
-        public void execute(EditorAdaptor vim) {
-            vim.getConfiguration().setAtomicInsert(false);
-        }
-    };
+public class ConfigCommand<T> extends CountIgnoringNonRepeatableCommand {
 
-    public int getCount() {
-        return NO_COUNT_GIVEN;
+    private final Option<T> option;
+    private final T value;
+
+    public ConfigCommand(Option<T> option, T value) {
+        super();
+        this.option = option;
+        this.value = value;
     }
 
-    public Command repetition() {
-        return null;
+    public void execute(EditorAdaptor editorAdaptor)
+            throws CommandExecutionException {
+        editorAdaptor.getConfiguration().set(option, value);
     }
-
-    public Command withCount(int count) {
-        return this;
-    }
-
 }

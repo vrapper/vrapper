@@ -5,6 +5,7 @@ import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.Options;
 
 /**
  * Inserts a new line.
@@ -86,11 +87,11 @@ public final class InsertLineCommand implements Command {
     public final void execute(EditorAdaptor vim) {
         TextContent p = vim.getModelContent();
         LineInformation line = p.getLineInformationOfOffset(vim.getCursorService().getPosition().getModelOffset());
-        if (vim.getConfiguration().isSmartIndent()) {
+        if (vim.getConfiguration().get(Options.SMART_INDENT)) {
             this.type.smart(vim, line);
         } else {
-            String indent = vim.getConfiguration().isAutoIndent() ? VimUtils
-                    .getIndent(vim.getModelContent(), line) : "";
+            boolean autoindent = vim.getConfiguration().get(Options.AUTO_INDENT);
+            String indent = autoindent ? VimUtils.getIndent(vim.getModelContent(), line) : "";
             this.type.dumb(vim, line, indent);
         }
     }

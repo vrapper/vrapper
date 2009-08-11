@@ -18,7 +18,6 @@ import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
-import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.BorderPolicy;
 import net.sourceforge.vrapper.vim.commands.CenterLineCommand;
@@ -33,7 +32,6 @@ import net.sourceforge.vrapper.vim.commands.LinewiseVisualMotionCommand;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.commands.MotionPairTextObject;
 import net.sourceforge.vrapper.vim.commands.MotionTextObject;
-import net.sourceforge.vrapper.vim.commands.OptionDependentTextObject;
 import net.sourceforge.vrapper.vim.commands.PasteAfterCommand;
 import net.sourceforge.vrapper.vim.commands.PasteBeforeCommand;
 import net.sourceforge.vrapper.vim.commands.PlaybackMacroCommand;
@@ -127,7 +125,8 @@ public class NormalMode extends CommandBasedMode {
             final TextObject wordForCW = new MotionTextObject(wordEndRight);
             final TextObject toEol = new MotionTextObject(eol);
             final TextObject wholeLine = new MotionTextObject(new LineEndMotion(BorderPolicy.LINE_WISE));
-            final TextObject toEolForY = new OptionDependentTextObject(Options.STUPID_Y, wholeLine, toEol);
+//            final TextObject toEolForY = new OptionDependentTextObject(Options.STUPID_Y, wholeLine, toEol);
+            final TextObject toEolForY = wholeLine;
 
             State<TextObject> textObjects = textObjects();
             State<TextObject> textObjectsForChange = CountingState.wrap(union(state(leafBind('w', wordForCW)), textObjects));

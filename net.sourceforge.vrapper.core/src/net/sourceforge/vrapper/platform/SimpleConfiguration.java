@@ -1,25 +1,27 @@
 package net.sourceforge.vrapper.platform;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class SimpleConfiguration implements Configuration {
 
-    private boolean autoIndent      = false;
-    private boolean startOfLine     = true;
     private String newLine = NewLine.SYSTEM.nl;
-    private boolean smartIndent     = true;
-    private boolean atomicInsert    = true;
+    private static final Map<Option<?>, Object> vars = new HashMap<Option<?>, Object>();
 
-    /* (non-Javadoc)
-     * @see net.sourceforge.vrapper.platform.Configuration#isStartOfLine()
-     */
-    public boolean isStartOfLine() {
-        return startOfLine;
+
+    @SuppressWarnings("unchecked")
+    public <T> T get(Option<T> key) {
+        if (vars.containsKey(key)) {
+            return (T) vars.get(key);
+        }
+        return key.getDefaultValue();
     }
 
-    /* (non-Javadoc)
-     * @see net.sourceforge.vrapper.platform.Configuration#setStartOfLine(boolean)
-     */
-    public void setStartOfLine(boolean startOfLine) {
-        this.startOfLine = startOfLine;
+    public <T> void set(Option<T> key, T value) {
+        if (value == null) {
+            throw new NullPointerException("value must not be null");
+        }
+        vars.put(key, value);
     }
 
     /* (non-Javadoc)
@@ -43,20 +45,6 @@ public class SimpleConfiguration implements Configuration {
         this.newLine = newLine.nl;
     }
 
-    /* (non-Javadoc)
-     * @see net.sourceforge.vrapper.platform.Configuration#isAutoIndent()
-     */
-    public boolean isAutoIndent() {
-        return autoIndent;
-    }
-
-    /* (non-Javadoc)
-     * @see net.sourceforge.vrapper.platform.Configuration#setAutoIndent(boolean)
-     */
-    public void setAutoIndent(boolean autoIndent) {
-        this.autoIndent = autoIndent;
-    }
-
     public static enum NewLine {
         MAC("\r"), UNIX("\n"), WINDOWS("\r\n"), SYSTEM(System
                 .getProperty("line.separator")), UNKNOWN("\n");
@@ -74,27 +62,5 @@ public class SimpleConfiguration implements Configuration {
             }
             throw new IllegalArgumentException("string does not begin with a known newline");
         }
-    }
-
-    /* (non-Javadoc)
-     * @see net.sourceforge.vrapper.platform.Configuration#isSmartIndent()
-     */
-    public boolean isSmartIndent() {
-        return smartIndent;
-    }
-
-    /* (non-Javadoc)
-     * @see net.sourceforge.vrapper.platform.Configuration#setSmartIndent(boolean)
-     */
-    public void setSmartIndent(boolean smartIndent) {
-        this.smartIndent = smartIndent;
-    }
-
-    public boolean isAtomicInsert() {
-        return atomicInsert;
-    }
-
-    public void setAtomicInsert(boolean atomicInsert) {
-        this.atomicInsert = atomicInsert;
     }
 }

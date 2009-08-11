@@ -15,6 +15,7 @@ import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
@@ -57,7 +58,7 @@ public class InsertMode extends AbstractMode {
         if (isEnabled) {
             return;
         }
-        if (editorAdaptor.getConfiguration().isAtomicInsert()) {
+        if (editorAdaptor.getConfiguration().get(Options.ATOMIC_INSERT)) {
             editorAdaptor.getHistory().beginCompoundChange();
             editorAdaptor.getHistory().lock();
         }
@@ -96,7 +97,7 @@ public class InsertMode extends AbstractMode {
             editorAdaptor.getUserInterfaceService().setErrorMessage(e.getMessage());
         }
         repeatInsert();
-        if (editorAdaptor.getConfiguration().isAtomicInsert()) {
+        if (editorAdaptor.getConfiguration().get(Options.ATOMIC_INSERT)) {
             editorAdaptor.getHistory().unlock();
             editorAdaptor.getHistory().endCompoundChange();
         }
