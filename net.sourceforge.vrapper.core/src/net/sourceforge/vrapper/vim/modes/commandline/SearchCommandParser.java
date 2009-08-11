@@ -6,8 +6,10 @@ import java.util.regex.Pattern;
 
 import net.sourceforge.vrapper.utils.Search;
 import net.sourceforge.vrapper.utils.SearchOffset;
+import net.sourceforge.vrapper.utils.StringUtils;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
@@ -77,7 +79,10 @@ public class SearchCommandParser extends AbstractCommandParser {
         } else {
             searchOffset = SearchOffset.NONE;
         }
-        Search search = new Search(keyword, backward, false, searchOffset);
+        boolean caseSensitive = !editor.getConfiguration().get(Options.IGNORE_CASE)
+            || editor.getConfiguration().get(Options.SMART_CASE)
+            && StringUtils.containsUppercase(keyword);
+        Search search = new Search(keyword, backward, false, caseSensitive, searchOffset);
         return search;
     }
 

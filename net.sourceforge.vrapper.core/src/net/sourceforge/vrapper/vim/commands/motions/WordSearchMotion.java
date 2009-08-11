@@ -69,7 +69,7 @@ public class WordSearchMotion extends SearchResultMotion {
             }
             keyword = p.getText(first, last-first+1);
         }
-        return new Search(keyword, reverse, true);
+        return new Search(keyword, reverse, true, true);
     }
 
 }
