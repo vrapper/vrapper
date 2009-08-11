@@ -17,6 +17,16 @@ public interface ViewportService {
 	void setRepaint(boolean b);
 
 	/**
+	 * Locks the repaint status.
+	 */
+	void lockRepaint(Object lock);
+
+	/**
+	 * Unlocks the repaint status.
+	 */
+	void unlockRepaint(Object lock);
+
+	/**
 	 * Exposes the given model offset if it is in a folded area.
 	 *
 	 * @param position the position to expose

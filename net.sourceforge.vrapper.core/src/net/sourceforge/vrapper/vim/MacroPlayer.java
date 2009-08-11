@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import net.sourceforge.vrapper.keymap.KeyStroke;
+import net.sourceforge.vrapper.platform.ViewportService;
 import net.sourceforge.vrapper.vim.commands.PlaybackMacroCommand;
 import net.sourceforge.vrapper.vim.modes.EditorMode;
 
@@ -48,8 +49,16 @@ public class MacroPlayer {
      * {@link EditorAdaptor}.
      */
     void play() {
-        while (!playlist.isEmpty()) {
-            editorAdaptor.handleKeyOffRecord(playlist.poll());
+        ViewportService view = editorAdaptor.getViewportService();
+        try {
+            view.setRepaint(false);
+            view.lockRepaint(this);
+            while (!playlist.isEmpty()) {
+                editorAdaptor.handleKeyOffRecord(playlist.poll());
+            }
+        } finally {
+            view.unlockRepaint(this);
+            view.setRepaint(true);
         }
     }
 }

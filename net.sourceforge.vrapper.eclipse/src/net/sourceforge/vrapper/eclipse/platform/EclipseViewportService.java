@@ -12,6 +12,7 @@ public class EclipseViewportService implements ViewportService {
 
     private final ITextViewer textViewer;
     private final ITextViewerExtension5 textViewer5;
+    private Object lock;
 
     public EclipseViewportService(ITextViewer textViewer) {
         this.textViewer = textViewer;
@@ -20,7 +21,21 @@ public class EclipseViewportService implements ViewportService {
     }
 
     public void setRepaint(boolean redraw) {
-        textViewer.getTextWidget().setRedraw(redraw);
+        if (lock == null) {
+            textViewer.getTextWidget().setRedraw(redraw);
+        }
+    }
+
+    public void lockRepaint(Object lock) {
+        if (this.lock == null) {
+            this.lock = lock;
+        }
+    }
+
+    public void unlockRepaint(Object lock) {
+        if (this.lock == lock) {
+            this.lock = null;
+        }
     }
 
     public void exposeModelPosition(Position position) {

@@ -10,6 +10,7 @@ import net.sourceforge.vrapper.platform.KeyMapProvider;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.ContentType;
+import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
@@ -165,18 +166,29 @@ public class InsertMode extends AbstractMode {
     }
 
     private void handleVirtualStroke(KeyStroke stroke) {
+        TextContent c = editorAdaptor.getModelContent();
         if (SpecialKey.BACKSPACE.equals(stroke.getSpecialKey())) {
             int pos = editorAdaptor.getPosition().getModelOffset();
-            if (pos < editorAdaptor.getModelContent().getLineInformationOfOffset(pos).getBeginOffset()) {
-                editorAdaptor.getModelContent().replace(pos-1, 1, "");
+            int pos2;
+            LineInformation line = c.getLineInformationOfOffset(pos);
+            if (pos > 0) {
+                if (pos > line.getBeginOffset()) {
+                    pos2 = pos-1;
+                } else {
+                    pos2 = c.getLineInformation(line.getNumber()-1).getEndOffset();
+                }
+                c.replace(pos2, pos-pos2, "");
+                editorAdaptor.setPosition(
+                        editorAdaptor.getCursorService().newPositionForModelOffset(pos2), false);
             }
         } else {
-            Position pos = editorAdaptor.getPosition();
-            String s = String.valueOf(stroke.getCharacter());
-            // TDOO: use smart insert and find a way to calculate the
-            // correct position
-            editorAdaptor.getModelContent().replace(pos.getModelOffset(), 0, s);
-            editorAdaptor.setPosition(pos.addModelOffset(1), false);
+            String s;
+            if (SpecialKey.RETURN.equals(stroke.getSpecialKey())) {
+                s = editorAdaptor.getConfiguration().getNewLine();
+            } else {
+                s = String.valueOf(stroke.getCharacter());
+            }
+            c.smartInsert(s);
         }
     }
 

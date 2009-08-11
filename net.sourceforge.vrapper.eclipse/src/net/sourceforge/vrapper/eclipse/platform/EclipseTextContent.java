@@ -96,6 +96,10 @@ public class EclipseTextContent {
             viewSide.smartInsert(converter.modelOffset2WidgetOffset(index), s);
         }
 
+        public void smartInsert(String s) {
+            viewSide.smartInsert(s);
+        }
+
         public Space getSpace() {
             return Space.MODEL;
         }
@@ -157,6 +161,20 @@ public class EclipseTextContent {
             textWidget.setCaretOffset(index);
             textWidget.insert(s);
             textWidget.setCaretOffset(oldIndex);
+        }
+
+        public void smartInsert(String s) {
+            StyledText textWidget = textViewer.getTextWidget();
+            int pos = textWidget.getCaretOffset();
+            // move caret after insertion to preserve position
+            if (pos < textWidget.getCharCount()) {
+                textWidget.setCaretOffset(pos+1);
+                textWidget.replaceTextRange(pos, 0, s);
+                textWidget.setCaretOffset(textWidget.getCaretOffset()-1);
+            } else {
+                textWidget.replaceTextRange(pos, 0, s);
+                textWidget.setCaretOffset(textWidget.getCharCount());
+            }
         }
 
         public Space getSpace() {

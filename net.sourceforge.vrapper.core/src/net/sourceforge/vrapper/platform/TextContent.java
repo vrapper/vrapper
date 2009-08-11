@@ -45,11 +45,20 @@ public interface TextContent {
 
     /**
      * Uses the underlying editors smart insert if available.
-     * Inserts at the current cursor position.
+     *
+     * @param s the string to insert
+     * @param i position for insertion
+     */
+    void smartInsert(int index, String s);
+
+    /**
+     * Uses the underlying editors smart insert if available.
+     * Inserts at the current cursor position. Cursor position is updated by
+     * the underlying editor.
      *
      * @param s the string to insert
      */
-    void smartInsert(int index, String s);
+    void smartInsert(String s);
 
     /**
      * Retrieves a substring from the text.
