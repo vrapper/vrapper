@@ -109,7 +109,8 @@ public class EclipseTextContent {
                 FindReplaceDocumentAdapter adapter = new FindReplaceDocumentAdapter(textViewer.getDocument());
                 IRegion result = adapter.find(
                             start.getModelOffset(), search.getKeyword(),
-                            !search.isBackward(), true, search.isWholeWord(), false);
+                            !search.isBackward(), search.isCaseSensitive(),
+                            search.isWholeWord(), false);
                 Position resultPosition = result != null ? start.setModelOffset(result.getOffset()) : null;
                 return new SearchResult(resultPosition);
             } catch (BadLocationException e) {
