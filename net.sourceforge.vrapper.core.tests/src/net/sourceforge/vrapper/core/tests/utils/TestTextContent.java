@@ -124,4 +124,8 @@ public class TestTextContent implements TextContent {
         replace(index, 0, s);
     }
 
+    public void smartInsert(String s) {
+        smartInsert(cursorService.getPosition().getModelOffset(), s);
+    }
+
 }

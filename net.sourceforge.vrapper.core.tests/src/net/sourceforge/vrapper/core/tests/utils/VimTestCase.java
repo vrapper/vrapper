@@ -12,9 +12,11 @@ import net.sourceforge.vrapper.platform.PlatformSpecificStateProvider;
 import net.sourceforge.vrapper.platform.ServiceProvider;
 import net.sourceforge.vrapper.platform.UserInterfaceService;
 import net.sourceforge.vrapper.platform.ViewportService;
+import net.sourceforge.vrapper.platform.Configuration.Option;
 import net.sourceforge.vrapper.utils.DefaultKeyMapProvider;
 import net.sourceforge.vrapper.vim.DefaultEditorAdaptor;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.modes.EditorMode;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
 import net.sourceforge.vrapper.vim.register.SimpleRegister;
@@ -71,6 +73,9 @@ public class VimTestCase {
 		when(registerManager.getLastEditRegister()).thenReturn(lastEditRegister);
 		when(fileService.isEditable()).thenReturn(true);
 		when(configuration.getNewLine()).thenReturn("\n");
+		for (Option<Boolean> o : Options.BOOLEAN_OPTIONS) {
+    		when(configuration.get(o)).thenReturn(Boolean.FALSE);
+		}
 
     }
 
