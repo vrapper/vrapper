@@ -190,7 +190,7 @@ public class NormalMode extends CommandBasedMode {
                             transitionBind('r', changeCaret(CaretType.UNDERLINE),
                                     convertKeyStroke(
                                             ReplaceCommand.KEYSTROKE_CONVERTER,
-                                            VimConstants.PRINTABLE_KEYSTROKES)),
+                                            VimConstants.PRINTABLE_KEYSTROKES_WITH_NL)),
                             transitionBind('m',
                                     convertKeyStroke(
                                             SetMarkCommand.KEYSTROKE_CONVERTER,

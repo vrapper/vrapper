@@ -21,6 +21,7 @@ public class VimConstants {
     public static final Set<String> WHITESPACE = set(" ", "\t", "\n", "\r");
     public static final Set<String> NEWLINE = createNewlineSet();
     public static final Set<KeyStroke> PRINTABLE_KEYSTROKES = createPrintableKeyStrokes();
+    public static final Set<KeyStroke> PRINTABLE_KEYSTROKES_WITH_NL = createPrintableKeyStrokesWithNL();
     public static final Set<SpecialKey> SPECIAL_KEYS_ALLOWED_FOR_INSERT = set(SpecialKey.BACKSPACE, SpecialKey.RETURN);
     //public static final String NEWLINE = System.getProperty("line.separator");
     public static final String SPACE = " ";
@@ -34,6 +35,7 @@ public class VimConstants {
     private static final <T> Set<T> set(T... content) {
         return Collections.unmodifiableSet(new HashSet<T>(Arrays.asList(content)));
     }
+
 
     private static Set<String> createNewlineSet() {
         NewLine[] newlines = NewLine.values();
@@ -52,4 +54,9 @@ public class VimConstants {
         return Collections.unmodifiableSet(result);
     }
 
+    private static Set<KeyStroke> createPrintableKeyStrokesWithNL() {
+        Set<KeyStroke> result = new HashSet<KeyStroke>(createPrintableKeyStrokes());
+        result.add(key(SpecialKey.RETURN));
+        return Collections.unmodifiableSet(result);
+    }
 }
