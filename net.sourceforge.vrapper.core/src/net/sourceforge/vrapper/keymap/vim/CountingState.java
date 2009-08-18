@@ -41,7 +41,7 @@ public class CountingState<T extends Counted<T>> implements State<T> {
     }
 
     public Transition<T> press(KeyStroke key) {
-        if (key.getModifiers() == 0 && key.getCharacter() >= '0' && key.getCharacter() <= '9') {
+        if (key.getCharacter() >= '0' && key.getCharacter() <= '9') {
             int keyValue = Character.getNumericValue(key.getCharacter());
             return new SimpleTransition<T>(new CountingState<T>(10*value + keyValue, wrappedState));
         }

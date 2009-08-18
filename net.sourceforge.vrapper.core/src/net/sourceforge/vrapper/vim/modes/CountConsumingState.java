@@ -23,7 +23,7 @@ final class CountConsumingState<T> implements State<T> {
 
     public Transition<T> press(KeyStroke key) {
         char c = key.getCharacter();
-        if ('0' <= c && c <= '9' && key.getModifiers() == 0) {
+        if ('0' <= c && c <= '9') {
             return new SimpleTransition<T>(this);
         }
         return state.press(key);

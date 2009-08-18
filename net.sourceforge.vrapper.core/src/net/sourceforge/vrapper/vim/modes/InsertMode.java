@@ -151,7 +151,7 @@ public class InsertMode extends AbstractMode {
     }
 
     public boolean handleKey(KeyStroke stroke) {
-        if (stroke.equals(key(SpecialKey.ESC)) || stroke.equals(key(KeyStroke.CTRL, '['))) {
+        if (stroke.equals(key(SpecialKey.ESC))) {
             editorAdaptor.changeMode(NormalMode.NAME);
             return true;
         }
@@ -199,11 +199,7 @@ public class InsertMode extends AbstractMode {
         if (specialKey != null) {
             return VimConstants.SPECIAL_KEYS_ALLOWED_FOR_INSERT.contains(specialKey);
         }
-        if ((stroke.getModifiers() & KeyStroke.CTRL) == 0) {
-            return true; // FIXME: look one line below
-        }
-        //			return Character.isLetterOrDigit(event.character); // FIXME: no enter, no backspace
-        return false;
+        return true;
     }
 
     public KeyMap resolveKeyMap(KeyMapProvider provider) {

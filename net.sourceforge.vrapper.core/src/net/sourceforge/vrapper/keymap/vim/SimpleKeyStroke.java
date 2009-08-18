@@ -9,24 +9,17 @@ import net.sourceforge.vrapper.utils.StringUtils;
 
 public class SimpleKeyStroke implements KeyStroke {
 
-    private final int modifiers;
     private final char character;
     private final SpecialKey specialKey;
 
-    public SimpleKeyStroke(int modifiers, char character) {
-        this.modifiers = modifiers;
+    public SimpleKeyStroke(char character) {
         this.character = character;
         this.specialKey = null;
     }
 
-    public SimpleKeyStroke(int modifiers, SpecialKey key) {
-        this.modifiers = modifiers;
+    public SimpleKeyStroke(SpecialKey key) {
         this.character = '\0';
         this.specialKey = key;
-    }
-
-    public int getModifiers() {
-        return modifiers;
     }
 
     public char getCharacter() {
@@ -39,22 +32,13 @@ public class SimpleKeyStroke implements KeyStroke {
 
     @Override
     public int hashCode() {
-        return modifiers ^ character << 16 ^ (specialKey == null ? 0 : specialKey.hashCode());
+        return character << 16 ^ (specialKey == null ? 0 : specialKey.hashCode());
     }
 
     @Override
     public String toString() {
         // this is mainly for debugging
         List<String> pieces = new ArrayList<String>();
-        if ((modifiers & SHIFT) != 0) {
-            pieces.add("SHIFT");
-        }
-        if ((modifiers & ALT) != 0) {
-            pieces.add("ALT");
-        }
-        if ((modifiers & CTRL) != 0) {
-            pieces.add("CTRL");
-        }
         pieces.add(specialKey == null ? Character.toString(character) : specialKey.toString());
         return "SimpleKeyStroke(" + StringUtils.join("+", pieces) + ")";
     }
@@ -75,9 +59,6 @@ public class SimpleKeyStroke implements KeyStroke {
             return false;
         }
         if (specialKey != other.getSpecialKey()) {
-            return false;
-        }
-        if (modifiers != other.getModifiers()) {
             return false;
         }
         return true;

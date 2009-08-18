@@ -1,10 +1,6 @@
 
 package net.sourceforge.vrapper.eclipse.interceptor;
 
-import static net.sourceforge.vrapper.keymap.KeyStroke.ALT;
-import static net.sourceforge.vrapper.keymap.KeyStroke.CTRL;
-import static net.sourceforge.vrapper.keymap.KeyStroke.SHIFT;
-
 import java.util.HashMap;
 
 import net.sourceforge.vrapper.eclipse.platform.EclipsePlatform;
@@ -16,7 +12,6 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
 
-import org.eclipse.jface.bindings.keys.SWTKeySupport;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.VerifyEvent;
@@ -68,46 +63,16 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
         }
 
         public void verifyKey(VerifyEvent event) {
-            int accelerator = SWTKeySupport.convertEventToUnmodifiedAccelerator(event);
-            org.eclipse.jface.bindings.keys.KeyStroke jfaceKS = SWTKeySupport.convertAcceleratorToKeyStroke(accelerator);
-            if (!jfaceKS.isComplete()) {
+            if(event.keyCode == SWT.SHIFT || event.keyCode == SWT.CTRL) {
                 return;
             }
-            int modifiers = convertModifiers(event.stateMask);
-            char character = convertCharacter(modifiers, event.character);
-            SpecialKey key = null;
-            KeyStroke keyStroke = null;
-            if (specialKeys.containsKey(event.keyCode)) {
-                key = specialKeys.get(event.keyCode);
-                keyStroke = new SimpleKeyStroke(modifiers, key);
+            KeyStroke keyStroke;
+            if(specialKeys.containsKey(event.keyCode)) {
+                keyStroke = new SimpleKeyStroke(specialKeys.get(event.keyCode));
             } else {
-                keyStroke = new SimpleKeyStroke(modifiers, character);
+                keyStroke = new SimpleKeyStroke(event.character);
             }
             event.doit = !editorAdaptor.handleKey(keyStroke);
-        }
-
-        private static char convertCharacter(int modifiers, char character) {
-            if (0 <= character && character <= 0x1F && (modifiers & KeyStroke.CTRL) != 0) {
-                character += 0x40;
-            }
-            if (Character.isLetter(character) && (modifiers & KeyStroke.SHIFT) == 0) {
-                character = Character.toLowerCase(character);
-            }
-            return character;
-        }
-
-        private static int convertModifiers(int stateMask) {
-            int result = 0;
-            if ((stateMask & SWT.CTRL) != 0) {
-                result |= CTRL;
-            }
-            if ((stateMask & SWT.ALT) != 0) {
-                result |= ALT;
-            }
-            if ((stateMask & SWT.SHIFT) != 0) {
-                result |= SHIFT;
-            }
-            return result;
         }
 
     }

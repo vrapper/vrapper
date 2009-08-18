@@ -37,7 +37,7 @@ public final class RegisterKeymapState implements State<String> {
     }
 
     public Transition<String> press(KeyStroke key) {
-        if (key.getCharacter() == '"' && (key.getModifiers() & KeyStroke.CTRL) == 0 ) {
+        if (key.getCharacter() == '"') {
             return new SimpleTransition<String>(KeyMapResolver.NO_KEYMAP, registerKeyMapState);
         }
         return wrapped.press(key);

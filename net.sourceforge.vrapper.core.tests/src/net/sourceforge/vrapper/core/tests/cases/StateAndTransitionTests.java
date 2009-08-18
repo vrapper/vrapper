@@ -266,8 +266,8 @@ public class StateAndTransitionTests {
 
     @Test
     public void testParsingKeyStrokes() {
-        assertEquals(asList(key(0, 'a')), parseKeyStrokes("a"));
-        assertEquals(asList(key(0, 'a'), key(0, 'b')), parseKeyStrokes("ab"));
+        assertEquals(asList(key('a')), parseKeyStrokes("a"));
+        assertEquals(asList(key('a'), key('b')), parseKeyStrokes("ab"));
     }
 
 //    private static<T> void assertReturnsValue(T expected, State<T> state, String keys) {

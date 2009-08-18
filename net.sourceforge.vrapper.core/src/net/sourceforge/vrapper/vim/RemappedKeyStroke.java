@@ -24,10 +24,6 @@ public class RemappedKeyStroke implements KeyStroke {
         return delegate.getCharacter();
     }
 
-    public int getModifiers() {
-        return delegate.getModifiers();
-    }
-
     public SpecialKey getSpecialKey() {
         return delegate.getSpecialKey();
     }

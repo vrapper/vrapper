@@ -22,7 +22,7 @@ public class RegisterState implements State<Command> {
     }
 
     public Transition<Command> press(KeyStroke key) {
-        if ('"' == key.getCharacter() && (key.getModifiers() & KeyStroke.CTRL) == 0) {
+        if ('"' == key.getCharacter()) {
             return new SimpleTransition<Command>(selectState);
         }
         return wrappedState.press(key);
@@ -30,7 +30,7 @@ public class RegisterState implements State<Command> {
 
     public Iterable<KeyStroke> supportedKeys() {
         Collection<KeyStroke> result = new HashSet<KeyStroke>();
-        result.add(new SimpleKeyStroke(0, '"'));
+        result.add(new SimpleKeyStroke('"'));
         for (KeyStroke key : wrappedState.supportedKeys()) {
             result.add(key);
         }

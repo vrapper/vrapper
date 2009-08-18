@@ -2,13 +2,11 @@ package net.sourceforge.vrapper.vim.modes;
 
 import static net.sourceforge.vrapper.keymap.StateUtils.union;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.convertKeyStroke;
-import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.key;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.dontRepeat;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
-import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.vim.CountingState;
@@ -80,7 +78,6 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
         Command centerLine = CenterLineCommand.INSTANCE;
         State<Command> visualMotions = getVisualMotionState();
         State<Command> initialState = new RegisterState(CountingState.wrap(union(state(
-                leafBind(key(KeyStroke.CTRL, '['), leaveVisual),
                 leafBind(SpecialKey.ESC, leaveVisual),
                 leafBind('v', leaveVisual),
                 leafBind('y', yank),

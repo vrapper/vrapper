@@ -37,20 +37,21 @@ import net.sourceforge.vrapper.vim.commands.motions.Motion;
  * @author Krzysiek Goj
  */
 public class ConstructorWrappers {
-    @SuppressWarnings("serial")
+    private static final Map<String, KeyStroke> keyNames = createKeyMap();
+//    @SuppressWarnings("serial")
     // FIXME: this is all going to be replaced by some JLex/JFlex stuff
-    static final Map<String, SpecialKey> specialKeys = Collections.unmodifiableMap(new HashMap<String, SpecialKey>() {{
-        put("LEFT",  SpecialKey.ARROW_LEFT);
-        put("RIGHT", SpecialKey.ARROW_RIGHT);
-        put("UP",    SpecialKey.ARROW_UP);
-        put("DOWN",  SpecialKey.ARROW_DOWN);
-        put("CR",    SpecialKey.RETURN);
-        put("ENTER", SpecialKey.RETURN);
-        for (SpecialKey key: SpecialKey.values()) {
-            String keyName = key.toString();
-            put(keyName, key);
-        }
-    }});
+//    static final Map<String, SpecialKey> specialKeys = Collections.unmodifiableMap(new HashMap<String, SpecialKey>() {{
+//        put("LEFT",  SpecialKey.ARROW_LEFT);
+//        put("RIGHT", SpecialKey.ARROW_RIGHT);
+//        put("UP",    SpecialKey.ARROW_UP);
+//        put("DOWN",  SpecialKey.ARROW_DOWN);
+//        put("CR",    SpecialKey.RETURN);
+//        put("ENTER", SpecialKey.RETURN);
+//        for (SpecialKey key: SpecialKey.values()) {
+//            String keyName = key.toString();
+//            put(keyName, key);
+//        }
+//    }});
 
     @SuppressWarnings("serial")
     static final Map<SpecialKey, String> specialKeyNames = Collections.unmodifiableMap(new HashMap<SpecialKey, String>() {{
@@ -63,14 +64,6 @@ public class ConstructorWrappers {
         put(SpecialKey.ARROW_UP,    "<UP>");
         put(SpecialKey.ARROW_DOWN,  "<DOWN>");
     }});
-
-    public static KeyStroke key(int modifiers, char key) {
-        return new SimpleKeyStroke(modifiers, key);
-    }
-
-    public static KeyStroke key(int modifiers, SpecialKey key) {
-        return new SimpleKeyStroke(modifiers, key);
-    }
 
     //    private static final Pattern pattern = Pattern.compile("<(.+)>");
 
@@ -89,15 +82,9 @@ public class ConstructorWrappers {
                 }
                 sb.deleteCharAt(sb.length()-1);
                 String key = sb.toString();
-                SpecialKey specialKey = specialKeys.get(key.toUpperCase());
-                if (specialKey != null) {
-                    result.add(new SimpleKeyStroke(0, specialKey)); // FIXME: <C-S-LEFT>
-                } else if (key.toLowerCase().startsWith("c-")) {
-                    result.add(ctrlKey(key.charAt(2)));
-                } else if (key.toLowerCase().equals("gt")) {
-                    result.add(key('>'));
-                } else if (key.toLowerCase().equals("lt")) {
-                    result.add(key('<'));
+                KeyStroke stroke = keyNames.get(key.toUpperCase());
+                if (stroke != null) {
+                    result.add(stroke);
                 }
             } else {
                 result.add(key(next));
@@ -117,7 +104,7 @@ public class ConstructorWrappers {
     public static String keyStrokeToString(KeyStroke stroke) {
         if (stroke.getSpecialKey() == null) {
             String key = String.valueOf(stroke.getCharacter());
-            if ((stroke.getModifiers() & KeyStroke.CTRL) == 0) {
+            if (stroke.getCharacter() > ' ') {
                 switch (stroke.getCharacter()) {
                 case '<':
                     return "<LT>";
@@ -132,25 +119,16 @@ public class ConstructorWrappers {
         return specialKeyNames.get(stroke.getSpecialKey());
     }
 
-    private static int maybeShift(char key) {
-        int modifiers = 0;
-        String autoShifted = "~!@#$%^&*()_+{}:\"|<>?";
-        if (Character.isUpperCase(key) || autoShifted.indexOf(key) != -1) {
-            modifiers |= KeyStroke.SHIFT;
-        }
-        return modifiers;
-    }
-
     public static KeyStroke key(char key) {
-        return new SimpleKeyStroke(maybeShift(key), key);
+        return new SimpleKeyStroke(key);
     }
 
     public static KeyStroke ctrlKey(char key) {
-        return new SimpleKeyStroke(maybeShift(key) | KeyStroke.CTRL, key);
+        return keyNames.get("C-"+String.valueOf(key).toUpperCase());
     }
 
     public static KeyStroke key(SpecialKey key) {
-        return new SimpleKeyStroke(0, key);
+        return new SimpleKeyStroke(key);
     }
 
     public static<T> KeyBinding<T> binding(char k, Transition<T> transition) {
@@ -294,5 +272,62 @@ public class ConstructorWrappers {
 
     public static<T1, T2 extends T1> State<T1> covariant(State<T2> wrapped) {
         return new CovariantState<T1, T2>(wrapped);
+    }
+
+    private static Map<String, KeyStroke> createKeyMap() {
+        HashMap<String, KeyStroke> map = new HashMap<String, KeyStroke>();
+        // special keys
+        map.put("DEL",     key(SpecialKey.DELETE));
+        map.put("INS",     key(SpecialKey.INSERT));
+        map.put("BS",      key(SpecialKey.BACKSPACE));
+        map.put("RETURN",  key(SpecialKey.RETURN));
+        map.put("ENTER",   map.get("RETURN"));
+        map.put("CR",      map.get("RETURN"));
+        map.put("HOME",    key(SpecialKey.HOME));
+        map.put("END",     key(SpecialKey.END));
+        map.put("PAGEUP",  key(SpecialKey.PAGE_UP));
+        map.put("PAGEDOWN",key(SpecialKey.PAGE_DOWN));
+        map.put("UP",      key(SpecialKey.ARROW_UP));
+        map.put("DOWN",    key(SpecialKey.ARROW_DOWN));
+        map.put("LEFT",    key(SpecialKey.ARROW_LEFT));
+        map.put("RIGHT",   key(SpecialKey.ARROW_RIGHT));
+        map.put("ESC",     key(SpecialKey.ESC));
+        map.put("SPACE",   key(' '));
+        map.put("GT",      key('>'));
+        map.put("LT",      key('<'));
+        // ctrl keys
+        map.put("C-@", key('\u0000'));
+        map.put("C-A", key('\u0001'));
+        map.put("C-B", key('\u0002'));
+        map.put("C-C", key('\u0003'));
+        map.put("C-D", key('\u0004'));
+        map.put("C-E", key('\u0005'));
+        map.put("C-F", key('\u0006'));
+        map.put("C-G", key('\u0007'));
+        map.put("C-H", key('\u0008'));
+        map.put("C-I", key('\t'));
+        map.put("C-J", map.get("RETURN"));
+        map.put("C-K", key('\u000B'));
+        map.put("C-L", key('\u000C'));
+        map.put("C-M", map.get("RETURN"));
+        map.put("C-N", key('\u000E'));
+        map.put("C-O", key('\u000F'));
+        map.put("C-P", key('\u0010'));
+        map.put("C-Q", key('\u0011'));
+        map.put("C-R", key('\u0012'));
+        map.put("C-S", key('\u0013'));
+        map.put("C-T", key('\u0014'));
+        map.put("C-U", key('\u0015'));
+        map.put("C-V", key('\u0016'));
+        map.put("C-W", key('\u0017'));
+        map.put("C-X", key('\u0018'));
+        map.put("C-Y", key('\u0019'));
+        map.put("C-Z", key('\u001A'));
+        map.put("C-[", map.get("ESC"));
+        map.put("C-\\",key('\u001C'));
+        map.put("C-]", key('\u001D'));
+        map.put("C-^", key('\u001E'));
+        map.put("C-_", key('\u001F'));
+        return map;
     }
 }
