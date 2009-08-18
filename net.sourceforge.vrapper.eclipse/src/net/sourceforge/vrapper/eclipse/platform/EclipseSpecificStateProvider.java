@@ -102,7 +102,8 @@ public class EclipseSpecificStateProvider implements
                         leafBind('R', javaEditText("rename.element")),
                         leafBind('t', cmd("org.eclipse.ui.window.nextEditor")),
                         leafBind('T', cmd("org.eclipse.ui.window.previousEditor"))),
-                leafCtrlBind('f', go("goto.pageDown")),
+                leafCtrlBind('f', go("pageDown")),
+                leafCtrlBind('b', go("pageUp")),
                 leafCtrlBind('y', dontRepeat(editText("scroll.lineUp"))),
                 leafCtrlBind('e', dontRepeat(editText("scroll.lineDown"))),
                 leafCtrlBind(']', seq(javaEditText("open.editor"), deselectAll)), // NOTE: deselect won't work in other editor
