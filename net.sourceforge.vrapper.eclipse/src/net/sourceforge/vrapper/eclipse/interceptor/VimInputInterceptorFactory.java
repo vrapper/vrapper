@@ -28,22 +28,27 @@ import org.eclipse.ui.texteditor.AbstractTextEditor;
 public class VimInputInterceptorFactory implements InputInterceptorFactory {
 
     private static final HashMap<Integer, SpecialKey> specialKeys;
+    private static final HashMap<Character, SpecialKey> specialChars;
     static {
         specialKeys = new HashMap<Integer, SpecialKey>();
-        specialKeys.put( (int)SWT.ESC,           SpecialKey.ESC);
         specialKeys.put( SWT.ARROW_LEFT,         SpecialKey.ARROW_LEFT);
         specialKeys.put( SWT.ARROW_RIGHT,        SpecialKey.ARROW_RIGHT);
         specialKeys.put( SWT.ARROW_UP,           SpecialKey.ARROW_UP);
         specialKeys.put( SWT.ARROW_DOWN,         SpecialKey.ARROW_DOWN);
         specialKeys.put( (int)SWT.BS,            SpecialKey.BACKSPACE);
-        specialKeys.put( (int)SWT.CR,            SpecialKey.RETURN);
         specialKeys.put( (int)SWT.DEL,           SpecialKey.DELETE);
         specialKeys.put( SWT.INSERT,             SpecialKey.INSERT);
         specialKeys.put( SWT.PAGE_DOWN,          SpecialKey.PAGE_DOWN);
         specialKeys.put( SWT.PAGE_UP,            SpecialKey.PAGE_UP);
         specialKeys.put( SWT.HOME,               SpecialKey.HOME);
         specialKeys.put( SWT.END,                SpecialKey.END);
+
+        specialChars = new HashMap<Character, SpecialKey>();
+        specialChars.put(Character.valueOf('\n'), SpecialKey.RETURN);
+        specialChars.put(Character.valueOf('\r'), SpecialKey.RETURN);
+        specialChars.put(Character.valueOf('\u001B'), SpecialKey.ESC);
     }
+
 
     private static final RegisterManager globalRegisterManager = new DefaultRegisterManager();
 
@@ -67,8 +72,11 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
                 return;
             }
             KeyStroke keyStroke;
+            System.out.println((int) event.character);
             if(specialKeys.containsKey(event.keyCode)) {
                 keyStroke = new SimpleKeyStroke(specialKeys.get(event.keyCode));
+            } else if (specialChars.containsKey(event.character)) {
+                keyStroke = new SimpleKeyStroke(specialChars.get(event.character));
             } else {
                 keyStroke = new SimpleKeyStroke(event.character);
             }
