@@ -92,7 +92,7 @@ public class InsertMode extends AbstractMode {
         isEnabled = false;
         saveTypedText();
         try {
-            MotionCommand.doIt(editorAdaptor, new MoveLeft());
+            MotionCommand.doIt(editorAdaptor, MoveLeft.INSTANCE);
         } catch (CommandExecutionException e) {
             editorAdaptor.getUserInterfaceService().setErrorMessage(e.getMessage());
         }
@@ -139,12 +139,12 @@ public class InsertMode extends AbstractMode {
             repetition = new VimCommandSequence(
                     newCommand,
                     new SwitchRegisterCommand(lastEditRegister),
-                    new PasteBeforeCommand(),
+                    PasteBeforeCommand.INSTANCE,
                     new MoveRightOverLineBreak(text.length()-1));
         } else {
             repetition = new SimpleInsertCommandSequence(
                     new SwitchRegisterCommand(lastEditRegister),
-                    new PasteBeforeCommand(),
+                    PasteBeforeCommand.INSTANCE,
                     new MoveRightOverLineBreak(text.length()-1));
         }
         return repetition;

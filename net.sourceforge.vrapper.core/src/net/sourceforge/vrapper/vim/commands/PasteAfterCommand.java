@@ -7,9 +7,11 @@ import net.sourceforge.vrapper.utils.StringUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.register.RegisterContent;
 
-// TODO: use more Vrapper code here
-// TODO: convert to AbstractModelSideCommand
 public class PasteAfterCommand extends CountAwareCommand {
+
+    public static final PasteAfterCommand INSTANCE = new PasteAfterCommand();
+
+    private PasteAfterCommand() { /* NOP */ }
 
 	@Override
 	public void execute(EditorAdaptor editorAdaptor, int count) {

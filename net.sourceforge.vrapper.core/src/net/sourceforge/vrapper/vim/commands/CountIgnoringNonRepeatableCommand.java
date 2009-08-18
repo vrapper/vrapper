@@ -2,6 +2,7 @@ package net.sourceforge.vrapper.vim.commands;
 
 
 public abstract class CountIgnoringNonRepeatableCommand implements Command {
+
     public Command repetition() {
         return null;
     }

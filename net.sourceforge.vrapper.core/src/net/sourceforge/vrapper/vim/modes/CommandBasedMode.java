@@ -31,6 +31,7 @@ import net.sourceforge.vrapper.vim.commands.motions.MoveBigWORDEndRight;
 import net.sourceforge.vrapper.vim.commands.motions.MoveBigWORDLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveBigWORDRight;
 import net.sourceforge.vrapper.vim.commands.motions.MoveDown;
+import net.sourceforge.vrapper.vim.commands.motions.MoveDownReturn;
 import net.sourceforge.vrapper.vim.commands.motions.MoveLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveRight;
 import net.sourceforge.vrapper.vim.commands.motions.MoveUp;
@@ -42,7 +43,6 @@ import net.sourceforge.vrapper.vim.commands.motions.ParenthesesMove;
 import net.sourceforge.vrapper.vim.commands.motions.SearchResultMotion;
 import net.sourceforge.vrapper.vim.commands.motions.ViewPortMotion;
 import net.sourceforge.vrapper.vim.commands.motions.WordSearchMotion;
-import net.sourceforge.vrapper.vim.commands.motions.ViewPortMotion.Type;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
 
 public abstract class CommandBasedMode extends AbstractMode {
@@ -68,43 +68,46 @@ public abstract class CommandBasedMode extends AbstractMode {
     @SuppressWarnings("unchecked")
     public static State<Motion> motions() {
         if (motions == null) {
-            final Motion moveLeft = new MoveLeft();
-            final Motion moveRight = new MoveRight();
-            final Motion moveUp = new MoveUp();
-            final Motion moveDown = new MoveDown();
+            final Motion moveLeft = MoveLeft.INSTANCE;
+            final Motion moveRight = MoveRight.INSTANCE;
+            final Motion moveUp = MoveUp.INSTANCE;
+            final Motion moveDown = MoveDown.INSTANCE;
+            final Motion moveDownReturn = MoveDownReturn.INSTANCE;
     //        final Motion findNext = new EclipseMoveCommand("org.eclipse.ui.edit.findNext", EXCLUSIVE);
     //        final Motion findPrevious = new EclipseMoveCommand("org.eclipse.ui.edit.findPrevious", EXCLUSIVE);
-            final Motion findNext = new SearchResultMotion(false);
-            final Motion findPrevious = new SearchResultMotion(true);
-            final Motion findWordNext = new WordSearchMotion(false);
-            final Motion findWordPrevious = new WordSearchMotion(true);
-            final Motion wordRight = new MoveWordRight();
-            final Motion WORDRight = new MoveBigWORDRight();
-            final Motion wordLeft = new MoveWordLeft();
-            final Motion WORDLeft = new MoveBigWORDLeft();
-            final Motion wordEndRight = new MoveWordEndRight();
-            final Motion WORDEndRight = new MoveBigWORDEndRight();
-            final Motion wordEndLeft = new MoveWordEndLeft();
-            final Motion WORDEndLeft = new MoveBigWORDEndLeft();
+            final Motion findNext = SearchResultMotion.FORWARD;
+            final Motion findPrevious = SearchResultMotion.BACKWARD;
+            final Motion findWordNext = WordSearchMotion.FORWARD;
+            final Motion findWordPrevious = WordSearchMotion.BACKWARD;
+            final Motion wordRight = MoveWordRight.INSTANCE;
+            final Motion WORDRight = MoveBigWORDRight.INSTANCE;
+            final Motion wordLeft = MoveWordLeft.INSTANCE;
+            final Motion WORDLeft = MoveBigWORDLeft.INSTANCE;
+            final Motion wordEndRight = MoveWordEndRight.INSTANCE;
+            final Motion WORDEndRight = MoveBigWORDEndRight.INSTANCE;
+            final Motion wordEndLeft = MoveWordEndLeft.INSTANCE;
+            final Motion WORDEndLeft = MoveBigWORDEndLeft.INSTANCE;
             // TODO: move this to eclipse module
     //        final Motion eclipseWordRight = go("wordNext", EXCLUSIVE);
     //        final Motion eclipseWordLeft  = go("wordPrevious", EXCLUSIVE);
-            final Motion lineStart = new LineStartMotion(true);
-            final Motion column0 = new LineStartMotion(false);
+            final Motion lineStart = LineStartMotion.NON_WHITESPACE;
+            final Motion column0 = LineStartMotion.COLUMN0;
             final Motion lineEnd = new LineEndMotion(EXCLUSIVE); // NOTE: it's not INCLUSIVE; bug in Vim documentation
             final Motion parenthesesMove = new ParenthesesMove();
-            final Motion findForward = new ContinueFindingMotion(false);
-            final Motion findBackward = new ContinueFindingMotion(true);
+            final Motion findForward = ContinueFindingMotion.NORMAL;
+            final Motion findBackward = ContinueFindingMotion.REVERSE;
 
-            final Motion highMove = new ViewPortMotion(Type.HIGH);
-            final Motion middleMove = new ViewPortMotion(Type.MIDDLE);
-            final Motion lowMove = new ViewPortMotion(Type.LOW);
+            final Motion highMove = ViewPortMotion.HIGH;
+            final Motion middleMove = ViewPortMotion.MIDDLE;
+            final Motion lowMove = ViewPortMotion.LOW;
 
             motions = state(
                     leafBind('h', moveLeft),
                     leafBind('j', moveDown),
+                    leafBind(SpecialKey.RETURN, moveDownReturn),
                     leafBind('k', moveUp),
                     leafBind('l', moveRight),
+                    leafBind(' ', moveRight),
                     leafBind(SpecialKey.ARROW_LEFT,  moveLeft),
                     leafBind(SpecialKey.ARROW_DOWN,  moveDown),
                     leafBind(SpecialKey.ARROW_UP,    moveUp),

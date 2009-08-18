@@ -243,7 +243,7 @@ public class ConstructorWrappers {
 
 
     public static ChangeCaretShapeCommand changeCaret(CaretType caret) {
-        return new ChangeCaretShapeCommand(caret);
+        return ChangeCaretShapeCommand.getInstance(caret);
     }
 
     @SuppressWarnings("unchecked")

@@ -8,9 +8,15 @@ import net.sourceforge.vrapper.vim.commands.motions.LineEndMotion;
 
 public class StickToEOLCommand extends CountAwareCommand {
 
+    public static final StickToEOLCommand INSTANCE = new StickToEOLCommand();
+
+    private StickToEOLCommand() { /* NOP */ }
+
 	@Override
 	public void execute(EditorAdaptor editorAdaptor, int count) {
-		if (count == NO_COUNT_GIVEN) count = 1;
+		if (count == NO_COUNT_GIVEN) {
+            count = 1;
+        }
 		CursorService cursorService = editorAdaptor.getCursorService();
 		int offset = cursorService.getPosition().getModelOffset();
 		TextContent content = editorAdaptor.getModelContent();

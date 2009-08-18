@@ -11,13 +11,15 @@ import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 
 public class SearchResultMotion extends CountAwareMotion {
 
+    public static final SearchResultMotion FORWARD = new SearchResultMotion(false);
+    public static final SearchResultMotion BACKWARD = new SearchResultMotion(true);
     private static final String NOT_FOUND_MESSAGE = "'%s' not found";
 
     protected final boolean reverse;
     private boolean includesTarget;
     private boolean lineWise;
 
-    public SearchResultMotion(boolean reverse) {
+    protected SearchResultMotion(boolean reverse) {
         super();
         this.reverse = reverse;
     }

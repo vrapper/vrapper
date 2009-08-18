@@ -6,6 +6,10 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 
 public class SwapSelectionSidesCommand extends CountIgnoringNonRepeatableCommand {
 
+    public static final SwapSelectionSidesCommand INSTANCE = new SwapSelectionSidesCommand();
+
+    private SwapSelectionSidesCommand() { /* NOP */ }
+
     public void execute(EditorAdaptor editorAdaptor) {
         Selection selection = editorAdaptor.getSelection();
         if (selection.getModelLength() == 1) {

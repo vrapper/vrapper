@@ -3,8 +3,6 @@ package net.sourceforge.vrapper.vim.commands;
 import net.sourceforge.vrapper.platform.Configuration.Option;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 
-
-
 public class ConfigCommand<T> extends CountIgnoringNonRepeatableCommand {
 
     private final Option<T> option;

@@ -8,6 +8,10 @@ import net.sourceforge.vrapper.vim.register.StringRegisterContent;
 
 public class YankOperation extends SimpleTextOperation {
 
+    public static final YankOperation INSTANCE = new YankOperation();
+
+    private YankOperation() { /* NOP */ }
+
     @Override
     public void execute(EditorAdaptor editorAdaptor, TextRange region, ContentType contentType) {
         doIt(editorAdaptor, region, contentType);

@@ -87,9 +87,9 @@ public class NormalMode extends CommandBasedMode {
     @SuppressWarnings("unchecked")
     public static State<TextObject> textObjects() {
         if (textObjects == null) {
-            final Motion wordRight = new MoveWordRight();
-            final Motion wordLeft = new MoveWordLeft();
-            final Motion wordEndRight = new MoveWordEndRight();
+            final Motion wordRight = MoveWordRight.INSTANCE;
+            final Motion wordLeft = MoveWordLeft.INSTANCE;
+            final Motion wordEndRight = MoveWordEndRight.INSTANCE;
             final TextObject innerWord = new MotionPairTextObject(wordLeft, wordEndRight);
             final TextObject aWord = new MotionPairTextObject(wordLeft, wordRight);
             textObjects = union(
@@ -113,11 +113,11 @@ public class NormalMode extends CommandBasedMode {
             Command linewiseVisualMode = new ChangeModeCommand(LinewiseVisualMode.NAME);
 
 
-            final Motion moveLeft = new MoveLeft();
-            final Motion moveRight = new MoveRight();
+            final Motion moveLeft = MoveLeft.INSTANCE;
+            final Motion moveRight = MoveRight.INSTANCE;
     //        final Motion wordRight = new MoveWordRight();
-            final Motion wordEndRight = new MoveWordEndRight();
-            final Motion bol = new LineStartMotion(true);
+            final Motion wordEndRight = MoveWordEndRight.INSTANCE;
+            final Motion bol = LineStartMotion.NON_WHITESPACE;
             final Motion eol = new LineEndMotion(BorderPolicy.EXCLUSIVE);
 
             final State<Motion> motions = motions();
@@ -131,22 +131,22 @@ public class NormalMode extends CommandBasedMode {
             State<TextObject> textObjects = textObjects();
             State<TextObject> textObjectsForChange = CountingState.wrap(union(state(leafBind('w', wordForCW)), textObjects));
 
-            TextOperation delete = new DeleteOperation();
-            TextOperation change = new ChangeOperation();
-            TextOperation yank   = new YankOperation();
-            Command undo = new UndoCommand();
-            Command redo = new RedoCommand();
-            Command pasteAfter  = new PasteAfterCommand();
-            Command pasteBefore = new PasteBeforeCommand();
+            TextOperation delete = DeleteOperation.INSTANCE;
+            TextOperation change = ChangeOperation.INSTANCE;
+            TextOperation yank   = YankOperation.INSTANCE;
+            Command undo = UndoCommand.INSTANCE;
+            Command redo = RedoCommand.INSTANCE;
+            Command pasteAfter  = PasteAfterCommand.INSTANCE;
+            Command pasteBefore = PasteBeforeCommand.INSTANCE;
             Command deleteNext = new TextOperationTextObjectCommand(delete, new MotionTextObject(moveRight));
             Command deletePrevious = new TextOperationTextObjectCommand(delete, new MotionTextObject(moveLeft));
-            Command repeatLastOne = new DotCommand();
-            Command tildeCmd = new SwapCaseCommand();
-            Command stickToEOL = new StickToEOLCommand();
+            Command repeatLastOne = DotCommand.INSTANCE;
+            Command tildeCmd = SwapCaseCommand.INSTANCE;
+            Command stickToEOL = StickToEOLCommand.INSTANCE;
             LineEndMotion lineEndMotion = new LineEndMotion(BorderPolicy.LINE_WISE);
             Command substituteLine = new TextOperationTextObjectCommand(change, new MotionTextObject(lineEndMotion));
             Command substituteChar = new TextOperationTextObjectCommand(change, new MotionTextObject(moveRight));
-            Command centerLine = new CenterLineCommand();
+            Command centerLine = CenterLineCommand.INSTANCE;
 
             State<Command> motionCommands = new GoThereState(motions);
 
@@ -166,8 +166,8 @@ public class NormalMode extends CommandBasedMode {
                             leafBind('?', (Command) new ChangeModeCommand(SearchMode.NAME, SearchMode.Direction.BACKWARD)),
                             leafBind('/', (Command) new ChangeModeCommand(SearchMode.NAME, SearchMode.Direction.FORWARD)),
                             leafBind('R', (Command) new ChangeModeCommand(ReplaceMode.NAME)),
-                            leafBind('o', (Command) new ChangeToInsertModeCommand(new InsertLineCommand(InsertLineCommand.Type.POST_CURSOR))),
-                            leafBind('O', (Command) new ChangeToInsertModeCommand(new InsertLineCommand(InsertLineCommand.Type.PRE_CURSOR))),
+                            leafBind('o', (Command) new ChangeToInsertModeCommand(InsertLineCommand.POST_CURSOR)),
+                            leafBind('O', (Command) new ChangeToInsertModeCommand(InsertLineCommand.PRE_CURSOR)),
                             leafBind('v', seq(visualMode, new VisualMotionCommand(moveRight))),
                             leafBind('V', seq(linewiseVisualMode, new LinewiseVisualMotionCommand(moveRight))),
                             leafBind('p', pasteAfter),

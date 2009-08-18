@@ -19,6 +19,8 @@ public class GoToLineMotion extends CountAwareMotion {
         }
     };
 
+    protected GoToLineMotion() { /* NOP */ }
+
     @Override
     public Position destination(EditorAdaptor editorAdaptor, int count)
             throws CommandExecutionException {

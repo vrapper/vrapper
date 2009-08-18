@@ -123,7 +123,7 @@ public class NormalModeTests extends CommandTestCase {
 	}
 
 	@Test public void test_dot() {
-		Command dw = new TextOperationTextObjectCommand(new DeleteOperation(), new MotionTextObject(new MoveWordRight()));
+		Command dw = new TextOperationTextObjectCommand(DeleteOperation.INSTANCE, new MotionTextObject(MoveWordRight.INSTANCE));
 		when(registerManager.getLastEdit()).thenReturn(dw);
 		checkCommand(forKeySeq(".."),
 				"A",'l',"a ma kota i psa",

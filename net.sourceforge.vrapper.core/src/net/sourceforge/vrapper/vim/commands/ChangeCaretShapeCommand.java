@@ -5,10 +5,33 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 
 public class ChangeCaretShapeCommand extends CountIgnoringNonRepeatableCommand {
 
+    private static final ChangeCaretShapeCommand VERTICAL_BAR = new ChangeCaretShapeCommand(CaretType.VERTICAL_BAR);
+    private static final ChangeCaretShapeCommand RECTANGULAR = new ChangeCaretShapeCommand(CaretType.RECTANGULAR);
+    private static final ChangeCaretShapeCommand LEFT_SHIFTED_RECTANGULAR = new ChangeCaretShapeCommand(CaretType.LEFT_SHIFTED_RECTANGULAR);
+    private static final ChangeCaretShapeCommand HALF_RECT = new ChangeCaretShapeCommand(CaretType.HALF_RECT);
+    private static final ChangeCaretShapeCommand UNDERLINE = new ChangeCaretShapeCommand(CaretType.UNDERLINE);
+
     private final CaretType caretType;
 
-    public ChangeCaretShapeCommand(CaretType caretType) {
+    private ChangeCaretShapeCommand(CaretType caretType) {
         this.caretType = caretType;
+    }
+
+    public static ChangeCaretShapeCommand getInstance(CaretType type) {
+        switch (type) {
+        case VERTICAL_BAR:
+            return VERTICAL_BAR;
+        case RECTANGULAR:
+            return RECTANGULAR;
+        case LEFT_SHIFTED_RECTANGULAR:
+            return LEFT_SHIFTED_RECTANGULAR;
+        case HALF_RECT:
+            return HALF_RECT;
+        case UNDERLINE:
+            return UNDERLINE;
+        default:
+            throw new IllegalArgumentException("unknown caret type: "+type);
+        }
     }
 
     public void execute(EditorAdaptor editorAdaptor) {

@@ -41,8 +41,8 @@ public class CommandLineParser extends AbstractCommandParser {
         Evaluator vmap = new KeyMapper.Map(true, VisualMode.KEYMAP_NAME);
         Evaluator inoremap = new KeyMapper.Map(false, InsertMode.KEYMAP_NAME);
         Evaluator imap = new KeyMapper.Map(true, InsertMode.KEYMAP_NAME);
-        Command save = new SaveCommand();
-        CloseCommand close = new CloseCommand(false);
+        Command save = SaveCommand.INSTANCE;
+        CloseCommand close = CloseCommand.CLOSE;
         Command saveAndClose = new VimCommandSequence(save, close);
         Evaluator unmap = new KeyMapper.Unmap(AbstractVisualMode.KEYMAP_NAME, NormalMode.KEYMAP_NAME);
         Evaluator nunmap = new KeyMapper.Unmap(NormalMode.KEYMAP_NAME);
@@ -61,7 +61,7 @@ public class CommandLineParser extends AbstractCommandParser {
         mapping.add("wq", saveAndClose);
         mapping.add("x", saveAndClose);
         mapping.add("q", close);
-        mapping.add("q!", new CloseCommand(true));
+        mapping.add("q!", CloseCommand.FORCED_CLOSE);
         // non-recursive mapping
         mapping.add("noremap", noremap);
         mapping.add("no", noremap);
@@ -97,8 +97,8 @@ public class CommandLineParser extends AbstractCommandParser {
         mapping.add("vmapc", vclear);
         mapping.add("imapclear", iclear);
         mapping.add("imapc", iclear);
-        UndoCommand undo = new UndoCommand();
-        RedoCommand redo = new RedoCommand();
+        UndoCommand undo = UndoCommand.INSTANCE;
+        RedoCommand redo = RedoCommand.INSTANCE;
         mapping.add("red", redo);
         mapping.add("redo", redo);
         mapping.add("undo", undo);

@@ -13,6 +13,40 @@ import net.sourceforge.vrapper.vim.Options;
  * @author Matthias Radig
  */
 public final class InsertLineCommand implements Command {
+
+    public static final InsertLineCommand PRE_CURSOR = new InsertLineCommand(Type.PRE_CURSOR);
+    public static final InsertLineCommand POST_CURSOR = new InsertLineCommand(Type.POST_CURSOR);
+
+    private final Type type;
+
+    private InsertLineCommand(InsertLineCommand.Type type) {
+        this.type = type;
+    }
+
+    public final void execute(EditorAdaptor vim) {
+        TextContent p = vim.getModelContent();
+        LineInformation line = p.getLineInformationOfOffset(vim.getCursorService().getPosition().getModelOffset());
+        if (vim.getConfiguration().get(Options.SMART_INDENT)) {
+            this.type.smart(vim, line);
+        } else {
+            boolean autoindent = vim.getConfiguration().get(Options.AUTO_INDENT);
+            String indent = autoindent ? VimUtils.getIndent(vim.getModelContent(), line) : "";
+            this.type.dumb(vim, line, indent);
+        }
+    }
+
+    public Command repetition() {
+        return this;
+    }
+
+    public int getCount() {
+        return NO_COUNT_GIVEN;
+    }
+
+    public Command withCount(int count) {
+        return this;
+    }
+
     public static enum Type {
         PRE_CURSOR {
             @Override
@@ -78,34 +112,5 @@ public final class InsertLineCommand implements Command {
 
     }
 
-    private final Type type;
-
-    public InsertLineCommand(InsertLineCommand.Type type) {
-        this.type = type;
-    }
-
-    public final void execute(EditorAdaptor vim) {
-        TextContent p = vim.getModelContent();
-        LineInformation line = p.getLineInformationOfOffset(vim.getCursorService().getPosition().getModelOffset());
-        if (vim.getConfiguration().get(Options.SMART_INDENT)) {
-            this.type.smart(vim, line);
-        } else {
-            boolean autoindent = vim.getConfiguration().get(Options.AUTO_INDENT);
-            String indent = autoindent ? VimUtils.getIndent(vim.getModelContent(), line) : "";
-            this.type.dumb(vim, line, indent);
-        }
-    }
-
-    public Command repetition() {
-        return this;
-    }
-
-    public int getCount() {
-        return NO_COUNT_GIVEN;
-    }
-
-    public Command withCount(int count) {
-        return this;
-    }
 
 }

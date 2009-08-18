@@ -59,7 +59,7 @@ public class EclipseSpecificStateProvider implements
     }
 
     private State<Command> visualModeBindings() {
-        Command leaveVisual = new LeaveVisualModeCommand();
+        Command leaveVisual = LeaveVisualModeCommand.INSTANCE;
         Command shiftRight = new EclipseShiftOperation.Visual(false);
         Command shiftLeft = new EclipseShiftOperation.Visual(true);
         return state(

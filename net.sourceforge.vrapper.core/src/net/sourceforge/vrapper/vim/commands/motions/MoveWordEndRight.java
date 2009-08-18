@@ -5,6 +5,10 @@ import net.sourceforge.vrapper.vim.commands.BorderPolicy;
 
 public class MoveWordEndRight extends MoveRightWithBounds {
 
+    public static final MoveWordEndRight INSTANCE = new MoveWordEndRight();
+
+    protected MoveWordEndRight() { /* NOP */ }
+
     @Override
     protected boolean atBoundary(char c1, char c2) {
         return !Character.isWhitespace(c1) && characterType(c1) != characterType(c2);

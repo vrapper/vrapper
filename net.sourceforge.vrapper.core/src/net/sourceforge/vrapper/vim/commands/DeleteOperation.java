@@ -8,6 +8,10 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 
 public class DeleteOperation extends SimpleTextOperation {
 
+    public static final DeleteOperation INSTANCE = new DeleteOperation();
+
+    private DeleteOperation() { /* NOP */ }
+
     @Override
     public void execute(EditorAdaptor editorAdaptor, TextRange region, ContentType contentType) {
         try {

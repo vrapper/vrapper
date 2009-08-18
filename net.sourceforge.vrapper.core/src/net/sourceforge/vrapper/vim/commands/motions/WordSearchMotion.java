@@ -10,6 +10,8 @@ import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 
 public class WordSearchMotion extends SearchResultMotion {
 
+    public static final WordSearchMotion FORWARD = new WordSearchMotion(false);
+    public static final WordSearchMotion BACKWARD = new WordSearchMotion(true);
     private final boolean reverse;
 
     public WordSearchMotion(boolean reverse) {

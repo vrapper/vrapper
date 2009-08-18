@@ -22,7 +22,6 @@ import net.sourceforge.vrapper.vim.commands.motions.SearchResultMotion;
  */
 public class SearchCommandParser extends AbstractCommandParser {
 
-    private static final SearchResultMotion MOTION = new SearchResultMotion(false);
     private static final Pattern AFTER_SEARCH_PATTERN = Pattern.compile("(e|b)?\\+?(-?\\d+)?");
 
     public SearchCommandParser(EditorAdaptor vim) {
@@ -39,7 +38,7 @@ public class SearchCommandParser extends AbstractCommandParser {
         Search search = createSearch(first, command);
         editor.getRegisterManager().setSearch(search);
         try {
-            MotionCommand.doIt(editor, MOTION);
+            MotionCommand.doIt(editor, SearchResultMotion.FORWARD);
         } catch (CommandExecutionException e) {
             // TODO: something useful
         }

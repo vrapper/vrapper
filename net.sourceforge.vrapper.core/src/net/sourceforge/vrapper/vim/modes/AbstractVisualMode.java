@@ -71,13 +71,13 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
 
     @SuppressWarnings("unchecked")
     protected State<Command> createInitialState() {
-        Command leaveVisual = new LeaveVisualModeCommand();
-        Command swapSides = new SwapSelectionSidesCommand();
-        Command yank   = dontRepeat(seq(new SelectionBasedTextOperation(new YankOperation()), leaveVisual));
-        Command delete = dontRepeat(seq(new SelectionBasedTextOperation(new DeleteOperation()), leaveVisual));
-        Command change = new SelectionBasedTextOperation(new ChangeOperation());
+        Command leaveVisual = LeaveVisualModeCommand.INSTANCE;
+        Command swapSides = SwapSelectionSidesCommand.INSTANCE;
+        Command yank   = dontRepeat(seq(new SelectionBasedTextOperation(YankOperation.INSTANCE), leaveVisual));
+        Command delete = dontRepeat(seq(new SelectionBasedTextOperation(DeleteOperation.INSTANCE), leaveVisual));
+        Command change = new SelectionBasedTextOperation(ChangeOperation.INSTANCE);
         Command commandLineMode = new ChangeModeCommand(CommandLineMode.NAME);
-        Command centerLine = new CenterLineCommand();
+        Command centerLine = CenterLineCommand.INSTANCE;
         State<Command> visualMotions = getVisualMotionState();
         State<Command> initialState = new RegisterState(CountingState.wrap(union(state(
                 leafBind(key(KeyStroke.CTRL, '['), leaveVisual),

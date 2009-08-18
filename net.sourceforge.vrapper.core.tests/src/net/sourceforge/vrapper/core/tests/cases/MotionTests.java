@@ -26,14 +26,15 @@ public class MotionTests extends CommandTestCase {
 
 	public MotionTests() {
 		StringBuilder builder = new StringBuilder();
-		for (int i=0; i<100; i++)
-			builder.append("VeryLongWord");
+		for (int i=0; i<100; i++) {
+            builder.append("VeryLongWord");
+        }
 		longWord = builder.toString();
 	}
 
 	@Test
 	public void testMoveRight() {
-		Motion moveRight = new MoveRight();
+		Motion moveRight = MoveRight.INSTANCE;
 		checkMotion(moveRight,
 				"",'A',"la ma kota",
 				"A",'l',"a ma kota");
@@ -53,7 +54,7 @@ public class MotionTests extends CommandTestCase {
 
 	@Test
 	public void testMoveLeft() {
-		Motion moveLeft = new MoveLeft();
+		Motion moveLeft = MoveLeft.INSTANCE;
 		checkMotion(moveLeft,
 				"",'A',"la ma kota",
 				"",'A',"la ma kota");
@@ -235,7 +236,7 @@ public class MotionTests extends CommandTestCase {
 
 	@Test
 	public void testMoveWORDRight() {
-		Motion moveWORDRight = new MoveBigWORDRight();
+		Motion moveWORDRight = MoveBigWORDRight.INSTANCE;
 
 		testCommonMoveWordWORDRight(moveWORDRight);
 
@@ -249,7 +250,7 @@ public class MotionTests extends CommandTestCase {
 
 	@Test
 	public void testMoveWORDEndRight() {
-		Motion moveWORDRight = new MoveBigWORDEndRight();
+		Motion moveWORDRight = MoveBigWORDEndRight.INSTANCE;
 
 		testCommonMoveWordEndWORDEndRight(moveWORDRight);
 
@@ -266,7 +267,7 @@ public class MotionTests extends CommandTestCase {
 
 	@Test
 	public void testMoveWordRight() {
-		Motion moveWordRight = new MoveWordRight();
+		Motion moveWordRight = MoveWordRight.INSTANCE;
 
 		testCommonMoveWordWORDRight(moveWordRight);
 
@@ -295,7 +296,7 @@ public class MotionTests extends CommandTestCase {
 
 	@Test
 	public void testMoveWordEndRight() {
-		Motion moveWordEndRight = new MoveWordEndRight();
+		Motion moveWordEndRight = MoveWordEndRight.INSTANCE;
 
 		testCommonMoveWordEndWORDEndRight(moveWordEndRight);
 
@@ -462,7 +463,7 @@ public class MotionTests extends CommandTestCase {
 
 	@Test
 	public void testMoveWORDLeft() {
-		Motion moveWORDLeft = new MoveBigWORDLeft();
+		Motion moveWORDLeft = MoveBigWORDLeft.INSTANCE;
 
 		testCommonMoveWordWORDLeft(moveWORDLeft);
 
@@ -476,7 +477,7 @@ public class MotionTests extends CommandTestCase {
 
 	@Test
 	public void testMoveWORDEndLeft() {
-		Motion moveWORDEndLeft = new MoveBigWORDEndLeft();
+		Motion moveWORDEndLeft = MoveBigWORDEndLeft.INSTANCE;
 
 		testCommonMoveWordWORDEndLeft(moveWORDEndLeft);
 
@@ -493,7 +494,7 @@ public class MotionTests extends CommandTestCase {
 
 	@Test
 	public void testMoveWordLeft() {
-		Motion moveWordLeft = new MoveWordLeft();
+		Motion moveWordLeft = MoveWordLeft.INSTANCE;
 
 		testCommonMoveWordWORDLeft(moveWordLeft);
 
@@ -522,7 +523,7 @@ public class MotionTests extends CommandTestCase {
 
 	@Test
 	public void testMoveWordEndLeft() {
-		Motion moveWordEndLeft = new MoveWordEndLeft();
+		Motion moveWordEndLeft = MoveWordEndLeft.INSTANCE;
 
 		testCommonMoveWordWORDEndLeft(moveWordEndLeft);
 

@@ -9,6 +9,10 @@ import net.sourceforge.vrapper.utils.LineInformation;
 
 public class SwapCaseCommand extends AbstractModelSideCommand {
 
+    public static final SwapCaseCommand INSTANCE = new SwapCaseCommand();
+
+    private SwapCaseCommand() { /* NOP */ }
+
     @Override
     protected int execute(TextContent content, int offset, int count) {
         LineInformation line = content.getLineInformationOfOffset(offset);

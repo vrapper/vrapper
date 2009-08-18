@@ -7,9 +7,12 @@ import net.sourceforge.vrapper.vim.commands.BorderPolicy;
 
 public class LineStartMotion extends AbstractModelSideMotion {
 
+    public static final LineStartMotion NON_WHITESPACE = new LineStartMotion(true);
+    public static final LineStartMotion COLUMN0 = new LineStartMotion(false);
+
     private final boolean goToFirstNonWS;
 
-    public LineStartMotion(boolean goToFirstNonWS) {
+    private LineStartMotion(boolean goToFirstNonWS) {
         this.goToFirstNonWS = goToFirstNonWS;
     }
 

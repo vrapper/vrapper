@@ -4,9 +4,11 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 
 public class CloseCommand extends CountIgnoringNonRepeatableCommand {
 
+    public static final CloseCommand FORCED_CLOSE = new CloseCommand(true);
+    public static final CloseCommand CLOSE = new CloseCommand(false);
     private final boolean force;
 
-    public CloseCommand(boolean force) {
+    private CloseCommand(boolean force) {
         super();
         this.force = force;
     }

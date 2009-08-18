@@ -7,6 +7,10 @@ import net.sourceforge.vrapper.vim.commands.motions.ViewPortMotion;
 
 public class CenterLineCommand extends CountIgnoringNonRepeatableCommand {
 
+    public static final CenterLineCommand INSTANCE = new CenterLineCommand();
+
+    private CenterLineCommand() { /* NOP */ }
+
     public void execute(EditorAdaptor editorAdaptor)
             throws CommandExecutionException {
         ViewportService view = editorAdaptor.getViewportService();

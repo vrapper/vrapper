@@ -12,9 +12,12 @@ import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
  */
 public class ViewPortMotion extends GoToLineMotion {
 
+    public static final ViewPortMotion HIGH = new ViewPortMotion(Type.HIGH);
+    public static final ViewPortMotion MIDDLE = new ViewPortMotion(Type.MIDDLE);
+    public static final ViewPortMotion LOW = new ViewPortMotion(Type.LOW);
     private final Type type;
 
-    public ViewPortMotion(Type type) {
+    private ViewPortMotion(Type type) {
         super();
         this.type = type;
     }
