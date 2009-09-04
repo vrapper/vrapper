@@ -59,6 +59,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     }
 
     public Position stickyColumnAtViewLine(int lineNo) {
+        // FIXME: do this properly
         StyledText tw = textViewer.getTextWidget();
         if (!stickToEOL) {
             try {
@@ -69,12 +70,18 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
                 // fall through silently and return line end
             }
         }
-        int lineLen = tw.getLine(lineNo).length();
-        int offset = tw.getOffsetAtLine(lineNo) + lineLen;
+        int lineLen;
+        try {
+            lineLen = textViewer.getDocument().getLineLength(converter.widgetLine2ModelLine(lineNo));
+        } catch (BadLocationException e) {
+            throw new RuntimeException(e);
+        }
+        int offset = tw.getOffsetAtLine(lineNo) + lineLen -1;
         return new TextViewerPosition(textViewer, Space.VIEW, offset);
     }
 
     public Position stickyColumnAtModelLine(int lineNo) {
+        // FIXME: do this properly
         if (stickToEOL) {
             try {
                 int lineLength = textViewer.getDocument().getLineLength(lineNo);
