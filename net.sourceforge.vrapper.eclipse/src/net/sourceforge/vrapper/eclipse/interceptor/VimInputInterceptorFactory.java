@@ -72,7 +72,6 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
                 return;
             }
             KeyStroke keyStroke;
-            System.out.println((int) event.character);
             if(specialKeys.containsKey(event.keyCode)) {
                 keyStroke = new SimpleKeyStroke(specialKeys.get(event.keyCode));
             } else if (specialChars.containsKey(event.character)) {
