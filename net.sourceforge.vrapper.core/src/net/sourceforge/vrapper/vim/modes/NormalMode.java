@@ -9,6 +9,7 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.operatorCmd
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
+import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.vim.CountingState;
 import net.sourceforge.vrapper.keymap.vim.GoThereState;
@@ -174,6 +175,7 @@ public class NormalMode extends CommandBasedMode {
                             leafBind('.', repeatLastOne),
                             leafBind('P', pasteBefore),
                             leafBind('x', deleteNext),
+                            leafBind(SpecialKey.DELETE, deleteNext),
                             leafBind('X', deletePrevious),
                             leafBind('~', tildeCmd),
                             leafBind('S', substituteLine),

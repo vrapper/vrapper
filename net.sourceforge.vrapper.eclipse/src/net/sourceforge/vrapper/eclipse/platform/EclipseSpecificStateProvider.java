@@ -12,6 +12,7 @@ import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
 import java.util.HashMap;
 import java.util.Queue;
 
+import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.StateUtils;
 import net.sourceforge.vrapper.platform.PlatformSpecificStateProvider;
@@ -104,6 +105,8 @@ public class EclipseSpecificStateProvider implements
                         leafBind('T', cmd("org.eclipse.ui.window.previousEditor"))),
                 leafCtrlBind('f', go("pageDown")),
                 leafCtrlBind('b', go("pageUp")),
+                leafBind(SpecialKey.PAGE_DOWN, go("pageDown")),
+                leafBind(SpecialKey.PAGE_UP, go("pageUp")),
                 leafCtrlBind('y', dontRepeat(editText("scroll.lineUp"))),
                 leafCtrlBind('e', dontRepeat(editText("scroll.lineDown"))),
                 leafCtrlBind(']', seq(javaEditText("open.editor"), deselectAll)), // NOTE: deselect won't work in other editor
