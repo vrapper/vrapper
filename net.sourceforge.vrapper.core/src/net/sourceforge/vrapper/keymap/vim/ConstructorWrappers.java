@@ -277,21 +277,21 @@ public class ConstructorWrappers {
     private static Map<String, KeyStroke> createKeyMap() {
         HashMap<String, KeyStroke> map = new HashMap<String, KeyStroke>();
         // special keys
+        for (SpecialKey key : SpecialKey.values()) {
+            map.put(key.name().toUpperCase(), key(key));
+        }
         map.put("DEL",     key(SpecialKey.DELETE));
         map.put("INS",     key(SpecialKey.INSERT));
         map.put("BS",      key(SpecialKey.BACKSPACE));
         map.put("RETURN",  key(SpecialKey.RETURN));
         map.put("ENTER",   map.get("RETURN"));
         map.put("CR",      map.get("RETURN"));
-        map.put("HOME",    key(SpecialKey.HOME));
-        map.put("END",     key(SpecialKey.END));
         map.put("PAGEUP",  key(SpecialKey.PAGE_UP));
         map.put("PAGEDOWN",key(SpecialKey.PAGE_DOWN));
         map.put("UP",      key(SpecialKey.ARROW_UP));
         map.put("DOWN",    key(SpecialKey.ARROW_DOWN));
         map.put("LEFT",    key(SpecialKey.ARROW_LEFT));
         map.put("RIGHT",   key(SpecialKey.ARROW_RIGHT));
-        map.put("ESC",     key(SpecialKey.ESC));
         map.put("SPACE",   key(' '));
         map.put("GT",      key('>'));
         map.put("LT",      key('<'));
