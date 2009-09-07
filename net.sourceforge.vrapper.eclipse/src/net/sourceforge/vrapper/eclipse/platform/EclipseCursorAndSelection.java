@@ -70,14 +70,16 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
                 // fall through silently and return line end
             }
         }
-        int lineLen;
         try {
-            lineLen = textViewer.getDocument().getLineLength(converter.widgetLine2ModelLine(lineNo));
+            int line = converter.widgetLine2ModelLine(lineNo);
+            int lineLen = textViewer.getDocument().getLineLength(line);
+            String nl = textViewer.getDocument().getLineDelimiter(line);
+            int nlLen = nl != null ? nl.length() : 0;
+            int offset = tw.getOffsetAtLine(lineNo) + lineLen - nlLen;
+            return new TextViewerPosition(textViewer, Space.VIEW, offset);
         } catch (BadLocationException e) {
             throw new RuntimeException(e);
         }
-        int offset = tw.getOffsetAtLine(lineNo) + lineLen -1;
-        return new TextViewerPosition(textViewer, Space.VIEW, offset);
     }
 
     public Position stickyColumnAtModelLine(int lineNo) {
