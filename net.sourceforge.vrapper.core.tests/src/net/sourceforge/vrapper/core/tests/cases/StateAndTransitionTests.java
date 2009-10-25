@@ -62,7 +62,7 @@ public class StateAndTransitionTests {
     public void HashMapStateShouldResolveActionConflictsAsFirstOneWins() {
         State<Integer> s1 = new HashMapState<Integer>(asList(leafBind('a', 1),
                 leafBind('a', 2)));
-        assertEquals(1, s1.press(key('a')).getValue());
+        assertEquals((Integer) 1, s1.press(key('a')).getValue());
     }
 
     @Test
@@ -110,8 +110,8 @@ public class StateAndTransitionTests {
     public void unionShouldResolveActionConflictsAsFirstOneWins() {
         State<Integer> s1 = state(leafBind('a', 1));
         State<Integer> s2 = state(leafBind('a', 2));
-        assertEquals(1, union(s1, s2).press(key('a')).getValue());
-        assertEquals(2, union(s2, s1).press(key('a')).getValue());
+        assertEquals((Integer) 1, union(s1, s2).press(key('a')).getValue());
+        assertEquals((Integer) 2, union(s2, s1).press(key('a')).getValue());
     }
 
     @Test
@@ -125,14 +125,14 @@ public class StateAndTransitionTests {
         State<Integer> simpleB = state(transitionBind('a', targetB));
         State<Integer> simpleC = state(transitionBind('a', targetC));
         assertSame(targetB, union(leaf, simpleB).press(key('a')).getNextState());
-        assertEquals(1, union(leaf, simpleB).press(key('a')).getValue());
+        assertEquals((Integer) 1, union(leaf, simpleB).press(key('a')).getValue());
         assertSame(targetB, union(simpleB, leaf).press(key('a')).getNextState());
-        assertEquals(1, union(simpleB, leaf).press(key('a')).getValue());
-        assertEquals(1, union(leaf, simpleB, simpleC).press(key('a'))
+        assertEquals((Integer) 1, union(simpleB, leaf).press(key('a')).getValue());
+        assertEquals((Integer) 1, union(leaf, simpleB, simpleC).press(key('a'))
                 .getValue());
-        assertEquals(12, union(leaf, simpleB, simpleC).press(key('a'))
+        assertEquals((Integer) 12, union(leaf, simpleB, simpleC).press(key('a'))
                 .getNextState().press(key('b')).getValue());
-        assertEquals(13, union(leaf, simpleB, simpleC).press(key('a'))
+        assertEquals((Integer) 13, union(leaf, simpleB, simpleC).press(key('a'))
                 .getNextState().press(key('c')).getValue());
     }
 
@@ -150,12 +150,12 @@ public class StateAndTransitionTests {
         };
         State<Character> abcMap = new ConvertingState<Character, Integer>(
                 converter, bindings);
-        assertEquals('A', abcMap.press(key('1')).getValue());
-        assertEquals('B', abcMap.press(key('2')).getValue());
-        assertEquals('C', abcMap.press(key('3')).getValue());
-        assertEquals('L', abcMap.press(key('1')).getNextState().press(key('2'))
+        assertEquals((Character) 'A', abcMap.press(key('1')).getValue());
+        assertEquals((Character) 'B', abcMap.press(key('2')).getValue());
+        assertEquals((Character) 'C', abcMap.press(key('3')).getValue());
+        assertEquals((Character) 'L', abcMap.press(key('1')).getNextState().press(key('2'))
                 .getValue());
-        assertEquals('M', abcMap.press(key('1')).getNextState().press(key('3'))
+        assertEquals((Character) 'M', abcMap.press(key('1')).getNextState().press(key('3'))
                 .getValue());
     }
 
@@ -197,17 +197,17 @@ public class StateAndTransitionTests {
         State<Integer> state_a2 = state(leafBind('a', 2));
         @SuppressWarnings("unchecked")
         State<Integer> state_b2 = state(leafBind('b', 2));
-        assertEquals(1, new UnionState<Integer>(state_a1, state_a2).press(
+        assertEquals((Integer) 1, new UnionState<Integer>(state_a1, state_a2).press(
                 key('a')).getValue());
-        assertEquals(2, new UnionState<Integer>(state_a2, state_a1).press(
+        assertEquals((Integer) 2, new UnionState<Integer>(state_a2, state_a1).press(
                 key('a')).getValue());
-        assertEquals(1, new UnionState<Integer>(state_a1, state_b2).press(
+        assertEquals((Integer) 1, new UnionState<Integer>(state_a1, state_b2).press(
                 key('a')).getValue());
-        assertEquals(2, new UnionState<Integer>(state_a1, state_b2).press(
+        assertEquals((Integer) 2, new UnionState<Integer>(state_a1, state_b2).press(
                 key('b')).getValue());
-        assertEquals(1, new UnionState<Integer>(state_b2, state_a1).press(
+        assertEquals((Integer) 1, new UnionState<Integer>(state_b2, state_a1).press(
                 key('a')).getValue());
-        assertEquals(2, new UnionState<Integer>(state_b2, state_a1).press(
+        assertEquals((Integer) 2, new UnionState<Integer>(state_b2, state_a1).press(
                 key('b')).getValue());
     }
 
@@ -232,9 +232,9 @@ public class StateAndTransitionTests {
                 transitionBind('c', leaf4)));
         State<Integer> union12 = new UnionState<Integer>(state1, state2);
         State<Integer> union21 = new UnionState<Integer>(state2, state1);
-        assertEquals(1, union12.press(key('a')).getNextState().press(key('a'))
+        assertEquals((Integer) 1, union12.press(key('a')).getNextState().press(key('a'))
                 .getValue());
-        assertEquals(2, union21.press(key('a')).getNextState().press(key('a'))
+        assertEquals((Integer) 2, union21.press(key('a')).getNextState().press(key('a'))
                 .getValue());
         assertSame(leaf3, union12.press(key('a')).getNextState()
                 .press(key('b')).getNextState());
