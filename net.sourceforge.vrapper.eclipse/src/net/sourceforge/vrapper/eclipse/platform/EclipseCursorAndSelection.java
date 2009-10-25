@@ -7,14 +7,12 @@ import net.sourceforge.vrapper.eclipse.ui.CaretUtils;
 import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.Configuration;
 import net.sourceforge.vrapper.platform.CursorService;
-import net.sourceforge.vrapper.platform.Platform;
 import net.sourceforge.vrapper.platform.SelectionService;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Space;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
-import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 

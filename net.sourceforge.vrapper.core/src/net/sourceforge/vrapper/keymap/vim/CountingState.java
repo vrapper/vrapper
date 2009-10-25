@@ -67,7 +67,7 @@ public class CountingState<T extends Counted<T>> implements State<T> {
     }
 
 	public State<T> union(State<T> other) {
-        if (other instanceof CountingState) {
+        if (other instanceof CountingState<?>) {
             CountingState<T> otherCS = (CountingState<T>) other;
             if (otherCS.value == value) {
                 return new CountingState<T>(value, wrappedState.union(otherCS.wrappedState));
