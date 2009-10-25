@@ -34,4 +34,9 @@ public class DumbPosition extends AbstractPosition {
     public Position setViewOffset(int offset) {
         return new DumbPosition(offset);
     }
+    
+    @Override
+    public String toString() {
+        return String.format("DumbPosition(%d)", position);
+    }
 }
