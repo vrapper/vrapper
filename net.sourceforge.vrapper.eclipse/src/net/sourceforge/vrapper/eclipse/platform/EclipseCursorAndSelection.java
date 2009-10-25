@@ -5,13 +5,16 @@ import java.util.Map;
 
 import net.sourceforge.vrapper.eclipse.ui.CaretUtils;
 import net.sourceforge.vrapper.log.VrapperLog;
+import net.sourceforge.vrapper.platform.Configuration;
 import net.sourceforge.vrapper.platform.CursorService;
+import net.sourceforge.vrapper.platform.Platform;
 import net.sourceforge.vrapper.platform.SelectionService;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Space;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
+import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 
@@ -36,8 +39,10 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     private Selection selection;
     private final SelectionChangeListener selectionChangeListener;
     private final Map<String, org.eclipse.jface.text.Position> marks;
+    private final Configuration configuration;
 
-    public EclipseCursorAndSelection(ITextViewer textViewer) {
+    public EclipseCursorAndSelection(Configuration configuration, ITextViewer textViewer) {
+        this.configuration = configuration;
         this.textViewer = textViewer;
         converter = OffsetConverter.create(textViewer);
         selectionChangeListener = new SelectionChangeListener();
@@ -142,7 +147,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
             // linewise selection includes final newline, this means the cursor
             // is placed in the line below the selection by eclipse. this
             // corrects that behaviour
-            if (ContentType.LINES.equals(newSelection.getContentType())) {
+            if (ContentType.LINES.equals(newSelection.getContentType(configuration))) {
                 if (newSelection.isReversed()) {
                     from -= 1;
                     length += 1;

@@ -1,6 +1,7 @@
 package net.sourceforge.vrapper.vim.commands;
 
-import net.sourceforge.vrapper.log.VrapperLog;
+import net.sourceforge.vrapper.platform.Configuration;
+import net.sourceforge.vrapper.platform.Configuration.Option;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
@@ -11,36 +12,26 @@ public class OptionDependentTextObject extends AbstractTextObject {
 
     private final TextObject onTrue;
     private final TextObject onFalse;
-    private final String option;
+    private final Option<Boolean> option;
 
-    public OptionDependentTextObject(String option, Motion onTrue, Motion onFalse) {
+    public OptionDependentTextObject(Option<Boolean> option, Motion onTrue, Motion onFalse) {
         this.option = option;
         this.onTrue = new MotionTextObject(onTrue);
         this.onFalse = new MotionTextObject(onFalse);
     }
 
-    public OptionDependentTextObject(String option, TextObject onTrue, TextObject onFalse) {
-        this.option = option;
-        this.onTrue = onTrue;
-        this.onFalse = onFalse;
+    public ContentType getContentType(Configuration configuration) {
+        if (configuration.get(option).booleanValue())
+            return onTrue.getContentType(configuration);
+        else
+            return onFalse.getContentType(configuration);
     }
 
-    public ContentType getContentType() {
-        VrapperLog.info("OptionDependentTextObject.getContentType not implemented");
-        return onFalse.getContentType();
-        //		if (TotalityCorePlugin.getDefault().getPreferenceStore().getBoolean(option))
-        //			return onTrue.getContentType();
-        //		else
-        //			return onFalse.getContentType();
-    }
-
-    public TextRange getRegion(EditorAdaptor editorMode, int count) throws CommandExecutionException {
-        VrapperLog.info("OptionDependentTextObject.getRegion not implemented");
-        return onFalse.getRegion(editorMode, count);
-        //		if (TotalityCorePlugin.getDefault().getPreferenceStore().getBoolean(option))
-        //			return onTrue.getRegion(editorMode, count);
-        //		else
-        //			return onFalse.getRegion(editorMode, count);
+    public TextRange getRegion(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
+        if (editorAdaptor.getConfiguration().get(option).booleanValue())
+            return onTrue.getRegion(editorAdaptor, count);
+        else
+            return onFalse.getRegion(editorAdaptor, count);
     }
 
 }

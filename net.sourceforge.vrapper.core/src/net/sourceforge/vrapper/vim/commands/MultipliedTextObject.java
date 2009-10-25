@@ -1,5 +1,6 @@
 package net.sourceforge.vrapper.vim.commands;
 
+import net.sourceforge.vrapper.platform.Configuration;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
@@ -14,8 +15,8 @@ public class MultipliedTextObject implements TextObject {
         this.textObject = textObject;
     }
 
-    public ContentType getContentType() {
-        return textObject.getContentType();
+    public ContentType getContentType(Configuration configuration) {
+        return textObject.getContentType(configuration);
     }
 
     public TextRange getRegion(EditorAdaptor editorMode, int count) throws CommandExecutionException {

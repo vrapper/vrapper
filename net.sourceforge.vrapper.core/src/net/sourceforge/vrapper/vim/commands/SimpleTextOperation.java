@@ -8,7 +8,7 @@ public abstract class SimpleTextOperation implements TextOperation {
 
     public void execute(EditorAdaptor editorAdaptor, int count, TextObject textObject)
             throws CommandExecutionException {
-        execute(editorAdaptor, textObject.getRegion(editorAdaptor, count), textObject.getContentType());
+        execute(editorAdaptor, textObject.getRegion(editorAdaptor, count), textObject.getContentType(editorAdaptor.getConfiguration()));
     }
 
     public abstract void execute(EditorAdaptor editorAdaptor, TextRange region,

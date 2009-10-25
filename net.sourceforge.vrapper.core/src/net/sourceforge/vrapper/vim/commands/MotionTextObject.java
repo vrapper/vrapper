@@ -1,5 +1,6 @@
 package net.sourceforge.vrapper.vim.commands;
 
+import net.sourceforge.vrapper.platform.Configuration;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.ContentType;
@@ -65,7 +66,7 @@ public class MotionTextObject extends AbstractTextObject {
 //        return new StartEndTextRange(cs.newPositionForModelOffset(start), cs.newPositionForModelOffset(end));
     }
 
-    public ContentType getContentType() {
+    public ContentType getContentType(Configuration configuration) {
         return ContentType.fromBorderPolicy(motion.borderPolicy());
     }
 

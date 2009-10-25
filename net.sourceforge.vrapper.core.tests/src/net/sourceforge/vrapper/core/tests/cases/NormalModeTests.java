@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 import net.sourceforge.vrapper.core.tests.utils.CommandTestCase;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.ContentType;
+import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.DeleteOperation;
@@ -62,6 +63,22 @@ public class NormalModeTests extends CommandTestCase {
 				"Al",'a'," ma kota",
 				"A",'a'," ma kota");
 		assertYanked(ContentType.TEXT, "l");
+	}
+
+	@Test public void test_cw_sane() {
+	    platform.getConfiguration().set(Options.SANE_CW, true);
+		checkCommand(forKeySeq("cw"),
+			"Ala",' ',"ma kota",
+			"Ala",'m',"a kota");
+		assertYanked(ContentType.TEXT, " ");
+	}
+
+	@Test public void test_cw_compilant() {
+	    platform.getConfiguration().set(Options.SANE_CW, false);
+		checkCommand(forKeySeq("cw"),
+			"Ala",' ',"ma kota",
+			"Ala",' ',"kota");
+		assertYanked(ContentType.TEXT, " ma");
 	}
 
 	@Test public void test_dw() {

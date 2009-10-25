@@ -17,7 +17,7 @@ public class ChangeOperation implements TextOperation {
     public void execute(EditorAdaptor editorAdaptor, int count,
             TextObject textObject) throws CommandExecutionException {
         Command c = new TextOperationTextObjectCommand(DeleteOperation.INSTANCE, textObject).withCount(count);
-        if (ContentType.LINES.equals(textObject.getContentType())) {
+        if (ContentType.LINES.equals(textObject.getContentType(editorAdaptor.getConfiguration()))) {
             c = new VimCommandSequence(c, InsertLineCommand.PRE_CURSOR);
         }
         editorAdaptor.changeMode(InsertMode.NAME, c);

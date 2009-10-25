@@ -1,5 +1,6 @@
 package net.sourceforge.vrapper.vim.commands;
 
+import net.sourceforge.vrapper.platform.Configuration;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.ContentType;
@@ -62,7 +63,7 @@ public class LineWiseSelection implements Selection {
     public boolean isReversed() {
         return range.isReversed();
     }
-    public ContentType getContentType() {
+    public ContentType getContentType(Configuration configuration) {
         return ContentType.LINES;
     }
     public Position getFrom() {

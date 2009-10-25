@@ -14,6 +14,7 @@ public interface Options {
     public static final Option<Boolean> ATOMIC_INSERT     = bool("atomicinsert",    true,  "ati");
     public static final Option<Boolean> IGNORE_CASE       = bool("ignorecase",      false);
     public static final Option<Boolean> SMART_CASE        = bool("smartcase",       false);
+    public static final Option<Boolean> SANE_CW           = bool("sanecw",          false);
     @SuppressWarnings("unchecked")
     public static final Set<Option<Boolean>> BOOLEAN_OPTIONS = set(SMART_INDENT, AUTO_INDENT, ATOMIC_INSERT, IGNORE_CASE, SMART_CASE);
 

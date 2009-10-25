@@ -14,10 +14,10 @@ public abstract class TextObjectCommand extends CountAwareCommand {
 	}
 
 	@Override
-	public void execute(EditorAdaptor editorMode, int count) throws CommandExecutionException {
-		TextRange range = textObject.getRegion(editorMode, count);
-		ContentType contentType = textObject.getContentType();
-		execute(editorMode, range, contentType);
+	public void execute(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
+		TextRange range = textObject.getRegion(editorAdaptor, count);
+		ContentType contentType = textObject.getContentType(editorAdaptor.getConfiguration());
+		execute(editorAdaptor, range, contentType);
 	}
 
 	@Override

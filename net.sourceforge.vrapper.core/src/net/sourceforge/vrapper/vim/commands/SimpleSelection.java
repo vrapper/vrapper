@@ -1,5 +1,6 @@
 package net.sourceforge.vrapper.vim.commands;
 
+import net.sourceforge.vrapper.platform.Configuration;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.TextRange;
@@ -14,7 +15,7 @@ public class SimpleSelection implements Selection {
         this.range = range;
     }
 
-    public ContentType getContentType() {
+    public ContentType getContentType(Configuration configuration) {
         return ContentType.TEXT;
     }
 

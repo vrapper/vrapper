@@ -34,7 +34,8 @@ public class EclipsePlatform implements Platform {
     private final Configuration configuration;
 
     public EclipsePlatform(AbstractTextEditor abstractTextEditor, ITextViewer textViewer) {
-        cursorAndSelection = new EclipseCursorAndSelection(textViewer);
+        configuration = new SimpleConfiguration();
+        cursorAndSelection = new EclipseCursorAndSelection(configuration, textViewer);
         textContent = new EclipseTextContent(textViewer);
         fileService = new EclipseFileService(abstractTextEditor);
         viewportService = new EclipseViewportService(textViewer);
@@ -42,7 +43,6 @@ public class EclipsePlatform implements Platform {
         userInterfaceService = new EclipseUserInterfaceService(abstractTextEditor, textViewer);
         keyMapProvider = new DefaultKeyMapProvider();
         underlyingEditorSettings = new AbstractTextEditorSettings(abstractTextEditor);
-        configuration = new SimpleConfiguration();
         if (textViewer instanceof ITextViewerExtension6) {
             IUndoManager delegate = ((ITextViewerExtension6)textViewer).getUndoManager();
             EclipseHistoryService manager = new EclipseHistoryService(textViewer.getTextWidget(), delegate);
