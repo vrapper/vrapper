@@ -21,7 +21,7 @@ public abstract class AbstractCommandLineMode extends AbstractMode {
     /**
      * @param args arguments for entering the mode
      */
-    public void enterMode(Object... args) {
+    public void enterMode(ModeSwitchHint... args) {
         isEnabled = true;
         parser = createParser();
         handleKey(ConstructorWrappers.key(activationChar()));

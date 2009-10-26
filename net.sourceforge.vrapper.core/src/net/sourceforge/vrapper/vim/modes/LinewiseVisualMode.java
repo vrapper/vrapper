@@ -22,7 +22,7 @@ public class LinewiseVisualMode extends AbstractVisualMode {
     }
 
     @Override
-    public void enterMode(Object... args) {
+    public void enterMode(ModeSwitchHint... args) {
         super.enterMode(args);
         CaretType caret = CaretType.RECTANGULAR;
         if (editorAdaptor.getConfiguration().get(Options.SELECTION).equals("exclusive"))

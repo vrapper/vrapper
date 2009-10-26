@@ -241,7 +241,7 @@ public class NormalMode extends CommandBasedMode {
         editorAdaptor.getRegisterManager().activateDefaultRegister();
     }
 
-    public void enterMode(Object... args) {
+    public void enterMode(ModeSwitchHint... args) {
         if (isEnabled) {
             return;
         }

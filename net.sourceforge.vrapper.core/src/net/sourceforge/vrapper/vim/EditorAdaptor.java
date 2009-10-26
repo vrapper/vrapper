@@ -14,10 +14,11 @@ import net.sourceforge.vrapper.platform.ViewportService;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.modes.EditorMode;
+import net.sourceforge.vrapper.vim.modes.ModeSwitchHint;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
 
 public interface EditorAdaptor {
-    void changeMode(String modeName, Object... args);
+    void changeMode(String modeName, ModeSwitchHint... args);
     EditorMode getMode(String name);
     public boolean handleKey(KeyStroke key);
 

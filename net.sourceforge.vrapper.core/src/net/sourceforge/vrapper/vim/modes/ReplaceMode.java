@@ -32,7 +32,7 @@ public class ReplaceMode extends InsertMode {
     }
 
     @Override
-    public void enterMode(Object... args) {
+    public void enterMode(ModeSwitchHint... args) {
         super.enterMode(args);
         editorAdaptor.getEditorSettings().setReplaceMode(true);
         editorAdaptor.getCursorService().setCaret(CaretType.UNDERLINE);

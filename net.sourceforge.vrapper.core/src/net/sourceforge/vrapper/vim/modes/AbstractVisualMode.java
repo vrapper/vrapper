@@ -54,7 +54,7 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
     //        }
         }
 
-    public void enterMode(Object... args) {
+    public void enterMode(ModeSwitchHint... args) {
         if (isEnabled) {
             return;
         }

@@ -24,7 +24,7 @@ public class VisualMode extends AbstractVisualMode {
     }
 
     @Override
-    public void enterMode(Object... args) {
+    public void enterMode(ModeSwitchHint... args) {
         super.enterMode(args);
         CaretType caret = CaretType.LEFT_SHIFTED_RECTANGULAR;
         if (editorAdaptor.getConfiguration().get(Options.SELECTION).equals("exclusive"))

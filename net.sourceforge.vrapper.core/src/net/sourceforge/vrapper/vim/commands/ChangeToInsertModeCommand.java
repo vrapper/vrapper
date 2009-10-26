@@ -1,6 +1,7 @@
 package net.sourceforge.vrapper.vim.commands;
 
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.modes.ExecuteCommandHint;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
 
 public class ChangeToInsertModeCommand extends CountAwareCommand {
@@ -17,8 +18,7 @@ public class ChangeToInsertModeCommand extends CountAwareCommand {
 
     @Override
 	public void execute(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
-  		Integer i = Integer.valueOf(count);
-  		editorAdaptor.changeMode(InsertMode.NAME, command, i);
+  		editorAdaptor.changeMode(InsertMode.NAME, new ExecuteCommandHint(command), new InsertMode.WithCountHint(count));
 	}
 
 	@Override

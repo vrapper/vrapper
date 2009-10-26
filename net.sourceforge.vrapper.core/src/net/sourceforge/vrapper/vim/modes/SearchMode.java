@@ -20,7 +20,7 @@ public class SearchMode extends AbstractCommandLineMode {
      * @param args {@link Direction} of the search
      */
     @Override
-    public void enterMode(Object... args) {
+    public void enterMode(ModeSwitchHint... args) {
         forward = args[0].equals(Direction.FORWARD);
         super.enterMode(args);
     }
@@ -43,7 +43,7 @@ public class SearchMode extends AbstractCommandLineMode {
         return NAME;
     }
 
-    public enum Direction {
+    public enum Direction implements ModeSwitchHint {
         FORWARD, BACKWARD;
     }
 

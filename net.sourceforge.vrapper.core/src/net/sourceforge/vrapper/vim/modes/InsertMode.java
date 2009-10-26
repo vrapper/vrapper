@@ -1,4 +1,3 @@
-
 package net.sourceforge.vrapper.vim.modes;
 
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.key;
@@ -30,7 +29,18 @@ import net.sourceforge.vrapper.vim.register.RegisterContent;
 import net.sourceforge.vrapper.vim.register.StringRegisterContent;
 
 public class InsertMode extends AbstractMode {
+    
+    public static class WithCountHint implements ModeSwitchHint {
+        private final int count;
 
+        public WithCountHint(int count) {
+            this.count = count;
+        }
+
+        public int getCount() {
+            return count;
+        }
+    }
 
     public static final String NAME = "insert mode";
     public static final String KEYMAP_NAME = "Insert Mode Keymap";
@@ -52,9 +62,10 @@ public class InsertMode extends AbstractMode {
     }
 
     /**
-     * @param args command to perform on entering insert mode
+     * @param args
+     *            command to perform on entering insert mode
      */
-    public void enterMode(Object... args) {
+    public void enterMode(ModeSwitchHint... args) {
         if (isEnabled) {
             return;
         }
@@ -62,26 +73,33 @@ public class InsertMode extends AbstractMode {
             editorAdaptor.getHistory().beginCompoundChange();
             editorAdaptor.getHistory().lock();
         }
+        
         count = 1;
-        if (args.length > 0) {
-            command = (Command) args[0];
-            if (command != null) {
-                try {
-                    if (!(command instanceof MotionCommand)) {
-                        editorAdaptor.getViewportService().setRepaint(false);
+        command = null;
+        
+        for (ModeSwitchHint hint : args) {
+            if (hint instanceof WithCountHint) {
+                WithCountHint cast = (WithCountHint) hint;
+                count = cast.getCount();
+            }
+            if (hint instanceof ExecuteCommandHint) {
+                ExecuteCommandHint cast = (ExecuteCommandHint) hint;
+                command = cast.getCommand();
+                if (command != null) {
+                    try {
+                        if (!(command instanceof MotionCommand)) {
+                            editorAdaptor.getViewportService()
+                                    .setRepaint(false);
+                        }
+                        command.execute(editorAdaptor);
+                    } catch (CommandExecutionException e) {
+                        editorAdaptor.getUserInterfaceService()
+                                .setErrorMessage(e.getMessage());
+                    } finally {
+                        editorAdaptor.getViewportService().setRepaint(true);
                     }
-                    command.execute(editorAdaptor);
-                } catch (CommandExecutionException e) {
-                    editorAdaptor.getUserInterfaceService().setErrorMessage(e.getMessage());
-                } finally {
-                    editorAdaptor.getViewportService().setRepaint(true);
                 }
             }
-            if (args.length > 1) {
-                count = ((Integer) args[1]).intValue();
-            }
-        } else {
-            command = null;
         }
         isEnabled = true;
         editorAdaptor.getCursorService().setCaret(CaretType.VERTICAL_BAR);
@@ -95,7 +113,8 @@ public class InsertMode extends AbstractMode {
             try {
                 MotionCommand.doIt(editorAdaptor, MoveLeft.INSTANCE);
             } catch (CommandExecutionException e) {
-                editorAdaptor.getUserInterfaceService().setErrorMessage(e.getMessage());
+                editorAdaptor.getUserInterfaceService().setErrorMessage(
+                        e.getMessage());
             }
             repeatInsert();
         } finally {
@@ -104,7 +123,8 @@ public class InsertMode extends AbstractMode {
                 editorAdaptor.getHistory().endCompoundChange();
             }
         }
-        editorAdaptor.getCursorService().setMark(CursorService.LAST_INSERT_MARK, editorAdaptor.getPosition());
+        editorAdaptor.getCursorService().setMark(
+                CursorService.LAST_INSERT_MARK, editorAdaptor.getPosition());
     }
 
     private void repeatInsert() {
@@ -113,18 +133,23 @@ public class InsertMode extends AbstractMode {
                 editorAdaptor.getRegisterManager().getLastEdit().withCount(
                         count - 1).execute(editorAdaptor);
             } catch (CommandExecutionException e) {
-                editorAdaptor.getUserInterfaceService().setErrorMessage(e.getMessage());
+                editorAdaptor.getUserInterfaceService().setErrorMessage(
+                        e.getMessage());
             }
         }
     }
 
     private void saveTypedText() {
-        Register lastEditRegister = editorAdaptor.getRegisterManager().getLastEditRegister();
+        Register lastEditRegister = editorAdaptor.getRegisterManager()
+                .getLastEditRegister();
         TextContent content = editorAdaptor.getModelContent();
         Position position = editorAdaptor.getCursorService().getPosition();
         TextRange editRange = new StartEndTextRange(startEditPosition, position);
-        String text = content.getText(editRange.getLeftBound().getModelOffset(), editRange.getViewLength());
-        RegisterContent registerContent = new StringRegisterContent(ContentType.TEXT, text);
+        String text = content.getText(
+                editRange.getLeftBound().getModelOffset(), editRange
+                        .getViewLength());
+        RegisterContent registerContent = new StringRegisterContent(
+                ContentType.TEXT, text);
         lastEditRegister.setContent(registerContent);
         Command repetition;
         repetition = createRepetition(lastEditRegister, text);
@@ -139,16 +164,15 @@ public class InsertMode extends AbstractMode {
             if (newCommand == null) {
                 newCommand = command;
             }
-            repetition = new VimCommandSequence(
-                    newCommand,
+            repetition = new VimCommandSequence(newCommand,
                     new SwitchRegisterCommand(lastEditRegister),
-                    PasteBeforeCommand.INSTANCE,
-                    new MoveRightOverLineBreak(text.length()-1));
+                    PasteBeforeCommand.INSTANCE, new MoveRightOverLineBreak(
+                            text.length() - 1));
         } else {
             repetition = new SimpleInsertCommandSequence(
                     new SwitchRegisterCommand(lastEditRegister),
-                    PasteBeforeCommand.INSTANCE,
-                    new MoveRightOverLineBreak(text.length()-1));
+                    PasteBeforeCommand.INSTANCE, new MoveRightOverLineBreak(
+                            text.length() - 1));
         }
         return repetition;
     }
@@ -157,8 +181,7 @@ public class InsertMode extends AbstractMode {
         if (stroke.equals(key(SpecialKey.ESC))) {
             editorAdaptor.changeMode(NormalMode.NAME);
             return true;
-        }
-        else if (!allowed(stroke)) {
+        } else if (!allowed(stroke)) {
             startEditPosition = editorAdaptor.getCursorService().getPosition();
             count = 1;
             if (editorAdaptor.getConfiguration().get(Options.ATOMIC_INSERT)) {
@@ -184,13 +207,14 @@ public class InsertMode extends AbstractMode {
             LineInformation line = c.getLineInformationOfOffset(pos);
             if (pos > 0) {
                 if (pos > line.getBeginOffset()) {
-                    pos2 = pos-1;
+                    pos2 = pos - 1;
                 } else {
-                    pos2 = c.getLineInformation(line.getNumber()-1).getEndOffset();
+                    pos2 = c.getLineInformation(line.getNumber() - 1)
+                            .getEndOffset();
                 }
-                c.replace(pos2, pos-pos2, "");
-                editorAdaptor.setPosition(
-                        editorAdaptor.getCursorService().newPositionForModelOffset(pos2), false);
+                c.replace(pos2, pos - pos2, "");
+                editorAdaptor.setPosition(editorAdaptor.getCursorService()
+                        .newPositionForModelOffset(pos2), false);
             }
         } else {
             String s;
@@ -207,7 +231,8 @@ public class InsertMode extends AbstractMode {
         // TODO: option to allow arrows
         SpecialKey specialKey = stroke.getSpecialKey();
         if (specialKey != null) {
-            return VimConstants.SPECIAL_KEYS_ALLOWED_FOR_INSERT.contains(specialKey);
+            return VimConstants.SPECIAL_KEYS_ALLOWED_FOR_INSERT
+                    .contains(specialKey);
         }
         return true;
     }
@@ -216,7 +241,8 @@ public class InsertMode extends AbstractMode {
         return provider.getKeyMap(KEYMAP_NAME);
     }
 
-    public class MoveRightOverLineBreak extends CountIgnoringNonRepeatableCommand {
+    public class MoveRightOverLineBreak extends
+            CountIgnoringNonRepeatableCommand {
 
         private final int offset;
 
@@ -227,8 +253,8 @@ public class InsertMode extends AbstractMode {
 
         public void execute(EditorAdaptor editorAdaptor)
                 throws CommandExecutionException {
-            editorAdaptor.setPosition(
-                    editorAdaptor.getPosition().addModelOffset(offset), true);
+            editorAdaptor.setPosition(editorAdaptor.getPosition()
+                    .addModelOffset(offset), true);
         }
     }
 
@@ -242,7 +268,8 @@ public class InsertMode extends AbstractMode {
         public Command withCount(final int count) {
             return new CountIgnoringNonRepeatableCommand() {
 
-                public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
+                public void execute(EditorAdaptor editorAdaptor)
+                        throws CommandExecutionException {
                     SimpleInsertCommandSequence.this.execute(editorAdaptor);
                     for (int i = 1; i < count; i++) {
                         Position pos = editorAdaptor.getPosition();

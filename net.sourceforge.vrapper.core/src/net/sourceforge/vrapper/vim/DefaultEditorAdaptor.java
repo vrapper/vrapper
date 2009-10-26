@@ -34,6 +34,7 @@ import net.sourceforge.vrapper.vim.modes.CommandLineMode;
 import net.sourceforge.vrapper.vim.modes.EditorMode;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
 import net.sourceforge.vrapper.vim.modes.LinewiseVisualMode;
+import net.sourceforge.vrapper.vim.modes.ModeSwitchHint;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.modes.ReplaceMode;
 import net.sourceforge.vrapper.vim.modes.SearchMode;
@@ -140,7 +141,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     }
 
 
-    public void changeMode(String modeName, Object... args) {
+    public void changeMode(String modeName, ModeSwitchHint... args) {
         EditorMode newMode = modeMap.get(modeName);
         if (newMode == null) {
             VrapperLog.error(format("There is no mode named '%s'",  modeName));
