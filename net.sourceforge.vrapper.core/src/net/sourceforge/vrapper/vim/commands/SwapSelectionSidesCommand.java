@@ -3,6 +3,7 @@ package net.sourceforge.vrapper.vim.commands;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.Options;
 
 public class SwapSelectionSidesCommand extends CountIgnoringNonRepeatableCommand {
 
@@ -19,8 +20,10 @@ public class SwapSelectionSidesCommand extends CountIgnoringNonRepeatableCommand
         editorAdaptor.setPosition(selection.getEnd(), true);
         editorAdaptor.setSelection(new SimpleSelection(
                 new StartEndTextRange(selection.getEnd(), selection.getStart())));
-        CaretType type = selection.isReversed() ? CaretType.LEFT_SHIFTED_RECTANGULAR : CaretType.RECTANGULAR;
-        editorAdaptor.getCursorService().setCaret(type);
+        if (!editorAdaptor.getConfiguration().get(Options.SELECTION).equals("exclusive")) {
+            CaretType type = selection.isReversed() ? CaretType.LEFT_SHIFTED_RECTANGULAR : CaretType.RECTANGULAR;
+            editorAdaptor.getCursorService().setCaret(type);
+        }
     }
 
 }
