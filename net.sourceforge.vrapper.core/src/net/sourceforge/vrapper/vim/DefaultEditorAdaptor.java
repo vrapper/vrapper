@@ -241,7 +241,6 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         return platformSpecificStateProvider;
     }
 
-
     public void useGlobalRegisters() {
         registerManager = globalRegisterManager;
         swapMacroRecorder();
