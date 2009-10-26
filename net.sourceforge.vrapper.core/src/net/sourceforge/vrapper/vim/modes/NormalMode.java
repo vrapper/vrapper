@@ -18,6 +18,7 @@ import net.sourceforge.vrapper.keymap.vim.TextObjectState;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
+import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.VimConstants;
@@ -27,6 +28,8 @@ import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeOperation;
 import net.sourceforge.vrapper.vim.commands.ChangeToInsertModeCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
+import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
+import net.sourceforge.vrapper.vim.commands.CountIgnoringNonRepeatableCommand;
 import net.sourceforge.vrapper.vim.commands.DeleteOperation;
 import net.sourceforge.vrapper.vim.commands.DotCommand;
 import net.sourceforge.vrapper.vim.commands.InsertLineCommand;
@@ -34,6 +37,7 @@ import net.sourceforge.vrapper.vim.commands.LinewiseVisualMotionCommand;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.commands.MotionPairTextObject;
 import net.sourceforge.vrapper.vim.commands.MotionTextObject;
+import net.sourceforge.vrapper.vim.commands.OptionDependentCommand;
 import net.sourceforge.vrapper.vim.commands.OptionDependentTextObject;
 import net.sourceforge.vrapper.vim.commands.PasteAfterCommand;
 import net.sourceforge.vrapper.vim.commands.PasteBeforeCommand;
@@ -42,6 +46,7 @@ import net.sourceforge.vrapper.vim.commands.RecordMacroCommand;
 import net.sourceforge.vrapper.vim.commands.RedoCommand;
 import net.sourceforge.vrapper.vim.commands.ReplaceCommand;
 import net.sourceforge.vrapper.vim.commands.SetMarkCommand;
+import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 import net.sourceforge.vrapper.vim.commands.StickToEOLCommand;
 import net.sourceforge.vrapper.vim.commands.SwapCaseCommand;
 import net.sourceforge.vrapper.vim.commands.TextObject;
@@ -150,6 +155,17 @@ public class NormalMode extends CommandBasedMode {
             Command substituteLine = new TextOperationTextObjectCommand(change, new MotionTextObject(lineEndMotion));
             Command substituteChar = new TextOperationTextObjectCommand(change, new MotionTextObject(moveRight));
             Command centerLine = CenterLineCommand.INSTANCE;
+            
+            Command afterEnteringVisualInc = new OptionDependentCommand<String>(Options.SELECTION, "inclusive",
+                    new VisualMotionCommand(moveRight));
+            Command afterEnteringVisualExc = new OptionDependentCommand<String>(Options.SELECTION, "exclusive",
+                    new CountIgnoringNonRepeatableCommand() {
+                        public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
+                            Position position = editorAdaptor.getPosition();
+                            editorAdaptor.setSelection(new  SimpleSelection(new StartEndTextRange(position, position)));
+                        }
+                    });
+            Command afterEnteringVisual = seq(afterEnteringVisualInc, afterEnteringVisualExc);
 
             State<Command> motionCommands = new GoThereState(motions);
 
@@ -171,7 +187,8 @@ public class NormalMode extends CommandBasedMode {
                             leafBind('R', (Command) new ChangeModeCommand(ReplaceMode.NAME)),
                             leafBind('o', (Command) new ChangeToInsertModeCommand(InsertLineCommand.POST_CURSOR)),
                             leafBind('O', (Command) new ChangeToInsertModeCommand(InsertLineCommand.PRE_CURSOR)),
-                            leafBind('v', seq(visualMode, new VisualMotionCommand(moveRight))),
+//                            leafBind('v', visualMode),
+                            leafBind('v', seq(visualMode, afterEnteringVisual)),
                             leafBind('V', seq(linewiseVisualMode, new LinewiseVisualMotionCommand(moveRight))),
                             leafBind('p', pasteAfter),
                             leafBind('.', repeatLastOne),

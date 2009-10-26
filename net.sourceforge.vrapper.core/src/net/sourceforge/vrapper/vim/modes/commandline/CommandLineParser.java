@@ -14,6 +14,7 @@ import net.sourceforge.vrapper.vim.commands.ConfigCommand;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.commands.RedoCommand;
 import net.sourceforge.vrapper.vim.commands.SaveCommand;
+import net.sourceforge.vrapper.vim.commands.SetOptionCommand;
 import net.sourceforge.vrapper.vim.commands.UndoCommand;
 import net.sourceforge.vrapper.vim.commands.VimCommandSequence;
 import net.sourceforge.vrapper.vim.commands.motions.GoToLineMotion;
@@ -109,20 +110,31 @@ public class CommandLineParser extends AbstractCommandParser {
     private static Evaluator buildConfigEvaluator() {
         EvaluatorMapping config = new EvaluatorMapping();
         // boolean options
-        for (Option<Boolean> o : Options.BOOLEAN_OPTIONS) {
-            ConfigCommand<Boolean> enable = new ConfigCommand<Boolean>(o, Boolean.TRUE);
-            ConfigCommand<Boolean> disable = new ConfigCommand<Boolean>(o, Boolean.FALSE);
-            config.add(o.getId(), enable);
-            config.add("no"+o.getId(), disable);
-            for (String alias : o.getAlias()) {
+        for (Option<Boolean> o: Options.BOOLEAN_OPTIONS) {
+            ConfigCommand<Boolean> enable = new SetOptionCommand<Boolean>(o, Boolean.TRUE);
+            ConfigCommand<Boolean> disable = new SetOptionCommand<Boolean>(o, Boolean.FALSE);
+            ConfigCommand<Boolean> toggle = new ToggleOptionCommand(o);
+            for (String alias: o.getAllNames()) {
                 config.add(alias, enable);
                 config.add("no"+alias, disable);
+                config.add(alias+"!", toggle);
             }
         }
         config.add("globalregisters", ConfigAction.GLOBAL_REGISTERS);
         config.add("noglobalregisters", ConfigAction.NO_GLOBAL_REGISTERS);
         config.add("localregisters", ConfigAction.NO_GLOBAL_REGISTERS);
         config.add("nolocalregisters", ConfigAction.GLOBAL_REGISTERS);
+        
+        // string options
+        // TODO: find a better way to do set them
+        for (Option<String> option: Options.STRING_OPTIONS) {
+            assert option.getLegalValues() != null; // TODO: only constrained string options are supported now
+            for (String value: option.getLegalValues()) {
+                ConfigCommand<String> setIt = new SetOptionCommand<String>(option, value);
+                for (String alias: option.getAllNames())
+                    config.add(alias+"="+value, setIt);
+            }
+        }
         return config;
     }
 

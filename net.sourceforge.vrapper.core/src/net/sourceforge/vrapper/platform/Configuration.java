@@ -1,5 +1,11 @@
 package net.sourceforge.vrapper.platform;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import net.sourceforge.vrapper.platform.SimpleConfiguration.NewLine;
 
 /**
@@ -24,16 +30,29 @@ public interface Configuration {
         private final String id;
         private final String[] alias;
         private final T defaultValue;
+        private final List<String> allNames;
+        private final Set<T> legalValues;
 
-        private Option(String id, T defaultValue, String...alias) {
-            super();
+        private Option(String id, T defaultValue, Set<T> legalValues, String...alias) {
             this.id = id;
             this.defaultValue = defaultValue;
+            this.legalValues = legalValues;
             this.alias = alias;
+            this.allNames = new ArrayList<String>();
+            allNames.add(id);
+            allNames.addAll(Arrays.asList(alias));
         }
 
         public static final Option<Boolean> bool(String id, boolean defaultValue, String... alias) {
-            return new Option<Boolean>(id, Boolean.valueOf(defaultValue), alias);
+            return new Option<Boolean>(id, Boolean.valueOf(defaultValue), null, alias);
+        }
+
+        public static final Option<String> string(String id, String defaultValue, String csv, String... alias) {
+            Set<String> legalValues = new HashSet<String>();
+            for (String value: csv.split(", *"))
+                legalValues.add(value);
+            assert legalValues.contains(defaultValue);
+            return new Option<String>(id, defaultValue, legalValues, alias);
         }
 
         public String getId() {
@@ -46,6 +65,17 @@ public interface Configuration {
 
         public String[] getAlias() {
             return alias;
+        }
+        
+        public Iterable<String> getAllNames() {
+            return allNames;
+        }
+        
+        /** 
+         * @return set of all legal values or <code>null</code> if there are no constraints on values of this option
+         */
+        public Set<T> getLegalValues() {
+            return legalValues;
         }
 
     }

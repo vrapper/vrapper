@@ -148,6 +148,9 @@ public class VisualModeTests extends CommandTestCase {
 				true,  "A","la"," ma kota",
 				false, "A","la"," ma kota");
 
+		// FIXME:
+		// it's broken in test case, works quite well
+		// in real eclipse
 		checkCommand(forKeySeq("x"),
 				false, "A","la"," ma kota",
 				false, "A",""," ma kota");
@@ -174,6 +177,18 @@ public class VisualModeTests extends CommandTestCase {
     @Test public void visualModeShouldHaveAName() {
 		assertEquals("visual mode", mode.getName());
 	}
+    
+    // FIXME: broken
+    @Test public void enteringAndExitingModeShouldLeaveCursorOnTheSamePosition() {
+	    CursorService cursorService = platform.getCursorService();
+        content.setText("This is some text");
+	    Position oldPosition = cursorService.newPositionForModelOffset(2);
+        cursorService.setPosition(oldPosition, true);
+        mode.enterMode();
+        mode.leaveMode();
+        Position newPosition = cursorService.getPosition();
+        assertEquals(oldPosition, newPosition);
+    }
 
 	@Test public void visualModeShouldEnterPainlesslyAndDeselectOnLeave() {
 	    CursorService cursorService = platform.getCursorService();

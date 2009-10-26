@@ -4,7 +4,9 @@ import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.vim.VisualMotionState;
 import net.sourceforge.vrapper.keymap.vim.VisualMotionState.Motion2VMC;
 import net.sourceforge.vrapper.utils.CaretType;
+import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.Command;
 
 
@@ -24,7 +26,21 @@ public class VisualMode extends AbstractVisualMode {
     @Override
     public void enterMode(Object... args) {
         super.enterMode(args);
-        editorAdaptor.getCursorService().setCaret(CaretType.LEFT_SHIFTED_RECTANGULAR);
+        CaretType caret = CaretType.LEFT_SHIFTED_RECTANGULAR;
+        if (editorAdaptor.getConfiguration().get(Options.SELECTION).equals("exclusive"))
+            caret = CaretType.VERTICAL_BAR;
+        editorAdaptor.getCursorService().setCaret(caret);
+    }
+    
+    @Override
+    public void leaveMode() {
+        super.leaveMode();
+        if (editorAdaptor.getConfiguration().get(Options.SELECTION).equals("inclusive")) {
+            Position position = editorAdaptor.getPosition();
+            if (position.getModelOffset() > 0)
+                position = position.addModelOffset(-1);
+            editorAdaptor.setPosition(position, true);
+        }
     }
 
     @Override
