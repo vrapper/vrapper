@@ -1,11 +1,16 @@
 package net.sourceforge.vrapper.vim.modes;
 
+import static net.sourceforge.vrapper.keymap.StateUtils.union;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.vim.VisualMotionState;
 import net.sourceforge.vrapper.keymap.vim.VisualMotionState.Motion2VMC;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.Command;
+import net.sourceforge.vrapper.vim.commands.SwapLinewiseSelectionSidesCommand;
 
 public class LinewiseVisualMode extends AbstractVisualMode {
 
@@ -19,7 +24,10 @@ public class LinewiseVisualMode extends AbstractVisualMode {
     @Override
     public void enterMode(Object... args) {
         super.enterMode(args);
-        editorAdaptor.getCursorService().setCaret(CaretType.RECTANGULAR);
+        CaretType caret = CaretType.RECTANGULAR;
+        if (editorAdaptor.getConfiguration().get(Options.SELECTION).equals("exclusive"))
+            caret = CaretType.VERTICAL_BAR;
+        editorAdaptor.getCursorService().setCaret(caret);
     }
 
     @Override
@@ -32,9 +40,11 @@ public class LinewiseVisualMode extends AbstractVisualMode {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected State<Command> getInitialState() {
         if (initialState == null) {
-            initialState = createInitialState();
+            State<Command> overrides = state(leafBind('o', (Command) SwapLinewiseSelectionSidesCommand.INSTANCE));
+            initialState = union(overrides, createInitialState());
         }
         return initialState;
     }
