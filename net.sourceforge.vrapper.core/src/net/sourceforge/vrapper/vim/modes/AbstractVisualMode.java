@@ -22,19 +22,19 @@ import net.sourceforge.vrapper.vim.commands.DeleteOperation;
 import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
 import net.sourceforge.vrapper.vim.commands.SelectionBasedTextOperation;
 import net.sourceforge.vrapper.vim.commands.SetMarkCommand;
-import net.sourceforge.vrapper.vim.commands.SwapSelectionSidesCommand;
 import net.sourceforge.vrapper.vim.commands.YankOperation;
 
 public abstract class AbstractVisualMode extends CommandBasedMode {
 
     public static final String KEYMAP_NAME = "Visual Mode Keymap";
+    public static final ModeSwitchHint FIX_SELECTION_HINT = new ModeSwitchHint() { };
 
     public AbstractVisualMode(EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
+    @SuppressWarnings("unchecked")
     protected KeyMapResolver buildKeyMapResolver() {
         State<String> state = union(
                 state(
@@ -59,8 +59,17 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
             return;
         }
         isEnabled = true;
-        editorAdaptor.setSelection(null);
+        boolean shouldDeselect = true;
+        for (ModeSwitchHint hint: args)
+            if (hint == FIX_SELECTION_HINT)
+                shouldDeselect = false;
+        if (shouldDeselect)
+            editorAdaptor.setSelection(null);
+        else if (editorAdaptor.getSelection() != null)
+            fixSelection();
     }
+
+    protected abstract void fixSelection();
 
     @Override
     public void leaveMode() {
@@ -70,7 +79,6 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
     @SuppressWarnings("unchecked")
     protected State<Command> createInitialState() {
         Command leaveVisual = LeaveVisualModeCommand.INSTANCE;
-        Command swapSides = SwapSelectionSidesCommand.INSTANCE;
         Command yank   = dontRepeat(seq(new SelectionBasedTextOperation(YankOperation.INSTANCE), leaveVisual));
         Command delete = dontRepeat(seq(new SelectionBasedTextOperation(DeleteOperation.INSTANCE), leaveVisual));
         Command change = new SelectionBasedTextOperation(ChangeOperation.INSTANCE);
@@ -79,14 +87,12 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
         State<Command> visualMotions = getVisualMotionState();
         State<Command> initialState = new RegisterState(CountingState.wrap(union(state(
                 leafBind(SpecialKey.ESC, leaveVisual),
-                leafBind('v', leaveVisual),
                 leafBind('y', yank),
                 leafBind('s', change),
                 leafBind('c', change),
                 leafBind('d', delete),
                 leafBind('x', delete),
                 leafBind('X', delete),
-                leafBind('o', swapSides),
                 leafBind(':', commandLineMode),
                 transitionBind('z',
                         leafBind('z', centerLine)),
