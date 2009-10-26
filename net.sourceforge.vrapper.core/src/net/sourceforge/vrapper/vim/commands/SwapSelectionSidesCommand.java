@@ -12,15 +12,16 @@ public class SwapSelectionSidesCommand extends CountIgnoringNonRepeatableCommand
     private SwapSelectionSidesCommand() { /* NOP */ }
 
     public void execute(EditorAdaptor editorAdaptor) {
+        boolean isSelectionExclusive = editorAdaptor.getConfiguration().get(Options.SELECTION).equals("exclusive");
         Selection selection = editorAdaptor.getSelection();
-        if (selection.getModelLength() == 1) {
+        if (selection.getModelLength() == 1 && !isSelectionExclusive) {
             // do nothing
             return;
         }
         editorAdaptor.setPosition(selection.getEnd(), true);
         editorAdaptor.setSelection(new SimpleSelection(
                 new StartEndTextRange(selection.getEnd(), selection.getStart())));
-        if (!editorAdaptor.getConfiguration().get(Options.SELECTION).equals("exclusive")) {
+        if (!isSelectionExclusive) {
             CaretType type = selection.isReversed() ? CaretType.LEFT_SHIFTED_RECTANGULAR : CaretType.RECTANGULAR;
             editorAdaptor.getCursorService().setCaret(type);
         }
