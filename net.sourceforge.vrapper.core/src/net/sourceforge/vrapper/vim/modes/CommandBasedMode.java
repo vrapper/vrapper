@@ -1,9 +1,14 @@
 package net.sourceforge.vrapper.vim.modes;
+
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.convertKeyStroke;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
 import static net.sourceforge.vrapper.vim.commands.BorderPolicy.EXCLUSIVE;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import net.sourceforge.vrapper.keymap.EmptyState;
 import net.sourceforge.vrapper.keymap.KeyMap;
 import net.sourceforge.vrapper.keymap.KeyStroke;
@@ -13,6 +18,7 @@ import net.sourceforge.vrapper.keymap.Transition;
 import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.KeyMapProvider;
+import net.sourceforge.vrapper.platform.PlatformSpecificStateProvider;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.Command;
@@ -53,6 +59,7 @@ public abstract class CommandBasedMode extends AbstractMode {
     protected State<Command> currentState;
     private final KeyMapResolver keyMapResolver;
     private final StringBuilder commandBuffer;
+    private static Map<String, State<Command>> initialStateCache = new HashMap<String, State<Command>>();
 
     public CommandBasedMode(EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
@@ -61,9 +68,17 @@ public abstract class CommandBasedMode extends AbstractMode {
         commandBuffer = new StringBuilder();
     }
 
-    protected abstract State<Command> getInitialState();
     protected abstract void placeCursor();
+    protected abstract State<Command> buildInitialState();
     protected abstract KeyMapResolver buildKeyMapResolver();
+
+    public State<Command> getInitialState() {
+        PlatformSpecificStateProvider platformSpecificStateProvider = editorAdaptor.getPlatformSpecificStateProvider();
+        String key = platformSpecificStateProvider.getFileType() + " :: " + getName();
+        if (!initialStateCache.containsKey(key))
+            initialStateCache.put(key, buildInitialState());
+        return initialStateCache.get(key);
+    }
 
     @SuppressWarnings("unchecked")
     public static State<Motion> motions() {
@@ -73,8 +88,11 @@ public abstract class CommandBasedMode extends AbstractMode {
             final Motion moveUp = MoveUp.INSTANCE;
             final Motion moveDown = MoveDown.INSTANCE;
             final Motion moveDownReturn = MoveDownReturn.INSTANCE;
-    //        final Motion findNext = new EclipseMoveCommand("org.eclipse.ui.edit.findNext", EXCLUSIVE);
-    //        final Motion findPrevious = new EclipseMoveCommand("org.eclipse.ui.edit.findPrevious", EXCLUSIVE);
+            // final Motion findNext = new
+            // EclipseMoveCommand("org.eclipse.ui.edit.findNext", EXCLUSIVE);
+            // final Motion findPrevious = new
+            // EclipseMoveCommand("org.eclipse.ui.edit.findPrevious",
+            // EXCLUSIVE);
             final Motion findNext = SearchResultMotion.FORWARD;
             final Motion findPrevious = SearchResultMotion.BACKWARD;
             final Motion findWordNext = WordSearchMotion.FORWARD;
@@ -88,11 +106,15 @@ public abstract class CommandBasedMode extends AbstractMode {
             final Motion wordEndLeft = MoveWordEndLeft.INSTANCE;
             final Motion WORDEndLeft = MoveBigWORDEndLeft.INSTANCE;
             // TODO: move this to eclipse module
-    //        final Motion eclipseWordRight = go("wordNext", EXCLUSIVE);
-    //        final Motion eclipseWordLeft  = go("wordPrevious", EXCLUSIVE);
+            // final Motion eclipseWordRight = go("wordNext", EXCLUSIVE);
+            // final Motion eclipseWordLeft = go("wordPrevious", EXCLUSIVE);
             final Motion lineStart = LineStartMotion.NON_WHITESPACE;
             final Motion column0 = LineStartMotion.COLUMN0;
-            final Motion lineEnd = new LineEndMotion(EXCLUSIVE); // NOTE: it's not INCLUSIVE; bug in Vim documentation
+            final Motion lineEnd = new LineEndMotion(EXCLUSIVE); // NOTE: it's
+                                                                 // not
+                                                                 // INCLUSIVE;
+                                                                 // bug in Vim
+                                                                 // documentation
             final Motion parenthesesMove = new ParenthesesMove();
             final Motion findForward = ContinueFindingMotion.NORMAL;
             final Motion findBackward = ContinueFindingMotion.REVERSE;
@@ -101,84 +123,78 @@ public abstract class CommandBasedMode extends AbstractMode {
             final Motion middleMove = ViewPortMotion.MIDDLE;
             final Motion lowMove = ViewPortMotion.LOW;
 
-            motions = state(
-                    leafBind('h', moveLeft),
-                    leafBind('j', moveDown),
-                    leafBind(SpecialKey.RETURN, moveDownReturn),
-                    leafBind('k', moveUp),
-                    leafBind('l', moveRight),
-                    leafBind(' ', moveRight),
-                    leafBind(SpecialKey.ARROW_LEFT,  moveLeft),
-                    leafBind(SpecialKey.ARROW_DOWN,  moveDown),
-                    leafBind(SpecialKey.ARROW_UP,    moveUp),
-                    leafBind(SpecialKey.ARROW_RIGHT, moveRight),
-                    leafBind(';', findForward),
-                    leafBind(',', findBackward),
-                    transitionBind('t', convertKeyStroke(
-                            FindMotion.keyConverter(false, false),
+            motions = state(leafBind('h', moveLeft), leafBind('j', moveDown),
+                    leafBind(SpecialKey.RETURN, moveDownReturn), leafBind('k',
+                            moveUp), leafBind('l', moveRight), leafBind(' ',
+                            moveRight), leafBind(SpecialKey.ARROW_LEFT,
+                            moveLeft),
+                    leafBind(SpecialKey.ARROW_DOWN, moveDown), leafBind(
+                            SpecialKey.ARROW_UP, moveUp), leafBind(
+                            SpecialKey.ARROW_RIGHT, moveRight), leafBind(';',
+                            findForward), leafBind(',', findBackward),
+                    transitionBind('t', convertKeyStroke(FindMotion
+                            .keyConverter(false, false),
                             VimConstants.PRINTABLE_KEYSTROKES)),
-                    transitionBind('T', convertKeyStroke(
-                            FindMotion.keyConverter(false, true),
+                    transitionBind('T', convertKeyStroke(FindMotion
+                            .keyConverter(false, true),
                             VimConstants.PRINTABLE_KEYSTROKES)),
-                    transitionBind('f', convertKeyStroke(
-                            FindMotion.keyConverter(true, false),
+                    transitionBind('f', convertKeyStroke(FindMotion
+                            .keyConverter(true, false),
                             VimConstants.PRINTABLE_KEYSTROKES)),
-                    transitionBind('F', convertKeyStroke(
-                            FindMotion.keyConverter(true, true),
+                    transitionBind('F', convertKeyStroke(FindMotion
+                            .keyConverter(true, true),
                             VimConstants.PRINTABLE_KEYSTROKES)),
                     transitionBind('\'', convertKeyStroke(
                             GoToMarkMotion.LINEWISE_CONVERTER,
                             VimConstants.PRINTABLE_KEYSTROKES)),
                     transitionBind('`', convertKeyStroke(
                             GoToMarkMotion.CHARWISE_CONVERTER,
-                            VimConstants.PRINTABLE_KEYSTROKES)),
-                    leafBind('w', wordRight),
-                    leafBind('W', WORDRight),
+                            VimConstants.PRINTABLE_KEYSTROKES)), leafBind('w',
+                            wordRight), leafBind('W', WORDRight),
                     leafBind('e', wordEndRight),
                     leafBind('E', WORDEndRight),
                     leafBind('b', wordLeft),
                     leafBind('B', WORDLeft),
                     leafBind('G', GoToLineMotion.LAST_LINE), // XXX: counts
-                    leafBind('H', highMove),
-                    leafBind('M', middleMove),
-                    leafBind('L', lowMove),
-                    leafBind('n', findNext),
-                    leafBind('N', findPrevious),
-                    leafBind('*', findWordNext),
-                    leafBind('#', findWordPrevious),
-                    leafBind('0', column0),
-                    leafBind('$', lineEnd),
-                    leafBind('%', parenthesesMove),
+                    leafBind('H', highMove), leafBind('M', middleMove),
+                    leafBind('L', lowMove), leafBind('n', findNext), leafBind(
+                            'N', findPrevious), leafBind('*', findWordNext),
+                    leafBind('#', findWordPrevious), leafBind('0', column0),
+                    leafBind('$', lineEnd), leafBind('%', parenthesesMove),
                     leafBind('^', lineStart),
-    //                leafBind('(', javaGoTo("previous.member",   LINE_WISE)), // XXX: vim non-compatible; XXX: make java-agnostic
-    //                leafBind(')', javaGoTo("next.member",       LINE_WISE)), // XXX: vim non-compatible; XXX: make java-agnostic
-                    //					leafBind(KEY("SHIFT+["), paragraphBackward), // '[' FIXME: doesn't worl
-                    //					leafBind(KEY("SHIFT+]"), paragraphForward),  // ']'
+                    // leafBind('(', javaGoTo("previous.member", LINE_WISE)), //
+                    // XXX: vim non-compatible; XXX: make java-agnostic
+                    // leafBind(')', javaGoTo("next.member", LINE_WISE)), //
+                    // XXX: vim non-compatible; XXX: make java-agnostic
+                    // leafBind(KEY("SHIFT+["), paragraphBackward), // '['
+                    // FIXME: doesn't worl
+                    // leafBind(KEY("SHIFT+]"), paragraphForward), // ']'
                     transitionBind('g',
                             leafBind('g', GoToLineMotion.FIRST_LINE),
-    //                        leafBind('w', eclipseWordRight),
-    //                        leafBind('b', eclipseWordLeft),
-                            leafBind('e', wordEndLeft),
-                            leafBind('E', WORDEndLeft)));
+                            // leafBind('w', eclipseWordRight),
+                            // leafBind('b', eclipseWordLeft),
+                            leafBind('e', wordEndLeft), leafBind('E',
+                                    WORDEndLeft)));
         }
         return motions;
     }
 
-    public void executeCommand(Command command) throws CommandExecutionException {
+    public void executeCommand(Command command)
+            throws CommandExecutionException {
         command.execute(editorAdaptor);
         Command repetition = command.repetition();
         if (repetition != null) {
-            RegisterManager registerManager = editorAdaptor.getRegisterManager();
+            RegisterManager registerManager = editorAdaptor
+                    .getRegisterManager();
             if (!registerManager.isDefaultRegisterActive()) {
-                repetition = new VimCommandSequence(
-                        new SwitchRegisterCommand(
-                                    registerManager.getActiveRegister()), repetition);
+                repetition = new VimCommandSequence(new SwitchRegisterCommand(
+                        registerManager.getActiveRegister()), repetition);
             }
             registerManager.setLastEdit(repetition);
-            editorAdaptor.getCursorService().setMark(CursorService.LAST_EDIT_MARK, editorAdaptor.getPosition());
+            editorAdaptor.getCursorService().setMark(
+                    CursorService.LAST_EDIT_MARK, editorAdaptor.getPosition());
         }
     }
-
 
     public boolean handleKey(KeyStroke keyStroke) {
         if (editorAdaptor == null) {
@@ -186,7 +202,8 @@ public abstract class CommandBasedMode extends AbstractMode {
         }
 
         if (currentState == null) {
-            VrapperLog.error("current state was null - this shouldn't have happened!");
+            VrapperLog
+                    .error("current state was null - this shouldn't have happened!");
             reset();
         }
 
@@ -200,7 +217,8 @@ public abstract class CommandBasedMode extends AbstractMode {
                 try {
                     executeCommand(command);
                 } catch (CommandExecutionException e) {
-                    editorAdaptor.getUserInterfaceService().setErrorMessage(e.getMessage());
+                    editorAdaptor.getUserInterfaceService().setErrorMessage(
+                            e.getMessage());
                 }
             }
         }
@@ -211,7 +229,8 @@ public abstract class CommandBasedMode extends AbstractMode {
             }
         }
 
-        editorAdaptor.getUserInterfaceService().setInfoMessage(commandBuffer.toString());
+        editorAdaptor.getUserInterfaceService().setInfoMessage(
+                commandBuffer.toString());
 
         // FIXME: has some issues with sticky column
         placeCursor();
@@ -247,15 +266,15 @@ public abstract class CommandBasedMode extends AbstractMode {
 
     @SuppressWarnings("unchecked")
     protected State<String> getKeyMapsForMotions() {
-        return state(
-                leafBind('f', KeyMapResolver.NO_KEYMAP),
-                leafBind('t', KeyMapResolver.NO_KEYMAP),
-                leafBind('T', KeyMapResolver.NO_KEYMAP),
-                leafBind('F', KeyMapResolver.NO_KEYMAP));
+        return state(leafBind('f', KeyMapResolver.NO_KEYMAP), leafBind('t',
+                KeyMapResolver.NO_KEYMAP), leafBind('T',
+                KeyMapResolver.NO_KEYMAP), leafBind('F',
+                KeyMapResolver.NO_KEYMAP));
     }
 
     protected State<Command> getPlatformSpecificState(String mode) {
-        State<Command> platformSpecificState = editorAdaptor.getPlatformSpecificStateProvider().getState(mode);
+        State<Command> platformSpecificState = editorAdaptor
+                .getPlatformSpecificStateProvider().getState(mode);
         if (platformSpecificState == null) {
             platformSpecificState = new EmptyState<Command>();
         }

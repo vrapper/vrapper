@@ -27,7 +27,9 @@ import net.sourceforge.vrapper.vim.commands.YankOperation;
 public abstract class AbstractVisualMode extends CommandBasedMode {
 
     public static final String KEYMAP_NAME = "Visual Mode Keymap";
+    
     public static final ModeSwitchHint FIX_SELECTION_HINT = new ModeSwitchHint() { };
+    public static final ModeSwitchHint MOVE_CURSOR_HINT = new ModeSwitchHint() { };
 
     public AbstractVisualMode(EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
@@ -77,7 +79,7 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
     }
 
     @SuppressWarnings("unchecked")
-    protected State<Command> createInitialState() {
+    protected State<Command> buildInitialState() {
         Command leaveVisual = LeaveVisualModeCommand.INSTANCE;
         Command yank   = dontRepeat(seq(new SelectionBasedTextOperation(YankOperation.INSTANCE), leaveVisual));
         Command delete = dontRepeat(seq(new SelectionBasedTextOperation(DeleteOperation.INSTANCE), leaveVisual));

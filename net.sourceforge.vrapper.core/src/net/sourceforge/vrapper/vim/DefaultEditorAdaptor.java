@@ -44,6 +44,10 @@ import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
 
 public class DefaultEditorAdaptor implements EditorAdaptor {
+    
+    // ugly global option, so unit tests can disable it
+    // in order to be .vrapperrc-agnostic
+    public static boolean SHOULD_READ_RC_FILE = true;
 
     private static final String CONFIG_FILE_NAME = ".vrapperrc";
     private EditorMode currentMode;
@@ -115,6 +119,8 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     }
 
     private void readConfiguration() {
+        if (!SHOULD_READ_RC_FILE)
+            return;
         File homeDir = new File(System.getProperty("user.home"));
         File config = new File(homeDir, CONFIG_FILE_NAME);
         BufferedReader reader = null;

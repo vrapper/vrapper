@@ -22,7 +22,6 @@ import net.sourceforge.vrapper.vim.commands.SwapSelectionSidesCommand;
 public class VisualMode extends AbstractVisualMode {
 
     public static final String NAME = "visual mode";
-    private static State<Command> initialState;
 
     public VisualMode(EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
@@ -44,7 +43,7 @@ public class VisualMode extends AbstractVisualMode {
     @Override
     public void leaveMode() {
         super.leaveMode();
-        if (editorAdaptor.getConfiguration().get(Options.SELECTION).equals("inclusive")) {
+        if (!editorAdaptor.getConfiguration().get(Options.SELECTION).equals("exclusive")) {
             Position position = editorAdaptor.getPosition();
             if (position.getModelOffset() > 0)
                 position = position.addModelOffset(-1);
@@ -59,17 +58,13 @@ public class VisualMode extends AbstractVisualMode {
 
     @Override
     @SuppressWarnings("unchecked")
-    protected State<Command> getInitialState() {
-        initialState = null;
-        if (initialState == null) {
-            State<Command> characterwiseSpecific = state(
-                    leafBind('o', (Command) SwapSelectionSidesCommand.INSTANCE),
-                    leafBind('V', (Command) new ChangeModeCommand(LinewiseVisualMode.NAME, FIX_SELECTION_HINT)),
-                    leafBind('v', (Command) LeaveVisualModeCommand.INSTANCE)
-                    );
-            initialState = union(characterwiseSpecific, createInitialState());
-        }
-        return initialState;
+    protected State<Command> buildInitialState() {
+        State<Command> characterwiseSpecific = state(
+                leafBind('o', (Command) SwapSelectionSidesCommand.INSTANCE),
+                leafBind('V', (Command) new ChangeModeCommand(LinewiseVisualMode.NAME, FIX_SELECTION_HINT)),
+                leafBind('v', (Command) LeaveVisualModeCommand.INSTANCE)
+                );
+        return union(characterwiseSpecific, super.buildInitialState());
     }
 
     @Override

@@ -32,4 +32,6 @@ public interface PlatformSpecificStateProvider {
      * @return {@link EvaluatorMapping} containing platform-specific commands
      */
     EvaluatorMapping getCommands();
+
+    String getFileType();
 }

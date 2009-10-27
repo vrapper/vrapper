@@ -1,5 +1,6 @@
 package net.sourceforge.vrapper.eclipse.platform;
 
+import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.Configuration;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.FileService;
@@ -32,8 +33,10 @@ public class EclipsePlatform implements Platform {
     private final DefaultKeyMapProvider keyMapProvider;
     private final UnderlyingEditorSettings underlyingEditorSettings;
     private final Configuration configuration;
+    private final AbstractTextEditor underlyingEditor;
 
     public EclipsePlatform(AbstractTextEditor abstractTextEditor, ITextViewer textViewer) {
+        underlyingEditor = abstractTextEditor;
         configuration = new SimpleConfiguration();
         cursorAndSelection = new EclipseCursorAndSelection(configuration, textViewer);
         textContent = new EclipseTextContent(textViewer);
@@ -102,6 +105,14 @@ public class EclipsePlatform implements Platform {
     }
 
     public PlatformSpecificStateProvider getPlatformSpecificStateProvider() {
+        // FIXME: civilised way of doing this would be extensions/extension points
+        // this is just temporary
+        String className = underlyingEditor.getClass().getName();
+        VrapperLog.info("PlatformSpecificStateProvider.getPlatformSpecificStateProvider: " + className);
+        if (className.endsWith(".CompilationUnitEditor"))
+            return JdtSpecificStateProvider.INSTANCE;
+        if (underlyingEditor.getClass().getName().endsWith(".CEditor"))
+            return CdtSpecificStateProvider.INSTANCE;
         return EclipseSpecificStateProvider.INSTANCE;
     }
 }

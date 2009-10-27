@@ -69,8 +69,6 @@ public class NormalMode extends CommandBasedMode {
     public static final String KEYMAP_NAME = "Normal Mode Keymap";
     public static final String NAME = "normal mode";
     private static State<TextObject> textObjects;
-    private static State<Command> initialState;
-
 
     public NormalMode(EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
@@ -115,113 +113,108 @@ public class NormalMode extends CommandBasedMode {
 
     @Override
     @SuppressWarnings("unchecked")
-    protected State<Command> getInitialState() {
-        if (initialState == null) {
-            Command visualMode = new ChangeModeCommand(VisualMode.NAME);
-            Command linewiseVisualMode = new ChangeModeCommand(LinewiseVisualMode.NAME);
+    protected State<Command> buildInitialState() {
+        Command visualMode = new ChangeModeCommand(VisualMode.NAME);
+        Command linewiseVisualMode = new ChangeModeCommand(LinewiseVisualMode.NAME);
 
+        final Motion moveLeft = MoveLeft.INSTANCE;
+        final Motion moveRight = MoveRight.INSTANCE;
+        final Motion wordRight = MoveWordRight.INSTANCE;
+        final Motion wordEndRight = MoveWordEndRight.INSTANCE;
+        final Motion bol = LineStartMotion.NON_WHITESPACE;
+        final Motion eol = new LineEndMotion(BorderPolicy.EXCLUSIVE);
 
-            final Motion moveLeft = MoveLeft.INSTANCE;
-            final Motion moveRight = MoveRight.INSTANCE;
-            final Motion wordRight = MoveWordRight.INSTANCE;
-            final Motion wordEndRight = MoveWordEndRight.INSTANCE;
-            final Motion bol = LineStartMotion.NON_WHITESPACE;
-            final Motion eol = new LineEndMotion(BorderPolicy.EXCLUSIVE);
-
-            final State<Motion> motions = motions();
-            final TextObject wordForCW = new OptionDependentTextObject(Options.SANE_CW, wordRight, wordEndRight);
+        final State<Motion> motions = motions();
+        final TextObject wordForCW = new OptionDependentTextObject(Options.SANE_CW, wordRight, wordEndRight);
 //            final TextObject wordForCW = new MotionTextObject(wordEndRight);
-            final TextObject toEol = new MotionTextObject(eol);
-            final TextObject wholeLine = new MotionTextObject(new LineEndMotion(BorderPolicy.LINE_WISE));
+        final TextObject toEol = new MotionTextObject(eol);
+        final TextObject wholeLine = new MotionTextObject(new LineEndMotion(BorderPolicy.LINE_WISE));
 //            final TextObject toEolForY = new OptionDependentTextObject(Options.STUPID_Y, wholeLine, toEol);
-            final TextObject toEolForY = wholeLine;
+        final TextObject toEolForY = wholeLine;
 
-            State<TextObject> textObjects = textObjects();
-            State<TextObject> textObjectsForChange = CountingState.wrap(union(state(leafBind('w', wordForCW)), textObjects));
+        State<TextObject> textObjects = textObjects();
+        State<TextObject> textObjectsForChange = CountingState.wrap(union(state(leafBind('w', wordForCW)), textObjects));
 
-            TextOperation delete = DeleteOperation.INSTANCE;
-            TextOperation change = ChangeOperation.INSTANCE;
-            TextOperation yank   = YankOperation.INSTANCE;
-            Command undo = UndoCommand.INSTANCE;
-            Command redo = RedoCommand.INSTANCE;
-            Command pasteAfter  = PasteAfterCommand.INSTANCE;
-            Command pasteBefore = PasteBeforeCommand.INSTANCE;
-            Command deleteNext = new TextOperationTextObjectCommand(delete, new MotionTextObject(moveRight));
-            Command deletePrevious = new TextOperationTextObjectCommand(delete, new MotionTextObject(moveLeft));
-            Command repeatLastOne = DotCommand.INSTANCE;
-            Command tildeCmd = SwapCaseCommand.INSTANCE;
-            Command stickToEOL = StickToEOLCommand.INSTANCE;
-            LineEndMotion lineEndMotion = new LineEndMotion(BorderPolicy.LINE_WISE);
-            Command substituteLine = new TextOperationTextObjectCommand(change, new MotionTextObject(lineEndMotion));
-            Command substituteChar = new TextOperationTextObjectCommand(change, new MotionTextObject(moveRight));
-            Command centerLine = CenterLineCommand.INSTANCE;
-            
-            Command afterEnteringVisualInc = new OptionDependentCommand<String>(Options.SELECTION, "inclusive",
-                    new VisualMotionCommand(moveRight));
-            Command afterEnteringVisualExc = new OptionDependentCommand<String>(Options.SELECTION, "exclusive",
-                    new CountIgnoringNonRepeatableCommand() {
-                        public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
-                            Position position = editorAdaptor.getPosition();
-                            editorAdaptor.setSelection(new  SimpleSelection(new StartEndTextRange(position, position)));
-                        }
-                    });
-            Command afterEnteringVisual = seq(afterEnteringVisualInc, afterEnteringVisualExc);
+        TextOperation delete = DeleteOperation.INSTANCE;
+        TextOperation change = ChangeOperation.INSTANCE;
+        TextOperation yank   = YankOperation.INSTANCE;
+        Command undo = UndoCommand.INSTANCE;
+        Command redo = RedoCommand.INSTANCE;
+        Command pasteAfter  = PasteAfterCommand.INSTANCE;
+        Command pasteBefore = PasteBeforeCommand.INSTANCE;
+        Command deleteNext = new TextOperationTextObjectCommand(delete, new MotionTextObject(moveRight));
+        Command deletePrevious = new TextOperationTextObjectCommand(delete, new MotionTextObject(moveLeft));
+        Command repeatLastOne = DotCommand.INSTANCE;
+        Command tildeCmd = SwapCaseCommand.INSTANCE;
+        Command stickToEOL = StickToEOLCommand.INSTANCE;
+        LineEndMotion lineEndMotion = new LineEndMotion(BorderPolicy.LINE_WISE);
+        Command substituteLine = new TextOperationTextObjectCommand(change, new MotionTextObject(lineEndMotion));
+        Command substituteChar = new TextOperationTextObjectCommand(change, new MotionTextObject(moveRight));
+        Command centerLine = CenterLineCommand.INSTANCE;
+        
+        Command afterEnteringVisualInc = new OptionDependentCommand<String>(Options.SELECTION, "inclusive",
+                new VisualMotionCommand(moveRight));
+        Command afterEnteringVisualExc = new OptionDependentCommand<String>(Options.SELECTION, "exclusive",
+                new CountIgnoringNonRepeatableCommand() {
+                    public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
+                        Position position = editorAdaptor.getPosition();
+                        editorAdaptor.setSelection(new  SimpleSelection(new StartEndTextRange(position, position)));
+                    }
+                });
+        Command afterEnteringVisual = seq(afterEnteringVisualInc, afterEnteringVisualExc);
 
-            State<Command> motionCommands = new GoThereState(motions);
+        State<Command> motionCommands = new GoThereState(motions);
 
-            State<Command> platformSpecificState = getPlatformSpecificState(NAME);
-            initialState = new RegisterState(CountingState.wrap(union(
-                    operatorCmdsWithUpperCase('d', delete, toEol,     textObjects),
-                    operatorCmdsWithUpperCase('y', yank,   toEolForY, textObjects),
-                    operatorCmdsWithUpperCase('c', change, toEol,     textObjectsForChange),
-                    state(leafBind('$', stickToEOL)),
-                    motionCommands,
-                    state(
-                            leafBind('i', (Command) new ChangeToInsertModeCommand()),
-                            leafBind('a', (Command) new ChangeToInsertModeCommand(new MotionCommand(moveRight))),
-                            leafBind('I', (Command) new ChangeToInsertModeCommand(new MotionCommand(bol))),
-                            leafBind('A', (Command) new ChangeToInsertModeCommand(new MotionCommand(eol))),
-                            leafBind(':', (Command) new ChangeModeCommand(CommandLineMode.NAME)),
-                            leafBind('?', (Command) new ChangeModeCommand(SearchMode.NAME, SearchMode.Direction.BACKWARD)),
-                            leafBind('/', (Command) new ChangeModeCommand(SearchMode.NAME, SearchMode.Direction.FORWARD)),
-                            leafBind('R', (Command) new ChangeModeCommand(ReplaceMode.NAME)),
-                            leafBind('o', (Command) new ChangeToInsertModeCommand(InsertLineCommand.POST_CURSOR)),
-                            leafBind('O', (Command) new ChangeToInsertModeCommand(InsertLineCommand.PRE_CURSOR)),
-//                            leafBind('v', visualMode),
-                            leafBind('v', seq(visualMode, afterEnteringVisual)),
-                            leafBind('V', seq(linewiseVisualMode, new LinewiseVisualMotionCommand(moveRight))),
-                            leafBind('p', pasteAfter),
-                            leafBind('.', repeatLastOne),
-                            leafBind('P', pasteBefore),
-                            leafBind('x', deleteNext),
-                            leafBind(SpecialKey.DELETE, deleteNext),
-                            leafBind('X', deletePrevious),
-                            leafBind('~', tildeCmd),
-                            leafBind('S', substituteLine),
-                            leafBind('s', substituteChar),
-                            transitionBind('q',
-                                    convertKeyStroke(
-                                            RecordMacroCommand.KEYSTROKE_CONVERTER,
-                                            VimConstants.PRINTABLE_KEYSTROKES)),
-                            transitionBind('@',
-                                    convertKeyStroke(
-                                            PlaybackMacroCommand.KEYSTROKE_CONVERTER,
-                                            VimConstants.PRINTABLE_KEYSTROKES)),
-                            transitionBind('r', changeCaret(CaretType.UNDERLINE),
-                                    convertKeyStroke(
-                                            ReplaceCommand.KEYSTROKE_CONVERTER,
-                                            VimConstants.PRINTABLE_KEYSTROKES_WITH_NL)),
-                            transitionBind('m',
-                                    convertKeyStroke(
-                                            SetMarkCommand.KEYSTROKE_CONVERTER,
-                                            VimConstants.PRINTABLE_KEYSTROKES)),
-                            leafBind('u', undo),
-                            leafCtrlBind('r', redo),
-                            transitionBind('z',
-                                    leafBind('z', centerLine))),
-                    platformSpecificState)));
-        }
-        return initialState;
+        State<Command> platformSpecificState = getPlatformSpecificState(NAME);
+        return new RegisterState(CountingState.wrap(union(
+                platformSpecificState,
+                operatorCmdsWithUpperCase('d', delete, toEol,     textObjects),
+                operatorCmdsWithUpperCase('y', yank,   toEolForY, textObjects),
+                operatorCmdsWithUpperCase('c', change, toEol,     textObjectsForChange),
+                state(leafBind('$', stickToEOL)),
+                motionCommands,
+                state(
+                        leafBind('i', (Command) new ChangeToInsertModeCommand()),
+                        leafBind('a', (Command) new ChangeToInsertModeCommand(new MotionCommand(moveRight))),
+                        leafBind('I', (Command) new ChangeToInsertModeCommand(new MotionCommand(bol))),
+                        leafBind('A', (Command) new ChangeToInsertModeCommand(new MotionCommand(eol))),
+                        leafBind(':', (Command) new ChangeModeCommand(CommandLineMode.NAME)),
+                        leafBind('?', (Command) new ChangeModeCommand(SearchMode.NAME, SearchMode.Direction.BACKWARD)),
+                        leafBind('/', (Command) new ChangeModeCommand(SearchMode.NAME, SearchMode.Direction.FORWARD)),
+                        leafBind('R', (Command) new ChangeModeCommand(ReplaceMode.NAME)),
+                        leafBind('o', (Command) new ChangeToInsertModeCommand(InsertLineCommand.POST_CURSOR)),
+                        leafBind('O', (Command) new ChangeToInsertModeCommand(InsertLineCommand.PRE_CURSOR)),
+                        leafBind('v', seq(visualMode, afterEnteringVisual)),
+                        leafBind('V', seq(linewiseVisualMode, new LinewiseVisualMotionCommand(moveRight))),
+                        leafBind('p', pasteAfter),
+                        leafBind('.', repeatLastOne),
+                        leafBind('P', pasteBefore),
+                        leafBind('x', deleteNext),
+                        leafBind(SpecialKey.DELETE, deleteNext),
+                        leafBind('X', deletePrevious),
+                        leafBind('~', tildeCmd),
+                        leafBind('S', substituteLine),
+                        leafBind('s', substituteChar),
+                        transitionBind('q',
+                                convertKeyStroke(
+                                        RecordMacroCommand.KEYSTROKE_CONVERTER,
+                                        VimConstants.PRINTABLE_KEYSTROKES)),
+                        transitionBind('@',
+                                convertKeyStroke(
+                                        PlaybackMacroCommand.KEYSTROKE_CONVERTER,
+                                        VimConstants.PRINTABLE_KEYSTROKES)),
+                        transitionBind('r', changeCaret(CaretType.UNDERLINE),
+                                convertKeyStroke(
+                                        ReplaceCommand.KEYSTROKE_CONVERTER,
+                                        VimConstants.PRINTABLE_KEYSTROKES_WITH_NL)),
+                        transitionBind('m',
+                                convertKeyStroke(
+                                        SetMarkCommand.KEYSTROKE_CONVERTER,
+                                        VimConstants.PRINTABLE_KEYSTROKES)),
+                        leafBind('u', undo),
+                        leafCtrlBind('r', redo),
+                        transitionBind('z',
+                                leafBind('z', centerLine))))));
     }
 
     @Override

@@ -18,7 +18,7 @@ import net.sourceforge.vrapper.keymap.StateUtils;
 import net.sourceforge.vrapper.platform.PlatformSpecificStateProvider;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.Command;
-import net.sourceforge.vrapper.vim.commands.CountIgnoringNonRepeatableCommand;
+import net.sourceforge.vrapper.vim.commands.DeselectAllCommand;
 import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
 import net.sourceforge.vrapper.vim.commands.TextObject;
 import net.sourceforge.vrapper.vim.modes.CommandLineMode;
@@ -39,11 +39,11 @@ public class EclipseSpecificStateProvider implements
 
     public static final EclipseSpecificStateProvider INSTANCE = new EclipseSpecificStateProvider();
 
-    private final HashMap<String, State<Command>> states;
-    private final HashMap<String, State<String>> keyMaps;
-    private final EvaluatorMapping commands;
+    protected final HashMap<String, State<Command>> states;
+    protected final HashMap<String, State<String>> keyMaps;
+    protected final EvaluatorMapping commands;
 
-    private EclipseSpecificStateProvider() {
+    protected EclipseSpecificStateProvider() {
        states = new HashMap<String, State<Command>>();
        states.put(NormalMode.NAME, normalModeBindings());
        states.put(VisualMode.NAME, visualModeBindings());
@@ -51,15 +51,22 @@ public class EclipseSpecificStateProvider implements
        keyMaps.put(NormalMode.NAME, normalModeKeymap());
        keyMaps.put(VisualMode.NAME, visualModeKeymap());
        commands = new EvaluatorMapping();
-       Command formatAll = javaEditText("format");
        commands.add("eclipseaction", new EclipseActionEvaluator(false));
        commands.add("eclipseaction!", new EclipseActionEvaluator(true));
-       commands.add("formatall", formatAll);
-       commands.add("format", formatAll);
-       commands.add("fm", formatAll);
+        Command formatAll = getFormatCommand();
+        if (formatAll != null) {
+            commands.add("formatall", formatAll);
+            commands.add("format", formatAll);
+            commands.add("fmt", formatAll);
+            commands.add("fm", formatAll);
+        }
     }
 
-    private State<Command> visualModeBindings() {
+    protected Command getFormatCommand() {
+        return null;
+    }
+
+    protected State<Command> visualModeBindings() {
         Command leaveVisual = LeaveVisualModeCommand.INSTANCE;
         Command shiftRight = new EclipseShiftOperation.Visual(false);
         Command shiftLeft = new EclipseShiftOperation.Visual(true);
@@ -72,23 +79,18 @@ public class EclipseSpecificStateProvider implements
             leafBind('<', shiftLeft));
     }
 
-    private State<String> normalModeKeymap() {
+    protected State<String> normalModeKeymap() {
         State<String> normalModeKeymap = state(
                         leafBind('z', KeyMapResolver.NO_KEYMAP),
                         leafBind('g', KeyMapResolver.NO_KEYMAP));
         return normalModeKeymap;
     }
 
-    private State<String> visualModeKeymap() {
+    protected State<String> visualModeKeymap() {
         return state(leafBind('g', KeyMapResolver.NO_KEYMAP));
     }
 
-    private State<Command> normalModeBindings() {
-        Command deselectAll = new CountIgnoringNonRepeatableCommand() {
-            public void execute(EditorAdaptor editorMode) {
-                editorMode.setPosition(editorMode.getSelection().getEnd(), true);
-            }
-        };
+    protected State<Command> normalModeBindings() {
         State<TextObject> textObjects = NormalMode.textObjects();
         State<Command> normalModeBindings = StateUtils.union(
             state(
@@ -99,8 +101,6 @@ public class EclipseSpecificStateProvider implements
                         leafBind('c', dontRepeat(editText("folding.collapse"))),
                         leafBind('M', dontRepeat(editText("folding.collapse_all")))),
                 transitionBind('g',
-                        leafBind('r', javaEditText("refactor.quickMenu")),
-                        leafBind('R', javaEditText("rename.element")),
                         leafBind('t', cmd("org.eclipse.ui.window.nextEditor")),
                         leafBind('T', cmd("org.eclipse.ui.window.previousEditor"))),
                 leafCtrlBind('f', go("pageDown")),
@@ -109,13 +109,10 @@ public class EclipseSpecificStateProvider implements
                 leafBind(SpecialKey.PAGE_UP, go("pageUp")),
                 leafCtrlBind('y', dontRepeat(editText("scroll.lineUp"))),
                 leafCtrlBind('e', dontRepeat(editText("scroll.lineDown"))),
-                leafCtrlBind(']', seq(javaEditText("open.editor"), deselectAll)), // NOTE: deselect won't work in other editor
                 leafCtrlBind('i', dontRepeat(cmd("org.eclipse.ui.navigate.forwardHistory"))),
                 leafCtrlBind('o', dontRepeat(cmd("org.eclipse.ui.navigate.backwardHistory")))),
-            prefixedOperatorCmds('g', 'c', seq(javaEditText("toggle.comment"), deselectAll), textObjects),
-            prefixedOperatorCmds('g', 'u', seq(editText("lowerCase"), deselectAll), textObjects),
-            prefixedOperatorCmds('g', 'U', seq(editText("upperCase"), deselectAll), textObjects),
-            operatorCmds('=', seq(javaEditText("indent"), deselectAll), textObjects),
+            prefixedOperatorCmds('g', 'u', seq(editText("lowerCase"), DeselectAllCommand.INSTANCE), textObjects),
+            prefixedOperatorCmds('g', 'U', seq(editText("upperCase"), DeselectAllCommand.INSTANCE), textObjects),
             operatorCmds('>', new EclipseShiftOperation.Normal(false), textObjects),
             operatorCmds('<', new EclipseShiftOperation.Normal(true), textObjects)
          );
@@ -144,12 +141,12 @@ public class EclipseSpecificStateProvider implements
 //        return new EclipseMoveCommand("org.eclipse.ui.edit.text.goto." + where, borderPolicy);
 //    }
 
-    private static Command go(String where) {
+    protected static Command go(String where) {
         return new EclipseCommand("org.eclipse.ui.edit.text.goto." + where);
     }
 
 
-    private static Command cmd(String command) {
+    protected static Command cmd(String command) {
         return new EclipseCommand(command);
     }
 
@@ -157,16 +154,11 @@ public class EclipseSpecificStateProvider implements
 //        return new EclipseCommand("org.eclipse.ui.edit." + command);
 //    }
 
-    private static EclipseCommand editText(String command) {
+    protected static EclipseCommand editText(String command) {
         return new EclipseCommand("org.eclipse.ui.edit.text." + command);
     }
 
-    private static Command javaEditText(String cmd) {
-        // FIXME: this is temporary, keymap should be language-independent
-        return new EclipseCommand("org.eclipse.jdt.ui.edit.text.java." + cmd);
-    }
-
-    private static class EclipseActionEvaluator implements Evaluator {
+    protected static class EclipseActionEvaluator implements Evaluator {
 
         private final boolean force;
 
@@ -185,6 +177,10 @@ public class EclipseSpecificStateProvider implements
             return null;
         }
 
+    }
+
+    public String getFileType() {
+        return "text";
     }
 
 }

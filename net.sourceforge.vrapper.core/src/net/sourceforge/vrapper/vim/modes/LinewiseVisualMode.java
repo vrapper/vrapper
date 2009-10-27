@@ -20,7 +20,6 @@ import net.sourceforge.vrapper.vim.commands.SwapLinewiseSelectionSidesCommand;
 public class LinewiseVisualMode extends AbstractVisualMode {
 
     public static final String NAME = "linewise visual mode";
-    private static State<Command> initialState;
 
     public LinewiseVisualMode(EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
@@ -46,17 +45,13 @@ public class LinewiseVisualMode extends AbstractVisualMode {
 
     @Override
     @SuppressWarnings("unchecked")
-    protected State<Command> getInitialState() {
-        initialState = null;
-        if (initialState == null) {
-            State<Command> linewiseSpecific = state(
-                    leafBind('o', (Command) SwapLinewiseSelectionSidesCommand.INSTANCE),
-                    leafBind('v', (Command) new ChangeModeCommand(VisualMode.NAME, FIX_SELECTION_HINT)),
-                    leafBind('V', (Command) LeaveVisualModeCommand.INSTANCE)
-                    );
-            initialState = union(linewiseSpecific, createInitialState());
-        }
-        return initialState;
+    protected State<Command> buildInitialState() {
+        State<Command> linewiseSpecific = state(
+                leafBind('o', (Command) SwapLinewiseSelectionSidesCommand.INSTANCE),
+                leafBind('v', (Command) new ChangeModeCommand(VisualMode.NAME, FIX_SELECTION_HINT)),
+                leafBind('V', (Command) LeaveVisualModeCommand.INSTANCE)
+                );
+        return union(linewiseSpecific, super.buildInitialState());
     }
 
     @Override
