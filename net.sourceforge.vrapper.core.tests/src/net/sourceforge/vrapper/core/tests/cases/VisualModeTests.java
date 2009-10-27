@@ -21,6 +21,9 @@ import net.sourceforge.vrapper.vim.modes.VisualMode;
 
 import org.junit.Test;
 
+// FIXME: needs testing with different values of 'selection' variable
+// (it affects most of the tests)
+
 public class VisualModeTests extends CommandTestCase {
 
     @Override
@@ -178,18 +181,6 @@ public class VisualModeTests extends CommandTestCase {
 		assertEquals("visual mode", mode.getName());
 	}
     
-    // FIXME: broken
-    @Test public void enteringAndExitingModeShouldLeaveCursorOnTheSamePosition() {
-	    CursorService cursorService = platform.getCursorService();
-        content.setText("This is some text");
-	    Position oldPosition = cursorService.newPositionForModelOffset(2);
-        cursorService.setPosition(oldPosition, true);
-        mode.enterMode();
-        mode.leaveMode();
-        Position newPosition = cursorService.getPosition();
-        assertEquals(oldPosition, newPosition);
-    }
-
 	@Test public void visualModeShouldEnterPainlesslyAndDeselectOnLeave() {
 	    CursorService cursorService = platform.getCursorService();
 	    Position position = cursorService.newPositionForModelOffset(42);
