@@ -78,6 +78,11 @@ public interface Configuration {
             return legalValues;
         }
 
+        
+        @Override
+        public String toString() {
+            return String.format("Option(%s)", id);
+        }
     }
 
 }

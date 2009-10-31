@@ -66,15 +66,15 @@ public class NormalModeTests extends CommandTestCase {
 	}
 
 	@Test public void test_cw_sane() {
-	    platform.getConfiguration().set(Options.SANE_CW, true);
-		checkCommand(forKeySeq("cw"),
+	    when(configuration.get(Options.SANE_CW)).thenReturn(true);
+	    checkCommand(forKeySeq("cw"),
 			"Ala",' ',"ma kota",
 			"Ala",'m',"a kota");
 		assertYanked(ContentType.TEXT, " ");
 	}
 
 	@Test public void test_cw_compilant() {
-	    platform.getConfiguration().set(Options.SANE_CW, false);
+	    when(configuration.get(Options.SANE_CW)).thenReturn(false);
 		checkCommand(forKeySeq("cw"),
 			"Ala",' ',"ma kota",
 			"Ala",' ',"kota");

@@ -1,5 +1,7 @@
 package net.sourceforge.vrapper.vim.modes;
 
+import java.util.Collection;
+
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SimpleTransition;
 import net.sourceforge.vrapper.keymap.State;
@@ -26,7 +28,7 @@ public final class RegisterKeymapState implements State<String> {
                 return new SimpleTransition<String>(keymapName, RegisterKeymapState.this);
             }
 
-            public Iterable<KeyStroke> supportedKeys() {
+            public Collection<KeyStroke> supportedKeys() {
                 return null;
             }
 
@@ -43,7 +45,7 @@ public final class RegisterKeymapState implements State<String> {
         return wrapped.press(key);
     }
 
-    public Iterable<KeyStroke> supportedKeys() { return null; }
+    public Collection<KeyStroke> supportedKeys() { return null; }
 
     public State<String> union(State<String> other) { return null; }
 }

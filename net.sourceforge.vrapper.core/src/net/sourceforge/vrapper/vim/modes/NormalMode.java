@@ -123,17 +123,16 @@ public class NormalMode extends CommandBasedMode {
         final Motion wordEndRight = MoveWordEndRight.INSTANCE;
         final Motion bol = LineStartMotion.NON_WHITESPACE;
         final Motion eol = new LineEndMotion(BorderPolicy.EXCLUSIVE);
+        final Motion wholeLineEol = new LineEndMotion(BorderPolicy.LINE_WISE);
 
         final State<Motion> motions = motions();
         final TextObject wordForCW = new OptionDependentTextObject(Options.SANE_CW, wordRight, wordEndRight);
-//            final TextObject wordForCW = new MotionTextObject(wordEndRight);
         final TextObject toEol = new MotionTextObject(eol);
-        final TextObject wholeLine = new MotionTextObject(new LineEndMotion(BorderPolicy.LINE_WISE));
-//            final TextObject toEolForY = new OptionDependentTextObject(Options.STUPID_Y, wholeLine, toEol);
-        final TextObject toEolForY = wholeLine;
+        final TextObject toEolForY = new OptionDependentTextObject(Options.SANE_Y, eol, wholeLineEol);
 
         State<TextObject> textObjects = textObjects();
-        State<TextObject> textObjectsForChange = CountingState.wrap(union(state(leafBind('w', wordForCW)), textObjects));
+        State<TextObject> textObjectsForChange = union(state(leafBind('w', wordForCW)), textObjects);
+        textObjectsForChange = CountingState.wrap(textObjectsForChange);
 
         TextOperation delete = DeleteOperation.INSTANCE;
         TextOperation change = ChangeOperation.INSTANCE;
@@ -166,7 +165,7 @@ public class NormalMode extends CommandBasedMode {
         State<Command> motionCommands = new GoThereState(motions);
 
         State<Command> platformSpecificState = getPlatformSpecificState(NAME);
-        return new RegisterState(CountingState.wrap(union(
+        return RegisterState.wrap(CountingState.wrap(union(
                 platformSpecificState,
                 operatorCmdsWithUpperCase('d', delete, toEol,     textObjects),
                 operatorCmdsWithUpperCase('y', yank,   toEolForY, textObjects),

@@ -3,8 +3,6 @@ package net.sourceforge.vrapper.platform;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sourceforge.vrapper.log.VrapperLog;
-
 public class SimpleConfiguration implements Configuration {
 
     private String newLine = NewLine.SYSTEM.nl;
@@ -23,7 +21,6 @@ public class SimpleConfiguration implements Configuration {
         if (value == null) {
             throw new NullPointerException("value must not be null");
         }
-        VrapperLog.info("Setting option '" + key.getId() + "' to " + value);
         vars.put(key, value);
     }
 

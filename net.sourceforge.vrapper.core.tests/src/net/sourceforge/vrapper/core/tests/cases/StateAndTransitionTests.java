@@ -8,19 +8,16 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.parseKeyStr
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
-
-import java.util.HashSet;
-import java.util.Set;
-
 import net.sourceforge.vrapper.keymap.ConvertingState;
 import net.sourceforge.vrapper.keymap.EmptyState;
 import net.sourceforge.vrapper.keymap.HashMapState;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.State;
+import net.sourceforge.vrapper.keymap.Transition;
 import net.sourceforge.vrapper.keymap.UnionState;
+import net.sourceforge.vrapper.keymap.WrappingState;
 import net.sourceforge.vrapper.keymap.vim.CountingState;
 import net.sourceforge.vrapper.utils.Function;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
@@ -88,14 +85,9 @@ public class StateAndTransitionTests {
     }
 
     @Test
-    public void emptyStateShouldSupportNoKeys() {
-        assertFalse(new EmptyState<Object>().supportedKeys().iterator()
-                .hasNext());
-    }
-
-    @Test
     public void emptyStateShouldReturnOtherOneWhenDoingUnion() {
-        assertSame(state, new EmptyState<Integer>().union(state));
+        State<Integer> emptyState = EmptyState.getInstance();
+        assertSame(state, emptyState.union(state));
     }
 
     @Test
@@ -170,8 +162,7 @@ public class StateAndTransitionTests {
 
             @Override
             public CountAwareCommand repetition() {
-                throw new UnsupportedOperationException(
-                        "method not yet implemented");
+                throw new UnsupportedOperationException();
             }
         };
         @SuppressWarnings("unchecked")
@@ -190,12 +181,10 @@ public class StateAndTransitionTests {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testUnionStateLeaf() {
-        @SuppressWarnings("unchecked")
         State<Integer> state_a1 = state(leafBind('a', 1));
-        @SuppressWarnings("unchecked")
         State<Integer> state_a2 = state(leafBind('a', 2));
-        @SuppressWarnings("unchecked")
         State<Integer> state_b2 = state(leafBind('b', 2));
         assertEquals((Integer) 1, new UnionState<Integer>(state_a1, state_a2).press(
                 key('a')).getValue());
@@ -230,8 +219,10 @@ public class StateAndTransitionTests {
                 transitionBind('b', leaf3)));
         State<Integer> state2 = state(transitionBind('a', leafBind('a', 2),
                 transitionBind('c', leaf4)));
+        
         State<Integer> union12 = new UnionState<Integer>(state1, state2);
         State<Integer> union21 = new UnionState<Integer>(state2, state1);
+        
         assertEquals((Integer) 1, union12.press(key('a')).getNextState().press(key('a'))
                 .getValue());
         assertEquals((Integer) 2, union21.press(key('a')).getNextState().press(key('a'))
@@ -243,31 +234,68 @@ public class StateAndTransitionTests {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
-    public void testUnionStateSupportedKeys() {
-        State<Integer> state1234 = state(leafBind('1', 1), leafBind('2', 2),
-                leafBind('3', 3), leafBind('4', 4));
-        State<Integer> state3456 = state(leafBind('3', 3), leafBind('4', 4),
-                leafBind('5', 5), leafBind('6', 6));
-        State<Integer> state789 = state(leafBind('7', 7), leafBind('8', 8),
-                leafBind('9', 9));
-
-        State<Integer> unionState = new UnionState(state1234, state3456);
-        Set<KeyStroke> expected = new HashSet<KeyStroke>();
-        for (char chr = '1'; chr <= '6'; chr++) {
-            expected.add(key(chr));
-        }
-        assertEquals(expected, unionState.supportedKeys());
-        for (char chr = '7'; chr <= '9'; chr++) {
-            expected.add(key(chr));
-        }
-        assertEquals(expected, unionState.union(state789).supportedKeys());
-    }
-
-    @Test
     public void testParsingKeyStrokes() {
         assertEquals(asList(key('a')), parseKeyStrokes("a"));
         assertEquals(asList(key('a'), key('b')), parseKeyStrokes("ab"));
+    }
+    
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testWrapperState() {
+        Function<Integer, Integer> subTwo = new Function<Integer, Integer>() {
+            public Integer call(Integer arg) { return arg - 2; }
+            @Override public String toString() { return "subTwo()"; }
+        };
+        Function<Integer, Integer> addTwo = new Function<Integer, Integer>() {
+            public Integer call(Integer arg) { return arg + 2; }
+            @Override public String toString() { return "addTwo()"; }
+        };
+        State<Integer> state42 = state(transitionBind('4', 4, state(leafBind('2', 42))));
+        State<Integer> state9 = state(leafBind('9', 9));
+        State<Function<Integer, Integer>> stateOperators = state(
+                leafBind('+', addTwo),
+                transitionBind('-', subTwo, state(leafBind('-', addTwo))));
+        State<Integer> wrapped42 = new WrappingState<Integer>(stateOperators, state42);
+        State<Integer> wrapped9 = new WrappingState<Integer>(stateOperators, state9);
+        State<Integer> unionState = union(wrapped42, wrapped9);
+        
+        assertEquals((Integer) 4, getValue(wrapped42, "4"));
+        assertEquals((Integer) 6, getValue(wrapped42, "+4"));
+        assertEquals((Integer) 2, getValue(wrapped42, "-4"));
+        assertEquals((Integer) 6, getValue(wrapped42, "--4"));
+        
+        assertEquals((Integer) 42, getValue(wrapped42, "42"));
+        assertEquals((Integer) 44, getValue(wrapped42, "+42"));
+        assertEquals((Integer) 40, getValue(wrapped42, "-42"));
+        assertEquals((Integer) 44, getValue(wrapped42, "--42"));
+        
+        assertEquals((Integer) 11, getValue(unionState, "--9"));
+        
+        assertNull(wrapped42.press(key('5')));
+        assertNull(wrapped42.press(key('+')).getNextState().press(key('5')));
+        assertNull(wrapped42.press(key('-')).getNextState().press(key('5')));
+        assertNull(wrapped42.press(key('-')).getNextState().press(key('-')).getNextState().press(key('5')));
+    }
+    
+    static<T> T getValue(State<T> state, String keys) {
+        return goThrough(state, keys).getValue();
+    }
+    
+    static<T> Transition<T> goThrough(State<T> state, String keys) {
+        return goThrough(state, parseKeyStrokes(keys));
+    }
+    
+    static<T> Transition<T> goThrough(State<T> state, Iterable<KeyStroke> keys) {
+        Transition<T> transition = null;
+        for (KeyStroke key: keys) {
+//            System.out.println(key);
+            transition = state.press(key);
+//            System.out.println(transition);
+            state = transition.getNextState();
+//            System.out.println(state);
+//            System.out.println();
+        }
+        return transition;
     }
 
 //    private static<T> void assertReturnsValue(T expected, State<T> state, String keys) {

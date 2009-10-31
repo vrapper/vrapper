@@ -1,22 +1,35 @@
 package net.sourceforge.vrapper.keymap;
 
-import net.sourceforge.vrapper.log.VrapperLog;
+import java.util.Collection;
+
 import net.sourceforge.vrapper.utils.Function;
 
-public class ConvertingState<T1, T2> extends HashMapState<T1> {
+public class ConvertingState<T1, T2> implements State<T1> {
 
-	public ConvertingState(Function<T1, T2> converter, State<? extends T2> wrapped) {
-    	for (KeyStroke key: wrapped.supportedKeys()) {
-		    T2 value = wrapped.press(key).getValue();
-		    @SuppressWarnings("unchecked")
-		    State<T2> nextState = (State<T2>) wrapped.press(key).getNextState();
-		    if (nextState != null) {
-		        map.put(key, new ConvertingTransition<T1, T2>(converter, value, nextState));
-		    } else if (value != null) {
-		        map.put(key, new SimpleTransition<T1>(converter.call(value)));
-		    } else {
-		        VrapperLog.error("Empty transition in " + wrapped + " for key: " + key);
-		    }
-		}
+    private final Function<T1, T2> converter;
+    private final State<T2> wrapped;
+
+    public ConvertingState(Function<T1, T2> converter, State<T2> wrapped) {
+        this.converter = converter;
+        this.wrapped = wrapped;
+    }
+
+    public Transition<T1> press(KeyStroke key) {
+        Transition<T2> transition = wrapped.press(key);
+        if (transition != null)
+            return new ConvertingTransition<T1, T2>(converter, transition.getValue(), transition.getNextState());
+        return null;
+    }
+
+    public Collection<KeyStroke> supportedKeys() {
+        // TODO Auto-generated method stub
+        // return null;
+        throw new UnsupportedOperationException();
+    }
+
+    public State<T1> union(State<T1> other) {
+        // TODO Auto-generated method stub
+        // return null;
+        throw new UnsupportedOperationException();
     }
 }

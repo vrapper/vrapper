@@ -1,8 +1,5 @@
 package net.sourceforge.vrapper.keymap.vim;
 
-import java.util.Collection;
-import java.util.HashSet;
-
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SimpleTransition;
 import net.sourceforge.vrapper.keymap.State;
@@ -28,17 +25,12 @@ public class RegisterState implements State<Command> {
         return wrappedState.press(key);
     }
 
-    public Iterable<KeyStroke> supportedKeys() {
-        Collection<KeyStroke> result = new HashSet<KeyStroke>();
-        result.add(new SimpleKeyStroke('"'));
-        for (KeyStroke key : wrappedState.supportedKeys()) {
-            result.add(key);
-        }
-        return result;
-    }
-
     public State<Command> union(State<Command> other) {
         return new RegisterState(wrappedState.union(other));
+    }
+
+    public static State<Command> wrap(State<Command> wrapped) {
+        return new RegisterState(wrapped);
     }
 
     public class RegisterSelectState implements State<Command> {
@@ -47,7 +39,6 @@ public class RegisterState implements State<Command> {
             return new SimpleTransition<Command>(
                     new SwitchRegisterCommand(key.getCharacter()),
                     RegisterState.this);
-
         }
 
         public Iterable<KeyStroke> supportedKeys() {

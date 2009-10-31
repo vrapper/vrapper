@@ -29,7 +29,7 @@ final class CountConsumingState<T> implements State<T> {
         return state.press(key);
     }
 
-    public Iterable<KeyStroke> supportedKeys() { return null; }
-
-    public State<T> union(State<T> other) { return null; }
+    public State<T> union(State<T> other) {
+        throw new UnsupportedOperationException();
+    }
 }

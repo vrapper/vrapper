@@ -4,7 +4,9 @@ import static net.sourceforge.vrapper.keymap.StateUtils.transitionUnion;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class HashMapState<T> implements State<T> {
 
@@ -31,21 +33,23 @@ public class HashMapState<T> implements State<T> {
         return map.get(key);
     }
 
-    public Iterable<KeyStroke> supportedKeys() {
+    public Collection<KeyStroke> supportedKeys() {
         return map.keySet();
     }
 
 	public State<T> union(State<T> other) {
         HashMapState<T> result = new HashMapState<T>(new HashMap<KeyStroke, Transition<T>>(map));
-        for(KeyStroke key: other.supportedKeys()) {
-        	Transition<T> others = other.press(key);
-            if (result.map.containsKey(key)) {
-				result.map.put(key, transitionUnion(result.map.get(key), others));
-            } else {
-                result.map.put(key, others);
-            }
+        if (other instanceof HashMapState<?>) {
+            HashMapState<T> otherHMS = (HashMapState<T>) other;
+            result.map.putAll(map);
+            result.map.putAll(otherHMS.map);
+            Set<KeyStroke> commonKeys = new HashSet<KeyStroke>(map.keySet());
+            commonKeys.retainAll(otherHMS.map.keySet());
+            for (KeyStroke key: commonKeys)
+                result.map.put(key, transitionUnion(press(key), other.press(key)));
+            return result;
         }
-        return result;
+        return new UnionState<T>(this, other);
     }
 
 }

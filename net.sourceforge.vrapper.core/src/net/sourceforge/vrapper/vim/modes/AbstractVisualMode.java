@@ -87,7 +87,7 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
         Command commandLineMode = new ChangeModeCommand(CommandLineMode.NAME);
         Command centerLine = CenterLineCommand.INSTANCE;
         State<Command> visualMotions = getVisualMotionState();
-        State<Command> initialState = new RegisterState(CountingState.wrap(union(state(
+        State<Command> initialState = RegisterState.wrap(CountingState.wrap(union(state(
                 leafBind(SpecialKey.ESC, leaveVisual),
                 leafBind('y', yank),
                 leafBind('s', change),

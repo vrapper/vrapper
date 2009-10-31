@@ -276,7 +276,7 @@ public abstract class CommandBasedMode extends AbstractMode {
         State<Command> platformSpecificState = editorAdaptor
                 .getPlatformSpecificStateProvider().getState(mode);
         if (platformSpecificState == null) {
-            platformSpecificState = new EmptyState<Command>();
+            platformSpecificState = EmptyState.getInstance();
         }
         return platformSpecificState;
     }

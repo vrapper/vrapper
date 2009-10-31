@@ -237,7 +237,7 @@ public class ConstructorWrappers {
         assert Character.isLowerCase(key);
         Command doToEOL = new TextOperationTextObjectCommand(command, eolMotion);
         return union(
-                counted(leafState(Character.toUpperCase(key), doToEOL)),
+                leafState(Character.toUpperCase(key), doToEOL), // FIXME: was: counted(...)
                 operatorCmds(key, command, textObjects));
     }
 

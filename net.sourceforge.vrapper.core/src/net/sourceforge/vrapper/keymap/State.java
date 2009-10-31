@@ -1,5 +1,6 @@
 package net.sourceforge.vrapper.keymap;
 
+
 /**
  * Interface describing keymap state at some point.
  * @author Krzysiek Goj
@@ -8,6 +9,6 @@ package net.sourceforge.vrapper.keymap;
  */
 public interface State<T> {
 	Transition<T> press(KeyStroke key);
-	Iterable<KeyStroke> supportedKeys();
 	State<T> union(State<T> other);
+	// TODO: map() method
 }

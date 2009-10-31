@@ -1,5 +1,6 @@
 package net.sourceforge.vrapper.keymap.vim;
 
+import java.util.Collection;
 import java.util.Set;
 
 import net.sourceforge.vrapper.keymap.KeyStroke;
@@ -40,7 +41,7 @@ public class KeyStrokeConvertingState<T> implements State<T> {
         return null;
     }
 
-    public Iterable<KeyStroke> supportedKeys() {
+    public Collection<KeyStroke> supportedKeys() {
         if (supportedKeys != null) {
             return supportedKeys;
         }
