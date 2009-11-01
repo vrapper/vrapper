@@ -235,4 +235,58 @@ public class NormalModeTests extends CommandTestCase {
 	            "0\n",'1',"\n2\n3\n4\n5\n6\n7\n",
 	            "0\n",'7',"\n");
     }
+	
+	@Test
+    public void test_dib() {
+        checkCommand(forKeySeq("dib"),
+                "call(so",'m',"ething, funny);",
+                "call(",')',";");
+        checkCommand(forKeySeq("dib"),
+                "call(so",'m',"ething(), funny);",
+                "call(",')',";");
+        checkCommand(forKeySeq("dib"),
+                "call(something(),",' ',"funny);",
+                "call(",')',";");
+        checkCommand(forKeySeq("dib"),
+                "call(\nsomething(),",'\n',"funny()\n);",
+                "call(",')',";");
+        checkCommand(forKeySeq("d2ib"),
+                "call(something very(fu",'n',"ny));",
+                "call(",')',";");
+        checkCommand(forKeySeq("2dib"),
+                "call(something, very(fu",'n',"ny));",
+                "call(",')',";");
+    }
+	
+	
+	@Test
+    public void test_dab() {
+        checkCommand(forKeySeq("dab"),
+                "call(so",'m',"ething, funny);",
+                "call",';',"");
+        checkCommand(forKeySeq("dab"),
+                "call(\nsomething(),",'\n',"funny()\n);",
+                "call",';',"");
+    }
+	
+	@Test
+    public void test_dt() {
+        checkCommand(forKeySeq("dta"),
+                "A",'l',"a ma kota.",
+                "A",'a'," ma kota.");
+        checkCommand(forKeySeq("d2ta"),
+                "A",'l',"a ma kota.",
+                "A",'a'," kota.");
+        checkCommand(forKeySeq("3dta"),
+                "A",'l',"a ma kota.",
+                "A",'a',".");
+        
+        checkCommand(forKeySeq("2d2ta"),
+                "A",'l',"a ma kota.",
+                "A",'l',"a ma kota.");
+        checkCommand(forKeySeq("3dta"),
+                "A",'l',"a ma\nkota.",
+                "A",'l',"a ma\nkota.");
+    }
+	
 }

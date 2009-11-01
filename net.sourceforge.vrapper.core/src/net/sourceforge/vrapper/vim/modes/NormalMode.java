@@ -39,6 +39,7 @@ import net.sourceforge.vrapper.vim.commands.MotionPairTextObject;
 import net.sourceforge.vrapper.vim.commands.MotionTextObject;
 import net.sourceforge.vrapper.vim.commands.OptionDependentCommand;
 import net.sourceforge.vrapper.vim.commands.OptionDependentTextObject;
+import net.sourceforge.vrapper.vim.commands.ParenthesisPairTextObject;
 import net.sourceforge.vrapper.vim.commands.PasteAfterCommand;
 import net.sourceforge.vrapper.vim.commands.PasteBeforeCommand;
 import net.sourceforge.vrapper.vim.commands.PlaybackMacroCommand;
@@ -58,6 +59,9 @@ import net.sourceforge.vrapper.vim.commands.YankOperation;
 import net.sourceforge.vrapper.vim.commands.motions.LineEndMotion;
 import net.sourceforge.vrapper.vim.commands.motions.LineStartMotion;
 import net.sourceforge.vrapper.vim.commands.motions.Motion;
+import net.sourceforge.vrapper.vim.commands.motions.MoveBigWORDEndRight;
+import net.sourceforge.vrapper.vim.commands.motions.MoveBigWORDLeft;
+import net.sourceforge.vrapper.vim.commands.motions.MoveBigWORDRight;
 import net.sourceforge.vrapper.vim.commands.motions.MoveLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveRight;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordEndRight;
@@ -98,13 +102,39 @@ public class NormalMode extends CommandBasedMode {
             final Motion wordEndRight = MoveWordEndRight.INSTANCE;
             final TextObject innerWord = new MotionPairTextObject(wordLeft, wordEndRight);
             final TextObject aWord = new MotionPairTextObject(wordLeft, wordRight);
+            final TextObject innerWORD = new MotionPairTextObject(MoveBigWORDLeft.INSTANCE, MoveBigWORDEndRight.INSTANCE);
+            final TextObject aWORD = new MotionPairTextObject(MoveBigWORDLeft.INSTANCE, MoveBigWORDRight.INSTANCE);
+            final TextObject innerBracket = new ParenthesisPairTextObject('(', ')', false);
+            final TextObject aBracket = new ParenthesisPairTextObject('(', ')', true);
+            final TextObject innerSquareBracket = new ParenthesisPairTextObject('[', ']', false);
+            final TextObject aSquareBracket = new ParenthesisPairTextObject('[', ']', true);
+            final TextObject innerBrace = new ParenthesisPairTextObject('{', '}', false);
+            final TextObject aBrace = new ParenthesisPairTextObject('{', '}', true);
             textObjects = union(
-                    state(
+                        state(
                             transitionBind('i',
-                                    leafBind('w', innerWord)),
-                                    transitionBind('a',
-                                            leafBind('w', aWord))),
-                                            new TextObjectState(motions()));
+                                    leafBind('b', innerBracket),
+                                    leafBind('(', innerBracket),
+                                    leafBind(')', innerBracket),
+                                    leafBind('[', innerSquareBracket),
+                                    leafBind(']', innerSquareBracket),
+                                    leafBind('B', innerBrace),
+                                    leafBind('{', innerBrace),
+                                    leafBind('}', innerBrace),
+                                    leafBind('w', innerWord),
+                                    leafBind('W', innerWORD)),
+                            transitionBind('a',
+                                    leafBind('b', aBracket),
+                                    leafBind('(', aBracket),
+                                    leafBind(')', aBracket),
+                                    leafBind('[', aSquareBracket),
+                                    leafBind(']', aSquareBracket),
+                                    leafBind('B', aBrace),
+                                    leafBind('{', aBrace),
+                                    leafBind('}', aBrace),
+                                    leafBind('w', aWord),
+                                    leafBind('W', aWORD))),
+                        new TextObjectState(motions()));
 
             textObjects = CountingState.wrap(textObjects);
         }

@@ -9,11 +9,12 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.BorderPolicy;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 
-public class FindMotion extends AbstractModelSideMotion {
-
-    private final char target;
-    private final boolean upToTarget;
-    private final boolean backwards;
+/** Motion responsible for 't', 'T', 'f' and 'F' motions.
+ * Finds next occurrence of a character in current line.
+ * 
+ * @author Krzysiek Goj
+ */
+public class FindMotion extends FindBalancedMotion {
 
     public static Function<Motion, KeyStroke> keyConverter(final boolean upToTarget, final boolean reversed) {
         return new Function<Motion, KeyStroke>() {
@@ -25,40 +26,20 @@ public class FindMotion extends AbstractModelSideMotion {
     }
 
     public FindMotion(char target, boolean upToTarget, boolean reversed) {
-        this.target = target;
-        this.upToTarget = upToTarget;
-        this.backwards = reversed;
+        super(target, '\0', upToTarget, reversed);
     }
 
     @Override
-    protected int destination(int offset, TextContent content, int count) throws CommandExecutionException {
+    protected int getEndSearchOffset(TextContent content, int offset) {
         LineInformation line = content.getLineInformationOfOffset(offset);
         int end = backwards ? line.getBeginOffset() : line.getEndOffset() - 1;
-        int step = backwards ? -1 : 1;
-        for(int n = 0; n < count; n++) {
-            while (offset != end) {
-                offset += step;
-                if(content.getText(offset, 1).charAt(0) == target)
-                    break;
-            }
-        }
-        if(offset >= content.getTextLength() || content.getText(offset, 1).charAt(0) != target) {
-            throw new CommandExecutionException("'" + target + "' not found");
-        }
-        if(!upToTarget) {
-            offset -= step;
-        }
-        return offset;
-    }
-
-    public BorderPolicy borderPolicy() {
-        return backwards ? BorderPolicy.EXCLUSIVE : BorderPolicy.INCLUSIVE;
+        return end;
     }
 
     public FindMotion reversed() {
         return new FindMotion(target, upToTarget, !backwards);
     }
-
+    
     private Motion registrator = new CountAwareMotion() {
         @Override
         public Position destination(EditorAdaptor editorAdaptor, int count)
