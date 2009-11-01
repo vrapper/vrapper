@@ -43,6 +43,7 @@ import net.sourceforge.vrapper.vim.commands.ParenthesisPairTextObject;
 import net.sourceforge.vrapper.vim.commands.PasteAfterCommand;
 import net.sourceforge.vrapper.vim.commands.PasteBeforeCommand;
 import net.sourceforge.vrapper.vim.commands.PlaybackMacroCommand;
+import net.sourceforge.vrapper.vim.commands.QuotedTextObject;
 import net.sourceforge.vrapper.vim.commands.RecordMacroCommand;
 import net.sourceforge.vrapper.vim.commands.RedoCommand;
 import net.sourceforge.vrapper.vim.commands.ReplaceCommand;
@@ -110,6 +111,14 @@ public class NormalMode extends CommandBasedMode {
             final TextObject aSquareBracket = new ParenthesisPairTextObject('[', ']', true);
             final TextObject innerBrace = new ParenthesisPairTextObject('{', '}', false);
             final TextObject aBrace = new ParenthesisPairTextObject('{', '}', true);
+            final TextObject innerAngleBrace = new ParenthesisPairTextObject('<', '>', false);
+            final TextObject anAngleBrace = new ParenthesisPairTextObject('<', '>', true);
+            final TextObject innerString = new QuotedTextObject('"', false);
+            final TextObject aString = new QuotedTextObject('"', true);
+            final TextObject innerGraveString = new QuotedTextObject('`', false);
+            final TextObject aGraveString = new QuotedTextObject('`', true);
+            final TextObject innerChar = new QuotedTextObject('`', false);
+            final TextObject aChar = new QuotedTextObject('\'', true);
             textObjects = union(
                         state(
                             transitionBind('i',
@@ -121,6 +130,11 @@ public class NormalMode extends CommandBasedMode {
                                     leafBind('B', innerBrace),
                                     leafBind('{', innerBrace),
                                     leafBind('}', innerBrace),
+                                    leafBind('<', innerAngleBrace),
+                                    leafBind('>', innerAngleBrace),
+                                    leafBind('"', innerString),
+                                    leafBind('\'', innerChar),
+                                    leafBind('`', innerGraveString),
                                     leafBind('w', innerWord),
                                     leafBind('W', innerWORD)),
                             transitionBind('a',
@@ -132,6 +146,11 @@ public class NormalMode extends CommandBasedMode {
                                     leafBind('B', aBrace),
                                     leafBind('{', aBrace),
                                     leafBind('}', aBrace),
+                                    leafBind('<', anAngleBrace),
+                                    leafBind('>', anAngleBrace),
+                                    leafBind('"', aString),
+                                    leafBind('\'', aChar),
+                                    leafBind('`', aGraveString),
                                     leafBind('w', aWord),
                                     leafBind('W', aWORD))),
                         new TextObjectState(motions()));

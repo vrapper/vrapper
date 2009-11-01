@@ -13,23 +13,27 @@ public class MotionPairTextObject extends AbstractTextObject {
     private final Motion toBeginning;
     private final Motion toEnd;
     private final boolean countToBeginning;
+    private final boolean countToEnd;
 
     public MotionPairTextObject(Motion toBeginning, Motion toEnd) {
         this.toBeginning = toBeginning;
         this.toEnd = toEnd;
         this.countToBeginning = false;
+        this.countToEnd = true;
     }
 
-    protected MotionPairTextObject(Motion toBeginning, Motion toEnd, boolean countToBeginning) {
+    protected MotionPairTextObject(Motion toBeginning, Motion toEnd, boolean countToBeginning, boolean countToEnd) {
         this.toBeginning = toBeginning;
         this.toEnd = toEnd;
         this.countToBeginning = countToBeginning;
+        this.countToEnd = countToEnd;
     }
 
     public TextRange getRegion(EditorAdaptor editorMode, int count) throws CommandExecutionException {
         Motion leftMotion = countToBeginning ? toBeginning.withCount(count) : toBeginning;
+        Motion rightMotion = countToEnd ? toEnd.withCount(count) : toEnd;
         Position from = leftMotion.destination(editorMode);
-        Position to = toEnd.withCount(count).destination(editorMode);
+        Position to = rightMotion.destination(editorMode);
         if (toEnd.borderPolicy() == BorderPolicy.INCLUSIVE) {
             to = to.addModelOffset(1);
         }
