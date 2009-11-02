@@ -5,7 +5,9 @@ import java.util.HashMap;
 
 import net.sourceforge.vrapper.core.tests.utils.SnapshotTestsExecutor;
 import net.sourceforge.vrapper.core.tests.utils.VimTestCase;
+import net.sourceforge.vrapper.vim.DefaultEditorAdaptor;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
+import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
 
 import org.junit.Test;
 
@@ -30,12 +32,24 @@ public class SnapshotTests extends VimTestCase {
         executor.execute("chars.txt", "Find", map);
     }
 
-    @Test public void testRegisters() throws IOException {
+    private void executeRegistersTest() throws IOException {
         SnapshotTestsExecutor executor = new SnapshotTestsExecutor(this);
         HashMap<String, String> map = new HashMap<String, String>();
         map.put("-", "<Esc>");
         map.put("_", "\"");
         executor.execute("text.txt", "Registers", map);
+    }
+
+    @Test public void testRegistersWithLocals() throws IOException {
+        adaptor.useLocalRegisters();
+        executeRegistersTest();
+    }
+
+    @Test public void testRegistersWithGlobals() throws IOException {
+        // we need no mock magic for register manager
+        adaptor = new DefaultEditorAdaptor(platform, new DefaultRegisterManager());
+        adaptor.useGlobalRegisters();
+        executeRegistersTest();
     }
 
 }

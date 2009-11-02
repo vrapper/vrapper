@@ -16,22 +16,29 @@ public class AppendRegister implements Register {
     }
 
     public void setContent(RegisterContent content) {
+        // TODO: use correct newline
+        String newline = VimConstants.REGISTER_NEWLINE;
     	// TODO: keystroke content type
         RegisterContent oldContent = getContent();
         ContentType type;
-        if (oldContent.getPayloadType() == content.getPayloadType())
-        	type = content.getPayloadType();
-        else if (oldContent.getPayloadType() == ContentType.LINES || content.getPayloadType() == ContentType.LINES)
+        ContentType oldType = oldContent.getPayloadType();
+        ContentType appendedType = content.getPayloadType();
+        if (oldType == appendedType)
+        	type = appendedType;
+        else if (oldType == ContentType.LINES || appendedType == ContentType.LINES)
         	type = ContentType.LINES;
 		else
 			type = ContentType.TEXT;
         StringBuilder sb = new StringBuilder();
+        
         sb.append(oldContent.getText());
-        if (type == ContentType.LINES) {
-            // TODO: use correct newline
-            sb.append(VimConstants.REGISTER_NEWLINE);
-        }
+        if (oldType != ContentType.LINES && type == ContentType.LINES)
+            sb.append(newline);
+        
         sb.append(content.getText());
+        if (appendedType != ContentType.LINES && type == ContentType.LINES)
+            sb.append(newline);
+        
         RegisterContent newContent = new StringRegisterContent(type, sb.toString());
         delegate.setContent(newContent);
     }
