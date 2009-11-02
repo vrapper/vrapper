@@ -41,17 +41,6 @@ public class VisualMode extends AbstractVisualMode {
     }
     
     @Override
-    public void leaveMode() {
-        super.leaveMode();
-        if (!editorAdaptor.getConfiguration().get(Options.SELECTION).equals("exclusive")) {
-            Position position = editorAdaptor.getPosition();
-            if (position.getModelOffset() > 0)
-                position = position.addModelOffset(-1);
-            editorAdaptor.setPosition(position, true);
-        }
-    }
-
-    @Override
     protected VisualMotionState getVisualMotionState() {
         return new VisualMotionState(Motion2VMC.CHARWISE, motions());
     }
