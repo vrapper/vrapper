@@ -1,5 +1,6 @@
 package net.sourceforge.vrapper.eclipse.platform;
 
+import net.sourceforge.vrapper.eclipse.commands.EclipseCommand;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.BorderPolicy;

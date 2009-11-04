@@ -1,4 +1,4 @@
-package net.sourceforge.vrapper.eclipse.platform;
+package net.sourceforge.vrapper.eclipse.commands;
 
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.Position;
@@ -59,7 +59,7 @@ public abstract class EclipseShiftOperation implements TextOperation {
         return this;
     }
 
-    static class Normal extends EclipseShiftOperation {
+    static public class Normal extends EclipseShiftOperation {
 
         public Normal(boolean left) {
             super(left);
@@ -72,7 +72,7 @@ public abstract class EclipseShiftOperation implements TextOperation {
 
     }
 
-    static class Visual extends EclipseShiftOperation implements Command {
+    static public class Visual extends EclipseShiftOperation implements Command {
 
         private final int count;
 

@@ -1,12 +1,12 @@
 package net.sourceforge.vrapper.keymap.vim;
 
-import java.util.Collection;
 import java.util.Set;
 
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SimpleTransition;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.Transition;
+import net.sourceforge.vrapper.keymap.UnionState;
 import net.sourceforge.vrapper.utils.Function;
 
 /**
@@ -41,15 +41,8 @@ public class KeyStrokeConvertingState<T> implements State<T> {
         return null;
     }
 
-    public Collection<KeyStroke> supportedKeys() {
-        if (supportedKeys != null) {
-            return supportedKeys;
-        }
-        throw new UnsupportedOperationException("all keys supported");
-    }
-
     public State<T> union(State<T> other) {
-        throw new UnsupportedOperationException("no union possible");
+        return new UnionState<T>(this, other);
     }
 
     public String stateIdentifier() {

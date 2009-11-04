@@ -1,6 +1,15 @@
 package net.sourceforge.vrapper.eclipse.platform;
 
-import net.sourceforge.vrapper.log.VrapperLog;
+import static net.sourceforge.vrapper.eclipse.utils.Utils.onlyChild;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import net.sourceforge.vrapper.eclipse.keymap.AbstractEclipseSpecificStateProvider;
+import net.sourceforge.vrapper.eclipse.keymap.UnionStateProvider;
+import net.sourceforge.vrapper.eclipse.matcher.EclipseSpecificStateProviderFactory;
+import net.sourceforge.vrapper.eclipse.matcher.ExtensionMatcher;
+import net.sourceforge.vrapper.eclipse.matcher.ExtensionMatcherFactory;
 import net.sourceforge.vrapper.platform.Configuration;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.FileService;
@@ -16,6 +25,8 @@ import net.sourceforge.vrapper.platform.UserInterfaceService;
 import net.sourceforge.vrapper.platform.ViewportService;
 import net.sourceforge.vrapper.utils.DefaultKeyMapProvider;
 
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.ITextViewerExtension6;
 import org.eclipse.jface.text.IUndoManager;
@@ -105,14 +116,33 @@ public class EclipsePlatform implements Platform {
     }
 
     public PlatformSpecificStateProvider getPlatformSpecificStateProvider() {
-        // FIXME: civilised way of doing this would be extensions/extension points
-        // this is just temporary
-        String className = underlyingEditor.getClass().getName();
-        VrapperLog.info("PlatformSpecificStateProvider.getPlatformSpecificStateProvider: " + className);
-        if (className.endsWith(".CompilationUnitEditor"))
-            return JdtSpecificStateProvider.INSTANCE;
-        if (underlyingEditor.getClass().getName().endsWith(".CEditor"))
-            return CdtSpecificStateProvider.INSTANCE;
-        return EclipseSpecificStateProvider.INSTANCE;
+        IExtensionRegistry registry = org.eclipse.core.runtime.Platform.getExtensionRegistry();
+        IConfigurationElement[] elements = registry.getConfigurationElementsFor("net.sourceforge.vrapper.eclipse.pssp");
+        List<AbstractEclipseSpecificStateProvider> matched = new ArrayList<AbstractEclipseSpecificStateProvider>();
+        for (IConfigurationElement element: elements) {
+            IConfigurationElement implementation = onlyChild(element, "implementation");
+            IConfigurationElement supportedEditors = onlyChild(element, "supported-editors");
+            boolean wasMatched = false;
+            for (IConfigurationElement matcherElement: supportedEditors.getChildren()) {
+                ExtensionMatcher matcher = ExtensionMatcherFactory.create(matcherElement);
+                if (matcher.matches(underlyingEditor)) {
+                    wasMatched = true;
+                    break;
+                }
+            }
+            if (wasMatched) {
+                AbstractEclipseSpecificStateProvider provider = EclipseSpecificStateProviderFactory.create(implementation);
+                matched.add(provider);
+            }
+        }
+        
+        return new UnionStateProvider(matched);
+//        String className = underlyingEditor.getClass().getName();
+//        VrapperLog.info("PlatformSpecificStateProvider.getPlatformSpecificStateProvider: " + className);
+//        if (className.endsWith(".CompilationUnitEditor"))
+//            return JdtSpecificStateProvider.INSTANCE;
+//        if (underlyingEditor.getClass().getName().endsWith(".CEditor"))
+//            return CdtSpecificStateProvider.INSTANCE;
+//        return EclipseSpecificStateProvider.INSTANCE;
     }
 }

@@ -20,7 +20,6 @@ public final class KeyMapResolver {
     private String lastValue;
 
     KeyMapResolver(State<String> initialState, String defaultValue) {
-        super();
         this.initialState = initialState;
         this.currentState = initialState;
         this.defaultValue = defaultValue;

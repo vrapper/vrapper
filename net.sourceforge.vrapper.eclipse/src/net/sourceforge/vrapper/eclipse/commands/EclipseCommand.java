@@ -1,4 +1,4 @@
-package net.sourceforge.vrapper.eclipse.platform;
+package net.sourceforge.vrapper.eclipse.commands;
 
 import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.vim.EditorAdaptor;

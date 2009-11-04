@@ -74,7 +74,7 @@ public abstract class CommandBasedMode extends AbstractMode {
 
     public State<Command> getInitialState() {
         PlatformSpecificStateProvider platformSpecificStateProvider = editorAdaptor.getPlatformSpecificStateProvider();
-        String key = platformSpecificStateProvider.getFileType() + " :: " + getName();
+        String key = platformSpecificStateProvider.getName() + " :: " + this.getName();
         if (!initialStateCache.containsKey(key))
             initialStateCache.put(key, buildInitialState());
         return initialStateCache.get(key);

@@ -33,5 +33,9 @@ public interface PlatformSpecificStateProvider {
      */
     EvaluatorMapping getCommands();
 
-    String getFileType();
+    /**
+     * @return name of this PlatformSpecificStateProvider (for caching purposes)
+     */
+    String getName();
+
 }

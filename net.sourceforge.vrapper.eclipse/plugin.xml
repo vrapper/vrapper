@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.2"?>
 <plugin>
+   <extension-point id="net.sourceforge.vrapper.eclipse.pssp" name="Platform Specific State Provider" schema="schema/net.sourceforge.vrapper.eclipse.pssp.exsd"/>
   <extension
        point="org.eclipse.ui.commands">
     <category
@@ -67,5 +68,21 @@
           name="Vim&apos;s key bindings"
           parentId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
      </extension>
+   <extension
+         point="net.sourceforge.vrapper.eclipse.pssp">
+      <keymap-provider
+            id="net.sourceforge.vrapper.eclipse.keymap-provider"
+            name="net.sourceforge.vrapper.eclipse.keymap-provider">
+        <implementation>
+	         <java-class
+               class="net.sourceforge.vrapper.eclipse.keymap.EclipseSpecificStateProvider">
+	         </java-class>
+        </implementation>
+         <supported-editors>
+            <subclass-of
+                  editor="org.eclipse.ui.texteditor.AbstractTextEditor">
+            </subclass-of></supported-editors>
+      </keymap-provider>
+   </extension>
 </plugin>
 

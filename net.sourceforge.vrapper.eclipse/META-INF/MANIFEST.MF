@@ -11,3 +11,5 @@ Require-Bundle: org.eclipse.ui,
  net.sourceforge.vrapper.core;bundle-version="0.8.0"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Export-Package: net.sourceforge.vrapper.eclipse.commands,
+ net.sourceforge.vrapper.eclipse.keymap

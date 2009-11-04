@@ -3,6 +3,7 @@ package net.sourceforge.vrapper.vim.modes.commandline;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Map.Entry;
 
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.Command;
@@ -35,6 +36,16 @@ public class EvaluatorMapping implements Evaluator {
 
     public boolean contains(String key) {
         return actions.containsKey(key);
+    }
+
+    /** Adds all actions from other EvaluatorMapping.
+     * 
+     * Current actions *aren't* overridden by new ones.
+     */
+    public void addAll(EvaluatorMapping other) {
+        for (Entry<String, Evaluator> entry: other.actions.entrySet())
+            if (!actions.containsKey(entry.getKey()))
+                actions.put(entry.getKey(), entry.getValue());
     }
 
 }

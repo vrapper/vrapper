@@ -1,0 +1,199 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="net.sourceforge.vrapper.eclipse" xmlns="http://www.w3.org/2001/XMLSchema">
+<annotation>
+      <appInfo>
+         <meta.schema plugin="net.sourceforge.vrapper.eclipse" id="net.sourceforge.vrapper.eclipse.pssp" name="Platform Specific State Provider"/>
+      </appInfo>
+      <documentation>
+         Extension that defines Platform Specific State Providers.
+      </documentation>
+   </annotation>
+
+   <element name="extension">
+      <annotation>
+         <appInfo>
+            <meta.element />
+         </appInfo>
+      </annotation>
+      <complexType>
+         <sequence minOccurs="1" maxOccurs="unbounded">
+            <element ref="keymap-provider"/>
+         </sequence>
+         <attribute name="point" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appInfo>
+                  <meta.attribute translatable="true"/>
+               </appInfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="keymap-provider">
+      <complexType>
+         <choice minOccurs="2" maxOccurs="2">
+            <element ref="supported-editors"/>
+            <element ref="implementation"/>
+         </choice>
+         <attribute name="name" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appInfo>
+                  <meta.attribute kind="identifier"/>
+               </appInfo>
+            </annotation>
+         </attribute>
+         <attribute name="priority" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="java-class">
+      <annotation>
+         <documentation>
+            Keymap provided by PlatformSpecificStateProvider instance.
+May have other alternatives (e.g. pure XML description in this XML schema) in future.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="class" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appInfo>
+                  <meta.attribute kind="java" basedOn=":net.sourceforge.vrapper.platform.PlatformSpecificStateProvider"/>
+               </appInfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="supported-editors">
+      <complexType>
+         <choice minOccurs="1" maxOccurs="unbounded">
+            <element ref="subclass-of"/>
+            <element ref="smelly-regex"/>
+         </choice>
+      </complexType>
+   </element>
+
+   <element name="subclass-of">
+      <annotation>
+         <documentation>
+            It works only for classes that are visible from net.sourceforge.eclipse plugin.
+This doesn&apos;t include JDT, CDT, PyDev, DLTK...
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="editor" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appInfo>
+                  <meta.attribute kind="java" basedOn="org.eclipse.ui.texteditor.AbstractTextEditor:"/>
+               </appInfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="smelly-regex">
+      <annotation>
+         <documentation>
+            This is pure, ugly evil.
+Regex that a class name must match in order for a keymap-provider to be applicable.
+
+To be replaced with something sane ASAP.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="regex" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="implementation">
+      <complexType>
+         <choice>
+            <element ref="java-class"/>
+         </choice>
+      </complexType>
+   </element>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="since"/>
+      </appInfo>
+      <documentation>
+         0.14
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="examples"/>
+      </appInfo>
+      <documentation>
+         [Enter extension point usage example here.]
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="apiinfo"/>
+      </appInfo>
+      <documentation>
+         [Enter API information here.]
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="implementation"/>
+      </appInfo>
+      <documentation>
+         [Enter information about supplied implementation of this extension point.]
+      </documentation>
+   </annotation>
+
+
+</schema>

@@ -98,11 +98,8 @@ public class NormalMode extends CommandBasedMode {
     @SuppressWarnings("unchecked")
     public static State<TextObject> textObjects() {
         if (textObjects == null) {
-            final Motion wordRight = MoveWordRight.INSTANCE;
-            final Motion wordLeft = MoveWordLeft.INSTANCE;
-            final Motion wordEndRight = MoveWordEndRight.INSTANCE;
-            final TextObject innerWord = new MotionPairTextObject(wordLeft, wordEndRight);
-            final TextObject aWord = new MotionPairTextObject(wordLeft, wordRight);
+            final TextObject innerWord = new MotionPairTextObject(MoveWordLeft.INSTANCE, MoveWordEndRight.INSTANCE);
+            final TextObject aWord = new MotionPairTextObject(MoveWordLeft.INSTANCE, MoveWordRight.INSTANCE);
             final TextObject innerWORD = new MotionPairTextObject(MoveBigWORDLeft.INSTANCE, MoveBigWORDEndRight.INSTANCE);
             final TextObject aWORD = new MotionPairTextObject(MoveBigWORDLeft.INSTANCE, MoveBigWORDRight.INSTANCE);
             final TextObject innerBracket = new ParenthesisPairTextObject('(', ')', false);
