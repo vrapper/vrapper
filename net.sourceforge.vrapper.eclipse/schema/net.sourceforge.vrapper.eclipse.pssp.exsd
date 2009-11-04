@@ -49,10 +49,6 @@
 
    <element name="keymap-provider">
       <complexType>
-         <choice minOccurs="2" maxOccurs="2">
-            <element ref="supported-editors"/>
-            <element ref="implementation"/>
-         </choice>
          <attribute name="name" type="string" use="required">
             <annotation>
                <documentation>
@@ -73,89 +69,33 @@
          <attribute name="priority" type="string">
             <annotation>
                <documentation>
-                  
+                  Priority of this keymap-provider.
+The higher the more important.
+Default to 1.
                </documentation>
             </annotation>
          </attribute>
-      </complexType>
-   </element>
-
-   <element name="java-class">
-      <annotation>
-         <documentation>
-            Keymap provided by PlatformSpecificStateProvider instance.
-May have other alternatives (e.g. pure XML description in this XML schema) in future.
-         </documentation>
-      </annotation>
-      <complexType>
-         <attribute name="class" type="string" use="required">
+         <attribute name="provider-class" type="string" use="required">
             <annotation>
                <documentation>
                   
                </documentation>
                <appInfo>
-                  <meta.attribute kind="java" basedOn=":net.sourceforge.vrapper.platform.PlatformSpecificStateProvider"/>
+                  <meta.attribute kind="java" basedOn="net.sourceforge.vrapper.eclipse.keymap.AbstractEclipseSpecificStateProvider:"/>
                </appInfo>
             </annotation>
          </attribute>
-      </complexType>
-   </element>
-
-   <element name="supported-editors">
-      <complexType>
-         <choice minOccurs="1" maxOccurs="unbounded">
-            <element ref="subclass-of"/>
-            <element ref="smelly-regex"/>
-         </choice>
-      </complexType>
-   </element>
-
-   <element name="subclass-of">
-      <annotation>
-         <documentation>
-            It works only for classes that are visible from net.sourceforge.eclipse plugin.
-This doesn&apos;t include JDT, CDT, PyDev, DLTK...
-         </documentation>
-      </annotation>
-      <complexType>
-         <attribute name="editor" type="string">
+         <attribute name="editor-must-subclass" type="string">
             <annotation>
                <documentation>
-                  
+                  Class that underlying editor must subclass for this provider to be applied.
+Optional, defaults to AbstractTextEditor.
                </documentation>
                <appInfo>
                   <meta.attribute kind="java" basedOn="org.eclipse.ui.texteditor.AbstractTextEditor:"/>
                </appInfo>
             </annotation>
          </attribute>
-      </complexType>
-   </element>
-
-   <element name="smelly-regex">
-      <annotation>
-         <documentation>
-            This is pure, ugly evil.
-Regex that a class name must match in order for a keymap-provider to be applicable.
-
-To be replaced with something sane ASAP.
-         </documentation>
-      </annotation>
-      <complexType>
-         <attribute name="regex" type="string">
-            <annotation>
-               <documentation>
-                  
-               </documentation>
-            </annotation>
-         </attribute>
-      </complexType>
-   </element>
-
-   <element name="implementation">
-      <complexType>
-         <choice>
-            <element ref="java-class"/>
-         </choice>
       </complexType>
    </element>
 

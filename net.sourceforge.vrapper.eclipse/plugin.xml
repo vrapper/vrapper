@@ -71,17 +71,10 @@
    <extension
          point="net.sourceforge.vrapper.eclipse.pssp">
       <keymap-provider
-            id="net.sourceforge.vrapper.eclipse.keymap-provider"
-            name="net.sourceforge.vrapper.eclipse.keymap-provider">
-        <implementation>
-	         <java-class
-               class="net.sourceforge.vrapper.eclipse.keymap.EclipseSpecificStateProvider">
-	         </java-class>
-        </implementation>
-         <supported-editors>
-            <subclass-of
-                  editor="org.eclipse.ui.texteditor.AbstractTextEditor">
-            </subclass-of></supported-editors>
+            id="net.sourceforge.vrapper.eclipse.EclipseSpecificStateProvider"
+            name="AbstractTextEditor-specific Provider"
+            priority="10"
+            provider-class="net.sourceforge.vrapper.eclipse.keymap.EclipseSpecificStateProvider">
       </keymap-provider>
    </extension>
 </plugin>

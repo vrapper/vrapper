@@ -1,15 +1,14 @@
 package net.sourceforge.vrapper.eclipse.platform;
 
-import static net.sourceforge.vrapper.eclipse.utils.Utils.onlyChild;
-
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import net.sourceforge.vrapper.eclipse.keymap.AbstractEclipseSpecificStateProvider;
 import net.sourceforge.vrapper.eclipse.keymap.UnionStateProvider;
-import net.sourceforge.vrapper.eclipse.matcher.EclipseSpecificStateProviderFactory;
-import net.sourceforge.vrapper.eclipse.matcher.ExtensionMatcher;
-import net.sourceforge.vrapper.eclipse.matcher.ExtensionMatcherFactory;
+import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.Configuration;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.FileService;
@@ -31,6 +30,7 @@ import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.ITextViewerExtension6;
 import org.eclipse.jface.text.IUndoManager;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
+import org.osgi.framework.Bundle;
 
 public class EclipsePlatform implements Platform {
 
@@ -45,6 +45,7 @@ public class EclipsePlatform implements Platform {
     private final UnderlyingEditorSettings underlyingEditorSettings;
     private final Configuration configuration;
     private final AbstractTextEditor underlyingEditor;
+    private static final Map<String, PlatformSpecificStateProvider> providerCache = new HashMap<String, PlatformSpecificStateProvider>();
 
     public EclipsePlatform(AbstractTextEditor abstractTextEditor, ITextViewer textViewer) {
         underlyingEditor = abstractTextEditor;
@@ -116,33 +117,35 @@ public class EclipsePlatform implements Platform {
     }
 
     public PlatformSpecificStateProvider getPlatformSpecificStateProvider() {
+        String className = underlyingEditor.getClass().getName();
+        if (!providerCache.containsKey(className))
+            providerCache.put(className, buildPlatformSpecificStateProvider());
+        return providerCache.get(className);
+    }
+    
+    private PlatformSpecificStateProvider buildPlatformSpecificStateProvider() {
         IExtensionRegistry registry = org.eclipse.core.runtime.Platform.getExtensionRegistry();
         IConfigurationElement[] elements = registry.getConfigurationElementsFor("net.sourceforge.vrapper.eclipse.pssp");
         List<AbstractEclipseSpecificStateProvider> matched = new ArrayList<AbstractEclipseSpecificStateProvider>();
-        for (IConfigurationElement element: elements) {
-            IConfigurationElement implementation = onlyChild(element, "implementation");
-            IConfigurationElement supportedEditors = onlyChild(element, "supported-editors");
-            boolean wasMatched = false;
-            for (IConfigurationElement matcherElement: supportedEditors.getChildren()) {
-                ExtensionMatcher matcher = ExtensionMatcherFactory.create(matcherElement);
-                if (matcher.matches(underlyingEditor)) {
-                    wasMatched = true;
-                    break;
-                }
+        for (IConfigurationElement element: elements)
+            try {
+                if (isProviderApplicable(element))
+                    matched.add((AbstractEclipseSpecificStateProvider) element.createExecutableExtension("provider-class"));
+            } catch (Exception exception) {
+                VrapperLog.error("error when determining if PlatformSpecificStateProvider is applicable", exception);
             }
-            if (wasMatched) {
-                AbstractEclipseSpecificStateProvider provider = EclipseSpecificStateProviderFactory.create(implementation);
-                matched.add(provider);
-            }
-        }
-        
-        return new UnionStateProvider(matched);
-//        String className = underlyingEditor.getClass().getName();
-//        VrapperLog.info("PlatformSpecificStateProvider.getPlatformSpecificStateProvider: " + className);
-//        if (className.endsWith(".CompilationUnitEditor"))
-//            return JdtSpecificStateProvider.INSTANCE;
-//        if (underlyingEditor.getClass().getName().endsWith(".CEditor"))
-//            return CdtSpecificStateProvider.INSTANCE;
-//        return EclipseSpecificStateProvider.INSTANCE;
+            Collections.sort(matched);
+        return new UnionStateProvider("extensions for " + underlyingEditor.getClass().getName(), matched);
     }
+
+    private boolean isProviderApplicable(IConfigurationElement element) throws ClassNotFoundException {
+        String editorClass = element.getAttribute("editor-must-subclass");
+        if (editorClass == null)
+            return underlyingEditor instanceof AbstractTextEditor;
+        String bundleName = element.getDeclaringExtension().getContributor().getName();
+        Bundle bundle = org.eclipse.core.runtime.Platform.getBundle(bundleName);
+        Class<?> cls = bundle.loadClass(editorClass);
+        return cls.isInstance(underlyingEditor); 
+    }
+
 }

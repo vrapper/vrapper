@@ -6,6 +6,7 @@ import java.util.Queue;
 import net.sourceforge.vrapper.eclipse.commands.EclipseCommand;
 import net.sourceforge.vrapper.keymap.EmptyState;
 import net.sourceforge.vrapper.keymap.State;
+import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.PlatformSpecificStateProvider;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.Command;
@@ -19,11 +20,13 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 
 public abstract class AbstractEclipseSpecificStateProvider implements
-        PlatformSpecificStateProvider {
+        PlatformSpecificStateProvider, Comparable<AbstractEclipseSpecificStateProvider> {
 
     protected final HashMap<String, State<Command>> states = new HashMap<String, State<Command>>();
     protected final HashMap<String, State<String>> keyMaps = new HashMap<String, State<String>>();
     protected final EvaluatorMapping commands = new EvaluatorMapping();
+    protected int priority = 1;
+    protected String name;
 
     protected AbstractEclipseSpecificStateProvider() {
         states.put(NormalMode.NAME, normalModeBindings());
@@ -33,7 +36,15 @@ public abstract class AbstractEclipseSpecificStateProvider implements
     }
 
     public void setInitializationData(IConfigurationElement config,
-            String propertyName, Object data) throws CoreException { /* NOP */
+            String propertyName, Object data) throws CoreException {
+        try {
+            String stringValue = config.getAttribute("priority");
+            name = config.getAttribute("name");
+            if (stringValue != null)
+                priority = Integer.parseInt(stringValue);
+        } catch (NumberFormatException e) {
+            VrapperLog.error("wrong format of priority", e);
+        }
     }
 
     protected State<Command> normalModeBindings() {
@@ -66,7 +77,7 @@ public abstract class AbstractEclipseSpecificStateProvider implements
     }
     
     public String getName() {
-        return null;
+        return name;
     }
 
     protected static class EclipseActionEvaluator implements Evaluator {
@@ -114,6 +125,10 @@ public abstract class AbstractEclipseSpecificStateProvider implements
             commands.add("fmt", formatAll);
             commands.add("fm", formatAll);
         }
+    }
+
+    public int compareTo(AbstractEclipseSpecificStateProvider o) {
+        return -Integer.valueOf(priority).compareTo(Integer.valueOf(o.priority));
     }
 
 }
