@@ -73,7 +73,7 @@
       <keymap-provider
             id="net.sourceforge.vrapper.eclipse.EclipseSpecificStateProvider"
             name="AbstractTextEditor-specific Provider"
-            priority="10"
+            priority="0"
             provider-class="net.sourceforge.vrapper.eclipse.keymap.EclipseSpecificStateProvider">
       </keymap-provider>
    </extension>

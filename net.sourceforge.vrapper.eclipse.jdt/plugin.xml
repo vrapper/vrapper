@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="net.sourceforge.vrapper.eclipse.pssp">
+      <keymap-provider
+            editor-must-subclass="org.eclipse.jdt.internal.ui.javaeditor.JavaEditor"
+            id="net.sourceforge.vrapper.eclipse.jdt.keymap.JdtSpecificStateProvider"
+            name="JDT - specific provider"
+            provider-class="net.sourceforge.vrapper.eclipse.jdt.keymap.JdtSpecificStateProvider">
+      </keymap-provider>
+   </extension>
+
+</plugin>

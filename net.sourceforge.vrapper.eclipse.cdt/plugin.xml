@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="net.sourceforge.vrapper.eclipse.pssp">
+      <keymap-provider
+            editor-must-subclass="org.eclipse.cdt.internal.ui.editor.CEditor"
+            id="net.sourceforge.vrapper.eclipse.cdt.keymap.CdtSpecificStateProvider"
+            name="CDT - specific provider"
+            provider-class="net.sourceforge.vrapper.eclipse.cdt.keymap.CdtSpecificStateProvider">
+      </keymap-provider>
+   </extension>
+
+</plugin>
