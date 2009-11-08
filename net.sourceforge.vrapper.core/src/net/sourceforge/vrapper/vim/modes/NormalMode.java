@@ -97,7 +97,7 @@ public class NormalMode extends CommandBasedMode {
         return new KeyMapResolver(registerKeymapState, KEYMAP_NAME);
     }
     @SuppressWarnings("unchecked")
-    public static State<DelimitedText> delimitedTexts() {
+    public static synchronized State<DelimitedText> delimitedTexts() {
         if (delimitedTexts == null) {
         final DelimitedText inBracket = new SimpleDelimitedText('(', ')');
         final DelimitedText inSquareBracket = new SimpleDelimitedText('[', ']');
@@ -128,7 +128,7 @@ public class NormalMode extends CommandBasedMode {
     }
 
     @SuppressWarnings("unchecked")
-    public static State<TextObject> textObjects() {
+    public static synchronized State<TextObject> textObjects() {
         if (textObjects == null) {
             final TextObject innerWord = new MotionPairTextObject(MoveWordLeft.INSTANCE, MoveWordEndRight.INSTANCE);
             final TextObject aWord = new MotionPairTextObject(MoveWordLeft.INSTANCE, MoveWordRight.INSTANCE);

@@ -241,7 +241,7 @@ public class InsertMode extends AbstractMode {
         return provider.getKeyMap(KEYMAP_NAME);
     }
 
-    public class MoveRightOverLineBreak extends
+    public static class MoveRightOverLineBreak extends
             CountIgnoringNonRepeatableCommand {
 
         private final int offset;
@@ -258,7 +258,7 @@ public class InsertMode extends AbstractMode {
         }
     }
 
-    public class SimpleInsertCommandSequence extends VimCommandSequence {
+    public static class SimpleInsertCommandSequence extends VimCommandSequence {
 
         public SimpleInsertCommandSequence(Command... commands) {
             super(commands);

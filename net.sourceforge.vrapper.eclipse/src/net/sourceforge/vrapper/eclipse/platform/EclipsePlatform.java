@@ -141,7 +141,7 @@ public class EclipsePlatform implements Platform {
     private boolean isProviderApplicable(IConfigurationElement element) throws ClassNotFoundException {
         String editorClass = element.getAttribute("editor-must-subclass");
         if (editorClass == null)
-            return underlyingEditor instanceof AbstractTextEditor;
+            return true; // underlyingEditor instanceof AbstractTextEditor;
         String bundleName = element.getDeclaringExtension().getContributor().getName();
         Bundle bundle = org.eclipse.core.runtime.Platform.getBundle(bundleName);
         Class<?> cls = bundle.loadClass(editorClass);

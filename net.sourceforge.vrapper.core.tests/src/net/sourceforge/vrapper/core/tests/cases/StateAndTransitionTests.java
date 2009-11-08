@@ -56,7 +56,7 @@ public class StateAndTransitionTests {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void HashMapStateShouldResolveActionConflictsAsFirstOneWins() {
+    public void checkThatHashMapStateShouldResolveActionConflictsAsFirstOneWins() {
         State<Integer> s1 = new HashMapState<Integer>(asList(leafBind('a', 1),
                 leafBind('a', 2)));
         assertEquals((Integer) 1, s1.press(key('a')).getValue());
