@@ -3,8 +3,6 @@ package net.sourceforge.vrapper.vim.commands;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.motions.Motion;
 
-
-
 /**
  * Placeholder for Java-ugliness-hiding static methods intended to be statically imported
  * @author Krzysiek Goj

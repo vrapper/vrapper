@@ -28,10 +28,6 @@ public final class RegisterKeymapState implements State<String> {
                 return new SimpleTransition<String>(keymapName, RegisterKeymapState.this);
             }
 
-            public Collection<KeyStroke> supportedKeys() {
-                return null;
-            }
-
             public State<String> union(State<String> other) {
                 return null;
             }

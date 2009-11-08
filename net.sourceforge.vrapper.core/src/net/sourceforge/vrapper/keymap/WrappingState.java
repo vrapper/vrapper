@@ -52,7 +52,6 @@ public class WrappingState<T> implements State<T> {
             if (functions == otherWS.functions && currentFunction == otherWS.currentFunction)
                 return new WrappingState<T>(currentFunction, functions, StateUtils.union(wrapped, otherWS.wrapped));
         }
-//        throw new UnsupportedOperationException();
         return new UnionState<T>(this, other);
     }
 
