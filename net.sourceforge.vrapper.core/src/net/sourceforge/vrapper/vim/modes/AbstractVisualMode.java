@@ -12,6 +12,7 @@ import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.vim.CountingState;
 import net.sourceforge.vrapper.keymap.vim.RegisterState;
 import net.sourceforge.vrapper.keymap.vim.VisualMotionState;
+import net.sourceforge.vrapper.keymap.vim.VisualTextObjectState;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.CenterLineCommand;
@@ -26,10 +27,12 @@ import net.sourceforge.vrapper.vim.commands.YankOperation;
 
 public abstract class AbstractVisualMode extends CommandBasedMode {
 
+    public static final String NAME = "all visual modes";
     public static final String KEYMAP_NAME = "Visual Mode Keymap";
     
     public static final ModeSwitchHint FIX_SELECTION_HINT = new ModeSwitchHint() { };
     public static final ModeSwitchHint MOVE_CURSOR_HINT = new ModeSwitchHint() { };
+
 
     public AbstractVisualMode(EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
@@ -87,7 +90,10 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
         Command commandLineMode = new ChangeModeCommand(CommandLineMode.NAME);
         Command centerLine = CenterLineCommand.INSTANCE;
         State<Command> visualMotions = getVisualMotionState();
-        State<Command> initialState = RegisterState.wrap(CountingState.wrap(union(state(
+        State<Command> visualTextObjects = VisualTextObjectState.INSTANCE;
+        State<Command> initialState = RegisterState.wrap(CountingState.wrap(union(
+                getPlatformSpecificState(NAME), 
+                state(
                 leafBind(SpecialKey.ESC, leaveVisual),
                 leafBind('y', yank),
                 leafBind('s', change),
@@ -102,8 +108,8 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
                         convertKeyStroke(
                                 SetMarkCommand.KEYSTROKE_CONVERTER,
                                 VimConstants.PRINTABLE_KEYSTROKES))
-        ), visualMotions,
-        getPlatformSpecificState(VisualMode.NAME))));
+        ), visualMotions, visualTextObjects
+        )));
         return initialState;
     }
 

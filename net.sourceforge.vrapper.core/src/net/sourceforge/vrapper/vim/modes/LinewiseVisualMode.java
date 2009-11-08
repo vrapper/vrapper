@@ -51,7 +51,7 @@ public class LinewiseVisualMode extends AbstractVisualMode {
                 leafBind('v', (Command) new ChangeModeCommand(VisualMode.NAME, FIX_SELECTION_HINT)),
                 leafBind('V', (Command) LeaveVisualModeCommand.INSTANCE)
                 );
-        return union(linewiseSpecific, super.buildInitialState());
+        return union(getPlatformSpecificState(NAME), linewiseSpecific, super.buildInitialState());
     }
 
     @Override

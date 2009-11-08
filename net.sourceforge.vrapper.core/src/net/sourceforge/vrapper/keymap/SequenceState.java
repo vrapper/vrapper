@@ -17,10 +17,13 @@ public abstract class SequenceState<T1, T2, T3> implements State<T1> {
         this.second = second;
     }
 
+    protected abstract Function<T1, T3> getConverter(T2 intermediate);
+    protected abstract SequenceState<T1, T2, T3> rewrap(State<T2> first);
+
     public Transition<T1> press(KeyStroke key) {
         Transition<T2> transition = first.press(key);
         if (transition == null)
-            return firstFailed(key);
+            return null;
         State<T1> nextState;
         
         State<T2> newFirst = transition.getNextState();
@@ -35,21 +38,11 @@ public abstract class SequenceState<T1, T2, T3> implements State<T1> {
         return new SimpleTransition<T1>(nextState);
     }
     
-    /** When first keymap turned out to be a dead-end after pressing key
-     * @param key
-     */
-    protected Transition<T1> firstFailed(KeyStroke key) {
-        return null;
-    }
-
     private class Continuation extends ConvertingState<T1, T3> {
         public Continuation(T2 intermediate) {
             super(getConverter(intermediate), second);
         }
     }
-
-    protected abstract Function<T1, T3> getConverter(T2 intermediate);
-    protected abstract SequenceState<T1, T2, T3> rewrap(State<T2> first);
 
     public State<T1> union(State<T1> other) {
         return new UnionState<T1>(this, other);

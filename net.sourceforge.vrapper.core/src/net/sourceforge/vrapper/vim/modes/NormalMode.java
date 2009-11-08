@@ -135,7 +135,6 @@ public class NormalMode extends CommandBasedMode {
             final TextObject innerWORD = new MotionPairTextObject(MoveBigWORDLeft.INSTANCE, MoveBigWORDEndRight.INSTANCE);
             final TextObject aWORD = new MotionPairTextObject(MoveBigWORDLeft.INSTANCE, MoveBigWORDRight.INSTANCE);
             
-            
             textObjects = union(
                         state(
                             transitionBind('i', union(

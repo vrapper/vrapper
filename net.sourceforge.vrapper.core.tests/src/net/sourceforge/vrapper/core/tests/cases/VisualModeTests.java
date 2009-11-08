@@ -189,5 +189,11 @@ public class VisualModeTests extends CommandTestCase {
 		mode.leaveMode();
 		assertNull(adaptor.getSelection());
 	}
+	
+	@Test public void testTextObjects() {
+		checkCommand(forKeySeq("iw"),
+				false,  "It's Some","th","ing interesting.",
+				false,  "It's ","Something"," interesting.");
+    }
 
 }

@@ -53,7 +53,7 @@ public class VisualMode extends AbstractVisualMode {
                 leafBind('V', (Command) new ChangeModeCommand(LinewiseVisualMode.NAME, FIX_SELECTION_HINT)),
                 leafBind('v', (Command) LeaveVisualModeCommand.INSTANCE)
                 );
-        return union(characterwiseSpecific, super.buildInitialState());
+        return union(getPlatformSpecificState(NAME), characterwiseSpecific, super.buildInitialState());
     }
 
     @Override
