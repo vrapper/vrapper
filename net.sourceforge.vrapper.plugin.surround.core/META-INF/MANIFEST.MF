@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Surround Plugin - Core
+Bundle-SymbolicName: net.sourceforge.vrapper.plugin.surround.core
+Bundle-Version: 0.14
+Bundle-Activator: net.sourceforge.vrapper.plugin.surround.core.Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ net.sourceforge.vrapper.core;bundle-version="0.11.0"
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Export-Package: net.sourceforge.vrapper.plugin.surround.commands,
+ net.sourceforge.vrapper.plugin.surround.state

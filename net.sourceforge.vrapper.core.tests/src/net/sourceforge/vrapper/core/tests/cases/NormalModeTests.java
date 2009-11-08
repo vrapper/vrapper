@@ -7,6 +7,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import net.sourceforge.vrapper.core.tests.utils.CommandTestCase;
+import net.sourceforge.vrapper.plugin.surround.provider.SurroundStateProvider;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.vim.Options;
@@ -89,6 +90,10 @@ public class NormalModeTests extends CommandTestCase {
 	}
 
 	@Test public void test_diw() {
+		checkCommand(forKeySeq("diw"),
+				"sin",'g',"le",
+				"",EOF,"");
+		assertYanked(ContentType.TEXT, "single");
 		checkCommand(forKeySeq("diw"),
 				"Ala mi",'e',"wa kota",
 				"Ala ",' ',"kota");
@@ -256,8 +261,24 @@ public class NormalModeTests extends CommandTestCase {
         checkCommand(forKeySeq("2dib"),
                 "call(something, very(fu",'n',"ny));",
                 "call(",')',";");
+        // as strange as it may look, this is the actual Vim behaviour
+        checkCommand(forKeySeq("dib"),
+                "call",'(',"something);",
+                "call(",')',";");
+        checkCommand(forKeySeq("dib"),
+                "call(something",')',";",
+                "call(",')',";");
+        checkCommand(forKeySeq("2dib"),
+                "call(something, very",'(',"funny));",
+                "call(",')',";");
     }
 	
+	@Test
+    public void test_di_() {
+        checkCommand(forKeySeq("di'"),
+                "'abc",'\'',"def'",
+                "'",'\'',"def'");
+    }
 	
 	@Test
     public void test_dab() {
@@ -289,4 +310,46 @@ public class NormalModeTests extends CommandTestCase {
                 "A",'l',"a ma\nkota.");
     }
 	
+	@Test
+    public void testSurroundPlugin_ds() {
+        when(platform.getPlatformSpecificStateProvider()).thenReturn(SurroundStateProvider.INSTANCE);
+        reloadEditorAdaptor();
+        checkCommand(forKeySeq("dsb"),
+                "array[(in",'d',"ex)];",
+                "array[",'i',"ndex];");
+        checkCommand(forKeySeq("ds("),
+                "array[(in",'d',"ex)];",
+                "array[",'i',"ndex];");
+        checkCommand(forKeySeq("ds("),
+                "array[",'(',"index)];",
+                "array[",'i',"ndex];");
+        checkCommand(forKeySeq("ds("),
+                "array[(index",')',"];",
+                "array[",'i',"ndex];");
+    }
+	
+	@Test
+    public void testSurroundPlugin_cs() {
+        when(platform.getPlatformSpecificStateProvider()).thenReturn(SurroundStateProvider.INSTANCE);
+        reloadEditorAdaptor();
+        checkCommand(forKeySeq("cs[b"),
+                "fn[ar",'g',"ument];",
+                "fn",'(',"argument);");
+        checkCommand(forKeySeq("cs)("),
+                "fn(ar",'g',"ument);",
+                "fn",'('," argument );");
+        checkCommand(forKeySeq("cs()"),
+                "fn(  ar",'g',"ument  );",
+                "fn",'(',"argument);");
+    }
+	
+	@Test
+    public void testSurroundPlugin_ys() {
+        when(platform.getPlatformSpecificStateProvider()).thenReturn(SurroundStateProvider.INSTANCE);
+        reloadEditorAdaptor();
+        checkCommand(forKeySeq("ysiwb"),
+                "so",'m',"ething",
+                "",'(',"something)");
+    }
 }
+

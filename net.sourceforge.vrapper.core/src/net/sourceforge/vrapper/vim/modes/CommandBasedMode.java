@@ -73,8 +73,10 @@ public abstract class CommandBasedMode extends AbstractMode {
     protected abstract KeyMapResolver buildKeyMapResolver();
 
     public State<Command> getInitialState() {
+        String key = getName();
         PlatformSpecificStateProvider platformSpecificStateProvider = editorAdaptor.getPlatformSpecificStateProvider();
-        String key = getName() + " for " + platformSpecificStateProvider.getName();
+        if (platformSpecificStateProvider != null)
+            key += " for " + platformSpecificStateProvider.getName();
         if (!initialStateCache.containsKey(key))
             initialStateCache.put(key, buildInitialState());
         return initialStateCache.get(key);

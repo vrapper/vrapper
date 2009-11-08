@@ -25,7 +25,7 @@ public abstract class MoveLeftWithBounds extends MoveWithBounds {
             --offset;
         }
 
-		notFound: while (offset > 1) {
+		notFound: while (offset >= 1) {
 			int i, len = min(BUFFER_LEN, offset + 1);
 			String buffer = content.getText(offset + 1 - len, len);
 			for (i = len-1; i > 0; i--, offset--) {
@@ -44,5 +44,4 @@ public abstract class MoveLeftWithBounds extends MoveWithBounds {
 
 		return max(0, offset);
 	}
-
 }

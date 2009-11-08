@@ -5,7 +5,6 @@ import java.util.HashMap;
 
 import net.sourceforge.vrapper.core.tests.utils.SnapshotTestsExecutor;
 import net.sourceforge.vrapper.core.tests.utils.VimTestCase;
-import net.sourceforge.vrapper.vim.DefaultEditorAdaptor;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
 
@@ -47,7 +46,8 @@ public class SnapshotTests extends VimTestCase {
 
     @Test public void testRegistersWithGlobals() throws IOException {
         // we need no mock magic for register manager
-        adaptor = new DefaultEditorAdaptor(platform, new DefaultRegisterManager());
+        registerManager = new DefaultRegisterManager();
+        reloadEditorAdaptor();
         adaptor.useGlobalRegisters();
         executeRegistersTest();
     }

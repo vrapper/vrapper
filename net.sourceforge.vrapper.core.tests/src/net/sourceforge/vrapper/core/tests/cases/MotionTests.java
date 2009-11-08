@@ -520,6 +520,14 @@ public class MotionTests extends CommandTestCase {
 				"while",'(',"true) ++aw3rs0meness;",
 				"",'w',"hile(true) ++aw3rs0meness;");
 	}
+	
+	@Test
+	public void testMoveWordLeftBug() {
+		Motion moveWordLeft = MoveWordLeft.INSTANCE;
+		checkMotion(moveWordLeft,
+				"so",'m',"ething",
+				"",'s',"omething");
+	}
 
 	@Test
 	public void testMoveWordEndLeft() {
@@ -565,6 +573,27 @@ public class MotionTests extends CommandTestCase {
 	    checkMotion(fa,
 	            "Ala m",'a'," kota",
 	            "Ala ma kot",'a',"");
+	    checkMotion(fa,
+	            "A",'l',"a ma kota",
+	            "Al",'a'," ma kota");
+	    // TODO: assert raises
+	}
+
+	@Test
+	public void test_t_motionWorks() {
+	    Motion ta = new FindMotion('a', false, false);
+	    checkMotion(ta,
+	            "",'A',"la ma kota",
+	            "A",'l',"a ma kota");
+	    checkMotion(ta,
+	            "Al",'a'," ma kota",
+	            "Ala ",'m',"a kota");
+	    checkMotion(ta,
+	            "Ala m",'a'," kota",
+	            "Ala ma ko",'t',"a");
+	    checkMotion(ta,
+	            "A",'l',"a ma kota",
+	            "A",'l',"a ma kota");
 	    // TODO: assert raises
 	}
 

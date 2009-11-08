@@ -69,7 +69,7 @@ public class VimTestCase {
     	when(platform.getServiceProvider()).thenReturn(serviceProvider);
     	when(platform.getConfiguration()).thenReturn(configuration);
     	when(platform.getPlatformSpecificStateProvider()).thenReturn(platformSpecificStateProvider);
-    	adaptor = spy(new DefaultEditorAdaptor(platform, registerManager));
+    	reloadEditorAdaptor();
     	defaultRegister = spy(new SimpleRegister());
     	lastEditRegister = spy(new SimpleRegister());
 		when(registerManager.getActiveRegister()).thenReturn(defaultRegister);
@@ -80,6 +80,12 @@ public class VimTestCase {
     		when(configuration.get(o)).thenReturn(Boolean.FALSE);
 		}
 
+    }
+
+    protected void reloadEditorAdaptor() {
+        adaptor = spy(new DefaultEditorAdaptor(platform, registerManager));
+        if (mode != null)
+            mode = adaptor.getMode(mode.getName());
     }
 
     @Before

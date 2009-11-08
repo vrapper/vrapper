@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="net.sourceforge.vrapper.eclipse.pssp">
+      <keymap-provider
+            id="net.sourceforge.vrapper.plugin.surround.provider.SurroundStateProvider"
+            name="Surround State Provider"
+            priority="20"
+            provider-class="net.sourceforge.vrapper.plugin.surround.provider.SurroundStateProvider">
+      </keymap-provider>
+   </extension>
+
+</plugin>

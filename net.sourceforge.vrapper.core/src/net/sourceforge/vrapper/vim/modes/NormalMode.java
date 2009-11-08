@@ -12,6 +12,7 @@ import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.vim.CountingState;
+import net.sourceforge.vrapper.keymap.vim.DelimitedTextObjectState;
 import net.sourceforge.vrapper.keymap.vim.GoThereState;
 import net.sourceforge.vrapper.keymap.vim.RegisterState;
 import net.sourceforge.vrapper.keymap.vim.TextObjectState;
@@ -31,6 +32,7 @@ import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.CountIgnoringNonRepeatableCommand;
 import net.sourceforge.vrapper.vim.commands.DeleteOperation;
+import net.sourceforge.vrapper.vim.commands.DelimitedText;
 import net.sourceforge.vrapper.vim.commands.DotCommand;
 import net.sourceforge.vrapper.vim.commands.InsertLineCommand;
 import net.sourceforge.vrapper.vim.commands.LinewiseVisualMotionCommand;
@@ -39,15 +41,14 @@ import net.sourceforge.vrapper.vim.commands.MotionPairTextObject;
 import net.sourceforge.vrapper.vim.commands.MotionTextObject;
 import net.sourceforge.vrapper.vim.commands.OptionDependentCommand;
 import net.sourceforge.vrapper.vim.commands.OptionDependentTextObject;
-import net.sourceforge.vrapper.vim.commands.ParenthesisPairTextObject;
 import net.sourceforge.vrapper.vim.commands.PasteAfterCommand;
 import net.sourceforge.vrapper.vim.commands.PasteBeforeCommand;
 import net.sourceforge.vrapper.vim.commands.PlaybackMacroCommand;
-import net.sourceforge.vrapper.vim.commands.QuotedTextObject;
 import net.sourceforge.vrapper.vim.commands.RecordMacroCommand;
 import net.sourceforge.vrapper.vim.commands.RedoCommand;
 import net.sourceforge.vrapper.vim.commands.ReplaceCommand;
 import net.sourceforge.vrapper.vim.commands.SetMarkCommand;
+import net.sourceforge.vrapper.vim.commands.SimpleDelimitedText;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 import net.sourceforge.vrapper.vim.commands.StickToEOLCommand;
 import net.sourceforge.vrapper.vim.commands.SwapCaseCommand;
@@ -74,6 +75,7 @@ public class NormalMode extends CommandBasedMode {
     public static final String KEYMAP_NAME = "Normal Mode Keymap";
     public static final String NAME = "normal mode";
     private static State<TextObject> textObjects;
+    private static State<DelimitedText> delimitedTexts;
 
     public NormalMode(EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
@@ -94,6 +96,36 @@ public class NormalMode extends CommandBasedMode {
         State<String> registerKeymapState = new RegisterKeymapState(KEYMAP_NAME, countEater);
         return new KeyMapResolver(registerKeymapState, KEYMAP_NAME);
     }
+    @SuppressWarnings("unchecked")
+    public static State<DelimitedText> delimitedTexts() {
+        if (delimitedTexts == null) {
+        final DelimitedText inBracket = new SimpleDelimitedText('(', ')');
+        final DelimitedText inSquareBracket = new SimpleDelimitedText('[', ']');
+        final DelimitedText inBrace = new SimpleDelimitedText('{', '}');
+        final DelimitedText inAngleBrace = new SimpleDelimitedText('<', '>');
+        final DelimitedText inString = new SimpleDelimitedText('"');
+        final DelimitedText inGraveString = new SimpleDelimitedText('`');
+        final DelimitedText inChar = new SimpleDelimitedText('\'');
+        
+        
+        delimitedTexts = state(
+                leafBind('b', inBracket),
+                leafBind('(', inBracket),
+                leafBind(')', inBracket),
+                leafBind('[', inSquareBracket),
+                leafBind(']', inSquareBracket),
+                leafBind('B', inBrace),
+                leafBind('{', inBrace),
+                leafBind('}', inBrace),
+                leafBind('<', inAngleBrace),
+                leafBind('>', inAngleBrace),
+                leafBind('"', inString),
+                leafBind('\'', inChar),
+                leafBind('`', inGraveString));
+        }
+        return delimitedTexts;
+        
+    }
 
     @SuppressWarnings("unchecked")
     public static State<TextObject> textObjects() {
@@ -102,54 +134,21 @@ public class NormalMode extends CommandBasedMode {
             final TextObject aWord = new MotionPairTextObject(MoveWordLeft.INSTANCE, MoveWordRight.INSTANCE);
             final TextObject innerWORD = new MotionPairTextObject(MoveBigWORDLeft.INSTANCE, MoveBigWORDEndRight.INSTANCE);
             final TextObject aWORD = new MotionPairTextObject(MoveBigWORDLeft.INSTANCE, MoveBigWORDRight.INSTANCE);
-            final TextObject innerBracket = new ParenthesisPairTextObject('(', ')', false);
-            final TextObject aBracket = new ParenthesisPairTextObject('(', ')', true);
-            final TextObject innerSquareBracket = new ParenthesisPairTextObject('[', ']', false);
-            final TextObject aSquareBracket = new ParenthesisPairTextObject('[', ']', true);
-            final TextObject innerBrace = new ParenthesisPairTextObject('{', '}', false);
-            final TextObject aBrace = new ParenthesisPairTextObject('{', '}', true);
-            final TextObject innerAngleBrace = new ParenthesisPairTextObject('<', '>', false);
-            final TextObject anAngleBrace = new ParenthesisPairTextObject('<', '>', true);
-            final TextObject innerString = new QuotedTextObject('"', false);
-            final TextObject aString = new QuotedTextObject('"', true);
-            final TextObject innerGraveString = new QuotedTextObject('`', false);
-            final TextObject aGraveString = new QuotedTextObject('`', true);
-            final TextObject innerChar = new QuotedTextObject('`', false);
-            final TextObject aChar = new QuotedTextObject('\'', true);
+            
+            
             textObjects = union(
                         state(
-                            transitionBind('i',
-                                    leafBind('b', innerBracket),
-                                    leafBind('(', innerBracket),
-                                    leafBind(')', innerBracket),
-                                    leafBind('[', innerSquareBracket),
-                                    leafBind(']', innerSquareBracket),
-                                    leafBind('B', innerBrace),
-                                    leafBind('{', innerBrace),
-                                    leafBind('}', innerBrace),
-                                    leafBind('<', innerAngleBrace),
-                                    leafBind('>', innerAngleBrace),
-                                    leafBind('"', innerString),
-                                    leafBind('\'', innerChar),
-                                    leafBind('`', innerGraveString),
-                                    leafBind('w', innerWord),
-                                    leafBind('W', innerWORD)),
-                            transitionBind('a',
-                                    leafBind('b', aBracket),
-                                    leafBind('(', aBracket),
-                                    leafBind(')', aBracket),
-                                    leafBind('[', aSquareBracket),
-                                    leafBind(']', aSquareBracket),
-                                    leafBind('B', aBrace),
-                                    leafBind('{', aBrace),
-                                    leafBind('}', aBrace),
-                                    leafBind('<', anAngleBrace),
-                                    leafBind('>', anAngleBrace),
-                                    leafBind('"', aString),
-                                    leafBind('\'', aChar),
-                                    leafBind('`', aGraveString),
-                                    leafBind('w', aWord),
-                                    leafBind('W', aWORD))),
+                            transitionBind('i', union(
+                                    state(  leafBind('w', innerWord),
+                                            leafBind('W', innerWORD)
+                                    ),
+                                    new DelimitedTextObjectState(delimitedTexts(), DelimitedTextObjectState.INNER))),
+                            transitionBind('a', union(
+                                    state(
+                                            leafBind('w', aWord),
+                                            leafBind('W', aWORD)
+                                    ),
+                                    new DelimitedTextObjectState(delimitedTexts(), DelimitedTextObjectState.OUTER)))),
                         new TextObjectState(motions()));
 
             textObjects = CountingState.wrap(textObjects);
