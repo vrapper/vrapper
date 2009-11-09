@@ -6,8 +6,12 @@ import java.util.Set;
 import net.sourceforge.vrapper.eclipse.interceptor.InputInterceptorFactory;
 import net.sourceforge.vrapper.eclipse.interceptor.InputInterceptorManager;
 import net.sourceforge.vrapper.eclipse.interceptor.VimInputInterceptorFactory;
+import net.sourceforge.vrapper.log.Log;
+import net.sourceforge.vrapper.log.VrapperLog;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Preferences;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IStartup;
@@ -22,7 +26,7 @@ import org.osgi.framework.BundleContext;
 /**
  * The activator class controls the plug-in life cycle
  */
-public class Activator extends AbstractUIPlugin implements IStartup {
+public class Activator extends AbstractUIPlugin implements IStartup, Log {
 
     // The plug-in ID
     public static final String PLUGIN_ID = "net.sourceforge.vrapper.eclipse";
@@ -58,6 +62,7 @@ public class Activator extends AbstractUIPlugin implements IStartup {
     public void start(BundleContext context) throws Exception {
         super.start(context);
         plugin = this;
+        VrapperLog.setImplementation(this);
         getWorkbench().getDisplay().asyncExec(new Runnable() {
             public void run() {
                 restoreVimEmulationInActiveEditors();
@@ -77,6 +82,7 @@ public class Activator extends AbstractUIPlugin implements IStartup {
     @Override
     public void stop(BundleContext context) throws Exception {
         plugin = null;
+        VrapperLog.setImplementation(null);
         super.stop(context);
     }
 
@@ -148,6 +154,26 @@ public class Activator extends AbstractUIPlugin implements IStartup {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    private static void log(int status, String msg, Throwable exception) {
+        Activator instance = getDefault();
+        if (instance != null) {
+            instance.getLog().log(new Status(status, PLUGIN_ID, msg, exception));
+        } else if (status == IStatus.ERROR) {
+            System.err.println(msg);
+        } else {
+            System.out.println(msg);
+        }
+
+    }
+
+    public void info(String msg) {
+        log(IStatus.INFO, msg, null);
+    }
+
+    public void error(String msg, Throwable exception) {
+        log(IStatus.ERROR, msg, exception);
     }
 
     /**
