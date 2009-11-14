@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Compile net.sourceforge.vrapper.plugin.surround" default="main">
+	<target name="main">
+		<ant antfile="build.xml" dir="../repository/trunk/net.sourceforge.vrapper.plugin.surround.eclipse" target="build.jars"/>
+	</target>
+</project>

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="de.jroene.vrapper"
+      id="net.sourceforge.vrapper"
       label="Vrapper"
-      version="0.5.0"
-      provider-name="JROENE">
+      version="0.14.0"
+      provider-name="Vrapper Team">
 
    <description url="http://vrapper.sourceforge.net/documentation/">
       Vrapper is a plugin which acts as a wrapper for Eclipse text editors to provide a Vim-like input scheme for moving around and editing text.
@@ -871,7 +871,7 @@ Public License instead of this License.  But first, please read
    </requires>
 
    <plugin
-         id="de.jroene.vrapper"
+         id="net.sourceforge.vrapper.eclipse"
          download-size="0"
          install-size="0"
          version="0.0.0"

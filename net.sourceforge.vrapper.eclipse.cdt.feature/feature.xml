@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="net.sourceforge.vrapper.eclipse.cdt.feature"
+      label="Vrapper CDT Feature"
+      version="0.14">
+
+   <description url="http://www.example.com/description">
+      [Enter Feature Description here.]
+   </description>
+
+   <copyright url="http://www.example.com/copyright">
+      [Enter Copyright Description here.]
+   </copyright>
+
+   <license url="http://www.example.com/license">
+      [Enter License Description here.]
+   </license>
+
+   <requires>
+      <import plugin="org.eclipse.cdt.ui" version="5.1.1" match="greaterOrEqual"/>
+      <import plugin="net.sourceforge.vrapper.eclipse" version="0.11.0" match="greaterOrEqual"/>
+      <import feature="net.sourceforge.vrapper" version="0.14.0"/>
+   </requires>
+
+   <plugin
+         id="net.sourceforge.vrapper.eclipse.cdt"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"
+         unpack="false"/>
+
+</feature>
