@@ -1,0 +1,73 @@
+
+<h2>Macros</h2>
+
+<h3>Overview</h3>
+<p>Vrapper supports basic macro functionality. It is possible to record,
+edit, and execute different macros to speed up repetetive operations.</p>
+<p>Macros are limited to Vrapper commands and insert operations.
+Eclipse actions can not be recorded. This includes autocompletion and
+similar tools used during insert mode.</p>
+
+<h3>Recording Macros</h3>
+<p>To record a macro, use "qx" where x is a character from a-z. All
+characters typed after x will be added to the macro x. To stop recording,
+press q. The macro is then written into register x.</p>
+<p>It is also possible to append to an existing macro by using "qX" where X
+is a character from A-Z.</p>
+
+<h3>Executing Macros</h3>
+<p>To execute macro x, use "@x".</p>
+<p>While executing a macro, some parts of Vrapper behave differently. See
+<a href="#issues">Possible Issues</a> for more information.</p>
+
+<h3>Editing Macros</h3>
+<p>Macros are stored in named registers. This means it is possible
+to edit a macro by pasting it, making some changes and then yanking it
+back to the register.</p>
+<p>Special and control characters are stored as multi-char sequences. This
+is different from Vim's macros, where special characters are stored the
+same way as the other characters. The reason for this is that Eclipse
+editors are not intended to display control characters.</p>
+<p>The sequences  are the same as for remapping keys; &lt;C-x&gt; with x between
+A and Z for control characters and &lt;NAME&gt; for the special characters:
+   <ul class="commands">
+       <li>GT</li>
+       <li>LT</li>
+       <li>LEFT</li>
+       <li>RIGHT</li>
+       <li>UP</li>
+       <li>DOWN</li>
+       <li>ENTER</li>
+       <li>RETURN</li>
+       <li>ESC</li>
+       <li>HOME</li>
+       <li>END</li>
+       <li>PAGE_UP</li>
+       <li>PAGE_DOWN</li>
+       <li>INSERT</li>
+       <li>DELETE</li>
+       <li>BACKSPACE</li>
+   </ul>
+</p>
+<a name="issues" />
+<h3>Possible Issues</h3>
+<ul>
+<li>Insert mode behaves different when executing macros. Normally insert mode does not 
+change the edited text, but only records what is typed for use with the dot
+operator etc. The keystrokes are passed to the underlying editor who then
+inserts the typed characters. During macro execution nothing can be passed
+to the underlying editor, because no events are generated. This means
+insert mode has to do the editing. Although insert mode tries to use
+the smart insert functionality of the underlying editor, this may still
+cause unexpected behaviour in some cases.</li>
+
+<li>Backspace (during inserts) removes the character behind the cursor.
+When the underlying editor behaves differently, backspace should not be
+used in macros.</li>
+
+<li>Special keys other than backspace and return will be ignored in insert
+mode during macro execution.</li>
+
+<li>Calling a macro while defining it (e.g. "qa@aq", then executing macro a)
+will result in an unlimited recursion.</li>
+</ul>

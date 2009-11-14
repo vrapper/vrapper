@@ -1,0 +1,231 @@
+<h2>Command-Line Mode</h2>
+
+<h3>Configration</h3>
+<p>Configuration of Vrapper's behaviour is done through different commands.</p>
+<table class="commands">
+    <tr>
+        <th>Command</th>
+        <th>Description</th>
+    </tr>
+    <tr>
+        <td>:set&nbsp;smartindent<br />:set&nbsp;nosmartindent</td>
+        <td>Whether to let the underlying editor indent lines or not.
+            Overrides the autoindent option.<br />
+            Active by default.</td>
+    </tr>
+    <tr>
+        <td>:set&nbsp;autoindent<br />:set&nbsp;noautoindent</td>
+        <td>Whether to indent inserted lines or not. When active, lines
+            inserted with "o" or "O" will use the indent of
+            the line under the cursor. "cc" or "S" will keep the
+            whitespace at the beginning of a line.<br />
+            Not active by default.</td>
+    </tr>
+    <tr>
+        <td>:set&nbsp;globalregisters<br />:set&nbsp;noglobalregisters</td>
+        <td>Whether registers (including the last search, last character
+            search and last edit) should be shared across all editors of
+            the workbench or local to the editor.<br />
+            Active by default.
+            </td>
+    </tr>
+    <tr>
+        <td>:set&nbsp;atomicinsert<br />:set&nbsp;noatomicinsert
+            :set&nbsp;ati<br />:set&nbsp;noati</td>
+        <td>Whether inserts should be handled as atomic operation.
+            This causes problems sometimes, so it is deactivatable.<br />
+            Active by default.</td>
+    </tr>
+    <tr>
+        <td>:set&nbsp;ignorecase<br />:set&nbsp;noignorecase</td>
+        <td>Whether case should be ignored when searching.<br />
+            Not active by default.</td>
+    </tr>
+    <tr>
+        <td>:set&nbsp;smartcase<br />:set&nbsp;nosmartcase</td>
+        <td>If set, searches will be case sensitive if the search string
+            includes uppercase characters. Only used if ignorecase is set.
+            <br />
+            Not active by default.</td>
+    </tr>
+</table>
+
+<h3>Remapping Keys</h3>
+<p>There are a lot of commands for defining different key mappings, but
+   essentially four actions: create a mapping which is searched again for
+   other mappings, create one which is not mapped again, clear a mapping,
+   and clear all mappings. Each of these four actions can be done either for   normal and visual mode together or for one of normal, visual, or insert
+   mode alone. The commands are:</p>
+   <table class="commands" style="margin-bottom:1em">
+       <tr>
+           <th>Command</th>
+           <th>Description</th>
+        </tr>
+       <tr>
+           <td>:map&nbsp;&lt;lhs&gt;&lt;rhs&gt;</td>
+           <td>Maps &lt;lhs&gt; to &lt;rhs&gt;. Searches &lt;rhs&gt; for
+               more mappings.</td>
+       </tr>
+       <tr>
+           <td>:noremap&nbsp;&lt;lhs&gt;&nbsp;&lt;rhs&gt;<br />
+               :no&nbsp;&lt;lhs&gt;&nbsp;&lt;rhs&gt;</td>
+           <td>Maps &lt;lhs&gt; to &lt;rhs&gt;. Ignores mappings occuring in
+               &lt;rhs&gt;</td>
+       </tr>
+       <tr>
+           <td>:unmap&nbsp;&lt;mapping&gt;
+               :unm&nbsp;&lt;mapping&gt;</td>
+           <td>Removes the mapping for &lt;mapping&gt;.</td>
+       </tr>
+       <tr>
+           <td>:mapclear<br />
+               :mapc</td>
+           <td>Removes all mappings of the corresponding key map.</td>
+       </tr>
+   </table>
+   <p>
+   The commands above all manipulate the key maps of normal and visual mode
+   respectively. The following commands are used for the individual modes:
+   </p>
+   <table class="commands" style="margin-bottom:1em">
+       <tr>
+           <td>
+               nmap<br />
+               nm<br />
+               imap<br />
+               im<br />
+               vmap<br />
+               vm<br />
+           </td>
+           <td>
+               nnoremap<br />
+               nn<br />
+               inoremap<br />
+               ino<br />
+               vnoremap<br />
+               vn<br />
+           </td>
+           <td>
+               unmap<br />
+               unm<br />
+               nunmap<br />
+               nun<br />
+               vunmap<br />
+               vu<br />
+               iunmap<br />
+               iu<br />
+           </td>
+           <td>
+               mapclear<br />
+               mapc<br />
+               nmapclear<br />
+               nmapc<br />
+               vmapclear<br />
+               vmapc<br />
+               imapclear<br />
+               imapc<br />
+           </td>
+       </tr>
+   </table>
+<p>It is possible to map multiple keys to multiple other keys, e.g.
+   ":ino jj <ESC>" or ":nn cw ce".</p>
+   <p>Special characters can be mapped by using the notation &lt;NAME&gt;.
+   Control characters are mapped by using &lt;C-x&gt; where x is a character from A-Z. Here is a list of special character names:</p>
+   <ul class="commands">
+       <li>GT</li>
+       <li>LT</li>
+       <li>LEFT</li>
+       <li>RIGHT</li>
+       <li>UP</li>
+       <li>DOWN</li>
+       <li>ENTER</li>
+       <li>RETURN</li>
+       <li>ESC</li>
+       <li>HOME</li>
+       <li>END</li>
+       <li>PAGE_UP</li>
+       <li>PAGE_DOWN</li>
+       <li>INSERT</li>
+       <li>DELETE</li>
+       <li>BACKSPACE</li>
+   </ul>
+<h3>Configuration File</h3>
+<p>The options described above only change the behaviour of the editor in which they are set. To change the default configuration a file is used. When a new editor is opened, the plugin checks for a file called ".vrapperrc" in the user's home directory. If found, the commands in the file are executed. You may use any configuration command in this file. As with ".vimrc" files, the leading ":" is omitted in the configuration file.</p>
+<p>This is an example of the contents of a configuration file:</p>
+<pre>
+noremap d h
+noremap h j
+noremap t k
+noremap n l
+noremap e d
+noremap E D
+noremap l n
+noremap L N
+noremap s :
+noremap ` ^
+noremap k e
+noremap K E
+set autoindent
+set ignorecase
+set smartcase
+</pre>
+
+
+<h3>Other Commands</h3>
+<table class="commands">
+    <tr>
+        <th>Command</th>
+        <th>Description</th>
+    </tr>
+    <tr>
+        <td>:w</td>
+        <td>Writes the edited file to disk.</td>
+    </tr>
+    <tr>
+        <td>:q</td>
+        <td>Closes the editor if nothing was changed since the last
+            save.</td>
+    </tr>
+    <tr>
+        <td>:wq<br />:x</td>
+        <td>Writes the edited file to disk and closes the editor.</td>
+    </tr>
+    <tr>
+        <td>:q!</td>
+        <td>Closes the editor even if there are unsaved changes.</td>
+    </tr>
+    <tr>
+        <td>:u<br />:undo</td>
+        <td>Undoes the last change.</td>
+    </tr>
+    <tr>
+        <td>:red<br />:redo</td>
+        <td>Redoes an undone change.</td>
+    </tr>
+    <tr>
+        <td>:fm<br />:format</td>
+        <td>Calls the formatter of the underlying editor if present.<br />
+            The formatter will be applied to the current selection
+            or the whole text if nothing is selected.</td>
+    </tr>
+    <tr>
+        <td>:&lt;number&gt;</td>
+        <td>Jumps to line &lt;number&gt;.</td>
+    </tr>
+    <tr>
+        <td>:eclipseaction&nbsp;&lt;name&gt;&nbsp;&lt;id&gt;</td>
+        <td>Binds the Eclipse action with the specified id to a 
+            (command line mode) command &lt;name&gt;.<br />
+            There are lists with action ids for
+            <a href="http://help.eclipse.org/help33/topic/org.eclipse.platform.doc.isv/reference/api/org/eclipse/ui/texteditor/IWorkbenchActionDefinitionIds.html">workbench</a>,
+            <a href="http://help.eclipse.org/help33/topic/org.eclipse.platform.doc.isv/reference/api/org/eclipse/ui/texteditor/ITextEditorActionDefinitionIds.html">text editors</a>,
+            and <a href="http://help.eclipse.org/ganymede/topic/org.eclipse.jdt.doc.isv/reference/api/org/eclipse/jdt/ui/actions/IJavaEditorActionDefinitionIds.html">java editors</a>.</td>
+    </tr>
+    <tr>
+        <td>:eclipseaction!&nbsp;&lt;name&gt;&nbsp;&lt;id&gt;</td>
+        <td>Binds the Eclipse action with the specified id to a 
+            (command line mode) command &lt;name&gt;. Overwrites the 
+            binding if it already exists.</td>
+    </tr>
+</table>
+    <p />

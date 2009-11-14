@@ -1,0 +1,7 @@
+<h2>Search</h2>
+
+<p>At the moment the implementation of search is very simple. There is no replace and the search is not configurable. But it is still a good navigation tool and in combination with the change and dot operators, simple search and replace operations can still be performed. Case sensitivity can be controlled via the options <a href="?page=6">ignorecase and smartcase</a>.</p>
+<p>Vrapper uses search functionality offered by Eclipse to do the actual search. You can use "/keyword" or "?keyword" to search for a keyword. "n" jumps to the next match while "N" jumps to the previous match.</p>
+<p>You may also specify search offsets as known from Vim. For example, "/keyword/e-2" searches for the keyword and then jumps to the "o" of the match. If the keyword is omitted, like "//b+2", the last keyword is used and only the offset of the search changes.</p>
+<p>"*" and "#" commands are also available. These search for an exact match of the word under the cursor.</p>
+<p>All search commands (n, N, *, #, /, ?) can be used like motions, i. e. combined with counts and operators.</p>

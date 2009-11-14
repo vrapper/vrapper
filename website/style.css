@@ -1,0 +1,205 @@
+body {
+    background:#444;
+}
+img {
+    border:1px solid #000;
+    margin:10px;
+}
+table {
+    border-collapse:collapse;
+}
+table td {
+    border:1px solid #000;
+    padding:3px;
+    vertical-align:top;
+}
+table.links td {
+    border:none;
+}
+table.links th {
+    text-align:left;
+    padding-top:20px;
+}
+#whopper {
+    margin-left:auto;
+    margin-right:auto;
+    max-width:1200px;
+    border:3px solid #000;
+    font-family:Verdana,Arial;
+    background:#fff;
+}
+.header {
+    background-color:#bf8;
+    margin:0;
+    padding:10px;
+}
+.header h1 {
+    margin:0;
+    text-transform:capitalize;
+}
+.header h2 {
+    margin:0;
+    font-size:smaller;
+}
+.menu {
+    border-top:1px solid #000;
+    border-bottom:1px solid #000;
+    background:#ddd;
+    padding:5px;
+}
+.menu img {
+    margin: 0;
+ }
+.footer {
+    border-top:1px solid #000;
+    background:#ddd;
+    padding:5px;
+    text-align:right;
+    font-size:65%;
+}
+.menu a {
+    text-decoration:none;
+    text-align:center;
+    margin-left:15px;
+    color:#000;
+    border:2px solid #ddd;
+    background:#9a9;
+}
+.menu a:hover {
+    background:#292;
+    border-color:#292;
+}
+.menu a:focus {
+    color:#000;
+    background:#292;
+    border-color:#292;
+}
+.sf-logo {
+    float:right;
+}
+.sf-logo img {
+    border:0px;
+}
+.content {
+    min-height:300px;
+    padding:0 20px;
+}
+.content h3 {
+    margin-top:20px;
+    margin-bottom:10px;
+    padding-left:30px;
+    background-repeat:no-repeat;
+    background-position:left center;
+    min-height:24px;
+}
+.content p {
+    margin-top:0;
+    margin-bottom:10px;
+}
+#right {
+    float:right;
+    width:48%;
+}
+#left {
+    width:48%;
+    min-height:400px;
+}
+#left h3 {
+    padding-left:30px;
+}
+#about {
+    padding:0 10px;
+}
+#download {
+    padding:0 10px;
+}
+#download p {
+    margin-left:10px;
+}
+#download h4 {
+    margin:0;
+    margin-left:10px;
+}
+div.newsbox {
+    background:#ddd;
+    border:1px solid #000;
+    margin:10px 0;
+}
+div.newsbox h4 {
+    background:#292;
+    padding:5px;
+    margin:0;
+}
+div.newsbox p {
+    padding:5px;
+}
+div.newsbox ul {
+    padding:0;
+    padding-left:1.5em;
+}
+div.newsbox li {
+    padding:0px;
+}
+div.newsbox div.date {
+    float:right;
+    padding:5px;
+}
+#features {
+    padding:0 10px;
+}
+#index {
+    color:#004;
+    background:#ddd;
+    float:left;
+    padding:10px 10px 10px 35px;
+    margin:10px;
+    width:13ex;
+}
+#index li a {
+    color:#226;
+    text-transform:capitalize;
+    text-decoration:none;
+}
+#index li a:hover {
+    text-transform:capitalize;
+    text-decoration:underline;
+}
+#index li.selected a {
+    text-decoration:underline;
+    font-weight:bold;
+}
+#documentation {
+    margin:0 10px 0 200px;
+}
+#documentation h3 {
+    padding:0;
+}
+#documentation ul.commands {
+    margin:0;
+}
+#documentation ul.commands li{
+    display:inline;
+}
+h3.download {
+    margin-top:0;
+    background-image:url(img/download24.png);
+}
+h3.information {
+    margin-top:2em;
+    background-image:url(img/info24.png);
+}
+h3.news {
+    background-image:url(img/news24.png);
+}
+h3.implemented {
+    background-image:url(img/ok24.png);
+}
+h3.planned {
+    background-image:url(img/clock24.png);
+}
+h3.considered {
+    background-image:url(img/question24.png);
+}
+h3.sites {
+    padding:0;
+}
