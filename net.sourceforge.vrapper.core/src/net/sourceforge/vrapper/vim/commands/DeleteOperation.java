@@ -1,6 +1,5 @@
 package net.sourceforge.vrapper.vim.commands;
 
-import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.ContentType;
@@ -37,9 +36,6 @@ public class DeleteOperation extends SimpleTextOperation {
             
             int position = range.getLeftBound().getModelOffset();
             int length = range.getModelLength();
-            
-            if (position + length == txt.getTextLength())
-                VrapperLog.info("end-cut");
             
             txt.replace(position, length, "");
             
