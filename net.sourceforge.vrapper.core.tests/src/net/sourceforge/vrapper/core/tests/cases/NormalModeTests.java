@@ -359,7 +359,23 @@ public class NormalModeTests extends CommandTestCase {
     }
 	
 	@Test
+    public void testYanking() {
+	    when(configuration.get(Options.MOVE_ON_YANK).booleanValue()).thenReturn(true);
+        checkCommand(forKeySeq("yiw"),
+                "so",'m',"ething",
+                "",'s',"omething");
+        assertYanked(ContentType.TEXT, "something");        
+        
+	    when(configuration.get(Options.MOVE_ON_YANK).booleanValue()).thenReturn(false);
+        checkCommand(forKeySeq("yiw"),
+                "so",'m',"ething",
+                "so",'m',"ething");
+        assertYanked(ContentType.TEXT, "something");        
+    }
+	
+	@Test
     public void test_dd_lastLine() {
+	    // FIXME: currently fails
         checkCommand(forKeySeq("dd"),
                 "sth\n",EOF,"",
                 "",'s',"th");

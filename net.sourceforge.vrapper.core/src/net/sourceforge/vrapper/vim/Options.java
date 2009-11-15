@@ -15,12 +15,13 @@ public interface Options {
     public static final Option<Boolean> ATOMIC_INSERT     = bool("atomicinsert",    true,  "ati");
     public static final Option<Boolean> IGNORE_CASE       = bool("ignorecase",      false, "ic");
     public static final Option<Boolean> SMART_CASE        = bool("smartcase",       false, "scs");
+    public static final Option<Boolean> MOVE_ON_YANK      = bool("moveonyank",      true);
     public static final Option<Boolean> SANE_CW           = bool("sanecw",          false);
     public static final Option<Boolean> SANE_Y            = bool("saney",           false);
     
     @SuppressWarnings("unchecked")
     public static final Set<Option<Boolean>> BOOLEAN_OPTIONS = set(
-            SMART_INDENT, AUTO_INDENT, ATOMIC_INSERT, IGNORE_CASE, SMART_CASE, SANE_CW, SANE_Y);
+            SMART_INDENT, AUTO_INDENT, ATOMIC_INSERT, IGNORE_CASE, SMART_CASE, MOVE_ON_YANK, SANE_CW, SANE_Y);
     
     // String options:
     public static final Option<String> SELECTION = string("selection", "inclusive", "old, inclusive, exclusive", "sel");
