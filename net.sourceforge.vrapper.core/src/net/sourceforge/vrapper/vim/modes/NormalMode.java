@@ -35,7 +35,7 @@ import net.sourceforge.vrapper.vim.commands.DeleteOperation;
 import net.sourceforge.vrapper.vim.commands.DelimitedText;
 import net.sourceforge.vrapper.vim.commands.DotCommand;
 import net.sourceforge.vrapper.vim.commands.InsertLineCommand;
-import net.sourceforge.vrapper.vim.commands.LinewiseVisualMotionCommand;
+import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.commands.MotionPairTextObject;
 import net.sourceforge.vrapper.vim.commands.MotionTextObject;
@@ -201,9 +201,15 @@ public class NormalMode extends CommandBasedMode {
                 new CountIgnoringNonRepeatableCommand() {
                     public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
                         Position position = editorAdaptor.getPosition();
-                        editorAdaptor.setSelection(new  SimpleSelection(new StartEndTextRange(position, position)));
+                        editorAdaptor.setSelection(new SimpleSelection(new StartEndTextRange(position, position)));
                     }
                 });
+        Command selectLine = new CountIgnoringNonRepeatableCommand() {
+            public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
+                        Position position = editorAdaptor.getPosition();
+                        editorAdaptor.setSelection(new LineWiseSelection(editorAdaptor, position, position));
+            }
+        };
         Command afterEnteringVisual = seq(afterEnteringVisualInc, afterEnteringVisualExc);
 
         State<Command> motionCommands = new GoThereState(motions);
@@ -228,7 +234,7 @@ public class NormalMode extends CommandBasedMode {
                         leafBind('o', (Command) new ChangeToInsertModeCommand(InsertLineCommand.POST_CURSOR)),
                         leafBind('O', (Command) new ChangeToInsertModeCommand(InsertLineCommand.PRE_CURSOR)),
                         leafBind('v', seq(visualMode, afterEnteringVisual)),
-                        leafBind('V', seq(linewiseVisualMode, new LinewiseVisualMotionCommand(moveRight))),
+                        leafBind('V', seq(linewiseVisualMode, selectLine)),
                         leafBind('p', pasteAfter),
                         leafBind('.', repeatLastOne),
                         leafBind('P', pasteBefore),

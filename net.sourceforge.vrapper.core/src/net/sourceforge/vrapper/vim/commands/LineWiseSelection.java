@@ -1,10 +1,7 @@
 package net.sourceforge.vrapper.vim.commands;
 
 import net.sourceforge.vrapper.platform.Configuration;
-import net.sourceforge.vrapper.platform.CursorService;
-import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.ContentType;
-import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
@@ -20,7 +17,7 @@ public class LineWiseSelection implements Selection {
         super();
         this.from = from;
         this.to = to;
-        this.range = createRange(editor, from, to);
+        this.range = StartEndTextRange.lines(editor, from, to);
     }
 
     public TextRange getRegion(EditorAdaptor editorMode, int count)
@@ -73,28 +70,5 @@ public class LineWiseSelection implements Selection {
     public Position getTo() {
         return to;
     }
-
-    private static TextRange createRange(EditorAdaptor editor, Position start, Position end) {
-        TextContent vc = editor.getViewContent();
-        LineInformation sLine = vc.getLineInformationOfOffset(start.getViewOffset());
-        LineInformation eLine = vc.getLineInformationOfOffset(end.getViewOffset());
-        CursorService cs = editor.getCursorService();
-        if (sLine.getNumber() < eLine.getNumber()) {
-            int endIndex = eLine.getNumber() < vc.getNumberOfLines()
-                    ? vc.getLineInformation(eLine.getNumber()+1).getBeginOffset()
-                    : eLine.getEndOffset();
-            return new StartEndTextRange(
-                    cs.newPositionForViewOffset(sLine.getBeginOffset()),
-                    cs.newPositionForViewOffset(endIndex));
-        } else {
-            int startIndex = sLine.getNumber() < vc.getNumberOfLines()
-                    ? vc.getLineInformation(sLine.getNumber()+1).getBeginOffset()
-                    : sLine.getEndOffset();
-            return new StartEndTextRange(
-                    cs.newPositionForViewOffset(startIndex),
-                    cs.newPositionForViewOffset(eLine.getBeginOffset()));
-        }
-    }
-
 
 }

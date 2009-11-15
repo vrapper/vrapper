@@ -1,5 +1,9 @@
 package net.sourceforge.vrapper.utils;
 
+import net.sourceforge.vrapper.platform.CursorService;
+import net.sourceforge.vrapper.platform.TextContent;
+import net.sourceforge.vrapper.vim.EditorAdaptor;
+
 public class StartEndTextRange implements TextRange {
 
     private final Position start;
@@ -40,6 +44,22 @@ public class StartEndTextRange implements TextRange {
 
     private int getSignedModelLength() {
         return getEnd().getModelOffset() - getStart().getModelOffset();
+    }
+
+    public static TextRange lines(EditorAdaptor editor, Position from, Position to) {
+        TextContent txt = editor.getModelContent();
+        LineInformation sLine = txt.getLineInformationOfOffset(from.getModelOffset());
+        LineInformation eLine = txt.getLineInformationOfOffset(to.getModelOffset());
+        if (sLine.getNumber() > eLine.getNumber())
+            return lines(editor, to, from);
+        CursorService cs = editor.getCursorService();
+        int startIndex = sLine.getBeginOffset();
+        int endIndex = txt.getLineInformation(eLine.getNumber()+1).getBeginOffset();
+        if (eLine.getNumber() == txt.getNumberOfLines())
+            endIndex = txt.getTextLength();
+        return new StartEndTextRange(
+                cs.newPositionForModelOffset(startIndex),
+                cs.newPositionForModelOffset(endIndex));
     }
 
 }
