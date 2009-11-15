@@ -1,6 +1,5 @@
 package net.sourceforge.vrapper.vim.commands;
 
-import static java.util.Collections.addAll;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.ContentType;
