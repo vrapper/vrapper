@@ -7,31 +7,21 @@ import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.motions.Motion;
+import net.sourceforge.vrapper.vim.commands.motions.MoveWithBounds;
 
 public class MotionPairTextObject extends AbstractTextObject {
 
     private final Motion toBeginning;
     private final Motion toEnd;
-    private final boolean countToBeginning;
-    private final boolean countToEnd;
-
-    public MotionPairTextObject(Motion toBeginning, Motion toEnd) {
+    
+    public MotionPairTextObject(MoveWithBounds toBeginning, MoveWithBounds toEnd) {
         this.toBeginning = toBeginning;
         this.toEnd = toEnd;
-        this.countToBeginning = false;
-        this.countToEnd = true;
-    }
-
-    protected MotionPairTextObject(Motion toBeginning, Motion toEnd, boolean countToBeginning, boolean countToEnd) {
-        this.toBeginning = toBeginning;
-        this.toEnd = toEnd;
-        this.countToBeginning = countToBeginning;
-        this.countToEnd = countToEnd;
     }
 
     public TextRange getRegion(EditorAdaptor editorMode, int count) throws CommandExecutionException {
-        Motion leftMotion = countToBeginning ? toBeginning.withCount(count) : toBeginning;
-        Motion rightMotion = countToEnd ? toEnd.withCount(count) : toEnd;
+        Motion leftMotion = toBeginning;
+        Motion rightMotion = toEnd.withCount(count);
         Position from = leftMotion.destination(editorMode);
         Position to = rightMotion.destination(editorMode);
         if (toEnd.borderPolicy() == BorderPolicy.INCLUSIVE) {

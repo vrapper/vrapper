@@ -1,6 +1,5 @@
 package net.sourceforge.vrapper.vim.commands.motions;
 
-import static java.lang.Math.max;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
@@ -14,8 +13,13 @@ public class GoToLineMotion extends CountAwareMotion {
     public static Motion FIRST_LINE = new GoToLineMotion();
     public static Motion LAST_LINE = new GoToLineMotion() {
         @Override protected int defaultLineNo(TextContent content) {
-            int lastChar = max(0, content.getTextLength() - 1);
-            return content.getLineInformationOfOffset(lastChar).getNumber();
+            if (content.getTextLength() == 0)
+                return 0;
+            int lastChar = content.getTextLength() - 1;
+            int number = content.getLineInformationOfOffset(lastChar).getNumber();
+            if (content.getText(lastChar, 1).equals("\n"))
+                ++number;
+            return number;
         }
     };
 

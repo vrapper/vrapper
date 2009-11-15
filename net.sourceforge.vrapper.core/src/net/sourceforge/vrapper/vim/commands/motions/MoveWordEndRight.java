@@ -5,9 +5,12 @@ import net.sourceforge.vrapper.vim.commands.BorderPolicy;
 
 public class MoveWordEndRight extends MoveRightWithBounds {
 
-    public static final MoveWordEndRight INSTANCE = new MoveWordEndRight();
+    public static final MoveWordEndRight INSTANCE = new MoveWordEndRight(false);
+    public static final MoveWordEndRight BAILS_OFF = new MoveWordEndRight(true);
 
-    protected MoveWordEndRight() { /* NOP */ }
+    protected MoveWordEndRight(boolean bailOff) {
+        super(bailOff);
+    }
 
     @Override
     protected boolean atBoundary(char c1, char c2) {

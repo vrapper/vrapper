@@ -3,9 +3,12 @@ package net.sourceforge.vrapper.vim.commands.motions;
 
 public class MoveBigWORDRight extends MoveWordRight {
 
-    public static final MoveBigWORDRight INSTANCE = new MoveBigWORDRight();
+    protected MoveBigWORDRight(boolean bailOff) {
+        super(bailOff);
+    }
 
-    private MoveBigWORDRight() { /* NOP */ }
+    public static final MoveBigWORDRight INSTANCE = new MoveBigWORDRight(false);
+    public static final MoveBigWORDRight BAILS_OFF = new MoveBigWORDRight(true);
 
 	@Override
 	protected boolean atBoundary(char c1, char c2) {

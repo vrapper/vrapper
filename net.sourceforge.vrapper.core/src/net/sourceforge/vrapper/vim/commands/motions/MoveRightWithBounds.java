@@ -5,10 +5,14 @@ import net.sourceforge.vrapper.platform.TextContent;
 
 public abstract class MoveRightWithBounds extends MoveWithBounds {
 
-	@Override
-	protected int destination(int offset, TextContent content) {
+	public MoveRightWithBounds(boolean bailOff) {
+        super(bailOff);
+    }
+
+    @Override
+	protected int destination(int offset, TextContent content, boolean bailOff) {
 		// ensure we don't stay inside object
-		if (shouldStopAtLeftBoundingChar())
+		if (!bailOff && shouldStopAtLeftBoundingChar())
 			++offset;
 
 		int textLen = content.getTextLength();

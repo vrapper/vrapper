@@ -1,8 +1,11 @@
 package net.sourceforge.vrapper.vim.commands;
 
+import static java.util.Collections.addAll;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.ContentType;
+import net.sourceforge.vrapper.utils.LineInformation;
+import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 
@@ -28,11 +31,32 @@ public class DeleteOperation extends SimpleTextOperation {
 
     public static void doIt(EditorAdaptor editorAdaptor, TextRange range, ContentType contentType) {
         YankOperation.doIt(editorAdaptor, range, contentType);
-        TextContent content = editorAdaptor.getModelContent();
+        
         if (editorAdaptor.getFileService().isEditable()) {
-            content.replace(range.getLeftBound().getModelOffset(), range.getModelLength(), "");
             CursorService cursorService = editorAdaptor.getCursorService();
-            cursorService.setPosition(cursorService.getPosition(), true);
+            TextContent txt = editorAdaptor.getModelContent();
+            
+            boolean deletesLastLine = contentType == ContentType.LINES && range.getEnd().getModelOffset() == txt.getTextLength();
+            
+            int position = range.getLeftBound().getModelOffset();
+            int length = range.getModelLength();
+            
+            if (deletesLastLine && position > 0) {
+                position -= 1;
+                length += 1;
+            }
+            
+            txt.replace(position, length, "");
+            
+            // don't move cursor
+            Position newPosition = cursorService.getPosition();
+            
+            if (deletesLastLine) {
+                LineInformation lastLine = txt.getLineInformationOfOffset(newPosition.getModelOffset());
+                newPosition = newPosition.setModelOffset(lastLine.getBeginOffset());
+            }
+            
+            cursorService.setPosition(newPosition, true);
         }
     }
 }

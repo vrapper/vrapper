@@ -2,9 +2,12 @@ package net.sourceforge.vrapper.vim.commands.motions;
 
 public class MoveBigWORDEndLeft extends MoveWordEndLeft {
 
-    public static final Motion INSTANCE = new MoveBigWORDEndLeft();
+    private MoveBigWORDEndLeft(boolean bailOff) {
+        super(bailOff);
+    }
 
-    private MoveBigWORDEndLeft() { /* NOP */ }
+    public static final Motion INSTANCE = new MoveBigWORDEndLeft(false);
+    public static final Motion BAILS_OFF = new MoveBigWORDEndLeft(true);
 
 	@Override
 	protected boolean atBoundary(char c1, char c2) {

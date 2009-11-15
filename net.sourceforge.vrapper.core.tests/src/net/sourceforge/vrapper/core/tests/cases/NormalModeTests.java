@@ -94,8 +94,14 @@ public class NormalModeTests extends CommandTestCase {
 				"sin",'g',"le",
 				"",EOF,"");
 		assertYanked(ContentType.TEXT, "single");
+		
 		checkCommand(forKeySeq("diw"),
 				"Ala mi",'e',"wa kota",
+				"Ala ",' ',"kota");
+		assertYanked(ContentType.TEXT, "miewa");
+		
+		checkCommand(forKeySeq("diw"),
+				"Ala miew",'a'," kota",
 				"Ala ",' ',"kota");
 		assertYanked(ContentType.TEXT, "miewa");
 	}
@@ -351,5 +357,11 @@ public class NormalModeTests extends CommandTestCase {
                 "so",'m',"ething",
                 "",'(',"something)");
     }
+	
+	@Test
+    public void test_dd_lastLine() {
+        checkCommand(forKeySeq("dd"),
+                "sth\n",EOF,"",
+                "",'s',"th");
+    }
 }
-

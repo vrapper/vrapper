@@ -130,10 +130,10 @@ public class NormalMode extends CommandBasedMode {
     @SuppressWarnings("unchecked")
     public static synchronized State<TextObject> textObjects() {
         if (textObjects == null) {
-            final TextObject innerWord = new MotionPairTextObject(MoveWordLeft.INSTANCE, MoveWordEndRight.INSTANCE);
-            final TextObject aWord = new MotionPairTextObject(MoveWordLeft.INSTANCE, MoveWordRight.INSTANCE);
-            final TextObject innerWORD = new MotionPairTextObject(MoveBigWORDLeft.INSTANCE, MoveBigWORDEndRight.INSTANCE);
-            final TextObject aWORD = new MotionPairTextObject(MoveBigWORDLeft.INSTANCE, MoveBigWORDRight.INSTANCE);
+            final TextObject innerWord = new MotionPairTextObject(MoveWordLeft.BAILS_OFF, MoveWordEndRight.BAILS_OFF);
+            final TextObject aWord = new MotionPairTextObject(MoveWordLeft.BAILS_OFF, MoveWordRight.BAILS_OFF);
+            final TextObject innerWORD = new MotionPairTextObject(MoveBigWORDLeft.BAILS_OFF, MoveBigWORDEndRight.BAILS_OFF);
+            final TextObject aWORD = new MotionPairTextObject(MoveBigWORDLeft.BAILS_OFF, MoveBigWORDRight.BAILS_OFF);
             
             textObjects = union(
                         state(

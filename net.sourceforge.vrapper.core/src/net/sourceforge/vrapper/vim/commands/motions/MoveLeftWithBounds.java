@@ -6,8 +6,12 @@ import net.sourceforge.vrapper.platform.TextContent;
 
 public abstract class MoveLeftWithBounds extends MoveWithBounds {
 
-	@Override
-	protected int destination(int offset, TextContent content) {
+	public MoveLeftWithBounds(boolean bailOff) {
+        super(bailOff);
+    }
+
+    @Override
+	protected int destination(int offset, TextContent content, boolean bailOff) {
 		boolean haveMoved = false;
 		// special case - end of buffer
 		final int last = content.getTextLength() - 1;
@@ -20,8 +24,8 @@ public abstract class MoveLeftWithBounds extends MoveWithBounds {
 			}
         }
 
-		// always move
-		if (!haveMoved && !shouldStopAtLeftBoundingChar()) {
+		// move or bail off
+		if (!bailOff && !haveMoved && !shouldStopAtLeftBoundingChar()) {
             --offset;
         }
 
