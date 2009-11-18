@@ -71,7 +71,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     private MacroRecorder macroRecorder;
     private MacroPlayer macroPlayer;
 
-    public DefaultEditorAdaptor(Platform editor, RegisterManager registerManager) {
+    public DefaultEditorAdaptor(Platform editor, RegisterManager registerManager, boolean isActive) {
         this.modelContent = editor.getModelContent();
         this.viewContent = editor.getViewContent();
         this.cursorService = editor.getCursorService();
@@ -104,7 +104,8 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         }
         readConfiguration();
         setNewLineFromFirstLine();
-        changeMode(NormalMode.NAME);
+        if (isActive)
+            changeMode(NormalMode.NAME);
     }
 
     private void setNewLineFromFirstLine() {
@@ -304,5 +305,9 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         return false;
     }
 
-}
+    public void onChangeEnabled(boolean enabled) {
+        // switch mode for set-up/tear-down
+        changeMode(enabled ? NormalMode.NAME : InsertMode.NAME);
+    }
 
+}

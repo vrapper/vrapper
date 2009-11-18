@@ -2,57 +2,48 @@ package net.sourceforge.vrapper.eclipse.interceptor;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.WeakHashMap;
 
-import net.sourceforge.vrapper.eclipse.activator.Activator;
+import net.sourceforge.vrapper.eclipse.activator.VrapperPlugin;
 
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.ITextViewerExtension;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.part.MultiEditor;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 
 /**
  * Listener which adds an {@link InputInterceptor} from the underlying factory
- * to editors which are opened.
+ * to editors.
  *
  * @author Matthias Radig
  */
 public class InputInterceptorManager implements IPartListener {
 
+    public static final InputInterceptorManager INSTANCE = new InputInterceptorManager(VimInputInterceptorFactory.INSTANCE);
     private static final Method METHOD_GET_PAGE_COUNT = getMultiPartEditorMethod("getPageCount");
     private static final Method METHOD_GET_EDITOR = getMultiPartEditorMethod("getEditor", Integer.TYPE);
 
     private final InputInterceptorFactory factory;
-    private final IWorkbenchWindow window;
     private final Map<IWorkbenchPart, InputInterceptor> interceptors;
-    private boolean active;
 
-    public InputInterceptorManager(InputInterceptorFactory factory, IWorkbenchWindow window) {
-        super();
+    protected InputInterceptorManager(InputInterceptorFactory factory) {
         this.factory = factory;
-        this.window = window;
-        this.interceptors = new HashMap<IWorkbenchPart, InputInterceptor>();
-        this.active = true;
-    }
-
-    public void deactivate() {
-        active = false;
-        removeIfNecessary();
+        this.interceptors = new WeakHashMap<IWorkbenchPart, InputInterceptor>();
     }
 
     public void partDeactivated(IWorkbenchPart arg0) {
     }
 
     public void partOpened(IWorkbenchPart part) {
-        if (!active) {
-            return;
-        }
+        interceptWorkbenchPart(part);
+    }
+
+    public void interceptWorkbenchPart(IWorkbenchPart part) {
         if (part instanceof AbstractTextEditor) {
             AbstractTextEditor editor = (AbstractTextEditor) part;
             try {
@@ -63,10 +54,10 @@ public class InputInterceptorManager implements IPartListener {
                 if (viewer != null) {
                     // test for needed interfaces
                     ITextViewerExtension textViewer = (ITextViewerExtension) viewer;
-                    InputInterceptor interceptor = factory.createInterceptor(window, editor, (ITextViewer)textViewer);
+                    InputInterceptor interceptor = factory.createInterceptor(editor, (ITextViewer)textViewer);
                     textViewer.prependVerifyKeyListener(interceptor);
                     interceptors.put(part, interceptor);
-                    Activator.getDefault().registerEditor(editor);
+                    VrapperPlugin.getDefault().registerEditor(editor);
                 }
             } catch (SecurityException e) {
                 // TODO Auto-generated catch block
@@ -145,7 +136,7 @@ public class InputInterceptorManager implements IPartListener {
                 }
         }
         if (part instanceof IEditorPart) {
-            Activator.getDefault().unregisterEditor((IEditorPart)part);
+            VrapperPlugin.getDefault().unregisterEditor((IEditorPart)part);
         }
         if (part instanceof MultiPageEditorPart) {
             multiPartClosed(part);
@@ -154,7 +145,6 @@ public class InputInterceptorManager implements IPartListener {
                 partClosed(subPart);
             }
         }
-        removeIfNecessary();
     }
 
     private void multiPartClosed(IWorkbenchPart part) {
@@ -183,12 +173,6 @@ public class InputInterceptorManager implements IPartListener {
     public void partBroughtToTop(IWorkbenchPart arg0) {
     }
 
-    private void removeIfNecessary() {
-        if (!active && interceptors.isEmpty()) {
-            window.getPartService().removePartListener(this);
-        }
-    }
-
     private static Method getMultiPartEditorMethod(String name, Class<?>... args) {
         try {
             Method m = MultiPageEditorPart.class.getDeclaredMethod(name, args);
@@ -202,6 +186,10 @@ public class InputInterceptorManager implements IPartListener {
             e.printStackTrace();
         }
         return null;
+    }
+    
+    public Iterable<InputInterceptor> getInterceptors() {
+        return interceptors.values();
     }
 
 }

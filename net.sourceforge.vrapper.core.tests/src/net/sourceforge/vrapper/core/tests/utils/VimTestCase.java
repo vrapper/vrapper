@@ -83,7 +83,7 @@ public class VimTestCase {
     }
 
     protected void reloadEditorAdaptor() {
-        adaptor = spy(new DefaultEditorAdaptor(platform, registerManager));
+        adaptor = spy(new DefaultEditorAdaptor(platform, registerManager, true));
         if (mode != null)
             mode = adaptor.getMode(mode.getName());
     }

@@ -1,7 +1,6 @@
 package net.sourceforge.vrapper.eclipse.interceptor;
 
 import org.eclipse.jface.text.ITextViewer;
-import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 
 /**
@@ -11,5 +10,5 @@ import org.eclipse.ui.texteditor.AbstractTextEditor;
  */
 public interface InputInterceptorFactory {
 
-    InputInterceptor createInterceptor(IWorkbenchWindow window, AbstractTextEditor part, ITextViewer textViewer);
+    InputInterceptor createInterceptor(AbstractTextEditor part, ITextViewer textViewer);
 }

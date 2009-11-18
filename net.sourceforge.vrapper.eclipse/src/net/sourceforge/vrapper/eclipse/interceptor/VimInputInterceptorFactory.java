@@ -1,8 +1,10 @@
 
 package net.sourceforge.vrapper.eclipse.interceptor;
 
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
 
+import net.sourceforge.vrapper.eclipse.activator.VrapperPlugin;
 import net.sourceforge.vrapper.eclipse.platform.EclipsePlatform;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SpecialKey;
@@ -15,17 +17,20 @@ import net.sourceforge.vrapper.vim.register.RegisterManager;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.VerifyEvent;
-import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 
 /**
- * A factory for interceptors which route input events to a {@link VimEmulator}
+ * A factory for interceptors which route input events to a {@link EditorAdaptor}
  * instance. This instance decides whether to pass the event to the underlying
  * editor or not.
  *
  * @author Matthias Radig
  */
 public class VimInputInterceptorFactory implements InputInterceptorFactory {
+    
+    private VimInputInterceptorFactory() { /* NOP */ }
+    
+    public static final VimInputInterceptorFactory INSTANCE = new VimInputInterceptorFactory();
 
     private static final HashMap<Integer, SpecialKey> specialKeys;
     private static final HashMap<Character, SpecialKey> specialChars;
@@ -52,25 +57,29 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
 
     private static final RegisterManager globalRegisterManager = new DefaultRegisterManager();
 
-    public InputInterceptor createInterceptor(IWorkbenchWindow window, AbstractTextEditor abstractTextEditor, ITextViewer textViewer) {
+    public InputInterceptor createInterceptor(AbstractTextEditor abstractTextEditor, ITextViewer textViewer) {
         EditorAdaptor editorAdaptor = new DefaultEditorAdaptor(
                 new EclipsePlatform(abstractTextEditor, textViewer),
-                globalRegisterManager);
+                globalRegisterManager, VrapperPlugin.isVrapperEnabled());
         return new VimInputInterceptor(editorAdaptor);
     }
 
     private static final class VimInputInterceptor implements InputInterceptor {
 
-        private final EditorAdaptor editorAdaptor;
+        private final WeakReference<EditorAdaptor> editorAdaptorReference;
 
         private VimInputInterceptor(EditorAdaptor editorAdaptor) {
-            this.editorAdaptor = editorAdaptor;
+            this.editorAdaptorReference = new WeakReference<EditorAdaptor>(editorAdaptor);
         }
 
         public void verifyKey(VerifyEvent event) {
-            if(event.keyCode == SWT.SHIFT || event.keyCode == SWT.CTRL) {
+            if (!VrapperPlugin.isVrapperEnabled())
                 return;
-            }
+            EditorAdaptor adaptor = editorAdaptorReference.get();
+            if (adaptor == null)
+                return;
+            if (event.keyCode == SWT.SHIFT || event.keyCode == SWT.CTRL)
+                return;
             KeyStroke keyStroke;
             if(specialKeys.containsKey(event.keyCode)) {
                 keyStroke = new SimpleKeyStroke(specialKeys.get(event.keyCode));
@@ -79,7 +88,11 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
             } else {
                 keyStroke = new SimpleKeyStroke(event.character);
             }
-            event.doit = !editorAdaptor.handleKey(keyStroke);
+            event.doit = !adaptor.handleKey(keyStroke);
+        }
+
+        public EditorAdaptor getEditorAdaptor() {
+            return editorAdaptorReference.get();
         }
 
     }

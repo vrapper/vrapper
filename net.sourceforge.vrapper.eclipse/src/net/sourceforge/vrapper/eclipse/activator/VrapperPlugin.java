@@ -1,13 +1,10 @@
 package net.sourceforge.vrapper.eclipse.activator;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import net.sourceforge.vrapper.eclipse.interceptor.InputInterceptorFactory;
+import net.sourceforge.vrapper.eclipse.interceptor.InputInterceptor;
 import net.sourceforge.vrapper.eclipse.interceptor.InputInterceptorManager;
-import net.sourceforge.vrapper.eclipse.interceptor.VimInputInterceptorFactory;
 import net.sourceforge.vrapper.log.Log;
 import net.sourceforge.vrapper.log.VrapperLog;
+import net.sourceforge.vrapper.vim.EditorAdaptor;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Preferences;
@@ -15,6 +12,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IStartup;
+import org.eclipse.ui.IWindowListener;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchListener;
 import org.eclipse.ui.IWorkbenchPage;
@@ -26,19 +24,15 @@ import org.osgi.framework.BundleContext;
 /**
  * The activator class controls the plug-in life cycle
  */
-public class Activator extends AbstractUIPlugin implements IStartup, Log {
+public class VrapperPlugin extends AbstractUIPlugin implements IStartup, Log {
 
     // The plug-in ID
     public static final String PLUGIN_ID = "net.sourceforge.vrapper.eclipse";
 
     // The shared instance
-    private static Activator plugin;
-
-    private final Set<IEditorPart> editors = new HashSet<IEditorPart>();
+    private static VrapperPlugin plugin;
 
     private static boolean vrapperEnabled;
-
-    private static final String KEY_VIM_EMULATION_ACTIVE = "vimEmulationActive.";
 
     private static final String KEY_VRAPPER_ENABLED = "vrapperEnabled";
 
@@ -47,16 +41,12 @@ public class Activator extends AbstractUIPlugin implements IStartup, Log {
     /**
      * The constructor
      */
-    public Activator() {
+    public VrapperPlugin() {
     }
 
-    public void registerEditor(IEditorPart part) {
-        editors.add(part);
-    }
+    public void registerEditor(IEditorPart part) { }
 
-    public void unregisterEditor(IEditorPart part) {
-        editors.remove(part);
-    }
+    public void unregisterEditor(IEditorPart part) { }
 
     @Override
     public void start(BundleContext context) throws Exception {
@@ -66,6 +56,7 @@ public class Activator extends AbstractUIPlugin implements IStartup, Log {
         getWorkbench().getDisplay().asyncExec(new Runnable() {
             public void run() {
                 restoreVimEmulationInActiveEditors();
+                addEditorListeners();
                 addShutdownListener();
             }
         });
@@ -87,31 +78,39 @@ public class Activator extends AbstractUIPlugin implements IStartup, Log {
     }
 
     private void restoreVimEmulationInActiveEditors() {
-        // FIXME: iterate over all the windows
-        IWorkbenchWindow w = plugin.getWorkbench().getWorkbenchWindows()[0];
-        Preferences preferences = plugin.getPluginPreferences();
-        InputInterceptorFactory f = new VimInputInterceptorFactory();
-        InputInterceptorManager manager = new InputInterceptorManager(f, w);
-        boolean addListener = false;
-        for (IWorkbenchPage page : w.getPages()) {
-            for (IEditorReference ref : page.getEditorReferences()) {
-                String key = createKey(ref.getName());
-                boolean activate = preferences.getBoolean(key);
-                IEditorPart part = ref.getEditor(true);
-                if (activate) {
+        IWorkbenchWindow[] windows = plugin.getWorkbench().getWorkbenchWindows();
+        for (IWorkbenchWindow window: windows) {
+            for (IWorkbenchPage page: window.getPages()) {
+                for (IEditorReference ref: page.getEditorReferences()) {
+                    IEditorPart part = ref.getEditor(true);
                     if (part != null) {
-                        manager.partOpened(part);
-                        addListener = true;
-                    } else {
-                        preferences.setToDefault(key);
+                        InputInterceptorManager.INSTANCE.interceptWorkbenchPart(part);
                     }
                 }
             }
         }
-        if (addListener) {
-            manager.deactivate();
-            w.getPartService().addPartListener(manager);
+            
+        addEditorListeners();
+    }
+
+    private void addEditorListeners() {
+        for (IWorkbenchWindow window: plugin.getWorkbench().getWorkbenchWindows()) {
+            addInterceptingListener(window);
         }
+        plugin.getWorkbench().addWindowListener(new IWindowListener() {
+            
+            public void windowOpened(IWorkbenchWindow window) {
+                addInterceptingListener(window);
+            }
+            
+            public void windowDeactivated(IWorkbenchWindow window) { }
+            public void windowClosed(IWorkbenchWindow window) { }
+            public void windowActivated(IWorkbenchWindow window) { }
+        });
+    }
+
+    private static void addInterceptingListener(IWorkbenchWindow window) {
+        window.getPartService().addPartListener(InputInterceptorManager.INSTANCE);
     }
 
     private void addShutdownListener() {
@@ -125,20 +124,11 @@ public class Activator extends AbstractUIPlugin implements IStartup, Log {
         });
     }
 
-    private static String createKey(String name) {
-        return KEY_VIM_EMULATION_ACTIVE + name;
-    }
-
     private void storeVimEmulationOfActiveEditors() {
         Preferences p = plugin.getPluginPreferences();
         // clean preferences
         for (String key : p.propertyNames()) {
             p.setToDefault(key);
-        }
-        // store which opened editors have vim emulation active
-        for (IEditorPart part : editors) {
-            String key = createKey(part.getEditorInput().getName());
-            p.setValue(key, true);
         }
         p.setValue(KEY_VRAPPER_ENABLED, vrapperEnabled);
         plugin.savePluginPreferences();
@@ -151,13 +141,13 @@ public class Activator extends AbstractUIPlugin implements IStartup, Log {
             try {
                 s.executeCommand(COMMAND_TOGGLE_VRAPPER, null);
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                VrapperLog.error("Error when toggling Vrapper", e);
             }
         }
     }
 
     private static void log(int status, String msg, Throwable exception) {
-        Activator instance = getDefault();
+        VrapperPlugin instance = getDefault();
         if (instance != null) {
             instance.getLog().log(new Status(status, PLUGIN_ID, msg, exception));
         } else if (status == IStatus.ERROR) {
@@ -181,12 +171,21 @@ public class Activator extends AbstractUIPlugin implements IStartup, Log {
      *
      * @return the shared instance
      */
-    public static Activator getDefault() {
+    public static VrapperPlugin getDefault() {
         return plugin;
     }
 
     public static void setVrapperEnabled(boolean enabled) {
         vrapperEnabled = enabled;
+        for (InputInterceptor interceptor: InputInterceptorManager.INSTANCE.getInterceptors()) {
+            EditorAdaptor adaptor = interceptor.getEditorAdaptor();
+            if (adaptor != null)
+                adaptor.onChangeEnabled(enabled);
+        }
+    }
+    
+    public static boolean isVrapperEnabled() {
+        return vrapperEnabled;
     }
 
 }

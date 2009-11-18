@@ -1,5 +1,7 @@
 package net.sourceforge.vrapper.eclipse.interceptor;
 
+import net.sourceforge.vrapper.vim.EditorAdaptor;
+
 import org.eclipse.swt.custom.VerifyKeyListener;
 
 /**
@@ -8,5 +10,6 @@ import org.eclipse.swt.custom.VerifyKeyListener;
  * @author Matthias Radig
  */
 public interface InputInterceptor extends VerifyKeyListener {
+    public EditorAdaptor getEditorAdaptor();
 
 }
