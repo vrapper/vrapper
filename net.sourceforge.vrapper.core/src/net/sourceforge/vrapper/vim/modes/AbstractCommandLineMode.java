@@ -27,7 +27,7 @@ public abstract class AbstractCommandLineMode extends AbstractMode {
         handleKey(ConstructorWrappers.key(activationChar()));
     }
 
-    public void leaveMode() {
+    public void leaveMode(ModeSwitchHint... hints) {
         isEnabled = false;
         parser = null;
     }

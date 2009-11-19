@@ -156,7 +156,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         }
         if (currentMode != newMode) {
             if (currentMode != null) {
-                currentMode.leaveMode();
+                currentMode.leaveMode(args);
             }
             currentMode = newMode;
             newMode.enterMode(args);
@@ -307,7 +307,8 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
 
     public void onChangeEnabled(boolean enabled) {
         // switch mode for set-up/tear-down
-        changeMode(enabled ? NormalMode.NAME : InsertMode.NAME);
+        changeMode(enabled ? NormalMode.NAME : InsertMode.NAME,
+                InsertMode.DONT_MOVE_CURSOR);
     }
 
 }

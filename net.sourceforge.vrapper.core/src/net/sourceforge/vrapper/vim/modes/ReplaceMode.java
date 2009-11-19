@@ -39,7 +39,7 @@ public class ReplaceMode extends InsertMode {
     }
 
     @Override
-    public void leaveMode() {
+    public void leaveMode(ModeSwitchHint... hints) {
         editorAdaptor.getEditorSettings().setReplaceMode(false);
         super.leaveMode();
     }

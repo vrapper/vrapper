@@ -249,7 +249,7 @@ public abstract class CommandBasedMode extends AbstractMode {
         return provider.getKeyMap(keyMapResolver.getKeyMapName());
     }
 
-    public void leaveMode() {
+    public void leaveMode(ModeSwitchHint... hints) {
         resetCommandBuffer();
     }
 

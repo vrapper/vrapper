@@ -293,7 +293,7 @@ public class NormalMode extends CommandBasedMode {
     }
 
     @Override
-    public void leaveMode() {
+    public void leaveMode(ModeSwitchHint... hints) {
         super.leaveMode();
         if (!isEnabled) {
             return;

@@ -44,6 +44,7 @@ public class InsertMode extends AbstractMode {
 
     public static final String NAME = "insert mode";
     public static final String KEYMAP_NAME = "Insert Mode Keymap";
+    public static final ModeSwitchHint DONT_MOVE_CURSOR = new ModeSwitchHint() {};
 
     private Position startEditPosition;
 
@@ -106,12 +107,17 @@ public class InsertMode extends AbstractMode {
         startEditPosition = editorAdaptor.getCursorService().getPosition();
     }
 
-    public void leaveMode() {
+    public void leaveMode(ModeSwitchHint... hints) {
+        boolean moveCursor = true;
+        for (ModeSwitchHint hint: hints)
+            if (hint == InsertMode.DONT_MOVE_CURSOR)
+                moveCursor = false;
         isEnabled = false;
         try {
             saveTypedText();
             try {
-                MotionCommand.doIt(editorAdaptor, MoveLeft.INSTANCE);
+                if (moveCursor)
+                    MotionCommand.doIt(editorAdaptor, MoveLeft.INSTANCE);
             } catch (CommandExecutionException e) {
                 editorAdaptor.getUserInterfaceService().setErrorMessage(
                         e.getMessage());

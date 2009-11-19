@@ -77,7 +77,7 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
     protected abstract void fixSelection();
 
     @Override
-    public void leaveMode() {
+    public void leaveMode(ModeSwitchHint... hints) {
         isEnabled = false;
     }
 

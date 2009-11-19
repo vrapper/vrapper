@@ -6,8 +6,8 @@ import net.sourceforge.vrapper.platform.KeyMapProvider;
 
 public interface EditorMode {
     String getName();
-    void enterMode(ModeSwitchHint... args);
-    void leaveMode();
+    void enterMode(ModeSwitchHint... hints);
+    void leaveMode(ModeSwitchHint... hints);
     boolean handleKey(KeyStroke stroke);
     KeyMap resolveKeyMap(KeyMapProvider provider);
 }
