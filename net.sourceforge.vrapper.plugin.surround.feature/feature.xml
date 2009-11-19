@@ -2,7 +2,8 @@
 <feature
       id="net.sourceforge.vrapper.plugin.surround"
       label="Vrapper - Surround Plugin"
-      version="0.14">
+      version="0.14"
+      provider-name="Vrapper Team">
 
    <description url="http://vrapper.sourceforge.net/documentation/">
       Vrapper&apos;s reimplementation of Tim Pope&apos;s surround.vim plug-in

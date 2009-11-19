@@ -1,5 +1,0 @@
-<project default="jar">
-    <target name="jar">
-        <jar destfile="${plugin}/lib/${filename}" basedir="bin"/>
-    </target>
-</project>

@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Vrapper Core Library
+Bundle-SymbolicName: net.sourceforge.vrapper.core
+Bundle-Version: 0.14
+Export-Package: net.sourceforge.vrapper.keymap,
+ net.sourceforge.vrapper.keymap.vim,
+ net.sourceforge.vrapper.log,
+ net.sourceforge.vrapper.platform,
+ net.sourceforge.vrapper.utils,
+ net.sourceforge.vrapper.vim,
+ net.sourceforge.vrapper.vim.commands,
+ net.sourceforge.vrapper.vim.commands.motions,
+ net.sourceforge.vrapper.vim.modes,
+ net.sourceforge.vrapper.vim.modes.commandline,
+ net.sourceforge.vrapper.vim.register
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
