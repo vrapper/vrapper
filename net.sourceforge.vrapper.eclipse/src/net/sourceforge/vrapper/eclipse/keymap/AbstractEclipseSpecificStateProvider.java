@@ -10,9 +10,9 @@ import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.PlatformSpecificStateProvider;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.Command;
+import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
 import net.sourceforge.vrapper.vim.modes.CommandLineMode;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
-import net.sourceforge.vrapper.vim.modes.VisualMode;
 import net.sourceforge.vrapper.vim.modes.commandline.Evaluator;
 import net.sourceforge.vrapper.vim.modes.commandline.EvaluatorMapping;
 
@@ -30,9 +30,9 @@ public abstract class AbstractEclipseSpecificStateProvider implements
 
     protected AbstractEclipseSpecificStateProvider() {
         states.put(NormalMode.NAME, normalModeBindings());
-        states.put(VisualMode.NAME, visualModeBindings());
+        states.put(AbstractVisualMode.NAME, visualModeBindings());
         keyMaps.put(NormalMode.NAME, normalModeKeymap());
-        keyMaps.put(VisualMode.NAME, visualModeKeymap());
+        keyMaps.put(AbstractVisualMode.NAME, visualModeKeymap());
     }
 
     public void setInitializationData(IConfigurationElement config,
