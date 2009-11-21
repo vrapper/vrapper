@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Eclipse
+Bundle-Name: Vrapper Surround Plug-in Eclipse integration
 Bundle-SymbolicName: net.sourceforge.vrapper.plugin.surround.eclipse;singleton:=true
-Bundle-Version: 0.14
-Fragment-Host: net.sourceforge.vrapper.eclipse;bundle-version="0.11.0"
+Bundle-Version: 0.14.0
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Bundle-ClassPath: .,
- lib/net.sourceforge.vrapper.plugin.surround.jar
+Require-Bundle: net.sourceforge.vrapper.plugin.surround.core;bundle-version="0.14.0";visibility:=reexport,
+ net.sourceforge.vrapper.eclipse
+Eclipse-BuddyPolicy: dependent

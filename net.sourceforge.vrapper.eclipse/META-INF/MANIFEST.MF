@@ -2,14 +2,13 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Eclipse Plug-in
 Bundle-SymbolicName: net.sourceforge.vrapper.eclipse;singleton:=true
-Bundle-Version: 0.11.0
+Bundle-Version: 0.14.0
 Bundle-Activator: net.sourceforge.vrapper.eclipse.activator.VrapperPlugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.jface.text,
  org.eclipse.ui.editors,
- net.sourceforge.vrapper.core;bundle-version="0.14.0"
-Bundle-ActivationPolicy: lazy
+ net.sourceforge.vrapper.core;bundle-version="0.14.0";visibility:=reexport
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Export-Package: net.sourceforge.vrapper.eclipse.commands;uses:="net.sourceforge.vrapper.vim.commands,net.sourceforge.vrapper.utils,net.sourceforge.vrapper.vim",
  net.sourceforge.vrapper.eclipse.keymap;
@@ -20,3 +19,4 @@ Export-Package: net.sourceforge.vrapper.eclipse.commands;uses:="net.sourceforge.
    net.sourceforge.vrapper.eclipse.commands,
    net.sourceforge.vrapper.platform,
    net.sourceforge.vrapper.vim"
+Eclipse-BuddyPolicy: dependent

@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Vrapper Core Library
-Bundle-SymbolicName: net.sourceforge.vrapper.core
+Bundle-SymbolicName: net.sourceforge.vrapper.core;singleton:=true
 Bundle-Version: 0.14
 Export-Package: net.sourceforge.vrapper.keymap,
  net.sourceforge.vrapper.keymap.vim,
@@ -15,3 +15,4 @@ Export-Package: net.sourceforge.vrapper.keymap,
  net.sourceforge.vrapper.vim.modes.commandline,
  net.sourceforge.vrapper.vim.register
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Eclipse-BuddyPolicy: dependent
