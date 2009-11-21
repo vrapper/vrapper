@@ -1,7 +1,6 @@
 package net.sourceforge.vrapper.keymap;
 
-import java.util.Collection;
-
+import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.utils.Function;
 
 public class ConvertingState<T1, T2> implements State<T1> {
@@ -21,15 +20,9 @@ public class ConvertingState<T1, T2> implements State<T1> {
         return null;
     }
 
-    public Collection<KeyStroke> supportedKeys() {
-        // TODO Auto-generated method stub
-        // return null;
-        throw new UnsupportedOperationException();
-    }
-
     public State<T1> union(State<T1> other) {
-        // TODO Auto-generated method stub
-        // return null;
-        throw new UnsupportedOperationException();
+        if (other instanceof ConvertingState<?,?>)
+        	VrapperLog.info("TODO: implement ConvertingState's union efficently");
+        return new UnionState<T1>(this, other);
     }
 }

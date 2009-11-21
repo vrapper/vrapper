@@ -195,5 +195,12 @@ public class VisualModeTests extends CommandTestCase {
 				false,  "It's Some","th","ing interesting.",
 				false,  "It's ","Something"," interesting.");
     }
+	
+	@Test
+	public void test_fMotions() {
+		checkCommand(forKeySeq("fs"),
+				false,  "Ther","e"," was a bug about it",
+				false,  "Ther","e was"," a bug about it");
+	}
 
 }
