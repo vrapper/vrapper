@@ -38,7 +38,6 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
         Command shiftLeft = new EclipseShiftOperation.Visual(true);
         return state(
             transitionBind('g',
-                    leafBind('c', seq(editText("toggle.comment"), leaveVisual)), // not in Vim
                     leafBind('U', seq(editText("upperCase"),      leaveVisual)),
                     leafBind('u', seq(editText("lowerCase"),      leaveVisual))),
             leafBind('>', shiftRight),
