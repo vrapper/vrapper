@@ -1,7 +1,6 @@
 
 package net.sourceforge.vrapper.eclipse.interceptor;
 
-import java.lang.ref.WeakReference;
 import java.util.HashMap;
 
 import net.sourceforge.vrapper.eclipse.activator.VrapperPlugin;
