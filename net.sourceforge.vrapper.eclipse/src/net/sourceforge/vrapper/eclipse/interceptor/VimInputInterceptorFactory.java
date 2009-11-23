@@ -66,17 +66,14 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
 
     private static final class VimInputInterceptor implements InputInterceptor {
 
-        private final WeakReference<EditorAdaptor> editorAdaptorReference;
+        private final EditorAdaptor editorAdaptor;
 
         private VimInputInterceptor(EditorAdaptor editorAdaptor) {
-            this.editorAdaptorReference = new WeakReference<EditorAdaptor>(editorAdaptor);
+			this.editorAdaptor = editorAdaptor;
         }
 
         public void verifyKey(VerifyEvent event) {
             if (!VrapperPlugin.isVrapperEnabled())
-                return;
-            EditorAdaptor adaptor = editorAdaptorReference.get();
-            if (adaptor == null)
                 return;
             if (event.keyCode == SWT.SHIFT || event.keyCode == SWT.CTRL)
                 return;
@@ -88,11 +85,11 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
             } else {
                 keyStroke = new SimpleKeyStroke(event.character);
             }
-            event.doit = !adaptor.handleKey(keyStroke);
+            event.doit = !editorAdaptor.handleKey(keyStroke);
         }
 
         public EditorAdaptor getEditorAdaptor() {
-            return editorAdaptorReference.get();
+            return editorAdaptor;
         }
 
     }
