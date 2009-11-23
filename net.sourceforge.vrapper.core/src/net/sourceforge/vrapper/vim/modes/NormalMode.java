@@ -165,17 +165,24 @@ public class NormalMode extends CommandBasedMode {
         final Motion moveRight = MoveRight.INSTANCE;
         final Motion wordRight = MoveWordRight.INSTANCE;
         final Motion wordEndRight = MoveWordEndRight.INSTANCE;
+        final Motion bigWordRight = MoveBigWORDRight.INSTANCE;
+        final Motion bigWordEndRight = MoveBigWORDEndRight.INSTANCE;
         final Motion bol = LineStartMotion.NON_WHITESPACE;
         final Motion eol = new LineEndMotion(BorderPolicy.EXCLUSIVE);
         final Motion wholeLineEol = new LineEndMotion(BorderPolicy.LINE_WISE);
 
         final State<Motion> motions = motions();
-        final TextObject wordForCW = new OptionDependentTextObject(Options.SANE_CW, wordRight, wordEndRight);
+        final TextObject wordForCw = new OptionDependentTextObject(Options.SANE_CW, wordRight, wordEndRight);
+        final TextObject wordForCW = new OptionDependentTextObject(Options.SANE_CW, bigWordRight, bigWordEndRight);
         final TextObject toEol = new MotionTextObject(eol);
         final TextObject toEolForY = new OptionDependentTextObject(Options.SANE_Y, eol, wholeLineEol);
 
         State<TextObject> textObjects = textObjects();
-        State<TextObject> textObjectsForChange = union(state(leafBind('w', wordForCW)), textObjects);
+        State<TextObject> textObjectsForChange = union(
+                state(
+                        leafBind('w', wordForCw),
+                        leafBind('W', wordForCW)),
+                textObjects);
         textObjectsForChange = CountingState.wrap(textObjectsForChange);
 
         TextOperation delete = DeleteOperation.INSTANCE;
