@@ -5,7 +5,6 @@
 	<classpathentry kind="src" path="/net.sourceforge.vrapper.plugin.surround.eclipse"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="src" path="/net.sourceforge.vrapper.core"/>
-	<classpathentry kind="lib" path="/home/misfo/code/junit-4.7.jar"/>
-	<classpathentry kind="lib" path="/home/misfo/code/mockito-all-1.8.0.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Mockito"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
