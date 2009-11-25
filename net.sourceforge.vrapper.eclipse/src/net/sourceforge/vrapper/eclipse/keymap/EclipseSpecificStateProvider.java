@@ -15,6 +15,7 @@ import net.sourceforge.vrapper.keymap.StateUtils;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.DeselectAllCommand;
 import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
+import net.sourceforge.vrapper.vim.commands.SelectionBasedTextOperationCommand;
 import net.sourceforge.vrapper.vim.commands.TextObject;
 import net.sourceforge.vrapper.vim.modes.KeyMapResolver;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
@@ -34,8 +35,9 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
     
     protected State<Command> visualModeBindings() {
         Command leaveVisual = LeaveVisualModeCommand.INSTANCE;
-        Command shiftRight = new EclipseShiftOperation.Visual(false);
-        Command shiftLeft = new EclipseShiftOperation.Visual(true);
+        Command shiftRight = new SelectionBasedTextOperationCommand(EclipseShiftOperation.Visual.RIGHT);
+        Command shiftLeft = new SelectionBasedTextOperationCommand(EclipseShiftOperation.Visual.LEFT);
+        
         return state(
             transitionBind('g',
                     leafBind('U', seq(editText("upperCase"),      leaveVisual)),
@@ -78,8 +80,8 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
                 leafCtrlBind('o', dontRepeat(cmd("org.eclipse.ui.navigate.backwardHistory")))),
             prefixedOperatorCmds('g', 'u', seq(editText("lowerCase"), DeselectAllCommand.INSTANCE), textObjects),
             prefixedOperatorCmds('g', 'U', seq(editText("upperCase"), DeselectAllCommand.INSTANCE), textObjects),
-            operatorCmds('>', new EclipseShiftOperation.Normal(false), textObjects),
-            operatorCmds('<', new EclipseShiftOperation.Normal(true), textObjects)
+            operatorCmds('>', EclipseShiftOperation.Normal.RIGHT, textObjects),
+            operatorCmds('<', EclipseShiftOperation.Normal.LEFT, textObjects)
          );
         return normalModeBindings;
     }

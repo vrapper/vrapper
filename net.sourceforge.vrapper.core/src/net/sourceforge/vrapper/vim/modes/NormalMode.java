@@ -8,6 +8,7 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafCtrlBin
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.operatorCmdsWithUpperCase;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
+import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.dontRepeat;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.State;
@@ -240,8 +241,8 @@ public class NormalMode extends CommandBasedMode {
                         leafBind('R', (Command) new ChangeModeCommand(ReplaceMode.NAME)),
                         leafBind('o', (Command) new ChangeToInsertModeCommand(InsertLineCommand.POST_CURSOR)),
                         leafBind('O', (Command) new ChangeToInsertModeCommand(InsertLineCommand.PRE_CURSOR)),
-                        leafBind('v', seq(visualMode, afterEnteringVisual)),
-                        leafBind('V', seq(linewiseVisualMode, selectLine)),
+                        leafBind('v', (seq(visualMode, afterEnteringVisual))),
+                        leafBind('V', dontRepeat(seq(linewiseVisualMode, selectLine))),
                         leafBind('p', pasteAfter),
                         leafBind('.', repeatLastOne),
                         leafBind('P', pasteBefore),

@@ -1,5 +1,7 @@
 package net.sourceforge.vrapper.utils;
 
+import java.util.Arrays;
+
 
 public class StringUtils {
 	public static String multiply(String str, int count) {
@@ -10,6 +12,10 @@ public class StringUtils {
 		return builder.toString();
 	}
 
+	public static String join(String separator, Object[] items) {
+		return join(separator, Arrays.asList(items));
+	}
+	
     public static String join(String separator, Iterable<?> items) {
         StringBuilder builder = new StringBuilder();
         String sep = "";

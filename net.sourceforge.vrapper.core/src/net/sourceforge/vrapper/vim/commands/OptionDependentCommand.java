@@ -10,10 +10,10 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 public class OptionDependentCommand<T> implements Command {
 
     private final Option<T> option;
-    private final String triggerValue;
+    private final T triggerValue;
     private final Command wrapped;
 
-    public OptionDependentCommand(Option<T> option, String triggerValue, Command wrapped) {
+    public OptionDependentCommand(Option<T> option, T triggerValue, Command wrapped) {
         this.option = option;
         this.triggerValue = triggerValue;
         this.wrapped = wrapped;
@@ -35,5 +35,10 @@ public class OptionDependentCommand<T> implements Command {
 
     public Command withCount(int count) {
         return this;
+    }
+    
+    @Override
+    public String toString() {
+    	return String.format("OptionDependentCommand(%s=%s, %s)", option, triggerValue, wrapped);
     }
 }

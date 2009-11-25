@@ -29,7 +29,9 @@ import net.sourceforge.vrapper.platform.UserInterfaceService;
 import net.sourceforge.vrapper.platform.ViewportService;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
+import net.sourceforge.vrapper.utils.PositionlessSelection;
 import net.sourceforge.vrapper.vim.commands.Selection;
+import net.sourceforge.vrapper.vim.commands.TextObject;
 import net.sourceforge.vrapper.vim.modes.CommandLineMode;
 import net.sourceforge.vrapper.vim.modes.EditorMode;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
@@ -310,5 +312,13 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         changeMode(enabled ? NormalMode.NAME : InsertMode.NAME,
                 InsertMode.DONT_MOVE_CURSOR);
     }
+
+	public void rememberLastActiveSelection() {
+		registerManager.setLastActiveSelection(PositionlessSelection.getInstance(this));
+	}
+
+	public TextObject getLastActiveSelection() {
+		return registerManager.getLastActiveSelection();
+	}
 
 }

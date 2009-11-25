@@ -13,6 +13,7 @@ import net.sourceforge.vrapper.platform.UserInterfaceService;
 import net.sourceforge.vrapper.platform.ViewportService;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.vim.commands.Selection;
+import net.sourceforge.vrapper.vim.commands.TextObject;
 import net.sourceforge.vrapper.vim.modes.EditorMode;
 import net.sourceforge.vrapper.vim.modes.ModeSwitchHint;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
@@ -53,5 +54,7 @@ public interface EditorAdaptor {
     <T>T getService(Class<T> serviceClass);
     void useGlobalRegisters();
     void useLocalRegisters();
+	void rememberLastActiveSelection();
+	TextObject getLastActiveSelection();
 }
 

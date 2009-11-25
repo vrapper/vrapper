@@ -12,7 +12,7 @@ public class ChangeOperation implements TextOperation {
     private ChangeOperation() { /* NOP */ }
 
     public TextOperation repetition() {
-        return null;
+        return this;
     }
 
     public void execute(EditorAdaptor editorAdaptor, int count,

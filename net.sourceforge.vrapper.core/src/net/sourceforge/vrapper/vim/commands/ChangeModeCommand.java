@@ -3,6 +3,7 @@
  */
 package net.sourceforge.vrapper.vim.commands;
 
+import net.sourceforge.vrapper.utils.StringUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.modes.ModeSwitchHint;
 
@@ -19,4 +20,8 @@ public class ChangeModeCommand extends CountIgnoringNonRepeatableCommand {
         editorMode.changeMode(modeName, args);
     }
 
+    @Override
+    public String toString() {
+    	return String.format("ChangeModeCommand('%s', %s)", modeName, StringUtils.join(", ", args));
+    }
 }

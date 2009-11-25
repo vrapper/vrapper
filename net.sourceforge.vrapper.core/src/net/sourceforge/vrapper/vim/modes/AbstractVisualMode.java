@@ -5,8 +5,6 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.convertKeyS
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
-import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.dontRepeat;
-import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.vim.CountingState;
@@ -21,7 +19,7 @@ import net.sourceforge.vrapper.vim.commands.ChangeOperation;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.DeleteOperation;
 import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
-import net.sourceforge.vrapper.vim.commands.SelectionBasedTextOperation;
+import net.sourceforge.vrapper.vim.commands.SelectionBasedTextOperationCommand;
 import net.sourceforge.vrapper.vim.commands.SetMarkCommand;
 import net.sourceforge.vrapper.vim.commands.YankOperation;
 
@@ -84,9 +82,9 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
     @SuppressWarnings("unchecked")
     protected State<Command> buildInitialState() {
         Command leaveVisual = LeaveVisualModeCommand.INSTANCE;
-        Command yank   = dontRepeat(seq(new SelectionBasedTextOperation(YankOperation.INSTANCE), leaveVisual));
-        Command delete = dontRepeat(seq(new SelectionBasedTextOperation(DeleteOperation.INSTANCE), leaveVisual));
-        Command change = new SelectionBasedTextOperation(ChangeOperation.INSTANCE);
+        Command yank   = new SelectionBasedTextOperationCommand(YankOperation.INSTANCE);
+        Command delete = new SelectionBasedTextOperationCommand(DeleteOperation.INSTANCE);
+        Command change = new SelectionBasedTextOperationCommand.DontChangeMode(ChangeOperation.INSTANCE);
         Command commandLineMode = new ChangeModeCommand(CommandLineMode.NAME);
         Command centerLine = CenterLineCommand.INSTANCE;
         State<Command> visualMotions = getVisualMotionState();

@@ -1,6 +1,7 @@
 package net.sourceforge.vrapper.vim.commands;
 
 import net.sourceforge.vrapper.platform.HistoryService;
+import net.sourceforge.vrapper.utils.StringUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 
 public class VimCommandSequence extends SimpleRepeatableCommand {
@@ -36,6 +37,11 @@ public class VimCommandSequence extends SimpleRepeatableCommand {
             }
         }
         return new VimCommandSequence(repeated);
+    }
+    
+    @Override
+    public String toString() {
+    	return String.format("seq(%s)", StringUtils.join(", ", commands));
     }
 
 }

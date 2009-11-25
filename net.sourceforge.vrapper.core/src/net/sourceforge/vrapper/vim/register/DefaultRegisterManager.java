@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.sourceforge.vrapper.utils.ContentType;
+import net.sourceforge.vrapper.utils.PositionlessSelection;
 import net.sourceforge.vrapper.utils.Search;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.motions.FindMotion;
@@ -24,6 +25,7 @@ public class DefaultRegisterManager implements RegisterManager {
     private Search search;
     private Command lastEdit;
     private FindMotion findMotion;
+	private PositionlessSelection lastActiveSelection;
 
     public DefaultRegisterManager() {
         this.registers = new HashMap<String, Register>();
@@ -113,5 +115,13 @@ public class DefaultRegisterManager implements RegisterManager {
     public boolean isDefaultRegisterActive() {
         return activeRegister == defaultRegister;
     }
+
+	public void setLastActiveSelection(PositionlessSelection selection) {
+		lastActiveSelection = selection;
+	}
+
+	public PositionlessSelection getLastActiveSelection() {
+		return lastActiveSelection;
+	}
 
 }

@@ -23,7 +23,10 @@ public class ConstructorWrappers {
             }
             public Command withCount(int count) {
                 return wrapped;
-
+            }
+            @Override
+            public String toString() {
+            	return String.format("dontRepeat(%s)", wrapped);
             }
         };
     }
