@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
 import net.sourceforge.vrapper.keymap.vim.GoThereState;
+import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
@@ -92,5 +93,10 @@ public class CommandTestCase extends VimTestCase {
 			}
 		};
 	}
+
+    protected void assertYanked(ContentType type, String text) {
+        assertEquals(type, defaultRegister.getContent().getPayloadType());
+        assertEquals(text, defaultRegister.getContent().getText());
+    }
 
 }

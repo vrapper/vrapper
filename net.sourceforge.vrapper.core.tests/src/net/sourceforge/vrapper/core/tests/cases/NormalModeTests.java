@@ -30,11 +30,6 @@ public class NormalModeTests extends CommandTestCase {
 		mode = new NormalMode(adaptor);
 	};
 
-	private void assertYanked(ContentType type, String text) {
-		assertEquals(type, defaultRegister.getContent().getPayloadType());
-		assertEquals(text, defaultRegister.getContent().getText());
-	}
-
 	@Test public void testEnteringNormalModeChangesCaret() {
 		mode.enterMode();
 		assertEquals(CaretType.RECTANGULAR, cursorAndSelection.getCaret());

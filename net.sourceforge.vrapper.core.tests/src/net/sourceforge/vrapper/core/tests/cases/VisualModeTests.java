@@ -10,14 +10,17 @@ import static org.mockito.Mockito.verify;
 import net.sourceforge.vrapper.core.tests.utils.CommandTestCase;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.SelectionService;
+import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
+import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.modes.VisualMode;
+import net.sourceforge.vrapper.vim.register.StringRegisterContent;
 
 import org.junit.Test;
 
@@ -52,9 +55,15 @@ public class VisualModeTests extends CommandTestCase {
 		adaptor.changeMode(VisualMode.NAME);
 		CursorService cursorService = platform.getCursorService();
 		SelectionService selectionService = platform.getSelectionService();
-		selectionService.setSelection(new SimpleSelection(new StartEndTextRange(
-		                cursorService.newPositionForModelOffset(selectFrom),
-		                cursorService.newPositionForModelOffset(selectTo))));
+        Position from = cursorService.newPositionForModelOffset(selectFrom);
+        if (selected1.endsWith("\n")) {
+            Position to = cursorService.newPositionForModelOffset(selectTo - 1);
+            selectionService.setSelection(new LineWiseSelection(adaptor, from, to));
+        } else {
+            Position to = cursorService.newPositionForModelOffset(selectTo);
+            selectionService.setSelection(new SimpleSelection(new StartEndTextRange(from, to)));
+        }
+		
 		try {
             command.execute(adaptor);
         } catch (CommandExecutionException e) {
@@ -176,6 +185,45 @@ public class VisualModeTests extends CommandTestCase {
 		// TODO: obtain correct arguments used by by ChangeOperation when changing mode
 //		verify(adaptor).changeMode(InsertMode.NAME);
 	}
+
+    @Test
+    public void testPastingInVisualMode() {
+        defaultRegister.setContent(new StringRegisterContent(ContentType.TEXT, "a series of tubes"));
+        checkCommand(forKeySeq("p"),
+                false, "The internet is ","awesome","!",
+                false, "The internet is a series of tube","","s!");
+        verify(adaptor).changeMode(NormalMode.NAME);
+        assertYanked(ContentType.TEXT, "awesome");
+
+        defaultRegister.setContent(new StringRegisterContent(ContentType.LINES, "\t\ta series of tubes\n"));
+        checkCommand(forKeySeq("p"),
+                true, "The internet is ","awesome","!",
+                true, "The internet is \n\t\t","","a series of tubes\n!");
+        verify(adaptor, times(2)).changeMode(NormalMode.NAME);
+        assertYanked(ContentType.TEXT, "awesome");
+
+        defaultRegister.setContent(new StringRegisterContent(ContentType.LINES, "a series of tubes\n"));
+        checkCommand(forKeySeq("p"),
+                false, "The internet is \n","awesome\n","!",
+                false, "The internet is \n","","a series of tubes\n!");
+        verify(adaptor, times(3)).changeMode(NormalMode.NAME);
+        assertYanked(ContentType.LINES, "awesome\n");
+
+        defaultRegister.setContent(new StringRegisterContent(ContentType.TEXT, "a series of tubes"));
+        checkCommand(forKeySeq("p"),
+                false, "The internet is \n","awesome\n","!",
+                false, "The internet is \n","","a series of tubes\n!");
+        verify(adaptor, times(4)).changeMode(NormalMode.NAME);
+        assertYanked(ContentType.LINES, "awesome\n");
+
+        // TODO fails: the count is ignored for pastes from visual mode
+        defaultRegister.setContent(new StringRegisterContent(ContentType.TEXT, "a series of tubes"));
+        checkCommand(forKeySeq("2p"),
+                false, "The internet is ","awesome","!",
+                false, "The internet is a series of tubesa series of tube","","s!");
+        verify(adaptor, times(5)).changeMode(NormalMode.NAME);
+        assertYanked(ContentType.TEXT, "awesome");
+    }
 
     @Test public void visualModeShouldHaveAName() {
 		assertEquals("visual mode", mode.getName());
