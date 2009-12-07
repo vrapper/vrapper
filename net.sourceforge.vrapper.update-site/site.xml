@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/net.sourceforge.vrapper_0.14.0.jar" id="net.sourceforge.vrapper" version="0.14.0"/>
+   <feature url="features/net.sourceforge.vrapper.eclipse.cdt.feature_0.14.0.jar" id="net.sourceforge.vrapper.eclipse.cdt.feature" version="0.14.0"/>
+   <feature url="features/net.sourceforge.vrapper.eclipse.jdt.feature_0.14.0.jar" id="net.sourceforge.vrapper.eclipse.jdt.feature" version="0.14.0"/>
+   <feature url="features/net.sourceforge.vrapper.plugin.surround_0.14.0.jar" id="net.sourceforge.vrapper.plugin.surround" version="0.14.0"/>
+   <category-def name="net.sourceforge.vrapper.category" label="Vim Emulation"/>
+</site>
