@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Vrapper - Aptana IDE support plug-in
+Bundle-SymbolicName: net.sourceforge.vrapper.aptana.ide;singleton:=true
+Bundle-Version: 0.14.0
+Bundle-Vendor: Vrapper Team
+Fragment-Host: net.sourceforge.vrapper.eclipse;bundle-version="0.14.0"
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Require-Bundle: com.aptana.ide.editor.html;bundle-version="1.5.0",
+ com.aptana.ide.editors;bundle-version="1.5.0",
+ com.aptana.ide.core;bundle-version="1.5.0",
+ com.aptana.ide.core.ui;bundle-version="1.5.0"

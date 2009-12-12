@@ -3,10 +3,11 @@
 <schema targetNamespace="net.sourceforge.vrapper.eclipse" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appInfo>
-         <meta.schema plugin="net.sourceforge.vrapper.eclipse" id="net.sourceforge.vrapper.eclipse.pssp" name="Platform Specific State Provider"/>
+         <meta.schema plugin="net.sourceforge.vrapper.eclipse" id="net.sourceforge.vrapper.eclipse.extractor" name="Text Editor Extractor"/>
       </appInfo>
       <documentation>
-         Extension that defines Platform Specific State Providers.
+         Extension that defines Text Editor Extractors.
+Those extractors (surprise, surprise!) extract AbstractTextEditors from compound editors (which can contain ATEs as tabs or something).
       </documentation>
    </annotation>
 
@@ -18,7 +19,7 @@
       </annotation>
       <complexType>
          <sequence minOccurs="1" maxOccurs="unbounded">
-            <element ref="keymap-provider"/>
+            <element ref="extractor"/>
          </sequence>
          <attribute name="point" type="string" use="required">
             <annotation>
@@ -47,52 +48,33 @@
       </complexType>
    </element>
 
-   <element name="keymap-provider">
+   <element name="extractor">
       <complexType>
-         <attribute name="name" type="string" use="required">
+         <attribute name="name" type="string">
             <annotation>
                <documentation>
                   
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="id" type="string" use="required">
-            <annotation>
-               <documentation>
-                  
-               </documentation>
-               <appInfo>
-                  <meta.attribute kind="identifier"/>
-               </appInfo>
-            </annotation>
-         </attribute>
-         <attribute name="priority" type="string">
-            <annotation>
-               <documentation>
-                  Priority of this keymap-provider.
-The higher the more important.
-Default to 1.
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="provider-class" type="string" use="required">
-            <annotation>
-               <documentation>
-                  
-               </documentation>
-               <appInfo>
-                  <meta.attribute kind="java" basedOn="net.sourceforge.vrapper.eclipse.keymap.AbstractEclipseSpecificStateProvider:"/>
-               </appInfo>
-            </annotation>
-         </attribute>
-         <attribute name="editor-must-subclass" type="string">
+         <attribute name="part-must-subclass" type="string">
             <annotation>
                <documentation>
                   Class that underlying editor must subclass for this provider to be applied.
 Optional, defaults to AbstractTextEditor.
                </documentation>
                <appInfo>
-                  <meta.attribute kind="java" basedOn="org.eclipse.ui.texteditor.AbstractTextEditor:"/>
+                  <meta.attribute kind="java" basedOn=":org.eclipse.ui.IWorkbenchPart"/>
+               </appInfo>
+            </annotation>
+         </attribute>
+         <attribute name="extractor-class" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appInfo>
+                  <meta.attribute kind="java" basedOn=":net.sourceforge.vrapper.eclipse.extractor.EditorExtractor"/>
                </appInfo>
             </annotation>
          </attribute>

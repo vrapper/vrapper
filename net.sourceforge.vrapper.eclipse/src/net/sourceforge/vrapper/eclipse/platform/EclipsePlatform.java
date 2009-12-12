@@ -8,7 +8,7 @@ import java.util.Map;
 
 import net.sourceforge.vrapper.eclipse.keymap.AbstractEclipseSpecificStateProvider;
 import net.sourceforge.vrapper.eclipse.keymap.UnionStateProvider;
-import net.sourceforge.vrapper.log.VrapperLog;
+import net.sourceforge.vrapper.eclipse.utils.Utils;
 import net.sourceforge.vrapper.platform.Configuration;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.FileService;
@@ -30,7 +30,6 @@ import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.ITextViewerExtension6;
 import org.eclipse.jface.text.IUndoManager;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
-import org.osgi.framework.Bundle;
 
 public class EclipsePlatform implements Platform {
 
@@ -47,20 +46,26 @@ public class EclipsePlatform implements Platform {
     private final AbstractTextEditor underlyingEditor;
     private static final Map<String, PlatformSpecificStateProvider> providerCache = new HashMap<String, PlatformSpecificStateProvider>();
 
-    public EclipsePlatform(AbstractTextEditor abstractTextEditor, ITextViewer textViewer) {
+    public EclipsePlatform(AbstractTextEditor abstractTextEditor,
+            ITextViewer textViewer) {
         underlyingEditor = abstractTextEditor;
         configuration = new SimpleConfiguration();
-        cursorAndSelection = new EclipseCursorAndSelection(configuration, textViewer);
+        cursorAndSelection = new EclipseCursorAndSelection(configuration,
+                textViewer);
         textContent = new EclipseTextContent(textViewer);
         fileService = new EclipseFileService(abstractTextEditor);
         viewportService = new EclipseViewportService(textViewer);
         serviceProvider = new EclipseServiceProvider(abstractTextEditor);
-        userInterfaceService = new EclipseUserInterfaceService(abstractTextEditor, textViewer);
+        userInterfaceService = new EclipseUserInterfaceService(
+                abstractTextEditor, textViewer);
         keyMapProvider = new DefaultKeyMapProvider();
-        underlyingEditorSettings = new AbstractTextEditorSettings(abstractTextEditor);
+        underlyingEditorSettings = new AbstractTextEditorSettings(
+                abstractTextEditor);
         if (textViewer instanceof ITextViewerExtension6) {
-            IUndoManager delegate = ((ITextViewerExtension6)textViewer).getUndoManager();
-            EclipseHistoryService manager = new EclipseHistoryService(textViewer.getTextWidget(), delegate);
+            IUndoManager delegate = ((ITextViewerExtension6) textViewer)
+                    .getUndoManager();
+            EclipseHistoryService manager = new EclipseHistoryService(
+                    textViewer.getTextWidget(), delegate);
             textViewer.setUndoManager(manager);
             this.historyService = manager;
         } else {
@@ -122,30 +127,24 @@ public class EclipsePlatform implements Platform {
             providerCache.put(className, buildPlatformSpecificStateProvider());
         return providerCache.get(className);
     }
-    
-    private PlatformSpecificStateProvider buildPlatformSpecificStateProvider() {
-        IExtensionRegistry registry = org.eclipse.core.runtime.Platform.getExtensionRegistry();
-        IConfigurationElement[] elements = registry.getConfigurationElementsFor("net.sourceforge.vrapper.eclipse.pssp");
-        List<AbstractEclipseSpecificStateProvider> matched = new ArrayList<AbstractEclipseSpecificStateProvider>();
-        for (IConfigurationElement element: elements)
-            try {
-                if (isProviderApplicable(element))
-                    matched.add((AbstractEclipseSpecificStateProvider) element.createExecutableExtension("provider-class"));
-            } catch (Exception exception) {
-                VrapperLog.error("error when determining if PlatformSpecificStateProvider is applicable", exception);
-            }
-            Collections.sort(matched);
-        return new UnionStateProvider("extensions for " + underlyingEditor.getClass().getName(), matched);
-    }
 
-    private boolean isProviderApplicable(IConfigurationElement element) throws ClassNotFoundException {
-        String editorClass = element.getAttribute("editor-must-subclass");
-        if (editorClass == null)
-            return true; // underlyingEditor instanceof AbstractTextEditor;
-        String bundleName = element.getDeclaringExtension().getContributor().getName();
-        Bundle bundle = org.eclipse.core.runtime.Platform.getBundle(bundleName);
-        Class<?> cls = bundle.loadClass(editorClass);
-        return cls.isInstance(underlyingEditor); 
+    private PlatformSpecificStateProvider buildPlatformSpecificStateProvider() {
+        IExtensionRegistry registry = org.eclipse.core.runtime.Platform
+                .getExtensionRegistry();
+        IConfigurationElement[] elements = registry
+                .getConfigurationElementsFor("net.sourceforge.vrapper.eclipse.pssp");
+        List<AbstractEclipseSpecificStateProvider> matched = new ArrayList<AbstractEclipseSpecificStateProvider>();
+        for (IConfigurationElement element : elements) {
+            AbstractEclipseSpecificStateProvider provider = (AbstractEclipseSpecificStateProvider) Utils
+                    .createGizmoForElementConditionally(
+                            underlyingEditor, "editor-must-subclass",
+                            element, "provider-class");
+            if (provider != null)
+                matched.add(provider);
+        }
+        Collections.sort(matched);
+        return new UnionStateProvider("extensions for "
+                + underlyingEditor.getClass().getName(), matched);
     }
 
 }

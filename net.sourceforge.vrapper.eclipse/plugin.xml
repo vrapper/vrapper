@@ -2,6 +2,7 @@
 <?eclipse version="3.2"?>
 <plugin>
    <extension-point id="net.sourceforge.vrapper.eclipse.pssp" name="Platform Specific State Provider" schema="schema/net.sourceforge.vrapper.eclipse.pssp.exsd"/>
+   <extension-point id="net.sourceforge.vrapper.eclipse.extractor" name="Text Editor Extractor" schema="schema/net.sourceforge.vrapper.eclipse.extractor.exsd"/>
   <extension
        point="org.eclipse.ui.commands">
     <category
