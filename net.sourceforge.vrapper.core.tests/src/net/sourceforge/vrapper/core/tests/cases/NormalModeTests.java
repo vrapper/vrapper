@@ -375,4 +375,45 @@ public class NormalModeTests extends CommandTestCase {
                 "sth\n",EOF,"",
                 "",'s',"th");
     }
+	
+	@Test
+    public void test_J() {
+        checkCommand(forKeySeq("J"),
+                "s",'t',"h\nsth",
+                "sth",' ',"sth");
+        checkCommand(forKeySeq("2J"),
+                "s",'t',"h\nsth\nsth",
+                "sth sth",' ',"sth");
+        checkCommand(forKeySeq("J"),
+                "s",'t',"h\n   sth",
+                "sth",' ',"sth");
+    }
+	
+	@Test
+    public void test_gJ() {
+        checkCommand(forKeySeq("gJ"),
+                "s",'t',"h\nsth",
+                "sth",'s',"th");
+        checkCommand(forKeySeq("2gJ"),
+                "s",'t',"h\nsth\nsth",
+                "sthsth",'s',"th");
+        checkCommand(forKeySeq("gJ"),
+                "s",'t',"h\n   sth",
+                "sth",' ',"  sth");
+    }
+	@Test
+    public void test_joinLastLine() {
+        checkCommand(forKeySeq("J"),
+                "no",'o',"p",
+                "no",'o',"p");
+        verify(userInterfaceService).setErrorMessage("there is nothing to join below last line");
+	}
+	
+	@Test
+    public void test_joinLastLineDumbWay() {
+        checkCommand(forKeySeq("gJ"),
+                "no",'o',"p",
+                "no",'o',"p");
+        verify(userInterfaceService).setErrorMessage("there is nothing to join below last line");
+	}
 }

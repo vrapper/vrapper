@@ -88,4 +88,5 @@ public interface TextContent {
      * @return the index of the searched string.
      */
 	SearchResult find(Search search, Position start);
+
 }

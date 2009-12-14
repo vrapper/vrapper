@@ -36,6 +36,7 @@ import net.sourceforge.vrapper.vim.commands.DeleteOperation;
 import net.sourceforge.vrapper.vim.commands.DelimitedText;
 import net.sourceforge.vrapper.vim.commands.DotCommand;
 import net.sourceforge.vrapper.vim.commands.InsertLineCommand;
+import net.sourceforge.vrapper.vim.commands.JoinLinesCommand;
 import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.commands.MotionPairTextObject;
@@ -201,6 +202,8 @@ public class NormalMode extends CommandBasedMode {
         LineEndMotion lineEndMotion = new LineEndMotion(BorderPolicy.LINE_WISE);
         Command substituteLine = new TextOperationTextObjectCommand(change, new MotionTextObject(lineEndMotion));
         Command substituteChar = new TextOperationTextObjectCommand(change, new MotionTextObject(moveRight));
+        Command joinLines = JoinLinesCommand.INSTANCE;
+        Command joinLinesDumbWay = JoinLinesCommand.DUMB_INSTANCE;
         Command centerLine = CenterLineCommand.INSTANCE;
         
         Command afterEnteringVisualInc = new OptionDependentCommand<String>(Options.SELECTION, "inclusive",
@@ -252,6 +255,9 @@ public class NormalMode extends CommandBasedMode {
                         leafBind('~', tildeCmd),
                         leafBind('S', substituteLine),
                         leafBind('s', substituteChar),
+                        leafBind('J', joinLines),
+                        transitionBind('g',
+                                leafBind('J', joinLinesDumbWay)),
                         transitionBind('q',
                                 convertKeyStroke(
                                         RecordMacroCommand.KEYSTROKE_CONVERTER,

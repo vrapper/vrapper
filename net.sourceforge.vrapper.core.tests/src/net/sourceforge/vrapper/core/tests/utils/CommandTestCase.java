@@ -22,9 +22,10 @@ public class CommandTestCase extends VimTestCase {
 			String beforeCursor2, char atCursor2, String afterCursor2) {
 
 		int initalOffset = beforeCursor1.length();
-		int expectedFinalOffset = beforeCursor2.length();
-		String cursorStr1 = atCursor1 != EOF ? Character.toString(atCursor1) : "";
-		String cursorStr2 = atCursor2 != EOF ? Character.toString(atCursor2) : "";
+		
+		String cursorStr1 = cursorStr(atCursor1);
+		String cursorStr2 = cursorStr(atCursor2);
+		
 		String initialContent = beforeCursor1 + cursorStr1 + afterCursor1;
 		String expectedFinalContent = beforeCursor2 + cursorStr2 + afterCursor2;
 		if (!changesContent)
@@ -32,25 +33,35 @@ public class CommandTestCase extends VimTestCase {
 
 		content.setText(initialContent);
 		cursorAndSelection.setPosition(new DumbPosition(initalOffset), true);
-		try {
-            command.execute(adaptor);
-        } catch (CommandExecutionException e) {
-            fail("Cought command execution exception: " + e);
-        }
+		
+		executeCommand(command);
+		
+		String initialLine = formatLine(beforeCursor1, cursorStr1, afterCursor1);
+        assertCommandResult(initialLine, beforeCursor2, atCursor2, afterCursor2);
+	}
+
+    private static String cursorStr(char chr) {
+        return chr != EOF ? Character.toString(chr) : "";
+    }
+
+	public void assertCommandResult(String initialLine,
+            String beforeCursor, char atCursor, String afterCursor) {
+		String cursor = cursorStr(atCursor);
+		int expectedFinalOffset = beforeCursor.length();
+        String expectedFinalContent = beforeCursor + cursor + afterCursor;
+		
 		int actualFinalOffset = cursorAndSelection.getPosition().getModelOffset();
 		String actualFinalContent = content.getText();
 
-		String msg;
-		String initialLine = formatLine(beforeCursor1, cursorStr1, afterCursor1);
-		String expectedLine = formatLine(beforeCursor2, cursorStr2, afterCursor2);
+		String expectedLine = formatLine(beforeCursor, cursor, afterCursor);
 		String actualLine = formatLine(actualFinalContent, actualFinalOffset, actualFinalOffset + 1);
 
-		msg = String.format("STARTING FROM:\n%s\nEXPECTED:\n%s\nGOT:\n%s\n", initialLine, expectedLine, actualLine);
+		String msg = String.format("STARTING FROM:\n%s\nEXPECTED:\n%s\nGOT:\n%s\n", initialLine, expectedLine, actualLine);
 		if (!actualFinalContent.equals(expectedFinalContent) || actualFinalOffset != expectedFinalOffset)
-			fail(msg);
-	}
+            fail(msg);
+    }
 
-	protected static String formatLine(String line, int from, int to) {
+    protected static String formatLine(String line, int from, int to) {
 		if (from < line.length() && to <= line.length())
 			return formatLine(line.substring(0, from), line.substring(from, to), line.substring(to));
 		return line + "[EOF]";
@@ -97,6 +108,14 @@ public class CommandTestCase extends VimTestCase {
     protected void assertYanked(ContentType type, String text) {
         assertEquals(type, defaultRegister.getContent().getPayloadType());
         assertEquals(text, defaultRegister.getContent().getText());
+    }
+
+    protected void executeCommand(Command command) {
+        try {
+            command.execute(adaptor);
+        } catch (CommandExecutionException e) {
+            fail("exception during command execution: " + e.getMessage());
+        }
     }
 
 }

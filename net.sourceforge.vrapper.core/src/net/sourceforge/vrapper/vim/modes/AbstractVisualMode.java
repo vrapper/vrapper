@@ -5,11 +5,6 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.convertKeyS
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
-import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.dontRepeat;
-import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
-
-import javax.swing.text.DefaultEditorKit.PasteAction;
-
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.vim.CountingState;
@@ -23,8 +18,8 @@ import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeOperation;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.DeleteOperation;
+import net.sourceforge.vrapper.vim.commands.JoinVisualLinesCommand;
 import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
-import net.sourceforge.vrapper.vim.commands.PasteAfterCommand;
 import net.sourceforge.vrapper.vim.commands.PasteOperation;
 import net.sourceforge.vrapper.vim.commands.SelectionBasedTextOperationCommand;
 import net.sourceforge.vrapper.vim.commands.SetMarkCommand;
@@ -95,6 +90,8 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
         Command change = new SelectionBasedTextOperationCommand.DontChangeMode(ChangeOperation.INSTANCE);
         Command commandLineMode = new ChangeModeCommand(CommandLineMode.NAME);
         Command centerLine = CenterLineCommand.INSTANCE;
+        Command joinLines = JoinVisualLinesCommand.INSTANCE;
+        Command joinLinesDumbWay = JoinVisualLinesCommand.DUMB_INSTANCE;
         State<Command> visualMotions = getVisualMotionState();
         State<Command> visualTextObjects = VisualTextObjectState.INSTANCE;
         State<Command> initialState = RegisterState.wrap(CountingState.wrap(union(
@@ -109,7 +106,10 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
                 leafBind('X', delete),
                 leafBind('p', paste),
                 leafBind('P', paste),
+                leafBind('J', joinLines),
                 leafBind(':', commandLineMode),
+                transitionBind('g',
+                        leafBind('J', joinLinesDumbWay)),
                 transitionBind('z',
                         leafBind('z', centerLine)),
                 transitionBind('m',

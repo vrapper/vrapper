@@ -15,7 +15,6 @@ import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.commands.Command;
-import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
@@ -35,77 +34,94 @@ public class VisualModeTests extends CommandTestCase {
 		mode = new VisualMode(adaptor);
 	};
 
-
-	private void checkCommand(Command command,
-			boolean inverted1, String beforeSelection1, String selected1, String afterSelection1,
-			boolean inverted2, String beforeSelection2, String selected2, String afterSelection2) {
-
-		String initialContent = beforeSelection1 + selected1 + afterSelection1;
-		String expectedFinalContent = beforeSelection2 + selected2 + afterSelection2;
-
-		content.setText(initialContent);
-		int selectFrom, selectTo;
-		selectFrom = selectTo = beforeSelection1.length();
-		if (!inverted1) {
-            selectTo += selected1.length();
+	private void prepareEditor(boolean inverted,
+            String beforeSelection, String selected, String afterSelection) {
+        String initialContent = beforeSelection + selected + afterSelection;
+    
+    	content.setText(initialContent);
+    	int selectFrom, selectTo;
+    	selectFrom = selectTo = beforeSelection.length();
+    	if (!inverted) {
+            selectTo += selected.length();
         } else {
-            selectFrom += selected1.length();
+            selectFrom += selected.length();
         }
-
-		adaptor.changeMode(VisualMode.NAME);
-		CursorService cursorService = platform.getCursorService();
-		SelectionService selectionService = platform.getSelectionService();
+    
+    	adaptor.changeMode(VisualMode.NAME);
+    	CursorService cursorService = platform.getCursorService();
+    	SelectionService selectionService = platform.getSelectionService();
         Position from = cursorService.newPositionForModelOffset(selectFrom);
-        if (selected1.endsWith("\n")) {
+        if (selected.endsWith("\n")) {
             Position to = cursorService.newPositionForModelOffset(selectTo - 1);
             selectionService.setSelection(new LineWiseSelection(adaptor, from, to));
         } else {
             Position to = cursorService.newPositionForModelOffset(selectTo);
             selectionService.setSelection(new SimpleSelection(new StartEndTextRange(from, to)));
         }
-		
-		try {
-            command.execute(adaptor);
-        } catch (CommandExecutionException e) {
-            fail("exception during command execution: " + e.getMessage());
-        }
-		String actualFinalContent = content.getText();
-		int actSelFrom;
-		int actSelTo;
-        TextRange selection = adaptor.getSelection();
-        if (selection != null) {
-            actSelFrom = selection.getStart().getModelOffset();
-            actSelTo = selection.getEnd().getModelOffset();
-        } else {
-            actSelFrom = actSelTo = adaptor.getCursorService().getPosition().getModelOffset();
-        }
-		int expSelTo, expSelFrom;
-		expSelFrom = expSelTo = beforeSelection2.length();
-		if (!inverted2) {
-            expSelTo += selected2.length();
-        } else {
-            expSelFrom += selected2.length();
+    }
+
+
+    private void assertCommandResult(String initialLine,
+            boolean inverted, String beforeSelection, String selected, String afterSelection) {
+            String expectedFinalContent = beforeSelection + selected + afterSelection;
+    		String actualFinalContent = content.getText();
+    		int actSelFrom;
+    		int actSelTo;
+            TextRange selection = adaptor.getSelection();
+            if (selection != null) {
+                actSelFrom = selection.getStart().getModelOffset();
+                actSelTo = selection.getEnd().getModelOffset();
+            } else {
+                actSelFrom = actSelTo = adaptor.getCursorService().getPosition().getModelOffset();
+            }
+    		int expSelTo, expSelFrom;
+    		expSelFrom = expSelTo = beforeSelection.length();
+    		if (!inverted) {
+                expSelTo += selected.length();
+            } else {
+                expSelFrom += selected.length();
+            }
+    
+    		String msg = "";
+    		boolean selectionMishmash = false;
+    		if (expSelFrom != actSelFrom || expSelTo != actSelTo) {
+    			msg = "selection mishmash\n" + expSelFrom + " " + expSelTo + " but got " + actSelFrom + " " + actSelTo + "\n";
+    			selectionMishmash = true;
+    		}
+    
+    //		int offset = mockEditorAdaptor.getCaretOffset();
+    		String expectedLine = formatLine(beforeSelection, selected, afterSelection) + "\n";// + cursorLine(expSelTo);
+    		String   actualLine = formatLine(actualFinalContent,
+    				min(actSelFrom, actSelTo),
+    				max(actSelFrom, actSelTo)) + "\n";// + cursorLine(offset);
+    
+    		msg += String.format("STARTING FROM:\n%s\nEXPECTED:\n%s\nGOT:\n%s\n", initialLine, expectedLine, actualLine);
+    		if (!actualFinalContent.equals(expectedFinalContent) || selectionMishmash) {
+                fail(msg);
+            }
         }
 
-		String msg = "";
-		boolean selectionMishmash = false;
-		if (expSelFrom != actSelFrom || expSelTo != actSelTo) {
-			msg = "selection mishmash\n" + expSelFrom + " " + expSelTo + " but got " + actSelFrom + " " + actSelTo + "\n";
-			selectionMishmash = true;
-		}
 
-//		int offset = mockEditorAdaptor.getCaretOffset();
+    private void checkCommand(Command command,
+			boolean inverted1, String beforeSelection1, String selected1, String afterSelection1,
+			boolean inverted2, String beforeSelection2, String selected2, String afterSelection2) {
+
 		String  initialLine = formatLine(beforeSelection1, selected1, afterSelection1) + "\n"; // + cursorLine(selectTo);
-		String expectedLine = formatLine(beforeSelection2, selected2, afterSelection2) + "\n";// + cursorLine(expSelTo);
-		String   actualLine = formatLine(actualFinalContent,
-				min(actSelFrom, actSelTo),
-				max(actSelFrom, actSelTo)) + "\n";// + cursorLine(offset);
-
-		msg += String.format("STARTING FROM:\n%s\nEXPECTED:\n%s\nGOT:\n%s\n", initialLine, expectedLine, actualLine);
-		if (!actualFinalContent.equals(expectedFinalContent) || selectionMishmash) {
-            fail(msg);
-        }
+		
+		prepareEditor(inverted1, beforeSelection1, selected1, afterSelection1);
+		executeCommand(command);
+		assertCommandResult(initialLine, inverted2, beforeSelection2, selected2, afterSelection2);
 	}
+
+    private void checkLeavingCommand(Command command,
+			boolean inverted, String beforeSelection, String selected, String afterSelection,
+			String beforeCursor, char atCursor, String afterCursor) {
+		String  initialLine = formatLine(beforeSelection, selected, afterSelection) + "\n"; // + cursorLine(selectTo);
+		
+		prepareEditor(inverted, beforeSelection, selected, afterSelection);
+		executeCommand(command);
+        assertCommandResult(initialLine, beforeCursor, atCursor, afterCursor);
+    }
 
 	protected static String cursorLine(int offset) {
 		StringBuilder cursorLine = new StringBuilder(">");
@@ -250,5 +266,15 @@ public class VisualModeTests extends CommandTestCase {
 				false,  "Ther","e"," was a bug about it",
 				false,  "Ther","e was"," a bug about it");
 	}
+
+	@Test
+    public void test_J() {
+		checkLeavingCommand(forKeySeq("J"),
+				false,  "Hell","o,\nW","orld!\n;-)",
+				"Hello,",' ',"World!\n;-)");
+		checkLeavingCommand(forKeySeq("gJ"),
+				false,  "new Hell","o\nW","orld();\n//;-)",
+				"new Hello",'W',"orld();\n//;-)");
+    }
 
 }

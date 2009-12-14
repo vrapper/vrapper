@@ -61,7 +61,6 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
         State<TextObject> textObjects = NormalMode.textObjects();
         State<Command> normalModeBindings = StateUtils.union(
             state(
-                leafBind('J', (Command) editText("join.lines")),
                 transitionBind('z',
                         leafBind('o', dontRepeat(editText("folding.expand"))),
                         leafBind('R', dontRepeat(editText("folding.expand_all"))),
