@@ -11,6 +11,7 @@
           name="Vrapper">
     </category>
     <command
+          category="net.sourceforge.vrapper.eclipse.commands"
           categoryId="net.sourceforge.vrapper.eclipse.commands"
           defaultHandler="net.sourceforge.vrapper.eclipse.actions.VrapperToggleHandler"
           description="Toggles Vrapper"
