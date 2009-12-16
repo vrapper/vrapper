@@ -381,12 +381,20 @@ public class NormalModeTests extends CommandTestCase {
         checkCommand(forKeySeq("J"),
                 "s",'t',"h\nsth",
                 "sth",' ',"sth");
+        // don't append space if current
+        // line ends with whitespace. D'oh!
+        checkCommand(forKeySeq("J"),
+                "s",'t',"h   \nsth",
+                "sth   ",'s',"th");
         checkCommand(forKeySeq("2J"),
                 "s",'t',"h\nsth\nsth",
                 "sth sth",' ',"sth");
         checkCommand(forKeySeq("J"),
                 "s",'t',"h\n   sth",
                 "sth",' ',"sth");
+        checkCommand(forKeySeq("JJ"),
+                "s",'t',"h\n\nsth",
+                "sth ",'s',"th");
     }
 	
 	@Test

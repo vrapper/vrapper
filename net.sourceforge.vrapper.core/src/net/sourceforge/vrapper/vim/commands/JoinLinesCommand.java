@@ -47,7 +47,9 @@ public class JoinLinesCommand extends CountAwareCommand {
             String glue;
             if (isSmart) {
                 glue = " ";
-                for (int j = 0; Character.isWhitespace(secondLine.charAt(j)) && j < secondLine.length(); j++)
+                if (firstLnInfo.getLength() > 0 && Character.isWhitespace(modelContent.getText(eolOffset - 1, 1).charAt(0)))
+                    glue = "";
+                for (int j = 0; j < secondLine.length() && Character.isWhitespace(secondLine.charAt(j)); j++)
                     bolOffset++;
             } else
                 glue = "";
