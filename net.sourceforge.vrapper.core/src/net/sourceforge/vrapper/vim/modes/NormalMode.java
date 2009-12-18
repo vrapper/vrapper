@@ -71,6 +71,7 @@ import net.sourceforge.vrapper.vim.commands.motions.MoveRight;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordEndRight;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordRight;
+import net.sourceforge.vrapper.vim.commands.motions.ParagraphMotion;
 
 public class NormalMode extends CommandBasedMode {
 
@@ -136,18 +137,22 @@ public class NormalMode extends CommandBasedMode {
             final TextObject aWord = new MotionPairTextObject(MoveWordLeft.BAILS_OFF, MoveWordRight.BAILS_OFF);
             final TextObject innerWORD = new MotionPairTextObject(MoveBigWORDLeft.BAILS_OFF, MoveBigWORDEndRight.BAILS_OFF);
             final TextObject aWORD = new MotionPairTextObject(MoveBigWORDLeft.BAILS_OFF, MoveBigWORDRight.BAILS_OFF);
+            final TextObject innerParagraph = new MotionPairTextObject(ParagraphMotion.TO_BACKWARD, ParagraphMotion.FORWARD);
+            final TextObject aParagraph = new MotionPairTextObject(ParagraphMotion.TO_BACKWARD, ParagraphMotion.TO_FORWARD);
             
             textObjects = union(
                         state(
                             transitionBind('i', union(
                                     state(  leafBind('w', innerWord),
-                                            leafBind('W', innerWORD)
+                                            leafBind('W', innerWORD),
+                                            leafBind('p', innerParagraph)
                                     ),
                                     new DelimitedTextObjectState(delimitedTexts(), DelimitedTextObjectState.INNER))),
                             transitionBind('a', union(
                                     state(
                                             leafBind('w', aWord),
-                                            leafBind('W', aWORD)
+                                            leafBind('W', aWORD),
+                                            leafBind('p', aParagraph)
                                     ),
                                     new DelimitedTextObjectState(delimitedTexts(), DelimitedTextObjectState.OUTER)))),
                         new TextObjectState(motions()));

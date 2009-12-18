@@ -15,6 +15,7 @@ import net.sourceforge.vrapper.vim.commands.motions.MoveWordEndLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordEndRight;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordRight;
+import net.sourceforge.vrapper.vim.commands.motions.ParagraphMotion;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
@@ -662,6 +663,76 @@ public class MotionTests extends CommandTestCase {
 	    checkMotion(GoToLineMotion.LAST_LINE, 2,
 	            "  Ala ma kota\n  Ala ",'m',"a kota\n  Ala ma kota",
 	            "  Ala ma kota\n  ",'A',"la ma kota\n  Ala ma kota");
+    }
+	
+	@Test
+    public void testParagrapForwardMotion() {
+	    Motion oneParagraphForward = ParagraphMotion.FORWARD;
+        checkMotion(oneParagraphForward,
+	            "Lorem ipsum do",'l',"or sit amet, consectetuer adipiscing elit.\n"+
+	            "Proin nibh augue, suscipit a, scelerisque sed, lacinia in, mi.\n"+
+	            "\n"+
+	            "\n"+
+	            "Almost like Cicero\n",
+	            
+	            "Lorem ipsum dolor sit amet, consectetuer adipiscing elit.\n"+
+	            "Proin nibh augue, suscipit a, scelerisque sed, lacinia in, mi.\n",
+	            '\n',
+	            "\n"+
+	            "Almost like Cicero\n"
+        );
+        
+        checkMotion(oneParagraphForward,
+                "Marry has ",'a'," little lamb",
+                "Marry has a little lamb",EOF,"");
+        
+        checkMotion(oneParagraphForward,
+	            "Lorem ipsum dolor sit amet, consectetuer adipiscing elit.\n"+
+	            "Proin nibh augue, suscipit a, scelerisque sed, lacinia in, mi.\n",
+	            '\n',
+	            "\n"+
+	            "Almost like Cicero\n",
+	            
+	            "Lorem ipsum dolor sit amet, consectetuer adipiscing elit.\n"+
+	            "Proin nibh augue, suscipit a, scelerisque sed, lacinia in, mi.\n"+
+	            "\n"+
+	            "\n"+
+	            "Almost like Cicero\n",EOF,""
+        );
+        
+        checkMotion(oneParagraphForward, 3,
+                "e",'i',"ns\n\nzwei\n\ndrei\n\nPolizei!",
+                "eins\n\nzwei\n\ndrei\n",'\n',"Polizei!");
+    }
+
+	
+	@Test
+    public void testParagraphBackwardMotion() {
+	    Motion oneParagraphBackward = ParagraphMotion.BACKWARD;
+        checkMotion(oneParagraphBackward,
+	            "aaah!\n"+
+	            "\n"+
+	            "\n"+
+	            "this is\n"+
+	            "so ",'g',"reat",
+	            
+	            "aaah!\n"+
+	            "\n",
+	            '\n',
+	            "this is\n"+
+	            "so great"
+        );
+        checkMotion(oneParagraphBackward,
+                "Marry has ",'a'," little lamb",
+                "",'M',"arry has a little lamb");
+        
+        checkMotion(oneParagraphBackward,
+                "\n\n",'\n',"\n\n",
+                "",'\n',"\n\n\n\n");
+        
+        checkMotion(oneParagraphBackward, 3,
+                "eins\n\nzwei\n\ndrei\n\n",'P',"olizei!",
+                "eins\n",'\n',"zwei\n\ndrei\n\nPolizei!");
     }
 
 }

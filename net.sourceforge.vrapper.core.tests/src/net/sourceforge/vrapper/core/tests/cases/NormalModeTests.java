@@ -409,8 +409,9 @@ public class NormalModeTests extends CommandTestCase {
                 "s",'t',"h\n   sth",
                 "sth",' ',"  sth");
     }
+	
 	@Test
-    public void test_joinLastLine() {
+    public void testJoinLastLine() {
         checkCommand(forKeySeq("J"),
                 "no",'o',"p",
                 "no",'o',"p");
@@ -418,10 +419,11 @@ public class NormalModeTests extends CommandTestCase {
 	}
 	
 	@Test
-    public void test_joinLastLineDumbWay() {
+    public void testJoinLastLineDumbWay() {
         checkCommand(forKeySeq("gJ"),
                 "no",'o',"p",
                 "no",'o',"p");
         verify(userInterfaceService).setErrorMessage("there is nothing to join below last line");
 	}
+	
 }
