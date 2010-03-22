@@ -23,21 +23,21 @@
          <attribute name="point" type="string" use="required">
             <annotation>
                <documentation>
-                  
+
                </documentation>
             </annotation>
          </attribute>
          <attribute name="id" type="string">
             <annotation>
                <documentation>
-                  
+
                </documentation>
             </annotation>
          </attribute>
          <attribute name="name" type="string">
             <annotation>
                <documentation>
-                  
+
                </documentation>
                <appInfo>
                   <meta.attribute translatable="true"/>
@@ -52,14 +52,14 @@
          <attribute name="name" type="string" use="required">
             <annotation>
                <documentation>
-                  
+
                </documentation>
             </annotation>
          </attribute>
          <attribute name="id" type="string" use="required">
             <annotation>
                <documentation>
-                  
+
                </documentation>
                <appInfo>
                   <meta.attribute kind="identifier"/>
@@ -78,7 +78,7 @@ Default to 1.
          <attribute name="provider-class" type="string" use="required">
             <annotation>
                <documentation>
-                  
+
                </documentation>
                <appInfo>
                   <meta.attribute kind="java" basedOn="net.sourceforge.vrapper.eclipse.keymap.AbstractEclipseSpecificStateProvider:"/>
@@ -104,7 +104,7 @@ Optional, defaults to AbstractTextEditor.
          <meta.section type="since"/>
       </appInfo>
       <documentation>
-         0.14.0
+         0.13.0
       </documentation>
    </annotation>
 

@@ -2,7 +2,7 @@
 <feature
       id="net.sourceforge.vrapper.aptana.ide.feature"
       label="Vrapper Aptana IDE Feature"
-      version="0.14.0"
+      version="0.13.0"
       provider-name="Vrapper Team">
 
    <description url="http://www.aptana.com/">

@@ -24,21 +24,21 @@ Those extractors (surprise, surprise!) extract AbstractTextEditors from compound
          <attribute name="point" type="string" use="required">
             <annotation>
                <documentation>
-                  
+
                </documentation>
             </annotation>
          </attribute>
          <attribute name="id" type="string">
             <annotation>
                <documentation>
-                  
+
                </documentation>
             </annotation>
          </attribute>
          <attribute name="name" type="string">
             <annotation>
                <documentation>
-                  
+
                </documentation>
                <appInfo>
                   <meta.attribute translatable="true"/>
@@ -53,7 +53,7 @@ Those extractors (surprise, surprise!) extract AbstractTextEditors from compound
          <attribute name="name" type="string">
             <annotation>
                <documentation>
-                  
+
                </documentation>
             </annotation>
          </attribute>
@@ -71,7 +71,7 @@ Optional, defaults to AbstractTextEditor.
          <attribute name="extractor-class" type="string" use="required">
             <annotation>
                <documentation>
-                  
+
                </documentation>
                <appInfo>
                   <meta.attribute kind="java" basedOn=":net.sourceforge.vrapper.eclipse.extractor.EditorExtractor"/>
@@ -86,7 +86,7 @@ Optional, defaults to AbstractTextEditor.
          <meta.section type="since"/>
       </appInfo>
       <documentation>
-         0.14.0
+         0.13.0
       </documentation>
    </annotation>
 
