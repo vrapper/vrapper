@@ -104,12 +104,14 @@ public class ConstructorWrappers {
     public static String keyStrokeToString(KeyStroke stroke) {
         if (stroke.getSpecialKey() == null) {
             String key = String.valueOf(stroke.getCharacter());
-            if (stroke.getCharacter() > ' ') {
+            if (stroke.getCharacter() >= ' ') {
                 switch (stroke.getCharacter()) {
                 case '<':
                     return "<LT>";
                 case '>':
                     return "<GT>";
+                case ' ':
+                    return "<SPACE>";
                 default:
                     return key;
                 }
