@@ -109,8 +109,8 @@ public class NormalMode extends CommandBasedMode {
         final DelimitedText inString = new SimpleDelimitedText('"');
         final DelimitedText inGraveString = new SimpleDelimitedText('`');
         final DelimitedText inChar = new SimpleDelimitedText('\'');
-        
-        
+
+
         delimitedTexts = state(
                 leafBind('b', inBracket),
                 leafBind('(', inBracket),
@@ -127,7 +127,7 @@ public class NormalMode extends CommandBasedMode {
                 leafBind('`', inGraveString));
         }
         return delimitedTexts;
-        
+
     }
 
     @SuppressWarnings("unchecked")
@@ -139,7 +139,7 @@ public class NormalMode extends CommandBasedMode {
             final TextObject aWORD = new MotionPairTextObject(MoveBigWORDLeft.BAILS_OFF, MoveBigWORDRight.BAILS_OFF);
             final TextObject innerParagraph = new MotionPairTextObject(ParagraphMotion.TO_BACKWARD, ParagraphMotion.FORWARD);
             final TextObject aParagraph = new MotionPairTextObject(ParagraphMotion.TO_BACKWARD, ParagraphMotion.TO_FORWARD);
-            
+
             textObjects = union(
                         state(
                             transitionBind('i', union(
@@ -209,8 +209,10 @@ public class NormalMode extends CommandBasedMode {
         Command substituteChar = new TextOperationTextObjectCommand(change, new MotionTextObject(moveRight));
         Command joinLines = JoinLinesCommand.INSTANCE;
         Command joinLinesDumbWay = JoinLinesCommand.DUMB_INSTANCE;
-        Command centerLine = CenterLineCommand.INSTANCE;
-        
+        Command centerLine = CenterLineCommand.CENTER;
+        Command centerBottomLine = CenterLineCommand.BOTTOM;
+        Command centerTopLine = CenterLineCommand.TOP;
+
         Command afterEnteringVisualInc = new OptionDependentCommand<String>(Options.SELECTION, "inclusive",
                 new VisualMotionCommand(moveRight));
         Command afterEnteringVisualExc = new OptionDependentCommand<String>(Options.SELECTION, "exclusive",
@@ -249,7 +251,7 @@ public class NormalMode extends CommandBasedMode {
                         leafBind('R', (Command) new ChangeModeCommand(ReplaceMode.NAME)),
                         leafBind('o', (Command) new ChangeToInsertModeCommand(InsertLineCommand.POST_CURSOR)),
                         leafBind('O', (Command) new ChangeToInsertModeCommand(InsertLineCommand.PRE_CURSOR)),
-                        leafBind('v', (seq(visualMode, afterEnteringVisual))),
+                        leafBind('v', seq(visualMode, afterEnteringVisual)),
                         leafBind('V', dontRepeat(seq(linewiseVisualMode, selectLine))),
                         leafBind('p', pasteAfter),
                         leafBind('.', repeatLastOne),
@@ -282,7 +284,12 @@ public class NormalMode extends CommandBasedMode {
                         leafBind('u', undo),
                         leafCtrlBind('r', redo),
                         transitionBind('z',
-                                leafBind('z', centerLine))))));
+                            leafBind('z', centerLine),
+                            leafBind('.', centerLine),
+                            leafBind('-', centerBottomLine),
+                            leafBind('b', centerBottomLine),
+                            leafBind('t', centerTopLine)
+                        )))));
     }
 
     @Override

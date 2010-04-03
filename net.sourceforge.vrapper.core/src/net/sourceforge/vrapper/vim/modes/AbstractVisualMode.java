@@ -29,7 +29,7 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
 
     public static final String NAME = "all visual modes";
     public static final String KEYMAP_NAME = "Visual Mode Keymap";
-    
+
     public static final ModeSwitchHint FIX_SELECTION_HINT = new ModeSwitchHint() { };
     public static final ModeSwitchHint MOVE_CURSOR_HINT = new ModeSwitchHint() { };
 
@@ -65,13 +65,16 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
         }
         isEnabled = true;
         boolean shouldDeselect = true;
-        for (ModeSwitchHint hint: args)
-            if (hint == FIX_SELECTION_HINT)
+        for (ModeSwitchHint hint: args) {
+            if (hint == FIX_SELECTION_HINT) {
                 shouldDeselect = false;
-        if (shouldDeselect)
+            }
+        }
+        if (shouldDeselect) {
             editorAdaptor.setSelection(null);
-        else if (editorAdaptor.getSelection() != null)
+        } else if (editorAdaptor.getSelection() != null) {
             fixSelection();
+        }
     }
 
     protected abstract void fixSelection();
@@ -81,6 +84,7 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
         isEnabled = false;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     protected State<Command> buildInitialState() {
         Command leaveVisual = LeaveVisualModeCommand.INSTANCE;
@@ -89,13 +93,15 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
         Command paste  = new SelectionBasedTextOperationCommand(PasteOperation.INSTANCE);
         Command change = new SelectionBasedTextOperationCommand.DontChangeMode(ChangeOperation.INSTANCE);
         Command commandLineMode = new ChangeModeCommand(CommandLineMode.NAME);
-        Command centerLine = CenterLineCommand.INSTANCE;
+        Command centerLine = CenterLineCommand.CENTER;
+        Command centerBottomLine = CenterLineCommand.BOTTOM;
+        Command centerTopLine = CenterLineCommand.TOP;
         Command joinLines = JoinVisualLinesCommand.INSTANCE;
         Command joinLinesDumbWay = JoinVisualLinesCommand.DUMB_INSTANCE;
         State<Command> visualMotions = getVisualMotionState();
         State<Command> visualTextObjects = VisualTextObjectState.INSTANCE;
         State<Command> initialState = RegisterState.wrap(CountingState.wrap(union(
-                getPlatformSpecificState(NAME), 
+                getPlatformSpecificState(NAME),
                 state(
                 leafBind(SpecialKey.ESC, leaveVisual),
                 leafBind('y', yank),
@@ -111,7 +117,12 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
                 transitionBind('g',
                         leafBind('J', joinLinesDumbWay)),
                 transitionBind('z',
-                        leafBind('z', centerLine)),
+                        leafBind('z', centerLine),
+                        leafBind('.', centerLine),
+                        leafBind('-', centerBottomLine),
+                        leafBind('b', centerBottomLine),
+                        leafBind('t', centerTopLine)
+                ),
                 transitionBind('m',
                         convertKeyStroke(
                                 SetMarkCommand.KEYSTROKE_CONVERTER,
