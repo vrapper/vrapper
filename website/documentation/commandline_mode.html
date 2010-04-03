@@ -128,7 +128,7 @@
        </tr>
    </table>
 <p>It is possible to map multiple keys to multiple other keys, e.g.
-   ":ino jj <ESC>" or ":nn cw ce".</p>
+   ":ino jj &lt;ESC&gt;" or ":nn cw ce".</p>
    <p>Special characters can be mapped by using the notation &lt;NAME&gt;.
    Control characters are mapped by using &lt;C-x&gt; where x is a character from A-Z. Here is a list of special character names:</p>
    <ul class="commands">
@@ -149,6 +149,15 @@
        <li>DELETE</li>
        <li>BACKSPACE</li>
    </ul>
+<h3>Collisions between Vrapper and Eclipse bindings</h3>
+<p>If a key combination is already mapped by Eclipse (e.g. Ctrl-P on Windows and
+Linux based systems is mapped to print), Vrapper will not receive the keystroke,
+so mapping it to some Vrapper action will not work.</p>
+<p>In Eclipse, go to the Preferences window, then General -&gt; Keys. Find the
+binding causing the collision. Select it, then click the "Unbind Command"
+button. This should remove the binding in the "Binding" column. Click "Apply".
+Vrapper should now receive the keystrokes and your mapping should work
+correctly.</p>
 <h3>Configuration File</h3>
 <p>The options described above only change the behaviour of the editor in which they are set. To change the default configuration a file is used. When a new editor is opened, the plugin checks for a file called ".vrapperrc" in the user's home directory. If found, the commands in the file are executed. You may use any configuration command in this file. As with ".vimrc" files, the leading ":" is omitted in the configuration file.</p>
 <p>This is an example of the contents of a configuration file:</p>
