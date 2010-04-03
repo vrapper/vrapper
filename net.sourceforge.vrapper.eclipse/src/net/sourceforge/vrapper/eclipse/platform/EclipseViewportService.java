@@ -46,12 +46,20 @@ public class EclipseViewportService implements ViewportService {
 
     public ViewPortInformation getViewPortInformation() {
         return new ViewPortInformation(
-                textViewer.getTopIndex(),
-                textViewer.getBottomIndex());
+                textViewer5.modelLine2WidgetLine(textViewer.getTopIndex()),
+                textViewer5.modelLine2WidgetLine(textViewer.getBottomIndex()));
     }
 
     public void setTopLine(int line) {
-        textViewer.setTopIndex(line);
+        textViewer.setTopIndex(textViewer5.widgetLine2ModelLine(line));
+    }
+
+    public int modelLine2ViewLine(int line) {
+        return textViewer5.modelLine2WidgetLine(line);
+    }
+
+    public int viewLine2ModelLine(int line) {
+        return textViewer5.widgetLine2ModelLine(line);
     }
 
 

@@ -44,4 +44,14 @@ public interface ViewportService {
 	 * @param line the new line to set
 	 */
 	void setTopLine(int line);
+
+	/**
+	 * Converts a view line to a model line.
+	 */
+	int viewLine2ModelLine(int line);
+
+	/**
+	 * Converts a model line to a view line.
+	 */
+	int modelLine2ViewLine(int line);
 }

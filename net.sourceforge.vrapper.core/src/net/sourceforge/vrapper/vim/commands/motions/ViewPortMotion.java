@@ -35,7 +35,8 @@ public class ViewPortMotion extends GoToLineMotion {
         result = Math.max(result, view.getTopLine());
         result = Math.min(result, view.getBottomLine());
         // add 1 to result as GoToLineMotion is 1-based
-        return super.destination(editorAdaptor, result+1);
+        int dest = editorAdaptor.getViewportService().viewLine2ModelLine(result);
+        return super.destination(editorAdaptor, dest+1);
     }
 
     public enum Type {
