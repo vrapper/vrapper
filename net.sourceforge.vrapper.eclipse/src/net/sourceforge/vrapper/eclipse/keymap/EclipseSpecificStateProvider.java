@@ -27,17 +27,18 @@ import net.sourceforge.vrapper.vim.modes.NormalMode;
  */
 @SuppressWarnings("unchecked")
 public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStateProvider {
-    
+
     public EclipseSpecificStateProvider() {
         commands.add("eclipseaction", new EclipseActionEvaluator(false));
         commands.add("eclipseaction!", new EclipseActionEvaluator(true));
     }
-    
+
+    @Override
     protected State<Command> visualModeBindings() {
         Command leaveVisual = LeaveVisualModeCommand.INSTANCE;
         Command shiftRight = new SelectionBasedTextOperationCommand(EclipseShiftOperation.Visual.RIGHT);
         Command shiftLeft = new SelectionBasedTextOperationCommand(EclipseShiftOperation.Visual.LEFT);
-        
+
         return state(
             transitionBind('g',
                     leafBind('U', seq(editText("upperCase"),      leaveVisual)),
@@ -46,6 +47,7 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
             leafBind('<', shiftLeft));
     }
 
+    @Override
     protected State<String> normalModeKeymap() {
         State<String> normalModeKeymap = state(
                         leafBind('z', KeyMapResolver.NO_KEYMAP),
@@ -53,10 +55,12 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
         return normalModeKeymap;
     }
 
+    @Override
     protected State<String> visualModeKeymap() {
         return state(leafBind('g', KeyMapResolver.NO_KEYMAP));
     }
 
+    @Override
     protected State<Command> normalModeBindings() {
         State<TextObject> textObjects = NormalMode.textObjects();
         State<Command> normalModeBindings = StateUtils.union(
@@ -71,6 +75,8 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
                         leafBind('T', cmd("org.eclipse.ui.window.previousEditor"))),
                 leafCtrlBind('f', go("pageDown")),
                 leafCtrlBind('b', go("pageUp")),
+                leafCtrlBind('d', go("pageDown")),
+                leafCtrlBind('u', go("pageUp")),
                 leafBind(SpecialKey.PAGE_DOWN, go("pageDown")),
                 leafBind(SpecialKey.PAGE_UP, go("pageUp")),
                 leafCtrlBind('y', dontRepeat(editText("scroll.lineUp"))),
