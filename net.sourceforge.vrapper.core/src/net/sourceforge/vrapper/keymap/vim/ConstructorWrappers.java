@@ -80,9 +80,12 @@ public class ConstructorWrappers {
                     next = s.charAt(i);
                     sb.append(next);
                 }
-                sb.deleteCharAt(sb.length()-1);
-                String key = sb.toString();
-                KeyStroke stroke = keyNames.get(key.toUpperCase());
+                KeyStroke stroke = null;
+                if (sb.length() > 0) {
+                    sb.deleteCharAt(sb.length()-1);
+                    String key = sb.toString();
+                    stroke = keyNames.get(key.toUpperCase());
+                }
                 if (stroke != null) {
                     result.add(stroke);
                 }
