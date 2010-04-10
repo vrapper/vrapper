@@ -8,6 +8,7 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.dontRepeat;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
+import net.sourceforge.vrapper.eclipse.commands.ChangeTabCommand;
 import net.sourceforge.vrapper.eclipse.commands.EclipseShiftOperation;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.State;
@@ -71,8 +72,8 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
                         leafBind('c', dontRepeat(editText("folding.collapse"))),
                         leafBind('M', dontRepeat(editText("folding.collapse_all")))),
                 transitionBind('g',
-                        leafBind('t', cmd("org.eclipse.ui.window.nextEditor")),
-                        leafBind('T', cmd("org.eclipse.ui.window.previousEditor"))),
+                        leafBind('t', (Command) ChangeTabCommand.NEXT_EDITOR),
+                        leafBind('T', (Command) ChangeTabCommand.PREVIOUS_EDITOR)),
                 leafCtrlBind('f', go("pageDown")),
                 leafCtrlBind('b', go("pageUp")),
                 leafCtrlBind('d', go("pageDown")),
