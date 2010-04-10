@@ -2,6 +2,7 @@
 package net.sourceforge.vrapper.eclipse.interceptor;
 
 import java.util.HashMap;
+import java.util.HashSet;
 
 import net.sourceforge.vrapper.eclipse.activator.VrapperPlugin;
 import net.sourceforge.vrapper.eclipse.platform.EclipsePlatform;
@@ -33,6 +34,7 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
 
     private static final HashMap<Integer, SpecialKey> specialKeys;
     private static final HashMap<Character, SpecialKey> specialChars;
+    private static final HashSet<Integer> ignoredKeyCodes;
     static {
         specialKeys = new HashMap<Integer, SpecialKey>();
         specialKeys.put( SWT.ARROW_LEFT,         SpecialKey.ARROW_LEFT);
@@ -51,6 +53,12 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
         specialChars.put(Character.valueOf('\n'), SpecialKey.RETURN);
         specialChars.put(Character.valueOf('\r'), SpecialKey.RETURN);
         specialChars.put(Character.valueOf('\u001B'), SpecialKey.ESC);
+
+        ignoredKeyCodes = new HashSet<Integer>();
+        ignoredKeyCodes.add(SWT.CTRL);
+        ignoredKeyCodes.add(SWT.SHIFT);
+        ignoredKeyCodes.add(SWT.ALT);
+        ignoredKeyCodes.add(SWT.CAPS_LOCK);
     }
 
 
@@ -75,8 +83,7 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
             if (!VrapperPlugin.isVrapperEnabled()) {
                 return;
             }
-            if (event.keyCode == SWT.SHIFT || event.keyCode == SWT.CTRL
-                    || event.keyCode == SWT.CAPS_LOCK) {
+            if (ignoredKeyCodes.contains(event.keyCode)) {
                 return;
             }
             KeyStroke keyStroke;
