@@ -26,9 +26,9 @@ import org.eclipse.ui.texteditor.AbstractTextEditor;
  * @author Matthias Radig
  */
 public class VimInputInterceptorFactory implements InputInterceptorFactory {
-    
+
     private VimInputInterceptorFactory() { /* NOP */ }
-    
+
     public static final VimInputInterceptorFactory INSTANCE = new VimInputInterceptorFactory();
 
     private static final HashMap<Integer, SpecialKey> specialKeys;
@@ -72,10 +72,13 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
         }
 
         public void verifyKey(VerifyEvent event) {
-            if (!VrapperPlugin.isVrapperEnabled())
+            if (!VrapperPlugin.isVrapperEnabled()) {
                 return;
-            if (event.keyCode == SWT.SHIFT || event.keyCode == SWT.CTRL)
+            }
+            if (event.keyCode == SWT.SHIFT || event.keyCode == SWT.CTRL
+                    || event.keyCode == SWT.CAPS_LOCK) {
                 return;
+            }
             KeyStroke keyStroke;
             if(specialKeys.containsKey(event.keyCode)) {
                 keyStroke = new SimpleKeyStroke(specialKeys.get(event.keyCode));
