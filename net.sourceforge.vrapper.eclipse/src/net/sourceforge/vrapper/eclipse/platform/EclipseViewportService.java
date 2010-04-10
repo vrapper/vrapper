@@ -16,8 +16,7 @@ public class EclipseViewportService implements ViewportService {
 
     public EclipseViewportService(ITextViewer textViewer) {
         this.textViewer = textViewer;
-        this.textViewer5 = textViewer instanceof ITextViewerExtension5
-                         ? (ITextViewerExtension5) textViewer : null;
+        this.textViewer5 = OffsetConverter.create(textViewer);
     }
 
     public void setRepaint(boolean redraw) {
@@ -39,9 +38,7 @@ public class EclipseViewportService implements ViewportService {
     }
 
     public void exposeModelPosition(Position position) {
-        if (textViewer5 != null) {
-            textViewer5.exposeModelRange(new Region(position.getModelOffset(), 1));
-        }
+        textViewer5.exposeModelRange(new Region(position.getModelOffset(), 1));
     }
 
     public ViewPortInformation getViewPortInformation() {

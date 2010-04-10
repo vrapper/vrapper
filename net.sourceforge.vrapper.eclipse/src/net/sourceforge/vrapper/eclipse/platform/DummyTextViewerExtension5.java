@@ -6,8 +6,8 @@ import org.eclipse.jface.text.ITextViewerExtension5;
 public class DummyTextViewerExtension5 implements ITextViewerExtension5 {
 
     public boolean exposeModelRange(IRegion modelRange) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("method not implemented");
+        // do nothing, return false because nothing was changed
+        return false;
     }
 
     public IRegion[] getCoveredModelRanges(IRegion modelRange) {
