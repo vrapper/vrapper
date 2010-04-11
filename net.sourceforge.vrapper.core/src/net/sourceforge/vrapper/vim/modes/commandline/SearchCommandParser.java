@@ -81,7 +81,8 @@ public class SearchCommandParser extends AbstractCommandParser {
         boolean caseSensitive = !editor.getConfiguration().get(Options.IGNORE_CASE)
             || editor.getConfiguration().get(Options.SMART_CASE)
             && StringUtils.containsUppercase(keyword);
-        Search search = new Search(keyword, backward, false, caseSensitive, searchOffset);
+        boolean useRegExp = editor.getConfiguration().get(Options.SEARCH_REGEX);
+        Search search = new Search(keyword, backward, false, caseSensitive, searchOffset, useRegExp);
         return search;
     }
 

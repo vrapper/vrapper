@@ -47,7 +47,7 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
         IRegion result = adapter.find(
                     begin, search.getKeyword(),
                     !search.isBackward(), search.isCaseSensitive(),
-                    search.isWholeWord(), false);
+                    search.isWholeWord(), search.isRegExSearch());
         return result;
     }
 
