@@ -16,4 +16,5 @@ public interface Platform {
     UnderlyingEditorSettings getUnderlyingEditorSettings();
     Configuration getConfiguration();
     PlatformSpecificStateProvider getPlatformSpecificStateProvider();
+    SearchAndReplaceService getSearchAndReplaceService();
 }

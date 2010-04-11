@@ -15,6 +15,7 @@ import net.sourceforge.vrapper.platform.FileService;
 import net.sourceforge.vrapper.platform.HistoryService;
 import net.sourceforge.vrapper.platform.Platform;
 import net.sourceforge.vrapper.platform.PlatformSpecificStateProvider;
+import net.sourceforge.vrapper.platform.SearchAndReplaceService;
 import net.sourceforge.vrapper.platform.SelectionService;
 import net.sourceforge.vrapper.platform.ServiceProvider;
 import net.sourceforge.vrapper.platform.SimpleConfiguration;
@@ -44,6 +45,7 @@ public class EclipsePlatform implements Platform {
     private final UnderlyingEditorSettings underlyingEditorSettings;
     private final Configuration configuration;
     private final AbstractTextEditor underlyingEditor;
+    private final SearchAndReplaceService searchAndReplaceService;
     private static final Map<String, PlatformSpecificStateProvider> providerCache = new HashMap<String, PlatformSpecificStateProvider>();
 
     public EclipsePlatform(AbstractTextEditor abstractTextEditor,
@@ -61,6 +63,7 @@ public class EclipsePlatform implements Platform {
         keyMapProvider = new DefaultKeyMapProvider();
         underlyingEditorSettings = new AbstractTextEditorSettings(
                 abstractTextEditor);
+        searchAndReplaceService = new EclipseSearchAndReplaceService(abstractTextEditor, textViewer);
         if (textViewer instanceof ITextViewerExtension6) {
             IUndoManager delegate = ((ITextViewerExtension6) textViewer)
                     .getUndoManager();
@@ -123,9 +126,14 @@ public class EclipsePlatform implements Platform {
 
     public PlatformSpecificStateProvider getPlatformSpecificStateProvider() {
         String className = underlyingEditor.getClass().getName();
-        if (!providerCache.containsKey(className))
+        if (!providerCache.containsKey(className)) {
             providerCache.put(className, buildPlatformSpecificStateProvider());
+        }
         return providerCache.get(className);
+    }
+
+    public SearchAndReplaceService getSearchAndReplaceService() {
+        return searchAndReplaceService;
     }
 
     private PlatformSpecificStateProvider buildPlatformSpecificStateProvider() {
@@ -139,8 +147,9 @@ public class EclipsePlatform implements Platform {
                     .createGizmoForElementConditionally(
                             underlyingEditor, "editor-must-subclass",
                             element, "provider-class");
-            if (provider != null)
+            if (provider != null) {
                 matched.add(provider);
+            }
         }
         Collections.sort(matched);
         return new UnionStateProvider("extensions for "

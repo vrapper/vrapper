@@ -54,6 +54,12 @@ public class CommandLineParser extends AbstractCommandParser {
         Evaluator vclear = new KeyMapper.Clear(AbstractVisualMode.KEYMAP_NAME);
         Evaluator iclear = new KeyMapper.Clear(InsertMode.KEYMAP_NAME);
         Command gotoEOF = new MotionCommand(GoToLineMotion.LAST_LINE);
+        Evaluator nohlsearch = new Evaluator() {
+            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
+                vim.getSearchAndReplaceService().removeHighlighting();
+                return null;
+            }
+        };
         mapping = new EvaluatorMapping();
         // options
         mapping.add("set", buildConfigEvaluator());
@@ -105,6 +111,8 @@ public class CommandLineParser extends AbstractCommandParser {
         mapping.add("undo", undo);
         mapping.add("u", undo);
         mapping.add("$", new CommandWrapper(gotoEOF));
+        mapping.add("nohlsearch", nohlsearch);
+        mapping.add("nohls", nohlsearch);
     }
 
     private static Evaluator buildConfigEvaluator() {
@@ -124,15 +132,16 @@ public class CommandLineParser extends AbstractCommandParser {
         config.add("noglobalregisters", ConfigAction.NO_GLOBAL_REGISTERS);
         config.add("localregisters", ConfigAction.NO_GLOBAL_REGISTERS);
         config.add("nolocalregisters", ConfigAction.GLOBAL_REGISTERS);
-        
+
         // string options
         // TODO: find a better way to do set them
         for (Option<String> option: Options.STRING_OPTIONS) {
             assert option.getLegalValues() != null; // TODO: only constrained string options are supported now
             for (String value: option.getLegalValues()) {
                 ConfigCommand<String> setIt = new SetOptionCommand<String>(option, value);
-                for (String alias: option.getAllNames())
+                for (String alias: option.getAllNames()) {
                     config.add(alias+"="+value, setIt);
+                }
             }
         }
         return config;

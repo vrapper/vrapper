@@ -2,13 +2,9 @@ package net.sourceforge.vrapper.eclipse.platform;
 
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.LineInformation;
-import net.sourceforge.vrapper.utils.Position;
-import net.sourceforge.vrapper.utils.Search;
-import net.sourceforge.vrapper.utils.SearchResult;
 import net.sourceforge.vrapper.utils.Space;
 
 import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.FindReplaceDocumentAdapter;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
@@ -104,20 +100,6 @@ public class EclipseTextContent {
             return Space.MODEL;
         }
 
-        public SearchResult find(Search search, Position start) {
-            try {
-                FindReplaceDocumentAdapter adapter = new FindReplaceDocumentAdapter(textViewer.getDocument());
-                IRegion result = adapter.find(
-                            start.getModelOffset(), search.getKeyword(),
-                            !search.isBackward(), search.isCaseSensitive(),
-                            search.isWholeWord(), false);
-                Position resultPosition = result != null ? start.setModelOffset(result.getOffset()) : null;
-                return new SearchResult(resultPosition);
-            } catch (BadLocationException e) {
-                return new SearchResult(null);
-            }
-        }
-
     }
 
     protected class ViewSideTextContent implements TextContent  {
@@ -180,10 +162,6 @@ public class EclipseTextContent {
 
         public Space getSpace() {
             return Space.VIEW;
-        }
-
-        public SearchResult find(Search search, Position start) {
-            return modelSide.find(search, start);
         }
     }
 }

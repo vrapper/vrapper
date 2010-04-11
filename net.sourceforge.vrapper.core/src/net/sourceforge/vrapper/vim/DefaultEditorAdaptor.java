@@ -21,6 +21,7 @@ import net.sourceforge.vrapper.platform.HistoryService;
 import net.sourceforge.vrapper.platform.KeyMapProvider;
 import net.sourceforge.vrapper.platform.Platform;
 import net.sourceforge.vrapper.platform.PlatformSpecificStateProvider;
+import net.sourceforge.vrapper.platform.SearchAndReplaceService;
 import net.sourceforge.vrapper.platform.SelectionService;
 import net.sourceforge.vrapper.platform.ServiceProvider;
 import net.sourceforge.vrapper.platform.TextContent;
@@ -46,7 +47,7 @@ import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
 
 public class DefaultEditorAdaptor implements EditorAdaptor {
-    
+
     // ugly global option, so unit tests can disable it
     // in order to be .vrapperrc-agnostic
     public static boolean SHOULD_READ_RC_FILE = true;
@@ -70,6 +71,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     private final UnderlyingEditorSettings editorSettings;
     private final Configuration configuration;
     private final PlatformSpecificStateProvider platformSpecificStateProvider;
+    private final SearchAndReplaceService searchAndReplaceService;
     private MacroRecorder macroRecorder;
     private MacroPlayer macroPlayer;
 
@@ -85,6 +87,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         this.editorSettings = editor.getUnderlyingEditorSettings();
         this.configuration = editor.getConfiguration();
         this.platformSpecificStateProvider = editor.getPlatformSpecificStateProvider();
+        this.searchAndReplaceService = editor.getSearchAndReplaceService();
         viewportService = editor.getViewportService();
         userInterfaceService = editor.getUserInterfaceService();
         keyMapProvider = editor.getKeyMapProvider();
@@ -106,8 +109,9 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         }
         readConfiguration();
         setNewLineFromFirstLine();
-        if (isActive)
+        if (isActive) {
             changeMode(NormalMode.NAME);
+        }
     }
 
     private void setNewLineFromFirstLine() {
@@ -122,8 +126,9 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     }
 
     private void readConfiguration() {
-        if (!SHOULD_READ_RC_FILE)
+        if (!SHOULD_READ_RC_FILE) {
             return;
+        }
         File homeDir = new File(System.getProperty("user.home"));
         File config = new File(homeDir, CONFIG_FILE_NAME);
         BufferedReader reader = null;
@@ -249,6 +254,10 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
 
     public PlatformSpecificStateProvider getPlatformSpecificStateProvider() {
         return platformSpecificStateProvider;
+    }
+
+    public SearchAndReplaceService getSearchAndReplaceService() {
+        return searchAndReplaceService;
     }
 
     public void useGlobalRegisters() {

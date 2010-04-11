@@ -1,11 +1,13 @@
 package net.sourceforge.vrapper.vim.commands.motions;
 
+import net.sourceforge.vrapper.platform.SearchAndReplaceService;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Search;
 import net.sourceforge.vrapper.utils.SearchResult;
 import net.sourceforge.vrapper.utils.SearchOffset.End;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.BorderPolicy;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 
@@ -40,9 +42,13 @@ public class SearchResultMotion extends CountAwareMotion {
         for (int i = 0; i < count; i++) {
             position = doSearch(search, editorAdaptor, position);
             if (position == null) {
+                editorAdaptor.getSearchAndReplaceService().removeHighlighting();
                 throw new CommandExecutionException(
                         String.format(NOT_FOUND_MESSAGE, search.getKeyword()));
             }
+        }
+        if (editorAdaptor.getConfiguration().get(Options.SEARCH_HIGHLIGHT)) {
+            editorAdaptor.getSearchAndReplaceService().highlight(search);
         }
         return search.getSearchOffset().apply(editorAdaptor, position);
     }
@@ -63,6 +69,7 @@ public class SearchResultMotion extends CountAwareMotion {
 
     private Position doSearch(Search search, EditorAdaptor vim, Position position) {
         TextContent p = vim.getModelContent();
+        SearchAndReplaceService searcher = vim.getSearchAndReplaceService();
         if (reverse) {
             search = search.reverse();
         }
@@ -73,13 +80,13 @@ public class SearchResultMotion extends CountAwareMotion {
                 position = position.addModelOffset(-1);
             }
         }
-        SearchResult result = vim.getModelContent().find(search, position);
+        SearchResult result = searcher.find(search, position);
         if (result.isFound()) {
             return result.getIndex();
         } else {
             // redo search from beginning / end of document
             int index = search.isBackward() ? p.getLineInformation(p.getNumberOfLines()-1).getEndOffset()-1 : 0;
-            result = vim.getModelContent().find(search, position.setModelOffset(index));
+            result = searcher.find(search, position.setModelOffset(index));
             if (result.isFound()) {
                 return result.getIndex();
             }

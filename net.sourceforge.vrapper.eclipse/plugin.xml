@@ -79,5 +79,33 @@
             provider-class="net.sourceforge.vrapper.eclipse.keymap.EclipseSpecificStateProvider">
       </keymap-provider>
    </extension>
+   <extension
+         point="org.eclipse.ui.editors.annotationTypes">
+      <type
+            markerSeverity="0"
+            markerType="net.sourceforge.vrapper.eclipse.searchhighlight"
+            name="net.sourceforge.vrapper.eclipse.searchhighlight">
+      </type>
+   </extension>
+   <extension
+         point="org.eclipse.ui.editors.markerAnnotationSpecification">
+	  <specification
+            annotationType="net.sourceforge.vrapper.eclipse.searchhighlight"
+            label="Vrapper Search"
+            textPreferenceKey="searchHighlightIndication"
+            textPreferenceValue="true"
+            highlightPreferenceKey="searchHighlightingHighlighting"
+            highlightPreferenceValue="true"
+            overviewRulerPreferenceKey="writeOccurrenceIndicationInOverviewRuler"
+            overviewRulerPreferenceValue="true"
+            verticalRulerPreferenceKey="writeOccurrenceIndicationInVerticalRuler"
+            verticalRulerPreferenceValue="false"
+            colorPreferenceKey="searchHighlightColor"
+            colorPreferenceValue="240,216,168"
+            presentationLayer="4"
+            textStylePreferenceKey="searchHighlightTextStyle"
+            textStylePreferenceValue="NONE">
+	  </specification>	  
+   </extension>
 </plugin>
 

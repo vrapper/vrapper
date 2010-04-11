@@ -3,9 +3,6 @@ package net.sourceforge.vrapper.core.tests.utils;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.LineInformation;
-import net.sourceforge.vrapper.utils.Position;
-import net.sourceforge.vrapper.utils.Search;
-import net.sourceforge.vrapper.utils.SearchResult;
 import net.sourceforge.vrapper.utils.Space;
 import net.sourceforge.vrapper.utils.VimUtils;
 
@@ -115,10 +112,6 @@ public class TestTextContent implements TextContent {
 	public String getText() {
 		return buffer.toString();
 	}
-
-    public SearchResult find(Search search, Position start) {
-        throw new UnsupportedOperationException("find not supported");
-    }
 
     public void smartInsert(int index, String s) {
         replace(index, 0, s);
