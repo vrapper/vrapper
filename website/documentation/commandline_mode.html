@@ -5,48 +5,78 @@
 <table class="commands">
     <tr>
         <th>Command</th>
+        <th>Short</th>
+        <th>Default</th>
         <th>Description</th>
     </tr>
     <tr>
         <td>:set&nbsp;smartindent<br />:set&nbsp;nosmartindent</td>
+        <td>:set&nbsp;si<br />:set&nbsp;nosi</td>
+        <td>On</td>
         <td>Whether to let the underlying editor indent lines or not.
-            Overrides the autoindent option.<br />
-            Active by default.</td>
+            Overrides the autoindent option.</td>
     </tr>
     <tr>
         <td>:set&nbsp;autoindent<br />:set&nbsp;noautoindent</td>
+        <td>:set&nbsp;ai<br />:set&nbsp;noai</td>
+        <td>Off</td>
         <td>Whether to indent inserted lines or not. When active, lines
             inserted with "o" or "O" will use the indent of
             the line under the cursor. "cc" or "S" will keep the
-            whitespace at the beginning of a line.<br />
-            Not active by default.</td>
+            whitespace at the beginning of a line.</td>
     </tr>
     <tr>
         <td>:set&nbsp;globalregisters<br />:set&nbsp;noglobalregisters</td>
+        <td>none</td>
+        <td>On</td>
         <td>Whether registers (including the last search, last character
             search and last edit) should be shared across all editors of
-            the workbench or local to the editor.<br />
-            Active by default.
-            </td>
+            the workbench or local to the editor.</td>
     </tr>
     <tr>
-        <td>:set&nbsp;atomicinsert<br />:set&nbsp;noatomicinsert
-            :set&nbsp;ati<br />:set&nbsp;noati</td>
+        <td>:set&nbsp;atomicinsert<br />:set&nbsp;noatomicinsert</td>
+        <td>:set&nbsp;ati<br />:set&nbsp;noati</td>
+        <td>On</td>
         <td>Whether inserts should be handled as atomic operation.
-            This causes problems sometimes, so it is deactivatable.<br />
-            Active by default.</td>
+            This causes problems sometimes, so it is deactivatable.</td>
     </tr>
     <tr>
         <td>:set&nbsp;ignorecase<br />:set&nbsp;noignorecase</td>
-        <td>Whether case should be ignored when searching.<br />
-            Not active by default.</td>
+        <td>:set&nbsp;ic<br />:set&nbsp;noic</td>
+        <td>Off</td>
+        <td>Whether case should be ignored when searching.</td>
     </tr>
     <tr>
         <td>:set&nbsp;smartcase<br />:set&nbsp;nosmartcase</td>
+        <td>:set&nbsp;scs<br />:set&nbsp;noscs</td>
+        <td>Off</td>
         <td>If set, searches will be case sensitive if the search string
-            includes uppercase characters. Only used if ignorecase is set.
-            <br />
-            Not active by default.</td>
+            includes uppercase characters. Only used if ignorecase is set.  
+        </td>
+    </tr>
+    <tr>
+        <td>:set&nbsp;moveonyank<br />:set&nbsp;nomoveonyank</td>
+        <td>none</td>
+        <td>On</td>
+        <td>If set, yanking a text object will move the cursor to the start
+            of the object. Otherwise, the cursor position is not altered.  
+       </td>
+    </tr>
+    <tr>
+        <td>:set&nbsp;sanecw<br />:set&nbsp;nosanecw</td>
+        <td>none</td>
+        <td>Off</td>
+        <td>If set, "cw" deletes the same as "dw" (i.e. whitespace before
+            the next word is not spared).
+        </td>
+    </tr>
+    <tr>
+        <td>:set&nbsp;saney<br />:set&nbsp;nosaney</td>
+        <td>none</td>
+        <td>Off</td>
+        <td>If set, "Y" will yank from the cursor position to the end of the
+            line instead of yanking the whole line.
+        </td>
     </tr>
 </table>
 
@@ -148,6 +178,7 @@
        <li>INSERT</li>
        <li>DELETE</li>
        <li>BACKSPACE</li>
+       <li>SPACE</li>
    </ul>
 <h3>Collisions between Vrapper and Eclipse bindings</h3>
 <p>If a key combination is already mapped by Eclipse (e.g. Ctrl-P on Windows and
