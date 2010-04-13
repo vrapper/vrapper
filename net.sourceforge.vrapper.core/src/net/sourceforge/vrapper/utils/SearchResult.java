@@ -1,19 +1,16 @@
 package net.sourceforge.vrapper.utils;
 
-public class SearchResult {
+public class SearchResult extends StartEndTextRange {
 
-    private final Position index;
-
-    public SearchResult(Position index) {
-        super();
-        this.index = index;
-    }
-
-    public Position getIndex() {
-        return index;
+    public SearchResult(Position index, Position endIndex) {
+        super(index, endIndex);
+        if (index == null != (endIndex == null)) {
+            throw new IllegalArgumentException("indices must be both null or" +
+            		" both not null");
+        }
     }
 
     public boolean isFound() {
-        return index != null;
+        return getStart() != null;
     }
 }

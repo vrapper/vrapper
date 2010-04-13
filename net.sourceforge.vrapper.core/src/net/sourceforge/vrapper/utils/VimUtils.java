@@ -6,8 +6,10 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import net.sourceforge.vrapper.platform.SearchAndReplaceService;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.platform.SimpleConfiguration.NewLine;
+import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.VimConstants;
 
 
@@ -142,6 +144,23 @@ public class VimUtils {
 
     public static final <T> Set<T> set(T... content) {
         return Collections.unmodifiableSet(new HashSet<T>(Arrays.asList(content)));
+    }
+
+    public static SearchResult wrapAroundSearch(EditorAdaptor vim, Search search,
+            Position position) {
+        SearchResult result2;
+        SearchAndReplaceService searcher = vim.getSearchAndReplaceService();
+        SearchResult result = searcher.find(search, position);
+        if (result.isFound()) {
+            result2 = result;
+        } else {
+            // redo search from beginning / end of document
+            TextContent p = vim.getModelContent();
+            int index = search.isBackward() ? p.getLineInformation(p.getNumberOfLines()-1).getEndOffset()-1 : 0;
+            result = searcher.find(search, position.setModelOffset(index));
+            result2 = result;
+        }
+        return result2;
     }
 
 }

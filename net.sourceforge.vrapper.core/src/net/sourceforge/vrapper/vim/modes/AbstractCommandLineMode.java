@@ -7,7 +7,7 @@ import net.sourceforge.vrapper.vim.modes.commandline.AbstractCommandParser;
 
 public abstract class AbstractCommandLineMode extends AbstractMode {
 
-    private AbstractCommandParser parser;
+    protected AbstractCommandParser parser;
 
     protected abstract char activationChar();
 

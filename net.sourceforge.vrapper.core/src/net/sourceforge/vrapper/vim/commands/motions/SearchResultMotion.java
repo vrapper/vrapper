@@ -1,10 +1,8 @@
 package net.sourceforge.vrapper.vim.commands.motions;
 
-import net.sourceforge.vrapper.platform.SearchAndReplaceService;
-import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Search;
-import net.sourceforge.vrapper.utils.SearchResult;
+import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.utils.SearchOffset.End;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
@@ -68,8 +66,6 @@ public class SearchResultMotion extends CountAwareMotion {
     }
 
     private Position doSearch(Search search, EditorAdaptor vim, Position position) {
-        TextContent p = vim.getModelContent();
-        SearchAndReplaceService searcher = vim.getSearchAndReplaceService();
         if (reverse) {
             search = search.reverse();
         }
@@ -80,18 +76,7 @@ public class SearchResultMotion extends CountAwareMotion {
                 position = position.addModelOffset(-1);
             }
         }
-        SearchResult result = searcher.find(search, position);
-        if (result.isFound()) {
-            return result.getIndex();
-        } else {
-            // redo search from beginning / end of document
-            int index = search.isBackward() ? p.getLineInformation(p.getNumberOfLines()-1).getEndOffset()-1 : 0;
-            result = searcher.find(search, position.setModelOffset(index));
-            if (result.isFound()) {
-                return result.getIndex();
-            }
-        }
-        return null;
+        return VimUtils.wrapAroundSearch(vim, search, position).getStart();
     }
 
     @Override

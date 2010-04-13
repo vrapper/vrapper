@@ -72,6 +72,7 @@ import net.sourceforge.vrapper.vim.commands.motions.MoveWordEndRight;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordRight;
 import net.sourceforge.vrapper.vim.commands.motions.ParagraphMotion;
+import net.sourceforge.vrapper.vim.modes.commandline.SearchMode;
 
 public class NormalMode extends CommandBasedMode {
 

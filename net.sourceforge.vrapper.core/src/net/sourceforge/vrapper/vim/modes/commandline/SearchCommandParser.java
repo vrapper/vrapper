@@ -47,27 +47,12 @@ public class SearchCommandParser extends AbstractCommandParser {
 	private Search createSearch(String first, String command) {
         boolean backward = first.equals(VimConstants.BACKWARD_SEARCH_CHAR);
         StringTokenizer nizer = new StringTokenizer(command, first);
-        StringBuilder sb = new StringBuilder();
-        // check whether a keyword was given
-        if (!command.startsWith(first)) {
-            while (nizer.hasMoreTokens()) {
-                String token = nizer.nextToken();
-                sb.append(token);
-                if (token.endsWith(VimConstants.ESCAPE_CHAR)) {
-                    sb.replace(sb.length()-1, sb.length(), first);
-                } else {
-                    break;
-                }
-            }
-        }
-        String keyword;
+        String keyword = parseKeyWord(first, command, nizer);
         // if keyword is empty, last keyword is used
         Search oldSearch = editor.getRegisterManager().getSearch();
-        boolean useLastKeyword = sb.length() == 0 && oldSearch != null;
+        boolean useLastKeyword = keyword.length() == 0 && oldSearch != null;
         if (useLastKeyword) {
             keyword = oldSearch.getKeyword();
-        } else {
-            keyword = sb.toString();
         }
         SearchOffset searchOffset;
         if (nizer.hasMoreTokens()) {
@@ -84,6 +69,31 @@ public class SearchCommandParser extends AbstractCommandParser {
         boolean useRegExp = editor.getConfiguration().get(Options.SEARCH_REGEX);
         Search search = new Search(keyword, backward, false, caseSensitive, searchOffset, useRegExp);
         return search;
+    }
+
+	public String getKeyWord() {
+        String first = buffer.substring(0,1);
+        String command = buffer.substring(1, buffer.length());
+	    return parseKeyWord(first, command, new StringTokenizer(command, first));
+	}
+
+    private String parseKeyWord(String first, String command,
+            StringTokenizer nizer) {
+        StringBuilder sb = new StringBuilder();
+        // check whether a keyword was given
+        if (!command.startsWith(first)) {
+            while (nizer.hasMoreTokens()) {
+                String token = nizer.nextToken();
+                sb.append(token);
+                if (token.endsWith(VimConstants.ESCAPE_CHAR)) {
+                    sb.replace(sb.length()-1, sb.length(), first);
+                } else {
+                    break;
+                }
+            }
+        }
+        String keyword = sb.toString();
+        return keyword;
     }
 
     private SearchOffset createSearchOffset(String keyword, String afterSearch) {

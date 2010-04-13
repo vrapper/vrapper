@@ -20,11 +20,21 @@ public interface SearchAndReplaceService {
 	/**
 	 * Highlights all matches of the given search.
 	 */
-
 	void highlight(Search search);
+
 	/**
 	 * Removes all decoration from the search results.
 	 */
 	void removeHighlighting();
+
+	/**
+	 * Highlights the given region. Used for incremental search.
+	 */
+	void incSearchhighlight(Position start, int length);
+
+	/**
+	 * Removes the highlighting set with {@link #incSearchhighlight(Position, int)}.
+	 */
+	void removeIncSearchHighlighting();
 
 }

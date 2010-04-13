@@ -22,10 +22,12 @@ import org.eclipse.ui.texteditor.IDocumentProvider;
 
 public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
 
+    private static final String ANNOTATION_TYPE = "net.sourceforge.vrapper.eclipse.searchhighlight";
     private final AbstractTextEditor editor;
     private final FindReplaceDocumentAdapter adapter;
     private Search lastHighlightedSearch;
     private List<Annotation> annotations;
+    private Annotation incSearchAnnotation;
 
     public EclipseSearchAndReplaceService(AbstractTextEditor editor, ITextViewer textViewer) {
         this.editor = editor;
@@ -36,10 +38,11 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
     public SearchResult find(Search search, Position start) {
         try {
             IRegion result = find(search, start.getModelOffset());
-            Position resultPosition = result != null ? resultPosition = start.setModelOffset(result.getOffset()) : null;
-            return new SearchResult(resultPosition);
+            Position resultPosition = result != null ? start.setModelOffset(result.getOffset()) : null;
+            Position endPosition = result != null ? start.setModelOffset(result.getOffset()+result.getLength()) : null;
+            return new SearchResult(resultPosition, endPosition);
         } catch (BadLocationException e) {
-            return new SearchResult(null);
+            return new SearchResult(null, null);
         }
     }
 
@@ -83,7 +86,7 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
         lastHighlightedSearch = search;
         try {
             while ((result = find(search, result.getOffset()+result.getLength())) != null) {
-                Annotation a = new Annotation("net.sourceforge.vrapper.eclipse.searchhighlight", false, "test");
+                Annotation a = new Annotation(ANNOTATION_TYPE, false, "Vrapper Search");
                 am.addAnnotation(a, new org.eclipse.jface.text.Position(result.getOffset(), result.getLength()));
                 annotations.add(a);
             }
@@ -94,6 +97,22 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
     private IAnnotationModel getAnnotationModel() {
         IDocumentProvider doc = editor.getDocumentProvider();
         return doc != null ? doc.getAnnotationModel(editor.getEditorInput()) : null;
+    }
+
+    public void incSearchhighlight(Position start, int length) {
+        IAnnotationModel am = getAnnotationModel();
+        if (am != null) {
+            removeIncSearchHighlighting();
+            incSearchAnnotation = new Annotation(ANNOTATION_TYPE, false, "Incremental Search");
+            am.addAnnotation(incSearchAnnotation, new org.eclipse.jface.text.Position(start.getModelOffset(), length));
+        }
+    }
+
+    public void removeIncSearchHighlighting() {
+        IAnnotationModel am = getAnnotationModel();
+        if (am != null && incSearchAnnotation != null) {
+            am.removeAnnotation(incSearchAnnotation);
+        }
     }
 
 }

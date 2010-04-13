@@ -3,6 +3,7 @@ package net.sourceforge.vrapper.vim.modes.commandline;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.key;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SpecialKey;
+import net.sourceforge.vrapper.platform.Platform;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 
@@ -14,9 +15,9 @@ import net.sourceforge.vrapper.vim.modes.NormalMode;
  */
 public abstract class AbstractCommandParser {
 
-    private static final KeyStroke KEY_RETURN = key(SpecialKey.RETURN);
-    private static final KeyStroke KEY_ESCAPE = key(SpecialKey.ESC);
-    private static final KeyStroke KEY_BACKSP = key(SpecialKey.BACKSPACE);
+    static final KeyStroke KEY_RETURN = key(SpecialKey.RETURN);
+    static final KeyStroke KEY_ESCAPE = key(SpecialKey.ESC);
+    static final KeyStroke KEY_BACKSP = key(SpecialKey.BACKSPACE);
     protected final StringBuffer buffer;
     protected final EditorAdaptor editor;
 

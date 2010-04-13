@@ -20,11 +20,13 @@ public interface Options {
     public static final Option<Boolean> SANE_Y            = bool("saney",           false);
     public static final Option<Boolean> SEARCH_HIGHLIGHT  = bool("hlsearch",        true,  "hls");
     public static final Option<Boolean> SEARCH_REGEX      = bool("regexsearch",     false, "rxs");
+    public static final Option<Boolean> INCREMENTAL_SEARCH = bool("incsearch",      false, "is");
 
     @SuppressWarnings("unchecked")
     public static final Set<Option<Boolean>> BOOLEAN_OPTIONS = set(
             SMART_INDENT, AUTO_INDENT, ATOMIC_INSERT, IGNORE_CASE, SMART_CASE,
-            MOVE_ON_YANK, SANE_CW, SANE_Y, SEARCH_HIGHLIGHT, SEARCH_REGEX);
+            MOVE_ON_YANK, SANE_CW, SANE_Y, SEARCH_HIGHLIGHT, SEARCH_REGEX,
+            INCREMENTAL_SEARCH);
 
     // String options:
     public static final Option<String> SELECTION = string("selection", "inclusive", "old, inclusive, exclusive", "sel");
