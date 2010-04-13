@@ -18,7 +18,7 @@ public interface Options {
     public static final Option<Boolean> MOVE_ON_YANK      = bool("moveonyank",      true);
     public static final Option<Boolean> SANE_CW           = bool("sanecw",          false);
     public static final Option<Boolean> SANE_Y            = bool("saney",           false);
-    public static final Option<Boolean> SEARCH_HIGHLIGHT  = bool("hlsearch",        true,  "hls");
+    public static final Option<Boolean> SEARCH_HIGHLIGHT  = bool("hlsearch",        false, "hls");
     public static final Option<Boolean> SEARCH_REGEX      = bool("regexsearch",     false, "rxs");
     public static final Option<Boolean> INCREMENTAL_SEARCH = bool("incsearch",      false, "is");
 
