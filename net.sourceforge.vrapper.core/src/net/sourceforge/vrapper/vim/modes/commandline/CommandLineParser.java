@@ -5,6 +5,7 @@ import java.util.Queue;
 import java.util.StringTokenizer;
 
 import net.sourceforge.vrapper.platform.Configuration.Option;
+import net.sourceforge.vrapper.utils.Search;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.CloseCommand;
@@ -128,6 +129,14 @@ public class CommandLineParser extends AbstractCommandParser {
                 config.add(alias+"!", toggle);
             }
         }
+        // overwrites hlsearch/nohlsearch commands
+        Evaluator hlsToggle = new OptionDependentEvaluator(Options.SEARCH_HIGHLIGHT, ConfigAction.NO_HL_SEARCH, ConfigAction.HL_SEARCH);
+        config.add("hlsearch", ConfigAction.HL_SEARCH);
+        config.add("nohlsearch", ConfigAction.NO_HL_SEARCH);
+        config.add("hls", ConfigAction.HL_SEARCH);
+        config.add("nohls", ConfigAction.NO_HL_SEARCH);
+        config.add("hlsearch!", hlsToggle);
+        config.add("hls!", hlsToggle);
         config.add("globalregisters", ConfigAction.GLOBAL_REGISTERS);
         config.add("noglobalregisters", ConfigAction.NO_GLOBAL_REGISTERS);
         config.add("localregisters", ConfigAction.NO_GLOBAL_REGISTERS);
@@ -198,6 +207,43 @@ public class CommandLineParser extends AbstractCommandParser {
                 vim.useLocalRegisters();
                 return null;
             }
-        };
+        },
+        HL_SEARCH {
+            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
+                vim.getConfiguration().set(Options.SEARCH_HIGHLIGHT, Boolean.TRUE);
+                Search search = vim.getRegisterManager().getSearch();
+                if (search != null) {
+                    vim.getSearchAndReplaceService().highlight(search);
+                }
+                return null;
+            }
+        },
+        NO_HL_SEARCH {
+            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
+                vim.getConfiguration().set(Options.SEARCH_HIGHLIGHT, Boolean.FALSE);
+                vim.getSearchAndReplaceService().removeHighlighting();
+                return null;
+            }
+        }
+            ;
+    }
+
+    private static class OptionDependentEvaluator implements Evaluator {
+        private final Option<Boolean> option;
+        private final Evaluator onTrue;
+        private final Evaluator onFalse;
+        private OptionDependentEvaluator(Option<Boolean> option,
+                Evaluator onTrue, Evaluator onFalse) {
+            super();
+            this.option = option;
+            this.onTrue = onTrue;
+            this.onFalse = onFalse;
+        }
+
+        public Object evaluate(EditorAdaptor vim, Queue<String> command) {
+            return vim.getConfiguration().get(option)
+                 ? onTrue.evaluate(vim, command)
+                 : onFalse.evaluate(vim, command);
+        }
     }
 }
