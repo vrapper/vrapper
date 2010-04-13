@@ -19,13 +19,16 @@ public class CenterLineCommand extends CountIgnoringNonRepeatableCommand {
         this.type = type;
     }
 
-    public void execute(EditorAdaptor editorAdaptor)
-            throws CommandExecutionException {
+    public void execute(EditorAdaptor editorAdaptor) {
+        int line = editorAdaptor.getViewContent().getLineInformationOfOffset(
+                editorAdaptor.getPosition().getViewOffset()).getNumber();
+        doIt(editorAdaptor, line);
+    }
+
+    public void doIt(EditorAdaptor editorAdaptor, int line) {
         ViewportService view = editorAdaptor.getViewportService();
         ViewPortInformation info = view.getViewPortInformation();
         int middle = type.calculateLine(info);
-        int line = editorAdaptor.getViewContent().getLineInformationOfOffset(
-                editorAdaptor.getPosition().getViewOffset()).getNumber();
         int offset = line - middle;
         int target = Math.max(info.getTopLine()+offset, 0);
         view.setTopLine(target);
