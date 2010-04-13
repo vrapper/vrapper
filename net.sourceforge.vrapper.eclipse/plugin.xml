@@ -97,7 +97,7 @@
             highlightPreferenceKey="searchHighlightingHighlighting"
             highlightPreferenceValue="true"
             overviewRulerPreferenceKey="writeOccurrenceIndicationInOverviewRuler"
-            overviewRulerPreferenceValue="true"
+            overviewRulerPreferenceValue="false"
             verticalRulerPreferenceKey="writeOccurrenceIndicationInVerticalRuler"
             verticalRulerPreferenceValue="false"
             colorPreferenceKey="searchHighlightColor"
