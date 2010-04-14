@@ -37,15 +37,15 @@ public class DefaultRegisterManager implements RegisterManager {
                 return lastEditRegister.getContent();
             }
         };
-        registers.put(".", lastInsertRegister);
+        registers.put(RegisterManager.REGISTER_NAME_INSERT, lastInsertRegister);
         Register searchRegister = new ReadOnlyRegister() {
             public RegisterContent getContent() {
                 return new StringRegisterContent(ContentType.TEXT, search.getKeyword());
             }
         };
-        registers.put("/", searchRegister);
+        registers.put(RegisterManager.REGISTER_NAME_SEARCH, searchRegister);
         // FIXME: AWTClipboardRegister is obviously underlying platform dependency
-        registers.put("*", new AWTClipboardRegister());
+        registers.put(RegisterManager.REGISTER_NAME_CLIPBOARD, new AWTClipboardRegister());
     }
 
     public Register getRegister(String name) {
