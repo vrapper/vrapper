@@ -63,8 +63,9 @@ public class CommandLineParser extends AbstractCommandParser {
         };
         Evaluator hlsearch = new Evaluator() {
             public Object evaluate(EditorAdaptor vim, Queue<String> command) {
-                vim.getSearchAndReplaceService().highlight(
-                        vim.getRegisterManager().getSearch());
+                Search search = vim.getRegisterManager().getSearch();
+                if (search != null)
+                    vim.getSearchAndReplaceService().highlight(search);
                 return null;
             }
         };
