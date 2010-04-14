@@ -6,17 +6,22 @@ import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Search;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 
 public class WordSearchMotion extends SearchResultMotion {
 
-    public static final WordSearchMotion FORWARD = new WordSearchMotion(false);
-    public static final WordSearchMotion BACKWARD = new WordSearchMotion(true);
+    public static final WordSearchMotion FORWARD = new WordSearchMotion(false, true);
+    public static final WordSearchMotion BACKWARD = new WordSearchMotion(true, true);
+    public static final WordSearchMotion LENIENT_FORWARD = new WordSearchMotion(false, false);
+    public static final WordSearchMotion LENIENT_BACKWARD = new WordSearchMotion(true, false);
     private final boolean reverse;
+    private final boolean wholeWord;
 
-    public WordSearchMotion(boolean reverse) {
+    public WordSearchMotion(boolean reverse, boolean wholeWord) {
         super(false);
         this.reverse = reverse;
+        this.wholeWord = wholeWord;
     }
 
     @Override
@@ -71,7 +76,8 @@ public class WordSearchMotion extends SearchResultMotion {
             }
             keyword = p.getText(first, last-first+1);
         }
-        return new Search(keyword, reverse, true, true);
+        boolean caseSensitive = !editorAdaptor.getConfiguration().get(Options.IGNORE_CASE);
+        return new Search(keyword, reverse, wholeWord, caseSensitive);
     }
 
 }

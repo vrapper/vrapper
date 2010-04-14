@@ -100,6 +100,8 @@ public abstract class CommandBasedMode extends AbstractMode {
             final Motion findPrevious = SearchResultMotion.BACKWARD;
             final Motion findWordNext = WordSearchMotion.FORWARD;
             final Motion findWordPrevious = WordSearchMotion.BACKWARD;
+            final Motion findWordForwardLenient = WordSearchMotion.LENIENT_FORWARD;
+            final Motion findWordBackwardLenient = WordSearchMotion.LENIENT_BACKWARD;
             final Motion wordRight = MoveWordRight.INSTANCE;
             final Motion WORDRight = MoveBigWORDRight.INSTANCE;
             final Motion wordLeft = MoveWordLeft.INSTANCE;
@@ -178,6 +180,8 @@ public abstract class CommandBasedMode extends AbstractMode {
                     // leafBind(KEY("SHIFT+]"), paragraphForward), // ']'
                     transitionBind('g',
                             leafBind('g', GoToLineMotion.FIRST_LINE),
+                            leafBind('*', findWordForwardLenient),
+                            leafBind('#', findWordBackwardLenient),
                             // leafBind('w', eclipseWordRight),
                             // leafBind('b', eclipseWordLeft),
                             leafBind('e', wordEndLeft), leafBind('E',
