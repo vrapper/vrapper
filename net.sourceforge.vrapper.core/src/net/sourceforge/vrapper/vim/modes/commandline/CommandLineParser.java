@@ -61,6 +61,13 @@ public class CommandLineParser extends AbstractCommandParser {
                 return null;
             }
         };
+        Evaluator hlsearch = new Evaluator() {
+            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
+                vim.getSearchAndReplaceService().highlight(
+                        vim.getRegisterManager().getSearch());
+                return null;
+            }
+        };
         mapping = new EvaluatorMapping();
         // options
         mapping.add("set", buildConfigEvaluator());
@@ -114,6 +121,8 @@ public class CommandLineParser extends AbstractCommandParser {
         mapping.add("$", new CommandWrapper(gotoEOF));
         mapping.add("nohlsearch", nohlsearch);
         mapping.add("nohls", nohlsearch);
+        mapping.add("hlsearch", hlsearch);
+        mapping.add("hls", hlsearch);
     }
 
     private static Evaluator buildConfigEvaluator() {
