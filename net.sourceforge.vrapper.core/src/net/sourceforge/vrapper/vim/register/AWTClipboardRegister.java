@@ -14,22 +14,34 @@ public class AWTClipboardRegister implements Register {
 
     public RegisterContent getContent() {
         Clipboard c = Toolkit.getDefaultToolkit().getSystemClipboard();
-        for (DataFlavor df : c.getAvailableDataFlavors()) {
-            if (df.isFlavorTextType()) {
-                String s;
-                try {
-                    s = (String) c.getContents(df).getTransferData(df);
-                    if (s.endsWith(VimConstants.REGISTER_NEWLINE)
-                            || s.startsWith(VimConstants.REGISTER_NEWLINE)) {
-                        return new StringRegisterContent(ContentType.LINES, s.trim());
-                    }
-                    return new StringRegisterContent(ContentType.TEXT, s);
-                } catch (Exception e) {
-                    e.printStackTrace();
+        DataFlavor df = getDataFlavor(c);
+        if (df != null) {
+            String s;
+            try {
+                s = (String) c.getContents(df).getTransferData(df);
+                if (s.endsWith(VimConstants.REGISTER_NEWLINE)
+                        || s.startsWith(VimConstants.REGISTER_NEWLINE)) {
+                    return new StringRegisterContent(ContentType.LINES, s.trim()+VimConstants.REGISTER_NEWLINE);
                 }
+                return new StringRegisterContent(ContentType.TEXT, s);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
         return RegisterContent.DEFAULT_CONTENT;
+    }
+
+    private DataFlavor getDataFlavor(Clipboard c) {
+        if (c.isDataFlavorAvailable(DataFlavor.stringFlavor)) {
+            return DataFlavor.stringFlavor;
+        } else {
+            for (DataFlavor f : c.getAvailableDataFlavors()) {
+                if (f.isFlavorTextType()) {
+                    return f;
+                }
+            }
+        }
+        return null;
     }
 
     public void setContent(RegisterContent content) {
