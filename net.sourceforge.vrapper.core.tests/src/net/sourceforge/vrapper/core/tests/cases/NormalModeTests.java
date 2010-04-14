@@ -89,12 +89,12 @@ public class NormalModeTests extends CommandTestCase {
 				"sin",'g',"le",
 				"",EOF,"");
 		assertYanked(ContentType.TEXT, "single");
-		
+
 		checkCommand(forKeySeq("diw"),
 				"Ala mi",'e',"wa kota",
 				"Ala ",' ',"kota");
 		assertYanked(ContentType.TEXT, "miewa");
-		
+
 		checkCommand(forKeySeq("diw"),
 				"Ala miew",'a'," kota",
 				"Ala ",' ',"kota");
@@ -133,7 +133,7 @@ public class NormalModeTests extends CommandTestCase {
 		defaultRegister.setContent(new StringRegisterContent(ContentType.LINES, "As to pies Ali\n"));
 		checkCommand(forKeySeq("p"),
 				"Al",'a'," ma kota",
-				"Ala ma kota\n",'A',"s to pies Ali\n");
+				"Ala ma kota\n",'A',"s to pies Ali");
 	}
 
 	// TODO: I don't like Vim's p behaviour for P with text -- make compatibility optional and THEN test it
@@ -241,7 +241,7 @@ public class NormalModeTests extends CommandTestCase {
 	            "0\n",'1',"\n2\n3\n4\n5\n6\n7\n",
 	            "0\n",'7',"\n");
     }
-	
+
 	@Test
     public void test_dib() {
         checkCommand(forKeySeq("dib"),
@@ -273,14 +273,14 @@ public class NormalModeTests extends CommandTestCase {
                 "call(something, very",'(',"funny));",
                 "call(",')',";");
     }
-	
+
 	@Test
     public void test_di_() {
         checkCommand(forKeySeq("di'"),
                 "'abc",'\'',"def'",
                 "'",'\'',"def'");
     }
-	
+
 	@Test
     public void test_dab() {
         checkCommand(forKeySeq("dab"),
@@ -290,7 +290,7 @@ public class NormalModeTests extends CommandTestCase {
                 "call(\nsomething(),",'\n',"funny()\n);",
                 "call",';',"");
     }
-	
+
 	@Test
     public void test_dt() {
         checkCommand(forKeySeq("dta"),
@@ -302,7 +302,7 @@ public class NormalModeTests extends CommandTestCase {
         checkCommand(forKeySeq("3dta"),
                 "A",'l',"a ma kota.",
                 "A",'a',".");
-        
+
         checkCommand(forKeySeq("2d2ta"),
                 "A",'l',"a ma kota.",
                 "A",'l',"a ma kota.");
@@ -310,7 +310,7 @@ public class NormalModeTests extends CommandTestCase {
                 "A",'l',"a ma\nkota.",
                 "A",'l',"a ma\nkota.");
     }
-	
+
 	@Test
     public void testSurroundPlugin_ds() {
         when(platform.getPlatformSpecificStateProvider()).thenReturn(SurroundStateProvider.INSTANCE);
@@ -328,7 +328,7 @@ public class NormalModeTests extends CommandTestCase {
                 "array[(index",')',"];",
                 "array[",'i',"ndex];");
     }
-	
+
 	@Test
     public void testSurroundPlugin_cs() {
         when(platform.getPlatformSpecificStateProvider()).thenReturn(SurroundStateProvider.INSTANCE);
@@ -343,7 +343,7 @@ public class NormalModeTests extends CommandTestCase {
                 "fn(  ar",'g',"ument  );",
                 "fn",'(',"argument);");
     }
-	
+
 	@Test
     public void testSurroundPlugin_ys() {
         when(platform.getPlatformSpecificStateProvider()).thenReturn(SurroundStateProvider.INSTANCE);
@@ -352,22 +352,22 @@ public class NormalModeTests extends CommandTestCase {
                 "so",'m',"ething",
                 "",'(',"something)");
     }
-	
+
 	@Test
     public void testYanking() {
 	    when(configuration.get(Options.MOVE_ON_YANK).booleanValue()).thenReturn(true);
         checkCommand(forKeySeq("yiw"),
                 "so",'m',"ething",
                 "",'s',"omething");
-        assertYanked(ContentType.TEXT, "something");        
-        
+        assertYanked(ContentType.TEXT, "something");
+
 	    when(configuration.get(Options.MOVE_ON_YANK).booleanValue()).thenReturn(false);
         checkCommand(forKeySeq("yiw"),
                 "so",'m',"ething",
                 "so",'m',"ething");
-        assertYanked(ContentType.TEXT, "something");        
+        assertYanked(ContentType.TEXT, "something");
     }
-	
+
 	@Test
     public void test_dd_lastLine() {
 	    // FIXME: currently fails
@@ -375,7 +375,7 @@ public class NormalModeTests extends CommandTestCase {
                 "sth\n",EOF,"",
                 "",'s',"th");
     }
-	
+
 	@Test
     public void test_J() {
         checkCommand(forKeySeq("J"),
@@ -396,7 +396,7 @@ public class NormalModeTests extends CommandTestCase {
                 "s",'t',"h\n\nsth",
                 "sth ",'s',"th");
     }
-	
+
 	@Test
     public void test_gJ() {
         checkCommand(forKeySeq("gJ"),
@@ -409,7 +409,7 @@ public class NormalModeTests extends CommandTestCase {
                 "s",'t',"h\n   sth",
                 "sth",' ',"  sth");
     }
-	
+
 	@Test
     public void testJoinLastLine() {
         checkCommand(forKeySeq("J"),
@@ -417,7 +417,7 @@ public class NormalModeTests extends CommandTestCase {
                 "no",'o',"p");
         verify(userInterfaceService).setErrorMessage("there is nothing to join below last line");
 	}
-	
+
 	@Test
     public void testJoinLastLineDumbWay() {
         checkCommand(forKeySeq("gJ"),
@@ -425,5 +425,5 @@ public class NormalModeTests extends CommandTestCase {
                 "no",'o',"p");
         verify(userInterfaceService).setErrorMessage("there is nothing to join below last line");
 	}
-	
+
 }

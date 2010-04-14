@@ -15,6 +15,7 @@ import net.sourceforge.vrapper.platform.UserInterfaceService;
 import net.sourceforge.vrapper.platform.ViewportService;
 import net.sourceforge.vrapper.platform.Configuration.Option;
 import net.sourceforge.vrapper.utils.DefaultKeyMapProvider;
+import net.sourceforge.vrapper.utils.ViewPortInformation;
 import net.sourceforge.vrapper.vim.DefaultEditorAdaptor;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
@@ -62,6 +63,8 @@ public class VimTestCase {
     	when(platform.getModelContent()).thenReturn(content);
     	when(platform.getViewContent()).thenReturn(content);
     	when(platform.getViewportService()).thenReturn(viewportService);
+    	ViewPortInformation viewPortInfo = new ViewPortInformation(0, 10);
+        when(viewportService.getViewPortInformation()).thenReturn(viewPortInfo);
     	when(platform.getUserInterfaceService()).thenReturn(userInterfaceService);
     	when(platform.getFileService()).thenReturn(fileService);
     	when(platform.getHistoryService()).thenReturn(historyService);
@@ -84,8 +87,9 @@ public class VimTestCase {
 
     protected void reloadEditorAdaptor() {
         adaptor = spy(new DefaultEditorAdaptor(platform, registerManager, true));
-        if (mode != null)
+        if (mode != null) {
             mode = adaptor.getMode(mode.getName());
+        }
     }
 
     @Before
