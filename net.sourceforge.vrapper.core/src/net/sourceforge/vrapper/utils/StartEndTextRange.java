@@ -9,6 +9,7 @@ public class StartEndTextRange implements TextRange {
     private final Position start;
     private final Position end;
 
+    // TODO: make private and use appropriate static methods
     public StartEndTextRange(Position start, Position end) {
         this.start = start;
         this.end = end;
@@ -63,6 +64,17 @@ public class StartEndTextRange implements TextRange {
         return new StartEndTextRange(
                 cs.newPositionForModelOffset(startIndex),
                 cs.newPositionForModelOffset(endIndex));
+    }
+
+    public static TextRange exclusive(Position from, Position to) {
+        return new StartEndTextRange(from, to);
+    }
+
+    public static TextRange inclusive(Position from, Position to) {
+        if (from.getModelOffset() <= to.getModelOffset())
+            return new StartEndTextRange(from, to.addModelOffset(1));
+        else
+            return new StartEndTextRange(from.addModelOffset(1), to);
     }
 
 }

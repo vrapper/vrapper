@@ -426,4 +426,14 @@ public class NormalModeTests extends CommandTestCase {
         verify(userInterfaceService).setErrorMessage("there is nothing to join below last line");
 	}
 
+	@Test
+	public void test_dPercent() {
+        checkCommand(forKeySeq("d%"),
+                "fun",'(',"call);",
+                "fun",';',"");
+        checkCommand(forKeySeq("d%"),
+                "fun(call",')',";",
+                "fun",';',"");
+	}
+
 }
