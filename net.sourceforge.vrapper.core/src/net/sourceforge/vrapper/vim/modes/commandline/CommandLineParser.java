@@ -122,6 +122,7 @@ public class CommandLineParser extends AbstractCommandParser {
         mapping.add("$", new CommandWrapper(gotoEOF));
         mapping.add("nohlsearch", nohlsearch);
         mapping.add("nohls", nohlsearch);
+        mapping.add("noh", nohlsearch);
         mapping.add("hlsearch", hlsearch);
         mapping.add("hls", hlsearch);
     }
