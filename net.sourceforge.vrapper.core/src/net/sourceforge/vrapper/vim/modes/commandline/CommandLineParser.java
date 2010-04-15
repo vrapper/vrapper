@@ -127,7 +127,7 @@ public class CommandLineParser extends AbstractCommandParser {
     }
 
     private static Evaluator buildConfigEvaluator() {
-        EvaluatorMapping config = new EvaluatorMapping();
+        EvaluatorMapping config = new EvaluatorMapping(new ComplexOptionEvaluator());
         // boolean options
         for (Option<Boolean> o: Options.BOOLEAN_OPTIONS) {
             ConfigCommand<Boolean> enable = new SetOptionCommand<Boolean>(o, Boolean.TRUE);
@@ -152,17 +152,6 @@ public class CommandLineParser extends AbstractCommandParser {
         config.add("localregisters", ConfigAction.NO_GLOBAL_REGISTERS);
         config.add("nolocalregisters", ConfigAction.GLOBAL_REGISTERS);
 
-        // string options
-        // TODO: find a better way to do set them
-        for (Option<String> option: Options.STRING_OPTIONS) {
-            assert option.getLegalValues() != null; // TODO: only constrained string options are supported now
-            for (String value: option.getLegalValues()) {
-                ConfigCommand<String> setIt = new SetOptionCommand<String>(option, value);
-                for (String alias: option.getAllNames()) {
-                    config.add(alias+"="+value, setIt);
-                }
-            }
-        }
         return config;
     }
 

@@ -55,6 +55,10 @@ public interface Configuration {
             return new Option<String>(id, defaultValue, legalValues, alias);
         }
 
+        public static final Option<Integer> integer(String id, int defaultValue, String... alias) {
+            return new Option<Integer>(id, defaultValue, null, alias);
+        }
+
         public String getId() {
             return id;
         }
@@ -66,19 +70,19 @@ public interface Configuration {
         public String[] getAlias() {
             return alias;
         }
-        
+
         public Iterable<String> getAllNames() {
             return allNames;
         }
-        
-        /** 
+
+        /**
          * @return set of all legal values or <code>null</code> if there are no constraints on values of this option
          */
         public Set<T> getLegalValues() {
             return legalValues;
         }
 
-        
+
         @Override
         public String toString() {
             return String.format("Option(%s)", id);

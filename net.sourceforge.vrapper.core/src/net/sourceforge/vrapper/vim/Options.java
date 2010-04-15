@@ -1,6 +1,7 @@
 package net.sourceforge.vrapper.vim;
 
 import static net.sourceforge.vrapper.platform.Configuration.Option.bool;
+import static net.sourceforge.vrapper.platform.Configuration.Option.integer;
 import static net.sourceforge.vrapper.platform.Configuration.Option.string;
 import static net.sourceforge.vrapper.utils.VimUtils.set;
 
@@ -32,4 +33,10 @@ public interface Options {
     public static final Option<String> SELECTION = string("selection", "inclusive", "old, inclusive, exclusive", "sel");
     @SuppressWarnings("unchecked")
     public static final Set<Option<String>> STRING_OPTIONS = set(SELECTION);
+
+    // Int options:
+    public static final Option<Integer> SCROLL_OFFSET = integer("scrolloff",  0, "so");
+    public static final Option<Integer> SCROLL_JUMP   = integer("scrolljump", 1, "sj");
+    @SuppressWarnings("unchecked")
+    public static final Set<Option<Integer>> INT_OPTIONS = set(SCROLL_JUMP, SCROLL_OFFSET);
 }

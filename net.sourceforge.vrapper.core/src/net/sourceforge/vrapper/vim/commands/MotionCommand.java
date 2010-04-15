@@ -4,11 +4,13 @@
 package net.sourceforge.vrapper.vim.commands;
 
 import net.sourceforge.vrapper.platform.CursorService;
+import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.platform.ViewportService;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.ViewPortInformation;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.motions.Motion;
 
 public class MotionCommand extends CountAwareCommand {
@@ -41,17 +43,26 @@ public class MotionCommand extends CountAwareCommand {
 		if (pos.getViewOffset() < 0) {
             editorAdaptor.getViewportService().exposeModelPosition(pos);
         }
-        LineInformation line = editorAdaptor.getViewContent().getLineInformationOfOffset(pos.getViewOffset());
+        TextContent viewContent = editorAdaptor.getViewContent();
+        LineInformation line = viewContent.getLineInformationOfOffset(pos.getViewOffset());
         ViewportService viewportService = editorAdaptor.getViewportService();
         ViewPortInformation view = viewportService.getViewPortInformation();
-        // center line if necessary
+        int scrollOff = editorAdaptor.getConfiguration().get(Options.SCROLL_OFFSET);
+        int scrollJump = editorAdaptor.getConfiguration().get(Options.SCROLL_JUMP);
         int lineNo = line.getNumber();
-        int top = view.getTopLine();
-        int bottom = view.getBottomLine();
+        int top = view.getTopLine()+scrollOff;
+        int bottom = view.getBottomLine()-scrollOff;
         int centerThreshold = view.getNumberOfLines()/2;
-        if (lineNo >= bottom + centerThreshold || lineNo <= top - centerThreshold) {
+        scrollJump = Math.min(bottom-top, scrollJump);
+        if (lineNo >= bottom + centerThreshold || lineNo <= top - centerThreshold || scrollOff >= centerThreshold) {
             // center line
             CenterLineCommand.CENTER.doIt(editorAdaptor, lineNo);
+        } else if (lineNo > bottom) {
+            int jumpLineNo = Math.min(lineNo+scrollJump-1, viewContent.getNumberOfLines() - 1);
+            CenterLineCommand.BOTTOM.doIt(editorAdaptor, jumpLineNo);
+        } else if (lineNo < top) {
+            int jumpLineNo = Math.max(lineNo-scrollJump+1, 0);
+            CenterLineCommand.TOP.doIt(editorAdaptor, jumpLineNo);
         }
         editorAdaptor.getCursorService().setPosition(pos, updateStickyColumn);
     }

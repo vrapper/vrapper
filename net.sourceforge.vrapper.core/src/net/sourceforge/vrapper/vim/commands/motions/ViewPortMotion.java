@@ -3,6 +3,7 @@ package net.sourceforge.vrapper.vim.commands.motions;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.ViewPortInformation;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 
 /**
@@ -29,7 +30,8 @@ public class ViewPortMotion extends GoToLineMotion {
             count = 1;
         }
         ViewPortInformation view = editorAdaptor.getViewportService().getViewPortInformation();
-        int line = type.calculateLine(view);
+        int scrolloff = editorAdaptor.getConfiguration().get(Options.SCROLL_OFFSET);
+        int line = type.calculateLine(view, scrolloff);
         int offset = type.calculateOffset(count);
         int result = line+offset;
         result = Math.max(result, view.getTopLine());
@@ -42,8 +44,8 @@ public class ViewPortMotion extends GoToLineMotion {
     public enum Type {
         HIGH {
             @Override
-            public int calculateLine(ViewPortInformation view) {
-                return view.getTopLine();
+            public int calculateLine(ViewPortInformation view, int scrolloff) {
+                return view.getTopLine()+scrolloff;
             }
 
             @Override
@@ -53,8 +55,8 @@ public class ViewPortMotion extends GoToLineMotion {
         },
         MIDDLE {
             @Override
-            public int calculateLine(ViewPortInformation view) {
-                return view.getTopLine()+view.getNumberOfLines()/2;
+            public int calculateLine(ViewPortInformation view, int scrolloff) {
+                return view.getTopLine() + view.getNumberOfLines()/2;
             }
 
             @Override
@@ -64,8 +66,8 @@ public class ViewPortMotion extends GoToLineMotion {
         },
         LOW {
             @Override
-            public int calculateLine(ViewPortInformation view) {
-                return view.getBottomLine();
+            public int calculateLine(ViewPortInformation view, int scrolloff) {
+                return view.getBottomLine() - scrolloff;
             }
 
             @Override
@@ -74,7 +76,7 @@ public class ViewPortMotion extends GoToLineMotion {
             }
         };
 
-        public abstract int calculateLine(ViewPortInformation view);
+        public abstract int calculateLine(ViewPortInformation view, int scrolloff);
 
         abstract int calculateOffset(int times);
 
