@@ -40,7 +40,7 @@ public class ComplexOptionEvaluator implements Evaluator {
     }
 
     private void noSuchOptionMessage(EditorAdaptor vim, String name) {
-        vim.getUserInterfaceService().setErrorMessage("No option named" + name);
+        vim.getUserInterfaceService().setErrorMessage("Unknown option: " + name);
     }
 
     private <T> void set(EditorAdaptor adaptor, Option<T> opt, T value) throws ValueException {
