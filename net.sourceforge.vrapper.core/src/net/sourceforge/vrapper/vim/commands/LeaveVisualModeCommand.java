@@ -12,12 +12,12 @@ public class LeaveVisualModeCommand extends CountIgnoringNonRepeatableCommand {
 
     private LeaveVisualModeCommand() { /* NOP */ }
 
-    public void execute(EditorAdaptor editorAdaptor) {
+    public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
         // FIXME: compatibility option: don't set caret offset
         doIt(editorAdaptor);
     }
 
-    public static void doIt(EditorAdaptor editorAdaptor) {
+    public static void doIt(EditorAdaptor editorAdaptor) throws CommandExecutionException {
         editorAdaptor.setSelection(null);
         editorAdaptor.changeMode(NormalMode.NAME);
     }

@@ -228,8 +228,10 @@ public abstract class CommandBasedMode extends AbstractMode {
                 try {
                     executeCommand(command);
                 } catch (CommandExecutionException e) {
-                    editorAdaptor.getUserInterfaceService().setErrorMessage(
-                            e.getMessage());
+                    setErrorMessage(e.getMessage());
+                    reset();
+                    commandDone();
+                    isEnabled = true;
                 }
             }
         }
@@ -249,6 +251,10 @@ public abstract class CommandBasedMode extends AbstractMode {
         return true;
     }
 
+    private void setErrorMessage(String message) {
+        editorAdaptor.getUserInterfaceService().setErrorMessage(message);
+    }
+
     private void reset() {
         currentState = initialState;
         keyMapResolver.reset();
@@ -258,7 +264,8 @@ public abstract class CommandBasedMode extends AbstractMode {
         return provider.getKeyMap(keyMapResolver.getKeyMapName());
     }
 
-    public void leaveMode(ModeSwitchHint... hints) {
+    public void leaveMode(ModeSwitchHint... hints) throws CommandExecutionException {
+        super.leaveMode(hints);
         resetCommandBuffer();
     }
 

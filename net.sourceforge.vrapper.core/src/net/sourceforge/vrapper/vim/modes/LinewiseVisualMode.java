@@ -12,6 +12,7 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
+import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
 import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
 import net.sourceforge.vrapper.vim.commands.Selection;
@@ -26,12 +27,12 @@ public class LinewiseVisualMode extends AbstractVisualMode {
     }
 
     @Override
-    public void enterMode(ModeSwitchHint... args) {
-        super.enterMode(args);
+    public void enterMode(ModeSwitchHint... args) throws CommandExecutionException {
         CaretType caret = CaretType.RECTANGULAR;
         if (editorAdaptor.getConfiguration().get(Options.SELECTION).equals("exclusive"))
             caret = CaretType.VERTICAL_BAR;
         editorAdaptor.getCursorService().setCaret(caret);
+        super.enterMode(args);
     }
 
     @Override

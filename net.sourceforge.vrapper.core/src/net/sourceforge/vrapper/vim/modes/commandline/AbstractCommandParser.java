@@ -48,7 +48,7 @@ public abstract class AbstractCommandParser {
             buffer.append(e.getCharacter());
 
         if (buffer.length() == 0 || e.equals(KEY_RETURN) || e.equals(KEY_ESCAPE)) {
-            editor.changeMode(NormalMode.NAME);
+            editor.changeModeSafely(NormalMode.NAME);
         }
     }
 

@@ -16,7 +16,7 @@ public class ChangeModeCommand extends CountIgnoringNonRepeatableCommand {
         this.args = args;
     }
 
-    public void execute(EditorAdaptor editorMode) {
+    public void execute(EditorAdaptor editorMode) throws CommandExecutionException {
         editorMode.changeMode(modeName, args);
     }
 

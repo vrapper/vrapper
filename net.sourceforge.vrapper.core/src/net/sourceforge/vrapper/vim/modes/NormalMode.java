@@ -310,22 +310,10 @@ public class NormalMode extends CommandBasedMode {
         editorAdaptor.getRegisterManager().activateDefaultRegister();
     }
 
-    public void enterMode(ModeSwitchHint... args) {
-        if (isEnabled) {
-            return;
-        }
-        isEnabled = true;
+    public void enterMode(ModeSwitchHint... args) throws CommandExecutionException {
         placeCursor();
         editorAdaptor.getCursorService().setCaret(CaretType.RECTANGULAR);
-    }
-
-    @Override
-    public void leaveMode(ModeSwitchHint... hints) {
-        super.leaveMode();
-        if (!isEnabled) {
-            return;
-        }
-        isEnabled = false;
+        super.enterMode(args);
     }
 
     public String getName() {

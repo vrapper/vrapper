@@ -13,6 +13,7 @@ import net.sourceforge.vrapper.platform.UnderlyingEditorSettings;
 import net.sourceforge.vrapper.platform.UserInterfaceService;
 import net.sourceforge.vrapper.platform.ViewportService;
 import net.sourceforge.vrapper.utils.Position;
+import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.TextObject;
 import net.sourceforge.vrapper.vim.modes.EditorMode;
@@ -20,7 +21,8 @@ import net.sourceforge.vrapper.vim.modes.ModeSwitchHint;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
 
 public interface EditorAdaptor {
-    void changeMode(String modeName, ModeSwitchHint... args);
+    void changeMode(String modeName, ModeSwitchHint... args) throws CommandExecutionException;
+    void changeModeSafely(String name, ModeSwitchHint... args);
     void onChangeEnabled(boolean enabled);
     EditorMode getMode(String name);
     public boolean handleKey(KeyStroke key);

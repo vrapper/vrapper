@@ -17,6 +17,7 @@ import net.sourceforge.vrapper.vim.commands.CenterLineCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeOperation;
 import net.sourceforge.vrapper.vim.commands.Command;
+import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.DeleteOperation;
 import net.sourceforge.vrapper.vim.commands.JoinVisualLinesCommand;
 import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
@@ -59,13 +60,9 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
     //        }
         }
 
-    public void enterMode(ModeSwitchHint... args) {
-        if (isEnabled) {
-            return;
-        }
-        isEnabled = true;
+    public void enterMode(ModeSwitchHint... hints) throws CommandExecutionException {
         boolean shouldDeselect = true;
-        for (ModeSwitchHint hint: args) {
+        for (ModeSwitchHint hint: hints) {
             if (hint == FIX_SELECTION_HINT) {
                 shouldDeselect = false;
             }
@@ -75,14 +72,10 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
         } else if (editorAdaptor.getSelection() != null) {
             fixSelection();
         }
+        super.enterMode(hints);
     }
 
     protected abstract void fixSelection();
-
-    @Override
-    public void leaveMode(ModeSwitchHint... hints) {
-        isEnabled = false;
-    }
 
     @Override
     @SuppressWarnings("unchecked")

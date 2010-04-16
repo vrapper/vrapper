@@ -37,7 +37,7 @@ public class VisualModeTests extends CommandTestCase {
 	private void prepareEditor(boolean inverted,
             String beforeSelection, String selected, String afterSelection) {
         String initialContent = beforeSelection + selected + afterSelection;
-    
+
     	content.setText(initialContent);
     	int selectFrom, selectTo;
     	selectFrom = selectTo = beforeSelection.length();
@@ -46,8 +46,9 @@ public class VisualModeTests extends CommandTestCase {
         } else {
             selectFrom += selected.length();
         }
-    
-    	adaptor.changeMode(VisualMode.NAME);
+
+        adaptor.changeModeSafely(VisualMode.NAME);
+
     	CursorService cursorService = platform.getCursorService();
     	SelectionService selectionService = platform.getSelectionService();
         Position from = cursorService.newPositionForModelOffset(selectFrom);
@@ -81,20 +82,20 @@ public class VisualModeTests extends CommandTestCase {
             } else {
                 expSelFrom += selected.length();
             }
-    
+
     		String msg = "";
     		boolean selectionMishmash = false;
     		if (expSelFrom != actSelFrom || expSelTo != actSelTo) {
     			msg = "selection mishmash\n" + expSelFrom + " " + expSelTo + " but got " + actSelFrom + " " + actSelTo + "\n";
     			selectionMishmash = true;
     		}
-    
+
     //		int offset = mockEditorAdaptor.getCaretOffset();
     		String expectedLine = formatLine(beforeSelection, selected, afterSelection) + "\n";// + cursorLine(expSelTo);
     		String   actualLine = formatLine(actualFinalContent,
     				min(actSelFrom, actSelTo),
     				max(actSelFrom, actSelTo)) + "\n";// + cursorLine(offset);
-    
+
     		msg += String.format("STARTING FROM:\n%s\nEXPECTED:\n%s\nGOT:\n%s\n", initialLine, expectedLine, actualLine);
     		if (!actualFinalContent.equals(expectedFinalContent) || selectionMishmash) {
                 fail(msg);
@@ -107,7 +108,7 @@ public class VisualModeTests extends CommandTestCase {
 			boolean inverted2, String beforeSelection2, String selected2, String afterSelection2) {
 
 		String  initialLine = formatLine(beforeSelection1, selected1, afterSelection1) + "\n"; // + cursorLine(selectTo);
-		
+
 		prepareEditor(inverted1, beforeSelection1, selected1, afterSelection1);
 		executeCommand(command);
 		assertCommandResult(initialLine, inverted2, beforeSelection2, selected2, afterSelection2);
@@ -117,7 +118,7 @@ public class VisualModeTests extends CommandTestCase {
 			boolean inverted, String beforeSelection, String selected, String afterSelection,
 			String beforeCursor, char atCursor, String afterCursor) {
 		String  initialLine = formatLine(beforeSelection, selected, afterSelection) + "\n"; // + cursorLine(selectTo);
-		
+
 		prepareEditor(inverted, beforeSelection, selected, afterSelection);
 		executeCommand(command);
         assertCommandResult(initialLine, beforeCursor, atCursor, afterCursor);
@@ -168,7 +169,7 @@ public class VisualModeTests extends CommandTestCase {
 				false, " ktoto","ta","ki ");
 	}
 
-	@Test public void testCommandsInVisualMode() {
+	@Test public void testCommandsInVisualMode() throws Exception {
 		checkCommand(forKeySeq("o"),
 				false, "A","la"," ma kota",
 				true,  "A","la"," ma kota");
@@ -203,7 +204,7 @@ public class VisualModeTests extends CommandTestCase {
 	}
 
     @Test
-    public void testPastingInVisualMode() {
+    public void testPastingInVisualMode() throws Exception {
         defaultRegister.setContent(new StringRegisterContent(ContentType.TEXT, "a series of tubes"));
         checkCommand(forKeySeq("p"),
                 false, "The internet is ","awesome","!",
@@ -244,8 +245,8 @@ public class VisualModeTests extends CommandTestCase {
     @Test public void visualModeShouldHaveAName() {
 		assertEquals("visual mode", mode.getName());
 	}
-    
-	@Test public void visualModeShouldEnterPainlesslyAndDeselectOnLeave() {
+
+	@Test public void visualModeShouldEnterPainlesslyAndDeselectOnLeave() throws Exception {
 	    CursorService cursorService = platform.getCursorService();
 	    Position position = cursorService.newPositionForModelOffset(42);
 	    cursorService.setPosition(position, true);
@@ -253,13 +254,13 @@ public class VisualModeTests extends CommandTestCase {
 		mode.leaveMode();
 		assertNull(adaptor.getSelection());
 	}
-	
+
 	@Test public void testTextObjects() {
 		checkCommand(forKeySeq("iw"),
 				false,  "It's Some","th","ing interesting.",
 				false,  "It's ","Something"," interesting.");
     }
-	
+
 	@Test
 	public void test_fMotions() {
 		checkCommand(forKeySeq("fs"),

@@ -31,6 +31,7 @@ import net.sourceforge.vrapper.platform.ViewportService;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.PositionlessSelection;
+import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.TextObject;
 import net.sourceforge.vrapper.vim.modes.CommandLineMode;
@@ -110,7 +111,16 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         readConfiguration();
         setNewLineFromFirstLine();
         if (isActive) {
-            changeMode(NormalMode.NAME);
+            changeModeSafely(NormalMode.NAME);
+        }
+    }
+
+    public void changeModeSafely(String name, ModeSwitchHint... hints) {
+        try {
+            changeMode(name, hints);
+        } catch (CommandExecutionException e) {
+            VrapperLog.error("exception when changing mode",  e);
+            userInterfaceService.setErrorMessage(e.getMessage());
         }
     }
 
@@ -155,7 +165,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     }
 
 
-    public void changeMode(String modeName, ModeSwitchHint... args) {
+    public void changeMode(String modeName, ModeSwitchHint... args) throws CommandExecutionException {
         EditorMode newMode = modeMap.get(modeName);
         if (newMode == null) {
             VrapperLog.error(format("There is no mode named '%s'",  modeName));
@@ -165,8 +175,8 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
             if (currentMode != null) {
                 currentMode.leaveMode(args);
             }
-            currentMode = newMode;
             newMode.enterMode(args);
+            currentMode = newMode;
         }
         userInterfaceService.setEditorMode(newMode.getName());
     }
@@ -318,7 +328,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
 
     public void onChangeEnabled(boolean enabled) {
         // switch mode for set-up/tear-down
-        changeMode(enabled ? NormalMode.NAME : InsertMode.NAME,
+        changeModeSafely(enabled ? NormalMode.NAME : InsertMode.NAME,
                 InsertMode.DONT_MOVE_CURSOR);
     }
 

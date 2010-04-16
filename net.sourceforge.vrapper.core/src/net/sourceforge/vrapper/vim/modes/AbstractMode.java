@@ -1,6 +1,7 @@
 package net.sourceforge.vrapper.vim.modes;
 
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 
 public abstract class AbstractMode implements EditorMode {
 
@@ -9,5 +10,13 @@ public abstract class AbstractMode implements EditorMode {
 
     public AbstractMode(EditorAdaptor editorAdaptor) {
         this.editorAdaptor = editorAdaptor;
+    }
+
+    public void enterMode(ModeSwitchHint... hints) throws CommandExecutionException {
+        isEnabled = true;
+    }
+
+    public void leaveMode(ModeSwitchHint... hints) throws CommandExecutionException {
+        isEnabled = false;
     }
 }

@@ -1,6 +1,7 @@
 package net.sourceforge.vrapper.core.tests.cases;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -18,6 +19,8 @@ import net.sourceforge.vrapper.vim.commands.MotionTextObject;
 import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordRight;
 import net.sourceforge.vrapper.vim.modes.CommandBasedMode;
+import net.sourceforge.vrapper.vim.modes.ExecuteCommandOnEnterHint;
+import net.sourceforge.vrapper.vim.modes.ModeSwitchHint;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.register.StringRegisterContent;
 
@@ -30,7 +33,7 @@ public class NormalModeTests extends CommandTestCase {
 		mode = new NormalMode(adaptor);
 	};
 
-	@Test public void testEnteringNormalModeChangesCaret() {
+	@Test public void testEnteringNormalModeChangesCaret() throws Exception {
 		mode.enterMode();
 		assertEquals(CaretType.RECTANGULAR, cursorAndSelection.getCaret());
 	}
@@ -434,6 +437,14 @@ public class NormalModeTests extends CommandTestCase {
         checkCommand(forKeySeq("d%"),
                 "fun(call",')',";",
                 "fun",';',"");
+	}
+
+	@Test
+	public void test_cfx() throws Exception {
+        checkCommand(forKeySeq("ctx"),
+                "so",'m',"ething",
+                "so",'m',"ething");
+        verify(adaptor, never()).changeMode(anyString(), any(ModeSwitchHint[].class));
 	}
 
 }

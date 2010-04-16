@@ -29,7 +29,7 @@ import net.sourceforge.vrapper.vim.register.RegisterContent;
 import net.sourceforge.vrapper.vim.register.StringRegisterContent;
 
 public class InsertMode extends AbstractMode {
-    
+
     public static class WithCountHint implements ModeSwitchHint {
         private final int count;
 
@@ -65,46 +65,42 @@ public class InsertMode extends AbstractMode {
     /**
      * @param args
      *            command to perform on entering insert mode
+     * @throws CommandExecutionException
      */
-    public void enterMode(ModeSwitchHint... args) {
-        if (isEnabled) {
-            return;
-        }
+    public void enterMode(ModeSwitchHint... args) throws CommandExecutionException {
         if (editorAdaptor.getConfiguration().get(Options.ATOMIC_INSERT)) {
             editorAdaptor.getHistory().beginCompoundChange();
             editorAdaptor.getHistory().lock();
         }
-        
+
         count = 1;
         command = null;
-        
-        for (ModeSwitchHint hint : args) {
-            if (hint instanceof WithCountHint) {
-                WithCountHint cast = (WithCountHint) hint;
-                count = cast.getCount();
-            }
-            if (hint instanceof ExecuteCommandHint) {
-                ExecuteCommandHint cast = (ExecuteCommandHint) hint;
-                command = cast.getCommand();
-                if (command != null) {
-                    try {
-                        if (!(command instanceof MotionCommand)) {
-                            editorAdaptor.getViewportService()
-                                    .setRepaint(false);
-                        }
-                        command.execute(editorAdaptor);
-                    } catch (CommandExecutionException e) {
-                        editorAdaptor.getUserInterfaceService()
-                                .setErrorMessage(e.getMessage());
-                    } finally {
-                        editorAdaptor.getViewportService().setRepaint(true);
-                    }
+
+        try {
+            editorAdaptor.getViewportService().setRepaint(false);
+
+            for (ModeSwitchHint hint : args) {
+                if (hint instanceof WithCountHint) {
+                    WithCountHint cast = (WithCountHint) hint;
+                    count = cast.getCount();
+                }
+                if (hint instanceof ExecuteCommandOnEnterHint) {
+                    ExecuteCommandOnEnterHint cast = (ExecuteCommandOnEnterHint) hint;
+                    cast.getCommand().execute(editorAdaptor);
                 }
             }
+        } catch (CommandExecutionException e) {
+            if (editorAdaptor.getConfiguration().get(Options.ATOMIC_INSERT)) {
+                editorAdaptor.getHistory().unlock();
+                editorAdaptor.getHistory().endCompoundChange();
+            }
+            throw e;
+        } finally {
+            editorAdaptor.getViewportService().setRepaint(true);
         }
-        isEnabled = true;
         editorAdaptor.getCursorService().setCaret(CaretType.VERTICAL_BAR);
         startEditPosition = editorAdaptor.getCursorService().getPosition();
+        super.enterMode(args);
     }
 
     public void leaveMode(ModeSwitchHint... hints) {
@@ -112,7 +108,6 @@ public class InsertMode extends AbstractMode {
         for (ModeSwitchHint hint: hints)
             if (hint == InsertMode.DONT_MOVE_CURSOR)
                 moveCursor = false;
-        isEnabled = false;
         try {
             saveTypedText();
             try {
@@ -185,7 +180,7 @@ public class InsertMode extends AbstractMode {
 
     public boolean handleKey(KeyStroke stroke) {
         if (stroke.equals(key(SpecialKey.ESC))) {
-            editorAdaptor.changeMode(NormalMode.NAME);
+            editorAdaptor.changeModeSafely(NormalMode.NAME);
             return true;
         } else if (!allowed(stroke)) {
             startEditPosition = editorAdaptor.getCursorService().getPosition();

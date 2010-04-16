@@ -2,7 +2,7 @@ package net.sourceforge.vrapper.vim.commands;
 
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
-import net.sourceforge.vrapper.vim.modes.ExecuteCommandHint;
+import net.sourceforge.vrapper.vim.modes.ExecuteCommandOnEnterHint;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
 
 public class ChangeOperation implements TextOperation {
@@ -21,6 +21,6 @@ public class ChangeOperation implements TextOperation {
         if (ContentType.LINES.equals(textObject.getContentType(editorAdaptor.getConfiguration()))) {
             c = new VimCommandSequence(c, InsertLineCommand.PRE_CURSOR);
         }
-        editorAdaptor.changeMode(InsertMode.NAME, new ExecuteCommandHint(c));
+        editorAdaptor.changeMode(InsertMode.NAME, new ExecuteCommandOnEnterHint(c));
     }
 }
