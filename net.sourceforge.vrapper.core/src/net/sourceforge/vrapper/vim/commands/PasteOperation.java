@@ -4,24 +4,25 @@ import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
+import net.sourceforge.vrapper.utils.StringUtils;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.register.RegisterContent;
 
-public class PasteOperation extends SimpleTextOperation {
+public class PasteOperation implements TextOperation {
 
     public static final PasteOperation INSTANCE = new PasteOperation();
 
-    private PasteOperation() { /* NOP */
-    }
+    private PasteOperation() { } /* NOP */
 
-    @Override
-    public void execute(EditorAdaptor editorAdaptor, TextRange region,
-            ContentType contentType) {
+    public void execute(EditorAdaptor editorAdaptor, int count,
+            TextObject textObject) throws CommandExecutionException {
         try {
             editorAdaptor.getHistory().beginCompoundChange();
-            doIt(editorAdaptor, region, contentType);
+            doIt(editorAdaptor, count,
+                    textObject.getRegion(editorAdaptor, Command.NO_COUNT_GIVEN),
+                    textObject.getContentType(editorAdaptor.getConfiguration()));
         } finally {
             editorAdaptor.getHistory().endCompoundChange();
         }
@@ -31,10 +32,11 @@ public class PasteOperation extends SimpleTextOperation {
         return this;
     }
 
-    public static void doIt(EditorAdaptor editorAdaptor, TextRange range,
-            ContentType contentType) {
+    public static void doIt(EditorAdaptor editorAdaptor, int count, TextRange range, ContentType contentType) {
+        if (count == Command.NO_COUNT_GIVEN)
+            count = 1;
         RegisterContent registerContent = editorAdaptor.getRegisterManager().getActiveRegister().getContent();
-        String text = registerContent.getText();
+        String text = StringUtils.multiply(registerContent.getText(), count);
 
         ContentType pastingContentType = registerContent.getPayloadType();
         ContentType selectionContentType = editorAdaptor.getSelection().getContentType(editorAdaptor.getConfiguration());

@@ -233,7 +233,6 @@ public class VisualModeTests extends CommandTestCase {
         verify(adaptor, times(4)).changeMode(NormalMode.NAME);
         assertYanked(ContentType.LINES, "awesome\n");
 
-        // TODO fails: the count is ignored for pastes from visual mode
         defaultRegister.setContent(new StringRegisterContent(ContentType.TEXT, "a series of tubes"));
         checkCommand(forKeySeq("2p"),
                 false, "The internet is ","awesome","!",
