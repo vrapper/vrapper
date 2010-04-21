@@ -39,7 +39,9 @@ import net.sourceforge.vrapper.vim.commands.motions.MoveBigWORDRight;
 import net.sourceforge.vrapper.vim.commands.motions.MoveDown;
 import net.sourceforge.vrapper.vim.commands.motions.MoveDownReturn;
 import net.sourceforge.vrapper.vim.commands.motions.MoveLeft;
+import net.sourceforge.vrapper.vim.commands.motions.MoveLeftAcrossLines;
 import net.sourceforge.vrapper.vim.commands.motions.MoveRight;
+import net.sourceforge.vrapper.vim.commands.motions.MoveRightAcrossLines;
 import net.sourceforge.vrapper.vim.commands.motions.MoveUp;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordEndLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordEndRight;
@@ -130,15 +132,20 @@ public abstract class CommandBasedMode extends AbstractMode {
             final Motion middleMove = ViewPortMotion.MIDDLE;
             final Motion lowMove = ViewPortMotion.LOW;
 
-            motions = state(leafBind('h', moveLeft), leafBind('j', moveDown),
-                    leafBind(SpecialKey.RETURN, moveDownReturn), leafBind('k',
-                            moveUp), leafBind('l', moveRight), leafBind(' ',
-                            moveRight), leafBind(SpecialKey.ARROW_LEFT,
-                            moveLeft),
-                    leafBind(SpecialKey.ARROW_DOWN, moveDown), leafBind(
-                            SpecialKey.ARROW_UP, moveUp), leafBind(
-                            SpecialKey.ARROW_RIGHT, moveRight), leafBind(';',
-                            findForward), leafBind(',', findBackward),
+            motions = state(
+                    leafBind('h', moveLeft),
+                    leafBind('j', moveDown),
+                    leafBind('k', moveUp),
+                    leafBind('l', moveRight),
+                    leafBind(SpecialKey.RETURN, moveDownReturn),
+                    leafBind(' ', (Motion) MoveRightAcrossLines.INSTANCE),
+                    leafBind(SpecialKey.BACKSPACE, (Motion) MoveLeftAcrossLines.INSTANCE),
+                    leafBind(SpecialKey.ARROW_LEFT, moveLeft),
+                    leafBind(SpecialKey.ARROW_DOWN, moveDown),
+                    leafBind(SpecialKey.ARROW_UP, moveUp),
+                    leafBind(SpecialKey.ARROW_RIGHT, moveRight),
+                    leafBind(';', findForward),
+                    leafBind(',', findBackward),
                     transitionBind('t', convertKeyStroke(FindMotion
                             .keyConverter(false, false),
                             VimConstants.PRINTABLE_KEYSTROKES)),
