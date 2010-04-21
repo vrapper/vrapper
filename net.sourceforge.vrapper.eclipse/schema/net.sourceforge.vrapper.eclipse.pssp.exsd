@@ -104,7 +104,7 @@ Optional, defaults to AbstractTextEditor.
          <meta.section type="since"/>
       </appInfo>
       <documentation>
-         0.13.0
+         0.15.0
       </documentation>
    </annotation>
 
