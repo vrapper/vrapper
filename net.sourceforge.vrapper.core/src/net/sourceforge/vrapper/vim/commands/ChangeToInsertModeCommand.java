@@ -18,7 +18,11 @@ public class ChangeToInsertModeCommand extends CountAwareCommand {
 
     @Override
 	public void execute(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
-  		editorAdaptor.changeMode(InsertMode.NAME, new ExecuteCommandOnEnterHint(command), new InsertMode.WithCountHint(count));
+        if (command != null)
+      		editorAdaptor.changeMode(InsertMode.NAME, new ExecuteCommandOnEnterHint(command),
+      		                                          new InsertMode.WithCountHint(count));
+        else
+            editorAdaptor.changeMode(InsertMode.NAME, new InsertMode.WithCountHint(count));
 	}
 
 	@Override
