@@ -6,7 +6,7 @@ import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 
 /** Points to next occurrence of target character skipping
  * all the balanced pairs.
- * 
+ *
  * @author Krzysiek Goj
  */
 public class FindBalancedMotion extends AbstractModelSideMotion {
@@ -30,7 +30,7 @@ public class FindBalancedMotion extends AbstractModelSideMotion {
         int step = backwards ? -1 : 1;
         int depth = count;
         char current;
-        while (offset != end) {
+        while (backwards ? offset > end : offset < end) {
             offset += step;
             current = content.getText(offset, 1).charAt(0);
             if(current == target)
