@@ -22,7 +22,7 @@ public class LineEndMotion extends AbstractModelSideMotion {
 
     public static int getDestination(int modelOffset, TextContent content, int count) {
         int currentLine = content.getLineInformationOfOffset(modelOffset).getNumber();
-        int lineCount = content.getLineInformationOfOffset(content.getTextLength()).getNumber();
+        int lineCount = content.getNumberOfLines();
         int lineNo = Math.min(lineCount, currentLine + count - 1);
         return content.getLineInformation(lineNo).getEndOffset();
     }

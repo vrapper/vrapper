@@ -19,7 +19,6 @@ import net.sourceforge.vrapper.vim.commands.MotionTextObject;
 import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordRight;
 import net.sourceforge.vrapper.vim.modes.CommandBasedMode;
-import net.sourceforge.vrapper.vim.modes.ExecuteCommandOnEnterHint;
 import net.sourceforge.vrapper.vim.modes.ModeSwitchHint;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.register.StringRegisterContent;
@@ -372,11 +371,13 @@ public class NormalModeTests extends CommandTestCase {
     }
 
 	@Test
-    public void test_dd_lastLine() {
-	    // FIXME: currently fails
+    public void test_deleteLastLines() {
         checkCommand(forKeySeq("dd"),
                 "sth\n",EOF,"",
                 "",'s',"th");
+        checkCommand(forKeySeq("dj"),
+                "   abc\nst",'h',"\nsth",
+                "   ",'a',"bc");
     }
 
 	@Test

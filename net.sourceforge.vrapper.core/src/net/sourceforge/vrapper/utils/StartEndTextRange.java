@@ -59,8 +59,13 @@ public class StartEndTextRange implements TextRange {
         int endIndex;
         if (nextLineNo < txt.getNumberOfLines())
             endIndex = txt.getLineInformation(nextLineNo).getBeginOffset();
-        else
+        else {
             endIndex = txt.getTextLength();
+            if (sLine.getNumber() > 0)
+                startIndex = txt.getLineInformation(sLine.getNumber() - 1).getEndOffset();
+            else
+                startIndex = 0;
+        }
         return new StartEndTextRange(
                 cs.newPositionForModelOffset(startIndex),
                 cs.newPositionForModelOffset(endIndex));
