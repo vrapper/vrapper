@@ -2,11 +2,13 @@ package net.sourceforge.vrapper.eclipse.platform;
 
 import net.sourceforge.vrapper.platform.HistoryService;
 
+import org.eclipse.core.commands.operations.IUndoContext;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.IUndoManager;
+import org.eclipse.jface.text.IUndoManagerExtension;
 import org.eclipse.swt.custom.StyledText;
 
-public class EclipseHistoryService implements IUndoManager, HistoryService {
+public class EclipseHistoryService implements IUndoManager, IUndoManagerExtension, HistoryService {
 
     private final IUndoManager delegate;
     private boolean locked;
@@ -77,5 +79,12 @@ public class EclipseHistoryService implements IUndoManager, HistoryService {
         int caretOffset = textWidget.getSelection().x;
         textWidget.setSelection(caretOffset);
     }
+
+	public IUndoContext getUndoContext() {
+		if (delegate instanceof IUndoManagerExtension) {
+			return ((IUndoManagerExtension)delegate).getUndoContext();
+		}
+		return null;
+	}
 
 }
