@@ -31,7 +31,6 @@ public class VisualModeTests extends CommandTestCase {
     @Override
 	public void setUp() {
 		super.setUp();
-		mode = new VisualMode(adaptor);
 	};
 
 	private void prepareEditor(boolean inverted,
@@ -242,15 +241,16 @@ public class VisualModeTests extends CommandTestCase {
     }
 
     @Test public void visualModeShouldHaveAName() {
-		assertEquals("visual mode", mode.getName());
+		adaptor.changeModeSafely(VisualMode.NAME);
+		assertEquals("visual mode", adaptor.getCurrentModeName());
 	}
 
 	@Test public void visualModeShouldEnterPainlesslyAndDeselectOnLeave() throws Exception {
 	    CursorService cursorService = platform.getCursorService();
 	    Position position = cursorService.newPositionForModelOffset(42);
 	    cursorService.setPosition(position, true);
-		mode.enterMode();
-		mode.leaveMode();
+		adaptor.changeMode(NormalMode.NAME);
+		adaptor.changeMode(VisualMode.NAME);
 		assertNull(adaptor.getSelection());
 	}
 

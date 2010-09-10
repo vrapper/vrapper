@@ -1,6 +1,5 @@
 package net.sourceforge.vrapper.core.tests.cases;
 
-import static org.mockito.Mockito.when;
 import net.sourceforge.vrapper.core.tests.utils.CommandTestCase;
 import net.sourceforge.vrapper.vim.commands.motions.FindMotion;
 import net.sourceforge.vrapper.vim.commands.motions.GoToLineMotion;
@@ -16,9 +15,7 @@ import net.sourceforge.vrapper.vim.commands.motions.MoveWordEndRight;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordRight;
 import net.sourceforge.vrapper.vim.commands.motions.ParagraphMotion;
-import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
-import net.sourceforge.vrapper.vim.register.RegisterManager;
 
 import org.junit.Test;
 
@@ -615,7 +612,6 @@ public class MotionTests extends CommandTestCase {
 
 	@Test
 	public void test_ftFT_getParsed() {
-	    mode = new NormalMode(adaptor);
 	    checkCommand(forKeySeq("fa"),
 	            "",'A',"la ma kota",
 	            "Al",'a'," ma kota");
@@ -632,9 +628,8 @@ public class MotionTests extends CommandTestCase {
 
 	@Test
     public void test_semicolon_and_comma() {
-		mode = new NormalMode(adaptor);
-		RegisterManager manager = new DefaultRegisterManager();
-		when(adaptor.getRegisterManager()).thenReturn(manager);
+        registerManager = new DefaultRegisterManager();
+        reloadEditorAdaptor();
         checkCommand(forKeySeq("2fa;"),
                 "",'A',"la ma kota",
                 "Ala ma kot",'a',"");

@@ -5,7 +5,6 @@ import java.util.HashMap;
 
 import net.sourceforge.vrapper.core.tests.utils.SnapshotTestsExecutor;
 import net.sourceforge.vrapper.core.tests.utils.VimTestCase;
-import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
 
 import org.junit.Test;
@@ -16,7 +15,6 @@ public class SnapshotTests extends VimTestCase {
     @Override
     public void setUp() {
         super.setUp();
-        mode = new NormalMode(adaptor);
     }
 
     @Test public void testDelete() throws IOException {

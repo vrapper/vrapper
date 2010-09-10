@@ -98,9 +98,10 @@ public class CommandTestCase extends VimTestCase {
 	public Command forKeySeq(final String keyNames) {
 		return new CountIgnoringNonRepeatableCommand() {
 			public void execute(EditorAdaptor editorAdaptor) {
-				assertSame(adaptor, editorAdaptor);
-				for (int i = 0; i < keyNames.length(); i++)
-					mode.handleKey(key(keyNames.charAt(i)));
+				for (int i = 0; i < keyNames.length(); i++) {
+					assertSame(adaptor, editorAdaptor);
+					adaptor.handleKey(key(keyNames.charAt(i)));
+				}
 			}
 		};
 	}

@@ -97,21 +97,27 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         macroPlayer = null;
 
         fileService = editor.getFileService();
-        EditorMode[] modes = {
-                new NormalMode(this),
-                new VisualMode(this),
-                new LinewiseVisualMode(this),
-                new InsertMode(this),
-                new ReplaceMode(this),
-                new CommandLineMode(this),
-                new SearchMode(this)};
-        for (EditorMode mode: modes) {
-            modeMap.put(mode.getName(), mode);
-        }
+        __set_modes(this);
         readConfiguration();
         setNewLineFromFirstLine();
         if (isActive) {
             changeModeSafely(NormalMode.NAME);
+        }
+    }
+
+    // this is public just for test purposes (Mockito spy as self)
+    public void __set_modes(DefaultEditorAdaptor self) {
+        modeMap.clear();
+        EditorMode[] modes = {
+                new NormalMode(self),
+                new VisualMode(self),
+                new LinewiseVisualMode(self),
+                new InsertMode(self),
+                new ReplaceMode(self),
+                new CommandLineMode(self),
+                new SearchMode(self)};
+        for (EditorMode mode: modes) {
+            modeMap.put(mode.getName(), mode);
         }
     }
 

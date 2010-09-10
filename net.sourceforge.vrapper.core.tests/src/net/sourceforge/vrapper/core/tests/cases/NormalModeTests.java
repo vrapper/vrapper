@@ -27,11 +27,11 @@ public class NormalModeTests extends CommandTestCase {
 	@Override
 	public void setUp() {
 		super.setUp();
-		mode = new NormalMode(adaptor);
+		adaptor.changeModeSafely(NormalMode.NAME);
 	};
 
 	@Test public void testEnteringNormalModeChangesCaret() throws Exception {
-		mode.enterMode();
+		adaptor.changeMode(NormalMode.NAME);
 		assertEquals(CaretType.RECTANGULAR, cursorAndSelection.getCaret());
 	}
 
@@ -210,7 +210,7 @@ public class NormalModeTests extends CommandTestCase {
 		Command cmd = mock(Command.class);
 		when(cmd.repetition()).thenReturn(repetition);
 		when(registerManager.isDefaultRegisterActive()).thenReturn(true);
-		CommandBasedMode normalMode = (CommandBasedMode) mode;
+		CommandBasedMode normalMode = new NormalMode(adaptor);
 		normalMode.executeCommand(cmd);
 		verify(registerManager).setLastEdit(repetition);
 	}
@@ -218,7 +218,7 @@ public class NormalModeTests extends CommandTestCase {
 	@Test public void testThereIsNoCommandRegistrationWhenThereIsNoRepetition() throws CommandExecutionException {
 		Command cmd = mock(Command.class);
 		when(cmd.repetition()).thenReturn(null);
-		CommandBasedMode normalMode = (CommandBasedMode) mode;
+		CommandBasedMode normalMode = new NormalMode(adaptor);
 		normalMode.executeCommand(cmd);
 		verify(registerManager, never()).setLastEdit(null);
 		verify(registerManager, never()).setLastEdit(any(Command.class));

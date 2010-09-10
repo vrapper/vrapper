@@ -4,6 +4,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.platform.Configuration;
+import net.sourceforge.vrapper.platform.Configuration.Option;
 import net.sourceforge.vrapper.platform.FileService;
 import net.sourceforge.vrapper.platform.HistoryService;
 import net.sourceforge.vrapper.platform.KeyMapProvider;
@@ -13,13 +14,11 @@ import net.sourceforge.vrapper.platform.ServiceProvider;
 import net.sourceforge.vrapper.platform.SimpleConfiguration;
 import net.sourceforge.vrapper.platform.UserInterfaceService;
 import net.sourceforge.vrapper.platform.ViewportService;
-import net.sourceforge.vrapper.platform.Configuration.Option;
 import net.sourceforge.vrapper.utils.DefaultKeyMapProvider;
 import net.sourceforge.vrapper.utils.ViewPortInformation;
 import net.sourceforge.vrapper.vim.DefaultEditorAdaptor;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
-import net.sourceforge.vrapper.vim.modes.EditorMode;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
 import net.sourceforge.vrapper.vim.register.SimpleRegister;
 
@@ -41,7 +40,6 @@ public class VimTestCase {
     protected TestTextContent content;
     protected TestCursorAndSelection cursorAndSelection;
     protected EditorAdaptor adaptor;
-    protected EditorMode mode;
     protected SimpleRegister defaultRegister;
     protected SimpleRegister lastEditRegister;
     protected KeyMapProvider keyMapProvider;
@@ -86,10 +84,10 @@ public class VimTestCase {
     }
 
     protected void reloadEditorAdaptor() {
-        adaptor = spy(new DefaultEditorAdaptor(platform, registerManager, true));
-        if (mode != null) {
-            mode = adaptor.getMode(mode.getName());
-        }
+        DefaultEditorAdaptor unwrapped = new DefaultEditorAdaptor(platform, registerManager, true);
+        DefaultEditorAdaptor wrapped = spy(unwrapped);
+        wrapped.__set_modes(wrapped);
+        adaptor = wrapped;
     }
 
     @Before
