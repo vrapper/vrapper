@@ -30,4 +30,8 @@ public class SimpleRemapping implements Remapping {
         return recursive;
     }
 
+    @Override
+    public String toString() {
+	    return String.format("SimpleRemapping(%s, %s)", keystrokes, recursive ? "recursive" : "non-recursive");
+    }
 }

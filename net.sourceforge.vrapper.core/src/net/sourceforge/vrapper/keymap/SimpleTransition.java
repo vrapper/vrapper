@@ -27,4 +27,8 @@ public class SimpleTransition<T> implements Transition<T> {
         return value;
     }
 
+    @Override
+    public String toString() {
+        return String.format("SimpleTransition(%s -> %s)", value, nextState);
+    }
 }
