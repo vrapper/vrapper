@@ -23,6 +23,7 @@ import net.sourceforge.vrapper.vim.register.RegisterManager;
 public interface EditorAdaptor {
     void changeMode(String modeName, ModeSwitchHint... args) throws CommandExecutionException;
     void changeModeSafely(String name, ModeSwitchHint... args);
+    String getCurrentModeName();
     void onChangeEnabled(boolean enabled);
     EditorMode getMode(String name);
     public boolean handleKey(KeyStroke key);

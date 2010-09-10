@@ -340,4 +340,8 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
 		return registerManager.getLastActiveSelection();
 	}
 
+	public String getCurrentModeName() {
+		return currentMode.getName();
+	}
+
 }
