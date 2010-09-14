@@ -188,7 +188,7 @@ public class NormalModeTests extends CommandTestCase {
 
 	    checkCommand(forKeySeq("10~"),
 	            "A",'l',"a\nma\nkota",
-	            "ALA",'\n',"ma\nkota");
+	            "AL",'A',"\nma\nkota");
 	    verify(historyService, times(3)).beginCompoundChange();
 	    verify(historyService, times(3)).endCompoundChange();
 	}
