@@ -65,17 +65,15 @@ public class StateAndTransitionTests {
     @Test
     public void unionShouldHandleCommonPrefix() {
         @SuppressWarnings("unchecked")
-        State other = state(leafBind('3', 3), transitionBind('4', leafBind('4',
+        State<Integer> other = state(leafBind('3', 3), transitionBind('4', leafBind('4',
                 1337)));
         @SuppressWarnings("unchecked")
-        State sum = union(state, other);
-        assertEquals(1, sum.press(key('1')).getValue());
-        assertEquals(2, sum.press(key('2')).getValue());
-        assertEquals(3, sum.press(key('3')).getValue());
-        assertEquals(42, sum.press(key('4')).getNextState().press(key('2'))
-                .getValue());
-        assertEquals(1337, sum.press(key('4')).getNextState().press(key('4'))
-                .getValue());
+        State<Integer> sum = union(state, other);
+        assertEquals(Integer.valueOf(1), sum.press(key('1')).getValue());
+        assertEquals(Integer.valueOf(2), sum.press(key('2')).getValue());
+        assertEquals(Integer.valueOf(3), sum.press(key('3')).getValue());
+        assertEquals(Integer.valueOf(42), sum.press(key('4')).getNextState().press(key('2')).getValue());
+        assertEquals(Integer.valueOf(1337), sum.press(key('4')).getNextState().press(key('4')).getValue());
     }
 
     @Test

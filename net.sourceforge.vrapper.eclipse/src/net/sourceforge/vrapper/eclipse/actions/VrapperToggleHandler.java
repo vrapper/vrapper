@@ -33,7 +33,7 @@ public class VrapperToggleHandler extends AbstractHandler implements
         return null;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public void updateElement(UIElement element, Map map) {
         element.setChecked(VrapperPlugin.isVrapperEnabled());
     }
