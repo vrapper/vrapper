@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import junit.framework.Assert;
+import net.sourceforge.vrapper.platform.TextContent;
+import net.sourceforge.vrapper.utils.Position;
 
 public class SnapshotTestsExecutor {
 
@@ -45,8 +47,26 @@ public class SnapshotTestsExecutor {
             for (Entry<String, String> entry: specialChars.entrySet())
                 command = command.replace(entry.getKey(), entry.getValue());
         }
+        int[] rowcol = getPosition();
         vimTestCase.type(parseKeyStrokes(command));
-        Assert.assertEquals(lastNumber + "->" + number, expectedState, vimTestCase.getBuffer());
+        String assertMsg = String.format("[%d, %d]'%s': %s -> %s", rowcol[0], rowcol[1], command, lastNumber, number);
+        Assert.assertEquals(assertMsg, expectedState, vimTestCase.getBuffer());
+    }
+
+    private int[] getPosition() {
+        Position position = vimTestCase.adaptor.getCursorService().getPosition();
+        TextContent modelContent = vimTestCase.adaptor.getModelContent();
+        String text = modelContent.getText(0, modelContent.getTextLength());
+        int offset = position.getModelOffset();
+        int[] rowcol = new int[]{1, 1};
+        for (int i = 0; i < offset; i++) {
+            if  (text.charAt(i) == '\n') {
+                ++rowcol[0];
+                rowcol[1] = 1;
+            } else
+                ++rowcol[1];
+        }
+        return rowcol;
     }
 
     private String readFile(File start) throws IOException {
