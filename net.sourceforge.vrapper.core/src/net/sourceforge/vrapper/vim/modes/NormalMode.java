@@ -96,7 +96,7 @@ public class NormalMode extends CommandBasedMode {
                     leafBind('@', KeyMapResolver.NO_KEYMAP)),
                 getKeyMapsForMotions(),
                 editorAdaptor.getPlatformSpecificStateProvider().getKeyMaps(NAME));
-        final State<String> countEater = new CountConsumingState(state);
+        final State<String> countEater = new CountConsumingState<String>(state);
         State<String> registerKeymapState = new RegisterKeymapState(KEYMAP_NAME, countEater);
         return new KeyMapResolver(registerKeymapState, KEYMAP_NAME);
     }
