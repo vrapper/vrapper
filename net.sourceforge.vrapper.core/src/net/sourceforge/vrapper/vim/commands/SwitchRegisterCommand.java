@@ -9,7 +9,6 @@ public class SwitchRegisterCommand extends CountIgnoringNonRepeatableCommand {
     private final Register register;
 
     public SwitchRegisterCommand(char registerName) {
-        super();
         this.registerName = registerName;
         register = null;
     }

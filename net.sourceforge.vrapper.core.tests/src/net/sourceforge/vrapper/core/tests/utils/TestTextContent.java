@@ -4,6 +4,7 @@ import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Space;
+import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
 
 /**
@@ -89,6 +90,10 @@ public class TestTextContent implements TextContent {
 
     public String getText(int index, int length) {
     	return buffer.substring(index, index + length);
+    }
+
+    public String getText(TextRange range) {
+        return getText(range.getLeftBound().getModelOffset(), range.getModelLength());
     }
 
     public void replace(int index, int length, String s) {

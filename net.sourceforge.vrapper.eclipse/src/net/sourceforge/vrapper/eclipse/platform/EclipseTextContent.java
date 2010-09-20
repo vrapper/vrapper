@@ -3,6 +3,7 @@ package net.sourceforge.vrapper.eclipse.platform;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Space;
+import net.sourceforge.vrapper.utils.TextRange;
 
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
@@ -76,6 +77,10 @@ public class EclipseTextContent {
             }
         }
 
+        public String getText(TextRange range) {
+            return getText(range.getLeftBound().getModelOffset(), range.getModelLength());
+        }
+
         public void replace(int index, int length, String s) {
             try {
                 IDocument doc = textViewer.getDocument();
@@ -131,6 +136,10 @@ public class EclipseTextContent {
 
         public String getText(int index, int length) {
             return textViewer.getTextWidget().getText(index, index + length - 1);
+        }
+
+        public String getText(TextRange range) {
+            return getText(range.getLeftBound().getViewOffset(), range.getViewLength());
         }
 
         public void replace(int index, int length, String text) {

@@ -25,6 +25,8 @@ public interface RegisterManager {
     void activateLastEditRegister();
     Command getLastEdit();
     void setLastEdit(Command edit);
+    void setLastInsertion(Command command);
+    Command getLastInsertion();
     void setLastFindMotion(FindMotion motion);
     FindMotion getLastFindMotion();
     Search getSearch();

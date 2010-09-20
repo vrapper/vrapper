@@ -1,6 +1,5 @@
 package net.sourceforge.vrapper.vim.modes;
 
-import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.key;
 import net.sourceforge.vrapper.keymap.KeyMap;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SpecialKey;
@@ -12,7 +11,6 @@ import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
-import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.VimConstants;
@@ -27,6 +25,9 @@ import net.sourceforge.vrapper.vim.commands.motions.MoveLeft;
 import net.sourceforge.vrapper.vim.register.Register;
 import net.sourceforge.vrapper.vim.register.RegisterContent;
 import net.sourceforge.vrapper.vim.register.StringRegisterContent;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.key;
+import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.dontRepeat;
+import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
 
 public class InsertMode extends AbstractMode {
 
@@ -141,41 +142,27 @@ public class InsertMode extends AbstractMode {
     }
 
     private void saveTypedText() {
-        Register lastEditRegister = editorAdaptor.getRegisterManager()
-                .getLastEditRegister();
+        Register lastEditRegister = editorAdaptor.getRegisterManager().getLastEditRegister();
         TextContent content = editorAdaptor.getModelContent();
         Position position = editorAdaptor.getCursorService().getPosition();
-        TextRange editRange = new StartEndTextRange(startEditPosition, position);
-        String text = content.getText(
-                editRange.getLeftBound().getModelOffset(), editRange
-                        .getViewLength());
-        RegisterContent registerContent = new StringRegisterContent(
-                ContentType.TEXT, text);
+        String text = content.getText(new StartEndTextRange(startEditPosition, position));
+        RegisterContent registerContent = new StringRegisterContent(ContentType.TEXT, text);
         lastEditRegister.setContent(registerContent);
-        Command repetition;
-        repetition = createRepetition(lastEditRegister, text);
-        editorAdaptor.getRegisterManager().setLastEdit(
+        Command repetition = createRepetition(lastEditRegister, text);
+        editorAdaptor.getRegisterManager().setLastInsertion(
                 count > 1 ? repetition.withCount(count) : repetition);
     }
 
     protected Command createRepetition(Register lastEditRegister, String text) {
-        Command repetition;
-        if (command != null) {
-            Command newCommand = command.repetition();
-            if (newCommand == null) {
-                newCommand = command;
-            }
-            repetition = new VimCommandSequence(newCommand,
-                    new SwitchRegisterCommand(lastEditRegister),
-                    PasteBeforeCommand.INSTANCE, new MoveRightOverLineBreak(
-                            text.length() - 1));
-        } else {
-            repetition = new SimpleInsertCommandSequence(
-                    new SwitchRegisterCommand(lastEditRegister),
-                    PasteBeforeCommand.INSTANCE, new MoveRightOverLineBreak(
-                            text.length() - 1));
-        }
-        return repetition;
+        Command repetition = null;
+        if (command != null)
+            repetition = command.repetition();
+        return dontRepeat(seq(
+                repetition,
+                new SwitchRegisterCommand(lastEditRegister),
+                PasteBeforeCommand.INSTANCE,
+                new MoveRightOverLineBreak(text.length() - 1)
+        ));
     }
 
     public boolean handleKey(KeyStroke stroke) {
@@ -248,7 +235,6 @@ public class InsertMode extends AbstractMode {
         private final int offset;
 
         public MoveRightOverLineBreak(int offset) {
-            super();
             this.offset = offset;
         }
 

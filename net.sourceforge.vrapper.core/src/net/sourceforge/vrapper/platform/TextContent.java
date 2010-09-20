@@ -2,6 +2,7 @@ package net.sourceforge.vrapper.platform;
 
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Space;
+import net.sourceforge.vrapper.utils.TextRange;
 
 /**
  * Common interface for model and view space to implement.
@@ -67,6 +68,8 @@ public interface TextContent {
      * @return the specified substring of the text.
      */
     String getText(int index, int length);
+
+    String getText(TextRange range);
 
     /**
      * @return length of text

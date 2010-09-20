@@ -31,6 +31,10 @@ public class ConstructorWrappers {
         };
     }
 
+    public static Command repeat(int count, final Command command) {
+        return new MultipleExecutionCommand(count, command);
+    }
+
     public static Command motionCmd(Motion motion) {
         return new MotionCommand(motion);
     }

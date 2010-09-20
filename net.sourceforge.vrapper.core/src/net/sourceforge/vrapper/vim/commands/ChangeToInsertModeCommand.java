@@ -27,6 +27,6 @@ public class ChangeToInsertModeCommand extends CountAwareCommand {
 
 	@Override
 	public CountAwareCommand repetition() {
-	    return null;
+	    return new RepeatInsertionCommand(command);
 	}
 }

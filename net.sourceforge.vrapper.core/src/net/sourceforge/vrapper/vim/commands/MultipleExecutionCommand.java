@@ -1,5 +1,6 @@
 package net.sourceforge.vrapper.vim.commands;
 
+import net.sourceforge.vrapper.platform.HistoryService;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 
 public class MultipleExecutionCommand implements Command {
@@ -13,8 +14,16 @@ public class MultipleExecutionCommand implements Command {
     }
 
     public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
-        for (int i = 0; i < count; i++) {
-            command.execute(editorAdaptor);
+        HistoryService history = editorAdaptor.getHistory();
+        try {
+            history.beginCompoundChange();
+            history.lock();
+            for (int i = 0; i < count; i++) {
+                command.execute(editorAdaptor);
+            }
+        } finally {
+            history.unlock();
+            history.endCompoundChange();
         }
     }
 

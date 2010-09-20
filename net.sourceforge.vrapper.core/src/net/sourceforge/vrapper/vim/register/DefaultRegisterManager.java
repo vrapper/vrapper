@@ -23,7 +23,7 @@ public class DefaultRegisterManager implements RegisterManager {
     private final Register defaultRegister;
     private final Register lastEditRegister;
     private Search search;
-    private Command lastEdit;
+    private Command lastEdit, lastInsertion;
     private FindMotion findMotion;
 	private PositionlessSelection lastActiveSelection;
 
@@ -123,5 +123,13 @@ public class DefaultRegisterManager implements RegisterManager {
 	public PositionlessSelection getLastActiveSelection() {
 		return lastActiveSelection;
 	}
+
+    public void setLastInsertion(Command command) {
+        lastInsertion = command;
+    }
+
+    public Command getLastInsertion() {
+        return lastInsertion;
+    }
 
 }

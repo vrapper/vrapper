@@ -1,15 +1,21 @@
 package net.sourceforge.vrapper.vim.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.sourceforge.vrapper.platform.HistoryService;
 import net.sourceforge.vrapper.utils.StringUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 
 public class VimCommandSequence extends SimpleRepeatableCommand {
 
-    private final Command[] commands;
+    private final List<Command> commands = new ArrayList<Command>();
 
     public VimCommandSequence(Command... commands) {
-        this.commands = commands;
+        for (Command cmd: commands) {
+            if (cmd != null)
+                this.commands.add(cmd);
+        }
     }
 
     public void execute(EditorAdaptor editorMode) throws CommandExecutionException {
@@ -27,13 +33,14 @@ public class VimCommandSequence extends SimpleRepeatableCommand {
     }
 
     public Command repetition() {
-        Command[] repeated = new Command[commands.length];
-        for (int i = 0; i < commands.length; i++) {
-            Command rep = commands[i].repetition();
+        Command[] repeated = new Command[commands.size()];
+        for (int i = 0; i < commands.size(); i++) {
+            Command cmd = commands.get(i);
+            Command rep = cmd.repetition();
             if (rep != null) {
                 repeated[i] = rep;
             } else {
-                repeated[i] = commands[i];
+                repeated[i] = cmd;
             }
         }
         return new VimCommandSequence(repeated);

@@ -5,6 +5,23 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.modes.ExecuteCommandOnEnterHint;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
 
+import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
+
+class ChangeOperationRepetition implements TextOperation {
+
+    public static final TextOperation INSTANCE = new ChangeOperationRepetition();
+
+    public void execute(EditorAdaptor editorAdaptor, int count,
+            TextObject textObject) throws CommandExecutionException {
+        Command lastInsertion = editorAdaptor.getRegisterManager().getLastInsertion();
+        seq(ChangeOperation.getHintCommand(editorAdaptor, count, textObject), lastInsertion).execute(editorAdaptor);
+    }
+
+    public TextOperation repetition() {
+        return this;
+    }
+}
+
 public class ChangeOperation implements TextOperation {
 
     public static final ChangeOperation INSTANCE = new ChangeOperation();
@@ -12,15 +29,19 @@ public class ChangeOperation implements TextOperation {
     private ChangeOperation() { /* NOP */ }
 
     public TextOperation repetition() {
-        return this;
+        return ChangeOperationRepetition.INSTANCE;
     }
 
-    public void execute(EditorAdaptor editorAdaptor, int count,
-            TextObject textObject) throws CommandExecutionException {
-        Command c = new TextOperationTextObjectCommand(DeleteOperation.INSTANCE, textObject).withCount(count);
+    public void execute(EditorAdaptor editorAdaptor, int count, TextObject textObject) throws CommandExecutionException {
+        Command beforeInsertCmd = getHintCommand(editorAdaptor, count, textObject);
+        editorAdaptor.changeMode(InsertMode.NAME, new ExecuteCommandOnEnterHint(beforeInsertCmd));
+    }
+
+    static Command getHintCommand(EditorAdaptor editorAdaptor, int count, TextObject textObject) {
+        Command result = new TextOperationTextObjectCommand(DeleteOperation.INSTANCE, textObject).withCount(count);
         if (ContentType.LINES.equals(textObject.getContentType(editorAdaptor.getConfiguration()))) {
-            c = new VimCommandSequence(c, InsertLineCommand.PRE_CURSOR);
+            result = seq(result, InsertLineCommand.PRE_CURSOR);
         }
-        editorAdaptor.changeMode(InsertMode.NAME, new ExecuteCommandOnEnterHint(c));
+        return result;
     }
 }
