@@ -19,6 +19,7 @@ import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordRight;
 import net.sourceforge.vrapper.vim.modes.CommandBasedMode;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
+import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
 import net.sourceforge.vrapper.vim.register.StringRegisterContent;
 
 import org.junit.Test;
@@ -446,5 +447,27 @@ public class NormalModeTests extends CommandTestCase {
         assertEquals(NormalMode.NAME, adaptor.getCurrentModeName());
         verify(userInterfaceService).setErrorMessage("'x' not found");
 	}
+
+	@Test
+	public void test_dot_on_i() {
+        installSaneRegisterManager();
+	    checkCommand(forKeySeq("adeja-vu <Esc>."),
+	            "This is",' ',".",
+	            "This is deja-vu deja-vu",' ',".");
+	}
+
+	@Test
+	public void test_dot_on_c() {
+        installSaneRegisterManager();
+	    checkCommand(forKeySeq("ceXXX<Esc>w."),
+	            "Ala ",'m',"a kota i psa",
+	            "Ala XXX XX",'X'," i psa");
+	}
+
+    private void installSaneRegisterManager() {
+        registerManager = new DefaultRegisterManager();
+        reloadEditorAdaptor();
+		adaptor.changeModeSafely(NormalMode.NAME);
+    }
 
 }

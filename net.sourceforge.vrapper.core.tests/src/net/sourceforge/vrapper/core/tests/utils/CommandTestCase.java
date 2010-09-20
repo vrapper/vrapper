@@ -1,9 +1,6 @@
 package net.sourceforge.vrapper.core.tests.utils;
 
-import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.key;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.fail;
+import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.vim.GoThereState;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
@@ -11,6 +8,10 @@ import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.CountIgnoringNonRepeatableCommand;
 import net.sourceforge.vrapper.vim.commands.motions.Motion;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.parseKeyStrokes;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
 
 
 public class CommandTestCase extends VimTestCase {
@@ -96,12 +97,14 @@ public class CommandTestCase extends VimTestCase {
 	}
 
 	public Command forKeySeq(final String keyNames) {
+	    return forKeySeq(parseKeyStrokes(keyNames));
+	}
+
+	public Command forKeySeq(final Iterable<KeyStroke> keySeq) {
 		return new CountIgnoringNonRepeatableCommand() {
 			public void execute(EditorAdaptor editorAdaptor) {
-				for (int i = 0; i < keyNames.length(); i++) {
-					assertSame(adaptor, editorAdaptor);
-					adaptor.handleKey(key(keyNames.charAt(i)));
-				}
+				assertSame(adaptor, editorAdaptor);
+				type(keySeq);
 			}
 		};
 	}
