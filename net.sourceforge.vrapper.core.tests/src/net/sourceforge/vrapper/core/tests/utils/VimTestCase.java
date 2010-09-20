@@ -84,7 +84,7 @@ public class VimTestCase {
     }
 
     protected void reloadEditorAdaptor() {
-        DefaultEditorAdaptor unwrapped = new DefaultEditorAdaptor(platform, registerManager, true);
+        DefaultEditorAdaptor unwrapped = new DefaultEditorAdaptor(platform, registerManager, false);
         DefaultEditorAdaptor wrapped = spy(unwrapped);
         wrapped.__set_modes(wrapped);
         adaptor = wrapped;

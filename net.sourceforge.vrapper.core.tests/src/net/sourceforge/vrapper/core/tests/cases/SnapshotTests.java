@@ -5,9 +5,13 @@ import java.util.HashMap;
 
 import net.sourceforge.vrapper.core.tests.utils.SnapshotTestsExecutor;
 import net.sourceforge.vrapper.core.tests.utils.VimTestCase;
+import net.sourceforge.vrapper.platform.UserInterfaceService;
+import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
 
 import org.junit.Test;
+
+import static org.mockito.Mockito.when;
 
 public class SnapshotTests extends VimTestCase {
 
@@ -15,6 +19,20 @@ public class SnapshotTests extends VimTestCase {
     @Override
     public void setUp() {
         super.setUp();
+        // we need no mock magic for register manager
+        registerManager = new DefaultRegisterManager();
+        when(platform.getUserInterfaceService()).thenReturn(new UserInterfaceService() {
+            public void setRecording(boolean recording) { }
+            public void setEditorMode(String modeName) { }
+            public void setCommandLine(String content) { }
+            public void setInfoMessage(String content) { }
+
+            public void setErrorMessage(String content) {
+                System.err.println(content);
+            }
+        });
+        reloadEditorAdaptor();
+        adaptor.changeModeSafely(NormalMode.NAME);
     }
 
     @Test public void testDelete() throws IOException {
@@ -43,9 +61,6 @@ public class SnapshotTests extends VimTestCase {
     }
 
     @Test public void testRegistersWithGlobals() throws IOException {
-        // we need no mock magic for register manager
-        registerManager = new DefaultRegisterManager();
-        reloadEditorAdaptor();
         adaptor.useGlobalRegisters();
         executeRegistersTest();
     }

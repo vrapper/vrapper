@@ -31,6 +31,12 @@ public class NormalModeTests extends CommandTestCase {
 		adaptor.changeModeSafely(NormalMode.NAME);
 	};
 
+	@Override
+	protected void reloadEditorAdaptor() {
+	    super.reloadEditorAdaptor();
+        adaptor.changeModeSafely(NormalMode.NAME);
+	};
+
 	@Test public void testEnteringNormalModeChangesCaret() throws Exception {
 		adaptor.changeMode(NormalMode.NAME);
 		assertEquals(CaretType.RECTANGULAR, cursorAndSelection.getCaret());
@@ -467,7 +473,6 @@ public class NormalModeTests extends CommandTestCase {
     private void installSaneRegisterManager() {
         registerManager = new DefaultRegisterManager();
         reloadEditorAdaptor();
-		adaptor.changeModeSafely(NormalMode.NAME);
     }
 
 }

@@ -15,6 +15,7 @@ import net.sourceforge.vrapper.vim.commands.motions.MoveWordEndRight;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordRight;
 import net.sourceforge.vrapper.vim.commands.motions.ParagraphMotion;
+import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
 
 import org.junit.Test;
@@ -29,6 +30,12 @@ public class MotionTests extends CommandTestCase {
         }
 		longWord = builder.toString();
 	}
+
+	@Override
+	protected void reloadEditorAdaptor() {
+	    super.reloadEditorAdaptor();
+        adaptor.changeModeSafely(NormalMode.NAME);
+	};
 
 	@Test
 	public void testMoveRight() {
