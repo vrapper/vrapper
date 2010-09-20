@@ -15,8 +15,8 @@ import net.sourceforge.vrapper.vim.commands.Counted;
  * @param <T> - counted thing (Command, TextObject, Motion) that is a subject to counting.
  */
 public class CountingState<T extends Counted<T>> implements State<Function<T, T>> {
-    
-    @SuppressWarnings("unchecked")
+
+    @SuppressWarnings("rawtypes")
     static CountingState<?> INSTANCE = new CountingState(0);
     
     private final int count;
