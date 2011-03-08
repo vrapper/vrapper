@@ -168,6 +168,9 @@ public class InsertMode extends AbstractMode {
     public boolean handleKey(KeyStroke stroke) {
         if (stroke.equals(key(SpecialKey.ESC))) {
             editorAdaptor.changeModeSafely(NormalMode.NAME);
+            PlatformUI.getWorkbench()  
+                .getActiveWorkbenchWindow()
+                .getShell().setImeInputMode(SWT.NULL);
             return true;
         } else if (!allowed(stroke)) {
             startEditPosition = editorAdaptor.getCursorService().getPosition();
