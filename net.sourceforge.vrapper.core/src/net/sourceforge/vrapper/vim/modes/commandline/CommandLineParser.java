@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.StringTokenizer;
 
+import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.Configuration.Option;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Search;
@@ -32,6 +33,8 @@ import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.modes.VisualMode;
+import net.sourceforge.vrapper.vim.register.Register;
+import net.sourceforge.vrapper.vim.register.RegisterManager;
 
 /**
  * Command Line Mode, activated with ':'.
@@ -162,6 +165,8 @@ public class CommandLineParser extends AbstractCommandParser {
         config.add("noglobalregisters", ConfigAction.NO_GLOBAL_REGISTERS);
         config.add("localregisters", ConfigAction.NO_GLOBAL_REGISTERS);
         config.add("nolocalregisters", ConfigAction.GLOBAL_REGISTERS);
+        config.add("clipboard", ConfigAction.CLIPBOARD);
+        VrapperLog.info("adding clipboard action");
         config.add("number", ConfigAction.LINE_NUMBERS);
         config.add("nonumber", ConfigAction.NO_LINE_NUMBERS);
         config.add("nu", ConfigAction.LINE_NUMBERS);
@@ -264,6 +269,17 @@ public class CommandLineParser extends AbstractCommandParser {
     
     private enum ConfigAction implements Evaluator {
 
+        CLIPBOARD {
+            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
+                VrapperLog.info("clipboard used" + command);
+                if (command.contains("unnamed")) {
+                    Register clipboardRegister = vim.getRegisterManager() .getRegister(RegisterManager.REGISTER_NAME_CLIPBOARD);
+                    vim.getRegisterManager().setDefaultRegister(clipboardRegister);
+                }
+
+                return null;
+            }
+        },
         GLOBAL_REGISTERS {
             public Object evaluate(EditorAdaptor vim, Queue<String> command) {
                 vim.useGlobalRegisters();
