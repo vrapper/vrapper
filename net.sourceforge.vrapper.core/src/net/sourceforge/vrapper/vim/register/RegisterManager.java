@@ -34,4 +34,5 @@ public interface RegisterManager {
     boolean isDefaultRegisterActive();
 	void setLastActiveSelection(PositionlessSelection instance);
 	PositionlessSelection getLastActiveSelection();
+    public abstract void setDefaultRegister(Register register);
 }
