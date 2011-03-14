@@ -21,7 +21,7 @@ public class AWTClipboardRegister implements Register {
                 s = (String) c.getContents(df).getTransferData(df);
                 if (s.endsWith(VimConstants.REGISTER_NEWLINE)
                         || s.startsWith(VimConstants.REGISTER_NEWLINE)) {
-                    return new StringRegisterContent(ContentType.LINES, s.trim()+VimConstants.REGISTER_NEWLINE);
+                    return new StringRegisterContent(ContentType.LINES, s+VimConstants.REGISTER_NEWLINE);
                 }
                 return new StringRegisterContent(ContentType.TEXT, s);
             } catch (Exception e) {
