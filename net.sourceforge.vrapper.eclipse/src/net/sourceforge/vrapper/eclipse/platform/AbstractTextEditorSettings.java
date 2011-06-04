@@ -5,6 +5,8 @@ import java.lang.reflect.Method;
 import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.UnderlyingEditorSettings;
 
+import org.eclipse.ui.editors.text.EditorsUI;
+import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 
 public class AbstractTextEditorSettings implements UnderlyingEditorSettings {
@@ -29,6 +31,14 @@ public class AbstractTextEditorSettings implements UnderlyingEditorSettings {
         } catch (Exception exception) {
             VrapperLog.error("error when enabling replace mode", exception);
         }
+    }
+    
+    public void setShowLineNumbers(boolean show) {
+        EditorsUI.getPreferenceStore().setValue(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_LINE_NUMBER_RULER, show);
+    }
+    
+    public void setShowWhitespace(boolean show) {
+        EditorsUI.getPreferenceStore().setValue(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_SHOW_WHITESPACE_CHARACTERS , show);
     }
 
 }
