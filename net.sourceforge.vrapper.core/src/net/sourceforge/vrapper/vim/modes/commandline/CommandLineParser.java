@@ -142,6 +142,8 @@ public class CommandLineParser extends AbstractCommandParser {
         }
         // overwrites hlsearch/nohlsearch commands
         Evaluator hlsToggle = new OptionDependentEvaluator(Options.SEARCH_HIGHLIGHT, ConfigAction.NO_HL_SEARCH, ConfigAction.HL_SEARCH);
+        Evaluator numberToggle = new OptionDependentEvaluator(Options.LINE_NUMBERS, ConfigAction.NO_LINE_NUMBERS, ConfigAction.LINE_NUMBERS);
+        Evaluator listToggle = new OptionDependentEvaluator(Options.SHOW_WHITESPACE, ConfigAction.NO_SHOW_WHITESPACE, ConfigAction.SHOW_WHITESPACE);
         config.add("hlsearch", ConfigAction.HL_SEARCH);
         config.add("nohlsearch", ConfigAction.NO_HL_SEARCH);
         config.add("hls", ConfigAction.HL_SEARCH);
@@ -152,6 +154,15 @@ public class CommandLineParser extends AbstractCommandParser {
         config.add("noglobalregisters", ConfigAction.NO_GLOBAL_REGISTERS);
         config.add("localregisters", ConfigAction.NO_GLOBAL_REGISTERS);
         config.add("nolocalregisters", ConfigAction.GLOBAL_REGISTERS);
+        config.add("number", ConfigAction.LINE_NUMBERS);
+        config.add("nonumber", ConfigAction.NO_LINE_NUMBERS);
+        config.add("nu", ConfigAction.LINE_NUMBERS);
+        config.add("nonu", ConfigAction.NO_LINE_NUMBERS);
+        config.add("number!", numberToggle);
+        config.add("nu!", numberToggle);
+        config.add("list", ConfigAction.SHOW_WHITESPACE);
+        config.add("nolist", ConfigAction.NO_SHOW_WHITESPACE);
+        config.add("list!", listToggle);
 
         return config;
     }
@@ -222,6 +233,34 @@ public class CommandLineParser extends AbstractCommandParser {
             public Object evaluate(EditorAdaptor vim, Queue<String> command) {
                 vim.getConfiguration().set(Options.SEARCH_HIGHLIGHT, Boolean.FALSE);
                 vim.getSearchAndReplaceService().removeHighlighting();
+                return null;
+            }
+        },
+        LINE_NUMBERS {
+            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
+                vim.getConfiguration().set(Options.LINE_NUMBERS, Boolean.TRUE);
+                vim.getEditorSettings().setShowLineNumbers(true);
+                return null;
+            }
+        },
+        NO_LINE_NUMBERS {
+            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
+                vim.getConfiguration().set(Options.LINE_NUMBERS, Boolean.FALSE);
+                vim.getEditorSettings().setShowLineNumbers(false);
+                return null;
+            }
+        },
+        SHOW_WHITESPACE {
+            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
+                vim.getConfiguration().set(Options.SHOW_WHITESPACE, Boolean.TRUE);
+                vim.getEditorSettings().setShowWhitespace(true);
+                return null;
+            }
+        },
+        NO_SHOW_WHITESPACE {
+            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
+                vim.getConfiguration().set(Options.SHOW_WHITESPACE, Boolean.FALSE);
+                vim.getEditorSettings().setShowWhitespace(false);
                 return null;
             }
         }
