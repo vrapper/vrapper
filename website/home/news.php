@@ -1,4 +1,24 @@
 <div class="newsbox">
+    <div class="date">2011-06-27</div>
+    <h4>0.16.0 released</h4>
+    <p>Version 0.16.0 has been released. It is not a major release in terms of functionality but it is an attempt to keep the project moving forward.  Changes are:</p>
+    <ul>
+        <li>Added incremental search (:set incsearch)</li>
+        <li>Added highlight search (:set hlsearch)</li>
+        <li>Added line number toggle (:set number)</li>
+        <li>Added show whitespace toggle (:set list)</li>
+        <li>Miscellaneous bug fixes</li>
+    </ul>
+
+</div>
+<div class="newsbox">
+    <div class="date">2011-06-17</div>
+    <h4>We're not quite dead</h4>
+    <p>The last release of vrapper may have been over a year ago but this project is not dead.  A new version of vrapper will be released soon and this project will hopefully become a little more active in the future.</p>
+    <p>The purpose of this post was mostly just to make sure I knew how to update the main page. :)</p>
+
+</div>
+<div class="newsbox">
     <div class="date">2010-04-12</div>
     <h4>0.14.0 released</h4>
     <p>Version 0.14.0 has been released. Changes are:</p>
@@ -32,11 +52,3 @@
         <li>lots of minor bugfixes and improvements</li>
     </ul>
 </div>
-
-<div class="newsbox">
-    <div class="date">2009-09-16</div>
-    <h4>0.10.1 released</h4>
-    <p>Version 0.10.1 has been released.</p>
-    <p>This release fixes compatibility issues with Eclipse 3.3.</p>
-</div>
-
