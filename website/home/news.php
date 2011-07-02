@@ -7,7 +7,10 @@
         <li>Added highlight search (:set hlsearch)</li>
         <li>Added line number toggle (:set number)</li>
         <li>Added show whitespace toggle (:set list)</li>
-        <li>Miscellaneous bug fixes</li>
+        <li>Added scrolljump and scrolloff options (:set scrolljump=10 :set scrolloff=10) </li>
+        <li>Added commands for lenient word search (g* and g#)</li>
+        <li>Center the line after jumping to a line that was far away from the viewport</li>
+        <li>Ctrl-V in search/command-line mode pastes text from the clipboard</li>
     </ul>
 
 </div>
