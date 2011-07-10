@@ -1,5 +1,8 @@
 package net.sourceforge.vrapper.vim.modes;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.ui.PlatformUI;
+
 import net.sourceforge.vrapper.keymap.KeyMap;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SpecialKey;
@@ -168,6 +171,7 @@ public class InsertMode extends AbstractMode {
     public boolean handleKey(KeyStroke stroke) {
         if (stroke.equals(key(SpecialKey.ESC))) {
             editorAdaptor.changeModeSafely(NormalMode.NAME);
+          
             PlatformUI.getWorkbench()  
                 .getActiveWorkbenchWindow()
                 .getShell().setImeInputMode(SWT.NULL);
