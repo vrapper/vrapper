@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="net.sourceforge.vrapper.eclipse.jdt.feature"
-      label="Vrapper JDT Feature"
-      version="0.15.0"
+      label="Vrapper - JDT Extensions (Optional)"
+      version="0.17.20110706"
       provider-name="Vrapper Team">
 
    <description url="http://vrapper.sourceforge.net/documentation/">
-      Vrapper support for JDT.
-You probably want it if you are Java programmer.
+      Extension for Vrapper.  Adds support for some Java-specific operations.  Requires the JDT.
    </description>
 
    <copyright>

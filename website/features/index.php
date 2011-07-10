@@ -1,6 +1,6 @@
 <?php $page="features"; include("../includes/header.html"); ?>
 <div id="features">
-<h3 class="implemented">Implemented as of 0.14.0:</h3>
+<h3 class="implemented">Implemented as of 0.16.0:</h3>
     <ul>
         <li>
             Operators (d, c, y, p, ...
@@ -30,6 +30,12 @@
             Basic search using /, ?, n, N, *, #, no regular expressions supported (yet)
         </li>
         <li>
+            Incremental search
+        </li>
+        <li>
+            Search highlighting
+        </li>
+        <li>
             Visual mode to highlight text
         </li>
         <li>
@@ -50,11 +56,8 @@
     <li>
         Search / Replace with ":%s/..." or similar
     </li>
-</ul>
-<h3 class="considered">Considered for future versions:</h3>
-<ul>
     <li>
-        Highlighting for search
+        Visual Block selection
     </li>
 </ul>
 </div>

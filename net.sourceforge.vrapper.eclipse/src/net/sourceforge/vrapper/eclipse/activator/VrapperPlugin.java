@@ -72,9 +72,14 @@ public class VrapperPlugin extends AbstractUIPlugin implements IStartup, Log {
 
     @Override
     public void stop(BundleContext context) throws Exception {
+        preShutdown();
         plugin = null;
         VrapperLog.setImplementation(null);
         super.stop(context);
+    }
+
+    private void preShutdown() {
+        storeVimEmulationOfActiveEditors();
     }
 
     private void restoreVimEmulationInActiveEditors() {
@@ -125,13 +130,15 @@ public class VrapperPlugin extends AbstractUIPlugin implements IStartup, Log {
     }
 
     private void storeVimEmulationOfActiveEditors() {
-        Preferences p = plugin.getPluginPreferences();
-        // clean preferences
-        for (String key : p.propertyNames()) {
-            p.setToDefault(key);
+        if (plugin != null) {
+            Preferences p = plugin.getPluginPreferences();
+            // clean preferences
+            for (String key : p.propertyNames()) {
+                p.setToDefault(key);
+            }
+            p.setValue(KEY_VRAPPER_ENABLED, vrapperEnabled);
+            plugin.savePluginPreferences();
         }
-        p.setValue(KEY_VRAPPER_ENABLED, vrapperEnabled);
-        plugin.savePluginPreferences();
     }
 
     private void toggleVrapper() {
