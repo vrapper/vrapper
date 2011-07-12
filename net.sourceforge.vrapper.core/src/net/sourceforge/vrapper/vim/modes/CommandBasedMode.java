@@ -172,11 +172,16 @@ public abstract class CommandBasedMode extends AbstractMode {
                     leafBind('}', paragraphForward),
                     leafBind('{', paragraphBackward),
                     leafBind('G', GoToLineMotion.LAST_LINE), // XXX: counts
-                    leafBind('H', highMove), leafBind('M', middleMove),
-                    leafBind('L', lowMove), leafBind('n', findNext), leafBind(
-                            'N', findPrevious), leafBind('*', findWordNext),
-                    leafBind('#', findWordPrevious), leafBind('0', column0),
-                    leafBind('$', lineEnd), leafBind('%', parenthesesMove),
+                    leafBind('H', highMove),
+                    leafBind('M', middleMove),
+                    leafBind('L', lowMove),
+                    leafBind('n', findNext),
+                    leafBind('N', findPrevious),
+                    leafBind('*', findWordNext),
+                    leafBind('#', findWordPrevious),
+                    leafBind('0', column0),
+                    leafBind('$', lineEnd),
+                    leafBind('%', parenthesesMove),
                     leafBind('^', lineStart),
                     // leafBind('(', javaGoTo("previous.member", LINE_WISE)), //
                     // XXX: vim non-compatible; XXX: make java-agnostic
@@ -191,8 +196,8 @@ public abstract class CommandBasedMode extends AbstractMode {
                             leafBind('#', findWordBackwardLenient),
                             // leafBind('w', eclipseWordRight),
                             // leafBind('b', eclipseWordLeft),
-                            leafBind('e', wordEndLeft), leafBind('E',
-                                    WORDEndLeft)));
+                            leafBind('e', wordEndLeft),
+                            leafBind('E', WORDEndLeft)));
         }
         return motions;
     }
