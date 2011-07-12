@@ -187,9 +187,6 @@ public abstract class CommandBasedMode extends AbstractMode {
                     // XXX: vim non-compatible; XXX: make java-agnostic
                     // leafBind(')', javaGoTo("next.member", LINE_WISE)), //
                     // XXX: vim non-compatible; XXX: make java-agnostic
-                    // leafBind(KEY("SHIFT+["), paragraphBackward), // '['
-                    // FIXME: doesn't worl
-                    // leafBind(KEY("SHIFT+]"), paragraphForward), // ']'
                     transitionBind('g',
                             leafBind('g', GoToLineMotion.FIRST_LINE),
                             leafBind('*', findWordForwardLenient),
