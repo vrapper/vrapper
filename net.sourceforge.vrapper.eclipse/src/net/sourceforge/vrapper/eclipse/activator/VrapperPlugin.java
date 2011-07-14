@@ -44,7 +44,7 @@ public class VrapperPlugin extends AbstractUIPlugin implements IStartup, Log {
 
     private static final IPreferencesService PREFERENCES_SERVICE = Platform.getPreferencesService();
 
-    private static final IEclipsePreferences PLUGIN_PREFERENCES = InstanceScope.INSTANCE.getNode(PLUGIN_ID);
+    private static final IEclipsePreferences PLUGIN_PREFERENCES = new InstanceScope().getNode(PLUGIN_ID);
 
     /**
      * The constructor
