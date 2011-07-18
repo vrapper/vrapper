@@ -80,9 +80,14 @@ public class VrapperPlugin extends AbstractUIPlugin implements IStartup, Log {
 
     @Override
     public void stop(BundleContext context) throws Exception {
+        preShutdown();
         plugin = null;
         VrapperLog.setImplementation(null);
         super.stop(context);
+    }
+
+    private void preShutdown() {
+        storeVimEmulationOfActiveEditors();
     }
 
     private void restoreVimEmulationInActiveEditors() {

@@ -73,7 +73,7 @@
         <td>:set&nbsp;incsearch<br />:set&nbsp;noincsearch</td>
         <td>:set&nbsp;is<br />:set&nbsp;nois</td>
         <td>Off</td>
-        <td>If set, search results will be highlighted.
+        <td>Incremental search.  If set, cursor will move to first closest match as you type.
         </td>
     </tr>
     <tr>
@@ -98,6 +98,35 @@
         <td>Off</td>
         <td>If set, "Y" will yank from the cursor position to the end of the
             line instead of yanking the whole line.
+        </td>
+    </tr>
+    <tr>
+        <td>:set&nbsp;list<br/>:set&nbsp;nolist</td>
+        <td>none</td>
+        <td>Off</td>
+        <td>Show/Hide whitespace characters.
+        </td>
+    </tr>
+    <tr>
+        <td>:set&nbsp;number<br/>:set&nbsp;nonumber</td>
+        <td>:set&nbsp;nu<br />:set&nbsp;nonu</td>
+        <td>Off</td>
+        <td>Show/Hide line numbers.
+        </td>
+    </tr>
+    <tr>
+        <td>:set&nbsp;scrolloff=&lt;N&gt;</td>
+        <td>:set&nbsp;so=&lt;N&gt;</td>
+        <td>scrolloff=0</td>
+        <td>When the cursor gets within &lt;N&gt; lines from the top or bottom of the view,
+            perform a scrolljump.
+        </td>
+    </tr>
+    <tr>
+        <td>:set&nbsp;scrolljump=&lt;N&gt;</td>
+        <td>:set&nbsp;sj=&lt;N&gt;</td>
+        <td>scrolljump=1</td>
+        <td>When the view needs to scroll, jump &lt;N&gt; lines at a time.
         </td>
     </tr>
 </table>

@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="net.sourceforge.vrapper.eclipse.cdt.feature"
-      label="Vrapper CDT Feature"
-      version="0.15.0"
+      label="Vrapper - CDT Extensions (Optional)"
+      version="0.17.20110706"
       provider-name="Vrapper Team">
 
    <description url="http://vrapper.sourceforge.net/documentation/">
-      Vrapper support for CDT.
-You probably want it if you are C/C++ programmer.
+      Extension for Vrapper.  Adds support for some C/C++-specific operations.  Requires the CDT.
    </description>
 
    <copyright>
