@@ -7,8 +7,11 @@ import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Preferences;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.IPreferencesService;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IStartup;
@@ -20,6 +23,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
+import org.osgi.service.prefs.BackingStoreException;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -37,6 +41,10 @@ public class VrapperPlugin extends AbstractUIPlugin implements IStartup, Log {
     private static final String KEY_VRAPPER_ENABLED = "vrapperEnabled";
 
     private static final String COMMAND_TOGGLE_VRAPPER = "net.sourceforge.vrapper.eclipse.commands.toggle";
+
+    private static final IPreferencesService PREFERENCES_SERVICE = Platform.getPreferencesService();
+
+    private static final IEclipsePreferences PLUGIN_PREFERENCES = new InstanceScope().getNode(PLUGIN_ID);
 
     /**
      * The constructor
@@ -123,26 +131,23 @@ public class VrapperPlugin extends AbstractUIPlugin implements IStartup, Log {
             public void postShutdown(IWorkbench arg0) { }
 
             public boolean preShutdown(IWorkbench arg0, boolean arg1) {
-                storeVimEmulationOfActiveEditors();
+                try {
+                    storeVimEmulationOfActiveEditors();
+                } catch (BackingStoreException e) {
+                    throw new RuntimeException(e);
+                }
                 return true;
             }
         });
     }
 
-    private void storeVimEmulationOfActiveEditors() {
-        if (plugin != null) {
-            Preferences p = plugin.getPluginPreferences();
-            // clean preferences
-            for (String key : p.propertyNames()) {
-                p.setToDefault(key);
-            }
-            p.setValue(KEY_VRAPPER_ENABLED, vrapperEnabled);
-            plugin.savePluginPreferences();
-        }
+    private static void storeVimEmulationOfActiveEditors() throws BackingStoreException {
+        PLUGIN_PREFERENCES.clear();
+        PLUGIN_PREFERENCES.putBoolean(KEY_VRAPPER_ENABLED, vrapperEnabled);
     }
 
     private void toggleVrapper() {
-        boolean enable = getPluginPreferences().getBoolean(KEY_VRAPPER_ENABLED);
+        boolean enable = PREFERENCES_SERVICE.getBoolean(PLUGIN_ID, KEY_VRAPPER_ENABLED, true, null);
         if (enable) {
             IHandlerService s = (IHandlerService) getWorkbench().getService(IHandlerService.class);
             try {
