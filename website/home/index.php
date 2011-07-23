@@ -19,6 +19,12 @@
                       <p>Unlike other plugins which embed Vim in Eclipse, Vrapper imitates the behaviour of Vim while still using whatever editor you have opened in the workbench. The goal is to have the comfort and ease which comes with the different modes, complex commands and count/operator/motion combinations which are the key features behind editing with Vim, while preserving the powerful features of the different Eclipse text editors, like code generation and refactoring.</p>
                       <p>Vrapper tries to offer Eclipse users the best of both worlds.</p>
               </div>
+              <div id="about">
+                      <h3 class="information">Development</h3>
+                      <p>Development of Vrapper has moved to our GitHub project at:<br/><a href="https://github.com/vrapper/vrapper">https://github.com/vrapper/vrapper</a></p>
+                      <p>GitHub makes it much easier for contributors to submit code changes, bug fixes, and new features.  If you'd like to contribute to Vrapper just initiate a Pull Request on our GitHub project.</p>
+                      <p>The SourceForge project will remain active because it hosts our website, bug tracker, wiki, forums, direct file downloads, and Eclipse update site.  The Git repository on SourceForge will only contain the state of the code for the most recent stable release.  Basically, everything other than actively developed code is still on SourceForge.</p>
+              </div>
         </div>
         <div>
           <div id="left">
