@@ -10,19 +10,15 @@
         <td>The Vrapper project at <a href="http://sourceforge.net">sourceforge.net</a>.</td>
     </tr>
     <tr>
+        <td><a href="https://github.com/vrapper/vrapper">GitHub Project</a></td>
+        <td>The Vrapper project at <a href="https://github.com/">github.com</a>.</td>
+    </tr>
+    <tr>
         <td><a href="http://www.assembla.com/wiki/show/totality">Totality project</a></td>
         <td>The Totality project at <a href="http://www.assembla.com">assembla.com</a> which was merged with Vrapper.</td>
     <tr>
         <td><a href="http://apps.sourceforge.net/trac/vrapper/">Trac</a></td>
         <td>A Trac system for bug reports and feature requests.</td>
-    </tr>
-    <tr>
-        <td><a href="http://vrapper.svn.sourceforge.net/viewvc/vrapper/">Source Code Browsing</a></td>
-        <td>A web interface for browsing the SVN repository.</td>
-    </tr>
-    <tr>
-        <td>SVN repository</td>
-        <td>https://vrapper.svn.sourceforge.net/svnroot/vrapper/trunk</td>
     </tr>
     <tr>
         <td>Eclipse Update Site</td>
