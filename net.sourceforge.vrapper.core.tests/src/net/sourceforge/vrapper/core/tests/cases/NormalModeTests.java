@@ -75,13 +75,29 @@ public class NormalModeTests extends CommandTestCase {
 			"Ala",'m',"a kota");
 		assertYanked(ContentType.TEXT, " ");
 	}
+		
+	@Test public void test_cw_single_letter() {
+		//'cw' on a single letter
+	    checkCommand(forKeySeq("cw"),
+			"Ala ",'z'," ma kota",
+			"Ala ",' ',"ma kota");
+		assertYanked(ContentType.TEXT, "z");
+	}
+		
+	@Test public void test_cw_single_space() {
+		//'cw' on a single space character
+	    checkCommand(forKeySeq("cw"),
+			"Ala",' ',"z ma kota",
+			"Ala",'z'," ma kota");
+		assertYanked(ContentType.TEXT, " ");
+	}
 
 	@Test public void test_cw_compilant() {
 	    when(configuration.get(Options.SANE_CW)).thenReturn(false);
 		checkCommand(forKeySeq("cw"),
 			"Ala",' ',"ma kota",
-			"Ala",' ',"kota");
-		assertYanked(ContentType.TEXT, " ma");
+			"Ala",'m',"a kota");
+		assertYanked(ContentType.TEXT, " ");
 	}
 
 	@Test public void test_dw() {
@@ -89,6 +105,26 @@ public class NormalModeTests extends CommandTestCase {
 			"Ala ",'m',"a kota",
 			"Ala ",'k',"ota");
 		assertYanked(ContentType.TEXT, "ma ");
+	}
+	
+	@Test public void test_dw_newline() {
+	    //delete last word of a line
+		checkCommand(forKeySeq("dw"),
+			"Ala ",'k',"ota\nanother line",
+			"Ala",' ',"\nanother line");
+		assertYanked(ContentType.TEXT, "kota");
+		
+		//delete word spanning a line
+		checkCommand(forKeySeq("d2w"),
+			"Ala ",'k',"ota\nanother line",
+			"Ala ",'l',"ine");
+		assertYanked(ContentType.TEXT, "kota\nanother ");
+		
+		//delete word spanning a line, ending with newline
+		checkCommand(forKeySeq("d3w"),
+			"Ala ",'k',"ota\nanother line\nand again",
+			"Ala",' ',"\nand again");
+		assertYanked(ContentType.TEXT, "kota\nanother line\n");
 	}
 
 	@Test public void test_diw() {
@@ -262,7 +298,7 @@ public class NormalModeTests extends CommandTestCase {
                 "call(",')',";");
         checkCommand(forKeySeq("dib"),
                 "call(\nsomething(),",'\n',"funny()\n);",
-                "call(",')',";");
+                "call",'(',"\n);");
         checkCommand(forKeySeq("d2ib"),
                 "call(something very(fu",'n',"ny));",
                 "call(",')',";");
