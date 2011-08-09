@@ -337,6 +337,13 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         changeModeSafely(enabled ? NormalMode.NAME : InsertMode.NAME,
                 InsertMode.DONT_MOVE_CURSOR);
     }
+    
+    public void beginMouseSelection() {
+    	if(currentMode == null || 
+    			(! VisualMode.NAME.equals(currentMode.getName()) && ! LinewiseVisualMode.NAME.equals(currentMode.getName()))) {
+    		changeModeSafely(VisualMode.NAME);
+    	}
+    }
 
 	public void rememberLastActiveSelection() {
 		registerManager.setLastActiveSelection(PositionlessSelection.getInstance(this));
