@@ -9,13 +9,20 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Preferences;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.text.TextSelection;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
+import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IStartup;
 import org.eclipse.ui.IWindowListener;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchListener;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -37,6 +44,8 @@ public class VrapperPlugin extends AbstractUIPlugin implements IStartup, Log {
     private static final String KEY_VRAPPER_ENABLED = "vrapperEnabled";
 
     private static final String COMMAND_TOGGLE_VRAPPER = "net.sourceforge.vrapper.eclipse.commands.toggle";
+    
+    private boolean mouseDown = false;
 
     /**
      * The constructor
@@ -101,21 +110,45 @@ public class VrapperPlugin extends AbstractUIPlugin implements IStartup, Log {
     private void addEditorListeners() {
         for (IWorkbenchWindow window: plugin.getWorkbench().getWorkbenchWindows()) {
             addInterceptingListener(window);
+            addSelectionListener(window);
         }
         plugin.getWorkbench().addWindowListener(new IWindowListener() {
-            
             public void windowOpened(IWorkbenchWindow window) {
                 addInterceptingListener(window);
+                addSelectionListener(window);
             }
-            
-            public void windowDeactivated(IWorkbenchWindow window) { }
             public void windowClosed(IWorkbenchWindow window) { }
             public void windowActivated(IWorkbenchWindow window) { }
+            public void windowDeactivated(IWorkbenchWindow window) { }
         });
     }
 
     private static void addInterceptingListener(IWorkbenchWindow window) {
         window.getPartService().addPartListener(InputInterceptorManager.INSTANCE);
+    }
+    
+    private static void addSelectionListener(IWorkbenchWindow window) {
+    	ISelectionListener selectionListener = new ISelectionListener() {
+            public void selectionChanged(IWorkbenchPart sourcepart, ISelection selection) {
+            	//TODO: is there a better way to know if the mouse initiated this selection?
+            	if (plugin.mouseDown && selection instanceof TextSelection && ! selection.isEmpty()) {
+            		beginMouseSelection();
+            	}
+            }
+        };
+        Listener downListener = new Listener() {
+            public void handleEvent(Event event) {
+                plugin.mouseDown = true;
+            }
+        };
+        Listener upListener = new Listener() {
+            public void handleEvent(Event event) {
+                plugin.mouseDown = false;
+            }
+        };
+        window.getWorkbench().getDisplay().addFilter(SWT.MouseDown, downListener);
+        window.getWorkbench().getDisplay().addFilter(SWT.MouseUp, upListener);
+        window.getSelectionService().addSelectionListener(selectionListener);
     }
 
     private void addShutdownListener() {
@@ -163,6 +196,14 @@ public class VrapperPlugin extends AbstractUIPlugin implements IStartup, Log {
             System.out.println(msg);
         }
 
+    }
+    
+    private static void beginMouseSelection() {
+        for (InputInterceptor interceptor: InputInterceptorManager.INSTANCE.getInterceptors()) {
+            EditorAdaptor adaptor = interceptor.getEditorAdaptor();
+            if (adaptor != null)
+                adaptor.beginMouseSelection();
+        }
     }
 
     public void info(String msg) {
