@@ -1,4 +1,32 @@
 <div class="newsbox">
+    <div class="date">2011-08-25</div>
+    <h4>What I'd like to see in Vrapper 0.18.0</h4>
+    <p>The last version of Vrapper took over a year to be released.  I'd like to make sure that doesn't happen again.
+    Of course, I also don't want to release a new version with too few modifications from the previous version.
+    I decided to look at the current list of defects and see which ones I feel are the highest priority (or provide the largest benefit).
+    This of course is very selfish because I'm selecting the defects I've personally run into or new features I would personally use.
+    With that said, this is an open source project.  If anyone contributes code to fix some other defect or implement some other feature I certainly won't reject it.</p>
+    
+    <p>If we could fix the following defects, I think it would be significant enough to be the next release:</p>
+    <ul>
+        <li><a href="http://sourceforge.net/apps/trac/vrapper/ticket/70">#70</a>	'dw' on the last word of a line will join lines</li>
+        <li><a href="http://sourceforge.net/apps/trac/vrapper/ticket/73">#73</a>	% text movement operator doesn't work in visual mode.</li>
+        <li><a href="http://sourceforge.net/apps/trac/vrapper/ticket/79">#79</a>	cw for single characters changes include next word</li>
+        <li><a href="http://sourceforge.net/apps/trac/vrapper/ticket/81">#81</a>	need d/<pattern> please</li>
+        <li><a href="http://sourceforge.net/apps/trac/vrapper/ticket/97">#97</a>	PageUp/PageDown don't work in visual mode</li>
+    </ul>
+    
+    <p>In addition to those defects, I'd love to fit in these stretch goals.  I think we're at the point where these should be feasible.</p>
+    <ul>
+        <li><a href="http://sourceforge.net/apps/trac/vrapper/ticket/50">#50</a>	Search and replace support</li>
+        <li><a href="http://sourceforge.net/apps/trac/vrapper/ticket/59">#59</a>	blockwise-visual missing</li>
+        <li><a href="http://sourceforge.net/apps/trac/vrapper/ticket/82">#82</a>	Pasting a search string using the keyboard doesn't work</li>
+    </ul>
+    
+    <p>We're always willing to accept code contributions.  If you can come up with a solution for any of the defects listed above, simply initiate a Pull Request on <a href="https://github.com/vrapper/vrapper">our GitHub project</a> to submit your code.</p>
+
+</div>
+<div class="newsbox">
     <div class="date">2011-07-06</div>
     <h4>Testing Help Needed</h4>
     <p>The unstable update site has been updated to include some optional plugins.  These plugins add some language-specific commands for Java and C/C++.  We didn't release them as part of 0.16.0 because they haven't been fully tested.  We would appreciate it if some of you Java or C/C++ developers out there installed these optional plugins and played with them a bit.  Let us know how it goes.</p>
