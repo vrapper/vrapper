@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project name="Compile net.sourceforge.vrapper.eclipse.cdt.feature" default="main">
-	<target name="main">
-		<ant antfile="build.xml" dir="../net.sourceforge.vrapper.eclipse.cdt" target="build.jars"/>
-	</target>
-</project>
