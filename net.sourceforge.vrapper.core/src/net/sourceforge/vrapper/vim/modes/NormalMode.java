@@ -71,6 +71,7 @@ import net.sourceforge.vrapper.vim.commands.motions.MoveRight;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordEndRight;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordRight;
+import net.sourceforge.vrapper.vim.commands.motions.MoveWordRightNoWhitespace;
 import net.sourceforge.vrapper.vim.commands.motions.ParagraphMotion;
 import net.sourceforge.vrapper.vim.modes.commandline.SearchMode;
 
@@ -80,6 +81,7 @@ public class NormalMode extends CommandBasedMode {
     public static final String NAME = "normal mode";
     private static State<TextObject> textObjects;
     private static State<DelimitedText> delimitedTexts;
+    private static State<Motion> textMotions;
 
     public NormalMode(EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
@@ -130,6 +132,24 @@ public class NormalMode extends CommandBasedMode {
         return delimitedTexts;
 
     }
+    
+    @SuppressWarnings("unchecked")
+    public static State<Motion> textMotions() {
+        if (textMotions == null) {
+
+            final Motion wordRightNoWS = MoveWordRightNoWhitespace.INSTANCE;
+
+            //override the default motions for a few motions that act differently in text mode
+            textMotions = union(
+            				state(
+            					leafBind('w', wordRightNoWS)
+            				),
+            				motions()
+            			);
+        }
+        return textMotions;
+    }
+
 
     @SuppressWarnings("unchecked")
     public static synchronized State<TextObject> textObjects() {
@@ -156,7 +176,7 @@ public class NormalMode extends CommandBasedMode {
                                             leafBind('p', aParagraph)
                                     ),
                                     new DelimitedTextObjectState(delimitedTexts(), DelimitedTextObjectState.OUTER)))),
-                        new TextObjectState(motions()));
+                        new TextObjectState(textMotions()));
 
             textObjects = CountingState.wrap(textObjects);
         }
