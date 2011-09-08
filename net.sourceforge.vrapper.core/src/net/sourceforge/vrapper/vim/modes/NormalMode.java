@@ -71,7 +71,7 @@ import net.sourceforge.vrapper.vim.commands.motions.MoveRight;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordEndRight;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordRight;
-import net.sourceforge.vrapper.vim.commands.motions.MoveWordRightNoWhitespace;
+import net.sourceforge.vrapper.vim.commands.motions.MoveWordRightForUpdate;
 import net.sourceforge.vrapper.vim.commands.motions.ParagraphMotion;
 import net.sourceforge.vrapper.vim.modes.commandline.SearchMode;
 
@@ -134,15 +134,15 @@ public class NormalMode extends CommandBasedMode {
     }
     
     @SuppressWarnings("unchecked")
-    public static State<Motion> textMotions() {
+    public static synchronized State<Motion> textMotions() {
         if (textMotions == null) {
 
-            final Motion wordRightNoWS = MoveWordRightNoWhitespace.INSTANCE;
+            final Motion moveRightForUpdate = MoveWordRightForUpdate.INSTANCE;
 
             //override the default motions for a few motions that act differently in text mode
             textMotions = union(
             				state(
-            					leafBind('w', wordRightNoWS)
+            					leafBind('w', moveRightForUpdate)
             				),
             				motions()
             			);
@@ -177,6 +177,7 @@ public class NormalMode extends CommandBasedMode {
                                     ),
                                     new DelimitedTextObjectState(delimitedTexts(), DelimitedTextObjectState.OUTER)))),
                         new TextObjectState(textMotions()));
+                        //new TextObjectState(motions()));
 
             textObjects = CountingState.wrap(textObjects);
         }

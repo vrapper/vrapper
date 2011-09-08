@@ -1,5 +1,7 @@
 package net.sourceforge.vrapper.vim.commands.motions;
 
+import static java.lang.Math.min;
+import static net.sourceforge.vrapper.vim.commands.Utils.isNewLineCharacter;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
@@ -21,6 +23,10 @@ public abstract class MoveWithBounds extends CountAwareMotion {
     public boolean updateStickyColumn() {
         return true;
     }
+    
+    public boolean trimsNewLinesFromEnd() {
+        return false;
+    }
 
     @Override
     public Position destination(EditorAdaptor editorAdaptor, int count) {
@@ -31,6 +37,26 @@ public abstract class MoveWithBounds extends CountAwareMotion {
 
         for (int i = 0; i < count; i++)
             offset = destination(offset, editorAdaptor.getModelContent(), bailOff && i == 0);
+        
+        if( trimsNewLinesFromEnd() ) 
+            offset = offsetWithoutNewLines(offset, editorAdaptor.getModelContent());
+        
         return editorAdaptor.getCursorService().newPositionForModelOffset(offset);
+    }
+    
+    private int offsetWithoutNewLines(int offset, TextContent content) {
+        int bufferLength = min(BUFFER_LEN, offset);
+        if( bufferLength == 0 )
+            return offset;
+        
+        String buffer = content.getText(offset-bufferLength ,bufferLength);
+        
+        int i=buffer.length()-1;
+        while( i>=0 && isNewLineCharacter( buffer.charAt(i) ) ) {
+            offset--;
+            i--;
+        }
+        
+        return offset;
     }
 }

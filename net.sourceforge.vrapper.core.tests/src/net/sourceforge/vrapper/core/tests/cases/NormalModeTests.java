@@ -83,7 +83,7 @@ public class NormalModeTests extends CommandTestCase {
 			"Ala ",' ',"ma kota");
 		assertYanked(ContentType.TEXT, "z");
 	}
-		
+	
 	@Test public void test_cw_single_space() {
 		//'cw' on a single space character
 	    checkCommand(forKeySeq("cw"),
@@ -113,13 +113,17 @@ public class NormalModeTests extends CommandTestCase {
 			"Ala ",'k',"ota\nanother line",
 			"Ala",' ',"\nanother line");
 		assertYanked(ContentType.TEXT, "kota");
-		
+	}
+	
+	@Test public void test_d2w_newline() {
 		//delete word spanning a line
 		checkCommand(forKeySeq("d2w"),
 			"Ala ",'k',"ota\nanother line",
 			"Ala ",'l',"ine");
 		assertYanked(ContentType.TEXT, "kota\nanother ");
-		
+	}
+	
+	@Test public void test_d3w_newline() {
 		//delete word spanning a line, ending with newline
 		checkCommand(forKeySeq("d3w"),
 			"Ala ",'k',"ota\nanother line\nand again",
