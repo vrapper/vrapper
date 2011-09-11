@@ -128,7 +128,7 @@ public class NormalModeTests extends CommandTestCase {
 		checkCommand(forKeySeq("d3w"),
 			"Ala ",'k',"ota\nanother line\nand again",
 			"Ala",' ',"\nand again");
-		assertYanked(ContentType.TEXT, "kota\nanother line\n");
+		assertYanked(ContentType.TEXT, "kota\nanother line");
 	}
 
 	@Test public void test_diw() {

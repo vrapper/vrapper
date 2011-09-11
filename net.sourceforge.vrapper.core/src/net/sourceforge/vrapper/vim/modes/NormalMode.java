@@ -177,7 +177,6 @@ public class NormalMode extends CommandBasedMode {
                                     ),
                                     new DelimitedTextObjectState(delimitedTexts(), DelimitedTextObjectState.OUTER)))),
                         new TextObjectState(textMotions()));
-                        //new TextObjectState(motions()));
 
             textObjects = CountingState.wrap(textObjects);
         }
