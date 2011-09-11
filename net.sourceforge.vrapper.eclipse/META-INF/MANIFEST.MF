@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Eclipse Plug-in
 Bundle-SymbolicName: net.sourceforge.vrapper.eclipse;singleton:=true
-Bundle-Version: 0.17.0
+Bundle-Version: 0.17.20110911
 Bundle-Activator: net.sourceforge.vrapper.eclipse.activator.VrapperPlugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,

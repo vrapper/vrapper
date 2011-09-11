@@ -2,7 +2,7 @@
 <feature
       id="net.sourceforge.vrapper.plugin.surround"
       label="Vrapper - Surround Plugin (Optional)"
-      version="0.17.20110706"
+      version="0.17.20110911"
       provider-name="Vrapper Team">
 
    <description url="http://vrapper.sourceforge.net/documentation/">
