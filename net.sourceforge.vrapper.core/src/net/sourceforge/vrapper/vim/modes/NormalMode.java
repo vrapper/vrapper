@@ -64,11 +64,13 @@ import net.sourceforge.vrapper.vim.commands.motions.LineEndMotion;
 import net.sourceforge.vrapper.vim.commands.motions.LineStartMotion;
 import net.sourceforge.vrapper.vim.commands.motions.Motion;
 import net.sourceforge.vrapper.vim.commands.motions.MoveBigWORDEndRight;
+import net.sourceforge.vrapper.vim.commands.motions.MoveBigWORDEndRightForChange;
 import net.sourceforge.vrapper.vim.commands.motions.MoveBigWORDLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveBigWORDRight;
 import net.sourceforge.vrapper.vim.commands.motions.MoveLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveRight;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordEndRight;
+import net.sourceforge.vrapper.vim.commands.motions.MoveWordEndRightForChange;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordRight;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordRightForUpdate;
@@ -192,16 +194,16 @@ public class NormalMode extends CommandBasedMode {
         final Motion moveLeft = MoveLeft.INSTANCE;
         final Motion moveRight = MoveRight.INSTANCE;
         final Motion wordRight = MoveWordRight.INSTANCE;
-        final Motion wordEndRight = MoveWordEndRight.INSTANCE;
+        final Motion wordEndRightForChange = MoveWordEndRightForChange.INSTANCE;
         final Motion bigWordRight = MoveBigWORDRight.INSTANCE;
-        final Motion bigWordEndRight = MoveBigWORDEndRight.INSTANCE;
+        final Motion bigWordEndRightForChange = MoveBigWORDEndRightForChange.INSTANCE;
         final Motion bol = LineStartMotion.NON_WHITESPACE;
         final Motion eol = new LineEndMotion(BorderPolicy.EXCLUSIVE);
         final Motion wholeLineEol = new LineEndMotion(BorderPolicy.LINE_WISE);
 
         final State<Motion> motions = motions();
-        final TextObject wordForCw = new OptionDependentTextObject(Options.SANE_CW, wordRight, wordEndRight);
-        final TextObject wordForCW = new OptionDependentTextObject(Options.SANE_CW, bigWordRight, bigWordEndRight);
+        final TextObject wordForCw = new OptionDependentTextObject(Options.SANE_CW, wordRight, wordEndRightForChange);
+        final TextObject wordForCW = new OptionDependentTextObject(Options.SANE_CW, bigWordRight, bigWordEndRightForChange);
         final TextObject toEol = new MotionTextObject(eol);
         final TextObject toEolForY = new OptionDependentTextObject(Options.SANE_Y, eol, wholeLineEol);
 

@@ -75,6 +75,14 @@ public class NormalModeTests extends CommandTestCase {
 			"Ala",'m',"a kota");
 		assertYanked(ContentType.TEXT, " ");
 	}
+
+	@Test public void test_cw_compilant() {
+	    when(configuration.get(Options.SANE_CW)).thenReturn(false);
+		checkCommand(forKeySeq("cw"),
+			"Ala",' ',"ma kota",
+			"Ala",'m',"a kota");
+		assertYanked(ContentType.TEXT, " ");
+	}
 		
 	@Test public void test_cw_single_letter() {
 		//'cw' on a single letter
@@ -91,13 +99,13 @@ public class NormalModeTests extends CommandTestCase {
 			"Ala",'z'," ma kota");
 		assertYanked(ContentType.TEXT, " ");
 	}
-
-	@Test public void test_cw_compilant() {
-	    when(configuration.get(Options.SANE_CW)).thenReturn(false);
-		checkCommand(forKeySeq("cw"),
-			"Ala",' ',"ma kota",
-			"Ala",'m',"a kota");
-		assertYanked(ContentType.TEXT, " ");
+		
+	@Test public void test_cw_multiple_spaces() {
+		//'cw' with multiple spaces to the next word
+	    checkCommand(forKeySeq("cw"),
+			"Ala",' ',"     z ma kota",
+			"Ala",'z'," ma kota");
+		assertYanked(ContentType.TEXT, "      ");
 	}
 
 	@Test public void test_dw() {
