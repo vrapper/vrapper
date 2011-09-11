@@ -290,32 +290,64 @@ public class NormalModeTests extends CommandTestCase {
     }
 
 	@Test
-    public void test_dib() {
+    public void test_dib_simple() {
         checkCommand(forKeySeq("dib"),
                 "call(so",'m',"ething, funny);",
                 "call(",')',";");
+	}
+	
+	@Test
+	public void test_dib_innerBlock() {
         checkCommand(forKeySeq("dib"),
                 "call(so",'m',"ething(), funny);",
                 "call(",')',";");
+	}
+	
+	@Test
+	public void test_dib_innerBlock_ws() {
         checkCommand(forKeySeq("dib"),
                 "call(something(),",' ',"funny);",
                 "call(",')',";");
+	}
+	
+	@Test
+	public void test_dib_innerBlock_newlines() {
         checkCommand(forKeySeq("dib"),
                 "call(\nsomething(),",'\n',"funny()\n);",
                 "call",'(',"\n);");
+	}
+	
+	@Test
+	public void test_d2ib() {
         checkCommand(forKeySeq("d2ib"),
                 "call(something very(fu",'n',"ny));",
                 "call(",')',";");
+	}
+	
+	@Test
+	public void test_2dib() {
         checkCommand(forKeySeq("2dib"),
                 "call(something, very(fu",'n',"ny));",
                 "call(",')',";");
+	}
+	
+	@Test 
+	public void test_dib_on_openParen() {
         // as strange as it may look, this is the actual Vim behaviour
         checkCommand(forKeySeq("dib"),
                 "call",'(',"something);",
                 "call(",')',";");
+	}
+	
+	@Test
+	public void test_dib_on_closeParen() {
         checkCommand(forKeySeq("dib"),
                 "call(something",')',";",
                 "call(",')',";");
+	}
+	
+	@Test
+	public void test_2dib_on_innerOpenParen() {
         checkCommand(forKeySeq("2dib"),
                 "call(something, very",'(',"funny));",
                 "call(",')',";");
