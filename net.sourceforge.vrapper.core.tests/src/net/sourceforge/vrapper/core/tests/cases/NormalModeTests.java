@@ -67,10 +67,32 @@ public class NormalModeTests extends CommandTestCase {
 				"A",'a'," ma kota");
 		assertYanked(ContentType.TEXT, "l");
 	}
+	
+	@Test public void test_cw() {
+	    checkCommand(forKeySeq("cw"),
+			"Ala",'m',"a kota",
+			"Ala",' ',"kota");
+		assertYanked(ContentType.TEXT, "ma");
+	}
+	
+	@Test public void test_cW() {
+	    checkCommand(forKeySeq("cW"),
+			"Ala",'m',"a;asdf kota",
+			"Ala",' ',"kota");
+		assertYanked(ContentType.TEXT, "ma;asdf");
+	}
 
 	@Test public void test_cw_sane() {
 	    when(configuration.get(Options.SANE_CW)).thenReturn(true);
 	    checkCommand(forKeySeq("cw"),
+			"Ala",' ',"ma kota",
+			"Ala",'m',"a kota");
+		assertYanked(ContentType.TEXT, " ");
+	}
+
+	@Test public void test_cw_compilant() {
+	    when(configuration.get(Options.SANE_CW)).thenReturn(false);
+		checkCommand(forKeySeq("cw"),
 			"Ala",' ',"ma kota",
 			"Ala",'m',"a kota");
 		assertYanked(ContentType.TEXT, " ");
@@ -84,6 +106,14 @@ public class NormalModeTests extends CommandTestCase {
 		assertYanked(ContentType.TEXT, "z");
 	}
 		
+	@Test public void test_cW_single_letter() {
+		//'cW' on a single letter
+	    checkCommand(forKeySeq("cW"),
+			"Ala ",'z'," ma kota",
+			"Ala ",' ',"ma kota");
+		assertYanked(ContentType.TEXT, "z");
+	}
+		
 	@Test public void test_cw_single_space() {
 		//'cw' on a single space character
 	    checkCommand(forKeySeq("cw"),
@@ -91,13 +121,13 @@ public class NormalModeTests extends CommandTestCase {
 			"Ala",'z'," ma kota");
 		assertYanked(ContentType.TEXT, " ");
 	}
-
-	@Test public void test_cw_compilant() {
-	    when(configuration.get(Options.SANE_CW)).thenReturn(false);
-		checkCommand(forKeySeq("cw"),
-			"Ala",' ',"ma kota",
-			"Ala",'m',"a kota");
-		assertYanked(ContentType.TEXT, " ");
+		
+	@Test public void test_cw_multiple_spaces() {
+		//'cw' with multiple spaces to the next word
+	    checkCommand(forKeySeq("cw"),
+			"Ala",' ',"     z ma kota",
+			"Ala",'z'," ma kota");
+		assertYanked(ContentType.TEXT, "      ");
 	}
 
 	@Test public void test_dw() {
