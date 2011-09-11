@@ -67,6 +67,20 @@ public class NormalModeTests extends CommandTestCase {
 				"A",'a'," ma kota");
 		assertYanked(ContentType.TEXT, "l");
 	}
+	
+	@Test public void test_cw() {
+		checkCommand(forKeySeq("cw"),
+				"Ala",'m',"a kota",
+				"Ala",' ',"kota");
+		assertYanked(ContentType.TEXT, "ma");
+	}
+
+	@Test public void test_cW() {
+		checkCommand(forKeySeq("cW"),
+				"Ala",'m',"a;asdf kota",
+				"Ala",' ',"kota");
+		assertYanked(ContentType.TEXT, "ma;asdf");
+	}
 
 	@Test public void test_cw_sane() {
 	    when(configuration.get(Options.SANE_CW)).thenReturn(true);
@@ -89,6 +103,14 @@ public class NormalModeTests extends CommandTestCase {
 	    checkCommand(forKeySeq("cw"),
 			"Ala ",'z'," ma kota",
 			"Ala ",' ',"ma kota");
+		assertYanked(ContentType.TEXT, "z");
+	}
+	
+	@Test public void test_cW_single_letter() {
+		//'cW' on a single letter
+		checkCommand(forKeySeq("cW"),
+				"Ala ",'z'," ma kota",
+				"Ala ",' ',"ma kota");
 		assertYanked(ContentType.TEXT, "z");
 	}
 	
