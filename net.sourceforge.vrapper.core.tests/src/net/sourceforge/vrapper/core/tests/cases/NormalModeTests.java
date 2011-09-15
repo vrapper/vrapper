@@ -41,6 +41,24 @@ public class NormalModeTests extends CommandTestCase {
 		adaptor.changeMode(NormalMode.NAME);
 		assertEquals(CaretType.RECTANGULAR, cursorAndSelection.getCaret());
 	}
+	
+	@Test public void test_w() {
+		checkCommand(forKeySeq("w"),
+				"Ala ",'m', "a kota",
+				"Ala ma ", 'k', "ota");
+	}
+	
+	@Test public void test_2w_newline() {
+		checkCommand(forKeySeq("2w"),
+				"Ala ", 'm', "a kota\nanother line",
+				"Ala ma kota\n", 'a', "nother line");
+	}
+	
+	@Test public void test_2w_blankline_as_word() {
+		checkCommand(forKeySeq("2w"),
+				"Ala ", 'm', "a kota\n\nthird line",
+				"Ala ma kota\n", '\n', "third line");
+	}
 
 	@Test public void test_x() {
 		checkCommand(forKeySeq("x"),
@@ -145,6 +163,22 @@ public class NormalModeTests extends CommandTestCase {
 		assertYanked(ContentType.TEXT, "kota");
 	}
 	
+	@Test public void test_dw_newline_space() {
+	    //delete last word of a line, space starting next line
+	    checkCommand(forKeySeq("dw"),
+	        "Ala ",'k',"ota\n another line",
+	        "Ala",' ',"\n another line");
+	    assertYanked(ContentType.TEXT, "kota");
+	}
+	
+	@Test public void test_dw_newline_ws() {
+	    //delete last word of a line, multi-space starting next line
+		checkCommand(forKeySeq("dw"),
+			"Ala ",'k',"ota\n  another line",
+			"Ala",' ',"\n  another line");
+		assertYanked(ContentType.TEXT, "kota");
+	}
+	
 	@Test public void test_d2w_newline() {
 		//delete word spanning a line
 		checkCommand(forKeySeq("d2w"),
@@ -159,6 +193,24 @@ public class NormalModeTests extends CommandTestCase {
 			"Ala ",'k',"ota\nanother line\nand again",
 			"Ala",' ',"\nand again");
 		assertYanked(ContentType.TEXT, "kota\nanother line");
+	}
+	
+	//blank lines act as a word
+	@Test public void test_d3w_multiple_newlines() {
+		//delete word spanning a line, ending with newline
+		checkCommand(forKeySeq("d3w"),
+			"Ala ",'k',"ota\nanother\n\nagain\n",
+			"Ala",' ',"\nagain\n");
+		assertYanked(ContentType.TEXT, "kota\nanother\n");
+	}
+
+	//blank lines act as a word
+	@Test public void test_d4w_multiple_newlines() {
+		//delete word spanning a line, ending with newline
+		checkCommand(forKeySeq("d4w"),
+			"Ala ",'k',"ota\nanother\n\n\nagain\n",
+			"Ala",' ',"\nagain\n");
+		assertYanked(ContentType.TEXT, "kota\nanother\n\n");
 	}
 
 	@Test public void test_diw() {

@@ -10,7 +10,7 @@ public class MoveWordRightForUpdate extends MoveWordRight {
 	}
 	
 	@Override
-	public boolean trimsNewLinesFromEnd() {
+	public boolean trimsNewLineFromEnd() {
 	    return true;
 	}
 }
