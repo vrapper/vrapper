@@ -4,4 +4,5 @@ public interface UnderlyingEditorSettings {
     void setReplaceMode(boolean replace);
     void setShowLineNumbers(boolean show);
     void setShowWhitespace(boolean show);
+    void disableInputMethod();
 }
