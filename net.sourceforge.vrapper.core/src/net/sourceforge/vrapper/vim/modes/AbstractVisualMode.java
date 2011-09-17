@@ -114,7 +114,8 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
                         leafBind('.', centerLine),
                         leafBind('-', centerBottomLine),
                         leafBind('b', centerBottomLine),
-                        leafBind('t', centerTopLine)
+                        leafBind('t', centerTopLine),
+                        leafBind(SpecialKey.RETURN, centerTopLine)
                 ),
                 transitionBind('m',
                         convertKeyStroke(
