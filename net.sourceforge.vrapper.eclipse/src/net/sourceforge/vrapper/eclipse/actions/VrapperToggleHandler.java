@@ -6,7 +6,6 @@ import net.sourceforge.vrapper.eclipse.activator.VrapperPlugin;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
-import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.commands.IElementUpdater;
@@ -22,7 +21,7 @@ public class VrapperToggleHandler extends AbstractHandler implements
      * adds / removes the listener and sets the actions "checked" status
      * accordingly.
      */
-    public Object execute(ExecutionEvent event) throws ExecutionException {
+    public Object execute(ExecutionEvent event) {
         if (!VrapperPlugin.isVrapperEnabled())
             VrapperPlugin.setVrapperEnabled(true);
         else
