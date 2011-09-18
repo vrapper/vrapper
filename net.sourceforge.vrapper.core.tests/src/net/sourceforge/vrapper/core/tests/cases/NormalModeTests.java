@@ -212,6 +212,20 @@ public class NormalModeTests extends CommandTestCase {
 			"Ala",' ',"\nagain\n");
 		assertYanked(ContentType.TEXT, "kota\nanother\n\n");
 	}
+	
+	@Test public void test_dw_newline_beginning() {
+	    checkCommand(forKeySeq("dw"),
+	        "Ala\n  ",' ',"  kota",
+	        "Ala\n  ",'k',"ota");
+	    assertYanked(ContentType.TEXT, "   ");
+	}
+	
+	@Test public void test_dw_newline_as_word() {
+		checkCommand(forKeySeq("dw"),
+			"Ala\n", '\n', "\nkota",
+			"Ala\n", '\n', "kota");
+		assertYanked(ContentType.TEXT, "\n");
+	}
 
 	@Test public void test_diw() {
 		checkCommand(forKeySeq("diw"),
