@@ -294,10 +294,10 @@ public abstract class CommandBasedMode extends AbstractMode {
 
     @SuppressWarnings("unchecked")
     protected State<String> getKeyMapsForMotions() {
-        return state(leafBind('f', KeyMapResolver.NO_KEYMAP), leafBind('t',
-                KeyMapResolver.NO_KEYMAP), leafBind('T',
-                KeyMapResolver.NO_KEYMAP), leafBind('F',
-                KeyMapResolver.NO_KEYMAP));
+        return state(leafBind('f', KeyMapResolver.NO_KEYMAP),
+        		     leafBind('t', KeyMapResolver.NO_KEYMAP),
+        		     leafBind('T', KeyMapResolver.NO_KEYMAP),
+        		     leafBind('F', KeyMapResolver.NO_KEYMAP));
     }
 
     protected State<Command> getPlatformSpecificState(String mode) {
