@@ -5,24 +5,16 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.BorderPolicy;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 
-/* This moves to the right by words, however it covers the special case of
- * updates at the end of a line: This will not move the cursor to the next line
- */
-public class MoveWordRightForUpdate extends CountAwareMotion {
+public class MoveBigWORDRightForUpdate extends CountAwareMotion {
     
-    public static final Motion INSTANCE = new MoveWordRightForUpdate(false);
+    public static final Motion INSTANCE = new MoveBigWORDRightForUpdate(false);
     
-    //delegate motion
     private CountAwareMotion delegate;
     
-    private MoveWordRightForUpdate(){}
+    private MoveBigWORDRightForUpdate() {}
     
-    private MoveWordRightForUpdate(boolean bailOff) {
-        delegate = new MoveWordRight(bailOff);
-    }
-
-    public int getCount() {
-        return delegate.getCount();
+    private MoveBigWORDRightForUpdate(boolean bailOff) {
+        delegate = new MoveBigWORDRight(bailOff);
     }
 
     public BorderPolicy borderPolicy() {
@@ -32,7 +24,11 @@ public class MoveWordRightForUpdate extends CountAwareMotion {
     public boolean updateStickyColumn() {
         return delegate.updateStickyColumn();
     }
-
+    
+    public int getCount() {
+        return delegate.getCount();
+    }
+    
     public boolean isJump() {
         return delegate.isJump();
     }
@@ -47,5 +43,6 @@ public class MoveWordRightForUpdate extends CountAwareMotion {
         
         return editorAdaptor.getCursorService().newPositionForModelOffset(newOffset);
     }
+
 }
     
