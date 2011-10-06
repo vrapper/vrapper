@@ -41,6 +41,24 @@ public class NormalModeTests extends CommandTestCase {
 		adaptor.changeMode(NormalMode.NAME);
 		assertEquals(CaretType.RECTANGULAR, cursorAndSelection.getCaret());
 	}
+	
+	@Test public void test_w() {
+		checkCommand(forKeySeq("w"),
+				"Ala ",'m', "a kota",
+				"Ala ma ", 'k', "ota");
+	}
+	
+	@Test public void test_2w_newline() {
+		checkCommand(forKeySeq("2w"),
+				"Ala ", 'm', "a kota\nanother line",
+				"Ala ma kota\n", 'a', "nother line");
+	}
+	
+	@Test public void test_2w_blankline_as_word() {
+		checkCommand(forKeySeq("2w"),
+				"Ala ", 'm', "a kota\n\nthird line",
+				"Ala ma kota\n", '\n', "third line");
+	}
 
 	@Test public void test_x() {
 		checkCommand(forKeySeq("x"),
@@ -69,16 +87,16 @@ public class NormalModeTests extends CommandTestCase {
 	}
 	
 	@Test public void test_cw() {
-	    checkCommand(forKeySeq("cw"),
-			"Ala",'m',"a kota",
-			"Ala",' ',"kota");
+		checkCommand(forKeySeq("cw"),
+				"Ala",'m',"a kota",
+				"Ala",' ',"kota");
 		assertYanked(ContentType.TEXT, "ma");
 	}
-	
+
 	@Test public void test_cW() {
-	    checkCommand(forKeySeq("cW"),
-			"Ala",'m',"a;asdf kota",
-			"Ala",' ',"kota");
+		checkCommand(forKeySeq("cW"),
+				"Ala",'m',"a;asdf kota",
+				"Ala",' ',"kota");
 		assertYanked(ContentType.TEXT, "ma;asdf");
 	}
 
@@ -105,15 +123,15 @@ public class NormalModeTests extends CommandTestCase {
 			"Ala ",' ',"ma kota");
 		assertYanked(ContentType.TEXT, "z");
 	}
-		
+	
 	@Test public void test_cW_single_letter() {
 		//'cW' on a single letter
-	    checkCommand(forKeySeq("cW"),
-			"Ala ",'z'," ma kota",
-			"Ala ",' ',"ma kota");
+		checkCommand(forKeySeq("cW"),
+				"Ala ",'z'," ma kota",
+				"Ala ",' ',"ma kota");
 		assertYanked(ContentType.TEXT, "z");
 	}
-		
+	
 	@Test public void test_cw_single_space() {
 		//'cw' on a single space character
 	    checkCommand(forKeySeq("cw"),
@@ -129,6 +147,14 @@ public class NormalModeTests extends CommandTestCase {
 			"Ala",'z'," ma kota");
 		assertYanked(ContentType.TEXT, "      ");
 	}
+	
+	@Test public void test_dW_newline() {
+	    //delete last word of a line
+	    checkCommand(forKeySeq("dW"),
+	        "Ala ",'k',"ota\nanother line",
+	        "Ala",' ',"\nanother line");
+	    assertYanked(ContentType.TEXT, "kota");
+	}
 
 	@Test public void test_dw() {
 		checkCommand(forKeySeq("dw"),
@@ -143,18 +169,70 @@ public class NormalModeTests extends CommandTestCase {
 			"Ala ",'k',"ota\nanother line",
 			"Ala",' ',"\nanother line");
 		assertYanked(ContentType.TEXT, "kota");
-		
+	}
+	
+	@Test public void test_dw_newline_space() {
+	    //delete last word of a line, space starting next line
+	    checkCommand(forKeySeq("dw"),
+	        "Ala ",'k',"ota\n another line",
+	        "Ala",' ',"\n another line");
+	    assertYanked(ContentType.TEXT, "kota");
+	}
+	
+	@Test public void test_dw_newline_ws() {
+	    //delete last word of a line, multi-space starting next line
+		checkCommand(forKeySeq("dw"),
+			"Ala ",'k',"ota\n  another line",
+			"Ala",' ',"\n  another line");
+		assertYanked(ContentType.TEXT, "kota");
+	}
+	
+	@Test public void test_d2w_newline() {
 		//delete word spanning a line
 		checkCommand(forKeySeq("d2w"),
 			"Ala ",'k',"ota\nanother line",
 			"Ala ",'l',"ine");
 		assertYanked(ContentType.TEXT, "kota\nanother ");
-		
+	}
+	
+	@Test public void test_d3w_newline() {
 		//delete word spanning a line, ending with newline
 		checkCommand(forKeySeq("d3w"),
 			"Ala ",'k',"ota\nanother line\nand again",
 			"Ala",' ',"\nand again");
-		assertYanked(ContentType.TEXT, "kota\nanother line\n");
+		assertYanked(ContentType.TEXT, "kota\nanother line");
+	}
+	
+	//blank lines act as a word
+	@Test public void test_d3w_multiple_newlines() {
+		//delete word spanning a line, ending with newline
+		checkCommand(forKeySeq("d3w"),
+			"Ala ",'k',"ota\nanother\n\nagain\n",
+			"Ala",' ',"\nagain\n");
+		assertYanked(ContentType.TEXT, "kota\nanother\n");
+	}
+
+	//blank lines act as a word
+	@Test public void test_d4w_multiple_newlines() {
+		//delete word spanning a line, ending with newline
+		checkCommand(forKeySeq("d4w"),
+			"Ala ",'k',"ota\nanother\n\n\nagain\n",
+			"Ala",' ',"\nagain\n");
+		assertYanked(ContentType.TEXT, "kota\nanother\n\n");
+	}
+	
+	@Test public void test_dw_newline_beginning() {
+	    checkCommand(forKeySeq("dw"),
+	        "Ala\n  ",' ',"  kota",
+	        "Ala\n  ",'k',"ota");
+	    assertYanked(ContentType.TEXT, "   ");
+	}
+	
+	@Test public void test_dw_newline_as_word() {
+		checkCommand(forKeySeq("dw"),
+			"Ala\n", '\n', "\nkota",
+			"Ala\n", '\n', "kota");
+		assertYanked(ContentType.TEXT, "\n");
 	}
 
 	@Test public void test_diw() {
@@ -316,32 +394,64 @@ public class NormalModeTests extends CommandTestCase {
     }
 
 	@Test
-    public void test_dib() {
+    public void test_dib_simple() {
         checkCommand(forKeySeq("dib"),
                 "call(so",'m',"ething, funny);",
                 "call(",')',";");
+	}
+	
+	@Test
+	public void test_dib_innerBlock() {
         checkCommand(forKeySeq("dib"),
                 "call(so",'m',"ething(), funny);",
                 "call(",')',";");
+	}
+	
+	@Test
+	public void test_dib_innerBlock_ws() {
         checkCommand(forKeySeq("dib"),
                 "call(something(),",' ',"funny);",
                 "call(",')',";");
+	}
+	
+	@Test
+	public void test_dib_innerBlock_newlines() {
         checkCommand(forKeySeq("dib"),
                 "call(\nsomething(),",'\n',"funny()\n);",
                 "call",'(',"\n);");
+	}
+	
+	@Test
+	public void test_d2ib() {
         checkCommand(forKeySeq("d2ib"),
                 "call(something very(fu",'n',"ny));",
                 "call(",')',";");
+	}
+	
+	@Test
+	public void test_2dib() {
         checkCommand(forKeySeq("2dib"),
                 "call(something, very(fu",'n',"ny));",
                 "call(",')',";");
+	}
+	
+	@Test 
+	public void test_dib_on_openParen() {
         // as strange as it may look, this is the actual Vim behaviour
         checkCommand(forKeySeq("dib"),
                 "call",'(',"something);",
                 "call(",')',";");
+	}
+	
+	@Test
+	public void test_dib_on_closeParen() {
         checkCommand(forKeySeq("dib"),
                 "call(something",')',";",
                 "call(",')',";");
+	}
+	
+	@Test
+	public void test_2dib_on_innerOpenParen() {
         checkCommand(forKeySeq("2dib"),
                 "call(something, very",'(',"funny));",
                 "call(",')',";");
