@@ -21,7 +21,7 @@ public abstract class MoveWithBounds extends CountAwareMotion {
     public boolean updateStickyColumn() {
         return true;
     }
-
+    
     @Override
     public Position destination(EditorAdaptor editorAdaptor, int count) {
         if (count == NO_COUNT_GIVEN)
@@ -31,6 +31,8 @@ public abstract class MoveWithBounds extends CountAwareMotion {
 
         for (int i = 0; i < count; i++)
             offset = destination(offset, editorAdaptor.getModelContent(), bailOff && i == 0);
+        
         return editorAdaptor.getCursorService().newPositionForModelOffset(offset);
     }
 }
+    
