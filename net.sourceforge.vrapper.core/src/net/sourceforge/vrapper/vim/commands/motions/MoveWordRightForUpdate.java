@@ -1,5 +1,8 @@
 package net.sourceforge.vrapper.vim.commands.motions;
 
+import static java.lang.Math.min;
+import static net.sourceforge.vrapper.vim.commands.Utils.isNewLineCharacter;
+import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.BorderPolicy;
@@ -10,17 +13,22 @@ import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
  */
 public class MoveWordRightForUpdate extends CountAwareMotion {
     
-    public static final Motion INSTANCE = new MoveWordRightForUpdate(false);
+    public static final Motion MOVE_WORD_RIGHT_INSTANCE = new MoveWordRightForUpdate( new MoveWordRight(false) );
+    public static final Motion MOVE_WORD_RIGHT_INSTANCE_BAILS_OFF = new MoveWordRightForUpdate( new MoveWordRight(true) );
+    
+    public static final Motion MOVE_BIG_WORD_RIGHT_INSTANCE = new MoveWordRightForUpdate( new MoveBigWORDRight(false) );
+    public static final Motion MOVE_BIG_WORD_RIGHT_INSTANCE_BAIL_OFF = new MoveWordRightForUpdate( new MoveBigWORDRight(true) );
+    
     
     //delegate motion
     private CountAwareMotion delegate;
     
     private MoveWordRightForUpdate(){}
     
-    private MoveWordRightForUpdate(boolean bailOff) {
-        delegate = new MoveWordRight(bailOff);
+    private MoveWordRightForUpdate(CountAwareMotion delegate) {
+        this.delegate = delegate;
     }
-
+    
     public int getCount() {
         return delegate.getCount();
     }
@@ -43,9 +51,70 @@ public class MoveWordRightForUpdate extends CountAwareMotion {
         Position delegatePosition = delegate.destination(editorAdaptor,count);
         
         //differ from the delegate in that we trim the last newline where appropriate
-        int newOffset = MoveWordRightUtils.offsetWithoutLastNewline(originalOffset, delegatePosition.getModelOffset(), editorAdaptor.getModelContent());
+        int newOffset = offsetWithoutLastNewline(originalOffset, delegatePosition.getModelOffset(), editorAdaptor.getModelContent());
         
         return editorAdaptor.getCursorService().newPositionForModelOffset(newOffset);
+    }
+    
+    /**
+     * Given a word defined in the TextContent object bounded by startingIndex and endingIndex,
+     * return the endingIndex that defines the end of the word without the last newline.
+     * <p>
+     * This deletes a single newline followed by arbitrary whitespace.  It does not 
+     * remove multiple newlines, or whitespace without newlines
+     * 
+     * @param startingIndex marks the beginning of the word
+     * @param endingIndex marks the end of the word, which may be trimmed
+     * @param content contains the buffer holding the word
+     * 
+     * @return the new ending offset, decremented if newlines and whitespace are present
+     */
+    public int offsetWithoutLastNewline(int startingIndex, int endingIndex, TextContent content) {
+        int bufferLength = min(MoveWithBounds.BUFFER_LEN, endingIndex);
+        if( bufferLength == 0 )
+            return endingIndex;
+        
+        //trim /\n{w}*/, but not /[^\n]{ws}*/
+        //Also, do not trim /\n*/ only /\n/
+        String buffer = content.getText(endingIndex-bufferLength ,bufferLength);
+        int lastBufferIndex = buffer.length()-1;
+        
+        int trailingWS = numTrailingWhitespaceChars(buffer, lastBufferIndex);
+        int trailingNL = numTrailingNewLines(buffer, lastBufferIndex-trailingWS);
+        
+        if( trailingNL > 0 ) {
+            int newOffset = endingIndex - (trailingWS+1); //only move back a single newline
+            if( newOffset > startingIndex ) //words only move right
+                endingIndex = newOffset;
+        }
+        
+        return endingIndex;
+    }
+    
+    /** Given the characters in buffer ending at offset, return the number of rightmost whitespace
+     * characters
+     */
+    private int numTrailingWhitespaceChars(String buffer, int endingIndex) {
+       int numWS = 0;
+       while( endingIndex>=0 && Character.isWhitespace(buffer.charAt(endingIndex)) && !isNewLineCharacter(buffer.charAt(endingIndex) ) ) {
+           numWS++;
+           endingIndex--;
+       }
+       
+       return numWS;
+    }
+    
+    /** Given the characters in buffer ending at offset, return the number of rightmost newline
+     * characters
+     */
+    private int numTrailingNewLines(String buffer, int endingIndex) {
+       int numWS = 0;
+       while( endingIndex>=0 && isNewLineCharacter(buffer.charAt(endingIndex)) ) {
+           numWS++;
+           endingIndex--;
+       }
+       
+       return numWS;
     }
 }
     
