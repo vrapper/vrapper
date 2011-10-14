@@ -11,6 +11,7 @@ import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.VimConstants;
+import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.commands.motions.SearchResultMotion;
@@ -23,9 +24,14 @@ import net.sourceforge.vrapper.vim.commands.motions.SearchResultMotion;
 public class SearchCommandParser extends AbstractCommandParser {
 
     private static final Pattern AFTER_SEARCH_PATTERN = Pattern.compile("(e|b)?\\+?(-?\\d+)?");
+    private Command commandToExecute;
 
     public SearchCommandParser(EditorAdaptor vim) {
         super(vim);
+    }
+    
+    public void setCommandToExecute(Command command) {
+        commandToExecute = command;
     }
 
     /**
@@ -39,7 +45,10 @@ public class SearchCommandParser extends AbstractCommandParser {
         editor.getRegisterManager().setSearch(search);
         editor.getSearchAndReplaceService().removeHighlighting();
         try {
-            MotionCommand.doIt(editor, SearchResultMotion.FORWARD);
+            if(commandToExecute != null)
+                commandToExecute.execute(editor);
+            else
+                MotionCommand.doIt(editor, SearchResultMotion.FORWARD);
         } catch (CommandExecutionException e) {
             // TODO: something useful
         }

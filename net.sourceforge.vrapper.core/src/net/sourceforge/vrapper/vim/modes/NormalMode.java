@@ -23,6 +23,7 @@ import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
+import net.sourceforge.vrapper.vim.PerformOperationOnSearchResultCommand;
 import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.BorderPolicy;
 import net.sourceforge.vrapper.vim.commands.CenterLineCommand;
@@ -307,6 +308,19 @@ public class NormalMode extends CommandBasedMode {
                                 convertKeyStroke(
                                         SetMarkCommand.KEYSTROKE_CONVERTER,
                                         VimConstants.PRINTABLE_KEYSTROKES)),
+                        //TODO: how can I account for counts? (d3/<pattern>)
+                        transitionBind('d',
+                        	leafBind('/', (Command) new ChangeModeCommand(SearchMode.NAME, SearchMode.Direction.FORWARD, new ExecuteCommandOnCompleteHint(new PerformOperationOnSearchResultCommand(delete, SearchMode.Direction.FORWARD)))),
+                        	leafBind('?', (Command) new ChangeModeCommand(SearchMode.NAME, SearchMode.Direction.BACKWARD, new ExecuteCommandOnCompleteHint(new PerformOperationOnSearchResultCommand(delete, SearchMode.Direction.BACKWARD))))
+                        ),
+                        transitionBind('y',
+                        	leafBind('/', (Command) new ChangeModeCommand(SearchMode.NAME, SearchMode.Direction.FORWARD, new ExecuteCommandOnCompleteHint(new PerformOperationOnSearchResultCommand(yank, SearchMode.Direction.FORWARD)))),
+                        	leafBind('?', (Command) new ChangeModeCommand(SearchMode.NAME, SearchMode.Direction.BACKWARD, new ExecuteCommandOnCompleteHint(new PerformOperationOnSearchResultCommand(yank, SearchMode.Direction.BACKWARD))))
+                        ),
+                        transitionBind('c',
+                        	leafBind('/', (Command) new ChangeModeCommand(SearchMode.NAME, SearchMode.Direction.FORWARD, new ExecuteCommandOnCompleteHint(new PerformOperationOnSearchResultCommand(change, SearchMode.Direction.FORWARD)))),
+                        	leafBind('?', (Command) new ChangeModeCommand(SearchMode.NAME, SearchMode.Direction.BACKWARD, new ExecuteCommandOnCompleteHint(new PerformOperationOnSearchResultCommand(change, SearchMode.Direction.BACKWARD))))
+                        ),
                         leafBind('u', undo),
                         leafCtrlBind('r', redo),
                         transitionBind('z',
