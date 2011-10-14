@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Eclipse Plug-in
+Bundle-Name: Vrapper
 Bundle-SymbolicName: net.sourceforge.vrapper.eclipse;singleton:=true
 Bundle-Version: 0.17.20110918
 Bundle-Activator: net.sourceforge.vrapper.eclipse.activator.VrapperPlugin
