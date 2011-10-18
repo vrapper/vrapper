@@ -14,11 +14,7 @@ import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 public class MoveWordRightForUpdate extends CountAwareMotion {
     
     public static final Motion MOVE_WORD_RIGHT_INSTANCE = new MoveWordRightForUpdate( new MoveWordRight(false) );
-    public static final Motion MOVE_WORD_RIGHT_INSTANCE_BAILS_OFF = new MoveWordRightForUpdate( new MoveWordRight(true) );
-    
     public static final Motion MOVE_BIG_WORD_RIGHT_INSTANCE = new MoveWordRightForUpdate( new MoveBigWORDRight(false) );
-    public static final Motion MOVE_BIG_WORD_RIGHT_INSTANCE_BAIL_OFF = new MoveWordRightForUpdate( new MoveBigWORDRight(true) );
-    
     
     //delegate motion
     private CountAwareMotion delegate;
