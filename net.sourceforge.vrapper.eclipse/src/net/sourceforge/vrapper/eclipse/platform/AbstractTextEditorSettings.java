@@ -5,6 +5,9 @@ import java.lang.reflect.Method;
 import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.UnderlyingEditorSettings;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
@@ -39,6 +42,12 @@ public class AbstractTextEditorSettings implements UnderlyingEditorSettings {
     
     public void setShowWhitespace(boolean show) {
         EditorsUI.getPreferenceStore().setValue(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_SHOW_WHITESPACE_CHARACTERS , show);
+    }
+    
+    public void disableInputMethod() {
+        //Reset IME (Input Method editor) so Japanese keyboards can use normal-mode's key-bindings
+        Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+        shell.setImeInputMode(SWT.NONE);
     }
 
 }

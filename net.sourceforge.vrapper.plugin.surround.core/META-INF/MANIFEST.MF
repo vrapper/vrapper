@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Vrapper Surround Plug-in Core
 Bundle-SymbolicName: net.sourceforge.vrapper.plugin.surround.core;singleton:=true
-Bundle-Version: 0.15.0
+Bundle-Version: 0.17.20110918
 Export-Package: net.sourceforge.vrapper.plugin.surround.commands,
  net.sourceforge.vrapper.plugin.surround.state
 Require-Bundle: net.sourceforge.vrapper.core;bundle-version="0.15.0";visibility:=reexport

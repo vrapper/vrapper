@@ -163,8 +163,9 @@ public abstract class CommandBasedMode extends AbstractMode {
                             VimConstants.PRINTABLE_KEYSTROKES)),
                     transitionBind('`', convertKeyStroke(
                             GoToMarkMotion.CHARWISE_CONVERTER,
-                            VimConstants.PRINTABLE_KEYSTROKES)), leafBind('w',
-                            wordRight), leafBind('W', WORDRight),
+                            VimConstants.PRINTABLE_KEYSTROKES)),
+                    leafBind('w', wordRight),
+                    leafBind('W', WORDRight),
                     leafBind('e', wordEndRight),
                     leafBind('E', WORDEndRight),
                     leafBind('b', wordLeft),
@@ -293,10 +294,10 @@ public abstract class CommandBasedMode extends AbstractMode {
 
     @SuppressWarnings("unchecked")
     protected State<String> getKeyMapsForMotions() {
-        return state(leafBind('f', KeyMapResolver.NO_KEYMAP), leafBind('t',
-                KeyMapResolver.NO_KEYMAP), leafBind('T',
-                KeyMapResolver.NO_KEYMAP), leafBind('F',
-                KeyMapResolver.NO_KEYMAP));
+        return state(leafBind('f', KeyMapResolver.NO_KEYMAP),
+        		     leafBind('t', KeyMapResolver.NO_KEYMAP),
+        		     leafBind('T', KeyMapResolver.NO_KEYMAP),
+        		     leafBind('F', KeyMapResolver.NO_KEYMAP));
     }
 
     protected State<Command> getPlatformSpecificState(String mode) {
