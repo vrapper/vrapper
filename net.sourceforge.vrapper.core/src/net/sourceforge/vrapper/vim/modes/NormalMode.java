@@ -67,7 +67,6 @@ import net.sourceforge.vrapper.vim.commands.motions.MoveBigWORDEndRight;
 import net.sourceforge.vrapper.vim.commands.motions.MoveBigWORDEndRightForChange;
 import net.sourceforge.vrapper.vim.commands.motions.MoveBigWORDLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveBigWORDRight;
-import net.sourceforge.vrapper.vim.commands.motions.MoveBigWORDRightForUpdate;
 import net.sourceforge.vrapper.vim.commands.motions.MoveLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveRight;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordEndRight;
@@ -140,14 +139,11 @@ public class NormalMode extends CommandBasedMode {
     public static synchronized State<Motion> textMotions() {
         if (textMotions == null) {
 
-            final Motion moveWordRightForUpdate = MoveWordRightForUpdate.INSTANCE;
-            final Motion moveBigWORDRightForUpdate = MoveBigWORDRightForUpdate.INSTANCE;
-
             //override the default motions for a few motions that act differently in text mode
             textMotions = union(
             				state(
-            					leafBind('w', moveWordRightForUpdate),
-            					leafBind('W', moveBigWORDRightForUpdate)
+            					leafBind('w', MoveWordRightForUpdate.MOVE_WORD_RIGHT_INSTANCE),
+            					leafBind('W', MoveWordRightForUpdate.MOVE_BIG_WORD_RIGHT_INSTANCE)
             				),
             				motions()
             			);
