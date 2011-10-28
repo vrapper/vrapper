@@ -297,6 +297,7 @@ public class ConstructorWrappers {
         map.put("DOWN",    key(SpecialKey.ARROW_DOWN));
         map.put("LEFT",    key(SpecialKey.ARROW_LEFT));
         map.put("RIGHT",   key(SpecialKey.ARROW_RIGHT));
+        map.put("TAB",     key(SpecialKey.TAB));
         map.put("SPACE",   key(' '));
         map.put("GT",      key('>'));
         map.put("LT",      key('<'));
