@@ -12,7 +12,6 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.Command;
-import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 
 /**
  * Mode for input of search parameters (keyword and offset).
@@ -35,15 +34,11 @@ public class SearchCommandParser extends AbstractCommandParser {
      * @param first contains the "command", probably '/' or '?' when searching
      */
     @Override
-    public void parseAndExecute(String first, String command) {
+    public Command parseAndExecute(String first, String command) {
         Search search = createSearch(first, command);
         editor.getRegisterManager().setSearch(search);
         editor.getSearchAndReplaceService().removeHighlighting();
-        try {
-            commandToExecute.execute(editor);
-        } catch (CommandExecutionException e) {
-            // TODO: something useful
-        }
+        return commandToExecute;
     }
 
 	private Search createSearch(String first, String command) {

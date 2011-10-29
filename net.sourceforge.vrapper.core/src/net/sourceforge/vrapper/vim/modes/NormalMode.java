@@ -78,7 +78,6 @@ import net.sourceforge.vrapper.vim.commands.motions.MoveWordLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordRight;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordRightForUpdate;
 import net.sourceforge.vrapper.vim.commands.motions.ParagraphMotion;
-import net.sourceforge.vrapper.vim.modes.commandline.SearchMode;
 
 public class NormalMode extends CommandBasedMode {
 
@@ -343,6 +342,9 @@ public class NormalMode extends CommandBasedMode {
         placeCursor();
         editorAdaptor.getCursorService().setCaret(CaretType.RECTANGULAR);
         super.enterMode(args);
+        if (args.length > 0) {
+	        executeCommand(((ExecuteCommandHint.OnEnter) args[0]).getCommand());
+        }
     }
 
     public String getName() {

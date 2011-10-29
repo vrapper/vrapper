@@ -181,8 +181,8 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
             if (currentMode != null) {
                 currentMode.leaveMode(args);
             }
-            newMode.enterMode(args);
             currentMode = newMode;
+            newMode.enterMode(args);
         }
         userInterfaceService.setEditorMode(newMode.getName());
     }
