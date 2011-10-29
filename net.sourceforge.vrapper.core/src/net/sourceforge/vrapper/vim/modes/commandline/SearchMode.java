@@ -25,7 +25,7 @@ public class SearchMode extends AbstractCommandLineMode {
     private boolean forward;
     private Position startPos;
     private int originalTopLine;
-    private Command commandOnComplete;
+    private Command command;
 
     public SearchMode(EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
@@ -36,15 +36,8 @@ public class SearchMode extends AbstractCommandLineMode {
      */
     @Override
     public void enterMode(ModeSwitchHint... args) {
-        for (ModeSwitchHint hint : args) {
-            if(hint instanceof Direction) {
-                forward = hint.equals(Direction.FORWARD);
-            }
-            if(hint instanceof ExecuteCommandOnCompleteHint) {
-                commandOnComplete = ((ExecuteCommandOnCompleteHint) hint).getCommand();
-            }
-        }
-            
+        forward = args[0].equals(Direction.FORWARD);
+        command = ((ExecuteCommandOnCompleteHint) args[1]).getCommand();
         startPos = editorAdaptor.getCursorService().getPosition();
         originalTopLine = editorAdaptor.getViewportService().getViewPortInformation().getTopLine();
         super.enterMode(args);
@@ -52,10 +45,7 @@ public class SearchMode extends AbstractCommandLineMode {
 
     @Override
     protected AbstractCommandParser createParser() {
-        SearchCommandParser parser = new SearchCommandParser(editorAdaptor);
-        if(commandOnComplete != null)
-            parser.setCommandToExecute(commandOnComplete);
-        return parser;
+        return new SearchCommandParser(editorAdaptor, command);
     }
 
     @Override

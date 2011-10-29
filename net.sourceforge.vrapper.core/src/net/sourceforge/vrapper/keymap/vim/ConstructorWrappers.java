@@ -22,7 +22,9 @@ import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.Transition;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.Function;
+import net.sourceforge.vrapper.vim.PerformOperationOnSearchResultCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeCaretShapeCommand;
+import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.MotionTextObject;
 import net.sourceforge.vrapper.vim.commands.SelectionBasedTextObjectCommand;
@@ -31,6 +33,9 @@ import net.sourceforge.vrapper.vim.commands.TextOperation;
 import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
 import net.sourceforge.vrapper.vim.commands.motions.LineEndMotion;
 import net.sourceforge.vrapper.vim.commands.motions.Motion;
+import net.sourceforge.vrapper.vim.commands.motions.SearchResultMotion;
+import net.sourceforge.vrapper.vim.modes.ExecuteCommandOnCompleteHint;
+import net.sourceforge.vrapper.vim.modes.commandline.SearchMode;
 
 /**
  * Placeholder for Java-ugliness-hiding static methods intended to be statically imported
@@ -246,11 +251,16 @@ public class ConstructorWrappers {
                 operatorCmds(key, command, textObjects));
     }
 
-    public static State<Command> operatorCmds(char key, TextOperation command, State<TextObject> textObjects) {
+    @SuppressWarnings("unchecked")
+	public static State<Command> operatorCmds(char key, TextOperation command, State<TextObject> textObjects) {
         LineEndMotion lineEndMotion = new LineEndMotion(LINE_WISE);
         Command doLinewise = new TextOperationTextObjectCommand(command, new MotionTextObject(lineEndMotion));
         State<Command> doubleKey = leafState(key, doLinewise);
-        State<Command> operatorCmds = new OperatorCommandState(command, textObjects);
+        State<Command> operatorCmds = union(
+		    	leafState('/', (Command) new ChangeModeCommand(SearchMode.NAME, SearchMode.Direction.FORWARD, new ExecuteCommandOnCompleteHint(new PerformOperationOnSearchResultCommand(command, SearchResultMotion.FORWARD)))),
+		    	leafState('?', (Command) new ChangeModeCommand(SearchMode.NAME, SearchMode.Direction.BACKWARD, new ExecuteCommandOnCompleteHint(new PerformOperationOnSearchResultCommand(command, SearchResultMotion.FORWARD)))),
+	    		new OperatorCommandState(command, textObjects)
+    	);
         return operatorPendingState(key, doubleKey, operatorCmds);
     }
 
