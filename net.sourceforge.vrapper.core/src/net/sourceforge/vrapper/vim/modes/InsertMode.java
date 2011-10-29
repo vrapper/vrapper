@@ -163,8 +163,7 @@ public class InsertMode extends AbstractMode {
         return dontRepeat(seq(
                 repetition,
                 new SwitchRegisterCommand(lastEditRegister),
-                PasteBeforeCommand.INSTANCE,
-                new MoveRightOverLineBreak(text.length() - 1)
+                PasteBeforeCommand.CURSOR_ON_TEXT
         ));
     }
 

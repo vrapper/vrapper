@@ -219,8 +219,10 @@ public class NormalMode extends CommandBasedMode {
         TextOperation yank   = YankOperation.INSTANCE;
         Command undo = UndoCommand.INSTANCE;
         Command redo = RedoCommand.INSTANCE;
-        Command pasteAfter  = PasteAfterCommand.INSTANCE;
-        Command pasteBefore = PasteBeforeCommand.INSTANCE;
+        Command pasteAfter  = PasteAfterCommand.CURSOR_ON_TEXT;
+        Command pasteBefore = PasteBeforeCommand.CURSOR_ON_TEXT;
+        Command pasteAfterWithG  = PasteAfterCommand.CURSOR_AFTER_TEXT;
+        Command pasteBeforeWithG = PasteBeforeCommand.CURSOR_AFTER_TEXT;
         Command deleteNext = new TextOperationTextObjectCommand(delete, new MotionTextObject(moveRight));
         Command deletePrevious = new TextOperationTextObjectCommand(delete, new MotionTextObject(moveLeft));
         Command repeatLastOne = DotCommand.INSTANCE;
@@ -286,7 +288,9 @@ public class NormalMode extends CommandBasedMode {
                         leafBind('s', substituteChar),
                         leafBind('J', joinLines),
                         transitionBind('g',
-                                leafBind('J', joinLinesDumbWay)),
+                                leafBind('J', joinLinesDumbWay),
+                                leafBind('p', pasteAfterWithG),
+                                leafBind('P', pasteBeforeWithG)),
                         transitionBind('q',
                                 convertKeyStroke(
                                         RecordMacroCommand.KEYSTROKE_CONVERTER,
