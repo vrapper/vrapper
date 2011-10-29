@@ -1,6 +1,7 @@
 package net.sourceforge.vrapper.vim.modes.commandline;
 
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.key;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.ctrlKey;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.platform.Platform;
@@ -18,6 +19,7 @@ public abstract class AbstractCommandParser {
 
     static final KeyStroke KEY_RETURN = key(SpecialKey.RETURN);
     static final KeyStroke KEY_ESCAPE = key(SpecialKey.ESC);
+    static final KeyStroke KEY_CTRL_C = ctrlKey('c');
     static final KeyStroke KEY_BACKSP = key(SpecialKey.BACKSPACE);
     static final KeyStroke KEY_CTRL_V = key((char) 22);
     protected final StringBuffer buffer;
@@ -47,7 +49,8 @@ public abstract class AbstractCommandParser {
         } else
             buffer.append(e.getCharacter());
 
-        if (buffer.length() == 0 || e.equals(KEY_RETURN) || e.equals(KEY_ESCAPE)) {
+        if (buffer.length() == 0 || e.equals(KEY_RETURN)
+        		|| e.equals(KEY_ESCAPE) || e.equals(KEY_CTRL_C)) {
             editor.changeModeSafely(NormalMode.NAME);
         }
     }

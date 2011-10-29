@@ -3,6 +3,7 @@ package net.sourceforge.vrapper.vim.modes;
 import static net.sourceforge.vrapper.keymap.StateUtils.union;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.convertKeyStroke;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafCtrlBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
 import net.sourceforge.vrapper.keymap.SpecialKey;
@@ -97,6 +98,7 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
                 getPlatformSpecificState(NAME),
                 state(
                 leafBind(SpecialKey.ESC, leaveVisual),
+                leafCtrlBind('c', leaveVisual),
                 leafBind('y', yank),
                 leafBind('s', change),
                 leafBind('c', change),

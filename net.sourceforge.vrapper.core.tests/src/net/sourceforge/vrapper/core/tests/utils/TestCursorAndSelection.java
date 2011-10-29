@@ -70,6 +70,8 @@ public class TestCursorAndSelection implements CursorService, SelectionService {
 	}
 
 	public void setSelection(Selection selection) {
+		if (selection != null)
+			this.position = selection.getEnd();
 		this.selection = selection;
 	}
 

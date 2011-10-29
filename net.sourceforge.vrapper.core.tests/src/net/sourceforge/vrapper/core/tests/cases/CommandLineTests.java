@@ -1,6 +1,8 @@
 package net.sourceforge.vrapper.core.tests.cases;
 
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.parseKeyStrokes;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -8,6 +10,8 @@ import java.util.Queue;
 import net.sourceforge.vrapper.core.tests.utils.VimTestCase;
 import net.sourceforge.vrapper.platform.Configuration.Option;
 import net.sourceforge.vrapper.vim.Options;
+import net.sourceforge.vrapper.vim.modes.CommandLineMode;
+import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.modes.commandline.ComplexOptionEvaluator;
 
 import org.junit.Test;
@@ -22,6 +26,15 @@ public class CommandLineTests extends VimTestCase {
         assertSetOption(Options.SCROLL_JUMP, "bbshh", 1, 0, -20);
         assertSetOption(Options.SCROLL_OFFSET, "bbshh", 1, 0, -20);
     }
+	
+	@Test
+	public void test_CtrlC_exits() {
+		adaptor.changeModeSafely(CommandLineMode.NAME);
+		adaptor.getConfiguration().set(Options.IGNORE_CASE, false);
+		type(parseKeyStrokes("set ic<C-c>"));
+		assertFalse(adaptor.getConfiguration().get(Options.IGNORE_CASE));
+		assertEquals(NormalMode.NAME, adaptor.getCurrentModeName());
+	}
 
     private <T> void assertSetOption(Option<T> o, String invalid, T... values) {
 

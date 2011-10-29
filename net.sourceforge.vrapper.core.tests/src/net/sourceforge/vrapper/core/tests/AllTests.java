@@ -1,5 +1,7 @@
 package net.sourceforge.vrapper.core.tests;
 
+import net.sourceforge.vrapper.core.tests.cases.CommandLineTests;
+import net.sourceforge.vrapper.core.tests.cases.InsertModeTests;
 import net.sourceforge.vrapper.core.tests.cases.KeyMapTests;
 import net.sourceforge.vrapper.core.tests.cases.MotionTests;
 import net.sourceforge.vrapper.core.tests.cases.NormalModeTests;
@@ -20,6 +22,8 @@ import org.junit.runners.Suite;
 	KeyMapTests.class,
 	VisualModeTests.class,
 	SnapshotTests.class,
+	CommandLineTests.class,
+	InsertModeTests.class,
 //	InsertModeTests.class,
 //	TextObjectsUnitTests.class,
 //	CommandUnitTests.class,

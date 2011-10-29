@@ -645,6 +645,17 @@ public class NormalModeTests extends CommandTestCase {
 	            "Ala ",'m',"a kota i psa",
 	            "Ala XXX XX",'X'," i psa");
 	}
+	
+	@Test
+	public void test_CtrlC_cancels() {
+		checkCommand(forKeySeq("rx<space><space>r<C-c>"),
+				"replace ", 'a', "bcd",
+				"replace xb", 'c', "d");
+		checkCommand(forKeySeq("/xxx<C-c>"),
+				"", 'a', " test is this ... xxx abc",
+				"", 'a', " test is this ... xxx abc");
+		assertEquals(NormalMode.NAME, adaptor.getCurrentModeName());
+	}
 
     private void installSaneRegisterManager() {
         registerManager = new DefaultRegisterManager();

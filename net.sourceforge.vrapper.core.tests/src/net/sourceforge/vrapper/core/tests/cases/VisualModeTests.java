@@ -189,11 +189,10 @@ public class VisualModeTests extends CommandTestCase {
 				true,  "A",""," MA kota");
 		verify(adaptor, times(2)).changeMode(NormalMode.NAME);
 
-		checkCommand(forKeySeq("y"),
-				false,  "A","LA"," MA kota",
-				false,  "A","","LA MA kota");
+		checkLeavingCommand(forKeySeq("y"), false,
+				"A", "LA", " MA kota",
+				"ALA", ' ', "MA kota");
 		verify(adaptor, times(3)).changeMode(NormalMode.NAME);
-		assertEquals(1, adaptor.getCursorService().getPosition().getModelOffset());
 
 		checkCommand(forKeySeq("s"),
 				true,  "A","LA"," MA kota",
@@ -276,5 +275,13 @@ public class VisualModeTests extends CommandTestCase {
 				false,  "new Hell","o\nW","orld();\n//;-)",
 				"new Hello",'W',"orld();\n//;-)");
     }
+	
+	@Test
+	public void test_CtrlC_exits() {
+		checkLeavingCommand(forKeySeq("<C-c>"), true,
+				"test", "123", "test",
+				"test", '1', "23test");
+		assertEquals(NormalMode.NAME, adaptor.getCurrentModeName());
+	}
 
 }
