@@ -15,7 +15,7 @@ import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.modes.AbstractCommandLineMode;
-import net.sourceforge.vrapper.vim.modes.ExecuteCommandOnCompleteHint;
+import net.sourceforge.vrapper.vim.modes.ExecuteCommandHint;
 import net.sourceforge.vrapper.vim.modes.ModeSwitchHint;
 
 public class SearchMode extends AbstractCommandLineMode {
@@ -37,7 +37,7 @@ public class SearchMode extends AbstractCommandLineMode {
     @Override
     public void enterMode(ModeSwitchHint... args) {
         forward = args[0].equals(Direction.FORWARD);
-        command = ((ExecuteCommandOnCompleteHint) args[1]).getCommand();
+        command = ((ExecuteCommandHint.OnLeave) args[1]).getCommand();
         startPos = editorAdaptor.getCursorService().getPosition();
         originalTopLine = editorAdaptor.getViewportService().getViewPortInformation().getTopLine();
         super.enterMode(args);

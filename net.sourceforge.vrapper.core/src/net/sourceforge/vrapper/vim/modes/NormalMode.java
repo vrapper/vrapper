@@ -258,7 +258,7 @@ public class NormalMode extends CommandBasedMode {
         Command afterEnteringVisual = seq(afterEnteringVisualInc, afterEnteringVisualExc);
 
         State<Command> motionCommands = new GoThereState(motions);
-        ModeSwitchHint nextResult = new ExecuteCommandOnCompleteHint(
+        ModeSwitchHint nextResult = new ExecuteCommandHint.OnLeave(
         		motionCommands.press(key('n')).getValue());
 
         State<Command> platformSpecificState = getPlatformSpecificState(NAME);

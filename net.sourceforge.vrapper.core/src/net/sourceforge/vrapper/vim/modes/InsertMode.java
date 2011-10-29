@@ -85,8 +85,8 @@ public class InsertMode extends AbstractMode {
                     WithCountHint cast = (WithCountHint) hint;
                     count = cast.getCount();
                 }
-                if (hint instanceof ExecuteCommandOnEnterHint) {
-                    ExecuteCommandOnEnterHint cast = (ExecuteCommandOnEnterHint) hint;
+                if (hint instanceof ExecuteCommandHint) {
+                    ExecuteCommandHint cast = (ExecuteCommandHint) hint;
                     cast.getCommand().execute(editorAdaptor);
                 }
             }

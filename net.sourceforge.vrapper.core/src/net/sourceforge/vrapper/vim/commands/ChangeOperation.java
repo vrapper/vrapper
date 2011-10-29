@@ -2,7 +2,7 @@ package net.sourceforge.vrapper.vim.commands;
 
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
-import net.sourceforge.vrapper.vim.modes.ExecuteCommandOnEnterHint;
+import net.sourceforge.vrapper.vim.modes.ExecuteCommandHint;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
 
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
@@ -34,7 +34,7 @@ public class ChangeOperation implements TextOperation {
 
     public void execute(EditorAdaptor editorAdaptor, int count, TextObject textObject) throws CommandExecutionException {
         Command beforeInsertCmd = getHintCommand(editorAdaptor, count, textObject);
-        editorAdaptor.changeMode(InsertMode.NAME, new ExecuteCommandOnEnterHint(beforeInsertCmd));
+        editorAdaptor.changeMode(InsertMode.NAME, new ExecuteCommandHint.OnEnter(beforeInsertCmd));
     }
 
     static Command getHintCommand(EditorAdaptor editorAdaptor, int count, TextObject textObject) {

@@ -34,7 +34,7 @@ import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
 import net.sourceforge.vrapper.vim.commands.motions.LineEndMotion;
 import net.sourceforge.vrapper.vim.commands.motions.Motion;
 import net.sourceforge.vrapper.vim.commands.motions.SearchResultMotion;
-import net.sourceforge.vrapper.vim.modes.ExecuteCommandOnCompleteHint;
+import net.sourceforge.vrapper.vim.modes.ExecuteCommandHint;
 import net.sourceforge.vrapper.vim.modes.commandline.SearchMode;
 
 /**
@@ -257,8 +257,8 @@ public class ConstructorWrappers {
         Command doLinewise = new TextOperationTextObjectCommand(command, new MotionTextObject(lineEndMotion));
         State<Command> doubleKey = leafState(key, doLinewise);
         State<Command> operatorCmds = union(
-		    	leafState('/', (Command) new ChangeModeCommand(SearchMode.NAME, SearchMode.Direction.FORWARD, new ExecuteCommandOnCompleteHint(new PerformOperationOnSearchResultCommand(command, SearchResultMotion.FORWARD)))),
-		    	leafState('?', (Command) new ChangeModeCommand(SearchMode.NAME, SearchMode.Direction.BACKWARD, new ExecuteCommandOnCompleteHint(new PerformOperationOnSearchResultCommand(command, SearchResultMotion.FORWARD)))),
+		    	leafState('/', (Command) new ChangeModeCommand(SearchMode.NAME, SearchMode.Direction.FORWARD, new ExecuteCommandHint.OnLeave(new PerformOperationOnSearchResultCommand(command, SearchResultMotion.FORWARD)))),
+		    	leafState('?', (Command) new ChangeModeCommand(SearchMode.NAME, SearchMode.Direction.BACKWARD, new ExecuteCommandHint.OnLeave(new PerformOperationOnSearchResultCommand(command, SearchResultMotion.FORWARD)))),
 	    		new OperatorCommandState(command, textObjects)
     	);
         return operatorPendingState(key, doubleKey, operatorCmds);
