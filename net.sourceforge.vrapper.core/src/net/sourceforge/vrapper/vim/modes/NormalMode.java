@@ -30,6 +30,7 @@ import net.sourceforge.vrapper.vim.commands.CenterLineCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeOperation;
 import net.sourceforge.vrapper.vim.commands.ChangeToInsertModeCommand;
+import net.sourceforge.vrapper.vim.commands.ChangeToSearchModeCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.CountIgnoringNonRepeatableCommand;
@@ -258,8 +259,7 @@ public class NormalMode extends CommandBasedMode {
         Command afterEnteringVisual = seq(afterEnteringVisualInc, afterEnteringVisualExc);
 
         State<Command> motionCommands = new GoThereState(motions);
-        ModeSwitchHint nextResult = new ExecuteCommandHint.OnLeave(
-        		motionCommands.press(key('n')).getValue());
+        Command nextResult = motionCommands.press(key('n')).getValue();
 
         State<Command> platformSpecificState = getPlatformSpecificState(NAME);
         return RegisterState.wrap(CountingState.wrap(union(
@@ -275,8 +275,8 @@ public class NormalMode extends CommandBasedMode {
                         leafBind('I', (Command) new ChangeToInsertModeCommand(new MotionCommand(bol))),
                         leafBind('A', (Command) new ChangeToInsertModeCommand(new MotionCommand(eol))),
                         leafBind(':', (Command) new ChangeModeCommand(CommandLineMode.NAME)),
-                        leafBind('?', (Command) new ChangeModeCommand(SearchMode.NAME, SearchMode.Direction.BACKWARD, nextResult)),
-                        leafBind('/', (Command) new ChangeModeCommand(SearchMode.NAME, SearchMode.Direction.FORWARD, nextResult)),
+                        leafBind('?', (Command) new ChangeToSearchModeCommand(true, nextResult)),
+                        leafBind('/', (Command) new ChangeToSearchModeCommand(false, nextResult)),
                         leafBind('R', (Command) new ChangeModeCommand(ReplaceMode.NAME)),
                         leafBind('o', (Command) new ChangeToInsertModeCommand(InsertLineCommand.POST_CURSOR)),
                         leafBind('O', (Command) new ChangeToInsertModeCommand(InsertLineCommand.PRE_CURSOR)),
