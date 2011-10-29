@@ -9,6 +9,8 @@ import net.sourceforge.vrapper.eclipse.platform.EclipsePlatform;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.vim.SimpleKeyStroke;
+import net.sourceforge.vrapper.platform.Configuration;
+import net.sourceforge.vrapper.platform.SimpleConfiguration;
 import net.sourceforge.vrapper.vim.DefaultEditorAdaptor;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
@@ -64,10 +66,11 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
 
 
     private static final RegisterManager globalRegisterManager = new DefaultRegisterManager();
+    private static final Configuration sharedConfiguration = new SimpleConfiguration();
 
     public InputInterceptor createInterceptor(AbstractTextEditor abstractTextEditor, ITextViewer textViewer) {
         EditorAdaptor editorAdaptor = new DefaultEditorAdaptor(
-                new EclipsePlatform(abstractTextEditor, textViewer),
+                new EclipsePlatform(abstractTextEditor, textViewer, sharedConfiguration),
                 globalRegisterManager, VrapperPlugin.isVrapperEnabled());
         return new VimInputInterceptor(editorAdaptor);
     }

@@ -6,7 +6,7 @@ import java.util.Map;
 public class SimpleConfiguration implements Configuration {
 
     private String newLine = NewLine.SYSTEM.nl;
-    private static final Map<Option<?>, Object> vars = new HashMap<Option<?>, Object>();
+    private final Map<Option<?>, Object> vars = new HashMap<Option<?>, Object>();
 
 
     @SuppressWarnings("unchecked")

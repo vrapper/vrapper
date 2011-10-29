@@ -49,9 +49,9 @@ public class EclipsePlatform implements Platform {
     private static final Map<String, PlatformSpecificStateProvider> providerCache = new HashMap<String, PlatformSpecificStateProvider>();
 
     public EclipsePlatform(AbstractTextEditor abstractTextEditor,
-            ITextViewer textViewer) {
+            ITextViewer textViewer, Configuration sharedConfiguration) {
         underlyingEditor = abstractTextEditor;
-        configuration = new SimpleConfiguration();
+        configuration = sharedConfiguration;
         cursorAndSelection = new EclipseCursorAndSelection(configuration,
                 textViewer);
         textContent = new EclipseTextContent(textViewer);
