@@ -13,6 +13,7 @@ import net.sourceforge.vrapper.platform.Configuration;
 import net.sourceforge.vrapper.platform.SimpleConfiguration;
 import net.sourceforge.vrapper.vim.DefaultEditorAdaptor;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
 import net.sourceforge.vrapper.vim.modes.LinewiseVisualMode;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
@@ -112,7 +113,9 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
         }
         
 		public void selectionChanged(SelectionChangedEvent event) {
-			if (!(event.getSelection() instanceof TextSelection) || !VrapperPlugin.isMouseDown())
+			if (!VrapperPlugin.isMouseDown()
+					|| !(event.getSelection() instanceof TextSelection)
+					|| !editorAdaptor.getConfiguration().get(Options.VISUAL_MOUSE))
 				return;
 			
         	TextSelection selection = (TextSelection) event.getSelection();

@@ -25,12 +25,14 @@ public interface Options {
     public static final Option<Boolean> LINE_NUMBERS       = bool("number",       false, "nu");
     public static final Option<Boolean> SHOW_WHITESPACE    = bool("list",         false, "l");
     public static final Option<Boolean> IM_DISABLE         = bool("imdisable",    false, "imd");
+    public static final Option<Boolean> VISUAL_MOUSE       = bool("visualmouse",  true,  "vm");
 
     @SuppressWarnings("unchecked")
     public static final Set<Option<Boolean>> BOOLEAN_OPTIONS = set(
             SMART_INDENT, AUTO_INDENT, ATOMIC_INSERT, IGNORE_CASE, SMART_CASE,
             MOVE_ON_YANK, SANE_CW, SANE_Y, SEARCH_HIGHLIGHT, SEARCH_REGEX,
-            INCREMENTAL_SEARCH, LINE_NUMBERS, SHOW_WHITESPACE, IM_DISABLE);
+            INCREMENTAL_SEARCH, LINE_NUMBERS, SHOW_WHITESPACE, IM_DISABLE,
+            VISUAL_MOUSE);
 
     // String options:
     public static final Option<String> SELECTION = string("selection", "inclusive", "old, inclusive, exclusive", "sel");
