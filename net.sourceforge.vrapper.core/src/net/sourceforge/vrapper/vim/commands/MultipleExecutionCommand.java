@@ -9,6 +9,8 @@ public class MultipleExecutionCommand implements Command {
     private final Command command;
 
     public MultipleExecutionCommand(int count, Command command) {
+        if (count == NO_COUNT_GIVEN)
+            count = 1;
         this.count = count;
         this.command = command;
     }
