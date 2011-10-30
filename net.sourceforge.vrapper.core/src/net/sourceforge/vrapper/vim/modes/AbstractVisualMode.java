@@ -23,6 +23,7 @@ import net.sourceforge.vrapper.vim.commands.DeleteOperation;
 import net.sourceforge.vrapper.vim.commands.JoinVisualLinesCommand;
 import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
 import net.sourceforge.vrapper.vim.commands.PasteOperation;
+import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SelectionBasedTextOperationCommand;
 import net.sourceforge.vrapper.vim.commands.SetMarkCommand;
 import net.sourceforge.vrapper.vim.commands.YankOperation;
@@ -34,8 +35,10 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
 
     public static final ModeSwitchHint FIX_SELECTION_HINT = new ModeSwitchHint() { };
     public static final ModeSwitchHint KEEP_SELECTION_HINT = new ModeSwitchHint() { };
+    public static final ModeSwitchHint RECALL_SELECTION_HINT = new ModeSwitchHint() { };
     public static final ModeSwitchHint MOVE_CURSOR_HINT = new ModeSwitchHint() { };
 
+    private Selection lastSelection;
 
     public AbstractVisualMode(EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
@@ -65,6 +68,7 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
     public void enterMode(ModeSwitchHint... hints) throws CommandExecutionException {
         boolean fixSelection = false;
         boolean keepSelection = false;
+        boolean recallSelection = false;
         for (ModeSwitchHint hint: hints) {
             if (hint == FIX_SELECTION_HINT) {
             	keepSelection = true;
@@ -73,14 +77,26 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
             if (hint == KEEP_SELECTION_HINT) {
             	keepSelection = true;
             }
+            if (hint == RECALL_SELECTION_HINT) {
+            	recallSelection = true;
+            }
         }
-        if (!keepSelection) {
+        if (recallSelection) {
+        	editorAdaptor.setSelection(lastSelection);
+        } else if (!keepSelection) {
             editorAdaptor.setSelection(null);
         }
         if (fixSelection && editorAdaptor.getSelection() != null) {
             fixSelection();
         }
         super.enterMode(hints);
+    }
+    
+    @Override
+    public void leaveMode(ModeSwitchHint... hints)
+    		throws CommandExecutionException {
+    	lastSelection = editorAdaptor.getSelection();
+    	super.leaveMode(hints);
     }
 
     protected abstract void fixSelection();
