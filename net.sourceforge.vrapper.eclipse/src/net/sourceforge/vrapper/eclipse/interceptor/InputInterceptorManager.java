@@ -101,6 +101,8 @@ public class InputInterceptorManager implements IPartListener {
                 InputInterceptor interceptor = factory.createInterceptor(
                         editor, (ITextViewer) textViewer);
                 textViewer.prependVerifyKeyListener(interceptor);
+				((ITextViewer) textViewer).getSelectionProvider()
+						.addSelectionChangedListener(interceptor);
                 interceptors.put(editor, interceptor);
                 VrapperPlugin.getDefault().registerEditor(editor);
             }
@@ -138,6 +140,8 @@ public class InputInterceptorManager implements IPartListener {
                 // test for needed interfaces
                 ITextViewerExtension textViewer = (ITextViewerExtension) viewer;
                 textViewer.removeVerifyKeyListener(interceptor);
+				((ITextViewer) viewer).getSelectionProvider()
+						.removeSelectionChangedListener(interceptor);
             } catch (Exception exception) {
                 VrapperLog.error("Exception during closing IWorkbenchPart",
                         exception);

@@ -13,10 +13,17 @@ import net.sourceforge.vrapper.platform.Configuration;
 import net.sourceforge.vrapper.platform.SimpleConfiguration;
 import net.sourceforge.vrapper.vim.DefaultEditorAdaptor;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.Options;
+import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
+import net.sourceforge.vrapper.vim.modes.LinewiseVisualMode;
+import net.sourceforge.vrapper.vim.modes.NormalMode;
+import net.sourceforge.vrapper.vim.modes.VisualMode;
 import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
 
 import org.eclipse.jface.text.ITextViewer;
+import org.eclipse.jface.text.TextSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
@@ -104,6 +111,28 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
         public EditorAdaptor getEditorAdaptor() {
             return editorAdaptor;
         }
-
+        
+		public void selectionChanged(SelectionChangedEvent event) {
+			if (!VrapperPlugin.isMouseDown()
+					|| !(event.getSelection() instanceof TextSelection)
+					|| !editorAdaptor.getConfiguration().get(Options.VISUAL_MOUSE))
+				return;
+			
+        	TextSelection selection = (TextSelection) event.getSelection();
+        	// selection.isEmpty() is false even if length == 0, don't use it
+        	if (selection instanceof TextSelection) {
+				if (selection.getLength() == 0 &&
+						(VisualMode.NAME.equals(editorAdaptor.getCurrentModeName())
+							|| LinewiseVisualMode.NAME.equals(editorAdaptor.getCurrentModeName()))) {
+					editorAdaptor.changeModeSafely(NormalMode.NAME);
+				} else if(selection.getLength() != 0 && NormalMode.NAME.equals(editorAdaptor.getCurrentModeName())) {
+					 /* gvim supports switching to visual from insert but we
+					 * don't allow it because it might interfere with
+					 * functionality of the underlying editor */
+		    		editorAdaptor.changeModeSafely(VisualMode.NAME, AbstractVisualMode.KEEP_SELECTION_HINT);
+				}
+	        }
+		}
+		
     }
-};
+}
