@@ -33,6 +33,7 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
     public static final String KEYMAP_NAME = "Visual Mode Keymap";
 
     public static final ModeSwitchHint FIX_SELECTION_HINT = new ModeSwitchHint() { };
+    public static final ModeSwitchHint KEEP_SELECTION_HINT = new ModeSwitchHint() { };
     public static final ModeSwitchHint MOVE_CURSOR_HINT = new ModeSwitchHint() { };
 
 
@@ -62,15 +63,21 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
         }
 
     public void enterMode(ModeSwitchHint... hints) throws CommandExecutionException {
-        boolean shouldDeselect = true;
+        boolean fixSelection = false;
+        boolean keepSelection = false;
         for (ModeSwitchHint hint: hints) {
             if (hint == FIX_SELECTION_HINT) {
-                shouldDeselect = false;
+            	keepSelection = true;
+                fixSelection = true;
+            }
+            if (hint == KEEP_SELECTION_HINT) {
+            	keepSelection = true;
             }
         }
-        if (shouldDeselect) {
+        if (!keepSelection) {
             editorAdaptor.setSelection(null);
-        } else if (editorAdaptor.getSelection() != null) {
+        }
+        if (fixSelection && editorAdaptor.getSelection() != null) {
             fixSelection();
         }
         super.enterMode(hints);

@@ -25,7 +25,6 @@ public interface EditorAdaptor {
     void changeModeSafely(String name, ModeSwitchHint... args);
     String getCurrentModeName();
     void onChangeEnabled(boolean enabled);
-    void beginMouseSelection();
     EditorMode getMode(String name);
     public boolean handleKey(KeyStroke key);
 

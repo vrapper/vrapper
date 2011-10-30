@@ -338,13 +338,6 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
                 InsertMode.DONT_MOVE_CURSOR);
     }
     
-    public void beginMouseSelection() {
-    	if(currentMode == null || 
-    			(! VisualMode.NAME.equals(currentMode.getName()) && ! LinewiseVisualMode.NAME.equals(currentMode.getName()))) {
-    		changeModeSafely(VisualMode.NAME);
-    	}
-    }
-
 	public void rememberLastActiveSelection() {
 		registerManager.setLastActiveSelection(PositionlessSelection.getInstance(this));
 	}
@@ -354,7 +347,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
 	}
 
 	public String getCurrentModeName() {
-		return currentMode.getName();
+		return currentMode != null ? currentMode.getName() : null;
 	}
 
 }
