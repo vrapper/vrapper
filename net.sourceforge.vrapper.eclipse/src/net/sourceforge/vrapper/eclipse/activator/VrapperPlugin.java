@@ -15,6 +15,7 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.ui.IEditorPart;
@@ -117,12 +118,12 @@ public class VrapperPlugin extends AbstractUIPlugin implements IStartup, Log {
     private void addEditorListeners() {
         for (IWorkbenchWindow window: plugin.getWorkbench().getWorkbenchWindows()) {
             addInterceptingListener(window);
-//            addSelectionListener(window);
+            addSelectionListener(window);
         }
         plugin.getWorkbench().addWindowListener(new IWindowListener() {
             public void windowOpened(IWorkbenchWindow window) {
                 addInterceptingListener(window);
-//                addSelectionListener(window);
+                addSelectionListener(window);
             }
             public void windowClosed(IWorkbenchWindow window) { }
             public void windowActivated(IWorkbenchWindow window) { }
@@ -145,7 +146,10 @@ public class VrapperPlugin extends AbstractUIPlugin implements IStartup, Log {
         };
         Listener downListener = new Listener() {
             public void handleEvent(Event event) {
-                plugin.mouseDown = true;
+            	//if button click over text
+            	if(event.widget instanceof StyledText) {
+            		plugin.mouseDown = true;
+            	}
             }
         };
         Listener upListener = new Listener() {
