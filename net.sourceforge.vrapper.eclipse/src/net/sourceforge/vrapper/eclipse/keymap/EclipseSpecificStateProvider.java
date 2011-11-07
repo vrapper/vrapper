@@ -44,6 +44,8 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
             transitionBind('g',
                     leafBind('U', seq(editText("upperCase"),      leaveVisual)),
                     leafBind('u', seq(editText("lowerCase"),      leaveVisual))),
+            leafBind(SpecialKey.PAGE_DOWN, go("pageDown")),
+            leafBind(SpecialKey.PAGE_UP, go("pageUp")),
             leafBind('>', shiftRight),
             leafBind('<', shiftLeft));
     }
