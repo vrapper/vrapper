@@ -10,6 +10,7 @@ import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.dontRepea
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
 import net.sourceforge.vrapper.eclipse.commands.ChangeTabCommand;
 import net.sourceforge.vrapper.eclipse.commands.EclipseShiftOperation;
+import net.sourceforge.vrapper.eclipse.commands.EclipseVisualMotionCommand;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.StateUtils;
@@ -39,17 +40,19 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
         Command leaveVisual = LeaveVisualModeCommand.INSTANCE;
         Command shiftRight = new SelectionBasedTextOperationCommand(EclipseShiftOperation.Visual.RIGHT);
         Command shiftLeft = new SelectionBasedTextOperationCommand(EclipseShiftOperation.Visual.LEFT);
+        Command pageUp = new EclipseVisualMotionCommand("org.eclipse.ui.edit.text.goto.pageUp");
+        Command pageDown = new EclipseVisualMotionCommand("org.eclipse.ui.edit.text.goto.pageDown");
 
         return state(
             transitionBind('g',
                     leafBind('U', seq(editText("upperCase"),      leaveVisual)),
                     leafBind('u', seq(editText("lowerCase"),      leaveVisual))),
-            leafBind(SpecialKey.PAGE_DOWN, go("pageDown")),
-            leafBind(SpecialKey.PAGE_UP, go("pageUp")),
-            leafCtrlBind('f', go("pageDown")),
-            leafCtrlBind('b', go("pageUp")),
-            leafCtrlBind('d', go("pageDown")),
-            leafCtrlBind('u', go("pageUp")),
+            leafBind(SpecialKey.PAGE_DOWN, pageDown),
+            leafBind(SpecialKey.PAGE_UP, pageUp),
+            leafCtrlBind('f', pageDown),
+            leafCtrlBind('b', pageUp),
+            leafCtrlBind('d', pageDown),
+            leafCtrlBind('u', pageUp),
             leafBind('>', shiftRight),
             leafBind('<', shiftLeft));
     }
