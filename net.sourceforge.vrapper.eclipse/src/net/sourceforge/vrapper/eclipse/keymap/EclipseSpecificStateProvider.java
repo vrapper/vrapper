@@ -11,6 +11,7 @@ import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
 import net.sourceforge.vrapper.eclipse.commands.ChangeTabCommand;
 import net.sourceforge.vrapper.eclipse.commands.EclipseShiftOperation;
 import net.sourceforge.vrapper.eclipse.commands.EclipseVisualMotionCommand;
+import net.sourceforge.vrapper.eclipse.commands.ToggleFoldingCommand;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.StateUtils;
@@ -76,6 +77,7 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
         State<Command> normalModeBindings = StateUtils.union(
             state(
                 transitionBind('z',
+                        leafBind('a', ToggleFoldingCommand.INSTANCE),
                         leafBind('o', dontRepeat(editText("folding.expand"))),
                         leafBind('R', dontRepeat(editText("folding.expand_all"))),
                         leafBind('c', dontRepeat(editText("folding.collapse"))),
