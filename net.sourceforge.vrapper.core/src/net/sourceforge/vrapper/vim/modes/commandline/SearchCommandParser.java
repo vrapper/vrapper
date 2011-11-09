@@ -12,9 +12,6 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.Command;
-import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
-import net.sourceforge.vrapper.vim.commands.MotionCommand;
-import net.sourceforge.vrapper.vim.commands.motions.SearchResultMotion;
 
 /**
  * Mode for input of search parameters (keyword and offset).
@@ -26,32 +23,22 @@ public class SearchCommandParser extends AbstractCommandParser {
     private static final Pattern AFTER_SEARCH_PATTERN = Pattern.compile("(e|b)?\\+?(-?\\d+)?");
     private Command commandToExecute;
 
-    public SearchCommandParser(EditorAdaptor vim) {
+    public SearchCommandParser(EditorAdaptor vim, Command commandToExecute) {
         super(vim);
+        this.commandToExecute = commandToExecute;
     }
     
-    public void setCommandToExecute(Command command) {
-        commandToExecute = command;
-    }
-
     /**
      * Parses and executes a search.
      *
      * @param first contains the "command", probably '/' or '?' when searching
      */
     @Override
-    public void parseAndExecute(String first, String command) {
+    public Command parseAndExecute(String first, String command) {
         Search search = createSearch(first, command);
         editor.getRegisterManager().setSearch(search);
         editor.getSearchAndReplaceService().removeHighlighting();
-        try {
-            if(commandToExecute != null)
-                commandToExecute.execute(editor);
-            else
-                MotionCommand.doIt(editor, SearchResultMotion.FORWARD);
-        } catch (CommandExecutionException e) {
-            // TODO: something useful
-        }
+        return commandToExecute;
     }
 
 	private Search createSearch(String first, String command) {

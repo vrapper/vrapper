@@ -10,7 +10,6 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.CloseCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
-import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.ConfigCommand;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.commands.RedoCommand;
@@ -172,17 +171,13 @@ public class CommandLineParser extends AbstractCommandParser {
     }
 
     @Override
-    public void parseAndExecute(String first, String command) {
+    public Command parseAndExecute(String first, String command) {
         try {
             // if the command is a number, jump to the given line
             int line = Integer.parseInt(command);
-            MotionCommand.doIt(editor, GoToLineMotion.FIRST_LINE.withCount(line));
-            return;
+            return new MotionCommand(GoToLineMotion.FIRST_LINE.withCount(line));
         } catch (NumberFormatException e) {
             // do nothing
-        } catch (CommandExecutionException e) {
-            editor.getUserInterfaceService().setErrorMessage(e.getMessage());
-            return;
         }
         StringTokenizer nizer = new StringTokenizer(command);
         Queue<String> tokens = new LinkedList<String>();
@@ -195,6 +190,7 @@ public class CommandLineParser extends AbstractCommandParser {
         } else {
             mapping.evaluate(editor, tokens);
         }
+        return null;
     }
 
     public boolean addCommand(String commandName, Command command, boolean overwrite) {
