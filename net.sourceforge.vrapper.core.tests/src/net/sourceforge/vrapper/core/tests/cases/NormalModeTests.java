@@ -265,6 +265,34 @@ public class NormalModeTests extends CommandTestCase {
 				"Al",'a'," ma kota",
 				"Ala czasam",'i'," ma kota");
 	}
+	
+	@Test public void test_P() {
+		defaultRegister.setContent(new StringRegisterContent(ContentType.TEXT, " czasami"));
+		checkCommand(forKeySeq("P"),
+				"Al",'a'," ma kota",
+				"Al czasam",'i',"a ma kota");
+	}
+	
+	@Test public void test_gp() {
+		defaultRegister.setContent(new StringRegisterContent(ContentType.TEXT, " czasami"));
+		checkCommand(forKeySeq("gp"),
+				"Al",'a'," ma kota",
+				"Ala czasami",' ',"ma kota");
+	}
+	
+	@Test public void test_gP() {
+		defaultRegister.setContent(new StringRegisterContent(ContentType.TEXT, " czasami"));
+		checkCommand(forKeySeq("gP"),
+				"Al",'a'," ma kota",
+				"Al czasami",'a'," ma kota");
+	}
+	
+	@Test public void test_P_empty_clipboard() {
+		defaultRegister.setContent(new StringRegisterContent(ContentType.TEXT, ""));
+		checkCommand(forKeySeq("P"),
+				"Al", 'a', " ma kota",
+				"Al", 'a', " ma kota");
+	}
 
 	@Test public void test_p_empty_clipboard() {
 		defaultRegister.setContent(new StringRegisterContent(ContentType.TEXT, ""));
@@ -644,6 +672,17 @@ public class NormalModeTests extends CommandTestCase {
 	    checkCommand(forKeySeq("ceXXX<Esc>w."),
 	            "Ala ",'m',"a kota i psa",
 	            "Ala XXX XX",'X'," i psa");
+	}
+	
+	@Test
+	public void test_CtrlC_cancels() {
+		checkCommand(forKeySeq("rx<space><space>r<C-c>"),
+				"replace ", 'a', "bcd",
+				"replace xb", 'c', "d");
+		checkCommand(forKeySeq("/xxx<C-c>"),
+				"", 'a', " test is this ... xxx abc",
+				"", 'a', " test is this ... xxx abc");
+		assertEquals(NormalMode.NAME, adaptor.getCurrentModeName());
 	}
 
     private void installSaneRegisterManager() {

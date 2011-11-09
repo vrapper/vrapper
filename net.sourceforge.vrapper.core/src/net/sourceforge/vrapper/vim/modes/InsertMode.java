@@ -26,6 +26,7 @@ import net.sourceforge.vrapper.vim.register.Register;
 import net.sourceforge.vrapper.vim.register.RegisterContent;
 import net.sourceforge.vrapper.vim.register.StringRegisterContent;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.key;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.ctrlKey;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.dontRepeat;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
 
@@ -34,6 +35,8 @@ public class InsertMode extends AbstractMode {
     public static final String NAME = "insert mode";
     public static final String KEYMAP_NAME = "Insert Mode Keymap";
     public static final ModeSwitchHint DONT_MOVE_CURSOR = new ModeSwitchHint() {};
+    public static final KeyStroke ESC = key(SpecialKey.ESC);
+    public static final KeyStroke CTRL_C = ctrlKey('c');
 
     private Position startEditPosition;
 
@@ -148,13 +151,12 @@ public class InsertMode extends AbstractMode {
         return dontRepeat(seq(
                 repetition,
                 new SwitchRegisterCommand(lastEditRegister),
-                PasteBeforeCommand.INSTANCE,
-                new MoveRightOverLineBreak(text.length() - 1)
+                PasteBeforeCommand.CURSOR_ON_TEXT
         ));
     }
 
     public boolean handleKey(KeyStroke stroke) {
-        if (stroke.equals(key(SpecialKey.ESC))) {
+		if (stroke.equals(ESC) || stroke.equals(CTRL_C)) {
             editorAdaptor.changeModeSafely(NormalMode.NAME);
             if (editorAdaptor.getConfiguration().get(Options.IM_DISABLE)) {
             	editorAdaptor.getEditorSettings().disableInputMethod();

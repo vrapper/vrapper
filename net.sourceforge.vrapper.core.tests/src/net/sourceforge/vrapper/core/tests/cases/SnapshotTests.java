@@ -46,6 +46,11 @@ public class SnapshotTests extends VimTestCase {
         map.put("-", "<Esc>");
         executor.execute("chars.txt", "Find", map);
     }
+    
+    @Test public void testPut() throws IOException {
+        SnapshotTestsExecutor executor = new SnapshotTestsExecutor(this);
+        executor.execute("text.txt", "Put", null);
+    }
 
     private void executeRegistersTest() throws IOException {
         SnapshotTestsExecutor executor = new SnapshotTestsExecutor(this);
