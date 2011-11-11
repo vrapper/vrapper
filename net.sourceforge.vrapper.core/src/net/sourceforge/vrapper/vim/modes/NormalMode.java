@@ -342,7 +342,7 @@ public class NormalMode extends CommandBasedMode {
         placeCursor();
         editorAdaptor.getCursorService().setCaret(CaretType.RECTANGULAR);
         super.enterMode(args);
-        if (args.length > 0) {
+        if (args.length > 0 && args[0] instanceof ExecuteCommandHint) {
 	        executeCommand(((ExecuteCommandHint.OnEnter) args[0]).getCommand());
         }
     }
