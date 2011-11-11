@@ -11,12 +11,15 @@ import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
+import net.sourceforge.vrapper.vim.commands.ChangeToSearchModeCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
 import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
+import net.sourceforge.vrapper.vim.commands.LinewiseVisualMotionCommand;
 import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SwapLinewiseSelectionSidesCommand;
+import net.sourceforge.vrapper.vim.commands.motions.SearchResultMotion;
 
 public class LinewiseVisualMode extends AbstractVisualMode {
 
@@ -50,7 +53,9 @@ public class LinewiseVisualMode extends AbstractVisualMode {
         State<Command> linewiseSpecific = state(
                 leafBind('o', (Command) SwapLinewiseSelectionSidesCommand.INSTANCE),
                 leafBind('v', (Command) new ChangeModeCommand(VisualMode.NAME, FIX_SELECTION_HINT)),
-                leafBind('V', (Command) LeaveVisualModeCommand.INSTANCE)
+                leafBind('V', (Command) LeaveVisualModeCommand.INSTANCE),
+                leafBind('/', (Command) new ChangeToSearchModeCommand(false, new LinewiseVisualMotionCommand(SearchResultMotion.FORWARD))),
+                leafBind('?', (Command) new ChangeToSearchModeCommand(true, new LinewiseVisualMotionCommand(SearchResultMotion.FORWARD)))
                 );
         return union(getPlatformSpecificState(NAME), linewiseSpecific, super.buildInitialState());
     }
