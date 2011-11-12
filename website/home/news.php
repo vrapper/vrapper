@@ -1,4 +1,34 @@
 <div class="newsbox">
+    <div class="date">2011-11-11</div>
+    <h4>0.18.0 Release Candidate</h4>
+    <p>The Unstable update site has been updated with the latest version of the code (0.17.20111111).  I would like to
+    think of this version as the Release Candidate for the next Vrapper release (0.18.0).  Thanks to the help of many
+    contributors I think we have plenty of defect fixes and new features that everyone will enjoy.  Please play with this
+    unstable version and see if there are any changes you think we should make before calling it stable.</p>
+    
+    <p>For those of you keeping track, here are the differences between version 0.16.0 and this Release Candidate:</p>
+    <ul>
+		<li> Search results can now be used as text motions</li>
+		  <ul><li>c/&lt;pattern&gt;, d/&lt;pattern&gt;, y/&lt;pattern&gt;, v/&lt;pattern&gt;</li></ul>
+		<li> Move into VisualMode on mouse select</li>
+		  <ul><li>You can disable this by setting the 'visualmouse' option to 'false' (true by default)</li></ul>
+		<li> Fixed cursor location when pasting</li>
+		  <ul><li>p, P, gp, gP</li></ul>
+		<li> Added 'za' operation for toggling fold open/close</li>
+		<li> Added &lt;TAB&gt; as a bindable key</li>
+		<li> Added &lt;C-c&gt; key binding to mimic &lt;ESC&gt;</li>
+		   <ul><li>Only works if you unbind &lt;C-c&gt; in Eclipse first</li></ul>
+		<li> Added key binding for 'z&lt;CR&gt;' (same operation as 'zt')</li>
+		<li> Added configurable option 'imdisable' to disable Input Method when exiting insert mode (useful on Japanese keyboards)</li>
+		<li> Added optional vrapper plugins (for CDT, JDT, Surround.vim)</li>
+		<li> Fix bug #97 PageUp/PageDown don't work in visual mode</li>
+		<li> Fix bug #79 'cw' for single character changes include next word</li>
+		<li> Fix bug #70 'dw' on the last word of a line will join lines</li>
+		<li> Fix bug #98 Uninstalling vrapper + ADT and now I can't quit Eclipse</li>
+    </ul>
+
+</div>
+<div class="newsbox">
     <div class="date">2011-08-25</div>
     <h4>What I'd like to see in Vrapper 0.18.0</h4>
     <p>The last version of Vrapper took over a year to be released.  I'd like to make sure that doesn't happen again.
