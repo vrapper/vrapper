@@ -3,6 +3,7 @@ package net.sourceforge.vrapper.vim.modes;
 import static net.sourceforge.vrapper.keymap.StateUtils.union;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
+import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.vim.VisualMotionState;
 import net.sourceforge.vrapper.keymap.vim.VisualMotionState.Motion2VMC;
@@ -12,12 +13,15 @@ import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
+import net.sourceforge.vrapper.vim.commands.ChangeToSearchModeCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
 import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 import net.sourceforge.vrapper.vim.commands.SwapSelectionSidesCommand;
+import net.sourceforge.vrapper.vim.commands.VisualMotionCommand;
+import net.sourceforge.vrapper.vim.commands.motions.SearchResultMotion;
 
 
 public class VisualMode extends AbstractVisualMode {
@@ -49,10 +53,15 @@ public class VisualMode extends AbstractVisualMode {
     @Override
     @SuppressWarnings("unchecked")
     protected State<Command> buildInitialState() {
-        State<Command> characterwiseSpecific = state(
+		Command exitSearchModeCommand = seq(
+				new ChangeModeCommand(VisualMode.NAME, VisualMode.RECALL_SELECTION_HINT),
+				new VisualMotionCommand(SearchResultMotion.FORWARD));
+		State<Command> characterwiseSpecific = state(
                 leafBind('o', (Command) SwapSelectionSidesCommand.INSTANCE),
                 leafBind('V', (Command) new ChangeModeCommand(LinewiseVisualMode.NAME, FIX_SELECTION_HINT)),
-                leafBind('v', (Command) LeaveVisualModeCommand.INSTANCE)
+                leafBind('v', (Command) LeaveVisualModeCommand.INSTANCE),
+                leafBind('/',  (Command) new ChangeToSearchModeCommand(false, exitSearchModeCommand)),
+                leafBind('?',  (Command) new ChangeToSearchModeCommand(true, exitSearchModeCommand))
                 );
         return union(getPlatformSpecificState(NAME), characterwiseSpecific, super.buildInitialState());
     }
