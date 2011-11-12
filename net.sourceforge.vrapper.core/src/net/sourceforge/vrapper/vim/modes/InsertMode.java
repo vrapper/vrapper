@@ -32,18 +32,6 @@ import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
 
 public class InsertMode extends AbstractMode {
 
-    public static class WithCountHint implements ModeSwitchHint {
-        private final int count;
-
-        public WithCountHint(int count) {
-            this.count = count;
-        }
-
-        public int getCount() {
-            return count;
-        }
-    }
-
     public static final String NAME = "insert mode";
     public static final String KEYMAP_NAME = "Insert Mode Keymap";
     public static final ModeSwitchHint DONT_MOVE_CURSOR = new ModeSwitchHint() {};
@@ -88,8 +76,8 @@ public class InsertMode extends AbstractMode {
                     WithCountHint cast = (WithCountHint) hint;
                     count = cast.getCount();
                 }
-                if (hint instanceof ExecuteCommandOnEnterHint) {
-                    ExecuteCommandOnEnterHint cast = (ExecuteCommandOnEnterHint) hint;
+                if (hint instanceof ExecuteCommandHint) {
+                    ExecuteCommandHint cast = (ExecuteCommandHint) hint;
                     cast.getCommand().execute(editorAdaptor);
                 }
             }

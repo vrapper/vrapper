@@ -3,6 +3,7 @@ package net.sourceforge.vrapper.vim.modes;
 import static net.sourceforge.vrapper.keymap.StateUtils.union;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.changeCaret;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.convertKeyStroke;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.key;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafCtrlBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.operatorCmdsWithUpperCase;
@@ -29,6 +30,7 @@ import net.sourceforge.vrapper.vim.commands.CenterLineCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeOperation;
 import net.sourceforge.vrapper.vim.commands.ChangeToInsertModeCommand;
+import net.sourceforge.vrapper.vim.commands.ChangeToSearchModeCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.CountIgnoringNonRepeatableCommand;
@@ -75,7 +77,6 @@ import net.sourceforge.vrapper.vim.commands.motions.MoveWordLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordRight;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordRightForUpdate;
 import net.sourceforge.vrapper.vim.commands.motions.ParagraphMotion;
-import net.sourceforge.vrapper.vim.modes.commandline.SearchMode;
 
 public class NormalMode extends CommandBasedMode {
 
@@ -255,6 +256,7 @@ public class NormalMode extends CommandBasedMode {
         Command afterEnteringVisual = seq(afterEnteringVisualInc, afterEnteringVisualExc);
 
         State<Command> motionCommands = new GoThereState(motions);
+        Command nextResult = motionCommands.press(key('n')).getValue();
 
         State<Command> platformSpecificState = getPlatformSpecificState(NAME);
         return RegisterState.wrap(CountingState.wrap(union(
@@ -270,8 +272,8 @@ public class NormalMode extends CommandBasedMode {
                         leafBind('I', (Command) new ChangeToInsertModeCommand(new MotionCommand(bol))),
                         leafBind('A', (Command) new ChangeToInsertModeCommand(new MotionCommand(eol))),
                         leafBind(':', (Command) new ChangeModeCommand(CommandLineMode.NAME)),
-                        leafBind('?', (Command) new ChangeModeCommand(SearchMode.NAME, SearchMode.Direction.BACKWARD)),
-                        leafBind('/', (Command) new ChangeModeCommand(SearchMode.NAME, SearchMode.Direction.FORWARD)),
+                        leafBind('?', (Command) new ChangeToSearchModeCommand(true, nextResult)),
+                        leafBind('/', (Command) new ChangeToSearchModeCommand(false, nextResult)),
                         leafBind('R', (Command) new ChangeModeCommand(ReplaceMode.NAME)),
                         leafBind('o', (Command) new ChangeToInsertModeCommand(InsertLineCommand.POST_CURSOR)),
                         leafBind('O', (Command) new ChangeToInsertModeCommand(InsertLineCommand.PRE_CURSOR)),
@@ -340,6 +342,13 @@ public class NormalMode extends CommandBasedMode {
         placeCursor();
         editorAdaptor.getCursorService().setCaret(CaretType.RECTANGULAR);
         super.enterMode(args);
+        if (args.length > 0 && args[0] instanceof ExecuteCommandHint) {
+        	try {
+		        executeCommand(((ExecuteCommandHint.OnEnter) args[0]).getCommand());
+        	} catch (CommandExecutionException e) {
+        		editorAdaptor.getUserInterfaceService().setErrorMessage(e.getMessage());
+        	}
+        }
     }
 
     public String getName() {
