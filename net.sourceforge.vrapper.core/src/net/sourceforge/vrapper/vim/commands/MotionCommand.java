@@ -25,6 +25,11 @@ public class MotionCommand extends CountAwareCommand {
 	public void execute(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
 		doIt(editorAdaptor, motion.withCount(count));
 	}
+	
+	@Override
+    public int getCount() {
+        return motion.getCount();
+    }
 
 	public static void doIt(EditorAdaptor editorAdaptor, Motion motion) throws CommandExecutionException {
 		final Position destination = motion.destination(editorAdaptor);
