@@ -30,6 +30,8 @@ public class GoToLineMotion extends CountAwareMotion {
             throws CommandExecutionException {
         TextContent content = editorAdaptor.getModelContent();
         int lineNo = count == NO_COUNT_GIVEN ? defaultLineNo(content) : count - 1;
+        if(lineNo > content.getNumberOfLines())
+        	lineNo = content.getNumberOfLines();
         LineInformation line = content.getLineInformation(lineNo);
         int offset = VimUtils.getFirstNonWhiteSpaceOffset(content, line);
         return editorAdaptor.getCursorService().newPositionForModelOffset(offset);
