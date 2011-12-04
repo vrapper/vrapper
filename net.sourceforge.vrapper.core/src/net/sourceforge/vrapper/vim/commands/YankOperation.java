@@ -2,6 +2,7 @@ package net.sourceforge.vrapper.vim.commands;
 
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.TextRange;
+import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.register.RegisterContent;
@@ -27,7 +28,7 @@ public class YankOperation extends SimpleTextOperation {
         //if we're expecting lines and this text doesn't end in a newline,
         //manually append a newline to the end
         //(this to handle yanking the last line of a file)
-        if (contentType == ContentType.LINES && (text.length() == 0 || ! Utils.isNewLineCharacter(text.charAt(text.length()-1)))) {
+        if (contentType == ContentType.LINES && (text.length() == 0 || ! VimUtils.isNewLine(text.substring(text.length()-1)))) {
             text += editorAdaptor.getConfiguration().getNewLine();
         }
         

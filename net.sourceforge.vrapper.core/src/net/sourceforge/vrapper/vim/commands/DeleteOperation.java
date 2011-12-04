@@ -42,8 +42,8 @@ public class DeleteOperation extends SimpleTextOperation {
             //try to include the previous newline character
             //(this is mostly to handle the last line of a file)
             if(contentType == ContentType.LINES && position > 0
-                    && (text.length() == 0 || ! Utils.isNewLineCharacter(text.charAt(text.length()-1)))) {
-                //grab the previous newline
+                    && (text.length() == 0 || ! VimUtils.isNewLine(text.substring(text.length()-1)))) {
+                //include the previous newline
                 LineInformation line = txtContent.getLineInformationOfOffset(position);
                 int previousNewlinePos = txtContent.getLineInformation(line.getNumber() - 1).getEndOffset();
                 length += position - previousNewlinePos;
