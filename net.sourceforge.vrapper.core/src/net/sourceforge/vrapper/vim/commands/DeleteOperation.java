@@ -41,10 +41,12 @@ public class DeleteOperation extends SimpleTextOperation {
             //if we're in LINES mode but the text doesn't start or end in a newline
             //try to include the closest newline character
             //(this is mostly to handle the last line of a file)
-            if(contentType == ContentType.LINES && ! (text.startsWith("\n") || text.endsWith("\n")) && position > 0) {
-                //let's hope the previous character is a newline!
-                position--;
-                length++;
+            if(contentType == ContentType.LINES && ! text.endsWith("\n") && position > 0) {
+                //grab the previous newline
+                LineInformation line = txtContent.getLineInformationOfOffset(position);
+                int previousNewlinePos = txtContent.getLineInformation(line.getNumber() - 1).getEndOffset();
+                length += position - previousNewlinePos;
+                position = previousNewlinePos;
             }
 
             txtContent.replace(position, length, "");
