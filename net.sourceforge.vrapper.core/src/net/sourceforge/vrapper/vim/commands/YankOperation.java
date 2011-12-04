@@ -24,6 +24,9 @@ public class YankOperation extends SimpleTextOperation {
 
     public static void doIt(EditorAdaptor editorAdaptor, TextRange range, ContentType contentType) {
         String text = editorAdaptor.getModelContent().getText(range.getLeftBound().getModelOffset(), range.getModelLength());
+        if (contentType == ContentType.LINES && ! text.endsWith("\n")) {
+            text += "\n";
+        }
         RegisterContent content = new StringRegisterContent(contentType, text);
         editorAdaptor.getRegisterManager().getActiveRegister().setContent(content);
         if (editorAdaptor.getConfiguration().get(Options.MOVE_ON_YANK).booleanValue())

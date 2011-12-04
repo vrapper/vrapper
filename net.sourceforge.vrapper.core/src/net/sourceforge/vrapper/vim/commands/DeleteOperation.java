@@ -32,19 +32,29 @@ public class DeleteOperation extends SimpleTextOperation {
         YankOperation.doIt(editorAdaptor, range, contentType);
 
         if (editorAdaptor.getFileService().isEditable()) {
-            TextContent txt = editorAdaptor.getModelContent();
+            TextContent txtContent = editorAdaptor.getModelContent();
             CursorService cur = editorAdaptor.getCursorService();
             int position = range.getLeftBound().getModelOffset();
             int length = range.getModelLength();
+            
+            String text = txtContent.getText(position, length);
+            //if we're in LINES mode but the text doesn't start or end in a newline
+            //try to include the closest newline character
+            //(this is mostly to handle the last line of a file)
+            if(contentType == ContentType.LINES && ! (text.startsWith("\n") || text.endsWith("\n")) && position > 0) {
+                //let's hope the previous character is a newline!
+                position--;
+                length++;
+            }
 
-            txt.replace(position, length, "");
+            txtContent.replace(position, length, "");
 
             if (contentType == ContentType.LINES) {
                 // move cursor on indented position
                 // this is Vim-compatible, but does everyone really want this?
                 // FIXME: make this an option
-                LineInformation lastLine = txt.getLineInformationOfOffset(position);
-                int indent = VimUtils.getIndent(txt, lastLine).length();
+                LineInformation lastLine = txtContent.getLineInformationOfOffset(position);
+                int indent = VimUtils.getIndent(txtContent, lastLine).length();
                 int offset = lastLine.getBeginOffset() + indent;
                 cur.setPosition(cur.newPositionForModelOffset(offset), true);
             } else // fix sticky column
