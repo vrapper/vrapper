@@ -11,16 +11,5 @@ public class Utils {
 		else
 			return 2;
 	}
-	
-	public static boolean isNewLineCharacter(char chr) {
-		return (chr=='\n' || 
-				chr=='\r' || 
-				chr=='\f' || 
-				chr=='\u2028' || 
-				chr=='\u2029' ||
-				chr=='\u0085' ||
-				chr=='\u000C'
-			);
-	}
 
 }
