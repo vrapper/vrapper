@@ -178,13 +178,23 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
             return;
         }
         if (currentMode != newMode) {
+        	EditorMode oldMode = currentMode;
             if (currentMode != null) {
                 currentMode.leaveMode(args);
             }
-            currentMode = newMode;
-            newMode.enterMode(args);
+            try {
+            	currentMode = newMode;
+            	newMode.enterMode(args);
+            	userInterfaceService.setEditorMode(newMode.getName());
+            }
+            catch(CommandExecutionException e) {
+            	//failed to enter new mode, revert to previous mode
+            	//then let Exception bubble up
+            	currentMode = oldMode;
+            	oldMode.enterMode();
+            	throw e;
+            }
         }
-        userInterfaceService.setEditorMode(newMode.getName());
     }
 
     public boolean handleKey(KeyStroke key) {
