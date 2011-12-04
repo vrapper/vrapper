@@ -1,9 +1,9 @@
 package net.sourceforge.vrapper.vim.commands.motions;
 
 import static java.lang.Math.min;
-import static net.sourceforge.vrapper.vim.commands.Utils.isNewLineCharacter;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.Position;
+import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.BorderPolicy;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
@@ -92,7 +92,7 @@ public class MoveWordRightForUpdate extends CountAwareMotion {
      */
     private int numTrailingWhitespaceChars(String buffer, int endingIndex) {
        int numWS = 0;
-       while( endingIndex>=0 && Character.isWhitespace(buffer.charAt(endingIndex)) && !isNewLineCharacter(buffer.charAt(endingIndex) ) ) {
+       while( endingIndex>=0 && Character.isWhitespace(buffer.charAt(endingIndex)) && ! VimUtils.isNewLine(buffer.substring(endingIndex, endingIndex+1)) ) {
            numWS++;
            endingIndex--;
        }
@@ -105,7 +105,7 @@ public class MoveWordRightForUpdate extends CountAwareMotion {
      */
     private int numTrailingNewLines(String buffer, int endingIndex) {
        int numWS = 0;
-       while( endingIndex>=0 && isNewLineCharacter(buffer.charAt(endingIndex)) ) {
+       while( endingIndex>=0 && VimUtils.isNewLine(buffer.substring(endingIndex, endingIndex+1))) {
            numWS++;
            endingIndex--;
        }
