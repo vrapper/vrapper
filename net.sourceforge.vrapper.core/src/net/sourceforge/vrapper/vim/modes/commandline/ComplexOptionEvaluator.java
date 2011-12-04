@@ -15,6 +15,7 @@ public class ComplexOptionEvaluator implements Evaluator {
         int index = next.indexOf('=');
         if (index < 0) {
             noSuchOptionMessage(vim, next);
+            return null;
         }
         String optName = next.substring(0, index).trim();
         String value = next.substring(index+1)+StringUtils.join(" ", command);
