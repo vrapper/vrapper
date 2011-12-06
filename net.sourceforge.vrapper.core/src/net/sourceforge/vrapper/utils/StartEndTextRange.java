@@ -61,9 +61,7 @@ public class StartEndTextRange implements TextRange {
             endIndex = txt.getLineInformation(nextLineNo).getBeginOffset();
         else {
             endIndex = txt.getTextLength();
-            if (sLine.getNumber() > 0)
-                startIndex = txt.getLineInformation(sLine.getNumber() - 1).getEndOffset();
-            else
+            if (sLine.getNumber() == 0)
                 startIndex = 0;
         }
         return new StartEndTextRange(
