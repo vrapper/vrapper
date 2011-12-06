@@ -54,10 +54,16 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     }
 
     public void setPosition(Position position, boolean updateColumn) {
-        textViewer.getTextWidget().setSelection(position.getViewOffset());
+    	int viewOffset = position.getViewOffset();
+    	if(viewOffset == -1) {
+    		//Something went screwy, avoid getting into a bad state.
+    		//Just put the cursor at offset 0.
+    		viewOffset = 0;
+    	}
+        textViewer.getTextWidget().setSelection(viewOffset);
         if (updateColumn) {
             stickToEOL = false;
-            stickyColumn = textViewer.getTextWidget().getLocationAtOffset(position.getViewOffset()).x;
+            stickyColumn = textViewer.getTextWidget().getLocationAtOffset(viewOffset).x;
         }
     }
 
