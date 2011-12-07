@@ -32,19 +32,32 @@ public class DeleteOperation extends SimpleTextOperation {
         YankOperation.doIt(editorAdaptor, range, contentType);
 
         if (editorAdaptor.getFileService().isEditable()) {
-            TextContent txt = editorAdaptor.getModelContent();
+            TextContent txtContent = editorAdaptor.getModelContent();
             CursorService cur = editorAdaptor.getCursorService();
             int position = range.getLeftBound().getModelOffset();
             int length = range.getModelLength();
+            
+            String text = txtContent.getText(position, length);
+            //if we're in LINES mode but the text doesn't end in a newline
+            //try to include the previous newline character
+            //(this is mostly to handle the last line of a file)
+            if(contentType == ContentType.LINES && position > 0
+                    && (text.length() == 0 || ! VimUtils.isNewLine(text.substring(text.length()-1)))) {
+                //include the previous newline
+                LineInformation line = txtContent.getLineInformationOfOffset(position);
+                int previousNewlinePos = txtContent.getLineInformation(line.getNumber() - 1).getEndOffset();
+                length += position - previousNewlinePos;
+                position = previousNewlinePos;
+            }
 
-            txt.replace(position, length, "");
+            txtContent.replace(position, length, "");
 
             if (contentType == ContentType.LINES) {
                 // move cursor on indented position
                 // this is Vim-compatible, but does everyone really want this?
                 // FIXME: make this an option
-                LineInformation lastLine = txt.getLineInformationOfOffset(position);
-                int indent = VimUtils.getIndent(txt, lastLine).length();
+                LineInformation lastLine = txtContent.getLineInformationOfOffset(position);
+                int indent = VimUtils.getIndent(txtContent, lastLine).length();
                 int offset = lastLine.getBeginOffset() + indent;
                 cur.setPosition(cur.newPositionForModelOffset(offset), true);
             } else // fix sticky column
