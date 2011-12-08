@@ -26,10 +26,6 @@ public class EclipseUserInterfaceService implements UserInterfaceService {
         vimInputModeItem = getContributionItem();
         editor.getSite().getWorkbenchWindow().getPartService().addPartListener(new PartChangeListener());
     }
-    
-    public void saveAll() {
-    	editor.getSite().getWorkbenchWindow().getWorkbench().saveAllEditors(false);
-    }
 
     public void setCommandLine(String content) {
         statusLine.setContent(content);
