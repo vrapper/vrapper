@@ -11,6 +11,7 @@ public interface Platform {
     ViewportService getViewportService();
     HistoryService getHistoryService();
     UserInterfaceService getUserInterfaceService();
+    WorkbenchService getWorkbenchService();
     ServiceProvider getServiceProvider();
     KeyMapProvider getKeyMapProvider();
     UnderlyingEditorSettings getUnderlyingEditorSettings();

@@ -18,11 +18,11 @@ import net.sourceforge.vrapper.platform.PlatformSpecificStateProvider;
 import net.sourceforge.vrapper.platform.SearchAndReplaceService;
 import net.sourceforge.vrapper.platform.SelectionService;
 import net.sourceforge.vrapper.platform.ServiceProvider;
-import net.sourceforge.vrapper.platform.SimpleConfiguration;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.platform.UnderlyingEditorSettings;
 import net.sourceforge.vrapper.platform.UserInterfaceService;
 import net.sourceforge.vrapper.platform.ViewportService;
+import net.sourceforge.vrapper.platform.WorkbenchService;
 import net.sourceforge.vrapper.utils.DefaultKeyMapProvider;
 
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -41,6 +41,7 @@ public class EclipsePlatform implements Platform {
     private final HistoryService historyService;
     private final EclipseServiceProvider serviceProvider;
     private final EclipseUserInterfaceService userInterfaceService;
+    private final EclipseWorkbenchService workbenchService;
     private final DefaultKeyMapProvider keyMapProvider;
     private final UnderlyingEditorSettings underlyingEditorSettings;
     private final Configuration configuration;
@@ -60,6 +61,7 @@ public class EclipsePlatform implements Platform {
         serviceProvider = new EclipseServiceProvider(abstractTextEditor);
         userInterfaceService = new EclipseUserInterfaceService(
                 abstractTextEditor, textViewer);
+        workbenchService = new EclipseWorkbenchService(abstractTextEditor);
         keyMapProvider = new DefaultKeyMapProvider();
         underlyingEditorSettings = new AbstractTextEditorSettings(
                 abstractTextEditor);
@@ -110,6 +112,10 @@ public class EclipsePlatform implements Platform {
 
     public UserInterfaceService getUserInterfaceService() {
         return userInterfaceService;
+    }
+
+    public WorkbenchService getWorkbenchService() {
+        return workbenchService;
     }
 
     public DefaultKeyMapProvider getKeyMapProvider() {

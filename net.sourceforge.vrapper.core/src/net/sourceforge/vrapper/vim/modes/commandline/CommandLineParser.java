@@ -13,6 +13,7 @@ import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.ConfigCommand;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.commands.RedoCommand;
+import net.sourceforge.vrapper.vim.commands.SaveAllCommand;
 import net.sourceforge.vrapper.vim.commands.SaveCommand;
 import net.sourceforge.vrapper.vim.commands.SetOptionCommand;
 import net.sourceforge.vrapper.vim.commands.UndoCommand;
@@ -43,6 +44,7 @@ public class CommandLineParser extends AbstractCommandParser {
         Evaluator inoremap = new KeyMapper.Map(false, InsertMode.KEYMAP_NAME);
         Evaluator imap = new KeyMapper.Map(true, InsertMode.KEYMAP_NAME);
         Command save = SaveCommand.INSTANCE;
+        Command saveAll = SaveAllCommand.INSTANCE;
         CloseCommand close = CloseCommand.CLOSE;
         Command saveAndClose = new VimCommandSequence(save, close);
         Evaluator unmap = new KeyMapper.Unmap(AbstractVisualMode.KEYMAP_NAME, NormalMode.KEYMAP_NAME);
@@ -77,6 +79,8 @@ public class CommandLineParser extends AbstractCommandParser {
         mapping.add("x", saveAndClose);
         mapping.add("q", close);
         mapping.add("q!", CloseCommand.FORCED_CLOSE);
+        mapping.add("wa", saveAll);
+        mapping.add("wall", saveAll);
         // non-recursive mapping
         mapping.add("noremap", noremap);
         mapping.add("no", noremap);
