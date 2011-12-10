@@ -28,7 +28,6 @@ import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.platform.UnderlyingEditorSettings;
 import net.sourceforge.vrapper.platform.UserInterfaceService;
 import net.sourceforge.vrapper.platform.ViewportService;
-import net.sourceforge.vrapper.platform.WorkbenchService;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.PositionlessSelection;
@@ -67,7 +66,6 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     private final ViewportService viewportService;
     private final HistoryService historyService;
     private final UserInterfaceService userInterfaceService;
-    private final WorkbenchService workbenchService;
     private final ServiceProvider serviceProvider;
     private final KeyStrokeTranslator keyStrokeTranslator;
     private final KeyMapProvider keyMapProvider;
@@ -93,7 +91,6 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         this.searchAndReplaceService = editor.getSearchAndReplaceService();
         viewportService = editor.getViewportService();
         userInterfaceService = editor.getUserInterfaceService();
-        workbenchService = editor.getWorkbenchService();
         keyMapProvider = editor.getKeyMapProvider();
         keyStrokeTranslator = new KeyStrokeTranslator();
         macroRecorder = new MacroRecorder(registerManager, userInterfaceService);
@@ -255,10 +252,6 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
 
     public UserInterfaceService getUserInterfaceService() {
         return userInterfaceService;
-    }
-
-    public WorkbenchService getWorkbenchService() {
-        return workbenchService;
     }
 
     public RegisterManager getRegisterManager() {

@@ -12,7 +12,6 @@ import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.platform.UnderlyingEditorSettings;
 import net.sourceforge.vrapper.platform.UserInterfaceService;
 import net.sourceforge.vrapper.platform.ViewportService;
-import net.sourceforge.vrapper.platform.WorkbenchService;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.Selection;
@@ -45,7 +44,6 @@ public interface EditorAdaptor {
     HistoryService getHistory();
     RegisterManager getRegisterManager();
     UserInterfaceService getUserInterfaceService();
-    WorkbenchService getWorkbenchService();
     KeyMapProvider getKeyMapProvider();
     UnderlyingEditorSettings getEditorSettings();
     Configuration getConfiguration();

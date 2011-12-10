@@ -11,7 +11,7 @@ public class SaveAllCommand extends CountIgnoringNonRepeatableCommand {
 
     public void execute(EditorAdaptor editorAdaptor)
             throws CommandExecutionException {
-        editorAdaptor.getWorkbenchService().saveAll();
+        editorAdaptor.getFileService().saveAll();
     }
 
 }
