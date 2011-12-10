@@ -570,18 +570,84 @@ public class NormalModeTests extends CommandTestCase {
 
 	@Test
     public void testYanking() {
-	    when(configuration.get(Options.MOVE_ON_YANK).booleanValue()).thenReturn(true);
         checkCommand(forKeySeq("yiw"),
                 "so",'m',"ething",
                 "",'s',"omething");
         assertYanked(ContentType.TEXT, "something");
-
-	    when(configuration.get(Options.MOVE_ON_YANK).booleanValue()).thenReturn(false);
-        checkCommand(forKeySeq("yiw"),
-                "so",'m',"ething",
-                "so",'m',"ething");
-        assertYanked(ContentType.TEXT, "something");
     }
+	
+	@Test
+	public void testCursorAfterYank() {
+	    checkCommand(forKeySeq("yy"),
+	            "first", ' ', "line\nsecond line\nthird line",
+	            "first", ' ', "line\nsecond line\nthird line");
+        assertYanked(ContentType.LINES, "first line\n");
+        
+	    checkCommand(forKeySeq("yy"),
+	            "first line\nsecond", ' ', "line\nthird line",
+	            "first line\nsecond", ' ', "line\nthird line");
+        assertYanked(ContentType.LINES, "second line\n");
+        
+	    checkCommand(forKeySeq("yy"),
+	            "first line\nsecond line\nthird", ' ', "line",
+	            "first line\nsecond line\nthird", ' ', "line");
+        assertYanked(ContentType.LINES, "third line\n");
+        
+	    checkCommand(forKeySeq("yk"),
+	            "first line\nsecond", ' ', "line\nthird line",
+	            "first ", 'l', "ine\nsecond line\nthird line");
+        assertYanked(ContentType.LINES, "first line\nsecond line\n");
+        
+	    checkCommand(forKeySeq("yj"),
+	            "first line\nsecond", ' ', "line\nthird line",
+	            "first line\nsecond", ' ', "line\nthird line");
+        assertYanked(ContentType.LINES, "second line\nthird line\n");
+        
+	    checkCommand(forKeySeq("y2k"),
+	            "first line\nsecond line\nthird", ' ', "line",
+	            "first", ' ', "line\nsecond line\nthird line");
+        assertYanked(ContentType.LINES, "first line\nsecond line\nthird line\n");
+        
+	    checkCommand(forKeySeq("y2j"),
+	            "first", ' ', "line\nsecond line\nthird line",
+	            "first", ' ', "line\nsecond line\nthird line");
+        assertYanked(ContentType.LINES, "first line\nsecond line\nthird line\n");
+        
+	    checkCommand(forKeySeq("ygg"),
+	            "first line\nsecond", ' ', "line\nthird line",
+	            "first ", 'l', "ine\nsecond line\nthird line");
+        assertYanked(ContentType.LINES, "first line\nsecond line\n");
+        
+	    checkCommand(forKeySeq("yG"),
+	            "first line\nsecond", ' ', "line\nthird line",
+	            "first line\nsecond", ' ', "line\nthird line");
+        assertYanked(ContentType.LINES, "second line\nthird line\n");
+        
+	    checkCommand(forKeySeq("y$"),
+	            "first line\nsecond", ' ', "line\nthird line",
+	            "first line\nsecond", ' ', "line\nthird line");
+        assertYanked(ContentType.TEXT, " line");
+        
+	    checkCommand(forKeySeq("y0"),
+	            "first line\nsecond", ' ', "line\nthird line",
+	            "first line\n", 's', "econd line\nthird line");
+        assertYanked(ContentType.TEXT, "second");
+        
+	    checkCommand(forKeySeq("yw"),
+	            "first line\nse", 'c', "ond line\nthird line",
+	            "first line\nse", 'c', "ond line\nthird line");
+        assertYanked(ContentType.TEXT, "cond ");
+        
+	    checkCommand(forKeySeq("yb"),
+	            "first line\nse", 'c', "ond line\nthird line",
+	            "first line\n", 's', "econd line\nthird line");
+        assertYanked(ContentType.TEXT, "se");
+        
+	    checkCommand(forKeySeq("yiw"),
+	            "first line\nse", 'c', "ond line\nthird line",
+	            "first line\n", 's', "econd line\nthird line");
+        assertYanked(ContentType.TEXT, "second");
+	}
 
 	@Test
     public void test_deleteLastLines() {
