@@ -191,7 +191,7 @@ public class VisualModeTests extends CommandTestCase {
 
 		checkLeavingCommand(forKeySeq("y"), false,
 				"A", "LA", " MA kota",
-				"ALA", ' ', "MA kota");
+				"A", 'L', "A MA kota");
 		verify(adaptor, times(3)).changeMode(NormalMode.NAME);
 
 		checkCommand(forKeySeq("s"),

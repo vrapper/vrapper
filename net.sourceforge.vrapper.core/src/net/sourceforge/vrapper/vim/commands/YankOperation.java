@@ -34,7 +34,7 @@ public class YankOperation extends SimpleTextOperation {
         
         RegisterContent content = new StringRegisterContent(contentType, text);
         editorAdaptor.getRegisterManager().getActiveRegister().setContent(content);
-        if (editorAdaptor.getConfiguration().get(Options.MOVE_ON_YANK).booleanValue())
+        if (contentType != ContentType.LINES)
             editorAdaptor.getCursorService().setPosition(range.getLeftBound(), true);
     }
 
