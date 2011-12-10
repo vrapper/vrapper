@@ -575,6 +575,34 @@ public class NormalModeTests extends CommandTestCase {
                 "",'s',"omething");
         assertYanked(ContentType.TEXT, "something");
     }
+	
+	@Test
+	public void testCursorAfterYank() {
+	    checkCommand(forKeySeq("yy"),
+	            "first line\nsecond", ' ', "line\nthird line",
+	            "first line\nsecond", ' ', "line\nthird line");
+        assertYanked(ContentType.LINES, "second line\n");
+        
+	    checkCommand(forKeySeq("yk"),
+	            "first line\nsecond", ' ', "line\nthird line",
+	            "first ", 'l', "ine\nsecond line\nthird line");
+        assertYanked(ContentType.LINES, "first line\nsecond line\n");
+        
+	    checkCommand(forKeySeq("yj"),
+	            "first line\nsecond", ' ', "line\nthird line",
+	            "first line\nsecond", ' ', "line\nthird line");
+        assertYanked(ContentType.LINES, "second line\nthird line\n");
+        
+	    checkCommand(forKeySeq("y$"),
+	            "first line\nsecond", ' ', "line\nthird line",
+	            "first line\nsecond", ' ', "line\nthird line");
+        assertYanked(ContentType.TEXT, " line");
+        
+	    checkCommand(forKeySeq("y0"),
+	            "first line\nsecond", ' ', "line\nthird line",
+	            "first line\n", 's', "econd line\nthird line");
+        assertYanked(ContentType.TEXT, "second");
+	}
 
 	@Test
     public void test_deleteLastLines() {
