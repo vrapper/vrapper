@@ -8,5 +8,5 @@ public interface FileService {
 
 	boolean save();
 	
-	void saveAll();
+	boolean saveAll();
 }

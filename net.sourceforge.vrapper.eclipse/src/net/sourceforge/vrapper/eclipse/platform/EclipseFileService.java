@@ -32,8 +32,8 @@ public class EclipseFileService implements FileService {
         return false;
     }
     
-    public void saveAll() {
-        editor.getSite().getWorkbenchWindow().getWorkbench().saveAllEditors(false);
+    public boolean saveAll() {
+        return editor.getSite().getWorkbenchWindow().getWorkbench().saveAllEditors(false);
     }
 
 }
