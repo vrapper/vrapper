@@ -1,10 +1,11 @@
 package net.sourceforge.vrapper.vim.commands;
 
 import net.sourceforge.vrapper.utils.ContentType;
+import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
-import net.sourceforge.vrapper.vim.Options;
+import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.register.RegisterContent;
 import net.sourceforge.vrapper.vim.register.StringRegisterContent;
 
@@ -34,8 +35,16 @@ public class YankOperation extends SimpleTextOperation {
         
         RegisterContent content = new StringRegisterContent(contentType, text);
         editorAdaptor.getRegisterManager().getActiveRegister().setContent(content);
-        if (contentType != ContentType.LINES)
+        if (contentType == ContentType.LINES && NormalMode.NAME.equals(editorAdaptor.getCurrentModeName())) {
+            //if this is line-wise, move cursor to first line in selection but keep stickyColumn
+            int lineNo = editorAdaptor.getModelContent().getLineInformationOfOffset(range.getLeftBound().getModelOffset()).getNumber();
+            Position stickyPosition = editorAdaptor.getCursorService().stickyColumnAtViewLine(lineNo);
+            editorAdaptor.getCursorService().setPosition(stickyPosition, true);
+        }
+        else {
+            //move cursor to beginning of selection
             editorAdaptor.getCursorService().setPosition(range.getLeftBound(), true);
+        }
     }
 
 }
