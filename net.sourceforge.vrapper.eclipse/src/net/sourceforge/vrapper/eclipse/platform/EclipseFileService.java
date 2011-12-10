@@ -2,13 +2,13 @@ package net.sourceforge.vrapper.eclipse.platform;
 
 import net.sourceforge.vrapper.platform.FileService;
 
-import org.eclipse.ui.texteditor.ITextEditor;
+import org.eclipse.ui.texteditor.AbstractTextEditor;
 
 public class EclipseFileService implements FileService {
 
-    private final ITextEditor editor;
+    private final AbstractTextEditor editor;
 
-    public EclipseFileService(ITextEditor editor) {
+    public EclipseFileService(AbstractTextEditor editor) {
         this.editor = editor;
     }
 
@@ -30,6 +30,10 @@ public class EclipseFileService implements FileService {
             return true;
         }
         return false;
+    }
+    
+    public boolean saveAll() {
+        return editor.getSite().getWorkbenchWindow().getWorkbench().saveAllEditors(false);
     }
 
 }
