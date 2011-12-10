@@ -80,6 +80,7 @@ public class CommandLineParser extends AbstractCommandParser {
         mapping.add("q", close);
         mapping.add("q!", CloseCommand.FORCED_CLOSE);
         mapping.add("wa", saveAll);
+        mapping.add("wal", saveAll);
         mapping.add("wall", saveAll);
         // non-recursive mapping
         mapping.add("noremap", noremap);
