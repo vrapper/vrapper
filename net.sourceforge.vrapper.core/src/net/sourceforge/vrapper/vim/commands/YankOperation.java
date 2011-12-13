@@ -38,7 +38,7 @@ public class YankOperation extends SimpleTextOperation {
         if (contentType == ContentType.LINES && NormalMode.NAME.equals(editorAdaptor.getCurrentModeName())) {
             //if this is line-wise, move cursor to first line in selection but keep stickyColumn
             int lineNo = editorAdaptor.getModelContent().getLineInformationOfOffset(range.getLeftBound().getModelOffset()).getNumber();
-            Position stickyPosition = editorAdaptor.getCursorService().stickyColumnAtViewLine(lineNo);
+            Position stickyPosition = editorAdaptor.getCursorService().stickyColumnAtModelLine(lineNo);
             editorAdaptor.getCursorService().setPosition(stickyPosition, true);
         }
         else {
