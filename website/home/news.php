@@ -1,4 +1,21 @@
 <div class="newsbox">
+    <div class="date">2011-12-12</div>
+    <h4>Another Release Candidate (0.18.0)</h4>
+    <p>We've made a couple fixes so I've updated the unstable update site.  Changes include:</p>
+    
+    <ul>
+		<li> :{line number} was broken in the last Release Candidate, fixed</li>
+		<li> 'ctx' where 'x' not found was broken in last Release Candidate, fixed</li>
+		<li> Fixed logic when deleting/yanking last line of a file</li>
+		<li> Implemented :wa[ll] command to write all dirty editors</li>
+		<li> Fixed cursor location on yank.  At least I think we did.  Vim isn't always consistent on when to move
+		the cursor and when not to but I think we match vim's behavior now.
+		I've removed the 'moveonyank' setting from vrapper with this fix because it is no longer relevant. 
+		Rather than an all-or-nothing setting to move the cursor or not, we now sometimes move the cursor to match vim's behavior.</li>
+    </ul>
+
+</div>
+<div class="newsbox">
     <div class="date">2011-11-11</div>
     <h4>0.18.0 Release Candidate</h4>
     <p>The Unstable update site has been updated with the latest version of the code (0.17.20111111).  I would like to
