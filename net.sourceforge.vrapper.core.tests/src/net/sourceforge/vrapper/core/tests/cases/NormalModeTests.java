@@ -155,6 +155,13 @@ public class NormalModeTests extends CommandTestCase {
 		assertYanked(ContentType.TEXT, "Ala ma");
 	}
 	
+	@Test public void test_c3w() {
+	    checkCommand(forKeySeq("c3w"),
+			"",'A',"la ma z kota",
+			"",' ',"kota");
+		assertYanked(ContentType.TEXT, "Ala ma z");
+	}
+	
 	@Test public void test_dW_newline() {
 	    //delete last word of a line
 	    checkCommand(forKeySeq("dW"),
