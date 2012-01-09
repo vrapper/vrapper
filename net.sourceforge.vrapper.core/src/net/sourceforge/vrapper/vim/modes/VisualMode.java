@@ -5,6 +5,7 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
 import net.sourceforge.vrapper.keymap.State;
+import net.sourceforge.vrapper.keymap.vim.CountingState;
 import net.sourceforge.vrapper.keymap.vim.VisualMotionState;
 import net.sourceforge.vrapper.keymap.vim.VisualMotionState.Motion2VMC;
 import net.sourceforge.vrapper.utils.CaretType;
@@ -59,11 +60,13 @@ public class VisualMode extends AbstractVisualMode {
 		State<Command> characterwiseSpecific = state(
                 leafBind('o', (Command) SwapSelectionSidesCommand.INSTANCE),
                 leafBind('V', (Command) new ChangeModeCommand(LinewiseVisualMode.NAME, FIX_SELECTION_HINT)),
-                leafBind('v', (Command) LeaveVisualModeCommand.INSTANCE),
+                leafBind('v', (Command) LeaveVisualModeCommand.INSTANCE)
+                );
+		State<Command> searchSpecific = CountingState.wrap(state(
                 leafBind('/',  (Command) new ChangeToSearchModeCommand(false, exitSearchModeCommand)),
                 leafBind('?',  (Command) new ChangeToSearchModeCommand(true, exitSearchModeCommand))
-                );
-        return union(getPlatformSpecificState(NAME), characterwiseSpecific, super.buildInitialState());
+				));
+        return union(getPlatformSpecificState(NAME), characterwiseSpecific, searchSpecific, super.buildInitialState());
     }
 
     @Override
