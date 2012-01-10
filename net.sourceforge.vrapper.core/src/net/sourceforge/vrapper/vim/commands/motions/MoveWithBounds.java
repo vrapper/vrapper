@@ -10,7 +10,7 @@ public abstract class MoveWithBounds extends CountAwareMotion {
     protected abstract boolean atBoundary(char c1, char c2);
     protected abstract boolean stopsAtNewlines();
     protected abstract boolean shouldStopAtLeftBoundingChar();
-    protected abstract int destination(int offset, TextContent viewContent, boolean bailOff);
+    protected abstract int destination(int offset, TextContent viewContent, boolean bailOff, boolean hasMoreCounts);
 
     private final boolean bailOff;
     
@@ -30,7 +30,7 @@ public abstract class MoveWithBounds extends CountAwareMotion {
         int offset = editorAdaptor.getPosition().getModelOffset();
 
         for (int i = 0; i < count; i++)
-            offset = destination(offset, editorAdaptor.getModelContent(), bailOff && i == 0);
+            offset = destination(offset, editorAdaptor.getModelContent(), bailOff && i == 0, i != count-1);
         
         return editorAdaptor.getCursorService().newPositionForModelOffset(offset);
     }

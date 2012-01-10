@@ -10,7 +10,7 @@ public abstract class MoveRightWithBounds extends MoveWithBounds {
     }
 
     @Override
-	protected int destination(int offset, TextContent content, boolean bailOff) {
+	protected int destination(int offset, TextContent content, boolean bailOff, boolean hasMoreCounts) {
 		// ensure we don't stay inside object
 		if (!bailOff && shouldStopAtLeftBoundingChar())
 			++offset;
@@ -27,7 +27,7 @@ public abstract class MoveRightWithBounds extends MoveWithBounds {
 			}
 		}
 
-		if (!shouldStopAtLeftBoundingChar())
+		if (!shouldStopAtLeftBoundingChar() || hasMoreCounts)
 			++offset;
 
 		return min(offset, textLen);

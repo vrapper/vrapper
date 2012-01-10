@@ -11,7 +11,7 @@ public abstract class MoveLeftWithBounds extends MoveWithBounds {
     }
 
     @Override
-	protected int destination(int offset, TextContent content, boolean bailOff) {
+	protected int destination(int offset, TextContent content, boolean bailOff, boolean hasMoreCounts) {
 		boolean haveMoved = false;
 		// special case - end of buffer
 		final int last = content.getTextLength() - 1;
