@@ -1,4 +1,18 @@
 <div class="newsbox">
+    <div class="date">2012-01-09</div>
+    <h4>Another Update</h4>
+    <p>I had every intention of releasing 0.18.0 this week but instead I ended up fixing another couple defects. 
+    I have updated the unstable update site yet again.  This version contains two fixes since the last update:</p>
+    
+    <ul>
+		<li>Fixed defect with 'c2w' command</li>
+		<li>Implemented counts for the new v/ feature (v3/{search})</li>
+    </ul>
+    
+    <p>I don't think there are any other defects that should hold up a release.
+    I'll give this current build 2 weeks before I declare it to be the stable release 0.18.0.</p>
+</div>
+<div class="newsbox">
     <div class="date">2011-12-12</div>
     <h4>Another Release Candidate (0.18.0)</h4>
     <p>We've made a couple fixes so I've updated the unstable update site.  Changes include:</p>
