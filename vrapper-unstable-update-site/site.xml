@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <description url="http://vrapper.sourceforge.net/update-site/unstable">
+      Unstable releases of Vrapper for testing.
+   </description>
+   <feature url="features/net.sourceforge.vrapper_0.17.20120109.jar" id="net.sourceforge.vrapper" version="0.17.20120109">
+      <category name="Vrapper Unstable"/>
+   </feature>
+   <feature url="features/net.sourceforge.vrapper.eclipse.cdt.feature_0.17.20120109.jar" id="net.sourceforge.vrapper.eclipse.cdt.feature" version="0.17.20120109">
+      <category name="Vrapper Unstable"/>
+   </feature>
+   <feature url="features/net.sourceforge.vrapper.eclipse.jdt.feature_0.17.20120109.jar" id="net.sourceforge.vrapper.eclipse.jdt.feature" version="0.17.20120109">
+      <category name="Vrapper Unstable"/>
+   </feature>
+   <feature url="features/net.sourceforge.vrapper.plugin.surround_0.17.20120109.jar" id="net.sourceforge.vrapper.plugin.surround" version="0.17.20120109">
+      <category name="Vrapper Unstable"/>
+   </feature>
+   <category-def name="Vrapper Unstable" label="Vrapper Unstable">
+      <description>
+         Unstable releases of Vrapper.
+      </description>
+   </category-def>
+</site>
