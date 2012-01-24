@@ -77,14 +77,6 @@
         </td>
     </tr>
     <tr>
-        <td>:set&nbsp;moveonyank<br />:set&nbsp;nomoveonyank</td>
-        <td>none</td>
-        <td>On</td>
-        <td>If set, yanking a text object will move the cursor to the start
-            of the object. Otherwise, the cursor position is not altered.  
-       </td>
-    </tr>
-    <tr>
         <td>:set&nbsp;sanecw<br />:set&nbsp;nosanecw</td>
         <td>none</td>
         <td>Off</td>
@@ -98,6 +90,13 @@
         <td>Off</td>
         <td>If set, "Y" will yank from the cursor position to the end of the
             line instead of yanking the whole line.
+        </td>
+    </tr>
+    <tr>
+        <td>:set&nbsp;visualmouse<br />:set&nbsp;novisualmouse</td>
+        <td>none</td>
+        <td>On</td>
+        <td>If set, selecting text with the mouse will automatically move into Visual Mode.
         </td>
     </tr>
     <tr>
@@ -127,6 +126,13 @@
         <td>:set&nbsp;sj=&lt;N&gt;</td>
         <td>scrolljump=1</td>
         <td>When the view needs to scroll, jump &lt;N&gt; lines at a time.
+        </td>
+    </tr>
+    <tr>
+        <td>:set&nbsp;imdisable<br />:set&nbsp;noimdisable</td>
+        <td>none</td>
+        <td>Off</td>
+        <td>If set, exiting Insert Mode will automatically disable the Input Method (useful on Japanese keyboards).
         </td>
     </tr>
 </table>
@@ -271,6 +277,10 @@ set smartcase
     <tr>
         <td>:w</td>
         <td>Writes the edited file to disk.</td>
+    </tr>
+    <tr>
+        <td>:wa[ll]</td>
+        <td>Writes all edited files to disk.</td>
     </tr>
     <tr>
         <td>:q</td>
