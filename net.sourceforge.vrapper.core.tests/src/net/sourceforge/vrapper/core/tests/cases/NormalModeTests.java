@@ -86,6 +86,27 @@ public class NormalModeTests extends CommandTestCase {
 		assertYanked(ContentType.TEXT, "l");
 	}
 	
+	@Test public void test_pipe() {
+		checkCommand(forKeySeq("|"),
+				"Al",'a'," ma kota",
+				"",'A',"la ma kota");
+		checkCommand(forKeySeq("1|"),
+				"Al",'a'," ma kota",
+				"",'A',"la ma kota");
+		checkCommand(forKeySeq("3|"),
+				"Ala ma",' ',"kota",
+				"Al",'a'," ma kota");
+		checkCommand(forKeySeq("9|"),
+				"Ala ma",' ',"kota",
+				"Ala ma k",'o',"ta");
+		checkCommand(forKeySeq("11|"),
+				"Ala ma",' ',"kota",
+				"Ala ma kot",'a',"");
+		checkCommand(forKeySeq("999|"),
+				"Ala ma",' ',"kota",
+				"Ala ma kot",'a',"");
+	}
+	
 	@Test public void test_cw() {
 		checkCommand(forKeySeq("cw"),
 				"Ala",'m',"a kota",

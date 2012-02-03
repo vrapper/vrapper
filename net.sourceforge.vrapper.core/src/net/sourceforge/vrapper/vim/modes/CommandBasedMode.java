@@ -42,6 +42,7 @@ import net.sourceforge.vrapper.vim.commands.motions.MoveLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveLeftAcrossLines;
 import net.sourceforge.vrapper.vim.commands.motions.MoveRight;
 import net.sourceforge.vrapper.vim.commands.motions.MoveRightAcrossLines;
+import net.sourceforge.vrapper.vim.commands.motions.MoveToColumn;
 import net.sourceforge.vrapper.vim.commands.motions.MoveUp;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordEndLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordEndRight;
@@ -93,6 +94,7 @@ public abstract class CommandBasedMode extends AbstractMode {
             final Motion moveUp = MoveUp.INSTANCE;
             final Motion moveDown = MoveDown.INSTANCE;
             final Motion moveDownReturn = MoveDownReturn.INSTANCE;
+            final Motion moveToColumn = MoveToColumn.INSTANCE;
             // final Motion findNext = new
             // EclipseMoveCommand("org.eclipse.ui.edit.findNext", EXCLUSIVE);
             // final Motion findPrevious = new
@@ -137,6 +139,7 @@ public abstract class CommandBasedMode extends AbstractMode {
                     leafBind('j', moveDown),
                     leafBind('k', moveUp),
                     leafBind('l', moveRight),
+                    leafBind('|', moveToColumn),
                     leafBind(SpecialKey.RETURN, moveDownReturn),
                     leafBind(' ', (Motion) MoveRightAcrossLines.INSTANCE),
                     leafBind(SpecialKey.BACKSPACE, (Motion) MoveLeftAcrossLines.INSTANCE),
