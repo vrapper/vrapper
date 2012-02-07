@@ -160,7 +160,18 @@ public class EclipseTextContent {
             int pos = textWidget.getCaretOffset();
             // move caret after insertion to preserve position
             if (pos < textWidget.getCharCount()) {
-                textWidget.setCaretOffset(pos+1);
+            	try {
+            		textWidget.setCaretOffset(pos+1);
+            	}
+            	catch (IllegalArgumentException e) {
+            		/**
+            		 * This exception should only happen if the cursor is on the
+            		 * end of a line and the newlines are multi-byte characters.
+            		 * Which is to say, Windows (\r\n).  If this happens, step
+            		 * back one character and try again.
+            		 */
+            		textWidget.setCaretOffset(pos);
+				}
                 textWidget.replaceTextRange(pos, 0, s);
                 textWidget.setCaretOffset(textWidget.getCaretOffset()-1);
             } else {
