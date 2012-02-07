@@ -32,7 +32,23 @@ public class GoToLineMotion extends CountAwareMotion {
         int lineNo = count == NO_COUNT_GIVEN ? defaultLineNo(content) : count - 1;
         if(lineNo > content.getNumberOfLines())
         	lineNo = content.getNumberOfLines();
-        LineInformation line = content.getLineInformation(lineNo);
+        LineInformation line = null;
+        try {
+        	line = content.getLineInformation(lineNo);
+        }
+        catch(RuntimeException e) {
+        	/**
+        	 * If we're trying to move to the last line of the file but that
+        	 * line is empty (blank line), it will throw a BadLocationException
+        	 * bundled up in a RuntimeException.  If this happens, move to the
+        	 * previous line and try again.  If that was the cause, everything
+        	 * will work fine and you'll move to the last line.  If that wasn't
+        	 * the cause... well, we'll probably throw the same Exception again
+        	 * and be no worse off than if we hadn't tried.
+        	 */
+        	lineNo--;
+        	line = content.getLineInformation(lineNo);
+        }
         int offset = VimUtils.getFirstNonWhiteSpaceOffset(content, line);
         return editorAdaptor.getCursorService().newPositionForModelOffset(offset);
     }
