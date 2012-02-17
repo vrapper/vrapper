@@ -19,6 +19,7 @@ public interface RegisterManager {
     Register getDefaultRegister();
     Register getActiveRegister();
     Register getLastEditRegister();
+    void setLastNamedRegister(Register register);
     void setActiveRegister(String name);
     void setActiveRegister(Register register);
     void activateDefaultRegister();

@@ -5,7 +5,9 @@ import net.sourceforge.vrapper.keymap.vim.ConstructorWrappers;
 import net.sourceforge.vrapper.utils.Function;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.MacroPlayer;
+import net.sourceforge.vrapper.vim.register.Register;
 import net.sourceforge.vrapper.vim.register.RegisterContent;
+import net.sourceforge.vrapper.vim.register.RegisterManager;
 
 /**
  * Enqueues a macro in the playlist of the {@link MacroPlayer}.
@@ -32,10 +34,14 @@ public class PlaybackMacroCommand extends SimpleRepeatableCommand {
 
     public void execute(EditorAdaptor editorAdaptor)
             throws CommandExecutionException {
-        RegisterContent content = editorAdaptor.getRegisterManager().getRegister(macroName).getContent();
+    	RegisterManager registerManager = editorAdaptor.getRegisterManager();
+    	Register namedRegister = registerManager.getRegister(macroName);
+        RegisterContent content = namedRegister.getContent();
         if (content == null) {
             throw new CommandExecutionException("Macro "+macroName+" does not exist");
         }
+        //store this register for the '@@' command
+        registerManager.setLastNamedRegister(namedRegister);
         Iterable<KeyStroke> parsed = ConstructorWrappers.parseKeyStrokes(content.getText());
         editorAdaptor.getMacroPlayer().add(parsed);
     }

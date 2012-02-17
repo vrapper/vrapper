@@ -83,6 +83,10 @@ public class DefaultRegisterManager implements RegisterManager {
     public Register getLastEditRegister() {
         return lastEditRegister;
     }
+    
+    public void setLastNamedRegister(Register register) {
+    	registers.put("@", register);
+    }
 
     public Search getSearch() {
         return search;
