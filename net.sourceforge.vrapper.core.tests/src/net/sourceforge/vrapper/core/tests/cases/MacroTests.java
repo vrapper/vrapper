@@ -17,6 +17,7 @@ public class MacroTests extends CommandTestCase {
 	};
 
 	@Test public void testMacro() {
+		//define macro
 		checkCommand(forKeySeq("qacwfoo<ESC>q"),
 				"Ala ",'m', "a kota",
 				"Ala fo", 'o', " kota");
@@ -33,6 +34,7 @@ public class MacroTests extends CommandTestCase {
 	}
 	
 	@Test public void testLastMacro() {
+		//define macro
 		checkCommand(forKeySeq("qacwfoo<ESC>q"),
 				"Ala ",'m', "a kota",
 				"Ala fo", 'o', " kota");
@@ -56,5 +58,20 @@ public class MacroTests extends CommandTestCase {
 		checkCommand(forKeySeq("@@"),
 				"Ala ",'m', "a kota",
 				"Ala ",'m', "a kota");
+		
+		//use defined macro
+		checkCommand(forKeySeq("@a"),
+				"Ala ",'m', "a kota",
+				"Ala fo", 'o', " kota");
+		
+		//change defined macro
+		checkCommand(forKeySeq("qacwblah<ESC>q"),
+				"Ala ",'m', "a kota",
+				"Ala bla", 'h', " kota");
+		
+		//re-use modified macro
+		checkCommand(forKeySeq("@@"),
+				"Ala ",'m', "a kota",
+				"Ala bla", 'h', " kota");
 	}
 }
