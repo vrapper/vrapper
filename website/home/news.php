@@ -5,7 +5,7 @@
     already filed, here's what I'd like to see in the next Vrapper release (0.20.0):</p>
     
     <ul>
-        <li><a href="http://sourceforge.net/apps/trac/vrapper/ticket/95">#95</a> imap ,e <ESC> works but cannot use comma anymore.</li>
+        <li><a href="http://sourceforge.net/apps/trac/vrapper/ticket/95">#95</a> imap ,e &lt;ESC&gt; works but cannot use comma anymore.</li>
         <li><a href="http://sourceforge.net/apps/trac/vrapper/ticket/386">#386</a> Add support for '@@' to repeat last macro</li>
         <li><a href="http://sourceforge.net/apps/trac/vrapper/ticket/387">#387</a> Replacing in Visual mode overwrites active register</li>
         <li><a href="https://github.com/vrapper/vrapper/issues/34">#34</a> Incorrect cursor position after mouse select</li>
