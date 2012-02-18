@@ -13,12 +13,14 @@ import org.eclipse.ui.texteditor.StatusLineContributionItem;
 public class EclipseUserInterfaceService implements UserInterfaceService {
 
     private static final String CONTRIBUTION_ITEM_NAME = "VimInputMode";
+    private static final String RECORDING_MESSAGE = "recording ";
     private static final int MESSAGE_WIDTH = 20;
 
     private final StatusLine statusLine;
     private final IEditorPart editor;
     private final StatusLineContributionItem vimInputModeItem;
     private String currentMode;
+    private boolean isRecording = false;
 
     public EclipseUserInterfaceService(IEditorPart editor, ITextViewer textViewer) {
         this.editor = editor;
@@ -41,6 +43,9 @@ public class EclipseUserInterfaceService implements UserInterfaceService {
     }
 
     public void setInfoMessage(String content) {
+    	if(isRecording) {
+    		content = RECORDING_MESSAGE + content;
+    	}
         editor.getEditorSite().getActionBars().getStatusLineManager().setMessage(content);
     }
 
@@ -81,9 +86,7 @@ public class EclipseUserInterfaceService implements UserInterfaceService {
     }
 
     public void setRecording(boolean b) {
-        // TODO: recording status line item
-        String content = b ? "recording" : "";
-        setInfoMessage(content);
+    	isRecording = b;
     }
 
 }
