@@ -1,10 +1,10 @@
 package net.sourceforge.vrapper.core.tests.cases;
 
-import org.junit.Test;
-
 import net.sourceforge.vrapper.core.tests.utils.CommandTestCase;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
+
+import org.junit.Test;
 
 public class MacroTests extends CommandTestCase {
 	
@@ -73,5 +73,33 @@ public class MacroTests extends CommandTestCase {
 		checkCommand(forKeySeq("@@"),
 				"Ala ",'m', "a kota",
 				"Ala bla", 'h', " kota");
+	}
+	
+	@Test
+	public void testRegisters() {
+		//yank a word into the "a" register
+		checkCommand(forKeySeq("\"ayw"),
+				"Ala ",'m', "a kota",
+				"Ala ",'m', "a kota");
+		
+		//paste from the "a" register
+		checkCommand(forKeySeq("\"ap"),
+				"Ala ",'m', "a kota",
+				"Ala mma",' ', "a kota");
+		
+		//overwrite some text with the contents of the "a" register
+		checkCommand(forKeySeq("vw\"ap"),
+				"",'A', "la ma kota",
+				"ma",' ', "ma kota");
+		
+		//verify that the overwritten text was stored in the default register
+		checkCommand(forKeySeq("p"),
+				"Ala ",'m', "a kota",
+				"Ala mAla",' ', "a kota");
+		
+		//verify that the "a" register is unchanged
+		checkCommand(forKeySeq("\"ap"),
+				"Ala ",'m', "a kota",
+				"Ala mma",' ', "a kota");
 	}
 }
