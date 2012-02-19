@@ -44,6 +44,20 @@ public class DefaultRegisterManager implements RegisterManager {
             }
         };
         registers.put(RegisterManager.REGISTER_NAME_SEARCH, searchRegister);
+        
+        // Unmodifiable register which will protect the default register from being updated.
+        Register blackholeRegister = new Register() {
+            public RegisterContent getContent() {
+                return RegisterContent.DEFAULT_CONTENT;
+            }
+
+            public void setContent(RegisterContent content) {
+                // This register shouldn't stay active, otherwise the first "default paste" returns
+                // nothing when it should simply return the content of the default register.
+                DefaultRegisterManager.this.activateDefaultRegister();
+            }
+        };
+        registers.put(RegisterManager.REGISTER_NAME_BLACKHOLE, blackholeRegister);
         // FIXME: AWTClipboardRegister is obviously underlying platform dependency
         registers.put(RegisterManager.REGISTER_NAME_CLIPBOARD, new AWTClipboardRegister());
     }
