@@ -43,6 +43,11 @@ public class PasteOperation implements TextOperation {
 
         TextContent content = editorAdaptor.getModelContent();
         int offset = range.getLeftBound().getModelOffset();
+        
+        //use the default register for the DeleteOperation so the deleted text
+        //will be stored in the default register, rather than overwriting the contents
+        //of the current active register (which we're attempting to paste from)
+        editorAdaptor.getRegisterManager().activateDefaultRegister();
 
         DeleteOperation.doIt(editorAdaptor, range, contentType);
 

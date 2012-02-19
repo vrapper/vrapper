@@ -162,6 +162,8 @@ public class EclipseTextContent {
             if (pos < textWidget.getCharCount()) {
             	try {
             		textWidget.setCaretOffset(pos+1);
+	                textWidget.replaceTextRange(pos, 0, s);
+	                textWidget.setCaretOffset(textWidget.getCaretOffset()-1);
             	}
             	catch (IllegalArgumentException e) {
             		/**
@@ -171,9 +173,9 @@ public class EclipseTextContent {
             		 * back one character and try again.
             		 */
             		textWidget.setCaretOffset(pos);
+	                textWidget.replaceTextRange(pos, 0, s);
+	                textWidget.setCaretOffset(textWidget.getCaretOffset()+1);
 				}
-                textWidget.replaceTextRange(pos, 0, s);
-                textWidget.setCaretOffset(textWidget.getCaretOffset()-1);
             } else {
                 textWidget.replaceTextRange(pos, 0, s);
                 textWidget.setCaretOffset(textWidget.getCharCount());

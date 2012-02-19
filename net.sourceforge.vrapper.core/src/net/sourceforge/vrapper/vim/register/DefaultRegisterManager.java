@@ -97,6 +97,11 @@ public class DefaultRegisterManager implements RegisterManager {
     public Register getLastEditRegister() {
         return lastEditRegister;
     }
+    
+    public void setLastNamedRegister(Register register) {
+    	//update the '@@' macro
+    	registers.put("@", register);
+    }
 
     public Search getSearch() {
         return search;

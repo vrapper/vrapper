@@ -3,6 +3,7 @@ package net.sourceforge.vrapper.core.tests;
 import net.sourceforge.vrapper.core.tests.cases.CommandLineTests;
 import net.sourceforge.vrapper.core.tests.cases.InsertModeTests;
 import net.sourceforge.vrapper.core.tests.cases.KeyMapTests;
+import net.sourceforge.vrapper.core.tests.cases.MacroTests;
 import net.sourceforge.vrapper.core.tests.cases.MotionTests;
 import net.sourceforge.vrapper.core.tests.cases.NormalModeTests;
 import net.sourceforge.vrapper.core.tests.cases.SimpleKeyStrokeTests;
@@ -18,6 +19,7 @@ import org.junit.runners.Suite;
 	CommandLineTests.class,
 	InsertModeTests.class,
 	KeyMapTests.class,
+	MacroTests.class,
 	MotionTests.class,
 	NormalModeTests.class,
 	SimpleKeyStrokeTests.class,
