@@ -181,4 +181,26 @@ public class MacroTests extends CommandTestCase {
 		
 	}
 	
+	@Test public void testBlackHoleRegister() {
+		//yank a word into the default register ("ma ")
+		checkCommand(forKeySeq("yw"),
+				"Ala ",'m', "a kota",
+				"Ala ",'m', "a kota");
+		
+		//move a word to the right
+		checkCommand(forKeySeq("w"),
+				"Ala ",'m', "a kota",
+				"Ala ma ",'k', "ota");
+		
+		//delete word with black hole register active
+		checkCommand(forKeySeq("\"_dw"),
+				"Ala ma ",'k', "ota",
+				"Ala ma",' ', "");
+		
+		//verify that the default register is unharmed and immediately active
+		checkCommand(forKeySeq("p"),
+				"Ala ma",' ', "",
+				"Ala ma ma",' ', "");
+	}
+	
 }
