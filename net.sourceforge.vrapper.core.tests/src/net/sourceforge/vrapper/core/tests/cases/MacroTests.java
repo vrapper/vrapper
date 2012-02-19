@@ -146,4 +146,39 @@ public class MacroTests extends CommandTestCase {
 				"Ala mAla",' ', "a kota");
 	}
 	
+	@Test public void testRegisterOperations() {
+		//store into 'a' with yw
+		checkCommand(forKeySeq("\"ayw"),
+				"Ala ",'m', "a kota",
+				"Ala ",'m', "a kota");
+		checkCommand(forKeySeq("\"ap"),
+				"Ala ",'m', "a kota",
+				"Ala mma",' ', "a kota");
+		
+		//store into 'a' with dw
+		checkCommand(forKeySeq("\"adw"),
+				"Ala ",'m', "a kota",
+				"Ala ",'k', "ota");
+		checkCommand(forKeySeq("\"ap"),
+				"Ala ",'m', "a kota",
+				"Ala mma",' ', "a kota");
+		
+		//store into 'a' with 2dw
+		checkCommand(forKeySeq("\"a2dw"),
+				"Ala ",'m', "a kota",
+				"Ala",' ', "");
+		checkCommand(forKeySeq("\"ap"),
+				"Ala ",'m', "a kota",
+				"Ala mma kot",'a', "a kota");
+		
+		//store into 'a' with x
+		checkCommand(forKeySeq("\"ax"),
+				"Ala ",'m', "a kota",
+				"Ala ",'a', " kota");
+		checkCommand(forKeySeq("\"ap"),
+				"Ala ",'m', "a kota",
+				"Ala m",'m', "a kota");
+		
+	}
+	
 }
