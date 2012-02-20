@@ -16,6 +16,7 @@ public interface RegisterManager {
     public static final String REGISTER_NAME_CLIPBOARD = "*";
     public static final String REGISTER_NAME_SEARCH = "/";
     public static final String REGISTER_NAME_BLACKHOLE = "_";
+    public static final String REGISTER_NAME_LAST = "@";
     Register getRegister(String name);
     Register getDefaultRegister();
     Register getActiveRegister();

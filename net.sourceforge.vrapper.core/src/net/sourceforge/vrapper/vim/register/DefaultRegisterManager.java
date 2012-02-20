@@ -100,7 +100,7 @@ public class DefaultRegisterManager implements RegisterManager {
     
     public void setLastNamedRegister(Register register) {
     	//update the '@@' macro
-    	registers.put("@", register);
+    	registers.put(REGISTER_NAME_LAST, register);
     }
 
     public Search getSearch() {
