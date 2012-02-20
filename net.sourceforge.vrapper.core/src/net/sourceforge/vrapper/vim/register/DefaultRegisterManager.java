@@ -54,7 +54,7 @@ public class DefaultRegisterManager implements RegisterManager {
             public void setContent(RegisterContent content) {
                 // This register shouldn't stay active, otherwise the first "default paste" returns
                 // nothing when it should simply return the content of the default register.
-                DefaultRegisterManager.this.activateDefaultRegister();
+                activateDefaultRegister();
             }
         };
         registers.put(RegisterManager.REGISTER_NAME_BLACKHOLE, blackholeRegister);
