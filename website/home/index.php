@@ -23,6 +23,7 @@
                       <p>Vrapper tries to offer Eclipse users the best of both worlds.</p>
               </div>
               <div id="about">
+                      <a class="float-right-noclear" href="https://github.com/vrapper/vrapper/commits/master.atom">dev rss</a>
                       <h3 class="information">Development</h3>
                       <p>Development of Vrapper has moved to our GitHub project at:<br/><a href="https://github.com/vrapper/vrapper">https://github.com/vrapper/vrapper</a></p>
                       <p>GitHub makes it much easier for contributors to submit code changes, bug fixes, and new features.  If you'd like to contribute to Vrapper just initiate a Pull Request on our GitHub project.</p>
@@ -32,6 +33,7 @@
         </div>
         <div>
           <div id="left">
+              <a class="float-right-noclear" href="http://sourceforge.net/export/rss2_projnews.php?group_id=249013">news rss</a>
               <h3 class="news">News</h3>
 <?php include("news.php"); ?>
           </div>

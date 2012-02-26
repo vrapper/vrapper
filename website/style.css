@@ -31,15 +31,16 @@ table.links th {
 .header {
     background-color:#bf8;
     margin:0;
-    padding:10px;
 }
 .header h1 {
     margin:0;
     text-transform:capitalize;
+    padding:10px;
 }
 .header h2 {
     margin:0;
     font-size:smaller;
+    padding-left:10px;
 }
 .menu {
     border-top:1px solid #000;
@@ -74,11 +75,15 @@ table.links th {
     background:#292;
     border-color:#292;
 }
-.sf-logo {
+.float-right {
     float:right;
+    clear:right;
 }
-.sf-logo img {
+.float-right img {
     border:0px;
+}
+.float-right-noclear {
+    float:right;
 }
 .content {
     min-height:300px;
