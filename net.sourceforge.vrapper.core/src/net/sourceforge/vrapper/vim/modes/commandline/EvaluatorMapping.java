@@ -37,6 +37,7 @@ public class EvaluatorMapping implements Evaluator {
         actions.put(key, evaluator);
     }
 
+    /** Adds a {@link Command} to the evaluator list by wrapping it. */
     public void add(String key, Command action) {
         actions.put(key, new CommandWrapper(action));
     }

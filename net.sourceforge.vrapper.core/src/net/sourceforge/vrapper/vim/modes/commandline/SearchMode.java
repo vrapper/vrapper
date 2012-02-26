@@ -2,13 +2,12 @@ package net.sourceforge.vrapper.vim.modes.commandline;
 
 import net.sourceforge.vrapper.keymap.KeyMap;
 import net.sourceforge.vrapper.keymap.KeyStroke;
-import net.sourceforge.vrapper.platform.Configuration;
 import net.sourceforge.vrapper.platform.KeyMapProvider;
 import net.sourceforge.vrapper.platform.SearchAndReplaceService;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Search;
+import net.sourceforge.vrapper.utils.SearchOffset;
 import net.sourceforge.vrapper.utils.SearchResult;
-import net.sourceforge.vrapper.utils.StringUtils;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
@@ -26,6 +25,7 @@ public class SearchMode extends AbstractCommandLineMode {
     private Position startPos;
     private int originalTopLine;
     private Command command;
+    private SearchCommandParser searchParser;
 
     public SearchMode(EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
@@ -40,12 +40,13 @@ public class SearchMode extends AbstractCommandLineMode {
         command = ((ExecuteCommandHint.OnLeave) args[1]).getCommand();
         startPos = editorAdaptor.getCursorService().getPosition();
         originalTopLine = editorAdaptor.getViewportService().getViewPortInformation().getTopLine();
+        searchParser = new SearchCommandParser(editorAdaptor, command);
         super.enterMode(args);
     }
 
     @Override
     protected AbstractCommandParser createParser() {
-        return new SearchCommandParser(editorAdaptor, command);
+        return searchParser;
     }
 
     @Override
@@ -59,7 +60,7 @@ public class SearchMode extends AbstractCommandLineMode {
         }
         super.handleKey(stroke);
         if (incsearch && isEnabled) {
-            // isEnabled is false when input was finished by pressing enter
+            // isEnabled == false indicates that super method ran a search and went to normal mode.
             doIncSearch();
         }
         return true;
@@ -72,16 +73,11 @@ public class SearchMode extends AbstractCommandLineMode {
     }
 
     private void doIncSearch() {
-        String keyword = ((SearchCommandParser) parser).getKeyWord();
-        Configuration config = editorAdaptor.getConfiguration();
-        boolean caseSensitive = !config.get(Options.IGNORE_CASE)
-            || config.get(Options.SMART_CASE)
-            && StringUtils.containsUppercase(keyword);
-        boolean useRegExp = config.get(Options.SEARCH_REGEX);
-        Search s = new Search(keyword, !forward, false, caseSensitive, null, useRegExp);
+        String keyword = searchParser.getKeyWord();
+        Search s = SearchCommandParser.createSearch(editorAdaptor, keyword, !forward, false, SearchOffset.NONE);
         SearchResult res = VimUtils.wrapAroundSearch(editorAdaptor, s, startPos);
         if (res.isFound()) {
-            if (config.get(Options.SEARCH_HIGHLIGHT)) {
+            if (editorAdaptor.getConfiguration().get(Options.SEARCH_HIGHLIGHT)) {
                 SearchAndReplaceService sars = editorAdaptor.getSearchAndReplaceService();
                 sars.incSearchhighlight(res.getStart(), res.getModelLength());
             }

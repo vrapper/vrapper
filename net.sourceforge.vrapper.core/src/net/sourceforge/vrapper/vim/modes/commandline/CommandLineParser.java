@@ -138,10 +138,12 @@ public class CommandLineParser extends AbstractCommandParser {
             ConfigCommand<Boolean> enable = new SetOptionCommand<Boolean>(o, Boolean.TRUE);
             ConfigCommand<Boolean> disable = new SetOptionCommand<Boolean>(o, Boolean.FALSE);
             ConfigCommand<Boolean> toggle = new ToggleOptionCommand(o);
+            ConfigCommand<Boolean> status = new PrintOptionCommand<Boolean>(o);
             for (String alias: o.getAllNames()) {
                 config.add(alias, enable);
                 config.add("no"+alias, disable);
                 config.add(alias+"!", toggle);
+                config.add(alias+"?", status);
             }
         }
         // overwrites hlsearch/nohlsearch commands
@@ -262,6 +264,28 @@ public class CommandLineParser extends AbstractCommandParser {
             public Object evaluate(EditorAdaptor vim, Queue<String> command) {
                 vim.getConfiguration().set(Options.SHOW_WHITESPACE, Boolean.FALSE);
                 vim.getEditorSettings().setShowWhitespace(false);
+                return null;
+            }
+        },
+        IGNORE_CASE {
+            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
+                vim.getConfiguration().set(Options.IGNORE_CASE, Boolean.TRUE);
+                Search lastSearch = vim.getRegisterManager().getSearch();
+                lastSearch = SearchCommandParser.createSearch(vim, lastSearch.getKeyword(),
+                        lastSearch.isBackward(), lastSearch.isWholeWord(),
+                        lastSearch.getSearchOffset());
+                vim.getRegisterManager().setSearch(lastSearch);
+                return null;
+            }
+        },
+        NO_IGNORE_CASE {
+            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
+                vim.getConfiguration().set(Options.IGNORE_CASE, Boolean.FALSE);
+                Search lastSearch = vim.getRegisterManager().getSearch();
+                lastSearch = SearchCommandParser.createSearch(vim, lastSearch.getKeyword(),
+                        lastSearch.isBackward(), lastSearch.isWholeWord(),
+                        lastSearch.getSearchOffset());
+                vim.getRegisterManager().setSearch(lastSearch);
                 return null;
             }
         }
