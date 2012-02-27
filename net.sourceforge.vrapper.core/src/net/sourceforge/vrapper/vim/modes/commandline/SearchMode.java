@@ -2,6 +2,7 @@ package net.sourceforge.vrapper.vim.modes.commandline;
 
 import net.sourceforge.vrapper.keymap.KeyMap;
 import net.sourceforge.vrapper.keymap.KeyStroke;
+import net.sourceforge.vrapper.platform.Configuration.Option;
 import net.sourceforge.vrapper.platform.KeyMapProvider;
 import net.sourceforge.vrapper.platform.SearchAndReplaceService;
 import net.sourceforge.vrapper.utils.Position;
@@ -10,6 +11,7 @@ import net.sourceforge.vrapper.utils.SearchOffset;
 import net.sourceforge.vrapper.utils.SearchResult;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.LocalConfigurationListener;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
@@ -18,6 +20,38 @@ import net.sourceforge.vrapper.vim.modes.ExecuteCommandHint;
 import net.sourceforge.vrapper.vim.modes.ModeSwitchHint;
 
 public class SearchMode extends AbstractCommandLineMode {
+
+    protected class SearchConfigurationListener implements
+            LocalConfigurationListener {
+        
+        private EditorAdaptor vim;
+
+        public SearchConfigurationListener(EditorAdaptor vim) {
+            this.vim = vim;
+        }
+
+        public <T> void optionChanged(Option<T> option, T oldValue, T newValue) {
+            if (option.equals(Options.SMART_CASE)
+                    || option.equals(Options.IGNORE_CASE)
+                    || option.equals(Options.SEARCH_HIGHLIGHT)
+                    || option.equals(Options.SEARCH_REGEX)) {
+                Search lastSearch = vim.getRegisterManager().getSearch();
+                // Update the search settings for the last/active search.
+                if (lastSearch != null) {
+                    lastSearch = SearchCommandParser.createSearch(vim, lastSearch.getKeyword(),
+                            lastSearch.isBackward(), lastSearch.isWholeWord(),
+                            lastSearch.getSearchOffset());
+                    
+                    if (Options.SEARCH_HIGHLIGHT.equals(option) && Boolean.FALSE.equals(newValue)) {
+                        vim.getSearchAndReplaceService().removeHighlighting();
+                    } else if (vim.getConfiguration().get(Options.SEARCH_HIGHLIGHT)) {
+                        vim.getSearchAndReplaceService().highlight(lastSearch);
+                    }
+                }
+                vim.getRegisterManager().setSearch(lastSearch);
+            }
+        }
+    }
 
     public static final String NAME = "search mode";
 
@@ -29,6 +63,7 @@ public class SearchMode extends AbstractCommandLineMode {
 
     public SearchMode(EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
+        editorAdaptor.getConfiguration().addListener(new SearchConfigurationListener(editorAdaptor));
     }
 
     /**
