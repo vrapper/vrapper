@@ -44,6 +44,8 @@ public class SearchMode extends AbstractCommandLineMode {
                     
                     if (Options.SEARCH_HIGHLIGHT.equals(option) && Boolean.FALSE.equals(newValue)) {
                         vim.getSearchAndReplaceService().removeHighlighting();
+                        
+                    // Update highlights when enabled, as search might now match more things
                     } else if (vim.getConfiguration().get(Options.SEARCH_HIGHLIGHT)) {
                         vim.getSearchAndReplaceService().highlight(lastSearch);
                     }
