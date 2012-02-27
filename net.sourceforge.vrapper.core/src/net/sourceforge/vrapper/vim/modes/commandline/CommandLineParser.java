@@ -147,15 +147,8 @@ public class CommandLineParser extends AbstractCommandParser {
             }
         }
         // overwrites hlsearch/nohlsearch commands
-        Evaluator hlsToggle = new OptionDependentEvaluator(Options.SEARCH_HIGHLIGHT, ConfigAction.NO_HL_SEARCH, ConfigAction.HL_SEARCH);
         Evaluator numberToggle = new OptionDependentEvaluator(Options.LINE_NUMBERS, ConfigAction.NO_LINE_NUMBERS, ConfigAction.LINE_NUMBERS);
         Evaluator listToggle = new OptionDependentEvaluator(Options.SHOW_WHITESPACE, ConfigAction.NO_SHOW_WHITESPACE, ConfigAction.SHOW_WHITESPACE);
-        config.add("hlsearch", ConfigAction.HL_SEARCH);
-        config.add("nohlsearch", ConfigAction.NO_HL_SEARCH);
-        config.add("hls", ConfigAction.HL_SEARCH);
-        config.add("nohls", ConfigAction.NO_HL_SEARCH);
-        config.add("hlsearch!", hlsToggle);
-        config.add("hls!", hlsToggle);
         config.add("globalregisters", ConfigAction.GLOBAL_REGISTERS);
         config.add("noglobalregisters", ConfigAction.NO_GLOBAL_REGISTERS);
         config.add("localregisters", ConfigAction.NO_GLOBAL_REGISTERS);
@@ -222,23 +215,6 @@ public class CommandLineParser extends AbstractCommandParser {
                 return null;
             }
         },
-        HL_SEARCH {
-            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
-                vim.getConfiguration().set(Options.SEARCH_HIGHLIGHT, Boolean.TRUE);
-                Search search = vim.getRegisterManager().getSearch();
-                if (search != null) {
-                    vim.getSearchAndReplaceService().highlight(search);
-                }
-                return null;
-            }
-        },
-        NO_HL_SEARCH {
-            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
-                vim.getConfiguration().set(Options.SEARCH_HIGHLIGHT, Boolean.FALSE);
-                vim.getSearchAndReplaceService().removeHighlighting();
-                return null;
-            }
-        },
         LINE_NUMBERS {
             public Object evaluate(EditorAdaptor vim, Queue<String> command) {
                 vim.getConfiguration().set(Options.LINE_NUMBERS, Boolean.TRUE);
@@ -264,28 +240,6 @@ public class CommandLineParser extends AbstractCommandParser {
             public Object evaluate(EditorAdaptor vim, Queue<String> command) {
                 vim.getConfiguration().set(Options.SHOW_WHITESPACE, Boolean.FALSE);
                 vim.getEditorSettings().setShowWhitespace(false);
-                return null;
-            }
-        },
-        IGNORE_CASE {
-            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
-                vim.getConfiguration().set(Options.IGNORE_CASE, Boolean.TRUE);
-                Search lastSearch = vim.getRegisterManager().getSearch();
-                lastSearch = SearchCommandParser.createSearch(vim, lastSearch.getKeyword(),
-                        lastSearch.isBackward(), lastSearch.isWholeWord(),
-                        lastSearch.getSearchOffset());
-                vim.getRegisterManager().setSearch(lastSearch);
-                return null;
-            }
-        },
-        NO_IGNORE_CASE {
-            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
-                vim.getConfiguration().set(Options.IGNORE_CASE, Boolean.FALSE);
-                Search lastSearch = vim.getRegisterManager().getSearch();
-                lastSearch = SearchCommandParser.createSearch(vim, lastSearch.getKeyword(),
-                        lastSearch.isBackward(), lastSearch.isWholeWord(),
-                        lastSearch.getSearchOffset());
-                vim.getRegisterManager().setSearch(lastSearch);
                 return null;
             }
         }
