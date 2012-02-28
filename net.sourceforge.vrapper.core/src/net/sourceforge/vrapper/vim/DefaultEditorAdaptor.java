@@ -185,7 +185,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
             try {
             	currentMode = newMode;
             	newMode.enterMode(args);
-            	userInterfaceService.setEditorMode(newMode.getName());
+            	userInterfaceService.setEditorMode(newMode.getDisplayName());
             }
             catch(CommandExecutionException e) {
             	//failed to enter new mode, revert to previous mode
@@ -343,9 +343,13 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     }
 
     public void onChangeEnabled(boolean enabled) {
-        // switch mode for set-up/tear-down
-        changeModeSafely(enabled ? NormalMode.NAME : InsertMode.NAME,
-                InsertMode.DONT_MOVE_CURSOR);
+        if (enabled) {
+            // switch mode for set-up/tear-down
+            changeModeSafely(NormalMode.NAME, InsertMode.DONT_MOVE_CURSOR);
+        } else {
+            changeModeSafely(InsertMode.NAME, InsertMode.DONT_MOVE_CURSOR);
+            userInterfaceService.setEditorMode("vrapper disabled");
+        }
     }
     
 	public void rememberLastActiveSelection() {

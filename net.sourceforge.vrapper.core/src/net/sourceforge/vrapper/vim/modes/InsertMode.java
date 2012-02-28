@@ -33,6 +33,7 @@ import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
 public class InsertMode extends AbstractMode {
 
     public static final String NAME = "insert mode";
+    public static final String DISPLAYNAME = "INSERT";
     public static final String KEYMAP_NAME = "Insert Mode Keymap";
     public static final ModeSwitchHint DONT_MOVE_CURSOR = new ModeSwitchHint() {};
     public static final KeyStroke ESC = key(SpecialKey.ESC);
@@ -52,6 +53,10 @@ public class InsertMode extends AbstractMode {
 
     public String getName() {
         return NAME;
+    }
+    
+    public String getDisplayName() {
+        return DISPLAYNAME;
     }
 
     /**

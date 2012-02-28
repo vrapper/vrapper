@@ -82,6 +82,7 @@ public class NormalMode extends CommandBasedMode {
 
     public static final String KEYMAP_NAME = "Normal Mode Keymap";
     public static final String NAME = "normal mode";
+    public static final String DISPLAYNAME = "NORMAL";
     private static State<TextObject> textObjects;
     private static State<DelimitedText> delimitedTexts;
     private static State<Motion> textMotions;
@@ -353,5 +354,9 @@ public class NormalMode extends CommandBasedMode {
 
     public String getName() {
         return NAME;
+    }
+
+    public String getDisplayName() {
+        return DISPLAYNAME;
     }
 }
