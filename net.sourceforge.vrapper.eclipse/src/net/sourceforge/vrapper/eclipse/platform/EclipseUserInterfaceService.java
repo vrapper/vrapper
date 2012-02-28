@@ -1,5 +1,6 @@
 package net.sourceforge.vrapper.eclipse.platform;
 
+import net.sourceforge.vrapper.eclipse.ui.ModeContributionItem;
 import net.sourceforge.vrapper.eclipse.ui.StatusLine;
 import net.sourceforge.vrapper.platform.UserInterfaceService;
 
@@ -8,19 +9,15 @@ import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.texteditor.StatusLineContributionItem;
 
 public class EclipseUserInterfaceService implements UserInterfaceService {
 
     private static final String CONTRIBUTION_ITEM_NAME = "VimInputMode";
-    private static final String RECORDING_MESSAGE = "recording ";
-    private static final int MESSAGE_WIDTH = 20;
 
     private final StatusLine statusLine;
     private final IEditorPart editor;
-    private final StatusLineContributionItem vimInputModeItem;
+    private final ModeContributionItem vimInputModeItem;
     private String currentMode;
-    private boolean isRecording = false;
 
     public EclipseUserInterfaceService(IEditorPart editor, ITextViewer textViewer) {
         this.editor = editor;
@@ -34,7 +31,7 @@ public class EclipseUserInterfaceService implements UserInterfaceService {
     }
 
     public void setEditorMode(String modeName) {
-        currentMode = "-- " + modeName.toUpperCase() + " --";
+        currentMode = "-- " + modeName + " --";
         vimInputModeItem.setText(currentMode);
     }
 
@@ -43,23 +40,21 @@ public class EclipseUserInterfaceService implements UserInterfaceService {
     }
 
     public void setInfoMessage(String content) {
-    	if(isRecording) {
-    		content = RECORDING_MESSAGE + content;
-    	}
         editor.getEditorSite().getActionBars().getStatusLineManager().setMessage(content);
     }
 
-    private StatusLineContributionItem getContributionItem() {
+    private ModeContributionItem getContributionItem() {
         String name = CONTRIBUTION_ITEM_NAME+editor.getEditorSite().getId();
         IStatusLineManager manager = editor.getEditorSite().getActionBars().getStatusLineManager();
-        StatusLineContributionItem item = (StatusLineContributionItem) manager.find(name);
+        ModeContributionItem  item = (ModeContributionItem) manager.find(name);
         if (item == null) {
-            item = new StatusLineContributionItem(name, true, MESSAGE_WIDTH);
+            item = new ModeContributionItem(name);
             try {
                 manager.insertBefore("ElementState", item);
             } catch (IllegalArgumentException e) {
                 manager.add(item);
             }
+            manager.update(true);
         }
         return item;
     }
@@ -86,7 +81,6 @@ public class EclipseUserInterfaceService implements UserInterfaceService {
     }
 
     public void setRecording(boolean b) {
-    	isRecording = b;
+    	vimInputModeItem.setRecording(b);
     }
-
 }
