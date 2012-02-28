@@ -6,6 +6,7 @@ import net.sourceforge.vrapper.platform.KeyMapProvider;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 
 public interface EditorMode {
+    String getDisplayName();
     String getName();
     void enterMode(ModeSwitchHint... hints) throws CommandExecutionException;
     void leaveMode(ModeSwitchHint... hints) throws CommandExecutionException;

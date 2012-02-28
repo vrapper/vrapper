@@ -21,6 +21,7 @@ import net.sourceforge.vrapper.vim.modes.ModeSwitchHint;
 public class SearchMode extends AbstractCommandLineMode {
 
     public static final String NAME = "search mode";
+    public static final String DISPLAYNAME = "INSERT";
 
     private boolean forward;
     private Position startPos;
@@ -102,6 +103,10 @@ public class SearchMode extends AbstractCommandLineMode {
 
     public String getName() {
         return NAME;
+    }
+
+    public String getDisplayName() {
+        return DISPLAYNAME;
     }
 
     public enum Direction implements ModeSwitchHint {
