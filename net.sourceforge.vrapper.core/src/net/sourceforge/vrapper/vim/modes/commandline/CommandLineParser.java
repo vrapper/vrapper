@@ -138,22 +138,17 @@ public class CommandLineParser extends AbstractCommandParser {
             ConfigCommand<Boolean> enable = new SetOptionCommand<Boolean>(o, Boolean.TRUE);
             ConfigCommand<Boolean> disable = new SetOptionCommand<Boolean>(o, Boolean.FALSE);
             ConfigCommand<Boolean> toggle = new ToggleOptionCommand(o);
+            ConfigCommand<Boolean> status = new PrintOptionCommand<Boolean>(o);
             for (String alias: o.getAllNames()) {
                 config.add(alias, enable);
                 config.add("no"+alias, disable);
                 config.add(alias+"!", toggle);
+                config.add(alias+"?", status);
             }
         }
         // overwrites hlsearch/nohlsearch commands
-        Evaluator hlsToggle = new OptionDependentEvaluator(Options.SEARCH_HIGHLIGHT, ConfigAction.NO_HL_SEARCH, ConfigAction.HL_SEARCH);
         Evaluator numberToggle = new OptionDependentEvaluator(Options.LINE_NUMBERS, ConfigAction.NO_LINE_NUMBERS, ConfigAction.LINE_NUMBERS);
         Evaluator listToggle = new OptionDependentEvaluator(Options.SHOW_WHITESPACE, ConfigAction.NO_SHOW_WHITESPACE, ConfigAction.SHOW_WHITESPACE);
-        config.add("hlsearch", ConfigAction.HL_SEARCH);
-        config.add("nohlsearch", ConfigAction.NO_HL_SEARCH);
-        config.add("hls", ConfigAction.HL_SEARCH);
-        config.add("nohls", ConfigAction.NO_HL_SEARCH);
-        config.add("hlsearch!", hlsToggle);
-        config.add("hls!", hlsToggle);
         config.add("globalregisters", ConfigAction.GLOBAL_REGISTERS);
         config.add("noglobalregisters", ConfigAction.NO_GLOBAL_REGISTERS);
         config.add("localregisters", ConfigAction.NO_GLOBAL_REGISTERS);
@@ -217,23 +212,6 @@ public class CommandLineParser extends AbstractCommandParser {
         NO_GLOBAL_REGISTERS {
             public Object evaluate(EditorAdaptor vim, Queue<String> command) {
                 vim.useLocalRegisters();
-                return null;
-            }
-        },
-        HL_SEARCH {
-            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
-                vim.getConfiguration().set(Options.SEARCH_HIGHLIGHT, Boolean.TRUE);
-                Search search = vim.getRegisterManager().getSearch();
-                if (search != null) {
-                    vim.getSearchAndReplaceService().highlight(search);
-                }
-                return null;
-            }
-        },
-        NO_HL_SEARCH {
-            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
-                vim.getConfiguration().set(Options.SEARCH_HIGHLIGHT, Boolean.FALSE);
-                vim.getSearchAndReplaceService().removeHighlighting();
                 return null;
             }
         },
