@@ -25,7 +25,7 @@ import net.sourceforge.vrapper.vim.commands.motions.SearchResultMotion;
 public class LinewiseVisualMode extends AbstractVisualMode {
 
     public static final String NAME = "linewise visual mode";
-    public static final String DISPLAYNAME = "VISUAL LINE";
+    public static final String DISPLAY_NAME = "VISUAL LINE";
 
     public LinewiseVisualMode(EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
@@ -50,7 +50,7 @@ public class LinewiseVisualMode extends AbstractVisualMode {
     }
 
     public String getDisplayName() {
-        return DISPLAYNAME;
+        return DISPLAY_NAME;
     }
 
     @Override

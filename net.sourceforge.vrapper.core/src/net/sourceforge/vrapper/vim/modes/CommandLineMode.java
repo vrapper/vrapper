@@ -8,7 +8,7 @@ import net.sourceforge.vrapper.vim.modes.commandline.CommandLineParser;
 
 public class CommandLineMode extends AbstractCommandLineMode {
 
-    public static final String DISPLAYNAME = "COMMAND LINE";
+    public static final String DISPLAY_NAME = "COMMAND LINE";
     public static final String NAME = "command mode";
     public static final String KEYMAP_NAME = "Command Mode Keymap";
 
@@ -31,7 +31,7 @@ public class CommandLineMode extends AbstractCommandLineMode {
     }
     
     public String getDisplayName() {
-        return DISPLAYNAME;
+        return DISPLAY_NAME;
     }
 
     public KeyMap resolveKeyMap(KeyMapProvider provider) {

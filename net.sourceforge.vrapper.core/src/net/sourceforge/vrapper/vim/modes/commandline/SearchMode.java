@@ -21,7 +21,7 @@ import net.sourceforge.vrapper.vim.modes.ModeSwitchHint;
 public class SearchMode extends AbstractCommandLineMode {
 
     public static final String NAME = "search mode";
-    public static final String DISPLAYNAME = "SEARCH";
+    public static final String DISPLAY_NAME = "SEARCH";
 
     private boolean forward;
     private Position startPos;
@@ -106,7 +106,7 @@ public class SearchMode extends AbstractCommandLineMode {
     }
 
     public String getDisplayName() {
-        return DISPLAYNAME;
+        return DISPLAY_NAME;
     }
 
     public enum Direction implements ModeSwitchHint {
