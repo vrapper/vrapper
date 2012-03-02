@@ -12,17 +12,12 @@ import org.eclipse.swt.widgets.Text;
 public class ModeContributionItem extends ContributionItem {
     
     private static final String RECORDING_MESSAGE = "recording";
-    private static final int MODEMESSAGE_WIDTH = 150;
+    private static final int MODEMESSAGE_WIDTH = 50;
     private String mode = "";
     private boolean isRecording;
     
     public ModeContributionItem(String id) {
         super(id);
-    }
-
-    @Override
-    public void dispose() {
-        super.dispose();
     }
 
     @Override
@@ -53,16 +48,6 @@ public class ModeContributionItem extends ContributionItem {
         modeText.setText(mode);
         
         reservedSpace.layout();
-    }
-
-    @Override
-    public void update(String id) {
-        super.update(id);
-    }
-
-    @Override
-    public void update() {
-        super.update();
     }
     
     public void setText(String text) {
