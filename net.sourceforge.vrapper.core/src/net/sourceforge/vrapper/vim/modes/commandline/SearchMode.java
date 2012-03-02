@@ -21,7 +21,7 @@ import net.sourceforge.vrapper.vim.modes.ModeSwitchHint;
 public class SearchMode extends AbstractCommandLineMode {
 
     public static final String NAME = "search mode";
-    public static final String DISPLAYNAME = "INSERT";
+    public static final String DISPLAYNAME = "SEARCH";
 
     private boolean forward;
     private Position startPos;
