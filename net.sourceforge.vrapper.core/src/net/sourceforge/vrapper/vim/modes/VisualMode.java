@@ -28,6 +28,7 @@ import net.sourceforge.vrapper.vim.commands.motions.SearchResultMotion;
 public class VisualMode extends AbstractVisualMode {
 
     public static final String NAME = "visual mode";
+    public static final String DISPLAYNAME = "VISUAL";    
 
     public VisualMode(EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
@@ -35,6 +36,10 @@ public class VisualMode extends AbstractVisualMode {
 
     public String getName() {
         return NAME;
+    }
+
+    public String getDisplayName() {
+        return DISPLAYNAME;
     }
 
     @Override

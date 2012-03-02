@@ -37,7 +37,7 @@ public class ComplexOptionEvaluator implements Evaluator {
     }
 
     private void invalidValueMessage(EditorAdaptor vim, String value) {
-        vim.getUserInterfaceService().setEditorMode("Invalid value: " + value);
+        vim.getUserInterfaceService().setErrorMessage("Invalid value: " + value);
     }
 
     private void noSuchOptionMessage(EditorAdaptor vim, String name) {
