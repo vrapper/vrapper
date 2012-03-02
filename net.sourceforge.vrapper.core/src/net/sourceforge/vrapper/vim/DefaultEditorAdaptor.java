@@ -70,7 +70,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     private final KeyStrokeTranslator keyStrokeTranslator;
     private final KeyMapProvider keyMapProvider;
     private final UnderlyingEditorSettings editorSettings;
-    private final Configuration configuration;
+    private final LocalConfiguration configuration;
     private final PlatformSpecificStateProvider platformSpecificStateProvider;
     private final SearchAndReplaceService searchAndReplaceService;
     private MacroRecorder macroRecorder;
@@ -86,7 +86,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         this.globalRegisterManager = registerManager;
         this.serviceProvider = editor.getServiceProvider();
         this.editorSettings = editor.getUnderlyingEditorSettings();
-        this.configuration = editor.getConfiguration();
+        this.configuration = new SimpleLocalConfiguration(editor.getConfiguration());
         this.platformSpecificStateProvider = editor.getPlatformSpecificStateProvider();
         this.searchAndReplaceService = editor.getSearchAndReplaceService();
         viewportService = editor.getViewportService();
@@ -296,7 +296,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         swapMacroRecorder();
     }
 
-    public Configuration getConfiguration() {
+    public LocalConfiguration getConfiguration() {
         return configuration;
     }
 

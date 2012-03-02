@@ -35,46 +35,58 @@ public class SearchCommandParser extends AbstractCommandParser {
      */
     @Override
     public Command parseAndExecute(String first, String command) {
-        Search search = createSearch(first, command);
+        Search search = parseSearchCommand(first, command);
         editor.getRegisterManager().setSearch(search);
         editor.getSearchAndReplaceService().removeHighlighting();
         return commandToExecute;
     }
+    
+    /** Create a {@link Search} instance based on the given parameters and configuration.*/
+    public static Search createSearch(EditorAdaptor editor, String keyword, boolean backward,
+            boolean wholeWord, SearchOffset offset) {
+        boolean caseSensitive = ! editor.getConfiguration().get(Options.IGNORE_CASE)
+            || (editor.getConfiguration().get(Options.SMART_CASE)
+                && StringUtils.containsUppercase(keyword));
+        boolean useRegExp = editor.getConfiguration().get(Options.SEARCH_REGEX);
+        if (offset == null) {
+            // Sanity checking. Passing null is bad style though.
+            offset = SearchOffset.NONE;
+        }
+        return new Search(keyword, backward, wholeWord, caseSensitive, offset, useRegExp);
+    }
 
-	private Search createSearch(String first, String command) {
+	private Search parseSearchCommand(String first, String command) {
         boolean backward = first.equals(VimConstants.BACKWARD_SEARCH_CHAR);
         StringTokenizer nizer = new StringTokenizer(command, first);
         String keyword = parseKeyWord(first, command, nizer);
+        Search lastSearch = editor.getRegisterManager().getSearch();
         // if keyword is empty, last keyword is used
-        Search oldSearch = editor.getRegisterManager().getSearch();
-        boolean useLastKeyword = keyword.length() == 0 && oldSearch != null;
+        boolean useLastKeyword = keyword.length() == 0 && lastSearch != null;
         if (useLastKeyword) {
-            keyword = oldSearch.getKeyword();
+            keyword = lastSearch.getKeyword();
         }
         SearchOffset searchOffset;
         if (nizer.hasMoreTokens()) {
             String afterSearch = nizer.nextToken();
             searchOffset = createSearchOffset(keyword, afterSearch);
         } else if (useLastKeyword) {
-            searchOffset = oldSearch.getSearchOffset();
+            searchOffset = lastSearch.getSearchOffset();
         } else {
             searchOffset = SearchOffset.NONE;
         }
-        boolean caseSensitive = !editor.getConfiguration().get(Options.IGNORE_CASE)
-            || editor.getConfiguration().get(Options.SMART_CASE)
-            && StringUtils.containsUppercase(keyword);
-        boolean useRegExp = editor.getConfiguration().get(Options.SEARCH_REGEX);
-        Search search = new Search(keyword, backward, false, caseSensitive, searchOffset, useRegExp);
+        Search search = createSearch(editor, keyword, backward, false, searchOffset);
         return search;
     }
 
+	/** Parses the (partial) buffer and returns only the keyword part. */
 	public String getKeyWord() {
         String first = buffer.substring(0,1);
         String command = buffer.substring(1, buffer.length());
 	    return parseKeyWord(first, command, new StringTokenizer(command, first));
 	}
 
-    private String parseKeyWord(String first, String command,
+	/** Parses the keyword tokens to remove escaped search delimiters. */ 
+    private static String parseKeyWord(String first, String command,
             StringTokenizer nizer) {
         StringBuilder sb = new StringBuilder();
         // check whether a keyword was given

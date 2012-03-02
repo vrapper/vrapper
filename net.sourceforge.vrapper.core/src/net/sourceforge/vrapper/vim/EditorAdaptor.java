@@ -46,7 +46,7 @@ public interface EditorAdaptor {
     UserInterfaceService getUserInterfaceService();
     KeyMapProvider getKeyMapProvider();
     UnderlyingEditorSettings getEditorSettings();
-    Configuration getConfiguration();
+    LocalConfiguration getConfiguration();
     MacroRecorder getMacroRecorder();
     MacroPlayer getMacroPlayer();
     PlatformSpecificStateProvider getPlatformSpecificStateProvider();

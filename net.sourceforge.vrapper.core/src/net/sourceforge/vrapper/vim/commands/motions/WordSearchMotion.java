@@ -4,11 +4,13 @@ import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Search;
+import net.sourceforge.vrapper.utils.SearchOffset;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
-import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
+import net.sourceforge.vrapper.vim.modes.commandline.SearchCommandParser;
 
+/** Starts a new search with the word the cursor sits on. */
 public class WordSearchMotion extends SearchResultMotion {
 
     public static final WordSearchMotion FORWARD = new WordSearchMotion(false, true);
@@ -27,11 +29,14 @@ public class WordSearchMotion extends SearchResultMotion {
     @Override
     public Position destination(EditorAdaptor editorAdaptor, int count)
             throws CommandExecutionException {
-        editorAdaptor.getRegisterManager().setSearch(createSearch(editorAdaptor));
+        String keyword = grabCurrentWord(editorAdaptor);
+        Search search = SearchCommandParser.createSearch(editorAdaptor, keyword, reverse, wholeWord,
+                SearchOffset.NONE);
+        editorAdaptor.getRegisterManager().setSearch(search);
         return super.destination(editorAdaptor, count);
     }
 
-    private Search createSearch(EditorAdaptor editorAdaptor) {
+    private static String grabCurrentWord(EditorAdaptor editorAdaptor) {
         String keyword = "";
         TextContent p = editorAdaptor.getViewContent();
         int index = editorAdaptor.getCursorService().getPosition().getViewOffset();
@@ -76,8 +81,7 @@ public class WordSearchMotion extends SearchResultMotion {
             }
             keyword = p.getText(first, last-first+1);
         }
-        boolean caseSensitive = !editorAdaptor.getConfiguration().get(Options.IGNORE_CASE);
-        return new Search(keyword, reverse, wholeWord, caseSensitive);
+        return keyword;
     }
 
 }

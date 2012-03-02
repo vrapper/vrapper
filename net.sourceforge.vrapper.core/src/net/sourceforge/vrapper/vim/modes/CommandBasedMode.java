@@ -55,6 +55,7 @@ import net.sourceforge.vrapper.vim.commands.motions.ViewPortMotion;
 import net.sourceforge.vrapper.vim.commands.motions.WordSearchMotion;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
 
+/** Base class for normal and visual modes. */
 public abstract class CommandBasedMode extends AbstractMode {
 
     private static State<Motion> motions;

@@ -7,6 +7,7 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 
+/** Wraps a {@link Command} in an {@link Evaluator} interface. Also does exception handling. */
 public class CommandWrapper implements Evaluator {
 
     private final Command action;
