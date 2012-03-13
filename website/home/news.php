@@ -1,4 +1,25 @@
 <div class="newsbox">
+    <div class="date">2012-03-12</div>
+    <h4>Current state of the Unstable update site</h4>
+    <p>We released 0.18.0 less than two months ago and there are already plenty of changes happening on our unstable update site.
+    I'm not sure how long I want to wait before releasing 0.20.0.  I don't have any huge changes pending so it might be pretty soon.
+    For anyone playing with the unstable update site, here are the changes since 0.18.0:</p>
+    
+    <ul>
+        <li>Added '|' (pipe) command to move to column</li>
+        <li>Added '@@' command to redo last macro</li>
+        <li>Added "_ the blackhole register</li>
+        <li>Added ability to check value of boolean settings with :set &lt;property&gt;?</li>
+        <li>Modifying search settings (e.g. noic, hlsearch) will now modify current search</li>
+        <li>Display 'recording' while recording a macro</li>
+        <li>Fixed issue where vw"ap would overwrite the contents of the 'a' register</li>
+        <li>Fixed issue with multi-character mappings in files with Windows line-endings (^M)</li>
+        <li>Fixed issue with :9999 when last line of file is empty</li>
+    </ul>
+    
+    <p>Thanks to all the contributors for constantly improving Vrapper!</p>
+</div>
+<div class="newsbox">
     <div class="date">2012-02-12</div>
     <h4>What I'd like to see in Vrapper 0.20.0</h4>
     <p>Vrapper 0.18.0 is out, time to start looking towards the next release.  Of the defects/feature requests
