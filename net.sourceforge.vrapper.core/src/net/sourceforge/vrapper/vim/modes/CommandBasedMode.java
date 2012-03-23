@@ -127,7 +127,12 @@ public abstract class CommandBasedMode extends AbstractMode {
                                                                  // INCLUSIVE;
                                                                  // bug in Vim
                                                                  // documentation
-            final Motion parenthesesMove = new ParenthesesMove();
+            final Motion parenthesesMove = ParenthesesMove.INSTANCE;
+            final Motion matchOpenParen = ParenthesesMove.MATCH_OPEN_PAREN;
+            final Motion matchCloseParen = ParenthesesMove.MATCH_CLOSE_PAREN;
+            final Motion matchOpenCurly = ParenthesesMove.MATCH_OPEN_CURLY;
+            final Motion matchCloseCurly = ParenthesesMove.MATCH_CLOSE_CURLY;
+            
             final Motion findForward = ContinueFindingMotion.NORMAL;
             final Motion findBackward = ContinueFindingMotion.REVERSE;
 
@@ -188,6 +193,12 @@ public abstract class CommandBasedMode extends AbstractMode {
                     leafBind('$', lineEnd),
                     leafBind('%', parenthesesMove),
                     leafBind('^', lineStart),
+                    transitionBind('[', 
+                    		leafBind('(', matchOpenParen),
+                    		leafBind('{', matchOpenCurly)),
+                    transitionBind(']', 
+                    		leafBind(')', matchCloseParen),
+                    		leafBind('}', matchCloseCurly)),
                     // leafBind('(', javaGoTo("previous.member", LINE_WISE)), //
                     // XXX: vim non-compatible; XXX: make java-agnostic
                     // leafBind(')', javaGoTo("next.member", LINE_WISE)), //

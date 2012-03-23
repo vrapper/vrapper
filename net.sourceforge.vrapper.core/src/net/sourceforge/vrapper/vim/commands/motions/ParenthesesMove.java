@@ -30,7 +30,10 @@ public class ParenthesesMove extends AbstractModelSideMotion {
         op.put("]", new ParenthesesPair("[", "]", true ));
         PARENTHESES = Collections.unmodifiableMap(op);
     }
+    
+    public static final ParenthesesMove INSTANCE = new ParenthesesMove();
 
+    //default match algorithm, find match for character under cursor
     @Override
     protected int destination(int offset, TextContent content, int count) throws CommandExecutionException {
         LineInformation info = content.getLineInformationOfOffset(offset);
@@ -46,7 +49,40 @@ public class ParenthesesMove extends AbstractModelSideMotion {
         if (pair == null) {
             throw new CommandExecutionException("no parentheses to jump found");
         }
-
+        
+        return findMatch(index, pair, content, count);
+    }
+    
+    public static final ParenthesesMove MATCH_OPEN_PAREN = new ParenthesesMove() {
+    	@Override
+    	protected int destination(int offset, TextContent content, int count) throws CommandExecutionException {
+    		return findMatch(offset, PARENTHESES.get(")"), content, count);
+    	}
+    };
+    
+    public static final ParenthesesMove MATCH_CLOSE_PAREN = new ParenthesesMove() {
+    	@Override
+    	protected int destination(int offset, TextContent content, int count) throws CommandExecutionException {
+    		return findMatch(offset, PARENTHESES.get("("), content, count);
+    	}
+    };
+    
+    public static final ParenthesesMove MATCH_OPEN_CURLY = new ParenthesesMove() {
+    	@Override
+    	protected int destination(int offset, TextContent content, int count) throws CommandExecutionException {
+    		return findMatch(offset, PARENTHESES.get("}"), content, count);
+    	}
+    };
+    
+    public static final ParenthesesMove MATCH_CLOSE_CURLY = new ParenthesesMove() {
+    	@Override
+    	protected int destination(int offset, TextContent content, int count) throws CommandExecutionException {
+    		return findMatch(offset, PARENTHESES.get("{"), content, count);
+    	}
+    };
+    
+    private static int findMatch(int offset, ParenthesesPair pair, TextContent content, int count) {
+    	int index = offset;
         int depth = 1;
         int leftModifier, rightModifier, limit, indexModifier;
         if (pair.backwards) {
@@ -62,7 +98,13 @@ public class ParenthesesMove extends AbstractModelSideMotion {
         }
         while (index != limit) {
             index += indexModifier;
-            String c = content.getText(index, 1);
+            String c;
+            try {
+            	c = content.getText(index, 1);
+            } catch(Exception e) {
+            	return offset;
+            }
+            
             if (c.equals(pair.right)) {
                 depth += rightModifier;
             } else if (c.equals(pair.left)) {
