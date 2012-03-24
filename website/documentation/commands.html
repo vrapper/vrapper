@@ -121,7 +121,6 @@
     <li>v</li>
     <li>V</li>
     <li>u</li>
-    <li>&lt;C-R&gt;</li>
     <li>~</li>
     <li>q</li>
     <li>@</li>
@@ -136,19 +135,62 @@
     <li>z-</li>
     <li>gt</li>
     <li>gT</li>
-    <li>&lt;C-U&gt;</li>
-    <li>&lt;C-D&gt;</li>
-    <li>&lt;C-F&gt;</li>
-    <li>&lt;C-B&gt;</li>
-    <li>&lt;C-Y&gt;</li>
-    <li>&lt;C-E&gt;</li>
-    <li>&lt;C-I&gt;</li>
-    <li>&lt;C-O&gt;</li>
+</ul>
+
+<h3>Ctrl Commands</h3>
+<ul>
+    Vrapper defines operations for some Ctrl keys.  However, in all cases, if you have an Eclipse shortcut bound to that
+    Ctrl key it will always perform the Eclipse operation.  You have to unbind all instances of that Ctrl key from Eclipse
+    for any of the following Vrapper bindings to work.
+
+	<h4 style="margin-bottom:0px">Normal Mode</h4>
+    <ul>
+		<li>&lt;C-F&gt; (page down)</li>
+		<li>&lt;C-B&gt; (page up)</li>
+		<li>&lt;C-D&gt; (page down)</li>
+		<li>&lt;C-U&gt; (page up)</li>
+		<li>&lt;C-Y&gt; (scroll line up)</li>
+		<li>&lt;C-E&gt; (scroll line down)</li>
+		<li>&lt;C-I&gt; (forward navigation history)</li>
+		<li>&lt;C-O&gt; (backward navigation history)</li>
+		<li>&lt;C-R&gt; (redo)</li>
+	</ul>
+
+	<h4 style="margin-bottom:0px">Insert Mode</h4>
+    <ul>
+		<li>&lt;C-C&gt; (leave insert mode)</li>
+	</ul>
+
+	<h4 style="margin-bottom:0px">Visual Mode</h4>
+    <ul>
+		<li>&lt;C-C&gt; (leave visual mode)</li>
+		<li>&lt;C-F&gt; (page down)</li>
+		<li>&lt;C-B&gt; (page up)</li>
+		<li>&lt;C-D&gt; (page down)</li>
+		<li>&lt;C-U&gt; (page up)</li>
+	</ul>
+
+	<h4 style="margin-bottom:0px">Command Mode</h4>
+    <ul>
+		<li>&lt;C-C&gt; (leave command mode)</li>
+		<li>&lt;C-V&gt; (paste clipboard into command line)</li>
+	</ul>
+
+	<h4 style="margin-bottom:0px">Search Mode</h4>
+    <ul>
+		<li>&lt;C-C&gt; (leave search mode)</li>
+	</ul>
+    
+	<h4 style="margin-bottom:0px">CDT/JDT optional plugins</h4>
+    <ul>
+		<li>&lt;C-]&gt; (go to declaration)</li>
+	</ul>
 </ul>
 
 <h3>Quirks (incompatibilities with Vim)</h3>
 <ul>
-    <li>Some of the commands are directly bound to corresponding Eclipse actions and behave differently from Vim or are only available in visual mode. These are:
+    Some commands are directly bound to Eclipse actions so they behave a little differently than in Vim. They are:
+    <br/>
     <ul class="commands" style="margin-left:0px;display:inline">
         <li>zo</li>
         <li>zR</li>
