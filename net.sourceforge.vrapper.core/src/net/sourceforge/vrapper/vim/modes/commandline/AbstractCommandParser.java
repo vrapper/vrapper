@@ -19,11 +19,11 @@ import net.sourceforge.vrapper.vim.register.RegisterManager;
  */
 public abstract class AbstractCommandParser {
 
-    static final KeyStroke KEY_RETURN = key(SpecialKey.RETURN);
-    static final KeyStroke KEY_ESCAPE = key(SpecialKey.ESC);
-    static final KeyStroke KEY_CTRL_C = ctrlKey('c');
-    static final KeyStroke KEY_BACKSP = key(SpecialKey.BACKSPACE);
-    static final KeyStroke KEY_CTRL_V = key((char) 22);
+    protected static final KeyStroke KEY_RETURN = key(SpecialKey.RETURN);
+    protected static final KeyStroke KEY_ESCAPE = key(SpecialKey.ESC);
+    protected static final KeyStroke KEY_CTRL_C = ctrlKey('c');
+    protected static final KeyStroke KEY_BACKSP = key(SpecialKey.BACKSPACE);
+    protected static final KeyStroke KEY_CTRL_V = key((char) 22);
     protected final StringBuffer buffer;
     protected final EditorAdaptor editor;
 
