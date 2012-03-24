@@ -15,6 +15,7 @@ import net.sourceforge.vrapper.vim.commands.motions.MoveWordEndRight;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordRight;
 import net.sourceforge.vrapper.vim.commands.motions.ParagraphMotion;
+import net.sourceforge.vrapper.vim.commands.motions.ParenthesesMove;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
 
@@ -736,5 +737,145 @@ public class MotionTests extends CommandTestCase {
                 "eins\n\nzwei\n\ndrei\n\n",'P',"olizei!",
                 "eins\n",'\n',"zwei\n\ndrei\n\nPolizei!");
     }
+	
+	@Test
+	public void testPercentMatch() {
+		Motion parenthesesMove = ParenthesesMove.INSTANCE;
+		
+		//basic case
+		checkMotion(parenthesesMove,
+			"(match",')',"",
+			"",'(',"match)");
+		
+		checkMotion(parenthesesMove,
+			"",'(',"match)",
+			"(match",')',"");
+		
+		checkMotion(parenthesesMove,
+			"{match",'}',"",
+			"",'{',"match}");
+		
+		checkMotion(parenthesesMove,
+			"",'{',"match}",
+			"{match",'}',"");
+		
+		checkMotion(parenthesesMove,
+			"[match",']',"",
+			"",'[',"match]");
+		
+		checkMotion(parenthesesMove,
+			"",'[',"match]",
+			"[match",']',"");
+		
+		//with nesting
+		checkMotion(parenthesesMove,
+			"(ma()tch",')',"",
+			"",'(',"ma()tch)");
+		
+		checkMotion(parenthesesMove,
+			"",'(',"ma()tch)",
+			"(ma()tch",')',"");
+		
+		checkMotion(parenthesesMove,
+			"{ma{}tch",'}',"",
+			"",'{',"ma{}tch}");
+		
+		checkMotion(parenthesesMove,
+			"",'{',"ma{}tch}",
+			"{ma{}tch",'}',"");
+		
+		checkMotion(parenthesesMove,
+			"[ma[]tch",']',"",
+			"",'[',"ma[]tch]");
+		
+		checkMotion(parenthesesMove,
+			"",'[',"ma[]tch]",
+			"[ma[]tch",']',"");
+		
+		//no match found
+		checkMotion(parenthesesMove,
+			"match",')',"",
+			"match",')',"");
+		
+		checkMotion(parenthesesMove,
+			"",'(',"match",
+			"",'(',"match");
+		
+		checkMotion(parenthesesMove,
+			"match",'}',"",
+			"match",'}',"");
+		
+		checkMotion(parenthesesMove,
+			"",'{',"match",
+			"",'{',"match");
+		
+		checkMotion(parenthesesMove,
+			"match",']',"",
+			"match",']',"");
+		
+		checkMotion(parenthesesMove,
+			"",'[',"match",
+			"",'[',"match");
+	}
+	
+	@Test
+	public void testParenthesesMatching() {
+		Motion matchOpenParen  = ParenthesesMove.MATCH_OPEN_PAREN;
+		Motion matchCloseParen = ParenthesesMove.MATCH_CLOSE_PAREN;
+		Motion matchOpenCurly  = ParenthesesMove.MATCH_OPEN_CURLY;
+		Motion matchCloseCurly = ParenthesesMove.MATCH_CLOSE_CURLY;
+		
+		//basic case
+		checkMotion(matchOpenParen,
+			"(matc",'h',")",
+			"",'(',"match)");
+		
+		checkMotion(matchCloseParen,
+			"(",'m',"atch)",
+			"(match",')',"");
+		
+		checkMotion(matchOpenCurly,
+			"{matc",'h',"}",
+			"",'{',"match}");
+		
+		checkMotion(matchCloseCurly,
+			"{",'m',"atch}",
+			"{match",'}',"");
+		
+		//with nesting
+		checkMotion(matchOpenParen,
+			"(ma()tc",'h',")",
+			"",'(',"ma()tch)");
+		
+		checkMotion(matchCloseParen,
+			"(",'m',"a()tch)",
+			"(ma()tch",')',"");
+		
+		checkMotion(matchOpenCurly,
+			"{ma{}tc",'h',"}",
+			"",'{',"ma{}tch}");
+		
+		checkMotion(matchCloseCurly,
+			"{",'m',"a{}tch}",
+			"{ma{}tch",'}',"");
+		
+		//no match found
+		checkMotion(matchOpenParen,
+			"matc",'h',")",
+			"matc",'h',")");
+		
+		checkMotion(matchCloseParen,
+			"(",'m',"atch",
+			"(",'m',"atch");
+		
+		checkMotion(matchOpenCurly,
+			"matc",'h',"}",
+			"matc",'h',"}");
+		
+		checkMotion(matchCloseCurly,
+			"{",'m',"atch",
+			"{",'m',"atch");
+		
+	}
 
 }
