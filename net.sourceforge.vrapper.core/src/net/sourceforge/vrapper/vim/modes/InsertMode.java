@@ -1,5 +1,9 @@
 package net.sourceforge.vrapper.vim.modes;
 
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.ctrlKey;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.key;
+import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.dontRepeat;
+import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
 import net.sourceforge.vrapper.keymap.KeyMap;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SpecialKey;
@@ -25,10 +29,6 @@ import net.sourceforge.vrapper.vim.commands.motions.MoveLeft;
 import net.sourceforge.vrapper.vim.register.Register;
 import net.sourceforge.vrapper.vim.register.RegisterContent;
 import net.sourceforge.vrapper.vim.register.StringRegisterContent;
-import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.key;
-import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.ctrlKey;
-import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.dontRepeat;
-import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
 
 public class InsertMode extends AbstractMode {
 
@@ -38,6 +38,7 @@ public class InsertMode extends AbstractMode {
     public static final ModeSwitchHint DONT_MOVE_CURSOR = new ModeSwitchHint() {};
     public static final KeyStroke ESC = key(SpecialKey.ESC);
     public static final KeyStroke CTRL_C = ctrlKey('c');
+    public static final KeyStroke CTRL_R = ctrlKey('r');
 
     private Position startEditPosition;
 
@@ -167,6 +168,8 @@ public class InsertMode extends AbstractMode {
             	editorAdaptor.getEditorSettings().disableInputMethod();
             }
             return true;
+		} else if (stroke.equals(CTRL_R)) {
+			editorAdaptor.changeModeSafely(PasteRegisterMode.NAME, DONT_MOVE_CURSOR);
         } else if (!allowed(stroke)) {
             startEditPosition = editorAdaptor.getCursorService().getPosition();
             count = 1;
