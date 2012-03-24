@@ -12,6 +12,7 @@ import net.sourceforge.vrapper.vim.commands.motions.FindMotion;
  */
 public interface RegisterManager {
 
+    public static final String REGISTER_NAME_UNNAMED = "\"";
     public static final String REGISTER_NAME_INSERT = ".";
     public static final String REGISTER_NAME_CLIPBOARD = "*";
     public static final String REGISTER_NAME_SEARCH = "/";

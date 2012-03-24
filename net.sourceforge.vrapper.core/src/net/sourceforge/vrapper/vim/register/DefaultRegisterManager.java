@@ -32,12 +32,21 @@ public class DefaultRegisterManager implements RegisterManager {
         this.defaultRegister = new SimpleRegister();
         this.lastEditRegister = new SimpleRegister();
         this.activeRegister = defaultRegister;
+        // ""
+        Register unnamedRegister = new ReadOnlyRegister() {
+            public RegisterContent getContent() {
+                return defaultRegister.getContent();
+            }
+        };
+        registers.put(RegisterManager.REGISTER_NAME_UNNAMED, unnamedRegister);
+        // ".
         Register lastInsertRegister = new ReadOnlyRegister() {
             public RegisterContent getContent() {
                 return lastEditRegister.getContent();
             }
         };
         registers.put(RegisterManager.REGISTER_NAME_INSERT, lastInsertRegister);
+        // "/
         Register searchRegister = new ReadOnlyRegister() {
             public RegisterContent getContent() {
                 return new StringRegisterContent(ContentType.TEXT, search.getKeyword());
@@ -45,7 +54,8 @@ public class DefaultRegisterManager implements RegisterManager {
         };
         registers.put(RegisterManager.REGISTER_NAME_SEARCH, searchRegister);
         
-        // Unmodifiable register which will protect the default register from being updated.
+        // "_
+        // (Unmodifiable register which will protect the default register from being updated)
         Register blackholeRegister = new Register() {
             public RegisterContent getContent() {
                 return RegisterContent.DEFAULT_CONTENT;
