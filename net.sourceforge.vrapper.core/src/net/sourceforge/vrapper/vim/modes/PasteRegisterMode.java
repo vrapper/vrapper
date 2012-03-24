@@ -85,7 +85,7 @@ public class PasteRegisterMode extends AbstractCommandLineMode {
 			if(text.length() > 0) {
 				TextContent content = editor.getModelContent();
 				int offset = editor.getCursorService().getPosition().getModelOffset();
-				int position = offset + text.length() - 1;
+				int position = offset + text.length();
 				content.replace(offset, 0, text);
 				Position destination = editorAdaptor.getCursorService().newPositionForModelOffset(position);
 				editorAdaptor.setPosition(destination, true);
