@@ -23,6 +23,7 @@ public class EclipseUserInterfaceService implements UserInterfaceService {
         this.editor = editor;
         statusLine = new StatusLine(textViewer.getTextWidget());
         vimInputModeItem = getContributionItem();
+        setEditorMode(VRAPPER_DISABLED);
         editor.getSite().getWorkbenchWindow().getPartService().addPartListener(new PartChangeListener());
     }
 

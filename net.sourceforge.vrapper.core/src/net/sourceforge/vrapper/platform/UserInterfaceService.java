@@ -9,6 +9,8 @@ package net.sourceforge.vrapper.platform;
  * @author Matthias Radig
  */
 public interface UserInterfaceService {
+	
+    static final String VRAPPER_DISABLED = "vrapper disabled";
 
     /**
      * The command line is used for showing the currently typed command or search.

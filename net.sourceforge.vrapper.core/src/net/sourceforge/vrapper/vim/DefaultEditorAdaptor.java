@@ -349,7 +349,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
             changeModeSafely(NormalMode.NAME, InsertMode.DONT_MOVE_CURSOR);
         } else {
             changeModeSafely(InsertMode.NAME, InsertMode.DONT_MOVE_CURSOR);
-            userInterfaceService.setEditorMode("vrapper disabled");
+            userInterfaceService.setEditorMode(UserInterfaceService.VRAPPER_DISABLED);
         }
     }
     
