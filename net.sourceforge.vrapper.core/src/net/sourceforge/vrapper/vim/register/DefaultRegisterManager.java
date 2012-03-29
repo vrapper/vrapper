@@ -49,7 +49,12 @@ public class DefaultRegisterManager implements RegisterManager {
         // "/
         Register searchRegister = new ReadOnlyRegister() {
             public RegisterContent getContent() {
-                return new StringRegisterContent(ContentType.TEXT, search.getKeyword());
+            	if(search == null) {
+            		return RegisterContent.DEFAULT_CONTENT;
+            	}
+            	else {
+            		return new StringRegisterContent(ContentType.TEXT, search.getKeyword());
+            	}
             }
         };
         registers.put(RegisterManager.REGISTER_NAME_SEARCH, searchRegister);
