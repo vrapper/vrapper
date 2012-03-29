@@ -3,13 +3,11 @@ package net.sourceforge.vrapper.vim.modes;
 import net.sourceforge.vrapper.keymap.KeyMap;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.platform.KeyMapProvider;
-import net.sourceforge.vrapper.platform.TextContent;
-import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.Command;
+import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
+import net.sourceforge.vrapper.vim.commands.PasteRegisterCommand;
 import net.sourceforge.vrapper.vim.modes.commandline.AbstractCommandParser;
-import net.sourceforge.vrapper.vim.register.Register;
-import net.sourceforge.vrapper.vim.register.RegisterManager;
 
 /**
  * When you're in InsertMode, you can hit Ctrl+R and it will ask for the
@@ -52,12 +50,6 @@ public class PasteRegisterMode extends AbstractCommandLineMode {
 		return new PasteRegisterParser(editorAdaptor);
 	}
 	
-	public static void pasteLastInsert(EditorAdaptor editorAdaptor) {
-		//paste the ". register without actually entering PasteRegisterMode
-		PasteRegisterParser parser = (new PasteRegisterMode(editorAdaptor)).new PasteRegisterParser(editorAdaptor);
-		parser.parseAndExecute("\"", RegisterManager.REGISTER_NAME_INSERT);
-	}
-	
 	private class PasteRegisterParser extends AbstractCommandParser {
 
 		public PasteRegisterParser(EditorAdaptor vim) {
@@ -74,31 +66,20 @@ public class PasteRegisterMode extends AbstractCommandLineMode {
             buffer.append(e.getCharacter());
             //first character is '"', take the second character and use it
             if(buffer.length() > 1) {
-            	parseAndExecute("\"", ""+e.getCharacter());
-            	//return to insert mode
-            	editor.changeModeSafely(InsertMode.NAME);
+            	Command command = parseAndExecute("\"", ""+e.getCharacter());
+            	try {
+					command.execute(editorAdaptor);
+				} catch (CommandExecutionException err) {
+					editorAdaptor.getUserInterfaceService().setErrorMessage(err.getMessage());
+				}
+            	//return to insert mode, continuing the previous insert operation
+            	editor.changeModeSafely(InsertMode.NAME, InsertMode.DONT_SAVE_STATE);
             }
 		}
 
 		@Override
 		public Command parseAndExecute(String first, String command) {
-			//Ideally, I would just send the register's contents to the PasteOperation;
-			//but that requires a TextObject and I don't know how to convert the contents
-			//of the register into a TextObject.  So instead, I'm actually performing
-			//most of what the PasteOperation would do if I could use it.
-			Register reg = editor.getRegisterManager().getRegister(command);
-			String text = reg.getContent().getText();
-			
-			if(text.length() > 0) {
-				TextContent content = editor.getModelContent();
-				int offset = editor.getCursorService().getPosition().getModelOffset();
-				//different from PasteOperation! it does length() - 1
-				int position = offset + text.length();
-				content.replace(offset, 0, text);
-				Position destination = editorAdaptor.getCursorService().newPositionForModelOffset(position);
-				editorAdaptor.setPosition(destination, true);
-			}
-			return null;
+			return new PasteRegisterCommand(command);
 		}
 		
 	}

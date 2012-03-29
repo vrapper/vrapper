@@ -23,6 +23,7 @@ import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.CountIgnoringNonRepeatableCommand;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.commands.PasteBeforeCommand;
+import net.sourceforge.vrapper.vim.commands.PasteRegisterCommand;
 import net.sourceforge.vrapper.vim.commands.SwitchRegisterCommand;
 import net.sourceforge.vrapper.vim.commands.VimCommandSequence;
 import net.sourceforge.vrapper.vim.commands.motions.MoveLeft;
@@ -36,7 +37,7 @@ public class InsertMode extends AbstractMode {
     public static final String DISPLAY_NAME = "INSERT";
     public static final String KEYMAP_NAME = "Insert Mode Keymap";
     public static final ModeSwitchHint DONT_MOVE_CURSOR = new ModeSwitchHint() {};
-    public static final ModeSwitchHint DONT_LEAVE_MODE = new ModeSwitchHint() {};
+    public static final ModeSwitchHint DONT_SAVE_STATE = new ModeSwitchHint() {};
     public static final KeyStroke ESC = key(SpecialKey.ESC);
     public static final KeyStroke CTRL_C = ctrlKey('c');
     public static final KeyStroke CTRL_R = ctrlKey('r');
@@ -68,7 +69,13 @@ public class InsertMode extends AbstractMode {
      * @throws CommandExecutionException
      */
     public void enterMode(ModeSwitchHint... args) throws CommandExecutionException {
-        if (editorAdaptor.getConfiguration().get(Options.ATOMIC_INSERT)) {
+    	boolean initMode = true;
+        for (ModeSwitchHint hint: args) {
+        	if(hint == DONT_SAVE_STATE) {
+        		initMode = false;
+        	}
+        }
+        if (initMode && editorAdaptor.getConfiguration().get(Options.ATOMIC_INSERT)) {
             editorAdaptor.getHistory().beginCompoundChange();
             editorAdaptor.getHistory().lock();
         }
@@ -99,7 +106,9 @@ public class InsertMode extends AbstractMode {
             editorAdaptor.getViewportService().setRepaint(true);
         }
         editorAdaptor.getCursorService().setCaret(CaretType.VERTICAL_BAR);
-        startEditPosition = editorAdaptor.getCursorService().getPosition();
+        if(initMode) {
+        	startEditPosition = editorAdaptor.getCursorService().getPosition();
+        }
         super.enterMode(args);
     }
 
@@ -109,7 +118,7 @@ public class InsertMode extends AbstractMode {
             if (hint == InsertMode.DONT_MOVE_CURSOR) {
                 moveCursor = false;
             }
-            else if(hint == InsertMode.DONT_LEAVE_MODE) {
+            else if(hint == InsertMode.DONT_SAVE_STATE) {
             	//Leave insert mode without performing any of our "leave" operations.
             	//This is because we'll be returning to InsertMode soon and we want
             	//everything to be considered a single "insert" operation.
@@ -181,10 +190,15 @@ public class InsertMode extends AbstractMode {
 		} else if (stroke.equals(CTRL_R)) {
 			//move to "paste register" mode, but don't actually perform the
 			//"leave insert mode" operations
-			editorAdaptor.changeModeSafely(PasteRegisterMode.NAME, DONT_LEAVE_MODE);
+			editorAdaptor.changeModeSafely(PasteRegisterMode.NAME, DONT_SAVE_STATE);
 		} else if (stroke.equals(CTRL_A)) {
 			// i_ctrl-a == i_ctrl-r ".
-			PasteRegisterMode.pasteLastInsert(editorAdaptor);
+			Command command = PasteRegisterCommand.PASTE_LAST_INSERT;
+			try {
+				command.execute(editorAdaptor);
+			} catch (CommandExecutionException e) {
+				editorAdaptor.getUserInterfaceService().setErrorMessage(e.getMessage());
+			}
         } else if (!allowed(stroke)) {
             startEditPosition = editorAdaptor.getCursorService().getPosition();
             count = 1;
