@@ -40,6 +40,7 @@ public class InsertMode extends AbstractMode {
     public static final KeyStroke ESC = key(SpecialKey.ESC);
     public static final KeyStroke CTRL_C = ctrlKey('c');
     public static final KeyStroke CTRL_R = ctrlKey('r');
+    public static final KeyStroke CTRL_A = ctrlKey('a');
 
     private Position startEditPosition;
 
@@ -181,6 +182,9 @@ public class InsertMode extends AbstractMode {
 			//move to "paste register" mode, but don't actually perform the
 			//"leave insert mode" operations
 			editorAdaptor.changeModeSafely(PasteRegisterMode.NAME, DONT_LEAVE_MODE);
+		} else if (stroke.equals(CTRL_A)) {
+			// i_ctrl-a == i_ctrl-r ".
+			PasteRegisterMode.pasteLastInsert(editorAdaptor);
         } else if (!allowed(stroke)) {
             startEditPosition = editorAdaptor.getCursorService().getPosition();
             count = 1;

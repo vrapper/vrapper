@@ -9,6 +9,7 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.modes.commandline.AbstractCommandParser;
 import net.sourceforge.vrapper.vim.register.Register;
+import net.sourceforge.vrapper.vim.register.RegisterManager;
 
 /**
  * When you're in InsertMode, you can hit Ctrl+R and it will ask for the
@@ -51,6 +52,12 @@ public class PasteRegisterMode extends AbstractCommandLineMode {
 		return new PasteRegisterParser(editorAdaptor);
 	}
 	
+	public static void pasteLastInsert(EditorAdaptor editorAdaptor) {
+		//paste the ". register without actually entering PasteRegisterMode
+		PasteRegisterParser parser = (new PasteRegisterMode(editorAdaptor)).new PasteRegisterParser(editorAdaptor);
+		parser.parseAndExecute("\"", RegisterManager.REGISTER_NAME_INSERT);
+	}
+	
 	private class PasteRegisterParser extends AbstractCommandParser {
 
 		public PasteRegisterParser(EditorAdaptor vim) {
@@ -85,6 +92,7 @@ public class PasteRegisterMode extends AbstractCommandLineMode {
 			if(text.length() > 0) {
 				TextContent content = editor.getModelContent();
 				int offset = editor.getCursorService().getPosition().getModelOffset();
+				//different from PasteOperation! it does length() - 1
 				int position = offset + text.length();
 				content.replace(offset, 0, text);
 				Position destination = editorAdaptor.getCursorService().newPositionForModelOffset(position);
