@@ -36,6 +36,7 @@ public class InsertMode extends AbstractMode {
     public static final String DISPLAY_NAME = "INSERT";
     public static final String KEYMAP_NAME = "Insert Mode Keymap";
     public static final ModeSwitchHint DONT_MOVE_CURSOR = new ModeSwitchHint() {};
+    public static final ModeSwitchHint DONT_LEAVE_MODE = new ModeSwitchHint() {};
     public static final KeyStroke ESC = key(SpecialKey.ESC);
     public static final KeyStroke CTRL_C = ctrlKey('c');
     public static final KeyStroke CTRL_R = ctrlKey('r');
@@ -103,9 +104,17 @@ public class InsertMode extends AbstractMode {
 
     public void leaveMode(ModeSwitchHint... hints) {
         boolean moveCursor = true;
-        for (ModeSwitchHint hint: hints)
-            if (hint == InsertMode.DONT_MOVE_CURSOR)
+        for (ModeSwitchHint hint: hints) {
+            if (hint == InsertMode.DONT_MOVE_CURSOR) {
                 moveCursor = false;
+            }
+            else if(hint == InsertMode.DONT_LEAVE_MODE) {
+            	//Leave insert mode without performing any of our "leave" operations.
+            	//This is because we'll be returning to InsertMode soon and we want
+            	//everything to be considered a single "insert" operation.
+            	return;
+            }
+        }
         try {
             saveTypedText();
             try {
@@ -169,7 +178,9 @@ public class InsertMode extends AbstractMode {
             }
             return true;
 		} else if (stroke.equals(CTRL_R)) {
-			editorAdaptor.changeModeSafely(PasteRegisterMode.NAME, DONT_MOVE_CURSOR);
+			//move to "paste register" mode, but don't actually perform the
+			//"leave insert mode" operations
+			editorAdaptor.changeModeSafely(PasteRegisterMode.NAME, DONT_LEAVE_MODE);
         } else if (!allowed(stroke)) {
             startEditPosition = editorAdaptor.getCursorService().getPosition();
             count = 1;
