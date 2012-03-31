@@ -21,6 +21,7 @@ import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.CountIgnoringNonRepeatableCommand;
+import net.sourceforge.vrapper.vim.commands.InsertAdjacentCharacter;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.commands.PasteBeforeCommand;
 import net.sourceforge.vrapper.vim.commands.PasteRegisterCommand;
@@ -42,6 +43,8 @@ public class InsertMode extends AbstractMode {
     public static final KeyStroke CTRL_C = ctrlKey('c');
     public static final KeyStroke CTRL_R = ctrlKey('r');
     public static final KeyStroke CTRL_A = ctrlKey('a');
+    public static final KeyStroke CTRL_E = ctrlKey('e');
+    public static final KeyStroke CTRL_Y = ctrlKey('y');
 
     private Position startEditPosition;
 
@@ -192,13 +195,11 @@ public class InsertMode extends AbstractMode {
 			//"leave insert mode" operations
 			editorAdaptor.changeModeSafely(PasteRegisterMode.NAME, DONT_SAVE_STATE);
 		} else if (stroke.equals(CTRL_A)) {
-			// i_ctrl-a == i_ctrl-r ".
-			Command command = PasteRegisterCommand.PASTE_LAST_INSERT;
-			try {
-				command.execute(editorAdaptor);
-			} catch (CommandExecutionException e) {
-				editorAdaptor.getUserInterfaceService().setErrorMessage(e.getMessage());
-			}
+			executeCommand(PasteRegisterCommand.PASTE_LAST_INSERT);
+		} else if (stroke.equals(CTRL_E)) {
+			executeCommand(InsertAdjacentCharacter.LINE_BELOW);
+		} else if (stroke.equals(CTRL_Y)) {
+			executeCommand(InsertAdjacentCharacter.LINE_ABOVE);
         } else if (!allowed(stroke)) {
             startEditPosition = editorAdaptor.getCursorService().getPosition();
             count = 1;
@@ -253,6 +254,15 @@ public class InsertMode extends AbstractMode {
                     .contains(specialKey);
         }
         return true;
+    }
+    
+    //just a convenience method to reduce duplicated code
+    private void executeCommand(Command command) {
+    	try {
+    		command.execute(editorAdaptor);
+    	} catch (CommandExecutionException e) {
+    		editorAdaptor.getUserInterfaceService().setErrorMessage(e.getMessage());
+    	}
     }
 
     public KeyMap resolveKeyMap(KeyMapProvider provider) {
