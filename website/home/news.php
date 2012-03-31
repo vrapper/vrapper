@@ -1,4 +1,41 @@
 <div class="newsbox">
+    <div class="date">2012-03-30</div>
+    <h4>More updates to Unstable update site</h4>
+    <p>I've updated the unstable update site again.  I'm mostly just posting here so I can keep track of the
+    changes since 0.18.0.  If people are actually playing with the unstable update site and want to know what
+    to test, well, that'd just be an added bonus!</p>
+    
+    <ul>
+        <li>Implemented [{, [(, ]}, and ])</li>
+    	  <ul><li>Similar to '%' except the cursor doesn't need to be on the matching parenthesis/bracket</li></ul>
+        <li>Add support for Ctrl+R while in InsertMode</li>
+    	  <ul>
+    	      <li>Pastes contents of a register without leaving Insert Mode</li>
+    	      <li>see :help i_ctrl-r</li>
+    	      <li>If you have Ctrl+R mapped in Eclipse, you'll need to unbind it for this feature to work</li>
+    	  </ul>
+        <li>Add support for Ctrl+A while in InsertMode</li>
+    	  <ul>
+    	      <li>Similar to Ctrl+R, but it pastes the previous insert register without prompting the user</li>
+    	      <li>see :help i_ctrl-a</li>
+    	      <li>You'll need to unbind Ctrl+A in Eclipse before this feature will work</li>
+    	  </ul>
+        <li>Add support for Ctrl+Y/Ctrl+E while in InsertMode</li>
+    	  <ul>
+    	      <li>Inserts the character above/below the cursor without leaving InsertMode</li>
+    	      <li>see :help i_ctrl-e</li>
+    	      <li>You'll need to unbind Ctrl+E/Ctrl+Y in Eclipse before this feature will work</li>
+    	      <li>This feature has some quirks.  Vrapper doesn't always know which column the cursor is in so
+    	      it could grab the wrong character.  If this happens to you, do a little 'hjkl' movement and
+    	      Vrapper will figure out the column.</li>
+    	  </ul>
+        <li>Added support for _vrapperrc for Windows people who have difficulty creating the .vrapperrc file</li>
+        <li>Fixed defect when opening files while Vrapper is disabled</li>
+    </ul>
+    <p>Please file issues on our <a href="https://github.com/vrapper/vrapper/issues">GitHub project</a> if you run into any problems.
+     I'm hoping we can consider these feature "stable" as soon as possible.</p>
+</div>
+<div class="newsbox">
     <div class="date">2012-03-12</div>
     <h4>Current state of the Unstable update site</h4>
     <p>We released 0.18.0 less than two months ago and there are already plenty of changes happening on our unstable update site.
