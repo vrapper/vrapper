@@ -54,6 +54,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     public static boolean SHOULD_READ_RC_FILE = true;
 
     private static final String CONFIG_FILE_NAME = ".vrapperrc";
+    private static final String WINDOWS_CONFIG_FILE_NAME = "_vrapperrc";
     private EditorMode currentMode;
     private final Map<String, EditorMode> modeMap = new HashMap<String, EditorMode>();
     private final TextContent modelContent;
@@ -148,26 +149,32 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         }
         File homeDir = new File(System.getProperty("user.home"));
         File config = new File(homeDir, CONFIG_FILE_NAME);
-        BufferedReader reader = null;
-        try {
-            reader = new BufferedReader(new FileReader(config));
-            String line;
-            CommandLineParser parser = new CommandLineParser(this);
-            while((line = reader.readLine()) != null) {
-                parser.parseAndExecute(null, line.trim());
-            }
-        } catch (FileNotFoundException e) {
-            // ignore
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if(reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+        if( ! config.exists()) { //if no .vrapperrc, look for _vrapperrc
+        	config =  new File(homeDir, WINDOWS_CONFIG_FILE_NAME);
+        }
+        
+        if(config.exists()) {
+        	BufferedReader reader = null;
+        	try {
+        		reader = new BufferedReader(new FileReader(config));
+        		String line;
+        		CommandLineParser parser = new CommandLineParser(this);
+        		while((line = reader.readLine()) != null) {
+        			parser.parseAndExecute(null, line.trim());
+        		}
+        	} catch (FileNotFoundException e) {
+        		// ignore
+        	} catch (IOException e) {
+        		e.printStackTrace();
+        	} finally {
+        		if(reader != null) {
+        			try {
+        				reader.close();
+        			} catch (IOException e) {
+        				e.printStackTrace();
+        			}
+        		}
+        	}
         }
     }
 
