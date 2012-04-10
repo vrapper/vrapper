@@ -21,13 +21,17 @@ import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.CountIgnoringNonRepeatableCommand;
+import net.sourceforge.vrapper.vim.commands.DeleteOperation;
 import net.sourceforge.vrapper.vim.commands.InsertAdjacentCharacter;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
+import net.sourceforge.vrapper.vim.commands.MotionTextObject;
 import net.sourceforge.vrapper.vim.commands.PasteBeforeCommand;
 import net.sourceforge.vrapper.vim.commands.PasteRegisterCommand;
 import net.sourceforge.vrapper.vim.commands.SwitchRegisterCommand;
+import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
 import net.sourceforge.vrapper.vim.commands.VimCommandSequence;
 import net.sourceforge.vrapper.vim.commands.motions.MoveLeft;
+import net.sourceforge.vrapper.vim.commands.motions.MoveWordLeft;
 import net.sourceforge.vrapper.vim.register.Register;
 import net.sourceforge.vrapper.vim.register.RegisterContent;
 import net.sourceforge.vrapper.vim.register.StringRegisterContent;
@@ -45,6 +49,7 @@ public class InsertMode extends AbstractMode {
     public static final KeyStroke CTRL_A = ctrlKey('a');
     public static final KeyStroke CTRL_E = ctrlKey('e');
     public static final KeyStroke CTRL_Y = ctrlKey('y');
+    public static final KeyStroke CTRL_W = ctrlKey('w');
 
     private Position startEditPosition;
 
@@ -200,6 +205,8 @@ public class InsertMode extends AbstractMode {
 			executeCommand(InsertAdjacentCharacter.LINE_BELOW);
 		} else if (stroke.equals(CTRL_Y)) {
 			executeCommand(InsertAdjacentCharacter.LINE_ABOVE);
+		} else if (stroke.equals(CTRL_W)) {
+			executeCommand(new TextOperationTextObjectCommand(DeleteOperation.INSTANCE, new MotionTextObject(MoveWordLeft.INSTANCE)));
         } else if (!allowed(stroke)) {
             startEditPosition = editorAdaptor.getCursorService().getPosition();
             count = 1;
