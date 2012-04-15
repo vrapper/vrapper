@@ -8,7 +8,7 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 
 /**
  * Perform an operation (yank, delete) on a range of lines.
- * Supports the following "range" definitions along with +/- modifiers:
+ * Supports the following line definitions along with +/- modifiers:
  * <number> (line number), . (current line), $ (last line), '<x> (mark)
  * For example:
  * :3,4d
@@ -37,10 +37,10 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
 	}
 
     private TextOperationTextObjectCommand parseRangeDefinition(String command, EditorAdaptor editorAdaptor) {
-    	String first     = "";
-    	String second    = "";
+    	String startStr    = "";
+    	String stopStr     = "";
     	char operationChar = 0;
-    	boolean firstComplete = false;
+    	boolean delimFound = false;
     	
     	for(int i=0; i < command.length(); i++) {
     		char next = command.charAt(i);
@@ -48,36 +48,36 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
     			continue;
     		}
     		
-    		if(! firstComplete) { //still building first part of range
+    		if(! delimFound) { //still building first part of range
     			if(next == ',') { //is this the only range delimiter?
-    				firstComplete = true;
+    				delimFound = true;
     			}
     			else {
-    				first += next;
+    				startStr += next;
     			}
     		}
     		else {  //building second part of range
-    			if(next == 'd' || next == 'y') { //what operations do we support?
+    			if(next == 'd' || next == 'y') { //what other operations do we support?
     				operationChar = next;
     				break; //ignore anything beyond the operation
     			}
     			else {
-    				second += next;
+    				stopStr += next;
     			}
     		}
     	}
     	
-    	if(first.length() == 0 | second.length() == 0 || operationChar == 0) {
+    	if(startStr.length() == 0 || stopStr.length() == 0 || operationChar == 0) {
     		//didn't parse right for whatever reason
     		return null;
     	}
     	
-    	Position firstPos = parseRangePosition(first, editorAdaptor);
-    	Position secondPos = parseRangePosition(second, editorAdaptor);
+    	Position startPos = parseRangePosition(startStr, editorAdaptor);
+    	Position stopPos = parseRangePosition(stopStr, editorAdaptor);
     	SimpleTextOperation operation = parseRangeOperation(operationChar, editorAdaptor);
     	
-    	if(firstPos != null && secondPos != null && operation != null) {
-    		return new TextOperationTextObjectCommand(operation, new LineWiseSelection(editorAdaptor, firstPos, secondPos));
+    	if(startPos != null && stopPos != null && operation != null) {
+    		return new TextOperationTextObjectCommand(operation, new LineWiseSelection(editorAdaptor, startPos, stopPos));
     	}
     	else {
     		return null;
@@ -129,7 +129,7 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
     			if(line > 0) {
     				line--; //0-based indexing internally
     			}
-    			if(line > modelContent.getNumberOfLines()) {
+    			if(line > modelContent.getNumberOfLines() -1) {
     				editorAdaptor.getUserInterfaceService().setErrorMessage("Invalid Range");
     				return null;
     			}
