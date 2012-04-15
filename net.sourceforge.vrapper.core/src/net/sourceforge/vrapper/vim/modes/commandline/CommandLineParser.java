@@ -5,25 +5,20 @@ import java.util.Queue;
 import java.util.StringTokenizer;
 
 import net.sourceforge.vrapper.platform.Configuration.Option;
-import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Search;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.CloseCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.ConfigCommand;
-import net.sourceforge.vrapper.vim.commands.DeleteOperation;
-import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
+import net.sourceforge.vrapper.vim.commands.LineRangeOperationCommand;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.commands.RedoCommand;
 import net.sourceforge.vrapper.vim.commands.SaveAllCommand;
 import net.sourceforge.vrapper.vim.commands.SaveCommand;
 import net.sourceforge.vrapper.vim.commands.SetOptionCommand;
-import net.sourceforge.vrapper.vim.commands.SimpleTextOperation;
-import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
 import net.sourceforge.vrapper.vim.commands.UndoCommand;
 import net.sourceforge.vrapper.vim.commands.VimCommandSequence;
-import net.sourceforge.vrapper.vim.commands.YankOperation;
 import net.sourceforge.vrapper.vim.commands.motions.GoToLineMotion;
 import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
@@ -186,10 +181,10 @@ public class CommandLineParser extends AbstractCommandParser {
             // do nothing
         }
         
-        //not a number but starts with a number, . (dot), or ' (quote)
+        //not a number but starts with a number, $, . (dot), or ' (quote)
         //might be a line range operation
-        if(command.length() > 1 && command.matches("^\\d.*|^\\..*|^'.*")) {
-        	return parseRangeOperation(command);
+        if(command.length() > 1 && command.matches("^\\d.*|^\\$.*|^\\..*|^'.*")) {
+        	return new LineRangeOperationCommand(command);
         }
         
         StringTokenizer nizer = new StringTokenizer(command);
@@ -214,110 +209,6 @@ public class CommandLineParser extends AbstractCommandParser {
         return false;
     }
     
-    /**
-     * Perform an operation (yank, delete) on a range of lines.
-     * Supports the following "range" definitions:
-     * <number> (line number), . (current line), $ (last line), '<x> (mark)
-     * For example:
-     * :3,4d
-     * :3,4 d
-     * :3,$y
-     * :.,$d
-     * :'a,'bd
-     **/
-    private TextOperationTextObjectCommand parseRangeOperation(String command) {
-    	String first     = "";
-    	String second    = "";
-    	char operationChar = 0;
-    	boolean firstComplete = false;
-    	
-    	for(int i=0; i < command.length(); i++) {
-    		char next = command.charAt(i);
-    		if(! firstComplete) { //still building first part of range
-    			if(next == ',') { //is this the only range delimiter?
-    				firstComplete = true;
-    			}
-    			else {
-    				first += next;
-    			}
-    		}
-    		else {  //building second part of range
-    			if(next == ' ') { //optional space between range and operation
-    				continue;
-    			}
-    			else if(next == 'd' || next == 'y') { //what operations do we support?
-    				operationChar += next;
-    				break; //ignore anything beyond the operation
-    			}
-    			else {
-    				second += next;
-    			}
-    		}
-    	}
-    	
-    	if(first.length() == 0 | second.length() == 0 || operationChar == 0) {
-    		//didn't parse right for whatever reason
-    		return null;
-    	}
-    	
-    	Position firstPos = getRangePosition(first);
-    	Position secondPos = getRangePosition(second);
-    	SimpleTextOperation operation = getRangeOperation(operationChar);
-    	
-    	if(firstPos != null && secondPos != null && operation != null) {
-    		return new TextOperationTextObjectCommand(operation, new LineWiseSelection(editor, firstPos, secondPos));
-    	}
-    	else {
-    		return null;
-    	}
-    }
-    
-    /**
-     * Convenience method for parsing line definition for range operations
-     */
-    private Position getRangePosition(String range) {
-    	if(range.startsWith("'") && range.length() > 1) { //mark
-    		return editor.getCursorService().getMark(range.substring(1));
-    	}
-    	else if(".".equals(range)) { //current line
-    		return editor.getCursorService().getPosition();
-    	}
-    	else if("$".equals(range)) { //last line
-    		return editor.getCursorService().newPositionForModelOffset( editor.getModelContent().getTextLength()-1 );
-    	}
-    	else {
-    		try {
-    			int line = Integer.parseInt(range);
-    			if(line > 0) {
-    				line--; //0-based indexing internally
-    			}
-    			if(line > editor.getModelContent().getNumberOfLines()) {
-    				editor.getUserInterfaceService().setErrorMessage("Invalid Range");
-    				return null;
-    			}
-    			return editor.getCursorService().newPositionForModelOffset( editor.getModelContent().getLineInformation(line).getBeginOffset() );
-    		} catch (NumberFormatException e) {
-    			return null;
-    		}
-    	}
-    }
-    
-    /**
-     * Convenience method for parsing operation for range operations
-     */
-    private SimpleTextOperation getRangeOperation(char operation) {
-    	if(operation == 'y') {
-    		return YankOperation.INSTANCE;
-    	}
-    	else if(operation == 'd') {
-    		return DeleteOperation.INSTANCE;
-    	}
-    	else {
-    		editor.getUserInterfaceService().setErrorMessage("Unknown operation: " + operation);
-    		return null;
-    	}
-    }
-
     private enum ConfigAction implements Evaluator {
 
         GLOBAL_REGISTERS {
