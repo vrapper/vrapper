@@ -19,7 +19,7 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
  **/
 public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand {
 
-	String definition;
+	private String definition;
 	
 	/**
 	 * @param definition User-provided string to define the range operation.
