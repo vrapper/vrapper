@@ -1,4 +1,31 @@
 <div class="newsbox">
+    <div class="date">2012-04-28</div>
+    <h4>0.20.0 Release Candidate</h4>
+    <p>Things have been pretty slow lately and I'm running out of defects/feature requests I'm able to work on. 
+    That's typically a sign that we should be able to release soon.  I've updated the unstable update site
+    with version 0.19.20120428.  I'm considering this a Release Candidate.  If this version can go 2 weeks
+    without any major issues found, I'll consider it stable.</p>
+    
+    <p>There are only a few differences between this unstable version and the previous one:</p>
+    
+    <ul>
+        <li>Prevent pageUp/pageDown from being stored in the '.' register</li>
+        <li>Add support for '~' in VisualMode</li>
+        <li>Add support for operations (yank, delete) on line ranges in CommandMode</li>
+        	<ul>
+        		<li>:3,5d</li>
+				<li>:3,5y</li>
+				<li>:.,$y</li>
+				<li>:.+3,$-2y</li>
+        	</ul>
+        <li>Add support for i_Ctrl-w</li>
+        	<ul>
+        		<li>Delete previous word while in InsertMode</li>
+				<li>You'll need to unbind Ctrl+W in Eclipse before this feature will work</li>
+        	</ul>
+    </ul>
+</div>
+<div class="newsbox">
     <div class="date">2012-03-30</div>
     <h4>More updates to Unstable update site</h4>
     <p>I've updated the unstable update site again.  I'm mostly just posting here so I can keep track of the
