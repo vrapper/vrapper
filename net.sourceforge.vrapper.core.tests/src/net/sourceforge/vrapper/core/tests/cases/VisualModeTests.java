@@ -277,6 +277,25 @@ public class VisualModeTests extends CommandTestCase {
     }
 	
 	@Test
+	public void test_tilde() {
+		checkLeavingCommand(forKeySeq("~"),
+				false,  "with ","some CAPITAL"," letters",
+				"with ",'S',"OME capital letters");
+		
+		checkLeavingCommand(forKeySeq("~"),
+				false,  "with ","some\nCAPITAL"," letters",
+				"with ",'S',"OME\ncapital letters");
+		
+		checkLeavingCommand(forKeySeq("~"),
+				true,  "with ","some CAPITAL"," letters",
+				"with ",'S',"OME capital letters");
+		
+		checkLeavingCommand(forKeySeq("~"),
+				true,  "with ","some\nCAPITAL"," letters",
+				"with ",'S',"OME\ncapital letters");
+	}
+	
+	@Test
 	public void test_CtrlC_exits() {
 		checkLeavingCommand(forKeySeq("<C-c>"), true,
 				"test", "123", "test",

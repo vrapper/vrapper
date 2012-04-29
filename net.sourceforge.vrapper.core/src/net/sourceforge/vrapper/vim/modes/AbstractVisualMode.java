@@ -26,6 +26,7 @@ import net.sourceforge.vrapper.vim.commands.PasteOperation;
 import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SelectionBasedTextOperationCommand;
 import net.sourceforge.vrapper.vim.commands.SetMarkCommand;
+import net.sourceforge.vrapper.vim.commands.SwapCaseCommand;
 import net.sourceforge.vrapper.vim.commands.YankOperation;
 
 public abstract class AbstractVisualMode extends CommandBasedMode {
@@ -109,6 +110,7 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
         Command delete = new SelectionBasedTextOperationCommand(DeleteOperation.INSTANCE);
         Command paste  = new SelectionBasedTextOperationCommand(PasteOperation.INSTANCE);
         Command change = new SelectionBasedTextOperationCommand.DontChangeMode(ChangeOperation.INSTANCE);
+        Command swapCase = SwapCaseCommand.VISUAL_INSTANCE;
         Command commandLineMode = new ChangeModeCommand(CommandLineMode.NAME);
         Command centerLine = CenterLineCommand.CENTER;
         Command centerBottomLine = CenterLineCommand.BOTTOM;
@@ -130,6 +132,7 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
                 leafBind('X', delete),
                 leafBind('p', paste),
                 leafBind('P', paste),
+                leafBind('~', swapCase),
                 leafBind('J', joinLines),
                 leafBind(':', commandLineMode),
                 transitionBind('g',
