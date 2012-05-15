@@ -1,4 +1,16 @@
 <div class="newsbox">
+    <div class="date">2012-05-14</div>
+    <h4>0.20.0 Released</h4>
+    <p>I let the code sit idle for two weeks and no defects were filed.  Therefore, I'm releasing Vrapper version 0.20.0 as promised.
+    Rather than listing the changes since 0.18.0, I'll let you look at the previous three news posts where I listed them as they were introduced.</p>
+    <p>For anyone using the unstable update site, version 0.19.20120428 is the same as 0.20.0.</p>
+    <p>Thanks to all the contributors and users of Vrapper!  According to the statistics on Eclipse's Marketplace, Vrapper is the #1 vim plugin for Eclipse! 
+    <a href="http://marketplace.eclipse.org/metrics/installs">http://marketplace.eclipse.org/metrics/installs</a></p>
+    <p>As of this writing, Vrapper is #56 out of the 1,340 total plugins installable from Eclipse Marketplace.  Emacs+ is #46 but I won't take that personally.
+    There is of course the caveat that this only tracks installs through Eclipse Marketplace.
+     This means I have no idea how we rank compared to eclim since they use their own installer.</p>
+</div>
+<div class="newsbox">
     <div class="date">2012-04-28</div>
     <h4>0.20.0 Release Candidate</h4>
     <p>Things have been pretty slow lately and I'm running out of defects/feature requests I'm able to work on. 
