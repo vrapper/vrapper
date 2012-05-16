@@ -56,7 +56,7 @@ public class InputInterceptorManager implements IPartListener {
 
     public void interceptWorkbenchPart(IWorkbenchPart part) {
         if (part == null) {
-            VrapperLog.error("WTF: null part?!?");
+            //VrapperLog.error("WTF: null part?!?");
             return;
         }
 //        VrapperLog.info(String.format("intercepting %s (%s)", part.getTitle(), part.getClass().getName()));
