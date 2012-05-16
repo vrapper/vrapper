@@ -99,7 +99,7 @@ public class VrapperPlugin extends AbstractUIPlugin implements IStartup, Log {
         for (IWorkbenchWindow window: windows) {
             for (IWorkbenchPage page: window.getPages()) {
                 for (IEditorReference ref: page.getEditorReferences()) {
-                    IEditorPart part = ref.getEditor(true);
+                    IEditorPart part = ref.getEditor(false);
                     if (part != null) {
                         InputInterceptorManager.INSTANCE.interceptWorkbenchPart(part);
                     }
