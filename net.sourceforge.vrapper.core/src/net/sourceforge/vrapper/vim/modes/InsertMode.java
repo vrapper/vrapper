@@ -1,12 +1,19 @@
 package net.sourceforge.vrapper.vim.modes;
 
+import static net.sourceforge.vrapper.keymap.StateUtils.union;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.ctrlKey;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.key;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafCtrlBind;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.dontRepeat;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
+import net.sourceforge.vrapper.keymap.EmptyState;
 import net.sourceforge.vrapper.keymap.KeyMap;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SpecialKey;
+import net.sourceforge.vrapper.keymap.State;
+import net.sourceforge.vrapper.keymap.Transition;
+import net.sourceforge.vrapper.keymap.vim.RegisterState;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.KeyMapProvider;
 import net.sourceforge.vrapper.platform.TextContent;
@@ -46,10 +53,8 @@ public class InsertMode extends AbstractMode {
     public static final KeyStroke ESC = key(SpecialKey.ESC);
     public static final KeyStroke CTRL_C = ctrlKey('c');
     public static final KeyStroke CTRL_R = ctrlKey('r');
-    public static final KeyStroke CTRL_A = ctrlKey('a');
-    public static final KeyStroke CTRL_E = ctrlKey('e');
-    public static final KeyStroke CTRL_Y = ctrlKey('y');
-    public static final KeyStroke CTRL_W = ctrlKey('w');
+    
+    protected State<Command> currentState = buildState();
 
     private Position startEditPosition;
 
@@ -189,7 +194,15 @@ public class InsertMode extends AbstractMode {
     }
 
     public boolean handleKey(KeyStroke stroke) {
-		if (stroke.equals(ESC) || stroke.equals(CTRL_C)) {
+        Transition<Command> transition = currentState.press(stroke);
+        if (transition != null) {
+        	try {
+        		transition.getValue().execute(editorAdaptor);
+        	} catch (CommandExecutionException e) {
+        		editorAdaptor.getUserInterfaceService().setErrorMessage(e.getMessage());
+        	}
+        }
+        else if (stroke.equals(ESC) || stroke.equals(CTRL_C)) {
             editorAdaptor.changeModeSafely(NormalMode.NAME);
             if (editorAdaptor.getConfiguration().get(Options.IM_DISABLE)) {
             	editorAdaptor.getEditorSettings().disableInputMethod();
@@ -199,14 +212,6 @@ public class InsertMode extends AbstractMode {
 			//move to "paste register" mode, but don't actually perform the
 			//"leave insert mode" operations
 			editorAdaptor.changeModeSafely(PasteRegisterMode.NAME, DONT_SAVE_STATE);
-		} else if (stroke.equals(CTRL_A)) {
-			executeCommand(PasteRegisterCommand.PASTE_LAST_INSERT);
-		} else if (stroke.equals(CTRL_E)) {
-			executeCommand(InsertAdjacentCharacter.LINE_BELOW);
-		} else if (stroke.equals(CTRL_Y)) {
-			executeCommand(InsertAdjacentCharacter.LINE_ABOVE);
-		} else if (stroke.equals(CTRL_W)) {
-			executeCommand(new TextOperationTextObjectCommand(DeleteOperation.INSTANCE, new MotionTextObject(MoveWordLeft.INSTANCE)));
         } else if (!allowed(stroke)) {
             startEditPosition = editorAdaptor.getCursorService().getPosition();
             count = 1;
@@ -263,13 +268,21 @@ public class InsertMode extends AbstractMode {
         return true;
     }
     
-    //just a convenience method to reduce duplicated code
-    private void executeCommand(Command command) {
-    	try {
-    		command.execute(editorAdaptor);
-    	} catch (CommandExecutionException e) {
-    		editorAdaptor.getUserInterfaceService().setErrorMessage(e.getMessage());
-    	}
+    @SuppressWarnings("unchecked")
+    protected State<Command> buildState() {
+        State<Command> platformSpecificState = editorAdaptor.getPlatformSpecificStateProvider().getState(NAME);
+        if(platformSpecificState == null) {
+            platformSpecificState = EmptyState.getInstance();
+        }
+        return RegisterState.wrap(union(
+            platformSpecificState,
+            state(
+            		leafCtrlBind('w', (Command)new TextOperationTextObjectCommand(DeleteOperation.INSTANCE, new MotionTextObject(MoveWordLeft.INSTANCE))),
+            		leafCtrlBind('a', (Command)PasteRegisterCommand.PASTE_LAST_INSERT),
+            		leafCtrlBind('e', (Command)InsertAdjacentCharacter.LINE_BELOW),
+            		leafCtrlBind('y', (Command)InsertAdjacentCharacter.LINE_ABOVE)
+            )
+        ));
     }
 
     public KeyMap resolveKeyMap(KeyMapProvider provider) {
