@@ -1,0 +1,55 @@
+
+<h2>Optional Plugins</h2>
+In addition to the standard Vrapper plugin, we have a couple optional plugins
+that you can install to further enhance Vrapper's features.  These plugins either have
+extra dependencies which everyone might not have installed, or they provide behaviors
+which aren't found in Vim.
+
+<h3>CDT and JDT Plugins</h3>
+<p>The CDT and JDT plugins access Eclipse features found only in the CDT package (C++ Development Tools)
+or in the JDT package (Java Development Tools).  If you do any C++ development in Eclipse, chances are
+you already have CDT installed.  Likewise with JDT for Java development.  The Vrapper CDT plugin has
+a dependency on the CDT package and the Vrapper JDT plugin has a dependency on the JDT package.</p>
+<p>Both plugins provide the following commands:</p>
+<ul>
+	<li>gcc (comment/uncomment current line)</li>
+	<li>gc&lt;text object&gt; (comment/uncomment text object)</li>
+	<li>== (auto-indent current line)</li>
+	<li>=&lt;text object&gt; (auto-indent text object)</li>
+	<li>Ctrl+] (go to declaration of object under cursor)</li>
+</ul>
+
+<p>In addition to this, the JDT plugin also provides these commands:</p>
+<ul>
+	<li>gR (rename element)</li>
+	<li>gr (activate Eclipse's 'refactor' menu)</li>
+	<li>gm (activate Eclipse's 'source' menu)</li>
+</ul>
+
+<p>
+We are able to define a mapping for any Eclipse operation within
+the org.eclipse.cdt.ui.edit.* or org.eclipse.jdt.ui.edit.text.java.*
+Eclipse namespaces.  If there are any commands you'd like us to support,
+just file an <a href="https://github.com/vrapper/vrapper/issues">Issue</a> on our GitHub project.
+</p>
+
+<h3>Surround.vim Plugin</h3>
+<p>Surround.vim is a vim plugin defined here:<br>
+<a href="http://www.vim.org/scripts/script.php?script_id=1697">http://www.vim.org/scripts/script.php?script_id=1697</a><br/>
+The Vrapper Surround plugin is a port of this script.  It isn't a complete port, but it
+supports a couple of the Surround operations.  The Vrapper Surround plugin works on the
+'c', 'd', and 'y' commands. After initiating one of those commands, hit 's' followed by
+one of the following characters:</p>
+<ul>
+	<li>a &lt; &gt;</li>
+	<li>b ( )</li>
+	<li>B { }</li>
+    <li>[ ]</li>
+	<li>'</li>
+	<li>"</li>
+	<li>`</li>
+</ul>
+
+<p>For the 'c' command you'll have to select the character that represents what the
+text is currently surrounded by then the character you want to replace it with. For
+example, cs"( would replace the surrounding double-quotes with parentheses.</p>

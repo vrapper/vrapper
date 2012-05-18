@@ -8,7 +8,8 @@ $docs = array(
     "visual_mode",
     "commandline_mode",
     "macros",
-    "marks"
+    "marks",
+    "optional_plugins"
 );
 if (isset($_GET['page'])) {
     $subpage = $_GET['page'];

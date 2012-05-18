@@ -1,7 +1,8 @@
 <h2>Command-Line Mode</h2>
 
 <h3>Configration</h3>
-<p>Configuration of Vrapper's behaviour is done through different commands.</p>
+<p>Configuration of Vrapper's behaviour is done through different commands.
+You can find the current value of boolean properties with ':set &lt;property&gt;?'</p>
 <table class="commands">
     <tr>
         <th>Command</th>
@@ -247,7 +248,10 @@ button. This should remove the binding in the "Binding" column. Click "Apply".
 Vrapper should now receive the keystrokes and your mapping should work
 correctly.</p>
 <h3>Configuration File</h3>
-<p>The options described above only change the behaviour of the editor in which they are set. To change the default configuration a file is used. When a new editor is opened, the plugin checks for a file called ".vrapperrc" in the user's home directory. If found, the commands in the file are executed. You may use any configuration command in this file. As with ".vimrc" files, the leading ":" is omitted in the configuration file.</p>
+<p>The options described above only change the behaviour of the editor in which they are set.
+To change the default configuration, a file is used. When a new editor is opened, the plugin checks for a file called ".vrapperrc"
+in the user's home directory (or "_vrapperrc" to make it easier for Windows people). If found, the commands in the file are executed. You may use any
+configuration command in this file. As with ".vimrc" files, the leading ":" is omitted in the configuration file.</p>
 <p>This is an example of the contents of a configuration file:</p>
 <pre>
 noremap d h
@@ -312,6 +316,17 @@ set smartcase
     <tr>
         <td>:&lt;number&gt;</td>
         <td>Jumps to line &lt;number&gt;.</td>
+    </tr>
+    <tr>
+        <td>:&lt;number&gt;,&lt;number&gt;[y|d]</td>
+        <td>Perform either the yank (y) operation or delete (d) operation on a range of lines. Supports '.' for current line
+        and '$' for last line in the file.  You can also add modifiers +/-.  For example:<br/>
+        	<ul>
+        	<li>:3,5d</li>
+			<li>:3,5y</li>
+			<li>:.,$y</li>
+			<li>:.+3,$-2y</li>
+        </td>
     </tr>
     <tr>
         <td>:eclipseaction&nbsp;&lt;name&gt;&nbsp;&lt;id&gt;</td>
