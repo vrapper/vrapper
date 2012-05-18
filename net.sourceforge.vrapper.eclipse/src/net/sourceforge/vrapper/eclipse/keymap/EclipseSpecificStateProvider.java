@@ -102,5 +102,13 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
          );
         return normalModeBindings;
     }
+    
+    @Override
+    protected State<Command> insertModeBindings() {
+    	return state(
+    		leafCtrlBind('n', dontRepeat(editText("hippieCompletion"))),
+    		leafCtrlBind('p', dontRepeat(editText("hippieCompletion")))
+    	);
+    }
 
 }
