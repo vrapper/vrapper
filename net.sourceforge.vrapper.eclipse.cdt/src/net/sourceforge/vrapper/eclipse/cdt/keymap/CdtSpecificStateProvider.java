@@ -1,6 +1,7 @@
 package net.sourceforge.vrapper.eclipse.cdt.keymap;
 
 import static net.sourceforge.vrapper.keymap.StateUtils.union;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafCtrlBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.operatorCmds;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.prefixedOperatorCmds;
@@ -11,6 +12,7 @@ import net.sourceforge.vrapper.eclipse.keymap.AbstractEclipseSpecificStateProvid
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.DeselectAllCommand;
+import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
 import net.sourceforge.vrapper.vim.commands.TextObject;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 
@@ -39,4 +41,9 @@ public class CdtSpecificStateProvider extends AbstractEclipseSpecificStateProvid
                 operatorCmds('=', seq(editC("indent"), DeselectAllCommand.INSTANCE), textObjects));
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
+    protected State<Command> visualModeBindings() {
+        return state(leafBind('=', seq(editC("indent"), LeaveVisualModeCommand.INSTANCE)));
+    }
 }
