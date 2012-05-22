@@ -355,7 +355,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
             // switch mode for set-up/tear-down
             changeModeSafely(NormalMode.NAME, InsertMode.DONT_MOVE_CURSOR);
         } else {
-            changeModeSafely(InsertMode.NAME, InsertMode.DONT_MOVE_CURSOR);
+            changeModeSafely(InsertMode.NAME, InsertMode.DONT_MOVE_CURSOR, InsertMode.DONT_LOCK_HISTORY);
             userInterfaceService.setEditorMode(UserInterfaceService.VRAPPER_DISABLED);
         }
     }

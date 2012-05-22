@@ -49,6 +49,7 @@ public class InsertMode extends AbstractMode {
     public static final String DISPLAY_NAME = "INSERT";
     public static final String KEYMAP_NAME = "Insert Mode Keymap";
     public static final ModeSwitchHint DONT_MOVE_CURSOR = new ModeSwitchHint() {};
+    public static final ModeSwitchHint DONT_LOCK_HISTORY = new ModeSwitchHint() {};
     public static final ModeSwitchHint DONT_SAVE_STATE = new ModeSwitchHint() {};
     public static final KeyStroke ESC = key(SpecialKey.ESC);
     public static final KeyStroke CTRL_C = ctrlKey('c');
@@ -83,12 +84,16 @@ public class InsertMode extends AbstractMode {
      */
     public void enterMode(ModeSwitchHint... args) throws CommandExecutionException {
     	boolean initMode = true;
+    	boolean lockHistory = true;
         for (ModeSwitchHint hint: args) {
         	if(hint == DONT_SAVE_STATE) {
         		initMode = false;
         	}
+        	if(hint == DONT_LOCK_HISTORY) {
+        		lockHistory = false;
+        	}
         }
-        if (initMode && editorAdaptor.getConfiguration().get(Options.ATOMIC_INSERT)) {
+        if (initMode && lockHistory && editorAdaptor.getConfiguration().get(Options.ATOMIC_INSERT)) {
             editorAdaptor.getHistory().beginCompoundChange();
             editorAdaptor.getHistory().lock();
         }
