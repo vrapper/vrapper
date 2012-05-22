@@ -67,7 +67,13 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
     		}
     	}
     	
-    	if(startStr.length() == 0 || stopStr.length() == 0 || operationChar == 0) {
+    	if(startStr.length() == 0) {
+    		startStr = ".";
+    	}
+    	if(stopStr.length() == 0) {
+    		stopStr = ".";
+    	}
+    	if(operationChar == 0) {
     		//didn't parse right for whatever reason
     		return null;
     	}

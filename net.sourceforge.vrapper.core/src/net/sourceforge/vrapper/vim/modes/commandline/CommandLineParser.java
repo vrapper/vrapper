@@ -181,9 +181,9 @@ public class CommandLineParser extends AbstractCommandParser {
             // do nothing
         }
         
-        //not a number but starts with a number, $, . (dot), or ' (quote)
+        //not a number but starts with a number, $, . (dot), , (comma), or ' (quote)
         //might be a line range operation
-        if(command.length() > 1 && command.matches("^\\d.*|^\\$.*|^\\..*|^'.*")) {
+        if(command.length() > 1 && command.matches("^\\d.*|^\\$.*|^,.*|^\\..*|^'.*")) {
         	return new LineRangeOperationCommand(command);
         }
         
