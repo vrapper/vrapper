@@ -6,6 +6,7 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafCtrlBin
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.operatorCmds;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.prefixedOperatorCmds;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
 import net.sourceforge.vrapper.eclipse.commands.EclipseCommand;
 import net.sourceforge.vrapper.eclipse.keymap.AbstractEclipseSpecificStateProvider;
@@ -37,13 +38,25 @@ public class CdtSpecificStateProvider extends AbstractEclipseSpecificStateProvid
         Command gotoDecl = seq(edit("opendecl"), DeselectAllCommand.INSTANCE); // NOTE: deselect won't work in other editor
         return union(
                 state(leafCtrlBind(']', gotoDecl)),
-                prefixedOperatorCmds('g', 'c', seq(editC("toggle.comment"), DeselectAllCommand.INSTANCE), textObjects),
-                operatorCmds('=', seq(editC("indent"), DeselectAllCommand.INSTANCE), textObjects));
+                prefixedOperatorCmds('g', 'c', editCAndDeselect("toggle.comment"), textObjects),
+                operatorCmds('=', editCAndDeselect("indent"), textObjects));
     }
 
     @Override
     @SuppressWarnings("unchecked")
     protected State<Command> visualModeBindings() {
-        return state(leafBind('=', seq(editC("indent"), LeaveVisualModeCommand.INSTANCE)));
+        return state(
+        		leafBind('=', editCAndLeaveVisual("indent")),
+        		transitionBind('g',
+    				leafBind('c', editCAndLeaveVisual("toggle.comment")) )
+        		);
+    }
+	
+	private static Command editCAndLeaveVisual(String cmd) {
+		return seq(editC(cmd), LeaveVisualModeCommand.INSTANCE);
+	}
+	
+    private static Command editCAndDeselect(String cmd) {
+    	return seq(editC(cmd), DeselectAllCommand.INSTANCE);
     }
 }
