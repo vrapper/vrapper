@@ -37,7 +37,11 @@ public class CdtSpecificStateProvider extends AbstractEclipseSpecificStateProvid
         State<TextObject> textObjects = NormalMode.textObjects();
         Command gotoDecl = seq(edit("opendecl"), DeselectAllCommand.INSTANCE); // NOTE: deselect won't work in other editor
         return union(
-                state(leafCtrlBind(']', gotoDecl)),
+                state(
+            		leafCtrlBind(']', gotoDecl),
+	                transitionBind('g',
+	                        leafBind('R', edit("text.rename.element")))
+                ),
                 prefixedOperatorCmds('g', 'c', editCAndDeselect("toggle.comment"), textObjects),
                 operatorCmds('=', editCAndDeselect("indent"), textObjects));
     }
