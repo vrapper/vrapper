@@ -195,7 +195,7 @@ public class InsertMode extends AbstractMode {
 
     public boolean handleKey(KeyStroke stroke) {
         Transition<Command> transition = currentState.press(stroke);
-        if (transition != null) {
+        if (transition != null && transition.getValue() != null) {
         	try {
         		transition.getValue().execute(editorAdaptor);
         	} catch (CommandExecutionException e) {
