@@ -5,7 +5,7 @@ import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 
 /**
- * Perform a substition on the current line or all lines.
+ * Perform a substitution on the current line or all lines.
  * For example, :s/foo/blah/g or :%s/foo/blah/g
  */
 public class SedSubstitutionCommand extends SimpleRepeatableCommand {
@@ -25,7 +25,7 @@ public class SedSubstitutionCommand extends SimpleRepeatableCommand {
 		String find = "";
 		String replace = "";
 		String flags = "";
-		//'s' = pieces[0]
+		//'s' or '%s' = pieces[0]
 		if(fields.length > 1) {
 			find = fields[1];
 		}
@@ -52,8 +52,12 @@ public class SedSubstitutionCommand extends SimpleRepeatableCommand {
 		//begin and end compound change so a single 'u' undoes all replaces
 		editorAdaptor.getHistory().beginCompoundChange();
 		SearchAndReplaceService searchAndReplace = editorAdaptor.getSearchAndReplaceService();
-		searchAndReplace.replace(start, end, find, replace, flags);
+		boolean success = searchAndReplace.replace(start, end, find, replace, flags);
 		editorAdaptor.getHistory().endCompoundChange();
+		
+		if(! success) {
+            throw new CommandExecutionException("'"+find+"' not found");
+		}
 	}
 
 	public Command repetition() {
