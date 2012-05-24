@@ -1,10 +1,9 @@
-package net.sourceforge.vrapper.vim.modes;
+package net.sourceforge.vrapper.vim.modes.commandline;
 
 import net.sourceforge.vrapper.keymap.KeyMap;
 import net.sourceforge.vrapper.platform.KeyMapProvider;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.Command;
-import net.sourceforge.vrapper.vim.modes.commandline.CommandLineParser;
 
 public class CommandLineMode extends AbstractCommandLineMode {
 

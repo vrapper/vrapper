@@ -1,4 +1,4 @@
-package net.sourceforge.vrapper.vim.modes;
+package net.sourceforge.vrapper.vim.modes.commandline;
 
 import net.sourceforge.vrapper.keymap.KeyMap;
 import net.sourceforge.vrapper.keymap.KeyStroke;
@@ -7,7 +7,7 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.PasteRegisterCommand;
-import net.sourceforge.vrapper.vim.modes.commandline.AbstractCommandParser;
+import net.sourceforge.vrapper.vim.modes.InsertMode;
 
 /**
  * When you're in InsertMode, you can hit Ctrl+R and it will ask for the

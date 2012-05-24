@@ -28,6 +28,7 @@ import net.sourceforge.vrapper.vim.commands.SelectionBasedTextOperationCommand;
 import net.sourceforge.vrapper.vim.commands.SetMarkCommand;
 import net.sourceforge.vrapper.vim.commands.SwapCaseCommand;
 import net.sourceforge.vrapper.vim.commands.YankOperation;
+import net.sourceforge.vrapper.vim.modes.commandline.CommandLineMode;
 
 public abstract class AbstractVisualMode extends CommandBasedMode {
 

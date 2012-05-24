@@ -15,7 +15,6 @@ import net.sourceforge.vrapper.vim.LocalConfigurationListener;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
-import net.sourceforge.vrapper.vim.modes.AbstractCommandLineMode;
 import net.sourceforge.vrapper.vim.modes.ExecuteCommandHint;
 import net.sourceforge.vrapper.vim.modes.ModeSwitchHint;
 

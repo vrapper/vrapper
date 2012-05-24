@@ -10,8 +10,8 @@ import java.util.Queue;
 import net.sourceforge.vrapper.core.tests.utils.VimTestCase;
 import net.sourceforge.vrapper.platform.Configuration.Option;
 import net.sourceforge.vrapper.vim.Options;
-import net.sourceforge.vrapper.vim.modes.CommandLineMode;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
+import net.sourceforge.vrapper.vim.modes.commandline.CommandLineMode;
 import net.sourceforge.vrapper.vim.modes.commandline.ComplexOptionEvaluator;
 
 import org.junit.Test;
