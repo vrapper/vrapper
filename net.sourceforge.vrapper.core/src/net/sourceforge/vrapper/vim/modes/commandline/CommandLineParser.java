@@ -17,6 +17,7 @@ import net.sourceforge.vrapper.vim.commands.RedoCommand;
 import net.sourceforge.vrapper.vim.commands.SaveAllCommand;
 import net.sourceforge.vrapper.vim.commands.SaveCommand;
 import net.sourceforge.vrapper.vim.commands.SetOptionCommand;
+import net.sourceforge.vrapper.vim.commands.SedSubstitutionCommand;
 import net.sourceforge.vrapper.vim.commands.UndoCommand;
 import net.sourceforge.vrapper.vim.commands.VimCommandSequence;
 import net.sourceforge.vrapper.vim.commands.motions.GoToLineMotion;
@@ -198,6 +199,16 @@ public class CommandLineParser extends AbstractCommandParser {
         } else {
             mapping.evaluate(editor, tokens);
         }
+        
+        if(command.length() > 1) {
+        	if(command.startsWith("s")) {
+        		return new SedSubstitutionCommand(command, true);
+        	}
+        	else if(command.startsWith("%s")) {
+        		return new SedSubstitutionCommand(command, false);
+        	}
+        }
+        
         return null;
     }
 

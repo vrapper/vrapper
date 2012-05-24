@@ -16,6 +16,17 @@ public interface SearchAndReplaceService {
      * @return the index of the searched string.
      */
 	SearchResult find(Search search, Position start);
+	
+	/**
+	 * Perform a search and replace.
+	 * @param start offset to start search for toFind
+	 * @param end offset to stop searching for toFind
+	 * @param toFind String to find in the document
+	 * @param replace String to replace toFind with
+	 * @param flags Regex flags like 'g' for global and 'i' for insensitive case
+	 * @return true if match found (and replaced), false if no match
+	 */
+    boolean replace(int start, int end, String toFind, String replace, String flags);
 
 	/**
 	 * Highlights all matches of the given search.

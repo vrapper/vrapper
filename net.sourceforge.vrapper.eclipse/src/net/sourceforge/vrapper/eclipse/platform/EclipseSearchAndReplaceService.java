@@ -45,6 +45,32 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
             return new SearchResult(null, null);
         }
     }
+    
+    public boolean replace(int start, int end, String toFind, String replace, String flags) {
+    	try {
+    		while(start < end) {
+    			IRegion result = adapter.find(start, toFind, true, !flags.contains("i"), false, true);
+    			if(result != null && result.getOffset() < end) {
+    				adapter.replace(replace, false);
+    				if(flags.contains("g")) {
+    					start = result.getOffset();
+    				}
+    				else {
+    					//if not global, we've performed our one replace
+    					return true;
+    				}
+    			}
+    			else {
+    				//no match found
+    				return false;
+    			}
+    		}
+        } catch (BadLocationException e) {
+        	//should we log something?
+        }
+    	
+    	return true;
+    }
 
     private IRegion find(Search search, int begin) throws BadLocationException {
         IRegion result = adapter.find(
