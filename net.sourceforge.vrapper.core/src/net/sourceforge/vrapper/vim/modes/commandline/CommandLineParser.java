@@ -200,7 +200,9 @@ public class CommandLineParser extends AbstractCommandParser {
             mapping.evaluate(editor, tokens);
         }
         
-        if(command.length() > 1) {
+        //how can I reliably tell the difference between :set and :s/?
+        //what if we add another command that starts with 's'?
+        if(command.length() > 1 && !command.startsWith("set")) {
         	if(command.startsWith("s")) {
         		return new SedSubstitutionCommand(command, true);
         	}
