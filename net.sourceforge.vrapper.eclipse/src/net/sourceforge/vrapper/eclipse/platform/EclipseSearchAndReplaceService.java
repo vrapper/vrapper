@@ -50,15 +50,23 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
     public boolean replace(LineInformation line, String toFind, String replace, String flags) {
     	int start = line.getBeginOffset();
     	int end = line.getEndOffset();
+    	int match;
     	boolean matchFound = false;
     	try {
     		while(start < end) {
     			IRegion result = adapter.find(start, toFind, true, !flags.contains("i"), false, true);
     			if(result != null && result.getOffset() < end) {
+    				match = result.getOffset();
     				matchFound = true;
-    				adapter.replace(replace, false);
+    				adapter.replace(replace, true);
     				if(flags.contains("g")) {
-    					start = result.getOffset();
+    					//prevent infinite loops
+    					if(match == start) {
+    						start = match+1;
+    					}
+    					else {
+    						start = match;
+    					}
     				}
     				else {
     					//if not global, we've performed our one replace
