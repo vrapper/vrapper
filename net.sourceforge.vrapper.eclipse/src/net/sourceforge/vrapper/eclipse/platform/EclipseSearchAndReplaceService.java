@@ -6,6 +6,7 @@ import java.util.List;
 
 import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.SearchAndReplaceService;
+import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Search;
 import net.sourceforge.vrapper.utils.SearchResult;
@@ -46,30 +47,34 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
         }
     }
     
-    public boolean replace(int start, int end, String toFind, String replace, String flags) {
+    public boolean replace(LineInformation line, String toFind, String replace, String flags) {
+    	int start = line.getBeginOffset();
+    	int end = line.getEndOffset();
+    	boolean matchFound = false;
     	try {
     		while(start < end) {
     			IRegion result = adapter.find(start, toFind, true, !flags.contains("i"), false, true);
     			if(result != null && result.getOffset() < end) {
+    				matchFound = true;
     				adapter.replace(replace, false);
     				if(flags.contains("g")) {
     					start = result.getOffset();
     				}
     				else {
     					//if not global, we've performed our one replace
-    					return true;
+    					break;
     				}
     			}
     			else {
     				//no match found
-    				return false;
+    				break;
     			}
     		}
         } catch (BadLocationException e) {
         	//should we log something?
         }
     	
-    	return true;
+    	return matchFound;
     }
 
     private IRegion find(Search search, int begin) throws BadLocationException {

@@ -1,5 +1,6 @@
 package net.sourceforge.vrapper.platform;
 
+import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Search;
 import net.sourceforge.vrapper.utils.SearchResult;
@@ -19,14 +20,13 @@ public interface SearchAndReplaceService {
 	
 	/**
 	 * Perform a search and replace.
-	 * @param start offset to start search for toFind
-	 * @param end offset to stop searching for toFind
-	 * @param toFind String to find in the document
+	 * @param line line in file to search for toFind
+	 * @param toFind String to find in the line
 	 * @param replace String to replace toFind with
 	 * @param flags Regex flags like 'g' for global and 'i' for insensitive case
 	 * @return true if match found (and replaced), false if no match
 	 */
-    boolean replace(int start, int end, String toFind, String replace, String flags);
+    boolean replace(LineInformation line, String toFind, String replace, String flags);
 
 	/**
 	 * Highlights all matches of the given search.

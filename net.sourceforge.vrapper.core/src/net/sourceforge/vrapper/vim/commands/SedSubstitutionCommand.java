@@ -36,27 +36,33 @@ public class SedSubstitutionCommand extends SimpleRepeatableCommand {
 			flags = fields[3];
 		}
 		
-		int start;
-		int end;
+		boolean success;
+		SearchAndReplaceService searchAndReplace = editorAdaptor.getSearchAndReplaceService();
 		if(currentLineOnly) {
 			int offset = editorAdaptor.getPosition().getModelOffset();
 			LineInformation currentLine = editorAdaptor.getModelContent().getLineInformationOfOffset(offset);
-			start = currentLine.getBeginOffset();
-			end = currentLine.getEndOffset();
+			//begin and end compound change so a single 'u' undoes all replaces
+			editorAdaptor.getHistory().beginCompoundChange();
+			success = searchAndReplace.replace(currentLine, find, replace, flags);
+			editorAdaptor.getHistory().endCompoundChange();
 		}
 		else {
-			start = 0;
-			end = editorAdaptor.getModelContent().getTextLength();
+			success = false;
+			int numLines = editorAdaptor.getModelContent().getNumberOfLines();
+			LineInformation line;
+			
+			//perform search individually on each line in the file
+			editorAdaptor.getHistory().beginCompoundChange();
+			for(int i=0; i < numLines; i++) {
+				line = editorAdaptor.getModelContent().getLineInformation(i);
+				success = searchAndReplace.replace(line, find, replace, flags) || success;
+			}
+			editorAdaptor.getHistory().endCompoundChange();
 		}
 		
-		//begin and end compound change so a single 'u' undoes all replaces
-		editorAdaptor.getHistory().beginCompoundChange();
-		SearchAndReplaceService searchAndReplace = editorAdaptor.getSearchAndReplaceService();
-		boolean success = searchAndReplace.replace(start, end, find, replace, flags);
-		editorAdaptor.getHistory().endCompoundChange();
 		
 		if(! success) {
-            throw new CommandExecutionException("'"+find+"' not found");
+			editorAdaptor.getUserInterfaceService().setErrorMessage("'"+find+"' not found");
 		}
 	}
 
