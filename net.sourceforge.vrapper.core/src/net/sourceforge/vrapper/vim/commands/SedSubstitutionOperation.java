@@ -79,6 +79,8 @@ public class SedSubstitutionOperation extends SimpleTextOperation {
 		if(! success) {
 			editorAdaptor.getUserInterfaceService().setErrorMessage("'"+find+"' not found");
 		}
+		
+		editorAdaptor.getRegisterManager().setLastSubstitution(this);
 	}
 
 	public TextOperation repetition() {

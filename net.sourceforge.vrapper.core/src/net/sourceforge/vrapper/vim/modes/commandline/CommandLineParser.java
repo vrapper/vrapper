@@ -19,6 +19,7 @@ import net.sourceforge.vrapper.vim.commands.LineRangeOperationCommand;
 import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.commands.RedoCommand;
+import net.sourceforge.vrapper.vim.commands.RepeatLastSubstitutionCommand;
 import net.sourceforge.vrapper.vim.commands.SaveAllCommand;
 import net.sourceforge.vrapper.vim.commands.SaveCommand;
 import net.sourceforge.vrapper.vim.commands.SedSubstitutionOperation;
@@ -208,11 +209,10 @@ public class CommandLineParser extends AbstractCommandParser {
             mapping.evaluate(editor, tokens);
         }
         
-        if(command.length() > 1) {
-        	Command substitution = parseSubstitution(command);
-        	if(substitution != null) {
-        		return substitution;
-        	}
+        //is this a substitution definition?
+        Command substitution = parseSubstitution(command);
+        if(substitution != null) {
+        	return substitution;
         }
         
         return null;
@@ -224,6 +224,9 @@ public class CommandLineParser extends AbstractCommandParser {
      * to keep it all contained here.
      */
     private Command parseSubstitution(String command) {
+    	if(command.equals("s")) {
+    		return RepeatLastSubstitutionCommand.CURRENT_LINE_ONLY;
+    	}
     	//any non-alphanumeric character can be a delimiter
     	//(this check is to avoid treating ":set" as a substitution)
     	if(command.startsWith("s") && !VimUtils.isWordCharacter(""+command.charAt(1))) {

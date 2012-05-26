@@ -3,6 +3,7 @@ package net.sourceforge.vrapper.vim.register;
 import net.sourceforge.vrapper.utils.PositionlessSelection;
 import net.sourceforge.vrapper.utils.Search;
 import net.sourceforge.vrapper.vim.commands.Command;
+import net.sourceforge.vrapper.vim.commands.TextOperation;
 import net.sourceforge.vrapper.vim.commands.motions.FindMotion;
 
 /**
@@ -31,6 +32,8 @@ public interface RegisterManager {
     void setLastEdit(Command edit);
     void setLastInsertion(Command command);
     Command getLastInsertion();
+    void setLastSubstitution(TextOperation operation);
+    TextOperation getLastSubstitution();
     void setLastFindMotion(FindMotion motion);
     FindMotion getLastFindMotion();
     Search getSearch();

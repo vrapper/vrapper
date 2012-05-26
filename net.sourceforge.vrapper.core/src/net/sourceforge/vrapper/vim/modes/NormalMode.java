@@ -50,6 +50,7 @@ import net.sourceforge.vrapper.vim.commands.PasteBeforeCommand;
 import net.sourceforge.vrapper.vim.commands.PlaybackMacroCommand;
 import net.sourceforge.vrapper.vim.commands.RecordMacroCommand;
 import net.sourceforge.vrapper.vim.commands.RedoCommand;
+import net.sourceforge.vrapper.vim.commands.RepeatLastSubstitutionCommand;
 import net.sourceforge.vrapper.vim.commands.ReplaceCommand;
 import net.sourceforge.vrapper.vim.commands.SetMarkCommand;
 import net.sourceforge.vrapper.vim.commands.SimpleDelimitedText;
@@ -239,6 +240,8 @@ public class NormalMode extends CommandBasedMode {
         Command centerLine = CenterLineCommand.CENTER;
         Command centerBottomLine = CenterLineCommand.BOTTOM;
         Command centerTopLine = CenterLineCommand.TOP;
+        Command repeatSubLine = RepeatLastSubstitutionCommand.CURRENT_LINE_ONLY;
+        Command repeatSubGlobal = RepeatLastSubstitutionCommand.GLOBALLY;
 
         Command afterEnteringVisualInc = new OptionDependentCommand<String>(Options.SELECTION, "inclusive",
                 new VisualMotionCommand(moveRight));
@@ -291,7 +294,9 @@ public class NormalMode extends CommandBasedMode {
                         leafBind('S', substituteLine),
                         leafBind('s', substituteChar),
                         leafBind('J', joinLines),
+                        leafBind('&', repeatSubLine),
                         transitionBind('g',
+                                leafBind('&', repeatSubGlobal),
                                 leafBind('J', joinLinesDumbWay),
                                 leafBind('p', pasteAfterWithG),
                                 leafBind('P', pasteBeforeWithG)),

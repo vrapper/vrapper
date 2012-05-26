@@ -7,6 +7,7 @@ import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.PositionlessSelection;
 import net.sourceforge.vrapper.utils.Search;
 import net.sourceforge.vrapper.vim.commands.Command;
+import net.sourceforge.vrapper.vim.commands.TextOperation;
 import net.sourceforge.vrapper.vim.commands.motions.FindMotion;
 
 
@@ -24,6 +25,7 @@ public class DefaultRegisterManager implements RegisterManager {
     private final Register lastEditRegister;
     private Search search;
     private Command lastEdit, lastInsertion;
+    private TextOperation lastSubstitution;
     private FindMotion findMotion;
 	private PositionlessSelection lastActiveSelection;
 
@@ -164,6 +166,14 @@ public class DefaultRegisterManager implements RegisterManager {
 
     public Command getLastInsertion() {
         return lastInsertion;
+    }
+
+    public void setLastSubstitution(TextOperation operation) {
+        lastSubstitution = operation;
+    }
+
+    public TextOperation getLastSubstitution() {
+        return lastSubstitution;
     }
 
 }
