@@ -40,6 +40,7 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
     	String startStr    = "";
     	String stopStr     = "";
     	char operationChar = 0;
+    	String remainingChars = "";
     	boolean delimFound = false;
     	
     	for(int i=0; i < command.length(); i++) {
@@ -57,9 +58,11 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
     			}
     		}
     		else {  //building second part of range
-    			if(next == 'd' || next == 'y') { //what other operations do we support?
+    			if(next == 'd' || next == 'y' || next == 's') { //what other operations do we support?
     				operationChar = next;
-    				break; //ignore anything beyond the operation
+    				//if 's', we're defining a substitution for the range
+    				remainingChars = command.substring(i);
+    				break; //we've found everything we need
     			}
     			else {
     				stopStr += next;
@@ -80,7 +83,7 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
     	
     	Position startPos = parseRangePosition(startStr, editorAdaptor);
     	Position stopPos = parseRangePosition(stopStr, editorAdaptor);
-    	SimpleTextOperation operation = parseRangeOperation(operationChar, editorAdaptor);
+    	SimpleTextOperation operation = parseRangeOperation(operationChar, remainingChars, editorAdaptor);
     	
     	if(startPos != null && stopPos != null && operation != null) {
     		return new TextOperationTextObjectCommand(operation, new LineWiseSelection(editorAdaptor, startPos, stopPos));
@@ -178,12 +181,15 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
     /**
      * parse operation for range operations
      */
-    private SimpleTextOperation parseRangeOperation(char operation, EditorAdaptor editorAdaptor) {
+    private SimpleTextOperation parseRangeOperation(char operation, String remainingChars, EditorAdaptor editorAdaptor) {
     	if(operation == 'y') {
     		return YankOperation.INSTANCE;
     	}
     	else if(operation == 'd') {
     		return DeleteOperation.INSTANCE;
+    	}
+    	else if(operation == 's') {
+    		return new SedSubstitutionOperation(remainingChars);
     	}
     	else {
     		editorAdaptor.getUserInterfaceService().setErrorMessage("Unknown operation for range: " + operation);

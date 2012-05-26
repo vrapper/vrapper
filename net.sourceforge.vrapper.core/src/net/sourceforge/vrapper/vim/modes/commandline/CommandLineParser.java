@@ -5,19 +5,27 @@ import java.util.Queue;
 import java.util.StringTokenizer;
 
 import net.sourceforge.vrapper.platform.Configuration.Option;
+import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Search;
+import net.sourceforge.vrapper.utils.TextRange;
+import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.CloseCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
+import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.ConfigCommand;
 import net.sourceforge.vrapper.vim.commands.LineRangeOperationCommand;
+import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.commands.RedoCommand;
 import net.sourceforge.vrapper.vim.commands.SaveAllCommand;
 import net.sourceforge.vrapper.vim.commands.SaveCommand;
+import net.sourceforge.vrapper.vim.commands.SedSubstitutionOperation;
+import net.sourceforge.vrapper.vim.commands.SelectionBasedTextOperationCommand;
 import net.sourceforge.vrapper.vim.commands.SetOptionCommand;
-import net.sourceforge.vrapper.vim.commands.SedSubstitutionCommand;
+import net.sourceforge.vrapper.vim.commands.SimpleSelection;
+import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
 import net.sourceforge.vrapper.vim.commands.UndoCommand;
 import net.sourceforge.vrapper.vim.commands.VimCommandSequence;
 import net.sourceforge.vrapper.vim.commands.motions.GoToLineMotion;
@@ -200,20 +208,56 @@ public class CommandLineParser extends AbstractCommandParser {
             mapping.evaluate(editor, tokens);
         }
         
-        //how can I reliably tell the difference between :set and :s/?
-        //what if we add another command that starts with 's'?
-        if(command.length() > 1 && !command.startsWith("set")) {
-        	if(command.startsWith("s")) {
-        		return new SedSubstitutionCommand(command, true);
-        	}
-        	else if(command.startsWith("%s")) {
-        		return new SedSubstitutionCommand(command, false);
+        if(command.length() > 1) {
+        	Command substitution = parseSubstitution(command);
+        	if(substitution != null) {
+        		return substitution;
         	}
         }
         
         return null;
     }
-
+    
+    /**
+     * The substitution feature (:s/foo/bar/g) is complicated.
+     * There are lots of nuances to it.  This method attempts
+     * to keep it all contained here.
+     */
+    private Command parseSubstitution(String command) {
+    	//any non-alphanumeric character can be a delimiter
+    	//(this check is to avoid treating ":set" as a substitution)
+    	if(command.startsWith("s") && !VimUtils.isWordCharacter(""+command.charAt(1))) {
+    		TextRange currentSelection = null;
+    		try {
+    			currentSelection = editor.getSelection().getRegion(editor, 0);
+    		}
+    		catch (CommandExecutionException e) {
+    		}
+    		if(currentSelection != null) {
+    			//there is an active selection (visual mode)
+    			//use that as the range
+				return new SelectionBasedTextOperationCommand(
+						new SedSubstitutionOperation(command)
+				);
+    		}
+    		else {
+    			//null TextRange is a special case for "current line"
+    			return new TextOperationTextObjectCommand(
+    					new SedSubstitutionOperation(command), new SimpleSelection(null)
+    			);
+    		}
+    	}
+    	else if(command.startsWith("%s")) {
+    		Position start = editor.getCursorService().newPositionForModelOffset( 0 );
+    		Position end = editor.getCursorService().newPositionForModelOffset( editor.getModelContent().getTextLength() );
+    		return new TextOperationTextObjectCommand(
+    				new SedSubstitutionOperation(command), new LineWiseSelection(editor, start, end)
+    		);
+    	}
+    	
+    	return null;
+    }
+    
     public boolean addCommand(String commandName, Command command, boolean overwrite) {
         if (overwrite || !mapping.contains(commandName)) {
             mapping.add(commandName, command);
