@@ -68,7 +68,7 @@ public class SedSubstitutionOperation extends SimpleTextOperation {
 			
 			//perform search individually on each line in the range
 			editorAdaptor.getHistory().beginCompoundChange();
-			for(int i=startLine; i <= endLine; i++) {
+			for(int i=startLine; i < endLine; i++) {
 				line = editorAdaptor.getModelContent().getLineInformation(i);
 				success = searchAndReplace.replace(line, find, replace, flags) || success;
 			}
