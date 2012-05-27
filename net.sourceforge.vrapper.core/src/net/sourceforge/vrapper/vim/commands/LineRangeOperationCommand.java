@@ -215,7 +215,11 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
     	//chop off the leading and trailing '/' or '?'
     	String search = searchDef.substring(1, searchDef.length()-1);
     	try {
-			return new RangeSearchMotion(search, start, reverse).destination(editorAdaptor);
+			Position pos = new RangeSearchMotion(search, start, reverse).destination(editorAdaptor);
+			if(pos == null) {
+				editorAdaptor.getUserInterfaceService().setErrorMessage("'"+search+"' not found");
+			}
+			return pos;
 		} catch (CommandExecutionException e) {
 			return null;
 		}

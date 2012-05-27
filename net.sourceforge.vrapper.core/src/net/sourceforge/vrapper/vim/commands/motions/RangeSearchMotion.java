@@ -30,7 +30,7 @@ public class RangeSearchMotion implements Motion {
         Search search = SearchCommandParser.createSearch(editorAdaptor, toFind,
         		reverse, false, SearchOffset.NONE);
         SearchResult result = editorAdaptor.getSearchAndReplaceService().find(search, start);
-        return result == null ? null : result.getLeftBound();
+        return result == null || result.getStart() == null ? null : result.getLeftBound();
     }
 
     public BorderPolicy borderPolicy() {
