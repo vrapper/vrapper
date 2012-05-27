@@ -7,8 +7,9 @@ import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 
 /**
- * Perform a substitution on the current line or all lines.
- * For example, :s/foo/blah/g or :%s/foo/blah/g
+ * Perform a substitution on a range of lines.  Can be current line,
+ * all lines, or any range in between.
+ * For example, :s/foo/blah/g or :%s/foo/blah/g or :2,5s/foo/blah/g
  */
 public class SedSubstitutionOperation extends SimpleTextOperation {
 	
@@ -42,7 +43,7 @@ public class SedSubstitutionOperation extends SimpleTextOperation {
 		String find = "";
 		String replace = "";
 		String flags = "";
-		//'s' or '%s' = pieces[0]
+		//'s' or '%s' = fields[0]
 		if(fields.length > 1) {
 			find = fields[1];
 		}
@@ -67,6 +68,7 @@ public class SedSubstitutionOperation extends SimpleTextOperation {
 			LineInformation line;
 			
 			//perform search individually on each line in the range
+			//(so :%s without 'g' flag runs once on each line)
 			editorAdaptor.getHistory().beginCompoundChange();
 			for(int i=startLine; i < endLine; i++) {
 				line = editorAdaptor.getModelContent().getLineInformation(i);
@@ -75,11 +77,11 @@ public class SedSubstitutionOperation extends SimpleTextOperation {
 			editorAdaptor.getHistory().endCompoundChange();
 		}
 		
-		
 		if(! success) {
 			editorAdaptor.getUserInterfaceService().setErrorMessage("'"+find+"' not found");
 		}
 		
+		//enable '&', 'g&', and ':s' features
 		editorAdaptor.getRegisterManager().setLastSubstitution(this);
 	}
 
