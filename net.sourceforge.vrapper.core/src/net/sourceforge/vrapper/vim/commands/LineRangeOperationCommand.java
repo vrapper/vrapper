@@ -5,17 +5,24 @@ import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.motions.RangeSearchMotion;
 
 /**
- * Perform an operation (yank, delete) on a range of lines.
+ * Perform an operation (yank, delete, substitution) on a range of lines.
  * Supports the following line definitions along with +/- modifiers:
- * <number> (line number), . (current line), $ (last line), '<x> (mark)
+ * <number> (line number), . (current line), $ (last line),
+ * '<x> (mark), /something/ (search forward), ?something? (search backward)
+ * 
  * For example:
  * :3,4d
  * :3-2,3+6 d
  * :3,$y
  * :.+2,$-4y
  * :'a,'bd
+ * :2,/foo/y
+ * 
+ * Since there is a lot of string parsing going on, it is very procedural.
+ * I've broken the process into methods to make it easier to follow.
  **/
 public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand {
 
@@ -42,23 +49,33 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
     	char operationChar = 0;
     	String remainingChars = "";
     	boolean delimFound = false;
+    	boolean insideSearchDef = false;
     	
     	for(int i=0; i < command.length(); i++) {
     		char next = command.charAt(i);
-    		if(next == ' ') { //ignore all spaces
+    		//ignore all spaces (unless we're defining search criteria)
+    		if(next == ' ' && !insideSearchDef) {
     			continue;
     		}
     		
+    		//if we're defining a search, don't flag any characters
+    		//as being special (no delimiters, no operations)
+    		if(next == '/' || next == '?') {
+    			//the '/' or '?' character has to start and end the search definition
+    			//so we can just toggle whatever the previous value was
+    			insideSearchDef = ! insideSearchDef;
+    		}
+    		
     		if(! delimFound) { //still building first part of range
-    			if(next == ',') { //is this the only range delimiter?
+    			if(!insideSearchDef && next == ',') { //is this the only range delimiter?
     				delimFound = true;
     			}
     			else {
     				startStr += next;
     			}
     		}
-    		else {  //building second part of range
-    			if(next == 'd' || next == 'y' || next == 's') { //what other operations do we support?
+    		else { //building second part of range
+    			if(!insideSearchDef && (next == 'd' || next == 'y' || next == 's')) { //what other operations do we support?
     				operationChar = next;
     				//if 's', we're defining a substitution for the range
     				remainingChars = command.substring(i);
@@ -70,6 +87,7 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
     		}
     	}
     	
+    	//if range not defined, assume current position
     	if(startStr.length() == 0) {
     		startStr = ".";
     	}
@@ -83,6 +101,7 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
     	
     	Position startPos = parseRangePosition(startStr, editorAdaptor);
     	Position stopPos = parseRangePosition(stopStr, editorAdaptor);
+    	
     	SimpleTextOperation operation = parseRangeOperation(operationChar, remainingChars, editorAdaptor);
     	
     	if(startPos != null && stopPos != null && operation != null) {
@@ -94,12 +113,14 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
     }
     
     /**
-     * parse line definition for range operations
+     * Parse user-defined line definition with optional +/- modifiers.
+     * In the definition <range>,<range><operation> this is one of the
+     * two <range>s.  This method doesn't care if its the start or end
+     * we're defining.
+     * @param range - user-defined string to define a line in the file
+     * @return Position in the file corresponding to range
      */
     private Position parseRangePosition(String range, EditorAdaptor editorAdaptor) {
-    	CursorService cursorService = editorAdaptor.getCursorService();
-    	TextContent modelContent = editorAdaptor.getModelContent();
-    	
     	String lineDef;
     	String modifierDef = "";
     	char modifier = 0;
@@ -117,14 +138,43 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
     		lineDef = pieces[0];
     		modifierDef = pieces[1];
     	}
-    	else {
+    	else { //no modifiers
     		lineDef = range;
     	}
     	
+    	Position pos = parseLineDefinition(lineDef, editorAdaptor);
+    	if(pos == null) {
+    		//couldn't find a position
+    		return null;
+    	}
     	
-    	Position pos;
+    	if(modifier != 0) {
+    		//take the current position and increment or decrement it
+    		pos = parseModifierDefinition(modifier, modifierDef, pos.getModelOffset(), editorAdaptor);
+    	}
+    	
+    	return pos;
+    }
+    
+    /**
+     * Parse the line definition (minus any modifiers) and return
+     * the corresponding Position.
+     * @param lineDef - user-provided string to define a position
+     * @param modelContent
+     * @param cursorService
+     * @param editorAdaptor
+     * @return Position in the file matching lineDef
+     */
+    private Position parseLineDefinition(String lineDef, EditorAdaptor editorAdaptor) {
+    	CursorService cursorService = editorAdaptor.getCursorService();
+    	TextContent modelContent = editorAdaptor.getModelContent();
+    	
+    	Position pos = null;
     	if(lineDef.startsWith("'") && lineDef.length() > 1) { //mark
     		pos = cursorService.getMark(lineDef.substring(1));
+    	}
+    	else if(lineDef.startsWith("/") || lineDef.startsWith("?")) {
+    		pos = parseSearchPosition(lineDef, editorAdaptor);
     	}
     	else if(".".equals(lineDef)) { //current line
     		pos = cursorService.getPosition();
@@ -144,42 +194,81 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
     			}
     			pos = cursorService.newPositionForModelOffset( modelContent.getLineInformation(line).getBeginOffset() );
     		} catch (NumberFormatException e) {
-    			return null;
+    			//it wasn't a number
     		}
-    	}
-    	
-    	if(modifier != 0) {
-    		int modifierCount;
-    		try {
-    			modifierCount = Integer.parseInt(modifierDef);
-    		} catch (NumberFormatException e) {
-    			//there wasn't a number after the +/-
-    			return null;
-    		}
-    		
-    		LineInformation posLine = modelContent.getLineInformationOfOffset( pos.getModelOffset() );
-    		int lineNumber = posLine.getNumber();
-    		if(modifier == '+') {
-    			lineNumber += modifierCount;
-    		}
-    		else {
-    			lineNumber -= modifierCount;
-    		}
-    		
-    		if(lineNumber < 0 || lineNumber > modelContent.getNumberOfLines() -1) {
-    			editorAdaptor.getUserInterfaceService().setErrorMessage("Invalid Range");
-    			return null;
-    		}
-    		
-    		LineInformation newLine = modelContent.getLineInformation(lineNumber);
-    		pos = cursorService.newPositionForModelOffset( newLine.getBeginOffset() );
     	}
     	
     	return pos;
     }
     
     /**
-     * parse operation for range operations
+     * Search for the provided string and return its Position.
+     * Start searching from the current cursor position.
+     * @param searchDef - user-defined search, /something/ or ?something?
+     * @param editorAdaptor
+     * @return Position of the match closest to start
+     */
+    private Position parseSearchPosition(String searchDef, EditorAdaptor editorAdaptor) {
+    	Position start = editorAdaptor.getPosition();
+    	boolean reverse = searchDef.startsWith("?");
+    	
+    	//chop off the leading and trailing '/' or '?'
+    	String search = searchDef.substring(1, searchDef.length()-1);
+    	try {
+			return new RangeSearchMotion(search, start, reverse).destination(editorAdaptor);
+		} catch (CommandExecutionException e) {
+			return null;
+		}
+    }
+    
+    /**
+     * Parse the modifiers defined after the lineDef.
+     * This takes an incoming startOffset and increments
+     * or decrements it.
+     * @param modifier - a '+' or '-' to increment or decrement by modifierDef
+     * @param modifierDef - number of lines away from startOffset desired
+     * @param startOffset - beginning position (if no modifiers had been defined)
+     * @param modelContent
+     * @param cursorService
+     * @param editorAdaptor
+     * @return new Position based off startOffset
+     */
+    private Position parseModifierDefinition(char modifier, String modifierDef, int startOffset,
+    		EditorAdaptor editorAdaptor ) {
+    	CursorService cursorService = editorAdaptor.getCursorService();
+    	TextContent modelContent = editorAdaptor.getModelContent();
+    	
+    	int modifierCount;
+    	try {
+    		modifierCount = Integer.parseInt(modifierDef);
+    	} catch (NumberFormatException e) {
+    		//there wasn't a number after the +/-
+    		return null;
+    	}
+
+    	LineInformation startLine = modelContent.getLineInformationOfOffset(startOffset);
+    	int lineNumber = startLine.getNumber();
+    	if(modifier == '+') {
+    		lineNumber += modifierCount;
+    	}
+    	else { //modifier == '-'
+    		lineNumber -= modifierCount;
+    	}
+
+    	if(lineNumber < 0 || lineNumber > modelContent.getNumberOfLines() -1) {
+    		editorAdaptor.getUserInterfaceService().setErrorMessage("Invalid Range");
+    		return null;
+    	}
+
+    	LineInformation newLine = modelContent.getLineInformation(lineNumber);
+    	return cursorService.newPositionForModelOffset( newLine.getBeginOffset() );
+    }
+    
+    /**
+     * Parse the desired operation to perform on this range.
+     * @param operation - single character defining the operation
+     * @param remainingChars - any characters defined by the user after the operation char
+     * @return the Operation corresponding to the operation char
      */
     private SimpleTextOperation parseRangeOperation(char operation, String remainingChars, EditorAdaptor editorAdaptor) {
     	if(operation == 'y') {
