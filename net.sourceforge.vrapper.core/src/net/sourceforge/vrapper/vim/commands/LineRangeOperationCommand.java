@@ -160,8 +160,6 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
      * Parse the line definition (minus any modifiers) and return
      * the corresponding Position.
      * @param lineDef - user-provided string to define a position
-     * @param modelContent
-     * @param cursorService
      * @param editorAdaptor
      * @return Position in the file matching lineDef
      */
@@ -206,7 +204,7 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
      * Start searching from the current cursor position.
      * @param searchDef - user-defined search, /something/ or ?something?
      * @param editorAdaptor
-     * @return Position of the match closest to start
+     * @return Position of the match closest to the cursor
      */
     private Position parseSearchPosition(String searchDef, EditorAdaptor editorAdaptor) {
     	Position start = editorAdaptor.getPosition();
@@ -232,8 +230,6 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
      * @param modifier - a '+' or '-' to increment or decrement by modifierDef
      * @param modifierDef - number of lines away from startOffset desired
      * @param startOffset - beginning position (if no modifiers had been defined)
-     * @param modelContent
-     * @param cursorService
      * @param editorAdaptor
      * @return new Position based off startOffset
      */
