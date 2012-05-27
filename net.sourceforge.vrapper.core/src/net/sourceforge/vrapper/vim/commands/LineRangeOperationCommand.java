@@ -88,11 +88,11 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
     	}
     	
     	//if range not defined, assume current position
-    	if(startStr.length() == 0) {
-    		startStr = ".";
+    	if(startStr.length() == 0 || startStr.startsWith("+") || startStr.startsWith("-") ) {
+    		startStr = "." + startStr;
     	}
-    	if(stopStr.length() == 0) {
-    		stopStr = ".";
+    	if(stopStr.length() == 0 || stopStr.startsWith("+") || stopStr.startsWith("-") ) {
+    		stopStr = "." + stopStr;
     	}
     	if(operationChar == 0) {
     		//didn't parse right for whatever reason
