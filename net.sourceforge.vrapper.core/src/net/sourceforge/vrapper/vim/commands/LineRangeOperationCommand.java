@@ -278,7 +278,7 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
     		return DeleteOperation.INSTANCE;
     	}
     	else if(operation == 's') {
-    		return new SedSubstitutionOperation(remainingChars);
+    		return new SubstitutionOperation(remainingChars);
     	}
     	else {
     		editorAdaptor.getUserInterfaceService().setErrorMessage("Unknown operation for range: " + operation);

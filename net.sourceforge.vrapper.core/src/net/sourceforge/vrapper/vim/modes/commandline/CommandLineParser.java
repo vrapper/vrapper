@@ -22,7 +22,7 @@ import net.sourceforge.vrapper.vim.commands.RedoCommand;
 import net.sourceforge.vrapper.vim.commands.RepeatLastSubstitutionCommand;
 import net.sourceforge.vrapper.vim.commands.SaveAllCommand;
 import net.sourceforge.vrapper.vim.commands.SaveCommand;
-import net.sourceforge.vrapper.vim.commands.SedSubstitutionOperation;
+import net.sourceforge.vrapper.vim.commands.SubstitutionOperation;
 import net.sourceforge.vrapper.vim.commands.SelectionBasedTextOperationCommand;
 import net.sourceforge.vrapper.vim.commands.SetOptionCommand;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
@@ -241,13 +241,13 @@ public class CommandLineParser extends AbstractCommandParser {
     			//there is an active selection (visual mode)
     			//use that as the range
 				return new SelectionBasedTextOperationCommand(
-						new SedSubstitutionOperation(command)
+						new SubstitutionOperation(command)
 				);
     		}
     		else {
     			//null TextRange is a special case for "current line"
     			return new TextOperationTextObjectCommand(
-    					new SedSubstitutionOperation(command), new SimpleSelection(null)
+    					new SubstitutionOperation(command), new SimpleSelection(null)
     			);
     		}
     	}
@@ -255,7 +255,7 @@ public class CommandLineParser extends AbstractCommandParser {
     		Position start = editor.getCursorService().newPositionForModelOffset( 0 );
     		Position end = editor.getCursorService().newPositionForModelOffset( editor.getModelContent().getTextLength() );
     		return new TextOperationTextObjectCommand(
-    				new SedSubstitutionOperation(command), new LineWiseSelection(editor, start, end)
+    				new SubstitutionOperation(command), new LineWiseSelection(editor, start, end)
     		);
     	}
     	

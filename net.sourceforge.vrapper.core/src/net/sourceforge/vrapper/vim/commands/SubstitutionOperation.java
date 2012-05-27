@@ -11,11 +11,11 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
  * all lines, or any range in between.
  * For example, :s/foo/blah/g or :%s/foo/blah/g or :2,5s/foo/blah/g
  */
-public class SedSubstitutionOperation extends SimpleTextOperation {
+public class SubstitutionOperation extends SimpleTextOperation {
 	
 	private String substitution;
 	
-	public SedSubstitutionOperation(String substitution) {
+	public SubstitutionOperation(String substitution) {
 		this.substitution = substitution;
 	}
 
