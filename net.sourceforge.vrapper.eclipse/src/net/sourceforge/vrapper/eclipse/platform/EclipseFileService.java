@@ -2,6 +2,10 @@ package net.sourceforge.vrapper.eclipse.platform;
 
 import net.sourceforge.vrapper.platform.FileService;
 
+import org.eclipse.core.commands.common.CommandException;
+import org.eclipse.ui.IWorkbenchCommandConstants;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 
 public class EclipseFileService implements FileService {
@@ -26,14 +30,31 @@ public class EclipseFileService implements FileService {
 
     public boolean save() {
         if (editor.isDirty() && editor.isEditable()) {
-            editor.doSave(null);
+        	//use the handler service so it sends all the right "save" events
+        	//to any listeners (such as the AnyEdit plugin)
+        	IHandlerService handlerService = (IHandlerService) PlatformUI
+                    .getWorkbench().getService(IHandlerService.class);
+            try {
+                handlerService.executeCommand(IWorkbenchCommandConstants.FILE_SAVE, null);
+            } catch (CommandException e) {
+                return false;
+            } 
+        	
             return true;
         }
         return false;
     }
     
     public boolean saveAll() {
-        return editor.getSite().getWorkbenchWindow().getWorkbench().saveAllEditors(false);
+    	IHandlerService handlerService = (IHandlerService) PlatformUI
+    			.getWorkbench().getService(IHandlerService.class);
+    	try {
+    		handlerService.executeCommand(IWorkbenchCommandConstants.FILE_SAVE_ALL, null);
+    	} catch (CommandException e) {
+    		return false;
+    	} 
+
+    	return true;
     }
 
 }
