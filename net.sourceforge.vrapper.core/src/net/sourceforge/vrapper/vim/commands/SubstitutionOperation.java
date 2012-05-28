@@ -55,12 +55,11 @@ public class SubstitutionOperation extends SimpleTextOperation {
 		}
 		
 		boolean success;
-		SearchAndReplaceService searchAndReplace = editorAdaptor.getSearchAndReplaceService();
 		if(startLine == endLine) {
 			LineInformation currentLine = editorAdaptor.getModelContent().getLineInformation(startLine);
 			//begin and end compound change so a single 'u' undoes all replaces
 			editorAdaptor.getHistory().beginCompoundChange();
-			success = searchAndReplace.replace(currentLine, find, replace, flags);
+			success = performReplace(currentLine, find, replace, flags, editorAdaptor);
 			editorAdaptor.getHistory().endCompoundChange();
 		}
 		else {
@@ -72,7 +71,7 @@ public class SubstitutionOperation extends SimpleTextOperation {
 			editorAdaptor.getHistory().beginCompoundChange();
 			for(int i=startLine; i < endLine; i++) {
 				line = editorAdaptor.getModelContent().getLineInformation(i);
-				success = searchAndReplace.replace(line, find, replace, flags) || success;
+				success = performReplace(line, find, replace, flags, editorAdaptor) || success;
 			}
 			editorAdaptor.getHistory().endCompoundChange();
 		}
@@ -84,6 +83,27 @@ public class SubstitutionOperation extends SimpleTextOperation {
 		//enable '&', 'g&', and ':s' features
 		editorAdaptor.getRegisterManager().setLastSubstitution(this);
 	}
+    
+    private boolean performReplace(LineInformation line, String find,
+    		String replace, String flags, EditorAdaptor editorAdaptor) {
+    	//Eclipse regex doesn't handle '^' and '$' like Vim does.
+    	//Time for some special cases!
+		if(find.equals("^")) {
+			//insert the text at the beginning of the line
+            editorAdaptor.getModelContent().replace(line.getBeginOffset(), 0, replace);
+			return true;
+		}
+		else if(find.equals("$")) {
+			//insert the text at the end of the line
+            editorAdaptor.getModelContent().replace(line.getEndOffset(), 0, replace);
+			return true;
+		}
+		else {
+			//let Eclipse handle the regex
+			SearchAndReplaceService searchAndReplace = editorAdaptor.getSearchAndReplaceService();
+			return searchAndReplace.replace(line, find, replace, flags);
+		}
+    }
 
 	public TextOperation repetition() {
 		return this;
