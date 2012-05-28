@@ -1,4 +1,59 @@
 <div class="newsbox">
+    <div class="date">2012-05-28</div>
+    <h4>Updates to unstable update site</h4>
+    <p>Vrapper version 0.20.0 was released two weeks ago and I already feel like I'm ready to release 0.22.0.
+    It's been a productive weekend for me with lots of new features.  I promise to wait a little while to make
+    sure these features are stable but I think there is already enough here to be a new release.</p>
+    <p>The unstable update site currently includes the following features:</p>
+    
+<ul>
+<li>Added support for the much-requested substitution feature!</li>
+  <ul>
+  <li>Supports the 'g' and 'i' flags</li>
+  <li>Supports Eclipse's flavor of regex</li>
+  <ul>
+  <li>:s/foo(.+)foo/bar$1bar/</li>
+  </ul>
+  <li>Supports '%' and any line range definition</li>
+  <ul>
+  <li>:s/foo/bar/g</li>
+  <li>:%s/foo/bar/g</li>
+  <li>:2,5s/foo/bar/g</li>
+  </ul>
+  <li>This feature will require lots of testing.  It's extremely complex and nuanced.
+   I'd like to hope that this implementation can cover the majority of use cases though.</li>
+  </ul>
+<li>Added support for '&', 'g&', and ':s' for repeating last substitution</li>
+<li>Added support for '+' and '-' without leading '.' in line range operations</li>
+  <ul>
+  <li>:-1,+1d == :.-1,.+1d</li>
+  </ul>
+<li>Added support for searches in line range operations</li>
+  <ul>
+  <li>?something? searches above current line, /something/ searches below current line</li>
+  <li>:1,/foo/d</li>
+  <li>:?something?,+4y</li>
+  <li>:?something?,/foo/y</li>
+  </ul>
+<li>Added mapping for Ctrl+N and Ctrl+P to Eclipse's word completion operation</li>
+  <ul>
+  <li>Eclipse operation Alt+/</li>
+  <li>Not quite content assist, but it's close</li>
+  </ul>
+<li>Refactored save operations so they play nicely with AnyEdit plugin</li>
+<li>Fixed an issue in Vrapper when 100+ files were open in Ecilpse</li>
+<li>Fixed issue with performing 'undo' after disabling Vrapper</li>
+</ul>
+
+Also, a few updates to the optional CDT plugin (JDT plugin already has these features):
+<ul>
+    <li>Added support for 'gR' to rename element</li>
+    <li>Added support for 'gc' to comment/uncomment lines</li>
+    <li>Added support for '=' to auto-indent lines</li>
+</ul>
+    
+</div>
+<div class="newsbox">
     <div class="date">2012-05-14</div>
     <h4>0.20.0 Released</h4>
     <p>I let the code sit idle for two weeks and no defects were filed.  Therefore, I'm releasing Vrapper version 0.20.0 as promised.
