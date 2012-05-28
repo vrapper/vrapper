@@ -12,6 +12,7 @@ import org.eclipse.swt.graphics.Rectangle;
  */
 public class StatusLine implements PaintListener {
 
+    private final static int COMMAND_CHAR_INDENT = 5;
     private int horScroll = 0;
     private int verScroll = 0;
     private String content = "";
@@ -41,12 +42,10 @@ public class StatusLine implements PaintListener {
         if (horScroll == parent.getHorizontalBar().getSelection()
                 && verScroll == parent.getVerticalBar().getSelection()) {
             e.gc.setLineWidth(1);
-//            Color color = e.gc.getForeground();
-//            e.gc.setForeground(new Color(e.display, 0, 0, 0));
             e.gc.fillRectangle(rect);
             e.gc.drawRectangle(rect);
-//            e.gc.setForeground(color);
-            e.gc.drawString(content, 5, bottom - height + offset);
+            int x1 = COMMAND_CHAR_INDENT;
+            e.gc.drawString(content, x1, bottom - height + offset);
         } else {
             parent.redraw();
             horScroll = parent.getHorizontalBar().getSelection();
