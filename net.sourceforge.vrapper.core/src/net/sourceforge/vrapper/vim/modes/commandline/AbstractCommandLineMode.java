@@ -35,8 +35,13 @@ public abstract class AbstractCommandLineMode extends AbstractMode {
 
     public boolean handleKey(KeyStroke stroke) {
         parser.type(stroke);
-        String buffer = isEnabled ? parser.getBuffer() : "";
-        editorAdaptor.getUserInterfaceService().setCommandLine(buffer);
+        String buffer = "";
+        int position = 0;
+        if (isEnabled) {
+            buffer = parser.getBuffer();
+            position = parser.getPosition();
+        }
+        editorAdaptor.getUserInterfaceService().setCommandLine(buffer, position);
         return true;
     }
 
