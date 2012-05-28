@@ -24,18 +24,28 @@ public abstract class AbstractCommandParser {
     protected static final KeyStroke KEY_CTRL_C = ctrlKey('c');
     protected static final KeyStroke KEY_BACKSP = key(SpecialKey.BACKSPACE);
     protected static final KeyStroke KEY_CTRL_V = key((char) 22);
+    protected static final KeyStroke KEY_UP = key(SpecialKey.ARROW_UP);
+    protected static final KeyStroke KEY_DOWN = key(SpecialKey.ARROW_DOWN);
     protected final StringBuffer buffer;
     protected final EditorAdaptor editor;
+    private final CommandLineHistory history;
+    private boolean modified;
 
-    public AbstractCommandParser(EditorAdaptor vim) {
+    public AbstractCommandParser(EditorAdaptor vim, CommandLineHistory history) {
         this.editor = vim;
         buffer = new StringBuffer();
+        modified = false;
+        if (history != null)
+            this.history = history;
+        else
+            this.history = new CommandLineHistory();
     }
 
     /**
      * Appends typed characters to the internal buffer. Deletes a char from the
      * buffer on press of the backspace key. Parses and executes the buffer on
      * press of the return key. Clears the buffer on press of the escape key.
+     * Up/down arrows handle command line history.
      */
     public void type(KeyStroke e) {
     	Command c = null;
@@ -49,6 +59,17 @@ public abstract class AbstractCommandParser {
                     RegisterManager.REGISTER_NAME_CLIPBOARD).getContent().getText();
             text = text.replace('\n', ' ').replace('\r', ' ');
             buffer.append(text);
+        } else if (e.equals(KEY_UP)) {
+            if (modified)
+                history.setTemp(buffer.substring(1, buffer.length()));
+            modified = false;
+            buffer.setLength(1);
+            String previous = history.getPrevious();
+            buffer.append(previous);
+        } else if (e.equals(KEY_DOWN)) {
+            buffer.setLength(1);
+            String next = history.getNext();
+            buffer.append(next);
         } else {
             buffer.append(e.getCharacter());
         }
@@ -80,6 +101,7 @@ public abstract class AbstractCommandParser {
     private Command parseAndExecute() {
         String first = buffer.substring(0,1);
         String command = buffer.substring(1, buffer.length());
+        history.append(command);
         return parseAndExecute(first, command);
     }
 

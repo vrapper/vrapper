@@ -23,8 +23,8 @@ public class SearchCommandParser extends AbstractCommandParser {
     private static final Pattern AFTER_SEARCH_PATTERN = Pattern.compile("(e|b)?\\+?(-?\\d+)?");
     private Command commandToExecute;
 
-    public SearchCommandParser(EditorAdaptor vim, Command commandToExecute) {
-        super(vim);
+    public SearchCommandParser(EditorAdaptor vim, Command commandToExecute, CommandLineHistory history) {
+        super(vim, history);
         this.commandToExecute = commandToExecute;
     }
     
