@@ -41,16 +41,17 @@ public abstract class AbstractCommandParser {
     	Command c = null;
         if (e.equals(KEY_RETURN)) {
             c = parseAndExecute();
-        } else if (e.equals(KEY_BACKSP))
+        } else if (e.equals(KEY_BACKSP)) {
             buffer.setLength(buffer.length()-1);
-        // TODO: on Mac OS, Cmd-V should be used
-        else if (e.equals(KEY_CTRL_V)) {
+            // TODO: on Mac OS, Cmd-V should be used
+        } else if (e.equals(KEY_CTRL_V)) {
             String text = editor.getRegisterManager().getRegister(
                     RegisterManager.REGISTER_NAME_CLIPBOARD).getContent().getText();
             text = text.replace('\n', ' ').replace('\r', ' ');
             buffer.append(text);
-        } else
+        } else {
             buffer.append(e.getCharacter());
+        }
 
         if (buffer.length() == 0 || e.equals(KEY_RETURN)
                || e.equals(KEY_ESCAPE) || e.equals(KEY_CTRL_C)) {
