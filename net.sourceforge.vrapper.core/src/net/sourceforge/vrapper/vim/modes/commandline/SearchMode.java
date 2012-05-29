@@ -62,6 +62,7 @@ public class SearchMode extends AbstractCommandLineMode {
     private int originalTopLine;
     private Command command;
     private SearchCommandParser searchParser;
+    private CommandLineHistory history = new CommandLineHistory();
 
     public SearchMode(EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
@@ -77,7 +78,7 @@ public class SearchMode extends AbstractCommandLineMode {
         command = ((ExecuteCommandHint.OnLeave) args[1]).getCommand();
         startPos = editorAdaptor.getCursorService().getPosition();
         originalTopLine = editorAdaptor.getViewportService().getViewPortInformation().getTopLine();
-        searchParser = new SearchCommandParser(editorAdaptor, command);
+        searchParser = new SearchCommandParser(editorAdaptor, command, history);
         super.enterMode(args);
     }
 

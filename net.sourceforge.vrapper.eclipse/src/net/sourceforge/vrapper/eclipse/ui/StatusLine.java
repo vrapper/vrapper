@@ -12,11 +12,13 @@ import org.eclipse.swt.graphics.Rectangle;
  */
 public class StatusLine implements PaintListener {
 
+    private final static int COMMAND_CHAR_INDENT = 5;
     private int horScroll = 0;
     private int verScroll = 0;
     private String content = "";
     private final StyledText parent;
     private Rectangle currentRect;
+    private int position = 0;
 
     public StatusLine(StyledText textWidget) {
         this.parent = textWidget;
@@ -41,12 +43,17 @@ public class StatusLine implements PaintListener {
         if (horScroll == parent.getHorizontalBar().getSelection()
                 && verScroll == parent.getVerticalBar().getSelection()) {
             e.gc.setLineWidth(1);
-//            Color color = e.gc.getForeground();
-//            e.gc.setForeground(new Color(e.display, 0, 0, 0));
             e.gc.fillRectangle(rect);
             e.gc.drawRectangle(rect);
-//            e.gc.setForeground(color);
-            e.gc.drawString(content, 5, bottom - height + offset);
+            int x1 = COMMAND_CHAR_INDENT;
+            e.gc.drawString(content, x1, bottom - height + offset);
+            // draw the caret
+            int y1 = bottom - height + offset;
+            int y2 = bottom + offset;
+            for (int i = 0; i < position; i++) {
+                x1 += e.gc.getAdvanceWidth(content.charAt(i));
+            }
+            e.gc.drawLine(x1, y1, x1, y2);
         } else {
             parent.redraw();
             horScroll = parent.getHorizontalBar().getSelection();
@@ -72,6 +79,14 @@ public class StatusLine implements PaintListener {
         } else {
             parent.redraw();
         }
+    }
+
+    /** Set the position of the caret in characters.
+     *
+     * @param position the position of the caret in characters.
+     */
+    public void setCaretPosition(int position) {
+        this.position = position;
     }
 
     /**
