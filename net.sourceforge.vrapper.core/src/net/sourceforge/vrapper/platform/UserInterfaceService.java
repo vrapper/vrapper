@@ -15,7 +15,7 @@ public interface UserInterfaceService {
     /**
      * The command line is used for showing the currently typed command or search.
      */
-    void setCommandLine(String content);
+    void setCommandLine(String content, int position);
 
     /**
      * Indicates the current mode of the editor.

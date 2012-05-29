@@ -27,8 +27,9 @@ public class EclipseUserInterfaceService implements UserInterfaceService {
         editor.getSite().getWorkbenchWindow().getPartService().addPartListener(new PartChangeListener());
     }
 
-    public void setCommandLine(String content) {
+    public void setCommandLine(String content, int position) {
         statusLine.setContent(content);
+        statusLine.setCaretPosition(position);
     }
 
     public void setEditorMode(String modeName) {
