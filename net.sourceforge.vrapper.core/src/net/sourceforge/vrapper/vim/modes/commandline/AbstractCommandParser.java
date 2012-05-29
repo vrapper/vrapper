@@ -60,6 +60,7 @@ public abstract class AbstractCommandParser {
             if (position > 1 || buffer.length() == 1) {
                 buffer.replace(position - 1, position, "");
                 position--;
+                modified = true;
             }
             // TODO: on Mac OS, Cmd-V should be used
         } else if (e.equals(KEY_CTRL_V)) {
@@ -69,17 +70,14 @@ public abstract class AbstractCommandParser {
             buffer.append(text);
         } else if (e.equals(KEY_UP)) {
             if (modified)
-                history.setTemp(buffer.substring(1, buffer.length()));
-            modified = false;
-            buffer.setLength(1);
+                history.setTemp(getCommand());
             String previous = history.getPrevious();
-            buffer.append(previous);
-            position = buffer.length();
+            setCommandFromHistory(previous);
         } else if (e.equals(KEY_DOWN)) {
-            buffer.setLength(1);
+            if (modified)
+                history.setTemp(getCommand());
             String next = history.getNext();
-            buffer.append(next);
-            position = buffer.length();
+            setCommandFromHistory(next);
         } else if (e.equals(KEY_RIGHT)) {
             position++;
             if (position > buffer.length())
@@ -103,6 +101,15 @@ public abstract class AbstractCommandParser {
         }
     }
 
+    private void setCommandFromHistory(String cmd) {
+        if (cmd == null)
+            return;
+        modified = false;
+        buffer.setLength(1);
+        buffer.append(cmd);
+        position = buffer.length();
+    }
+
     public int getPosition() {
         return position;
     }
@@ -122,9 +129,13 @@ public abstract class AbstractCommandParser {
 	 */
     public abstract Command parseAndExecute(String first, String command);
 
+    private String getCommand() {
+        return buffer.substring(1, buffer.length());
+    }
+
     private Command parseAndExecute() {
         String first = buffer.substring(0,1);
-        String command = buffer.substring(1, buffer.length());
+        String command = getCommand();
         history.append(command);
         return parseAndExecute(first, command);
     }

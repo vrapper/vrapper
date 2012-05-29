@@ -11,10 +11,11 @@ import java.util.Set;
 public class CommandLineHistory {
 	List<String> history = new ArrayList<String>();
 	int position = 0;
+	String original;
 
 	public void append(String command) {
 		history.add(0, command);
-		position = 0;
+		position = -1;
 		removeDuplicates();
 	}
 
@@ -32,30 +33,49 @@ public class CommandLineHistory {
 	}
 
 	public void setTemp(String temp) {
-		history.add(0, temp);
-		position++;
-		removeDuplicates();
+		original = temp;
+		position = -1;
 	}
 
+	/**
+	 * Get the previous entry in the history that matches the current
+	 * edited command.
+	 * @return the command in the history or null if none found to match.
+	 */
 	public String getPrevious() {
-		if (position < history.size()) {
-			String result = history.get(position);
+		String result = null;
+		while (position >= -1 && (position + 1) < history.size()) {
 			position++;
-			if (position == history.size())
-				position--;
-			return result;
+			String tmp = history.get(position);
+			if (tmp.startsWith(original)) {
+				result = tmp;
+				break;
+			}
 		}
-		return "";
+		if (position >= history.size())
+			position = history.size() - 1;
+		return result;
 	}
 
+	/**
+	 * Get the next entry in the history that matches the current
+	 * edited command.
+	 * @return the command in the history or the original command if none
+	 * found to match.
+	 */
 	public String getNext() {
-		if (position >= 0 && position < history.size()) {
-			String result = history.get(position);
+		String result = original;
+		position--;
+		while (position >= 0 && position < history.size()) {
+			String tmp = history.get(position);
 			position--;
-			if (position == -1)
-				position++;
-			return result;
+			if (tmp.startsWith(original)) {
+				result = tmp;
+				break;
+			}
 		}
-		return "";
+		if (position < 0)
+			position = -1;
+		return result;
 	}
 }
