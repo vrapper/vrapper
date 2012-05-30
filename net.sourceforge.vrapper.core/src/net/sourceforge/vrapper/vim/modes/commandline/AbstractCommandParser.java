@@ -79,7 +79,7 @@ public abstract class AbstractCommandParser {
             if (position < buffer.length())
             	position++;
         } else if (e.equals(KEY_LEFT)) {
-            if (position > 0)
+            if (position > 1)
             	position--;
         } else {
             buffer.insert(position, e.getCharacter());
