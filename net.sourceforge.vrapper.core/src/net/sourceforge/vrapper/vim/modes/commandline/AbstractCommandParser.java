@@ -30,19 +30,16 @@ public abstract class AbstractCommandParser {
     protected static final KeyStroke KEY_LEFT = key(SpecialKey.ARROW_LEFT);
     protected final StringBuffer buffer;
     protected final EditorAdaptor editor;
-    private final CommandLineHistory history;
+    private final CommandLineHistory history = CommandLineHistory.INSTANCE;
     private boolean modified;
     private int position;
 
-    public AbstractCommandParser(EditorAdaptor vim, CommandLineHistory history) {
+    public AbstractCommandParser(EditorAdaptor vim) {
         this.editor = vim;
         buffer = new StringBuffer();
         position = 0;
         modified = false;
-        if (history != null)
-            this.history = history;
-        else
-            this.history = new CommandLineHistory();
+        history.setMode(editor.getCurrentModeName());
     }
 
     /**
@@ -79,13 +76,11 @@ public abstract class AbstractCommandParser {
             String next = history.getNext();
             setCommandFromHistory(next);
         } else if (e.equals(KEY_RIGHT)) {
-            position++;
-            if (position > buffer.length())
-                position--;
+            if (position < buffer.length())
+            	position++;
         } else if (e.equals(KEY_LEFT)) {
-            position--;
-            if (position <= 0)
-                position++;
+            if (position > 0)
+            	position--;
         } else {
             buffer.insert(position, e.getCharacter());
             position++;

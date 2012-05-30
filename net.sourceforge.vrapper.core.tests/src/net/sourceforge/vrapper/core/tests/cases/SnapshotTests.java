@@ -24,7 +24,7 @@ public class SnapshotTests extends VimTestCase {
         when(platform.getUserInterfaceService()).thenReturn(new UserInterfaceService() {
             public void setRecording(boolean recording) { }
             public void setEditorMode(String modeName) { }
-            public void setCommandLine(String content) { }
+            public void setCommandLine(String content, int position) { }
             public void setInfoMessage(String content) { }
 
             public void setErrorMessage(String content) {

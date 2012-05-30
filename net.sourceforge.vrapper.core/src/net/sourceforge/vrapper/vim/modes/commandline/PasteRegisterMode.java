@@ -23,7 +23,6 @@ public class PasteRegisterMode extends AbstractCommandLineMode {
 
 	public static final String DISPLAY_NAME = "PASTE REGISTER";
     public static final String NAME = "paste register";
-    private CommandLineHistory history = new CommandLineHistory();
 
 	public String getDisplayName() {
 		return DISPLAY_NAME;
@@ -48,13 +47,13 @@ public class PasteRegisterMode extends AbstractCommandLineMode {
 
 	@Override
 	protected AbstractCommandParser createParser() {
-		return new PasteRegisterParser(editorAdaptor, history);
+		return new PasteRegisterParser(editorAdaptor);
 	}
 	
 	private class PasteRegisterParser extends AbstractCommandParser {
 
-		public PasteRegisterParser(EditorAdaptor vim, CommandLineHistory history) {
-			super(vim, history);
+		public PasteRegisterParser(EditorAdaptor vim) {
+			super(vim);
 		}
 		
 		@Override

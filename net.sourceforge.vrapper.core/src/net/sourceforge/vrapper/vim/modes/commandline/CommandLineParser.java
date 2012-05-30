@@ -178,11 +178,7 @@ public class CommandLineParser extends AbstractCommandParser {
     }
 
     public CommandLineParser(EditorAdaptor vim) {
-        this(vim, null);
-    }
-
-    public CommandLineParser(EditorAdaptor vim, CommandLineHistory history) {
-        super(vim, history);
+        super(vim);
     }
 
     @Override

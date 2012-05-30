@@ -10,7 +10,6 @@ public class CommandLineMode extends AbstractCommandLineMode {
     public static final String DISPLAY_NAME = "COMMAND LINE";
     public static final String NAME = "command mode";
     public static final String KEYMAP_NAME = "Command Mode Keymap";
-    private CommandLineHistory history = new CommandLineHistory();
 
     public CommandLineMode(EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
@@ -18,7 +17,7 @@ public class CommandLineMode extends AbstractCommandLineMode {
 
     @Override
     protected CommandLineParser createParser() {
-        return new CommandLineParser(editorAdaptor, history);
+        return new CommandLineParser(editorAdaptor);
     }
 
     @Override

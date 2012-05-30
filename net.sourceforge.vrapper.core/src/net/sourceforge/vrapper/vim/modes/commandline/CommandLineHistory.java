@@ -1,40 +1,50 @@
 package net.sourceforge.vrapper.vim.modes.commandline;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 /**
- * Stores the command line history and remove duplicates.
+ * Stores the command line history for each mode.
  */
 public class CommandLineHistory {
-	List<String> history = new ArrayList<String>();
-	int position = 0;
+	Map<String, ArrayList<String>> history = new HashMap<String, ArrayList<String>>();
+	int index = -1;
 	String original;
-
-	public void append(String command) {
-		history.add(0, command);
-		position = -1;
-		removeDuplicates();
+	String mode;
+	
+	public static final CommandLineHistory INSTANCE = new CommandLineHistory();
+	
+	//singleton
+	private CommandLineHistory() { }
+	
+	private List<String> getModeHistory() {
+		if( ! history.containsKey(mode)) {
+			history.put(mode, new ArrayList<String>());
+		}
+		return history.get(mode);
+	}
+	
+	public void setMode(String modeName) {
+		mode = modeName;
+		index = -1;
 	}
 
-	private void removeDuplicates() {
-		Set<String> contents = new HashSet<String>();
-		List<String> tmp = new ArrayList<String>();
-		for (String cmd : history) {
-			if (contents.contains(cmd))
-				continue;
-			contents.add(cmd);
-			tmp.add(cmd);
+	public void append(String command) {
+		List<String> modeHistory = getModeHistory();
+		//remove duplicates (if any)
+		if(modeHistory.contains(command)) {
+			modeHistory.remove(command);
 		}
-		history.clear();
-		history.addAll(tmp);
+		
+		modeHistory.add(0, command);
+		index = -1;
 	}
 
 	public void setTemp(String temp) {
 		original = temp;
-		position = -1;
+		index = -1;
 	}
 
 	/**
@@ -43,18 +53,17 @@ public class CommandLineHistory {
 	 * @return the command in the history or null if none found to match.
 	 */
 	public String getPrevious() {
-		String result = null;
-		while (position >= -1 && (position + 1) < history.size()) {
-			position++;
-			String tmp = history.get(position);
-			if (tmp.startsWith(original)) {
-				result = tmp;
-				break;
+		List<String> modeHistory = getModeHistory();
+		String command;
+		for(int i=index+1; i < modeHistory.size(); i++) {
+			command = modeHistory.get(i);
+			if(command.startsWith(original)) {
+				index = i;
+				return command;
 			}
 		}
-		if (position >= history.size())
-			position = history.size() - 1;
-		return result;
+		index = modeHistory.size() -1;
+		return null;
 	}
 
 	/**
@@ -64,18 +73,16 @@ public class CommandLineHistory {
 	 * found to match.
 	 */
 	public String getNext() {
-		String result = original;
-		position--;
-		while (position >= 0 && position < history.size()) {
-			String tmp = history.get(position);
-			position--;
-			if (tmp.startsWith(original)) {
-				result = tmp;
-				break;
+		List<String> modeHistory = getModeHistory();
+		String command;
+		for(int i=index-1; i > -1; i--) {
+			command = modeHistory.get(i);
+			if(command.startsWith(original)) {
+				index = i;
+				return command;
 			}
 		}
-		if (position < 0)
-			position = -1;
-		return result;
+		index = -1;
+		return original;
 	}
 }
