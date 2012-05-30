@@ -23,6 +23,7 @@ public abstract class AbstractCommandParser {
     protected static final KeyStroke KEY_ESCAPE = key(SpecialKey.ESC);
     protected static final KeyStroke KEY_CTRL_C = ctrlKey('c');
     protected static final KeyStroke KEY_BACKSP = key(SpecialKey.BACKSPACE);
+    protected static final KeyStroke KEY_DELETE = key(SpecialKey.DELETE);
     protected static final KeyStroke KEY_CTRL_V = key((char) 22);
     protected static final KeyStroke KEY_UP = key(SpecialKey.ARROW_UP);
     protected static final KeyStroke KEY_DOWN = key(SpecialKey.ARROW_DOWN);
@@ -59,12 +60,17 @@ public abstract class AbstractCommandParser {
                 position--;
                 modified = true;
             }
-            // TODO: on Mac OS, Cmd-V should be used
+        } else if (e.equals(KEY_DELETE)) {
+            if (position < buffer.length()) {
+                buffer.replace(position, position+1, "");
+                modified = true;
+            }
         } else if (e.equals(KEY_CTRL_V)) {
             String text = editor.getRegisterManager().getRegister(
                     RegisterManager.REGISTER_NAME_CLIPBOARD).getContent().getText();
             text = text.replace('\n', ' ').replace('\r', ' ');
             buffer.append(text);
+            // TODO: on Mac OS, Cmd-V should be used
         } else if (e.equals(KEY_UP)) {
             if (modified)
                 history.setTemp(getCommand());
