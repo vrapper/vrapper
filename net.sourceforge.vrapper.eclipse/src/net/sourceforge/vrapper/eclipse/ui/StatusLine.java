@@ -49,11 +49,20 @@ public class StatusLine implements PaintListener {
             e.gc.drawString(content, x1, bottom - height + offset);
             // draw the caret
             int y1 = bottom - height + offset;
-            int y2 = bottom + offset;
+            int y2 = bottom - offset;
             for (int i = 0; i < position; i++) {
                 x1 += e.gc.getAdvanceWidth(content.charAt(i));
             }
-            e.gc.drawLine(x1, y1, x1, y2);
+            
+            if(position == content.length()) {
+            	//if cursor is on last position, draw a rectangle
+            	//(matches vim behavior)
+            	e.gc.setBackground(parent.getForeground()); //black rectangle
+            	e.gc.fillRectangle(x1, y1, e.gc.getFontMetrics().getAverageCharWidth(), e.gc.getFontMetrics().getHeight());
+            }
+            else { //draw a caret between characters
+            	e.gc.drawLine(x1, y1, x1, y2);
+            }
         } else {
             parent.redraw();
             horScroll = parent.getHorizontalBar().getSelection();
