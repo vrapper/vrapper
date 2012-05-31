@@ -21,6 +21,7 @@ import net.sourceforge.vrapper.vim.register.Register;
 public class ReplaceMode extends InsertMode {
 
     public static final String NAME = "replace mode";
+    public static final String DISPLAY_NAME = "REPLACE";
 
     public ReplaceMode(EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
@@ -29,6 +30,11 @@ public class ReplaceMode extends InsertMode {
     @Override
     public String getName() {
         return NAME;
+    }
+
+    @Override
+    public String getDisplayName() {
+        return DISPLAY_NAME;
     }
 
     @Override
