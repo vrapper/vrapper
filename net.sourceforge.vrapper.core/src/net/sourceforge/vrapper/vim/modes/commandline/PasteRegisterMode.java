@@ -58,12 +58,14 @@ public class PasteRegisterMode extends AbstractCommandLineMode {
 		
 		@Override
 		public void type(KeyStroke e) {
-            if (e.equals(KEY_RETURN) || e.equals(KEY_ESCAPE) || e.equals(KEY_CTRL_C)) {
+            if (e.equals(KEY_RETURN) || e.equals(KEY_ESCAPE) || e.equals(KEY_CTRL_C)
+            		|| (buffer.length() == 1 && e.equals(KEY_BACKSP))) {
             	editor.changeModeSafely(InsertMode.NAME);
             	return;
             }
             
-            buffer.append(e.getCharacter());
+            super.type(e);
+            
             //first character is '"', take the second character and use it
             if(buffer.length() > 1) {
             	Command command = parseAndExecute("\"", ""+e.getCharacter());
