@@ -62,7 +62,6 @@ public class CommandLineHistory {
 				return command;
 			}
 		}
-		index = modeHistory.size() -1;
 		return null;
 	}
 
