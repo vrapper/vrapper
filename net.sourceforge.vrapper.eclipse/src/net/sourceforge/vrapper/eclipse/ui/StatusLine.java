@@ -49,7 +49,7 @@ public class StatusLine implements PaintListener {
             e.gc.drawString(content, x1, bottom - height + offset);
             // draw the caret
             int y1 = bottom - height + offset;
-            int y2 = bottom - offset;
+            int y2 = y1 + e.gc.getFontMetrics().getHeight();
             for (int i = 0; i < position; i++) {
                 x1 += e.gc.getAdvanceWidth(content.charAt(i));
             }
