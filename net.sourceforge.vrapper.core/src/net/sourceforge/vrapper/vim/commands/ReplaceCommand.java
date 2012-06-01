@@ -56,8 +56,8 @@ public abstract class ReplaceCommand extends AbstractModelSideCommand {
                 throws CommandExecutionException {
         	//grab current selection
         	TextRange selectionRange = editorAdaptor.getSelection().getRegion(editorAdaptor, 0);
-        	selectionOffset = selectionRange.getLeftBound().getViewOffset();
-        	selectionText = editorAdaptor.getViewContent().getText(selectionRange);
+        	selectionOffset = selectionRange.getLeftBound().getModelOffset();
+        	selectionText = editorAdaptor.getModelContent().getText(selectionRange);
         	replace(editorAdaptor.getModelContent(), selectionOffset, 1, selectionOffset);
             editorAdaptor.changeMode(NormalMode.NAME);
         }
