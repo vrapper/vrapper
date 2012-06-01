@@ -1,6 +1,7 @@
 package net.sourceforge.vrapper.vim.modes;
 
 import static net.sourceforge.vrapper.keymap.StateUtils.union;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.changeCaret;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.convertKeyStroke;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafCtrlBind;
@@ -12,6 +13,7 @@ import net.sourceforge.vrapper.keymap.vim.CountingState;
 import net.sourceforge.vrapper.keymap.vim.RegisterState;
 import net.sourceforge.vrapper.keymap.vim.VisualMotionState;
 import net.sourceforge.vrapper.keymap.vim.VisualTextObjectState;
+import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.CenterLineCommand;
@@ -23,6 +25,7 @@ import net.sourceforge.vrapper.vim.commands.DeleteOperation;
 import net.sourceforge.vrapper.vim.commands.JoinVisualLinesCommand;
 import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
 import net.sourceforge.vrapper.vim.commands.PasteOperation;
+import net.sourceforge.vrapper.vim.commands.ReplaceCommand;
 import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SelectionBasedTextOperationCommand;
 import net.sourceforge.vrapper.vim.commands.SetMarkCommand;
@@ -51,7 +54,8 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
     protected KeyMapResolver buildKeyMapResolver() {
         State<String> state = union(
                 state(
-                    leafBind('z', KeyMapResolver.NO_KEYMAP)),
+                    leafBind('z', KeyMapResolver.NO_KEYMAP),
+                    leafBind('r', KeyMapResolver.NO_KEYMAP)),
                 getKeyMapsForMotions(),
                 editorAdaptor.getPlatformSpecificStateProvider().getKeyMaps(VisualMode.NAME));
         final State<String> countEater = new CountConsumingState<String>(state);
@@ -146,6 +150,10 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
                         leafBind('t', centerTopLine),
                         leafBind(SpecialKey.RETURN, centerTopLine)
                 ),
+                transitionBind('r', changeCaret(CaretType.UNDERLINE),
+                        convertKeyStroke(
+                                ReplaceCommand.Visual.VISUAL_KEYSTROKE,
+                                VimConstants.PRINTABLE_KEYSTROKES_WITH_NL)),
                 transitionBind('m',
                         convertKeyStroke(
                                 SetMarkCommand.KEYSTROKE_CONVERTER,

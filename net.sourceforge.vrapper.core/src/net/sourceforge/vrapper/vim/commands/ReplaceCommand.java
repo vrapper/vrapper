@@ -7,9 +7,11 @@ import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.Function;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.StringUtils;
+import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
+import net.sourceforge.vrapper.vim.modes.NormalMode;
 
 /**
  * Replaces the character at the current position with another one.
@@ -38,6 +40,46 @@ public abstract class ReplaceCommand extends AbstractModelSideCommand {
     }
 
     abstract int replace(TextContent c, int offset, int count, int targetOffset);
+    
+    public static class Visual extends ReplaceCommand {
+        private final char replaceChar;
+        private int selectionOffset;
+        private String selectionText;
+
+        public Visual(char replacement) {
+            super();
+            this.replaceChar = replacement;
+        }
+
+        @Override
+        public void execute(EditorAdaptor editorAdaptor)
+                throws CommandExecutionException {
+        	//grab current selection
+        	TextRange selectionRange = editorAdaptor.getSelection().getRegion(editorAdaptor, 0);
+        	selectionOffset = selectionRange.getLeftBound().getViewOffset();
+        	selectionText = editorAdaptor.getViewContent().getText(selectionRange);
+        	replace(editorAdaptor.getModelContent(), selectionOffset, 1, selectionOffset);
+            editorAdaptor.changeMode(NormalMode.NAME);
+        }
+
+		@Override
+        protected int replace(TextContent c, int offset, int count, int targetOffset) {
+        	String s = "";
+        	for(int i=0; i < selectionText.length(); i++) {
+        		//replace every character *except* newlines
+        		s += VimUtils.isNewLine(""+selectionText.charAt(i)) ? selectionText.charAt(i) : replaceChar;
+        	}
+            c.replace(selectionOffset, selectionText.length(), s);
+            return selectionOffset;
+        }
+        
+        public static final Function<Command, KeyStroke> VISUAL_KEYSTROKE = new Function<Command, KeyStroke>() {
+        	public Command call(KeyStroke arg) {
+        		return new Visual(arg.getCharacter());
+        	}
+        };
+    
+    }
 
     private static class Character extends ReplaceCommand {
 
