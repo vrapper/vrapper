@@ -112,7 +112,7 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
         Command paste  = new SelectionBasedTextOperationCommand(PasteOperation.INSTANCE);
         Command change = new SelectionBasedTextOperationCommand.DontChangeMode(ChangeOperation.INSTANCE);
         Command swapCase = SwapCaseCommand.VISUAL_INSTANCE;
-        Command commandLineMode = new ChangeModeCommand(CommandLineMode.NAME);
+        Command commandLineMode = new ChangeModeCommand(CommandLineMode.NAME, CommandLineMode.FROM_VISUAL);
         Command centerLine = CenterLineCommand.CENTER;
         Command centerBottomLine = CenterLineCommand.BOTTOM;
         Command centerTopLine = CenterLineCommand.TOP;

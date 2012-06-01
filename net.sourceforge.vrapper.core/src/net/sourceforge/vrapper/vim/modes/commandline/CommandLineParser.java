@@ -231,31 +231,16 @@ public class CommandLineParser extends AbstractCommandParser {
     	//any non-alphanumeric character can be a delimiter
     	//(this check is to avoid treating ":set" as a substitution)
     	if(command.startsWith("s") && !VimUtils.isWordCharacter(""+command.charAt(1))) {
-    		TextRange currentSelection = null;
-    		try {
-    			currentSelection = editor.getSelection().getRegion(editor, 0);
-    		}
-    		catch (CommandExecutionException e) {
-    		}
-    		if(currentSelection != null) {
-    			//there is an active selection (visual mode)
-    			//use that as the range
-				return new SelectionBasedTextOperationCommand(
-						new SubstitutionOperation(command)
-				);
-    		}
-    		else {
-    			//null TextRange is a special case for "current line"
-    			return new TextOperationTextObjectCommand(
-    					new SubstitutionOperation(command), new SimpleSelection(null)
-    			);
-    		}
+    		//null TextRange is a special case for "current line"
+    		return new TextOperationTextObjectCommand(
+				new SubstitutionOperation(command), new SimpleSelection(null)
+    		);
     	}
     	else if(command.startsWith("%s")) {
     		Position start = editor.getCursorService().newPositionForModelOffset( 0 );
     		Position end = editor.getCursorService().newPositionForModelOffset( editor.getModelContent().getTextLength() );
     		return new TextOperationTextObjectCommand(
-    				new SubstitutionOperation(command), new LineWiseSelection(editor, start, end)
+				new SubstitutionOperation(command), new LineWiseSelection(editor, start, end)
     		);
     	}
     	

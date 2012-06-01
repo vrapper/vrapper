@@ -169,7 +169,20 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
     	
     	Position pos = null;
     	if(lineDef.startsWith("'") && lineDef.length() > 1) { //mark
-    		pos = cursorService.getMark(lineDef.substring(1));
+    		String mark = lineDef.substring(1);
+    		if(mark.equals("<")) { //selection begin
+    			try {
+					pos = editorAdaptor.getSelection().getRegion(editorAdaptor, 0).getLeftBound();
+				} catch (CommandExecutionException e) { }
+    		}
+    		else if(mark.equals(">")) { //selection end
+    			try {
+    				pos = editorAdaptor.getSelection().getRegion(editorAdaptor, 0).getRightBound();
+				} catch (CommandExecutionException e) { }
+    		}
+    		else { //normal mark
+    			pos = cursorService.getMark(mark);
+    		}
     	}
     	else if(lineDef.startsWith("/") || lineDef.startsWith("?")) {
     		pos = parseSearchPosition(lineDef, editorAdaptor);
