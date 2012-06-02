@@ -279,7 +279,7 @@ public class NormalMode extends CommandBasedMode {
                         leafBind(':', (Command) new ChangeModeCommand(CommandLineMode.NAME)),
                         leafBind('?', (Command) new ChangeToSearchModeCommand(true, nextResult)),
                         leafBind('/', (Command) new ChangeToSearchModeCommand(false, nextResult)),
-                        leafBind('R', (Command) new ChangeModeCommand(ReplaceMode.NAME)),
+                        leafBind('R', (Command) new ReplaceMode.ChangeToReplaceModeCommand()),
                         leafBind('o', (Command) new ChangeToInsertModeCommand(InsertLineCommand.POST_CURSOR)),
                         leafBind('O', (Command) new ChangeToInsertModeCommand(InsertLineCommand.PRE_CURSOR)),
                         leafBind('v', seq(visualMode, afterEnteringVisual)),

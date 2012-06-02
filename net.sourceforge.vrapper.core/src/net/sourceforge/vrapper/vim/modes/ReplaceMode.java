@@ -1,14 +1,13 @@
 package net.sourceforge.vrapper.vim.modes;
 
-import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.platform.SimpleConfiguration.NewLine;
+import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
-import net.sourceforge.vrapper.vim.commands.Command;
+import net.sourceforge.vrapper.vim.commands.ChangeToInsertModeCommand;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
-import net.sourceforge.vrapper.vim.commands.CountIgnoringNonRepeatableCommand;
-import net.sourceforge.vrapper.vim.register.Register;
+import net.sourceforge.vrapper.vim.commands.CountAwareCommand;
 
 /**
  * Replace mode for overwriting existing text.
@@ -49,38 +48,52 @@ public class ReplaceMode extends InsertMode {
         editorAdaptor.getEditorSettings().setReplaceMode(false);
         super.leaveMode();
     }
-
-    @Override
-    protected Command createRepetition(Register lastEditRegister, String text) {
-        return new RepeatReplaceCommand();
+    
+    public static class ChangeToReplaceModeCommand extends ChangeToInsertModeCommand {
+    	@Override
+    	public void execute(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
+    		editorAdaptor.changeMode(ReplaceMode.NAME, new WithCountHint(count));
+    	}
+    	
+    	@Override
+    	public CountAwareCommand repetition() {
+    		return new RepeatReplaceCommand();
+    	}
     }
 
-    private static class RepeatReplaceCommand extends CountIgnoringNonRepeatableCommand {
+    private static class RepeatReplaceCommand extends CountAwareCommand {
 
-        public void execute(EditorAdaptor editorAdaptor)
+        public void execute(EditorAdaptor editorAdaptor, int count)
                 throws CommandExecutionException {
             editorAdaptor.getHistory().beginCompoundChange();
-            editorAdaptor.getHistory().lock();
             TextContent modelContent = editorAdaptor.getModelContent();
             String editorNewline = editorAdaptor.getConfiguration().getNewLine();
             String text = editorAdaptor.getRegisterManager().getLastEditRegister().getContent().getText();
             int pos = editorAdaptor.getPosition().getModelOffset();
-            int start = 0;
-            for (int i = 0; i < text.length(); i++) {
-                char c = text.charAt(i);
-                if (VimUtils.isNewLine(String.valueOf(c))) {
-                    String replace = text.substring(start, i);
-                    String nl = text.substring(i);
-                    NewLine newline = NewLine.parse(nl);
-                    replace(modelContent, pos, replace);
-                    modelContent.replace(pos+replace.length(), 0, editorNewline);
-                    i += newline.nl.length()-1;
-                    pos += replace.length()+editorNewline.length();
-                    start += replace.length()+newline.nl.length();
-                }
+            if(count == NO_COUNT_GIVEN) {
+            	count = 1;
             }
-            String replace = text.substring(start);
-            replace(modelContent, pos, replace);
+            for(int j=0; j < count; j++) {
+            	int start = 0;
+            	for (int i = 0; i < text.length(); i++) {
+            		char c = text.charAt(i);
+            		if (VimUtils.isNewLine(String.valueOf(c))) {
+            			String replace = text.substring(start, i);
+            			String nl = text.substring(i);
+            			NewLine newline = NewLine.parse(nl);
+            			replace(modelContent, pos, replace);
+            			modelContent.replace(pos+replace.length(), 0, editorNewline);
+            			i += newline.nl.length()-1;
+            			pos += replace.length()+editorNewline.length();
+            			start += replace.length()+newline.nl.length();
+            		}
+            	}
+            	String replace = text.substring(start);
+            	replace(modelContent, pos, replace);
+            	//prepare for next iteration if count defined
+            	pos += text.length();
+            }
+            editorAdaptor.getHistory().endCompoundChange();
         }
 
         private void replace(TextContent modelContent, int pos, String replace) {
@@ -94,6 +107,14 @@ public class ReplaceMode extends InsertMode {
             }
             modelContent.replace(pos, length, replace);
         }
+
+		@Override
+		public CountAwareCommand repetition() {
+			//ChangeToReplaceModeCommand repeats, RepeatReplaceCommand doesn't
+			//could this be implemented a little simpler?
+			//(I made it complicated to support '.' command)
+			return null;
+		}
     }
 
 }
