@@ -28,6 +28,8 @@
                       <p>Development of Vrapper has moved to our GitHub project at:<br/><a href="https://github.com/vrapper/vrapper">https://github.com/vrapper/vrapper</a></p>
                       <p>GitHub makes it much easier for contributors to submit code changes, bug fixes, and new features.  If you'd like to contribute to Vrapper just initiate a Pull Request on our GitHub project.</p>
                       <p>The SourceForge project will remain active because it hosts our website, bug tracker, wiki, forums, direct file downloads, and Eclipse update site.  The Git repository on SourceForge will only contain the state of the code for the most recent stable release.  Basically, everything other than actively developed code is still on SourceForge.</p>
+                      <p>If you'd like to contribute to Vrapper but need some help, here are a couple Developer Wiki pages we've put together:<br/>
+                      <a href="https://sourceforge.net/apps/trac/vrapper/wiki">Developer Wiki</a></p>
               </div>
               <script type="text/javascript" src="http://www.ohloh.net/p/318170/widgets/project_basic_stats.js"></script>
         </div>
