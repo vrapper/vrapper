@@ -51,6 +51,8 @@ public class JoinLinesCommand extends CountAwareCommand {
                     glue = "";
                 for (int j = 0; j < secondLine.length() && Character.isWhitespace(secondLine.charAt(j)); j++)
                     bolOffset++;
+                if (modelContent.getText(bolOffset, 1).charAt(0) == ')')
+                    glue = "";
             } else
                 glue = "";
             modelContent.replace(eolOffset, bolOffset - eolOffset, glue);
