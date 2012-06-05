@@ -11,6 +11,7 @@ public abstract class AbstractModelSideMotion extends CountAwareMotion {
 
     protected abstract int destination(int offset, TextContent content, int count) throws CommandExecutionException;
     protected boolean isLeftRight() {return false;}
+    protected void setCurrentState(String mode, Selection sel) {}
 
     @Override
     public Position destination(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
@@ -24,6 +25,7 @@ public abstract class AbstractModelSideMotion extends CountAwareMotion {
                 modelOffset--;
             }
         }
+        setCurrentState(editorAdaptor.getCurrentModeName(), editorAdaptor.getSelection());
         TextContent modelContent = editorAdaptor.getModelContent();
         int destination = destination(modelOffset, modelContent, count);
         return editorAdaptor.getCursorService().newPositionForModelOffset(destination);
