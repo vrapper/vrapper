@@ -31,6 +31,7 @@ import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeOperation;
 import net.sourceforge.vrapper.vim.commands.ChangeToInsertModeCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeToSearchModeCommand;
+import net.sourceforge.vrapper.vim.commands.CloseCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.CountIgnoringNonRepeatableCommand;
@@ -52,6 +53,7 @@ import net.sourceforge.vrapper.vim.commands.RecordMacroCommand;
 import net.sourceforge.vrapper.vim.commands.RedoCommand;
 import net.sourceforge.vrapper.vim.commands.RepeatLastSubstitutionCommand;
 import net.sourceforge.vrapper.vim.commands.ReplaceCommand;
+import net.sourceforge.vrapper.vim.commands.SaveCommand;
 import net.sourceforge.vrapper.vim.commands.SetMarkCommand;
 import net.sourceforge.vrapper.vim.commands.SimpleDelimitedText;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
@@ -61,6 +63,7 @@ import net.sourceforge.vrapper.vim.commands.TextObject;
 import net.sourceforge.vrapper.vim.commands.TextOperation;
 import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
 import net.sourceforge.vrapper.vim.commands.UndoCommand;
+import net.sourceforge.vrapper.vim.commands.VimCommandSequence;
 import net.sourceforge.vrapper.vim.commands.VisualMotionCommand;
 import net.sourceforge.vrapper.vim.commands.YankOperation;
 import net.sourceforge.vrapper.vim.commands.motions.LineEndMotion;
@@ -242,6 +245,7 @@ public class NormalMode extends CommandBasedMode {
         Command centerTopLine = CenterLineCommand.TOP;
         Command repeatSubLine = RepeatLastSubstitutionCommand.CURRENT_LINE_ONLY;
         Command repeatSubGlobal = RepeatLastSubstitutionCommand.GLOBALLY;
+        Command saveAndClose = new VimCommandSequence(SaveCommand.INSTANCE, CloseCommand.CLOSE);
 
         Command afterEnteringVisualInc = new OptionDependentCommand<String>(Options.SELECTION, "inclusive",
                 new VisualMotionCommand(moveRight));
@@ -318,6 +322,9 @@ public class NormalMode extends CommandBasedMode {
                                         VimConstants.PRINTABLE_KEYSTROKES)),
                         leafBind('u', undo),
                         leafCtrlBind('r', redo),
+                        transitionBind('Z',
+                            leafBind('Z', saveAndClose),
+                            leafBind('Q', (Command)CloseCommand.FORCED_CLOSE)),
                         transitionBind('z',
                             leafBind('z', centerLine),
                             leafBind('.', centerLine),
