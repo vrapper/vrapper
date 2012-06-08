@@ -29,7 +29,7 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
 	public CountAwareCommand repetition() {
         TextOperation wrappedRepetition = command.repetition();
         if (wrappedRepetition != null) {
-            return new Repetition();
+            return new Repetition(wrappedRepetition);
         }
         return null;
     }
@@ -43,11 +43,17 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
 	
 	/** Repetition of SelectionBasedTextOperation */
 	public class Repetition extends CountAwareCommand {
+		
+		private TextOperation repetition;
+		
+		public Repetition(TextOperation repeat) {
+			this.repetition = repeat;
+		}
 
 		@Override
 		public void execute(EditorAdaptor editorAdaptor, int count)
 				throws CommandExecutionException {
-			command.execute(editorAdaptor, count, editorAdaptor.getLastActiveSelection());
+			repetition.execute(editorAdaptor, count, editorAdaptor.getLastActiveSelection());
 			if (changeMode)
 				LeaveVisualModeCommand.doIt(editorAdaptor);
 		}
