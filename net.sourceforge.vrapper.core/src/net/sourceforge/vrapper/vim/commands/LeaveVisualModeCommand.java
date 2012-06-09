@@ -24,6 +24,7 @@ public class LeaveVisualModeCommand extends CountIgnoringNonRepeatableCommand {
         editorAdaptor.setSelection(null);
         editorAdaptor.changeMode(NormalMode.NAME);
         // Fix off-by-one position if selection was left to right
+        // (see EvilCaret.java for details)
         if (sel != null && sel.getStart().getModelOffset() < sel.getEnd().getModelOffset()) {
             CursorService service = editorAdaptor.getCursorService();
             Position position = service.getPosition().addModelOffset(-1);

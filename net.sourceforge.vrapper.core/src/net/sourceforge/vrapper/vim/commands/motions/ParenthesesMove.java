@@ -62,6 +62,7 @@ public class ParenthesesMove extends AbstractModelSideMotion {
 
         int match = findMatch(index, pair, content, count);
         // adjust for caret offset if the match is before the selection start
+        // (see EvilCaret.java for details)
         if (VisualMode.NAME.equals(mode) && match < sel.getStart().getModelOffset()) {
             match--;
         }

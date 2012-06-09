@@ -20,6 +20,7 @@ public abstract class AbstractModelSideMotion extends CountAwareMotion {
         }
         int modelOffset = editorAdaptor.getCursorService().getPosition().getModelOffset();
         if (VisualMode.NAME.equals(editorAdaptor.getCurrentModeName())) {
+        	//workaround for hack in EvilCaret.java
             Selection selection = editorAdaptor.getSelection();
             if (selection != null && !isLeftRight() && selection.getStart().getModelOffset() < selection.getEnd().getModelOffset()) {
                 modelOffset--;
