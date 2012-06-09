@@ -13,4 +13,9 @@ public abstract class LeftRightMotion extends AbstractModelSideMotion {
         return true;
     }
 
+	@Override
+	protected boolean isLeftRight() {
+		return true;
+	}
+
 }
