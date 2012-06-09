@@ -8,6 +8,8 @@ import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.vim.commands.BorderPolicy;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
+import net.sourceforge.vrapper.vim.commands.Selection;
+import net.sourceforge.vrapper.vim.modes.VisualMode;
 
 // TODO: can we use underlying eclipse to do extra-smart stuff
 // like matching XML tags, LaTeX \begin{paragraph}\end{paragraph},
@@ -32,6 +34,14 @@ public class ParenthesesMove extends AbstractModelSideMotion {
     }
     
     public static final ParenthesesMove INSTANCE = new ParenthesesMove();
+    private String mode;
+    private Selection sel;
+
+    @Override
+    protected void setCurrentState(String mode, Selection sel) {
+        this.mode = mode;
+        this.sel = sel;
+    }
 
     //default match algorithm, find match for character under cursor
     @Override
@@ -49,8 +59,13 @@ public class ParenthesesMove extends AbstractModelSideMotion {
         if (pair == null) {
             throw new CommandExecutionException("no parentheses to jump found");
         }
-        
-        return findMatch(index, pair, content, count);
+
+        int match = findMatch(index, pair, content, count);
+        // adjust for caret offset if the match is before the selection start
+        if (VisualMode.NAME.equals(mode) && match < sel.getStart().getModelOffset()) {
+            match--;
+        }
+        return match;
     }
     
     public static final ParenthesesMove MATCH_OPEN_PAREN = new ParenthesesMove() {
