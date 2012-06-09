@@ -1,4 +1,35 @@
 <div class="newsbox">
+    <div class="date">2012-06-09</div>
+    <h4>Further updates to unstable update site</h4>
+    <p>Work is still progressing quickly towards a 0.22.0 release.  If I can just let the code sit idle
+    for 2 weeks I'll probably release it.  There's nothing else pending that I plan on adding but we've
+    had some great contributions from others lately and I don't want to rush them.</p>
+    
+    <p>Changes since last news posting are:</p>
+    
+    <ul>
+        <li>Added history for all command-line based modes</li>
+        <ul>
+            <li>Use up/down arrow</li>
+        </ul>
+        <li>Added cursor to all command-line based modes</li>
+        <ul>
+            <li>Use left/right arrow</li>
+        </ul>
+        <li>Added support for 'ZZ' (like :wq) and 'ZQ' (like :q!)</li>
+        <li>Added support for r&lt;character&gt; in visual mode</li>
+        <li>Added more tweaks to the new substitution command</li>
+        <li>Fixed issue with '.' after performing a 'R' replace</li>
+        <li>Fixed issue with '.' after performing a visual-mode change</li>
+        <li>Fixed issue with '.' after performing a 'gt' or 'gT'</li>
+        <li>Fixed issue with '%' in visual mode</li>
+        <li>Fixed compatibility issue when joining a line that begins with ')'</li>
+    </ul>
+    
+    <p>Looking back at that list, I only worked on the easy things.
+    All the difficult pieces were submitted by contributors.  Thanks for all your help!</p>
+</div>
+<div class="newsbox">
     <div class="date">2012-05-28</div>
     <h4>Updates to unstable update site</h4>
     <p>Vrapper version 0.20.0 was released two weeks ago and I already feel like I'm ready to release 0.22.0.
