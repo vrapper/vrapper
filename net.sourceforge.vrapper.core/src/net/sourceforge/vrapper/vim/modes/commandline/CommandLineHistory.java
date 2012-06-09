@@ -9,54 +9,67 @@ import java.util.Map;
  * Stores the command line history for each mode.
  */
 public class CommandLineHistory {
-	Map<String, ArrayList<String>> history = new HashMap<String, ArrayList<String>>();
-	int index = -1;
-	String original;
-	String mode;
+	//history of commands for each command-line mode
+	private Map<String, ArrayList<String>> modeHistory = new HashMap<String, ArrayList<String>>();
+	//current index into history
+	private int index = -1;
+	//original text entered by user before scrolling through history
+	private String original;
+	//ordered list of previously-entered commands for the current Mode
+	private List<String> history;
 	
 	public static final CommandLineHistory INSTANCE = new CommandLineHistory();
 	
 	//singleton
 	private CommandLineHistory() { }
 	
-	private List<String> getModeHistory() {
-		if( ! history.containsKey(mode)) {
-			history.put(mode, new ArrayList<String>());
-		}
-		return history.get(mode);
-	}
-	
+	/**
+	 * We've changed modes.  Fetch the history for this mode.
+	 * @param modeName name of now-current mode
+	 */
 	public void setMode(String modeName) {
-		mode = modeName;
 		index = -1;
+		if( ! modeHistory.containsKey(modeName)) {
+			modeHistory.put(modeName, new ArrayList<String>());
+		}
+		history = modeHistory.get(modeName);
 	}
 
+	/**
+	 * User has committed a command (hit 'enter').  Add it to the history.
+	 * @param command - command to add to history
+	 */
 	public void append(String command) {
-		List<String> modeHistory = getModeHistory();
 		//remove duplicates (if any)
-		if(modeHistory.contains(command)) {
-			modeHistory.remove(command);
+		if(history.contains(command)) {
+			history.remove(command);
 		}
 		
-		modeHistory.add(0, command);
+		history.add(0, command);
 		index = -1;
 	}
 
+	/**
+	 * The user entered a couple keys then started scrolling
+	 * through the command history.  Those keys aren't actually
+	 * part of the history (not committed yet) but they're
+	 * treated as the first item in the history.
+	 * @param temp - User-entered string, may not be a full command
+	 */
 	public void setTemp(String temp) {
 		original = temp;
 		index = -1;
 	}
 
 	/**
-	 * Get the previous entry in the history that matches the current
-	 * edited command.
+	 * Get the previous entry in the history that starts with
+	 * whatever the user had entered before scrolling through the history.
 	 * @return the command in the history or null if none found to match.
 	 */
 	public String getPrevious() {
-		List<String> modeHistory = getModeHistory();
 		String command;
-		for(int i=index+1; i < modeHistory.size(); i++) {
-			command = modeHistory.get(i);
+		for(int i=index+1; i < history.size(); i++) {
+			command = history.get(i);
 			if(command.startsWith(original)) {
 				index = i;
 				return command;
@@ -66,16 +79,15 @@ public class CommandLineHistory {
 	}
 
 	/**
-	 * Get the next entry in the history that matches the current
-	 * edited command.
+	 * Get the next entry in the history that starts with
+	 * whatever the user had entered before scrolling through the history.
 	 * @return the command in the history or the original command if none
 	 * found to match.
 	 */
 	public String getNext() {
-		List<String> modeHistory = getModeHistory();
 		String command;
 		for(int i=index-1; i > -1; i--) {
-			command = modeHistory.get(i);
+			command = history.get(i);
 			if(command.startsWith(original)) {
 				index = i;
 				return command;
