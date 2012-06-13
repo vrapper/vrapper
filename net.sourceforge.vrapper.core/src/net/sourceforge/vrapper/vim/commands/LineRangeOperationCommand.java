@@ -75,7 +75,7 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
     			}
     		}
     		else { //building second part of range
-    			if(!insideSearchDef && (next == 'd' || next == 'y' || next == 's')) { //what other operations do we support?
+    			if(!insideSearchDef && isOperationChar(next)) {
     				operationChar = next;
     				//if 's', we're defining a substitution for the range
     				remainingChars = command.substring(i);
@@ -110,6 +110,11 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
     	else {
     		return null;
     	}
+    }
+    
+    private boolean isOperationChar(char c) {
+    	//what other operations do we support?
+    	return c == 'd' || c == 'y' || c == 's' || c == 'v' || c == 'g';
     }
     
     /**
