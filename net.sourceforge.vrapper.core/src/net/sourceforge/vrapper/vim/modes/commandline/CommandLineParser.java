@@ -7,14 +7,13 @@ import java.util.StringTokenizer;
 import net.sourceforge.vrapper.platform.Configuration.Option;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Search;
-import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.CloseCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
-import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.ConfigCommand;
+import net.sourceforge.vrapper.vim.commands.ExCommandOperation;
 import net.sourceforge.vrapper.vim.commands.LineRangeOperationCommand;
 import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
@@ -22,10 +21,9 @@ import net.sourceforge.vrapper.vim.commands.RedoCommand;
 import net.sourceforge.vrapper.vim.commands.RepeatLastSubstitutionCommand;
 import net.sourceforge.vrapper.vim.commands.SaveAllCommand;
 import net.sourceforge.vrapper.vim.commands.SaveCommand;
-import net.sourceforge.vrapper.vim.commands.SubstitutionOperation;
-import net.sourceforge.vrapper.vim.commands.SelectionBasedTextOperationCommand;
 import net.sourceforge.vrapper.vim.commands.SetOptionCommand;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
+import net.sourceforge.vrapper.vim.commands.SubstitutionOperation;
 import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
 import net.sourceforge.vrapper.vim.commands.UndoCommand;
 import net.sourceforge.vrapper.vim.commands.VimCommandSequence;
@@ -198,6 +196,8 @@ public class CommandLineParser extends AbstractCommandParser {
         	return new LineRangeOperationCommand(command);
         }
         
+        //check against list of known commands
+        //(the ones without arguments)
         StringTokenizer nizer = new StringTokenizer(command);
         Queue<String> tokens = new LinkedList<String>();
         while (nizer.hasMoreTokens()) {
@@ -214,6 +214,13 @@ public class CommandLineParser extends AbstractCommandParser {
         Command substitution = parseSubstitution(command);
         if(substitution != null) {
         	return substitution;
+        }
+        
+        //is this an Ex command?
+        if(command.length() > 1 && (command.startsWith("g") || command.startsWith("v"))) {
+    		return new TextOperationTextObjectCommand(
+				new ExCommandOperation(command), new SimpleSelection(null)
+    		);
         }
         
         return null;
@@ -236,7 +243,7 @@ public class CommandLineParser extends AbstractCommandParser {
 				new SubstitutionOperation(command), new SimpleSelection(null)
     		);
     	}
-    	else if(command.startsWith("%s")) {
+    	else if(command.startsWith("%s")) { //global substitution
     		Position start = editor.getCursorService().newPositionForModelOffset( 0 );
     		Position end = editor.getCursorService().newPositionForModelOffset( editor.getModelContent().getTextLength() );
     		return new TextOperationTextObjectCommand(
@@ -244,6 +251,7 @@ public class CommandLineParser extends AbstractCommandParser {
     		);
     	}
     	
+    	//not a substitution
     	return null;
     }
     

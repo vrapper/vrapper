@@ -293,6 +293,9 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
     	else if(operation == 's') {
     		return new SubstitutionOperation(remainingChars);
     	}
+    	else if(operation == 'g' || operation == 'v') {
+    		return new ExCommandOperation(remainingChars);
+    	}
     	else {
     		editorAdaptor.getUserInterfaceService().setErrorMessage("Unknown operation for range: " + operation);
     		return null;
