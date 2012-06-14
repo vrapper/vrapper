@@ -50,6 +50,9 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
     public boolean replace(LineInformation line, String toFind, String replace, String flags) {
     	int start = line.getBeginOffset();
     	int end = line.getEndOffset();
+    	//each time we perform a replace,
+    	//how many characters will be added/removed?
+    	int lengthDiff = replace.length() - toFind.length();
     	int match;
     	boolean matchFound = false;
     	try {
@@ -60,13 +63,12 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
     				matchFound = true;
     				adapter.replace(replace, true);
     				if(flags.contains("g")) {
-    					//prevent infinite loops
-    					if(match == start) {
-    						start = match+1;
-    					}
-    					else {
-    						start = match;
-    					}
+    					//don't match on the replacement string
+    					//when we come around again
+    					// (s/foo/barfoo/g)
+    					start = match + replace.length();
+    					//the offset for the end of this line has changed
+    					end += lengthDiff;
     				}
     				else {
     					//if not global, we've performed our one replace
