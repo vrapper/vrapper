@@ -15,21 +15,21 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
  * And parses all the pieces.  The expected pieces are:
  * 'g', 'g!', or 'v' to determine whether we find matches or non-matches
  * /{pattern}/ to determine what we're matching on
- * command name (e.g., 'normal')
- * any command args (e.g., 'wdw')
+ * command name (e.g., 'normal', 's', 'd', etc.)
+ * any command args (e.g., 'wdw' or '/foo/bar/g')
  *
  * We take those pieces and generate a Command if everything is valid.
  */
 public class ExCommandOperation extends SimpleTextOperation {
 	
 	String definition;
-	boolean findMatch = true;
 	
 	public ExCommandOperation(String definition) {
 		this.definition = definition;
 	}
 
     public void execute(EditorAdaptor editorAdaptor, TextRange region, ContentType contentType) {
+    	boolean findMatch = true;
 		if(definition.startsWith("g!")) {
 			findMatch = false;
 			//chop off 'g!'
@@ -81,8 +81,7 @@ public class ExCommandOperation extends SimpleTextOperation {
 	private SimpleTextOperation buildExCommand(String command, EditorAdaptor editorAdaptor) {
 		if(command.startsWith("normal ")) {
 			String args = command.substring("normal ".length());
-			Iterable<KeyStroke> parsed = ConstructorWrappers.parseKeyStrokes(args);
-			editorAdaptor.getMacroPlayer().add(parsed);
+			return new AnonymousMacroOperation(args);
 		}
 		else if(command.startsWith("s")) {
 			return new SubstitutionOperation(command);
@@ -119,12 +118,12 @@ public class ExCommandOperation extends SimpleTextOperation {
 		editorAdaptor.getHistory().lock();
 		if(startLine == endLine) {
 			line = editorAdaptor.getModelContent().getLineInformation(startLine);
-			processLine(pattern, operation, line, editorAdaptor);
+			processLine(pattern, findMatch, operation, line, editorAdaptor);
 		}
 		else {
 			for(int i=startLine; i < endLine; i++) {
 				line = editorAdaptor.getModelContent().getLineInformation(i);
-				boolean operationPerformed = processLine(pattern, operation, line, editorAdaptor);
+				boolean operationPerformed = processLine(pattern, findMatch, operation, line, editorAdaptor);
 				
 				if(operationPerformed) {
 					int currentNumLines = editorAdaptor.getModelContent().getNumberOfLines();
@@ -133,11 +132,9 @@ public class ExCommandOperation extends SimpleTextOperation {
 					if(totalNumLines > currentNumLines) {
 						//next line moved up, make sure we don't skip it
 						i--;
-					}
-					if(endLine > currentNumLines) {
-						//if we're running to the end of the file,
-						//the end of the file just got shorter
-						endLine = currentNumLines;
+						//make sure we don't run outside our boundary
+						endLine--;
+						totalNumLines = currentNumLines;
 					}
 				}
 			}
@@ -147,7 +144,7 @@ public class ExCommandOperation extends SimpleTextOperation {
 		
 	}
 	
-	private boolean processLine(String pattern, SimpleTextOperation operation,
+	private boolean processLine(String pattern, boolean findMatch, SimpleTextOperation operation,
 			LineInformation line, EditorAdaptor editorAdaptor) {
 		boolean operationPerformed = false;
 		String text = editorAdaptor.getModelContent().getText(line.getBeginOffset(), line.getLength());

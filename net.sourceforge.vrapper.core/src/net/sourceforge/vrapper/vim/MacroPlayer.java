@@ -48,7 +48,7 @@ public class MacroPlayer {
      * Executes what is in the playlist. Should only be called by the parent
      * {@link EditorAdaptor}.
      */
-    void play() {
+    public void play() {
         ViewportService view = editorAdaptor.getViewportService();
         try {
             view.setRepaint(false);
