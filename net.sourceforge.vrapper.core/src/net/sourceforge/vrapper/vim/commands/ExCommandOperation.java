@@ -1,7 +1,5 @@
 package net.sourceforge.vrapper.vim.commands;
 
-import net.sourceforge.vrapper.keymap.KeyStroke;
-import net.sourceforge.vrapper.keymap.vim.ConstructorWrappers;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
