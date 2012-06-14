@@ -1,5 +1,8 @@
 package net.sourceforge.vrapper.vim.commands;
 
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+
 import net.sourceforge.vrapper.platform.SearchAndReplaceService;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.LineInformation;
@@ -53,6 +56,14 @@ public class SubstitutionOperation extends SimpleTextOperation {
 		if(fields.length > 3) {
 			flags = fields[3];
 		}
+		
+		//before attempting substitution, is this regex even valid?
+		try {
+	        Pattern.compile(find);
+	    } catch (PatternSyntaxException e) {
+			editorAdaptor.getUserInterfaceService().setErrorMessage(e.getDescription());
+			return;
+	    }
 		
 		boolean success;
 		if(startLine == endLine) {

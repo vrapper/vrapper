@@ -182,7 +182,10 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
     		}
     		else if(mark.equals(">")) { //selection end
     			try {
-    				pos = editorAdaptor.getSelection().getRegion(editorAdaptor, 0).getRightBound();
+    				//getRightBound is exclusive, meaning in linewise-mode it will
+    				//include the first character on the next line.  Back up one
+    				//character to make this inclusive.
+    				pos = editorAdaptor.getSelection().getRegion(editorAdaptor, 0).getRightBound().addModelOffset(-1);
 				} catch (CommandExecutionException e) { }
     		}
     		else { //normal mark
