@@ -193,8 +193,7 @@ public class CommandLineParser extends AbstractCommandParser {
         
         //not a number but starts with a number, $, /, ?, +, -, ', . (dot), or , (comma)
         //might be a line range operation
-        if(command.length() > 1 &&
-        		command.matches("^\\d.*|^\\$.*|^\\/.*|^\\?.*|^\\+.*|^\\-.*|^,.*|^\\..*|^'.*")) {
+        if(command.length() > 1 && LineRangeOperationCommand.isLineRangeOperation(command)) {
         	return new LineRangeOperationCommand(command);
         }
         

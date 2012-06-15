@@ -34,6 +34,12 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
 	public LineRangeOperationCommand(String definition) {
 		this.definition = definition;
 	}
+	
+	public static boolean isLineRangeOperation(String command) {
+		//list all possible starting characters for a line range
+		//<number> $ / ? . ' + - , 
+		return command.matches("^[\\d\\$\\/\\?\\.\\'\\+\\-\\,].*");
+	}
 
 	public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
 		TextOperationTextObjectCommand command = parseRangeDefinition(definition, editorAdaptor);
