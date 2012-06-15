@@ -20,14 +20,17 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
  */
 public class ExCommandOperation extends SimpleTextOperation {
 	
-	String definition;
+	String originalDefinition;
 	
 	public ExCommandOperation(String definition) {
-		this.definition = definition;
+		this.originalDefinition = definition;
 	}
 
     public void execute(EditorAdaptor editorAdaptor, TextRange region, ContentType contentType) {
     	boolean findMatch = true;
+    	//leave 'originalDefinition' untouched so repetition can use it again
+    	//we'll be modifying 'definition' to make parsing easier
+    	String definition = originalDefinition;
 		if(definition.startsWith("g!")) {
 			findMatch = false;
 			//chop off 'g!'
@@ -110,7 +113,6 @@ public class ExCommandOperation extends SimpleTextOperation {
 	    			.getLineInformationOfOffset( region.getRightBound().getModelOffset() ).getNumber();
     	}
 		
-    	int totalNumLines = editorAdaptor.getModelContent().getNumberOfLines();
 		LineInformation line;
 		editorAdaptor.getHistory().beginCompoundChange();
 		editorAdaptor.getHistory().lock();
@@ -119,20 +121,21 @@ public class ExCommandOperation extends SimpleTextOperation {
 			processLine(pattern, findMatch, operation, line, editorAdaptor);
 		}
 		else {
+			int oldLineCount = editorAdaptor.getModelContent().getNumberOfLines();
 			for(int i=startLine; i < endLine; i++) {
 				line = editorAdaptor.getModelContent().getLineInformation(i);
 				boolean operationPerformed = processLine(pattern, findMatch, operation, line, editorAdaptor);
 				
 				if(operationPerformed) {
 					int currentNumLines = editorAdaptor.getModelContent().getNumberOfLines();
-					//this was a destructive operation and a line was removed
+					//if this was a destructive operation and a line was removed
 					//stay in sync
-					if(totalNumLines > currentNumLines) {
+					if(oldLineCount > currentNumLines) {
 						//next line moved up, make sure we don't skip it
 						i--;
 						//make sure we don't run outside our boundary
 						endLine--;
-						totalNumLines = currentNumLines;
+						oldLineCount = currentNumLines;
 					}
 				}
 			}
@@ -164,6 +167,7 @@ public class ExCommandOperation extends SimpleTextOperation {
 				Position start = editorAdaptor.getCursorService().newPositionForViewOffset(line.getBeginOffset());
 				Position end = editorAdaptor.getCursorService().newPositionForViewOffset(line.getEndOffset());
 				TextRange range = new StartEndTextRange(start, end);
+				
 				operation.execute(editorAdaptor, range, ContentType.LINES);
 				operationPerformed = true;
 			} catch (CommandExecutionException e) {
