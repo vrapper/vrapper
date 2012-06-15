@@ -164,8 +164,8 @@ public class ExCommandOperation extends SimpleTextOperation {
 		boolean matches = text.matches(pattern);
 		if( (findMatch && matches) || (!findMatch && !matches) ) {
 			try {
-				Position start = editorAdaptor.getCursorService().newPositionForViewOffset(line.getBeginOffset());
-				Position end = editorAdaptor.getCursorService().newPositionForViewOffset(line.getEndOffset());
+				Position start = editorAdaptor.getCursorService().newPositionForModelOffset(line.getBeginOffset());
+				Position end = editorAdaptor.getCursorService().newPositionForModelOffset(line.getEndOffset());
 				TextRange range = new StartEndTextRange(start, end);
 				
 				operation.execute(editorAdaptor, range, ContentType.LINES);
