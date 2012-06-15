@@ -47,6 +47,8 @@ public class MacroPlayer {
     /**
      * Executes what is in the playlist. Should only be called by the parent
      * {@link EditorAdaptor}.
+     * (This method is now public rather than package-private just
+     *  so we can support the 'normal' command, see ":help normal")
      */
     public void play() {
         ViewportService view = editorAdaptor.getViewportService();
