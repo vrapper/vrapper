@@ -10,6 +10,7 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 /**
  * Takes a user-defined String such as:
  * :g/^a/normal wdw
+ * :g/something/s/foo/bar/g
  * And parses all the pieces.  The expected pieces are:
  * 'g', 'g!', or 'v' to determine whether we find matches or non-matches
  * /{pattern}/ to determine what we're matching on
@@ -24,6 +25,20 @@ public class ExCommandOperation extends SimpleTextOperation {
 	
 	public ExCommandOperation(String definition) {
 		this.originalDefinition = definition;
+	}
+
+	public TextOperation repetition() {
+		//The dot command doesn't work for "normal", it leaves NormalMode
+		//in a bad state. So, prevent the dot command on "normal".  This
+		//means dot will actually perform whatever operation was last in
+		//the "normal" command execution.
+		//Surprisingly, this is consistent with vim's behavior.
+		if(originalDefinition.contains("normal ")) {
+			return null;
+		}
+		else {
+			return this;
+		}
 	}
 
     public void execute(EditorAdaptor editorAdaptor, TextRange region, ContentType contentType) {
@@ -174,10 +189,6 @@ public class ExCommandOperation extends SimpleTextOperation {
 			}
 		}
 		return operationPerformed;
-	}
-
-	public TextOperation repetition() {
-		return this;
 	}
 
 }
