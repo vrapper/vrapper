@@ -6,6 +6,8 @@ import java.util.HashSet;
 
 import net.sourceforge.vrapper.eclipse.activator.VrapperPlugin;
 import net.sourceforge.vrapper.eclipse.platform.EclipsePlatform;
+import net.sourceforge.vrapper.eclipse.platform.SWTClipboardRegister;
+import net.sourceforge.vrapper.eclipse.platform.SWTRegisterManager;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.vim.SimpleKeyStroke;
@@ -26,6 +28,7 @@ import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.VerifyEvent;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 
 /**
@@ -72,7 +75,7 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
     }
 
 
-    private static final RegisterManager globalRegisterManager = new DefaultRegisterManager();
+    private static final RegisterManager globalRegisterManager = new SWTRegisterManager(PlatformUI.getWorkbench().getDisplay());
     private static final Configuration sharedConfiguration = new SimpleConfiguration();
 
     public InputInterceptor createInterceptor(AbstractTextEditor abstractTextEditor, ITextViewer textViewer) {
