@@ -10,6 +10,7 @@ import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.SelectionService;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.ContentType;
+import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Space;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
@@ -21,6 +22,8 @@ import org.eclipse.jface.text.BadPositionCategoryException;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.ITextViewerExtension5;
+import org.eclipse.swt.custom.CaretEvent;
+import org.eclipse.swt.custom.CaretListener;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -36,16 +39,22 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     private final ITextViewerExtension5 converter;
     private Selection selection;
     private final SelectionChangeListener selectionChangeListener;
+    private final StickyColumnUpdater caretListener;
     private final Map<String, org.eclipse.jface.text.Position> marks;
     private final Configuration configuration;
+    private final EclipseTextContent textContent;
 
-    public EclipseCursorAndSelection(Configuration configuration, ITextViewer textViewer) {
+	public EclipseCursorAndSelection(Configuration configuration,
+			ITextViewer textViewer, EclipseTextContent textContent) {
         this.configuration = configuration;
         this.textViewer = textViewer;
+        this.textContent = textContent;
         converter = OffsetConverter.create(textViewer);
         selectionChangeListener = new SelectionChangeListener();
+        caretListener = new StickyColumnUpdater();
         marks = new HashMap<String, org.eclipse.jface.text.Position>();
         textViewer.getTextWidget().addSelectionListener(selectionChangeListener);
+        textViewer.getTextWidget().addCaretListener(caretListener);
         textViewer.getDocument().addPositionCategory(POSITION_CATEGORY_NAME);
     }
 
@@ -54,6 +63,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     }
 
     public void setPosition(Position position, boolean updateColumn) {
+    	caretListener.disable();
     	int viewOffset = position.getViewOffset();
     	if(viewOffset == -1) {
     		//Something went screwy, avoid getting into a bad state.
@@ -65,6 +75,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
             stickToEOL = false;
             stickyColumn = textViewer.getTextWidget().getLocationAtOffset(viewOffset).x;
         }
+        caretListener.enable();
     }
 
     public Position stickyColumnAtViewLine(int lineNo) {
@@ -140,6 +151,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     }
 
     public void setSelection(Selection newSelection) {
+    	caretListener.disable();
         if (newSelection == null) {
             int cursorPos = converter.widgetOffset2ModelOffset(textViewer.getTextWidget().getCaretOffset());
             textViewer.setSelectedRange(cursorPos, 0);
@@ -164,6 +176,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
             textViewer.setSelectedRange(from, length);
             selectionChangeListener.enable();
         }
+        caretListener.enable();
     }
 
     public Position newPositionForModelOffset(int offset) {
@@ -207,6 +220,33 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         public void disable() {
             enabled = false;
         }
+    }
+    
+    private final class StickyColumnUpdater implements CaretListener {
+    	
+        boolean enabled = true;
+        
+		public void caretMoved(CaretEvent e) {
+			if (enabled) {
+				int offset = e.caretOffset;
+				setPosition(newPositionForViewOffset(offset), true);
+				// if the user clicks to the right of the line end
+				// (i.e. the newline is selected) stick to EOL
+				LineInformation line = textContent.getViewContent().getLineInformationOfOffset(offset);
+				if (offset >= line.getEndOffset()) {
+					stickToEOL();
+				}
+			}
+		}
+
+        public void enable() {
+            enabled = true;
+        }
+
+        public void disable() {
+            enabled = false;
+        }
+    	
     }
 
     public void setMark(String id, Position position) {
