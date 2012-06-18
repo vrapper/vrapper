@@ -75,8 +75,6 @@ public class DefaultRegisterManager implements RegisterManager {
             }
         };
         registers.put(RegisterManager.REGISTER_NAME_BLACKHOLE, blackholeRegister);
-        // FIXME: AWTClipboardRegister is obviously underlying platform dependency
-        registers.put(RegisterManager.REGISTER_NAME_CLIPBOARD, new AWTClipboardRegister());
     }
 
     public Register getRegister(String name) {
