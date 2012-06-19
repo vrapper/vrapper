@@ -21,7 +21,7 @@ public class DefaultRegisterManager implements RegisterManager {
 
     protected final Map<String, Register> registers;
     private Register activeRegister;
-    private final Register defaultRegister;
+    private Register defaultRegister;
     private final Register lastEditRegister;
     private Search search;
     private Command lastEdit, lastInsertion;
@@ -91,6 +91,10 @@ public class DefaultRegisterManager implements RegisterManager {
 
     public Register getDefaultRegister() {
         return defaultRegister;
+    }
+
+    public void setDefaultRegister(Register register) {
+        this.defaultRegister = register;
     }
 
     public Register getActiveRegister() {
