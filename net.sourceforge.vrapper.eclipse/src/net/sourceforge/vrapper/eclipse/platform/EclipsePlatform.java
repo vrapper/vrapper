@@ -51,9 +51,9 @@ public class EclipsePlatform implements Platform {
             ITextViewer textViewer, Configuration sharedConfiguration) {
         underlyingEditor = abstractTextEditor;
         configuration = sharedConfiguration;
-        cursorAndSelection = new EclipseCursorAndSelection(configuration,
-                textViewer);
         textContent = new EclipseTextContent(textViewer);
+        cursorAndSelection = new EclipseCursorAndSelection(configuration,
+                textViewer, textContent);
         fileService = new EclipseFileService(abstractTextEditor);
         viewportService = new EclipseViewportService(textViewer);
         serviceProvider = new EclipseServiceProvider(abstractTextEditor);
