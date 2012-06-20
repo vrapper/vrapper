@@ -34,9 +34,10 @@ public interface Options {
             VISUAL_MOUSE);
 
     // String options:
+    public static final Option<String> CLIPBOARD = string("clipboard", "autoselect", "unnamed, autoselect", "cb");
     public static final Option<String> SELECTION = string("selection", "inclusive", "old, inclusive, exclusive", "sel");
     @SuppressWarnings("unchecked")
-    public static final Set<Option<String>> STRING_OPTIONS = set(SELECTION);
+    public static final Set<Option<String>> STRING_OPTIONS = set(CLIPBOARD, SELECTION);
 
     // Int options:
     public static final Option<Integer> SCROLL_OFFSET = integer("scrolloff",  0, "so");
