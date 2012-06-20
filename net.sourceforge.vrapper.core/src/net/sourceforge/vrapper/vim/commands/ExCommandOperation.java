@@ -130,7 +130,7 @@ public class ExCommandOperation extends SimpleTextOperation {
 		
 		LineInformation line;
 		editorAdaptor.getHistory().beginCompoundChange();
-		editorAdaptor.getHistory().lock();
+		editorAdaptor.getHistory().lock("ex-command");
 		if(startLine == endLine) {
 			line = editorAdaptor.getModelContent().getLineInformation(startLine);
 			processLine(pattern, findMatch, operation, line, editorAdaptor);
@@ -155,7 +155,7 @@ public class ExCommandOperation extends SimpleTextOperation {
 				}
 			}
 		}
-		editorAdaptor.getHistory().unlock();
+		editorAdaptor.getHistory().unlock("ex-command");
 		editorAdaptor.getHistory().endCompoundChange();
 		
 	}

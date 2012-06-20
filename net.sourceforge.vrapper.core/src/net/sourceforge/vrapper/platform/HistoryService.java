@@ -9,4 +9,6 @@ public interface HistoryService {
 	void endCompoundChange();
 	void lock();
 	void unlock();
+	void lock(String name);
+	void unlock(String name);
 }

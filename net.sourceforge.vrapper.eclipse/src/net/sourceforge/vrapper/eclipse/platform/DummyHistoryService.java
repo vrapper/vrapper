@@ -70,4 +70,14 @@ public class DummyHistoryService implements IUndoManager, HistoryService {
         // TODO Auto-generated method stub
     }
 
+	public void lock(String name) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void unlock(String name) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

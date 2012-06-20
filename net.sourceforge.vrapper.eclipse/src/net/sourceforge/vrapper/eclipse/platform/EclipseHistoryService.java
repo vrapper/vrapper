@@ -12,19 +12,39 @@ public class EclipseHistoryService implements IUndoManager, IUndoManagerExtensio
 
     private final IUndoManager delegate;
     private boolean locked;
+    private String lockName = "";
     private final StyledText textWidget;
 
     public EclipseHistoryService(StyledText textWidget, IUndoManager delegate) {
         this.textWidget = textWidget;
         this.delegate = delegate;
     }
+    
+    /**
+     * Accept any arbitrary string as a lock name.  This is to ensure
+     * that a parent class can lock and unlock without a child class
+     * unknowingly locking and unlocking, removing that parent's lock.
+     */
+    public void lock(String name) {
+    	if(!locked) {
+    		locked = true;
+    		lockName = name;
+    	}
+    }
+    
+    public void unlock(String name) {
+    	if(locked && lockName.equals(name)) {
+    		locked = false;
+    		lockName = "";
+    	}
+    }
 
     public void lock() {
-        locked = true;
+        lock("unnamed");
     }
 
     public void unlock() {
-        locked = false;
+        unlock("unnamed");
     }
 
     public void beginCompoundChange() {
