@@ -19,6 +19,7 @@ public interface RegisterManager {
     public static final String REGISTER_NAME_SEARCH = "/";
     public static final String REGISTER_NAME_BLACKHOLE = "_";
     public static final String REGISTER_NAME_LAST = "@";
+
     Register getRegister(String name);
     Register getDefaultRegister();
     Register getActiveRegister();
@@ -41,4 +42,5 @@ public interface RegisterManager {
     boolean isDefaultRegisterActive();
 	void setLastActiveSelection(PositionlessSelection instance);
 	PositionlessSelection getLastActiveSelection();
+    public abstract void setDefaultRegister(Register register);
 }

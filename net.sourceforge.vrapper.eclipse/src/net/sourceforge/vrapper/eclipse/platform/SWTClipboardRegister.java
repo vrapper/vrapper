@@ -35,7 +35,7 @@ public class SWTClipboardRegister implements Register {
     public void setContent(RegisterContent content) {
         String s = content.getText();
         if (content.getPayloadType() == ContentType.LINES) {
-            s += VimConstants.REGISTER_NEWLINE;
+            s = normalizeLineBreaks(s);
         }
         clipboard.setContents(new Object[] { s }, new Transfer[] { TextTransfer.getInstance() });
     }

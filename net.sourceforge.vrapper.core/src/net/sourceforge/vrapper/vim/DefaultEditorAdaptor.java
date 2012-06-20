@@ -27,6 +27,7 @@ import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.platform.UnderlyingEditorSettings;
 import net.sourceforge.vrapper.platform.UserInterfaceService;
 import net.sourceforge.vrapper.platform.ViewportService;
+import net.sourceforge.vrapper.platform.Configuration.Option;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.PositionlessSelection;
@@ -45,6 +46,7 @@ import net.sourceforge.vrapper.vim.modes.commandline.CommandLineParser;
 import net.sourceforge.vrapper.vim.modes.commandline.PasteRegisterMode;
 import net.sourceforge.vrapper.vim.modes.commandline.SearchMode;
 import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
+import net.sourceforge.vrapper.vim.register.Register;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
 
 public class DefaultEditorAdaptor implements EditorAdaptor {
@@ -88,6 +90,22 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         this.serviceProvider = editor.getServiceProvider();
         this.editorSettings = editor.getUnderlyingEditorSettings();
         this.configuration = new SimpleLocalConfiguration(editor.getConfiguration());
+        LocalConfigurationListener listener = new LocalConfigurationListener() {
+            
+            public <T> void optionChanged(Option<T> option, T oldValue, T newValue) {
+                if("clipboard".equals(option.getId())) {
+                    if("unnamed".equals(newValue)) {
+                        Register clipboardRegister = DefaultEditorAdaptor.this.getRegisterManager().getRegister(RegisterManager.REGISTER_NAME_CLIPBOARD);
+                        DefaultEditorAdaptor.this.getRegisterManager().setDefaultRegister(clipboardRegister);
+                    } else {
+                        Register unnamedRegister = DefaultEditorAdaptor.this.getRegisterManager().getRegister(RegisterManager.REGISTER_NAME_UNNAMED);
+                        DefaultEditorAdaptor.this.getRegisterManager().setDefaultRegister(unnamedRegister);
+                    }
+                }
+                
+            }
+        };
+        this.configuration.addListener(listener);
         this.platformSpecificStateProvider = editor.getPlatformSpecificStateProvider();
         this.searchAndReplaceService = editor.getSearchAndReplaceService();
         viewportService = editor.getViewportService();
