@@ -63,7 +63,9 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     }
 
     public void setPosition(Position position, boolean updateColumn) {
-    	caretListener.disable();
+    	if (!updateColumn) {
+	    	caretListener.disable();
+    	}
     	int viewOffset = position.getViewOffset();
     	if(viewOffset == -1) {
     		//Something went screwy, avoid getting into a bad state.
@@ -71,10 +73,6 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     		viewOffset = 0;
     	}
         textViewer.getTextWidget().setSelection(viewOffset);
-        if (updateColumn) {
-            stickToEOL = false;
-            stickyColumn = textViewer.getTextWidget().getLocationAtOffset(viewOffset).x;
-        }
         caretListener.enable();
     }
 
@@ -151,7 +149,6 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     }
 
     public void setSelection(Selection newSelection) {
-    	caretListener.disable();
         if (newSelection == null) {
             int cursorPos = converter.widgetOffset2ModelOffset(textViewer.getTextWidget().getCaretOffset());
             textViewer.setSelectedRange(cursorPos, 0);
@@ -176,7 +173,6 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
             textViewer.setSelectedRange(from, length);
             selectionChangeListener.enable();
         }
-        caretListener.enable();
     }
 
     public Position newPositionForModelOffset(int offset) {
@@ -229,13 +225,11 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
 		public void caretMoved(CaretEvent e) {
 			if (enabled) {
 				int offset = e.caretOffset;
-				setPosition(newPositionForViewOffset(offset), true);
+	            stickyColumn = textViewer.getTextWidget().getLocationAtOffset(offset).x;
 				// if the user clicks to the right of the line end
 				// (i.e. the newline is selected) stick to EOL
 				LineInformation line = textContent.getViewContent().getLineInformationOfOffset(offset);
-				if (offset >= line.getEndOffset()) {
-					stickToEOL();
-				}
+	            stickToEOL = offset >= line.getEndOffset();
 			}
 		}
 
