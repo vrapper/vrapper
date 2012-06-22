@@ -52,10 +52,17 @@ public class JdtSpecificStateProvider extends AbstractEclipseSpecificStateProvid
     			// FIXME: there is a WTF with Eclipse and select.* commands
     			// they make selection "special", we need to have a way of using
     			// it. Try VLLLd - it's quite broken now :-/
+    			/**
+    			 * I have a better WTF... where did these features come from?
+    			 * This breaks the H, M, L functionality of normal Vrapper by
+    			 * overriding them.  This is confusing our users.  I'm only
+    			 * commenting these lines out for now in case there is a legitimate
+    			 * reason why they were added.
     			leafBind('m', editJava("select.enclosing")),
     			leafBind('M', editJava("select.last")),
     			leafBind('L', editJava("select.next")), 
     			leafBind('H', editJava("select.previous")),
+    			 */
     			transitionBind('g', union(
     					state(leafBind('c', editJavaAndLeaveVisual("toggle.comment"))),
     					getGSomethingBindings()
