@@ -102,7 +102,7 @@ public class XmlTagDelimitedText implements DelimitedText {
     	
     	//There might be an arbitrary number of attributes set on this tag.
     	//Don't assume it's "<"+tagName+">"
-    	Search findTagEnd = new Search(">", true, false, true, SearchOffset.NONE, false);
+    	Search findTagEnd = new Search(">", false, false, true, SearchOffset.NONE, false);
     	result = searchAndReplace.find(findTagEnd, result.getRightBound());
     	if( ! result.isFound()) {
             throw new CommandExecutionException("Could not find ending to <"+tagName);
