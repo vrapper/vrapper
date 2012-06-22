@@ -65,6 +65,7 @@ import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
 import net.sourceforge.vrapper.vim.commands.UndoCommand;
 import net.sourceforge.vrapper.vim.commands.VimCommandSequence;
 import net.sourceforge.vrapper.vim.commands.VisualMotionCommand;
+import net.sourceforge.vrapper.vim.commands.XmlTagDelimitedText;
 import net.sourceforge.vrapper.vim.commands.YankOperation;
 import net.sourceforge.vrapper.vim.commands.motions.LineEndMotion;
 import net.sourceforge.vrapper.vim.commands.motions.LineStartMotion;
@@ -121,7 +122,7 @@ public class NormalMode extends CommandBasedMode {
         final DelimitedText inString = new SimpleDelimitedText('"');
         final DelimitedText inGraveString = new SimpleDelimitedText('`');
         final DelimitedText inChar = new SimpleDelimitedText('\'');
-
+        final DelimitedText inTag = new XmlTagDelimitedText();
 
         delimitedTexts = state(
                 leafBind('b', inBracket),
@@ -134,6 +135,7 @@ public class NormalMode extends CommandBasedMode {
                 leafBind('}', inBrace),
                 leafBind('<', inAngleBrace),
                 leafBind('>', inAngleBrace),
+                leafBind('t', inTag),
                 leafBind('"', inString),
                 leafBind('\'', inChar),
                 leafBind('`', inGraveString));
