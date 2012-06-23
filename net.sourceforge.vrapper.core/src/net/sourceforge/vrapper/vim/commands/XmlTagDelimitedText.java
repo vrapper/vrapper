@@ -1,5 +1,7 @@
 package net.sourceforge.vrapper.vim.commands;
 
+import java.util.Stack;
+
 import net.sourceforge.vrapper.platform.SearchAndReplaceService;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Search;
@@ -9,17 +11,21 @@ import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 
+/**
+ * The cursor is inside a pair of XML tags.  Find the open tag before the cursor
+ * that matches the closing tag after the cursor.  We don't know which tag name we're looking
+ * for until we find the unbalanced closing tag after the cursor.
+ */
 public class XmlTagDelimitedText implements DelimitedText {
 	
 	private TextRange endTag;
-
+	
     public TextRange leftDelimiter(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
-    	//find nearest closing tag to know which opening tag we need
-    	endTag = findInsideClosingTag(editorAdaptor);
+    	Position cursorPos = editorAdaptor.getCursorService().getPosition();
+    	endTag = getUnbalancedClosingTag(cursorPos, editorAdaptor);
     	String tagName = getClosingTagName(endTag, editorAdaptor);
     	
-    	//go find the open tag that matches this endTag we're inside
-        return findInsideStartTag(tagName, editorAdaptor);
+        return getUnbalancedOpenTag(cursorPos, tagName, editorAdaptor);
     }
 
     public TextRange rightDelimiter(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
@@ -28,92 +34,67 @@ public class XmlTagDelimitedText implements DelimitedText {
     		return endTag;
     	}
     	else {
-    		return findInsideClosingTag(editorAdaptor);
+    		Position cursorPos = editorAdaptor.getCursorService().getPosition();
+    		return getUnbalancedClosingTag(cursorPos, editorAdaptor);
     	}
     }
     
     /**
-     * Don't just find the next open tag, find the open tag that we're inside.
-     * (find the first unbalanced open tag before cursor)
+     * Search forwards for XML tags.  Push every open tag, pop every close tag.
+     * If we get a close tag without an open tag, we're inside that tag.
      */
-    private TextRange findInsideStartTag(String tagName, EditorAdaptor editorAdaptor) throws CommandExecutionException {
-    	Position cursorPos = editorAdaptor.getCursorService().getPosition();
-    	Position before = cursorPos;
-    	Position after = cursorPos;
-    	TextRange openTag;
-    	
-    	do {
-    		before = after;
-    		openTag = findNextOpenTag(before, tagName, editorAdaptor);
-    		
-    		//prepare to loop again just in case
-    		after = openTag.getLeftBound();
-    		
-    		//if we aren't inside this tag, look for the next open tag 
-    	} while( isClosingTagBeforeCursor(after, before, tagName, editorAdaptor) );
-    	
-    	
-    	SearchAndReplaceService searchAndReplace = editorAdaptor.getSearchAndReplaceService();
-    	//There might be an arbitrary number of attributes set on this tag.
-    	//Don't assume it's "<"+tagName+">"
-    	Search findTagEnd = new Search(">", false, false, true, SearchOffset.NONE, false);
-    	SearchResult result = searchAndReplace.find(findTagEnd, openTag.getRightBound());
-    	if( ! result.isFound()) {
-            throw new CommandExecutionException("Could not find ending to <"+tagName);
-    	}
-    	
-    	return new StartEndTextRange(openTag.getLeftBound(), result.getRightBound());
-    }
-    
-    /**
-     * Don't just find the next closing tag, find the closing tag that we're inside.
-     * (find the first unbalanced close tag after cursor)
-     */
-    private TextRange findInsideClosingTag(EditorAdaptor editorAdaptor) throws CommandExecutionException {
-    	Position cursorPos = editorAdaptor.getCursorService().getPosition();
-    	Position after = cursorPos;
-    	Position before = cursorPos;
-    	TextRange closeTag;
+    public TextRange getUnbalancedClosingTag(Position start, EditorAdaptor editorAdaptor) throws CommandExecutionException {
+    	Stack<String> openTags = new Stack<String>();
+    	TextRange tag;
+    	String contents;
     	String tagName;
     	
-    	do {
-    		after = before;
-    		closeTag = findNextClosingTag(after, editorAdaptor);
-    		tagName = getClosingTagName(closeTag, editorAdaptor);
+    	while(true) { //we'll either hit a 'return' or throw an exception
+    		tag = findNextTag(start, editorAdaptor);
+    		contents = editorAdaptor.getModelContent().getText(tag);
+    		start = tag.getRightBound(); //prepare for next iteration
     		
-    		//prepare to loop again just in case
-    		before = closeTag.getRightBound();
-    		
-    		//if we aren't inside this tag, look for the next closing tag 
-    	} while( isOpenTagAfterCursor(after, before, tagName, editorAdaptor) );
-    	
-    	return closeTag;
-    }
-    
-    /**
-     * Find the next open tag before the start Position.
-     */
-    private TextRange findNextOpenTag(Position start, String tagName, EditorAdaptor editorAdaptor) throws CommandExecutionException {
-    	SearchAndReplaceService searchAndReplace = editorAdaptor.getSearchAndReplaceService();
-    	Search findTagStart = new Search("<"+tagName, true, false, true, SearchOffset.NONE, false);
-    	SearchResult result = searchAndReplace.find(findTagStart, start);
-    	if( ! result.isFound()) {
-    		//we couldn't find an open tag
-            throw new CommandExecutionException("Could not find open tag to match </"+tagName+">");
+    		if(contents.startsWith("</")) { //close tag
+    			tagName = getClosingTagName(tag, editorAdaptor);
+    			if(openTags.empty() ) {
+    				//we hit a close tag before finding any open tags
+    				//the cursor must be inside this tag
+    				return tag;
+    			}
+    			else if(openTags.peek().equals(tagName)) {
+    				//found the matching close tag for this open tag
+    				//ignore it and keep moving
+    				openTags.pop();
+    			}
+    			else {
+    				//there must've been a mis-matched open tag
+    				//does this closing tag match with anything we've seen?
+    				while(!openTags.empty()) {
+    					if(openTags.peek().equals(tagName)) {
+    						break;
+    					}
+    					openTags.pop();
+    				}
+    				//did we exhaust the list?
+    				//this must be the closing tag we're inside
+    				if(openTags.empty()) {
+    					return tag;
+    				}
+    			}
+    		}
+    		else { //open tag
+    			tagName = getOpenTagName(tag, editorAdaptor);
+    			openTags.push(tagName);
+    		}
     	}
-    	
-    	return new StartEndTextRange(result.getLeftBound(), result.getRightBound());
     }
     
-    /**
-     * Find the next closing tag after the start Position.
-     */
-    private TextRange findNextClosingTag(Position start, EditorAdaptor editorAdaptor) throws CommandExecutionException {
-    	Search findEnd = new Search("</.*?>", false, false, true, SearchOffset.NONE, true);
+    private TextRange findNextTag(Position start, EditorAdaptor editorAdaptor) throws CommandExecutionException {
+    	Search findTag = new Search("<.*?>", false, false, true, SearchOffset.NONE, true);
     	SearchAndReplaceService searchAndReplace = editorAdaptor.getSearchAndReplaceService();
-    	SearchResult result = searchAndReplace.find(findEnd, start);
+    	SearchResult result = searchAndReplace.find(findTag, start);
     	if( ! result.isFound()) {
-    		//we couldn't find a closing tag
+    		//we couldn't find a tag
             throw new CommandExecutionException("The cursor is not within an XML tag");
     	}
     	
@@ -121,36 +102,72 @@ public class XmlTagDelimitedText implements DelimitedText {
     }
     
     /**
-     * We found an open tag, but is its closing tag before the cursor?
+     * Search backwards for XML tags.  Push every close tag, pop every open tag.
+     * If we get the open tag we're looking for without a matching close tag, we're inside that tag.
      */
-    private boolean isClosingTagBeforeCursor(Position tagStart, Position stopLooking, String tagName, EditorAdaptor editorAdaptor) {
+    public TextRange getUnbalancedOpenTag(Position start, String toFindTagName, EditorAdaptor editorAdaptor) throws CommandExecutionException {
+    	Stack<String> closeTags = new Stack<String>();
+    	TextRange tag;
+    	String contents;
+    	String tagName;
+    	
+    	while(true) { //we'll either hit a 'return' or throw an exception
+    		tag = findPreviousTag(start, editorAdaptor);
+    		contents = editorAdaptor.getModelContent().getText(tag);
+    		start = tag.getLeftBound(); //prepare for next iteration
+    		
+    		if(contents.startsWith("</")) { //close tag
+    			tagName = getClosingTagName(tag, editorAdaptor);
+    			closeTags.push(tagName);
+    		}
+    		else { //open tag
+    			tagName = getOpenTagName(tag, editorAdaptor);
+    			if(closeTags.empty() && tagName.equals(toFindTagName) ) {
+    				//we hit the desired open tag before finding any close tags
+    				//the cursor must be inside this tag
+    				return tag;
+    			}
+    			else if(!closeTags.empty() && closeTags.peek().equals(tagName)) {
+    				//found the matching open tag for this close tag
+    				//ignore it and keep moving
+    				closeTags.pop();
+    			}
+    			else if(tagName.equals(toFindTagName)) {
+    				//we don't have the corresponding close tag for this open tag
+    				//and it matches the name we're looking for
+    				//the cursor must be inside this tag
+    				return tag;
+    			}
+    			else {
+    				//we found an open tag without a corresponding close tag
+    				//but it wasn't the open tag we wanted
+    				//ignore it and keep moving (this is how vim handles it)
+    			}
+    		}
+    	}
+    }
+    
+    private TextRange findPreviousTag(Position start, EditorAdaptor editorAdaptor) throws CommandExecutionException {
+    	Search findTag = new Search("<.*?>", true, false, true, SearchOffset.NONE, true);
     	SearchAndReplaceService searchAndReplace = editorAdaptor.getSearchAndReplaceService();
-    	SearchResult result;
+    	SearchResult result = searchAndReplace.find(findTag, start);
+    	if( ! result.isFound()) {
+    		//we couldn't find a tag
+            throw new CommandExecutionException("The cursor is not within an XML tag");
+    	}
     	
-    	Search findEnd = new Search("</"+tagName+">", false, false, true, SearchOffset.NONE, false);
-    	result = searchAndReplace.find(findEnd, tagStart);
-    	
-    	//is this close tag after the open tag we'd found?
-    	return result.isFound() && result.getRightBound().getModelOffset() < stopLooking.getModelOffset();
+    	return new StartEndTextRange(result.getLeftBound(), result.getRightBound());
     }
     
     /**
-     * We found a closing tag, but is its opening tag after the cursor?
+     * Just a few convenience methods
      */
-    private boolean isOpenTagAfterCursor(Position startLooking, Position tagStart, String tagName, EditorAdaptor editorAdaptor) {
-    	SearchAndReplaceService searchAndReplace = editorAdaptor.getSearchAndReplaceService();
-    	SearchResult result;
-    	
-    	Search findTagStart = new Search("<"+tagName, false, false, true, SearchOffset.NONE, false);
-    	result = searchAndReplace.find(findTagStart, startLooking);
-    	
-    	//is this open tag before the closing tag we'd found?
-    	return result.isFound() && result.getRightBound().getModelOffset() < tagStart.getModelOffset();
+    private String getOpenTagName(TextRange tagRange, EditorAdaptor editorAdaptor) {
+    	String contents = editorAdaptor.getModelContent().getText(tagRange);
+    	//name goes from '<' to first space or first '>'
+    	return contents.indexOf(' ') > -1 ? contents.substring(1, contents.indexOf(' ')) : contents.substring(1, contents.indexOf('>'));
     }
     
-    /**
-     * Just a convenience method
-     */
     private String getClosingTagName(TextRange tagRange, EditorAdaptor editorAdaptor) {
     	String tag = editorAdaptor.getModelContent().getText(tagRange);
     	//chop off leading '</' and trailing '>'
