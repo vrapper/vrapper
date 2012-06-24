@@ -1,4 +1,39 @@
 <div class="newsbox">
+    <div class="date">2012-06-23</div>
+    <h4>2 weeks later, no new release</h4>
+    <p>2 weeks ago, I said that if the code sat idle for 2 weeks I'd release 0.22.0.  Well, it didn't sit idle.
+    So I'll try again; if the code can sit idle for 2 weeks I'll release version 0.22.0.</p>
+    
+    <p>Changes since last news posting are:</p>
+    
+    <ul>
+        <li>Added basic support for :g, :g!, :v</li>
+        <ul>
+            <li>Supports 'd', 's' and 'normal' operations</li>
+            <li>:g/foo/d</li>
+            <li>:g/foo/s/bar/baz/</li>
+            <li>:g/foo/normal wwdw</li>
+            <li>:'<,'>g/foo/d</li>
+            <li>:help :g</li>
+        </ul>
+        <li>Added support for 'unnamed' clipboard</li>
+        <ul>
+            <li>Uses system clipboard</li>
+            <li>:set clipboard=unnamed</li>
+        </ul>
+        <li>Added support for 't' text object</li>
+        <ul>
+            <li>dit = delete contents of XML tag the cursor is within</li>
+            <li>dat = delete contents and the XML tag the cursor is within</li>
+        </ul>
+        <li>Removed H, M, and L mapping from JDT plugin</li>
+        <ul>
+            <li>I don't know why they were overriding the default H, M, and L operations</li>
+        </ul>
+        <li>Fixed inconsistency with mouse click not updating sticky column</li>
+    </ul>
+</div>
+<div class="newsbox">
     <div class="date">2012-06-09</div>
     <h4>Further updates to unstable update site</h4>
     <p>Work is still progressing quickly towards a 0.22.0 release.  If I can just let the code sit idle
