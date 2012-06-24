@@ -12,30 +12,67 @@ import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 
 /**
- * The cursor is inside a pair of XML tags.  Find the open tag before the cursor
- * that matches the closing tag after the cursor.  We don't know which tag name we're looking
- * for until we find the unbalanced closing tag after the cursor.
+ * The cursor is inside a pair of XML tags.  Find the open tag *before* the cursor
+ * that matches the closing tag *after* the cursor.  Note that We don't know which
+ * open tag name we're looking for until we find the unbalanced closing tag after
+ * the cursor.  This is to handle malformed XML documents with lingering open tags.
+ * This aligns with how Vim handles things.
  */
 public class XmlTagDelimitedText implements DelimitedText {
 	
 	private TextRange endTag;
 	
+	/**
+	 * Find the open tag this cursor is inside.  To do that,
+	 * we first have to find the closing tag we're inside.
+	 */
     public TextRange leftDelimiter(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
-    	Position cursorPos = editorAdaptor.getCursorService().getPosition();
-    	endTag = getUnbalancedClosingTag(cursorPos, editorAdaptor);
-    	String tagName = getClosingTagName(endTag, editorAdaptor);
+    	if(count == 0) {
+    		count = 1;
+    	}
     	
-        return getUnbalancedOpenTag(cursorPos, tagName, editorAdaptor);
+    	String tagName;
+    	TextRange openTag = null;
+    	Position startOpenSearch = editorAdaptor.getCursorService().getPosition();
+    	Position startCloseSearch = editorAdaptor.getCursorService().getPosition();
+    	for(int i=0; i < count; i++) {
+    		//find the first unbalanced closing tag after start
+    		endTag = getUnbalancedClosingTag(startCloseSearch, editorAdaptor);
+    		tagName = getClosingTagName(endTag, editorAdaptor);
+    		//find the first unbalanced open tag before start that
+    		//matches the name of the closing tag we found
+    		openTag = getUnbalancedOpenTag(startOpenSearch, tagName, editorAdaptor);
+    		
+    		//prepare for next iteration (if any)
+    		//to find the parent open and closing tags to the ones we just found
+    		startOpenSearch = openTag.getLeftBound();
+    		startCloseSearch = endTag.getRightBound();
+    	}
+    	
+        return openTag;
     }
 
+    /**
+     * Find the closing tag this cursor is inside.
+     */
     public TextRange rightDelimiter(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
-    	if(endTag != null) {
+    	if(count == 0) {
+    		count = 1;
+    	}
+    	
+    	if(endTag != null && count == 1) {
     		//if someone already ran leftDelimiter(), just re-use that tag
     		return endTag;
     	}
     	else {
-    		Position cursorPos = editorAdaptor.getCursorService().getPosition();
-    		return getUnbalancedClosingTag(cursorPos, editorAdaptor);
+    		TextRange closeTag = null;
+    		Position start = editorAdaptor.getCursorService().getPosition();
+    		for(int i=0; i < count; i++) {
+    			closeTag = getUnbalancedClosingTag(start, editorAdaptor);
+    			//prepare for next iteration (if any)
+    			start = closeTag.getRightBound();
+    		}
+    		return closeTag;
     	}
     }
     
@@ -71,8 +108,12 @@ public class XmlTagDelimitedText implements DelimitedText {
     				//does this closing tag match with anything we've seen?
     				while(!openTags.empty()) {
     					if(openTags.peek().equals(tagName)) {
+    						//we found the match to this close tag
+    						//just skip that unexpected open tag
     						break;
     					}
+    					//see if the previous tag matches
+    					//this closing tag's name
     					openTags.pop();
     				}
     				//did we exhaust the list?
@@ -82,13 +123,17 @@ public class XmlTagDelimitedText implements DelimitedText {
     				}
     			}
     		}
-    		else { //open tag
+    		else { //open tag, see if we'll find it's matching close tag
     			tagName = getOpenTagName(tag, editorAdaptor);
     			openTags.push(tagName);
     		}
     	}
     }
     
+    /**
+     * Search for the next XML tag after start.  Can either be an open tag or
+     * close tag.  We'll let the calling method figure out what to do with it.
+     */
     private TextRange findNextTag(Position start, EditorAdaptor editorAdaptor) throws CommandExecutionException {
     	Search findTag = new Search("<.*?>", false, false, true, SearchOffset.NONE, true);
     	SearchAndReplaceService searchAndReplace = editorAdaptor.getSearchAndReplaceService();
@@ -112,11 +157,11 @@ public class XmlTagDelimitedText implements DelimitedText {
     	String tagName;
     	
     	while(true) { //we'll either hit a 'return' or throw an exception
-    		tag = findPreviousTag(start, editorAdaptor);
+    		tag = findPreviousTag(start, editorAdaptor, toFindTagName);
     		contents = editorAdaptor.getModelContent().getText(tag);
     		start = tag.getLeftBound(); //prepare for next iteration
     		
-    		if(contents.startsWith("</")) { //close tag
+    		if(contents.startsWith("</")) { //close tag, see if we'll find it's matching open tag
     			tagName = getClosingTagName(tag, editorAdaptor);
     			closeTags.push(tagName);
     		}
@@ -147,13 +192,17 @@ public class XmlTagDelimitedText implements DelimitedText {
     	}
     }
     
-    private TextRange findPreviousTag(Position start, EditorAdaptor editorAdaptor) throws CommandExecutionException {
+    /**
+     * Search for the previous XML tag before start.  Can either be an open tag or
+     * close tag.  We'll let the calling method figure out what to do with it.
+     */
+    private TextRange findPreviousTag(Position start, EditorAdaptor editorAdaptor, String toFindTagName) throws CommandExecutionException {
     	Search findTag = new Search("<.*?>", true, false, true, SearchOffset.NONE, true);
     	SearchAndReplaceService searchAndReplace = editorAdaptor.getSearchAndReplaceService();
     	SearchResult result = searchAndReplace.find(findTag, start);
     	if( ! result.isFound()) {
     		//we couldn't find a tag
-            throw new CommandExecutionException("The cursor is not within an XML tag");
+            throw new CommandExecutionException("Could not find matching open tag for </"+toFindTagName+">");
     	}
     	
     	return new StartEndTextRange(result.getLeftBound(), result.getRightBound());
