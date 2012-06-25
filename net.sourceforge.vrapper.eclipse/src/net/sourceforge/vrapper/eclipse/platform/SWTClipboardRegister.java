@@ -27,22 +27,14 @@ public class SWTClipboardRegister implements Register {
     	}
         if (s.endsWith(VimConstants.REGISTER_NEWLINE)
                 || s.startsWith(VimConstants.REGISTER_NEWLINE)) {
-            return new StringRegisterContent(ContentType.LINES, normalizeLineBreaks(s));
+            return new StringRegisterContent(ContentType.LINES, s);
         }
         return new StringRegisterContent(ContentType.TEXT, s);
     }
 
     public void setContent(RegisterContent content) {
         String s = content.getText();
-        if (content.getPayloadType() == ContentType.LINES) {
-            s = normalizeLineBreaks(s);
-        }
         clipboard.setContents(new Object[] { s }, new Transfer[] { TextTransfer.getInstance() });
-    }
-    
-    private String normalizeLineBreaks(String s) {
-    	// remove leading and trailing line breaks, the add a single line break at the end
-    	return s.replaceAll("^[\\n\\r]|[\\n\\r]$", "")+VimConstants.REGISTER_NEWLINE;
     }
 
 }
