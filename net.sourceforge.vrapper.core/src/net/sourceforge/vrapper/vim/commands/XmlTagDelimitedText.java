@@ -135,7 +135,9 @@ public class XmlTagDelimitedText implements DelimitedText {
      * close tag.  We'll let the calling method figure out what to do with it.
      */
     private TextRange findNextTag(Position start, EditorAdaptor editorAdaptor) throws CommandExecutionException {
-    	Search findTag = new Search("<.*?>", false, false, true, SearchOffset.NONE, true);
+    	//regex usually stops at newlines but open tags might have
+    	//multiple lines of attributes.  So, include newlines in search.
+    	Search findTag = new Search("<(.|\n)*?>", false, false, true, SearchOffset.NONE, true);
     	SearchAndReplaceService searchAndReplace = editorAdaptor.getSearchAndReplaceService();
     	SearchResult result = searchAndReplace.find(findTag, start);
     	if( ! result.isFound()) {
@@ -197,7 +199,9 @@ public class XmlTagDelimitedText implements DelimitedText {
      * close tag.  We'll let the calling method figure out what to do with it.
      */
     private TextRange findPreviousTag(Position start, EditorAdaptor editorAdaptor, String toFindTagName) throws CommandExecutionException {
-    	Search findTag = new Search("<.*?>", true, false, true, SearchOffset.NONE, true);
+    	//regex usually stops at newlines but open tags might have
+    	//multiple lines of attributes.  So, include newlines in search.
+    	Search findTag = new Search("<(.|\n)*?>", true, false, true, SearchOffset.NONE, true);
     	SearchAndReplaceService searchAndReplace = editorAdaptor.getSearchAndReplaceService();
     	SearchResult result = searchAndReplace.find(findTag, start);
     	if( ! result.isFound()) {
