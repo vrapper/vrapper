@@ -21,6 +21,7 @@ public class DefaultRegisterManager implements RegisterManager {
 
     protected final Map<String, Register> registers;
     private Register activeRegister;
+    private Register unnamedRegister;
     private Register defaultRegister;
     private final Register lastEditRegister;
     private Search search;
@@ -31,15 +32,11 @@ public class DefaultRegisterManager implements RegisterManager {
 
     public DefaultRegisterManager() {
         this.registers = new HashMap<String, Register>();
-        this.defaultRegister = new SimpleRegister();
+        this.unnamedRegister = new SimpleRegister();
+        this.defaultRegister = unnamedRegister;
         this.lastEditRegister = new SimpleRegister();
         this.activeRegister = defaultRegister;
         // ""
-        Register unnamedRegister = new ReadOnlyRegister() {
-            public RegisterContent getContent() {
-                return defaultRegister.getContent();
-            }
-        };
         registers.put(RegisterManager.REGISTER_NAME_UNNAMED, unnamedRegister);
         // ".
         Register lastInsertRegister = new ReadOnlyRegister() {
