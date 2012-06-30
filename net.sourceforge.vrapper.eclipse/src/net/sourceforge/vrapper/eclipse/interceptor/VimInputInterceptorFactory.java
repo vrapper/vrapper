@@ -6,7 +6,6 @@ import java.util.HashSet;
 
 import net.sourceforge.vrapper.eclipse.activator.VrapperPlugin;
 import net.sourceforge.vrapper.eclipse.platform.EclipsePlatform;
-import net.sourceforge.vrapper.eclipse.platform.SWTClipboardRegister;
 import net.sourceforge.vrapper.eclipse.platform.SWTRegisterManager;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SpecialKey;
@@ -20,7 +19,6 @@ import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
 import net.sourceforge.vrapper.vim.modes.LinewiseVisualMode;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.modes.VisualMode;
-import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
 
 import org.eclipse.jface.text.ITextViewer;
