@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.sourceforge.vrapper.eclipse.ui.CaretUtils;
-import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.Configuration;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.SelectionService;
@@ -18,7 +17,6 @@ import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 
 import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.BadPositionCategoryException;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.ITextViewerExtension5;
@@ -105,7 +103,8 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         if (stickToEOL) {
             try {
                 int lineLength = textViewer.getDocument().getLineLength(lineNo);
-                int offset = textViewer.getDocument().getLineInformation(lineNo).getOffset() + lineLength;
+                //go lineLength-1 or else offset will be calculated as the beginning of the next line
+                int offset = textViewer.getDocument().getLineInformation(lineNo).getOffset() + lineLength-1;
                 return new TextViewerPosition(textViewer, Space.MODEL, offset);
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -245,14 +244,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
 
     public void setMark(String id, Position position) {
         org.eclipse.jface.text.Position p = new org.eclipse.jface.text.Position(position.getModelOffset());
-        try {
-            textViewer.getDocument().addPosition(POSITION_CATEGORY_NAME, p);
-            marks.put(id, p);
-        } catch (BadLocationException e) {
-            VrapperLog.error("could not set mark", e);
-        } catch (BadPositionCategoryException e) {
-            VrapperLog.error("could not set mark", e);
-        }
+        marks.put(id, p);
     }
 
     public Position getMark(String id) {
