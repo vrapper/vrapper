@@ -7,14 +7,11 @@ import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.MultipleExecutionCommand;
 
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.internal.EditorAreaHelper;
-import org.eclipse.ui.internal.EditorPane;
-import org.eclipse.ui.internal.EditorStack;
-import org.eclipse.ui.internal.WorkbenchPage;
 
 /**
  * Emulating vim gt/gT tab cycling behavior.
@@ -52,28 +49,11 @@ public class ChangeTabCommand extends AbstractCommand {
 
         IEditorPart[] editors;
 
-        /*
-         * { // "activation" order IEditorReference[] editorReferences =
-         * activePage.getEditorReferences(); editors = new
-         * IEditorPart[editorReferences.length]; for ( int i = 0; i <
-         * editorReferences.length; i++ ) { IEditorReference eRef =
-         * editorReferences[i]; editors[i] = eRef.getEditor(true); i++; } }
-         */
-
-        {
-            // "tab" (visual) order, uses internal APIs
-            WorkbenchPage wbp = (WorkbenchPage) activePage;
-            EditorAreaHelper eah = wbp.getEditorPresentation();
-            // eah.displayEditorList();
-            EditorStack activeWorkbook = eah.getActiveWorkbook();
-            EditorPane[] editorPanes = activeWorkbook.getEditors();
-
-            editors = new IEditorPart[editorPanes.length];
-
-            for (int i = 0; i < editorPanes.length; i++) {
-                EditorPane ePane = editorPanes[i];
-                editors[i] = ePane.getEditorReference().getEditor(true);
-            }
+        IEditorReference[] editorReferences = activePage.getEditorReferences();
+        editors = new IEditorPart[editorReferences.length];
+        for ( int i = 0; i < editorReferences.length; i++ ) {
+        	IEditorReference eRef = editorReferences[i];
+        	editors[i] = eRef.getEditor(true);
         }
 
         Integer activeEditorIndex = null;
