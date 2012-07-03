@@ -13,6 +13,7 @@ import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Space;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
+import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 
@@ -103,9 +104,19 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         if (stickToEOL) {
             try {
                 int lineLength = textViewer.getDocument().getLineLength(lineNo);
-                //go lineLength-1 or else offset will be calculated as the beginning of the next line
-                int offset = textViewer.getDocument().getLineInformation(lineNo).getOffset() + lineLength-1;
-                return new TextViewerPosition(textViewer, Space.MODEL, offset);
+            	//getLineLength includes the line's delimiter
+            	//we need to find the last non-delimiter character
+                int startOffset = textViewer.getDocument().getLineInformation(lineNo).getOffset();
+                int endOffset = startOffset + lineLength;
+                //don't leave the cursor on a newline
+                if(lineLength > 0) {
+                	endOffset--;
+                }
+                //check for multi-byte (windows) line-endings (\r\n)
+                if(endOffset > startOffset && VimUtils.isNewLine(textContent.getModelContent().getText(endOffset, 1))) {
+                	endOffset--;
+                }
+                return new TextViewerPosition(textViewer, Space.MODEL, endOffset);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
