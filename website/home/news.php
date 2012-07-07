@@ -1,4 +1,34 @@
 <div class="newsbox">
+    <div class="date">2012-07-07</div>
+    <h4>0.22.0 Released</h4>
+    <p>Aside from a couple minor defect fixes, the code was idle for the last 2 weeks.
+    So, I'm releasing 0.22.0.  There are still a couple defects I'd like fixed, but I want to get 0.22.0 out now
+    for a couple reasons.  First, I want to get the substitution feature out to everyone that has been waiting
+    so patiently for it.  Second (and probably more importantly), version 0.20.0 throws a nasty stack trace during startup
+    in Eclipse Juno (4.2) which leaves Vrapper in a weird state.  I fixed that issue in 0.22.0 so Vrapper will start
+    correctly in Ecipse Juno for anyone who has already upgraded.  However, I haven't yet gone through and verified
+    all functionality against Eclipse Juno so there may be more problems.</p>
+    
+    <p>Here are a couple known defects that I wanted to fix but didn't want to delay 0.22.0 for:</p>
+    
+    <ul>
+        <li>'u' undo operation doesn't work in some files (<a href="https://github.com/vrapper/vrapper/issues/86">#86</a>)</li>
+        <ul>
+            <li>This is consistently a problem in certain XML files like Maven pom.xml files but is otherwise difficult to reproduce.</li>
+            <li>If you run into this issue, Eclipse's normal Ctrl+Z undo will still function</li>
+        </ul>
+        <li>'gt' has inconsistent behavior in Eclipse Juno</li>
+        <ul>
+            <li>I'm going to do my best to refactor this feature so it works in both Eclipse 3.x and 4.x
+            but I'm not sure if that will be possible</li>
+            <li>I don't want to break compatibility with the Ecipse 3.x series so quickly after 4.2 releasing</li>
+        </ul>
+    </ul>
+    
+    <p>Aside from those issues, everything is looking good.  See the previous news posts for all the features/fixes
+    we've included since 0.20.0.  I think it's a pretty impressive list given that 0.20.0 was released less than 2 months ago.</p>
+</div>
+<div class="newsbox">
     <div class="date">2012-06-23</div>
     <h4>2 weeks later, no new release</h4>
     <p>2 weeks ago, I said that if the code sat idle for 2 weeks I'd release 0.22.0.  Well, it didn't sit idle.
