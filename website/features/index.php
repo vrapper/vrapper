@@ -1,6 +1,6 @@
 <?php $page="features"; include("../includes/header.html"); ?>
 <div id="features">
-<h3 class="implemented">Implemented as of 0.20.0:</h3>
+<h3 class="implemented">Implemented as of 0.22.0:</h3>
     <ul>
         <li>
             Operators (d, c, y, p, ...
@@ -27,7 +27,7 @@
             Marks (named, "'", ".", "^")
         </li>
         <li>
-            Basic search using /, ?, n, N, *, #, no regular expressions supported (yet)
+            Basic search using /, ?, n, N, *, #
         </li>
         <li>
             Incremental search
@@ -47,18 +47,12 @@
         <li>
             All features of the "wrapped" editor are still available
         </li>
+        <li>
+            Search with support for regular expressions
+        </li>
+        <li>
+            Search / Replace with ":%s/..."
+        </li>
     </ul>
-<h3 class="planned">Planned for future versions:</h3>
-<ul>
-    <li>
-        Search with support for regular expressions
-    </li>
-    <li>
-        Search / Replace with ":%s/..." or similar
-    </li>
-    <li>
-        Visual Block selection
-    </li>
-</ul>
 </div>
 <?php include("../includes/footer.html"); ?>
