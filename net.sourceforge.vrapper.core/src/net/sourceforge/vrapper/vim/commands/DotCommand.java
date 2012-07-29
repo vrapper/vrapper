@@ -14,6 +14,8 @@ public class DotCommand extends CountAwareCommand {
 		if (lastCommand != null) {
 			if (count != NO_COUNT_GIVEN) {
                 lastCommand = lastCommand.withCount(count);
+                //update the count to be used if '.' is called again
+                editorAdaptor.getRegisterManager().setLastEdit(lastCommand);
             }
 			lastCommand.execute(editorAdaptor);
 		}
