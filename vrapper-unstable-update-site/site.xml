@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <description url="http://vrapper.sourceforge.net/update-site/unstable">
+   <description name="Vrapper Unstable" url="http://vrapper.sourceforge.net/update-site/unstable">
       Unstable releases of Vrapper for testing.
    </description>
    <feature url="features/net.sourceforge.vrapper_0.23.20120729.jar" id="net.sourceforge.vrapper" version="0.23.20120729">

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <description url="http://vrapper.sourceforge.net/update-site/stable">
+   <description name="Vrapper" url="http://vrapper.sourceforge.net/update-site/stable">
       Stable releases of Vrapper.
    </description>
    <feature url="features/net.sourceforge.vrapper_0.22.0.jar" id="net.sourceforge.vrapper" version="0.22.0">
