@@ -1,10 +1,8 @@
 package net.sourceforge.vrapper.eclipse.commands;
 
 import net.sourceforge.vrapper.vim.EditorAdaptor;
-import net.sourceforge.vrapper.vim.commands.AbstractCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
-import net.sourceforge.vrapper.vim.commands.MultipleExecutionCommand;
 
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
@@ -17,80 +15,64 @@ import org.eclipse.ui.PlatformUI;
  * Emulating vim gt/gT tab cycling behavior.
  *
  * Not straightforward.
- *
- * The eclipse next/previous-editor commands cycle using "activation" order.
- * Also, next-editor has a bug. When called programmatically, instead of by
- * eclipse keymap, it leaves its editor stack widget open.
- *
- * Ctrl-PageUp/Down cycle through visual tab order, but that's an SWT keymap,
- * not an eclipse keymap. Thus no way to call it programmatically. Furthermore
- * it stops cycling when it hits either end of the tab list.
- *
- * Getting editors in "activation" order from eclipse API's is easy. But only
- * the presentation-layer knows the "visual" order of the editor tabs. So, to
- * cycle through visual order we have to use internal-only eclipse APIs.
- *
  */
-public class ChangeTabCommand extends AbstractCommand {
+public class ChangeTabCommand extends EclipseCommand {
 
-    private final boolean previous;
+    private static final String PREVIOUS_ACTION = "org.eclipse.ui.navigate.previousTab";
+    private static final String NEXT_ACTION = "org.eclipse.ui.navigate.nextTab";
+    private int count = NO_COUNT_GIVEN;
+    
+    public static ChangeTabCommand NEXT_EDITOR = new ChangeTabCommand(NEXT_ACTION);
+    public static ChangeTabCommand PREVIOUS_EDITOR = new ChangeTabCommand(PREVIOUS_ACTION);
 
-    private ChangeTabCommand(boolean previous) {
-        this.previous = previous;
+    private ChangeTabCommand(String action) {
+    	super(action);
     }
 
-    public void execute(EditorAdaptor editorAdaptor)
-            throws CommandExecutionException {
+    public Command withCount(int count) {
+    	this.count = count;
+        return this;
+    }
+
+    public Command repetition() {
+        return null;
+    }
+    
+    public void execute(EditorAdaptor editorAdaptor) {
+    	if(count == NO_COUNT_GIVEN) {
+    		count = 1;
+    	}
+    	//<n>gt goes to the <n>th tab, not gt <n> times
+    	//if(count > 1) {
+    	//	moveToTab(editorAdaptor, count - 1);
+    	//}
+    	for(int i=0; i < count; i++) {
+    		doIt(1, getCommandName(), editorAdaptor);
+    	}
+    	
+    	//reset the count since this instance is used as a static
+    	//(we might call this command again in a new context)
+    	count = NO_COUNT_GIVEN;
+    }
+
+    /*
+    public void moveToTab(EditorAdaptor editorAdaptor, int index) throws CommandExecutionException {
         IWorkbench workbench = PlatformUI.getWorkbench();
-        IWorkbenchWindow activeWorkbenchWindow = workbench
-                .getActiveWorkbenchWindow();
+        IWorkbenchWindow activeWorkbenchWindow = workbench.getActiveWorkbenchWindow();
         IWorkbenchPage activePage = activeWorkbenchWindow.getActivePage();
-        IEditorPart activeEditor = activePage.getActiveEditor();
 
         IEditorPart[] editors;
-
         IEditorReference[] editorReferences = activePage.getEditorReferences();
         editors = new IEditorPart[editorReferences.length];
-        for ( int i = 0; i < editorReferences.length; i++ ) {
+        for(int i=0; i < editorReferences.length; i++) {
         	IEditorReference eRef = editorReferences[i];
         	editors[i] = eRef.getEditor(true);
         }
 
-        Integer activeEditorIndex = null;
-        for (int i = 0; i < editors.length; i++) {
-            IEditorPart editor = editors[i];
-            if (editor == activeEditor) {
-                activeEditorIndex = i;
-                break;
-            }
-        }
-
-        // now activate that editor.
-        if (activeEditorIndex != null) {
-            int nextEditorIndex;
-            if (previous) {
-                if (activeEditorIndex == 0) {
-                    activeEditorIndex = editors.length;
-                }
-                nextEditorIndex = (activeEditorIndex - 1) % editors.length;
-            } else {
-                nextEditorIndex = (activeEditorIndex + 1) % editors.length;
-            }
-            IEditorPart nextEditor = editors[nextEditorIndex];
-            activePage.activate(nextEditor);
-        }
-
+        int nextEditorIndex = index % editors.length;
+        IEditorPart nextEditor = editors[nextEditorIndex];
+        activePage.activate(nextEditor);
     }
-
-    public Command repetition() {
-        return this;
-    }
-
-    public Command withCount(int count) {
-        return new MultipleExecutionCommand(count, this);
-    }
-
-    public static ChangeTabCommand NEXT_EDITOR = new ChangeTabCommand(false);
-    public static ChangeTabCommand PREVIOUS_EDITOR = new ChangeTabCommand(true);
+    */
 
 }
