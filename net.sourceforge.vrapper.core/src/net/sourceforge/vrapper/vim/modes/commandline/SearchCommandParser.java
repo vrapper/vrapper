@@ -47,7 +47,9 @@ public class SearchCommandParser extends AbstractCommandParser {
         boolean caseSensitive = ! editor.getConfiguration().get(Options.IGNORE_CASE)
             || (editor.getConfiguration().get(Options.SMART_CASE)
                 && StringUtils.containsUppercase(keyword));
-        boolean useRegExp = editor.getConfiguration().get(Options.SEARCH_REGEX);
+        //can't mix wholeWord and regex search, Eclipse chokes
+        //(if we're searching for wholeWord it isn't a regex anyway)
+        boolean useRegExp = !wholeWord && editor.getConfiguration().get(Options.SEARCH_REGEX);
         if (offset == null) {
             // Sanity checking. Passing null is bad style though.
             offset = SearchOffset.NONE;
