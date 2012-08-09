@@ -13,6 +13,8 @@ import java.util.Queue;
 
 import net.sourceforge.vrapper.keymap.KeyMap;
 import net.sourceforge.vrapper.keymap.KeyStroke;
+import net.sourceforge.vrapper.keymap.SpecialKey;
+import net.sourceforge.vrapper.keymap.vim.SimpleKeyStroke;
 import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.FileService;
@@ -352,6 +354,28 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
                 if (inMapping) {
                     Queue<RemappedKeyStroke> resultingKeyStrokes =
                         keyStrokeTranslator.resultingKeyStrokes();
+                    //if we're in a mapping in InsertMode, display the pending characters
+                    //(we'll delete them if the user completes the mapping)
+                    if(currentMode.getName() == InsertMode.NAME) {
+                    	//display pending character
+                    	if(resultingKeyStrokes.isEmpty()) {
+                    		return currentMode.handleKey(key);
+                    	}
+                    	//mapping completed
+                    	//(delete all the pending characters we had displayed)
+                    	else if(keyStrokeTranslator.numUnconsumedKeys() > 0) {
+                    		for(int i=0; i < keyStrokeTranslator.numUnconsumedKeys(); i++) {
+	                    		currentMode.handleKey(new RemappedKeyStroke(new SimpleKeyStroke(SpecialKey.BACKSPACE), false));
+                    		}
+                    	}
+                    	//mapping did not complete
+                    	//(we've already displayed the pending characters, so don't re-apply them)
+                    	else {
+                    		//display character that didn't complete the mapping and return
+                    		return currentMode.handleKey(key);
+                    	}
+                    }
+                    //play all resulting key strokes
                     while (!resultingKeyStrokes.isEmpty()) {
                         RemappedKeyStroke next = resultingKeyStrokes.poll();
                         if (next.isRecursive()) {
