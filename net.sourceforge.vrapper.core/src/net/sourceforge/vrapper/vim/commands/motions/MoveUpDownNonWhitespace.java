@@ -6,13 +6,17 @@ import net.sourceforge.vrapper.vim.commands.BorderPolicy;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
 
-public class MoveDownReturn extends CountAwareMotion {
+/**
+ * Move up or down lines with the cursor on the first non-whitespace character.
+ * ('+' and '-' movement operations)
+ */
+public class MoveUpDownNonWhitespace extends CountAwareMotion {
 
-    public static final MoveDownReturn MOVE_DOWN = new MoveDownReturn(true);
-    public static final MoveDownReturn MOVE_UP = new MoveDownReturn(false);
+    public static final MoveUpDownNonWhitespace MOVE_DOWN = new MoveUpDownNonWhitespace(true);
+    public static final MoveUpDownNonWhitespace MOVE_UP = new MoveUpDownNonWhitespace(false);
     private boolean down = false;
     
-    private MoveDownReturn(boolean down) {
+    private MoveUpDownNonWhitespace(boolean down) {
     	this.down = down;
     }
 

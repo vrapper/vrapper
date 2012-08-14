@@ -8,9 +8,9 @@ import net.sourceforge.vrapper.vim.commands.motions.MoveBigWORDEndLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveBigWORDEndRight;
 import net.sourceforge.vrapper.vim.commands.motions.MoveBigWORDLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveBigWORDRight;
-import net.sourceforge.vrapper.vim.commands.motions.MoveDownReturn;
 import net.sourceforge.vrapper.vim.commands.motions.MoveLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveRight;
+import net.sourceforge.vrapper.vim.commands.motions.MoveUpDownNonWhitespace;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordEndLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordEndRight;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordLeft;
@@ -78,7 +78,7 @@ public class MotionTests extends CommandTestCase {
 	
 	@Test
 	public void testMoveUp() {
-		Motion moveUp = MoveDownReturn.MOVE_UP;
+		Motion moveUp = MoveUpDownNonWhitespace.MOVE_UP;
 		//this isn't actually how Vim behaves, but I still want to test
 		//the case where the cursor is already on the first line
 		//(vim wouldn't move the cursor to the beginning of the line)
@@ -104,7 +104,7 @@ public class MotionTests extends CommandTestCase {
 	
 	@Test
 	public void testMoveDown() {
-		Motion moveDown = MoveDownReturn.MOVE_DOWN;
+		Motion moveDown = MoveUpDownNonWhitespace.MOVE_DOWN;
 		//this isn't actually how Vim behaves, but I still want to test
 		//the case where the cursor is already on the last line
 		//(vim wouldn't move the cursor to the beginning of the line)

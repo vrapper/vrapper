@@ -37,13 +37,13 @@ import net.sourceforge.vrapper.vim.commands.motions.MoveBigWORDEndRight;
 import net.sourceforge.vrapper.vim.commands.motions.MoveBigWORDLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveBigWORDRight;
 import net.sourceforge.vrapper.vim.commands.motions.MoveDown;
-import net.sourceforge.vrapper.vim.commands.motions.MoveDownReturn;
 import net.sourceforge.vrapper.vim.commands.motions.MoveLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveLeftAcrossLines;
 import net.sourceforge.vrapper.vim.commands.motions.MoveRight;
 import net.sourceforge.vrapper.vim.commands.motions.MoveRightAcrossLines;
 import net.sourceforge.vrapper.vim.commands.motions.MoveToColumn;
 import net.sourceforge.vrapper.vim.commands.motions.MoveUp;
+import net.sourceforge.vrapper.vim.commands.motions.MoveUpDownNonWhitespace;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordEndLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordEndRight;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordLeft;
@@ -94,8 +94,8 @@ public abstract class CommandBasedMode extends AbstractMode {
             final Motion moveRight = MoveRight.INSTANCE;
             final Motion moveUp = MoveUp.INSTANCE;
             final Motion moveDown = MoveDown.INSTANCE;
-            final Motion moveDownReturn = MoveDownReturn.MOVE_DOWN;
-            final Motion moveUpReturn = MoveDownReturn.MOVE_UP;
+            final Motion moveDownNonWhitespace = MoveUpDownNonWhitespace.MOVE_DOWN;
+            final Motion moveUpNonWhitespace = MoveUpDownNonWhitespace.MOVE_UP;
             final Motion moveToColumn = MoveToColumn.INSTANCE;
             // final Motion findNext = new
             // EclipseMoveCommand("org.eclipse.ui.edit.findNext", EXCLUSIVE);
@@ -147,9 +147,9 @@ public abstract class CommandBasedMode extends AbstractMode {
                     leafBind('k', moveUp),
                     leafBind('l', moveRight),
                     leafBind('|', moveToColumn),
-                    leafBind(SpecialKey.RETURN, moveDownReturn),
-                    leafBind('+', moveDownReturn),
-                    leafBind('-', moveUpReturn),
+                    leafBind(SpecialKey.RETURN, moveDownNonWhitespace),
+                    leafBind('+', moveDownNonWhitespace),
+                    leafBind('-', moveUpNonWhitespace),
                     leafBind(' ', (Motion) MoveRightAcrossLines.INSTANCE),
                     leafBind(SpecialKey.BACKSPACE, (Motion) MoveLeftAcrossLines.INSTANCE),
                     leafBind(SpecialKey.ARROW_LEFT, moveLeft),
