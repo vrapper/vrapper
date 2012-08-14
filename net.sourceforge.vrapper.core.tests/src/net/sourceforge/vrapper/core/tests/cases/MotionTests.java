@@ -8,6 +8,7 @@ import net.sourceforge.vrapper.vim.commands.motions.MoveBigWORDEndLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveBigWORDEndRight;
 import net.sourceforge.vrapper.vim.commands.motions.MoveBigWORDLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveBigWORDRight;
+import net.sourceforge.vrapper.vim.commands.motions.MoveDownReturn;
 import net.sourceforge.vrapper.vim.commands.motions.MoveLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveRight;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordEndLeft;
@@ -73,6 +74,58 @@ public class MotionTests extends CommandTestCase {
 		checkMotion(moveLeft,
 				"Ala ma kota\n",'L',"ata osa koło nosa.",
 				"Ala ma kota\n",'L',"ata osa koło nosa.");
+	}
+	
+	@Test
+	public void testMoveUp() {
+		Motion moveUp = MoveDownReturn.MOVE_UP;
+		//this isn't actually how Vim behaves, but I still want to test
+		//the case where the cursor is already on the first line
+		//(vim wouldn't move the cursor to the beginning of the line)
+		checkMotion(moveUp,
+				"something ", 's', "omething",
+				"", 's', "omething something");
+		
+		//normal "move up" case
+		checkMotion(moveUp,
+				"something something\nsomething ", 's', "omething\nelse",
+				"", 's', "omething something\nsomething something\nelse");
+		
+		//leading spaces
+		checkMotion(moveUp,
+				"     something something\nsomething ", 's', "omething\nelse",
+				"     ", 's', "omething something\nsomething something\nelse");
+		
+		//leading tab
+		checkMotion(moveUp,
+				"	something something\n    something ", 's', "omething\nelse",
+				"	", 's', "omething something\n    something something\nelse");
+	}
+	
+	@Test
+	public void testMoveDown() {
+		Motion moveDown = MoveDownReturn.MOVE_DOWN;
+		//this isn't actually how Vim behaves, but I still want to test
+		//the case where the cursor is already on the last line
+		//(vim wouldn't move the cursor to the beginning of the line)
+		checkMotion(moveDown,
+				"something ", 's', "omething",
+				"", 's', "omething something");
+		
+		//normal "move down" case
+		checkMotion(moveDown,
+				"something ", 's', "omething\nsomething something\nelse",
+				"something something\n", 's', "omething something\nelse");
+		
+		//leading spaces
+		checkMotion(moveDown,
+				"something ", 's', "omething\n   something something\nelse",
+				"something something\n   ", 's', "omething something\nelse");
+		
+		//leading tab
+		checkMotion(moveDown,
+				"something ", 's', "omething\n	something something\nelse",
+				"something something\n	", 's', "omething something\nelse");
 	}
 
 	public void testCommonMoveWordWORDRight(Motion wordMotion) {

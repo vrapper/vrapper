@@ -94,7 +94,8 @@ public abstract class CommandBasedMode extends AbstractMode {
             final Motion moveRight = MoveRight.INSTANCE;
             final Motion moveUp = MoveUp.INSTANCE;
             final Motion moveDown = MoveDown.INSTANCE;
-            final Motion moveDownReturn = MoveDownReturn.INSTANCE;
+            final Motion moveDownReturn = MoveDownReturn.MOVE_DOWN;
+            final Motion moveUpReturn = MoveDownReturn.MOVE_UP;
             final Motion moveToColumn = MoveToColumn.INSTANCE;
             // final Motion findNext = new
             // EclipseMoveCommand("org.eclipse.ui.edit.findNext", EXCLUSIVE);
@@ -147,6 +148,8 @@ public abstract class CommandBasedMode extends AbstractMode {
                     leafBind('l', moveRight),
                     leafBind('|', moveToColumn),
                     leafBind(SpecialKey.RETURN, moveDownReturn),
+                    leafBind('+', moveDownReturn),
+                    leafBind('-', moveUpReturn),
                     leafBind(' ', (Motion) MoveRightAcrossLines.INSTANCE),
                     leafBind(SpecialKey.BACKSPACE, (Motion) MoveLeftAcrossLines.INSTANCE),
                     leafBind(SpecialKey.ARROW_LEFT, moveLeft),
