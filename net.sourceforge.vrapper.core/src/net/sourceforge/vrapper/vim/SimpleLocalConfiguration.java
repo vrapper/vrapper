@@ -8,24 +8,29 @@ import net.sourceforge.vrapper.platform.SimpleConfiguration.NewLine;
 
 /** Wraps a {@link Configuration}, allowing to notify {@link LocalConfigurationListener}. */
 public class SimpleLocalConfiguration implements LocalConfiguration {
+    
     protected Configuration sharedConfiguration;
+    
+    protected String newLine;
+    
     protected List<LocalConfigurationListener> listeners =
             new CopyOnWriteArrayList<LocalConfigurationListener>();
 
     public SimpleLocalConfiguration(Configuration configuration) {
         sharedConfiguration = configuration;
+        newLine = sharedConfiguration.getNewLine();
     }
 
     public String getNewLine() {
-        return sharedConfiguration.getNewLine();
+        return newLine;
     }
 
     public void setNewLine(String newLine) {
-        sharedConfiguration.setNewLine(newLine);
+        this.newLine = newLine;
     }
 
     public void setNewLine(NewLine newLine) {
-        sharedConfiguration.setNewLine(newLine);
+        this.newLine = newLine.nl;
     }
 
     public <T> void set(Option<T> key, T value) {
