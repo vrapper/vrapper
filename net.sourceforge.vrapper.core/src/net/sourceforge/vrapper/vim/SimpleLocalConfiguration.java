@@ -18,6 +18,9 @@ public class SimpleLocalConfiguration implements LocalConfiguration {
 
     public SimpleLocalConfiguration(Configuration configuration) {
         sharedConfiguration = configuration;
+        //Don't share the newline.  Each file has its own newline.
+        //(in case you have one windows file open
+        //  and one unix file open at the same time)
         newLine = sharedConfiguration.getNewLine();
     }
 
