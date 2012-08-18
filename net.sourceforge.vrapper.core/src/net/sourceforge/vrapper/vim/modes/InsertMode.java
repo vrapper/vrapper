@@ -180,6 +180,13 @@ public class InsertMode extends AbstractMode {
         Register lastEditRegister = editorAdaptor.getRegisterManager().getLastEditRegister();
         TextContent content = editorAdaptor.getModelContent();
         Position position = editorAdaptor.getCursorService().getPosition();
+        if(startEditPosition.getModelOffset() > editorAdaptor.getModelContent().getTextLength()) {
+        	//if the file is shorter than where we started,
+        	//update so we aren't at an invalid position
+        	startEditPosition = editorAdaptor.getCursorService().newPositionForModelOffset(
+				        			editorAdaptor.getModelContent().getTextLength()
+			        			);
+        }
         String text = content.getText(new StartEndTextRange(startEditPosition, position));
         RegisterContent registerContent = new StringRegisterContent(ContentType.TEXT, text);
         lastEditRegister.setContent(registerContent);
