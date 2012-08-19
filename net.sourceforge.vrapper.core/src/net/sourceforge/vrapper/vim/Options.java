@@ -42,6 +42,7 @@ public interface Options {
     // Int options:
     public static final Option<Integer> SCROLL_OFFSET = integer("scrolloff",  0, "so");
     public static final Option<Integer> SCROLL_JUMP   = integer("scrolljump", 1, "sj");
+    public static final Option<Integer> TEXT_WIDTH   = integer("textwidth", 80, "tw");
     @SuppressWarnings("unchecked")
-    public static final Set<Option<Integer>> INT_OPTIONS = set(SCROLL_JUMP, SCROLL_OFFSET);
+    public static final Set<Option<Integer>> INT_OPTIONS = set(SCROLL_JUMP, SCROLL_OFFSET, TEXT_WIDTH);
 }

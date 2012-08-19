@@ -268,6 +268,17 @@ public class ConstructorWrappers {
         State<Command> operatorCmds = new OperatorCommandState(operator, textObjects);
         return operatorPendingState(key, doubleKey, operatorCmds);
     }
+    
+    public static State<Command> prefixedOperatorCmds(char prefix, char key, TextOperation command, State<TextObject> textObjects) {
+        LineEndMotion lineEndMotion = new LineEndMotion(LINE_WISE);
+        Command doLinewise = new TextOperationTextObjectCommand(command, new MotionTextObject(lineEndMotion));
+        @SuppressWarnings("unchecked")
+        State<Command> doubleKey = state(
+                leafBind(key, doLinewise), // e.g. for 'g??'
+                transitionBind(prefix, leafBind(key, doLinewise))); // e.g. for 'g?g?'
+        State<Command> operatorCmds = new OperatorCommandState(command, textObjects);
+        return transitionState(prefix, operatorPendingState(key, doubleKey, operatorCmds));
+    }
 
     public static State<Command> prefixedOperatorCmds(char prefix, char key, Command operator, State<TextObject> textObjects) {
         Command doLinewise = operatorMoveCmd(operator, new LineEndMotion(LINE_WISE));

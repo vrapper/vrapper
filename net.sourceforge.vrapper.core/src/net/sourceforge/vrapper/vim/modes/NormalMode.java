@@ -7,6 +7,7 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.key;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafCtrlBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.operatorCmdsWithUpperCase;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.prefixedOperatorCmds;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.dontRepeat;
@@ -38,6 +39,7 @@ import net.sourceforge.vrapper.vim.commands.CountIgnoringNonRepeatableCommand;
 import net.sourceforge.vrapper.vim.commands.DeleteOperation;
 import net.sourceforge.vrapper.vim.commands.DelimitedText;
 import net.sourceforge.vrapper.vim.commands.DotCommand;
+import net.sourceforge.vrapper.vim.commands.FormatOperation;
 import net.sourceforge.vrapper.vim.commands.InsertLineCommand;
 import net.sourceforge.vrapper.vim.commands.JoinLinesCommand;
 import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
@@ -226,6 +228,7 @@ public class NormalMode extends CommandBasedMode {
         TextOperation delete = DeleteOperation.INSTANCE;
         TextOperation change = ChangeOperation.INSTANCE;
         TextOperation yank   = YankOperation.INSTANCE;
+        TextOperation format = FormatOperation.INSTANCE;
         Command undo = UndoCommand.INSTANCE;
         Command redo = RedoCommand.INSTANCE;
         Command pasteAfter  = PasteAfterCommand.CURSOR_ON_TEXT;
@@ -275,6 +278,7 @@ public class NormalMode extends CommandBasedMode {
                 operatorCmdsWithUpperCase('d', delete, toEol,     textObjects),
                 operatorCmdsWithUpperCase('y', yank,   toEolForY, textObjects),
                 operatorCmdsWithUpperCase('c', change, toEol,     textObjectsForChange),
+                prefixedOperatorCmds('g', 'q', format, textObjects),
                 state(leafBind('$', stickToEOL)),
                 motionCommands,
                 state(
