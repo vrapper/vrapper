@@ -1,4 +1,47 @@
 <div class="newsbox">
+    <div class="date">2012-08-19</div>
+    <h4>Current state of the Unstable update site</h4>
+    <p>Things have been pretty slow here since releasing 0.22.0.  As far as I can tell, the only major features
+    Vrapper has left to implement are visual block selection and split editor views.  Unfortunately, both those
+    features rely heavily on poking and prodding the Eclipse API just right and I haven't yet found the magical
+    incantation to do either one of them.  I'm afraid I'll need outside help if I'm ever going to get those features
+    working.</p>
+    
+    <p>With that said, I have found time to fix/implement a couple things in between sessions of banging my head
+    against the Eclipse API.  The unstable update site currently has the following changes from 0.22.0:</p>
+    
+    <ul>
+        <li>Fixed multi-character mappings to &lt;ESC&gt; when inside parentheses</li>
+        <ul>
+			<li>Vrapper now displays pending characters when typing multi-character mappings</li>
+			<li>This is more aligned with Vim behavior and appears to work in all cases now</li>
+        </ul>
+        <li>Fixed behavior of &gt;i{ to match Vim</li>
+        <li>Preserve counts sent to '.' command for future '.' executions</li>
+        <li>Fixed '*' and '#' when regexsearch is enabled.</li>
+        <li>Added support for '+' and '-' line motions</li>
+        <li>Fixed issue with exiting InsertMode at the end of a file</li>
+        <li>Added support for 'gq' paragraph formatting</li>
+        <li>Refactored 'gt' and 'gT' commands for Eclipse Juno</li>
+        <ul>
+			<li>'gt' and 'gT' should work correctly but '&lt;number&gt;gt' still doesn't work</li>
+			<li>'gt' and 'gT' in Eclipse 3.x should still work but it won't wrap around the first and last tabs anymore</li>
+        </ul>
+        <li>Fixed issue with newline characters being shared between editors</li>
+        <ul>
+			<li>If you open both a Unix file and a Windows file Vrapper will keep the newlines straight</li>
+        </ul>
+        <li>Defined behavior for the &lt;END&gt; key</li>
+        <ul>
+			<li>You'll need to unbind &lt;END&gt; in Eclipse before using it in Vrapper operations</li>
+        </ul>
+    </ul>
+    
+    <p>I don't think any of those changes are very big so I'm not itching to release the next version of Vrapper.
+    We'll see what else I can add in the near future.  If things remain slow and no defects arrive, I might release it.</p>
+    
+</div>
+<div class="newsbox">
     <div class="date">2012-07-07</div>
     <h4>0.22.0 Released</h4>
     <p>Aside from a couple minor defect fixes, the code was idle for the last 2 weeks.
