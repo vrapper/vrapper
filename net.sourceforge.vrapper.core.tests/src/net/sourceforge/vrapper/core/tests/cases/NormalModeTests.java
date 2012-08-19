@@ -560,6 +560,111 @@ public class NormalModeTests extends CommandTestCase {
                 "A",'l',"a ma\nkota.",
                 "A",'l',"a ma\nkota.");
     }
+	
+	@Test
+	public void test_gq_mergeLines() {
+		//Some of these tests move the cursor when they shouldn't;
+		//some of these tests append a newline when they shouldn't.
+		//If we were to fix these behaviors, these tests might fail
+		//but that doesn't mean the fixes aren't valid.
+		//I'm mostly focusing on when lines are merged or not.
+        checkCommand(forKeySeq("gqj"),
+                "line",' ',"one\nline two",
+                "",'l',"ine one line two\n");
+        
+        checkCommand(forKeySeq("gqj"),
+                "* line",' ',"one\n  * line two",
+                "",'*'," line one line two\n");
+        
+        checkCommand(forKeySeq("gqj"),
+                "// line",' ',"one\n  // line two",
+                "",'/',"/ line one line two\n");
+        
+        checkCommand(forKeySeq("gqj"),
+                "# line",' ',"one\n  # line two",
+                "",'#'," line one line two\n");
+        
+        checkCommand(forKeySeq("gqj"),
+                "# line",' ',"one\n  #       line two",
+                "",'#'," line one line two\n");
+        
+        checkCommand(forKeySeq("gqj"),
+                "# line",' ',"one\n      #line two",
+                "",'#'," line one line two\n");
+        
+        checkCommand(forKeySeq("gq2j"),
+                "", '/', "*\n* line one\n*/",
+                "", '/', "*\n* line one\n*/\n");
+        
+        checkCommand(forKeySeq("gq2j"),
+                "", '/', "* foo\n* line one\n*/",
+                "", '/', "* foo line one\n*/\n");
+        
+        checkCommand(forKeySeq("gqj"),
+                "/* line",' ',"one */\n  /* line two */",
+                "",'/',"* line one */\n  /* line two */\n");
+        
+        //this shouldn't actually move the cursor,
+        //I just want to verify it doesn't merge un-common comment types
+        checkCommand(forKeySeq("gqj"),
+                "* line",' ',"one\n  // line two",
+                "",'*'," line one\n  // line two\n");
+        
+        checkCommand(forKeySeq("gq2j"),
+                "* line",' ',"one\n  line two\n* line three",
+                "",'*'," line one\n  line two\n* line three\n");
+        
+        checkCommand(forKeySeq("gqj"),
+                "// line",' ',"one\n  line two",
+                "",'/',"/ line one\n  line two\n");
+        
+        //blank line
+        checkCommand(forKeySeq("gqj"),
+                "* line",' ',"one\n * \n  * line two",
+                "",'*'," line one\n * \n  * line two");
+	}
+	
+	@Test
+	public void test_gq_splitLines() {
+        
+		configuration.set(Options.TEXT_WIDTH, 20);
+		
+        checkCommand(forKeySeq("gqq"),
+                "// this",' ',"line is longer than text width and should be split",
+                "",'/',"/ this line is\n// longer than text\n// width and should\n// be split\n");
+        
+        checkCommand(forKeySeq("gqq"),
+                "* this",' ',"line is longer than text width and should be split",
+                "",'*'," this line is\n* longer than text\n* width and should\n* be split\n");
+        
+        checkCommand(forKeySeq("gqq"),
+                "# this",' ',"line is longer than text width and should be split",
+                "",'#'," this line is\n# longer than text\n# width and should\n# be split\n");
+        
+        //ensure new lines use same indentation as first line
+        checkCommand(forKeySeq("gqq"),
+                "    # this",' ',"line is longer than text width and should be split",
+                "",' ',"   # this line is\n    # longer than\n    # text width and\n    # should be\n    # split\n");
+        checkCommand(forKeySeq("gqq"),
+                "    #   this",' ',"line is longer than text width and should be split",
+                "",' ',"   #   this line is\n    #   longer than\n    #   text width\n    #   and should\n    #   be split\n");
+        
+		configuration.set(Options.TEXT_WIDTH, 30);
+        
+        checkCommand(forKeySeq("gqj"),
+                "// line",' ',"one\n  // line two is longer and will be split",
+                "",'/',"/ line one line two is longer\n// and will be split\n");
+        
+		configuration.set(Options.TEXT_WIDTH, 3);
+        
+        checkCommand(forKeySeq("gqq"),
+                "# this",' ',"line will be split multiple times",
+                "", '#', " this\n# line\n# will\n# be\n# split\n# multiple\n# times\n");
+        
+        checkCommand(forKeySeq("gqq"),
+                "/* this",' ',"line will be split multiple times */",
+                "", '/', "* this\n* line\n* will\n* be\n* split\n* multiple\n* times\n* */\n");
+	}
 
 	@Test
     public void testSurroundPlugin_ds() {

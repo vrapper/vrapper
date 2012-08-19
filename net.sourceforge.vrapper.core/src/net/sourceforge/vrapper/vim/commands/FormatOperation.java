@@ -27,10 +27,6 @@ import net.sourceforge.vrapper.vim.Options;
 public class FormatOperation implements TextOperation {
 	
 	public static final FormatOperation INSTANCE = new FormatOperation();
-	
-	public static final Set<String> SINGLE_LINE_COMMENTS = VimUtils.set("//", "#", "*");
-	public static final String MULTI_LINE_START = "/*";
-	public static final String MULTI_LINE_END = "*/";
 
 	public TextOperation repetition() {
 		return this;
@@ -56,9 +52,15 @@ public class FormatOperation implements TextOperation {
 			
 			//if we can merge with line above
 			//(must have matching comment characters)
-			if(previous != null && previous.getCommentChar().equals(current.getCommentChar())) {
-				processed = formatLines(new ArrayList<String>(), previous.getFullLine()+" "+current.getText(),
-						previous.getIndent(), previous.getCommentChar(), textwidth
+			if(previous != null && previous.getContinueChar().equals(current.getCommentChar())) {
+				processed = formatLines(new ArrayList<String>(),
+						new CommentedLine(
+								previous.getPreIndent(),
+								previous.getCommentChar(),
+								previous.getPostIndent(),
+								previous.getText()+" "+current.getText(),
+								previous.getContinueChar()),
+						textwidth
 				);
 				//remove old 'previous' text
 				formattedLines.remove(formattedLines.size() - 1);
@@ -69,9 +71,7 @@ public class FormatOperation implements TextOperation {
 			}
 			//we can't merge with line above, does this line need to be split?
 			else {
-				processed = formatLines(new ArrayList<String>(), current.getFullLine(),
-						current.getIndent(), current.getCommentChar(), textwidth
-				);
+				processed = formatLines(new ArrayList<String>(), current, textwidth);
 				formattedLines.addAll(processed);
 				//prepare for next iteration
 				previous = current;
@@ -84,10 +84,12 @@ public class FormatOperation implements TextOperation {
 			newLines += line + newlineChar;
 		}
 		
+		//swap out the old text with the formatted text
 		TextRange region = textObject.getRegion(editorAdaptor, count);
 		int start = region.getLeftBound().getModelOffset();
 		int length = region.getModelLength();
 		editorAdaptor.getModelContent().replace(start, length, newLines);
+		editorAdaptor.getCursorService().setPosition(region.getStart(), true);
 	}
 	
 	/**
@@ -95,24 +97,36 @@ public class FormatOperation implements TextOperation {
 	 * Note that this may result in multiple lines.  Each new line will
 	 * share the same indentation and comment character as the first.
 	 */
-	private List<String> formatLines(List<String> formatted, String textToFormat,
-			String indent, String commentChar, int textwidth) {
-		if(textToFormat.length() <= textwidth) {
-			formatted.add(textToFormat);
+	private List<String> formatLines(List<String> formatted, CommentedLine textToFormat, int textwidth) {
+		if(textToFormat.getFullLine().length() <= textwidth) {
+			formatted.add(textToFormat.getFullLine());
 		}
 		else {
-			int lineBreak = getLastWhitespaceBeforeWidth(textToFormat, textwidth);
+			String text = textToFormat.getText();
+			//make sure we don't end up with indentation when
+			//trying to find the closest whitespace character
+			int adjustedTextWidth = textwidth - textToFormat.getPrefix().length();
+			adjustedTextWidth = Math.max(0, adjustedTextWidth);
+			int lineBreak = getLastWhitespaceBeforeWidth(text, adjustedTextWidth);
 			if(lineBreak < 0) {
-				//no whitespace, break on non-word boundary
-				lineBreak = Math.min(textToFormat.length(), textwidth);
+				//if we can't break cleanly within textwidth,
+				//break as close to it as we can
+				lineBreak = getFirstWhitespaceAfterWidth(text, adjustedTextWidth);
 			}
-			String line = textToFormat.substring(0, lineBreak);
-			formatted.add(line);
+			String line = text.substring(0, lineBreak);
+			String remainder = text.substring(lineBreak).trim();
+			formatted.add(textToFormat.getPrefix() + line);
 			
-			String newText = indent + commentChar + textToFormat.substring(lineBreak);
-			if(newText.length() > 0) {
+			if(remainder.length() > 0) {
+				CommentedLine newLine = new CommentedLine(
+						textToFormat.getPreIndent(),
+						textToFormat.getContinueChar(),
+						textToFormat.getPostIndent(),
+						remainder,
+						textToFormat.getContinueChar()
+				);
 				//recursion!
-				return formatLines(formatted, newText, indent, commentChar, textwidth);
+				return formatLines(formatted, newLine, textwidth);
 			}
 		}
 		
@@ -129,18 +143,60 @@ public class FormatOperation implements TextOperation {
 		return -1;
 	}
 	
+	private int getFirstWhitespaceAfterWidth(String text, int width) {
+		for(int i=width; i < text.length(); i++) {
+			if(Character.isWhitespace(text.charAt(i))) {
+				return i;
+			}
+		}
+		//no whitespace available
+		return text.length();
+	}
+	
+	/**
+	 * Take a line of text and find the following pieces:
+	 * - indent prior to comment character
+	 * - comment character 
+	 * - indent after comment character
+	 * - line contents
+	 */
 	private class CommentedLine {
+	
+		public final Set<String> SINGLE_LINE_COMMENTS = VimUtils.set("//", "#", "*");
+		public static final String MULTI_LINE_START = "/*";
+		public static final String MULTI_LINE_END = "*/";
+	
 		private boolean allowFormat = true;
-		private String commentChar = "";
-		private String indent = "";
 		private String fullLine = "";
+		private String preIndent = "";
+		private String commentChar = "";
+		private String continueChar = "";
+		private String postIndent = "";
 		private String text = "";
 
-		public boolean allowFormat()    { return allowFormat; }
-		public String  getCommentChar() { return commentChar; }
-		public String  getIndent()      { return indent;      }
-		public String  getFullLine()    { return fullLine;    }
-		public String  getText()        { return text;        }
+		public boolean allowFormat()     { return allowFormat;   }
+		public String  getFullLine()     { return fullLine;      }
+		public String  getPreIndent()    { return preIndent;     }
+		public String  getCommentChar()  { return commentChar;   }
+		public String  getContinueChar() { return continueChar; }
+		public String  getPostIndent()   { return postIndent;    }
+		public String  getPrefix()       { return preIndent + commentChar + postIndent; }
+		public String  getText()         { return text;          }
+		
+		/**
+		 * This constructor is used when we're modifying the text
+		 * of an existing CommentedLine.  No need to re-parse
+		 * all the pieces.
+		 */
+		public CommentedLine(String preIndent, String commentChar, String postIndent,
+				String text, String continueChar) {
+			this.preIndent = preIndent;
+			this.commentChar = commentChar;
+			this.postIndent = postIndent;
+			this.text = text;
+			this.continueChar = continueChar;
+			this.fullLine = preIndent + commentChar + postIndent + text;
+		}
 		
 		public CommentedLine(String line) {
 			fullLine = line;
@@ -148,37 +204,46 @@ public class FormatOperation implements TextOperation {
 			//grab indent (if any)
 			int indentOffset = getFirstNonWhiteSpaceOffset(line);
 			if(indentOffset > -1) {
-				indent = line.substring(0, indentOffset);
+				preIndent = line.substring(0, indentOffset);
 				text = line.substring(indentOffset);
 			}
 			else {
-				indent = "";
+				preIndent = "";
 				text = line;
 			}
 			
-			if(text.matches("\\s*") || text.startsWith(MULTI_LINE_START) || text.startsWith(MULTI_LINE_END)) {
-				//blank lines and start and end of multi-line comments never format
+			if(text.matches("\\s*") || text.startsWith(MULTI_LINE_END)) {
+				//blank lines and end of multi-line comments never format
 				allowFormat = false;
+			}
+			else if(text.startsWith(MULTI_LINE_START)) {
+				commentChar = MULTI_LINE_START;
+				continueChar = "*";
+				//chop off comment char
+				text = text.substring(MULTI_LINE_START.length());
 			}
 			else {
 				for(String comment : SINGLE_LINE_COMMENTS) {
 					if(text.startsWith(comment)) {
 						commentChar = comment;
+						continueChar = comment;
+						//chop off comment char
+						text = text.substring(commentChar.length());
 						break;
 					}
 				}
 			}
 			
 			//get text after comment char
-			int nonCommentOffset = getFirstNonWhiteSpaceOffset( text.substring(commentChar.length()) );
-			if(nonCommentOffset > -1) {
-				text = text.substring(commentChar.length() + nonCommentOffset);
+			int postCommentOffset = getFirstNonWhiteSpaceOffset(text);
+			if(postCommentOffset > -1) {
+				postIndent = text.substring(0, postCommentOffset);
+				text = text.substring(postCommentOffset);
 			}
 			else {
 				//empty lines with comment char aren't formatted
 				allowFormat = false;
 			}
-			
 		}
 	
 		private int getFirstNonWhiteSpaceOffset(String line) {
