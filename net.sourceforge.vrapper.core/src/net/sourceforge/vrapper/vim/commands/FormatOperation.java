@@ -74,7 +74,7 @@ public class FormatOperation implements TextOperation {
 				processed = formatLines(new ArrayList<String>(), current, textwidth);
 				formattedLines.addAll(processed);
 				//prepare for next iteration
-				previous = current;
+				previous = new CommentedLine(processed.get(processed.size()-1));
 			}
 			
 		}
@@ -178,7 +178,7 @@ public class FormatOperation implements TextOperation {
 		public String  getFullLine()     { return fullLine;      }
 		public String  getPreIndent()    { return preIndent;     }
 		public String  getCommentChar()  { return commentChar;   }
-		public String  getContinueChar() { return continueChar; }
+		public String  getContinueChar() { return continueChar;  }
 		public String  getPostIndent()   { return postIndent;    }
 		public String  getPrefix()       { return preIndent + commentChar + postIndent; }
 		public String  getText()         { return text;          }

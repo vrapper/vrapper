@@ -655,6 +655,10 @@ public class NormalModeTests extends CommandTestCase {
                 "// line",' ',"one\n  // line two is longer and will be split",
                 "",'/',"/ line one line two is longer\n// and will be split\n");
         
+        checkCommand(forKeySeq("gqj"),
+                "// line",' ',"one is longer than line two,\n  // line two will be merged",
+                "",'/',"/ line one is longer than\n// line two, line two will be\n// merged\n");
+        
 		configuration.set(Options.TEXT_WIDTH, 3);
         
         checkCommand(forKeySeq("gqq"),
