@@ -2,6 +2,7 @@ package net.sourceforge.vrapper.vim.modes;
 
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.convertKeyStroke;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafCtrlBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
 import static net.sourceforge.vrapper.vim.commands.BorderPolicy.EXCLUSIVE;
@@ -29,6 +30,7 @@ import net.sourceforge.vrapper.vim.commands.motions.ContinueFindingMotion;
 import net.sourceforge.vrapper.vim.commands.motions.FindMotion;
 import net.sourceforge.vrapper.vim.commands.motions.GoToLineMotion;
 import net.sourceforge.vrapper.vim.commands.motions.GoToMarkMotion;
+import net.sourceforge.vrapper.vim.commands.motions.HalfPageUpDownMotion;
 import net.sourceforge.vrapper.vim.commands.motions.LineEndMotion;
 import net.sourceforge.vrapper.vim.commands.motions.LineStartMotion;
 import net.sourceforge.vrapper.vim.commands.motions.Motion;
@@ -142,6 +144,8 @@ public abstract class CommandBasedMode extends AbstractMode {
             final Motion lowMove = ViewPortMotion.LOW;
 
             motions = state(
+	                leafCtrlBind('d', (Motion)HalfPageUpDownMotion.PAGE_DOWN),
+	                leafCtrlBind('u', (Motion)HalfPageUpDownMotion.PAGE_UP),
                     leafBind('h', moveLeft),
                     leafBind('j', moveDown),
                     leafBind('k', moveUp),

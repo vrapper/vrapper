@@ -52,8 +52,6 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
             leafBind(SpecialKey.PAGE_UP, pageUp),
             leafCtrlBind('f', pageDown),
             leafCtrlBind('b', pageUp),
-            leafCtrlBind('d', pageDown),
-            leafCtrlBind('u', pageUp),
             leafBind('>', shiftRight),
             leafBind('<', shiftLeft));
     }
@@ -87,8 +85,6 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
                         leafBind('T', (Command)ChangeTabCommand.PREVIOUS_EDITOR)),
                 leafCtrlBind('f', dontRepeat(go("pageDown"))),
                 leafCtrlBind('b', dontRepeat(go("pageUp"))),
-                leafCtrlBind('d', dontRepeat(go("pageDown"))),
-                leafCtrlBind('u', dontRepeat(go("pageUp"))),
                 leafBind(SpecialKey.PAGE_DOWN, dontRepeat(go("pageDown"))),
                 leafBind(SpecialKey.PAGE_UP, dontRepeat(go("pageUp"))),
                 leafCtrlBind('y', dontRepeat(editText("scroll.lineUp"))),
