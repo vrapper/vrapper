@@ -29,13 +29,13 @@ public class HalfPageUpDownMotion extends GoToLineMotion {
         ViewPortInformation view = viewService.getViewPortInformation();
         //I don't know why, but it's always off-by-one
         int viewLines = view.getNumberOfLines() + 1;
-        int topLine = view.getTopLine();
         int numLinesToMove = viewLines/2; //half-screen
         if(pageUp) {
         	numLinesToMove *= -1;
         }
         
         //move view
+        int topLine = view.getTopLine();
         int destTopLine = Math.max(0, topLine + numLinesToMove);
         viewService.setTopLine(destTopLine);
         
