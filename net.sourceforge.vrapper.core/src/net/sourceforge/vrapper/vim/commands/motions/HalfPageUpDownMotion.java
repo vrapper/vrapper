@@ -45,6 +45,7 @@ public class HalfPageUpDownMotion extends GoToLineMotion {
         int destCursorLine = viewService.viewLine2ModelLine(
         		Math.max(0, cursorLine + numLinesToMove)
         	);
+        //viewLine2ModelLine returns -1 if we've exceeded the last line
         if(destCursorLine < 0) {
         	destCursorLine = editorAdaptor.getModelContent().getNumberOfLines();
         }
