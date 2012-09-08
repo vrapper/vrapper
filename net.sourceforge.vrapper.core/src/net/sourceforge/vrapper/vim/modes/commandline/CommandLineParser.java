@@ -155,6 +155,18 @@ public class CommandLineParser extends AbstractCommandParser {
                 config.add(alias+"?", status);
             }
         }
+        for (Option<Integer> o : Options.INT_OPTIONS) {
+            ConfigCommand<Integer> status = new PrintOptionCommand<Integer>(o);
+            for (String alias: o.getAllNames()) {
+                config.add(alias+"?", status);
+            }
+        }
+        for (Option<String> o : Options.STRING_OPTIONS) {
+            ConfigCommand<String> status = new PrintOptionCommand<String>(o);
+            for (String alias: o.getAllNames()) {
+                config.add(alias+"?", status);
+            }
+        }
         // overwrites hlsearch/nohlsearch commands
         Evaluator numberToggle = new OptionDependentEvaluator(Options.LINE_NUMBERS, ConfigAction.NO_LINE_NUMBERS, ConfigAction.LINE_NUMBERS);
         Evaluator listToggle = new OptionDependentEvaluator(Options.SHOW_WHITESPACE, ConfigAction.NO_SHOW_WHITESPACE, ConfigAction.SHOW_WHITESPACE);
