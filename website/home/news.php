@@ -1,4 +1,26 @@
 <div class="newsbox">
+    <div class="date">2012-09-15</div>
+    <h4>0.24.0 Released</h4>
+    <p>I don't like sitting on unreleased features when I'm not working on anything new.  If I have a list
+    of things completed but none of them are major, there's nothing that says I can't release them into the world.
+    So, I am now releasing version 0.24.0 of Vrapper.  This is mostly a minor bug fix release but since
+    I have nothing pending right now, I might as well give you what I have.</p>
+    <p>In addition to the miscellaneous bug fixes and minor features listed in my previous news post, I've added
+     the following changes:</p>
+     <ul>
+        <li>Refactored Ctrl+u/Ctrl+d to scroll by half-screen, not fullscreen</li>
+        <li>Add support for '?' on all command-line options, not just booleans.</li>
+        <ul>
+            <li>For example, ':set textwidth?' or ':set clipboard?' to see current value.</li>
+        </ul>
+        <li>In our optional Surround plugin, added support for 'yss' to surround entire line</li>
+     </ul>
+     <p>That's a pretty short list of changes in the month since my last news post.  It feels like things are
+     slowing down here.  The only major features left pending are the ones I don't feel confident implementing
+     myself (see the previous news post about my inadequacies with the Eclipse API).  I'll still do my best
+     to fix any defects that may arise, but I have nothing new on the horizon.  Other than that, hurray! A new release!</p>
+</div>
+<div class="newsbox">
     <div class="date">2012-08-19</div>
     <h4>Current state of the Unstable update site</h4>
     <p>Things have been pretty slow here since releasing 0.22.0.  As far as I can tell, the only major features
