@@ -1,0 +1,131 @@
+<h2>Command-Line Commands</h2>
+
+<table class="commands">
+    <tr>
+        <th>Command</th>
+        <th>Description</th>
+    </tr>
+    <tr>
+        <td>:w</td>
+        <td>Writes the edited file to disk.</td>
+    </tr>
+    <tr>
+        <td>:wa[ll]</td>
+        <td>Writes all edited files to disk.</td>
+    </tr>
+    <tr>
+        <td>:q</td>
+        <td>Closes the editor if nothing was changed since the last
+            save.</td>
+    </tr>
+    <tr>
+        <td>:wq<br />:x</td>
+        <td>Writes the edited file to disk and closes the editor.</td>
+    </tr>
+    <tr>
+        <td>:q!</td>
+        <td>Closes the editor even if there are unsaved changes.</td>
+    </tr>
+    <tr>
+        <td>:u<br />:undo</td>
+        <td>Undoes the last change.</td>
+    </tr>
+    <tr>
+        <td>:red<br />:redo</td>
+        <td>Redoes an undone change.</td>
+    </tr>
+    <tr>
+        <td>:fm<br />:format</td>
+        <td>Calls the formatter of the underlying editor if present.<br />
+            The formatter will be applied to the current selection
+            or the whole text if nothing is selected.</td>
+    </tr>
+    <tr>
+        <td>:&lt;number&gt;</td>
+        <td>Jumps to line &lt;number&gt;.</td>
+    </tr>
+    <tr>
+        <td><nobr>:[%]s/&lt;search&gt;/&lt;replace&gt;/[g|i]</nobr></td>
+        <td>The famous substitution feature.
+        <ul>
+        <li>Supports 'g' flag for global (all matches) and 'i' flag for case-insensitive</li>
+        <li>Supports '%' for performing substitution on all lines<br/>(e.g., :%s/foo/bar/)</li>
+        <li>Whatever non-alphanumeric character is after :s will be the delimiter<br/>(e.g., :s_foo_bar_)</li>
+        <li>Uses Eclipse's flavor of regex<br/>(e.g., :s/foo(.+)foo/bar$1bar/)</li>
+        </ul>
+        </td>
+    </tr>
+    <tr>
+        <td>:&lt;range&gt;,&lt;range&gt;[y|d|s]</td>
+        <td>Perform either the yank (y), delete (d), or substitution (s) operation on a range of lines.
+        <table>
+        <tr>
+        <td style="border:none">Supports:<br/>
+            <ul>
+            <li>number for specific line number</li>
+            <li>. for current line</li>
+            <li>$ for last line in the file</li>
+            <li>?&lt;pattern&gt;? for first match above current line</li>
+            <li>/&lt;pattern&gt;/ for first match below current line</li>
+            <li>'&lt;a-x&gt; for mark</li>
+            <li>You can also add modifiers +/-</li>
+            </ul>
+        </td>
+        <td style="border:none">Examples:<br/>
+        	<ul>
+        	<li>:3,5d</li>
+			<li>:3,5y</li>
+			<li>:.,$y</li>
+			<li>:.+3,$-2y</li>
+            <li>:2,5s/foo/bar/g</li>
+            <li>:1,/foo/d</li>
+            <li>:'a,'bd</li>
+            <li>:?something?,+4y</li>
+            <li>:?something?,/foo/y</li>
+            </ul>
+        </td>
+        </tr>
+        </table>
+        </td>
+    </tr>
+    <tr>
+        <td>:g/&lt;pattern&gt;/[d|s|normal]<br/>
+        :g!/&lt;pattern&gt;/[d|s|normal]<br/>
+        :v/&lt;pattern&gt;/[d|s|normal]
+        </td>
+        <td>Perform an operation on all lines that match &lt;pattern&gt;.  Or, in the case of :g! and :v, all lines that <b>don't</b> match &lt;pattern&gt;.<br/>
+        Operations are:
+            <ul>
+            <li>'d' to delete those lines</li>
+            <ul>
+                <li>:g/foo/d</li>
+            </ul>
+            <li>'s' to perform substitution on those lines</li>
+            <ul>
+                <li>:g/foo/s/something/else/g</li>
+            </ul>
+            <li>'normal' to perform (basic) normal-mode commands on those lines</li>
+            <ul>
+                <li>:g/foo/normal wwdw</li>
+                <li>This basically executes an anonymous macro on all lines that match (or don't match, for :g! and :v).
+                Special keys are defined like in mappings.  For example, &ltesc&gt;.</li>
+            </ul>
+            </ul>
+        </td>
+    </tr>
+    <tr>
+        <td>:eclipseaction&nbsp;&lt;name&gt;&nbsp;&lt;id&gt;</td>
+        <td>Binds the Eclipse action with the specified id to a 
+            (command line mode) command &lt;name&gt;.<br />
+            There are lists with action ids for
+            <a href="http://help.eclipse.org/help33/topic/org.eclipse.platform.doc.isv/reference/api/org/eclipse/ui/texteditor/IWorkbenchActionDefinitionIds.html">workbench</a>,
+            <a href="http://help.eclipse.org/help33/topic/org.eclipse.platform.doc.isv/reference/api/org/eclipse/ui/texteditor/ITextEditorActionDefinitionIds.html">text editors</a>,
+            and <a href="http://help.eclipse.org/ganymede/topic/org.eclipse.jdt.doc.isv/reference/api/org/eclipse/jdt/ui/actions/IJavaEditorActionDefinitionIds.html">java editors</a>.</td>
+    </tr>
+    <tr>
+        <td>:eclipseaction!&nbsp;&lt;name&gt;&nbsp;&lt;id&gt;</td>
+        <td>Binds the Eclipse action with the specified id to a 
+            (command line mode) command &lt;name&gt;. Overwrites the 
+            binding if it already exists.</td>
+    </tr>
+</table>

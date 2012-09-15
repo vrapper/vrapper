@@ -6,7 +6,8 @@ $docs = array(
     "commands",
     "search",
     "visual_mode",
-    "commandline_mode",
+    "configuration",
+    "commandline_commands",
     "macros",
     "marks",
     "optional_plugins"
