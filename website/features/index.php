@@ -1,6 +1,6 @@
 <?php $page="features"; include("../includes/header.html"); ?>
 <div id="features">
-<h3 class="implemented">Implemented as of 0.22.0:</h3>
+<h3 class="implemented">Implemented as of 0.24.0:</h3>
     <ul>
         <li>
             Operators (d, c, y, p, ...

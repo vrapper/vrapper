@@ -2,7 +2,7 @@
 
 <h3>Configration</h3>
 <p>Configuration of Vrapper's behaviour is done through different commands.
-You can find the current value of boolean properties with ':set &lt;property&gt;?'</p>
+You can find the current value of a property with ':set &lt;property&gt;?'</p>
 <table class="commands">
     <tr>
         <th>Command</th>
@@ -127,6 +127,13 @@ You can find the current value of boolean properties with ':set &lt;property&gt;
         <td>:set&nbsp;sj=&lt;N&gt;</td>
         <td>scrolljump=1</td>
         <td>When the view needs to scroll, jump &lt;N&gt; lines at a time.
+        </td>
+    </tr>
+    <tr>
+        <td>:set&nbsp;textwidth=&lt;N&gt;</td>
+        <td>:set&nbsp;tw=&lt;N&gt;</td>
+        <td>textwidth=80</td>
+        <td>Only used by the 'gq' command to format paragraphs.  Defines max line length when formatting.
         </td>
     </tr>
     <tr>
