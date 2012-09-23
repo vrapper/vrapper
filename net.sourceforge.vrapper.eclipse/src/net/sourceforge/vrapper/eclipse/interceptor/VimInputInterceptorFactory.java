@@ -59,6 +59,13 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
         specialKeys.put( SWT.PAGE_UP,            SpecialKey.PAGE_UP);
         specialKeys.put( SWT.HOME,               SpecialKey.HOME);
         specialKeys.put( SWT.END,                SpecialKey.END);
+        
+        SpecialKey[] values = SpecialKey.values();
+        int swtStart = SWT.F1;
+        int skStart = SpecialKey.F1.ordinal();
+        //SWT has up to F20
+        for (int i=0; i < 20; ++i)
+        	specialKeys.put(swtStart+i, values[skStart+i]);
 
         specialChars = new HashMap<Character, SpecialKey>();
         specialChars.put(Character.valueOf('\n'), SpecialKey.RETURN);
