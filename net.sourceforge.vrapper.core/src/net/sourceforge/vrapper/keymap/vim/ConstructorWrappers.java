@@ -320,6 +320,12 @@ public class ConstructorWrappers {
         map.put("SPACE",   key(' '));
         map.put("GT",      key('>'));
         map.put("LT",      key('<'));
+        
+        //function keys
+        SpecialKey[] values = SpecialKey.values();
+        for (int i=0, start=SpecialKey.F1.ordinal(); i < 20; ++i)
+        	map.put("F" + i+1, key(values[start+i]));
+        
         // ctrl keys
         map.put("C-@", key('\u0000'));
         map.put("C-A", key('\u0001'));
