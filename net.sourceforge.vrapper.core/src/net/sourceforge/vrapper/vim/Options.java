@@ -40,9 +40,10 @@ public interface Options {
     public static final Set<Option<String>> STRING_OPTIONS = set(CLIPBOARD, SELECTION);
 
     // Int options:
-    public static final Option<Integer> SCROLL_OFFSET = integer("scrolloff",  0, "so");
-    public static final Option<Integer> SCROLL_JUMP   = integer("scrolljump", 1, "sj");
-    public static final Option<Integer> TEXT_WIDTH   = integer("textwidth", 80, "tw");
+    public static final Option<Integer> SCROLL_OFFSET = integer("scrolloff",   0, "so");
+    public static final Option<Integer> SCROLL_JUMP   = integer("scrolljump",  1, "sj");
+    public static final Option<Integer> TEXT_WIDTH    = integer("textwidth",  80, "tw");
+    public static final Option<Integer> SOFT_TAB      = integer("softtabstop", 0, "sts");
     @SuppressWarnings("unchecked")
-    public static final Set<Option<Integer>> INT_OPTIONS = set(SCROLL_JUMP, SCROLL_OFFSET, TEXT_WIDTH);
+    public static final Set<Option<Integer>> INT_OPTIONS = set(SCROLL_JUMP, SCROLL_OFFSET, TEXT_WIDTH, SOFT_TAB);
 }
