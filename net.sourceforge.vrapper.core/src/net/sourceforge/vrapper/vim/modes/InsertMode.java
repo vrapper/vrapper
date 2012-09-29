@@ -53,6 +53,7 @@ public class InsertMode extends AbstractMode {
     public static final ModeSwitchHint DONT_LOCK_HISTORY = new ModeSwitchHint() {};
     public static final ModeSwitchHint DONT_SAVE_STATE = new ModeSwitchHint() {};
     public static final KeyStroke ESC = key(SpecialKey.ESC);
+    public static final KeyStroke BACKSPACE = key(SpecialKey.BACKSPACE);
     public static final KeyStroke CTRL_C = ctrlKey('c');
     public static final KeyStroke CTRL_R = ctrlKey('r');
     
@@ -234,7 +235,7 @@ public class InsertMode extends AbstractMode {
                 editorAdaptor.getHistory().beginCompoundChange();
                 editorAdaptor.getHistory().lock();
             }
-        } else if (stroke.equals(key(SpecialKey.BACKSPACE)) 
+        } else if (stroke.equals(BACKSPACE) 
         		&& editorAdaptor.getConfiguration().get(Options.SOFT_TAB) > 1) {
         	//soft tab stop is enabled, check to see if there are spaces
         	return softTabDelete();
