@@ -25,18 +25,21 @@ public abstract class AbstractCommandParser {
     protected static final KeyStroke KEY_BACKSP = key(SpecialKey.BACKSPACE);
     protected static final KeyStroke KEY_DELETE = key(SpecialKey.DELETE);
     protected static final KeyStroke KEY_CTRL_V = key((char) 22);
-    protected static final KeyStroke KEY_UP = key(SpecialKey.ARROW_UP);
-    protected static final KeyStroke KEY_DOWN = key(SpecialKey.ARROW_DOWN);
-    protected static final KeyStroke KEY_RIGHT = key(SpecialKey.ARROW_RIGHT);
-    protected static final KeyStroke KEY_LEFT = key(SpecialKey.ARROW_LEFT);
+    protected static final KeyStroke KEY_UP     = key(SpecialKey.ARROW_UP);
+    protected static final KeyStroke KEY_DOWN   = key(SpecialKey.ARROW_DOWN);
+    protected static final KeyStroke KEY_RIGHT  = key(SpecialKey.ARROW_RIGHT);
+    protected static final KeyStroke KEY_LEFT   = key(SpecialKey.ARROW_LEFT);
+    protected static final KeyStroke KEY_TAB    = key(SpecialKey.TAB);
     protected final StringBuffer buffer;
     protected final EditorAdaptor editor;
     private final CommandLineHistory history = CommandLineHistory.INSTANCE;
+    private final FilePathTabCompletion tabComplete;
     private boolean modified;
     private int position;
 
     public AbstractCommandParser(EditorAdaptor vim) {
         this.editor = vim;
+        this.tabComplete = new FilePathTabCompletion(this.editor);
         buffer = new StringBuffer();
         position = 0;
         modified = false;
@@ -71,6 +74,14 @@ public abstract class AbstractCommandParser {
             text = text.replace('\n', ' ').replace('\r', ' ');
             buffer.append(text);
             // TODO: on Mac OS, Cmd-V should be used
+        } else if (e.equals(KEY_TAB) && buffer.toString().startsWith(":e ")) {
+        	//command starts with ":e " so filename starts at index 3
+        	String prefix = buffer.substring(3);
+        	prefix = tabComplete.getNextMatch(prefix);
+        	
+        	buffer.setLength(0);
+        	buffer.append(":e " + prefix);
+	        position = buffer.length();
         } else if (e.equals(KEY_UP)) {
             if (modified)
                 history.setTemp(getCommand());

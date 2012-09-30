@@ -10,5 +10,7 @@ public interface FileService {
 	
 	boolean saveAll();
 	
+	String getFilePathMatch(String prefix, String previous);
+	
 	boolean openFile(String filename);
 }
