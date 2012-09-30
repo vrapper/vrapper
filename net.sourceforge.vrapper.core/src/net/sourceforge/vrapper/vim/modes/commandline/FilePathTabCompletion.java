@@ -1,6 +1,7 @@
 package net.sourceforge.vrapper.vim.modes.commandline;
 
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.Options;
 
 /**
  * The user typed ":e <partial>" then hit TAB.  Iterate through all
@@ -23,14 +24,24 @@ public class FilePathTabCompletion {
 		lastAttempt = null;
 	}
 	
-	public String getNextMatch(String prefix) {
+	/**
+	 * Given a partial file path, return the closest match
+	 */
+	public String getNextMatch(String prefix, boolean searchPath) {
 		//first time through, or user modified the string
 		if(lastAttempt == null || ! lastAttempt.equals(prefix)) {
 			init(prefix);
 		}
 		
 		//find next match after lastAttempt
-		String match = editorAdaptor.getFileService().getFilePathMatch(original, lastAttempt);
+		String match;
+		if(searchPath) {
+			String[] paths = editorAdaptor.getConfiguration().get(Options.PATH).split(",");
+			match = editorAdaptor.getFileService().findFileInPath(original, lastAttempt, paths, false);
+		}
+		else {
+			match = editorAdaptor.getFileService().getFilePathMatch(original, lastAttempt);
+		}
 		
 		if(match.equals(original)) {
 			//if we've looped back around, restart
@@ -40,7 +51,7 @@ public class FilePathTabCompletion {
 			//start iterating within that directory rather than restarting
 			if(numMatches == 1) {
 				init(match);
-				return getNextMatch(prefix);
+				return getNextMatch(prefix, searchPath);
 			}
 		}
 		else {

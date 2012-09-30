@@ -71,6 +71,36 @@ public class EclipseFileService implements FileService {
     }
     
     /**
+     * @param filename name of file to find
+     * @param paths list of paths to search for file
+     * @param getFullPath return the relative filename or the fullpath to that filename?
+     * @return path (relative or absolute) to filename
+     */
+    public String findFileInPath(String filename, String previous, String[] paths, boolean getFullPath) {
+    	IProject project = getCurrentSelectedProject();
+    	for(String path : paths) {
+    		if(path.equals(".") || path.equals("")) { //current file's directory
+    			path = getCurrentFileDir();
+    		}
+    		if(path.equals("/")) { //project root
+    			path = project.getProjectRelativePath().toString();
+    		}
+    		
+    		IFolder dir = project.getFolder(path);
+    		
+    		String fullPath = findNextMatchWithPrefix(path+'/'+filename, previous, dir);
+    		//findPath just returns filename if no match found
+    		if( ! fullPath.equals(filename)) {
+    			if(!getFullPath) {
+    				fullPath = fullPath.substring(path.length()+1);
+    			}
+    			return fullPath;
+    		}
+    	}
+    	return filename;
+    }
+    
+    /**
      * Perform tab-completion on a path.
      * Given a partial file path, return the next possible match.
      * 
@@ -79,13 +109,19 @@ public class EclipseFileService implements FileService {
      * @return Path to the next file (or directory) that has 'prefix' in its path
      */
     public String getFilePathMatch(String prefix, String previous) {
-    	return findPath(prefix, previous, null);
+    	return findNextMatchWithPrefix(prefix, previous, getCurrentSelectedProject());
     }
     
-    private String findPath(String prefix, String previous, IContainer startDir) {
-    	if(startDir == null) {
-    		startDir = getCurrentSelectedProject();
-    	}
+    /**
+     * Find the first file or directory whose path contains 'prefix' after
+     * any previous value 'previous'.  Start in 'startDir' and recurse if
+     * necessary.
+     * @param prefix partial file path to search for
+     * @param previous previous match found (if any)
+     * @param startDir parent directory to start search in
+     * @return next file/folder (after 'previous') which contains 'prefix', or 'prefix' if none found
+     */
+    private String findNextMatchWithPrefix(String prefix, String previous, IContainer startDir) {
     	boolean foundPrevious = previous == null;
     	
     	try {
@@ -97,7 +133,7 @@ public class EclipseFileService implements FileService {
 				
 				//prefix is in this folder, go into it
 				if(resource.getType() == IResource.FOLDER && prefix.startsWith(path)) {
-					return findPath(prefix, previous, (IFolder)resource);
+					return findNextMatchWithPrefix(prefix, previous, (IFolder)resource);
 				}
 				//keep looping until we hit the previous match
 				else if( ! foundPrevious) {
@@ -113,10 +149,36 @@ public class EclipseFileService implements FileService {
 			return prefix;
 		}
     	
+    	//couldn't find a more-specific path
+    	//the user needs to provide more information
     	return prefix;
     }
     
+    /**
+     * Open file with default Eclipse editor.  File may
+     * be found under any of the directories within 'paths'.
+     * 
+     * @param filename to open
+     * @param paths list of directories to search for filename
+     * @return true if file opened successfully
+     */
+    public boolean findAndOpenFile(String filename, String paths[]) {
+    	String fullPath = findFileInPath(filename, null, paths, true);
+    	return openFile(fullPath);
+    }
+    
+    /**
+     * Open file with default Eclipse editor.  Filename is relative
+     * to project root.
+     * 
+     * @param filename project-local path to file
+     * @return true if file opened successfully
+     */
     public boolean openFile(String filename) {
+    	if(filename == null || filename.length() == 0) {
+    		return false;
+    	}
+    	
     	IProject project = getCurrentSelectedProject();
     	if(project == null) {
     		return false;
@@ -149,6 +211,18 @@ public class EclipseFileService implements FileService {
     		return file.getProject();
     	}
     	return null;
+    }
+    
+    private String getCurrentFileDir() {
+    	IEditorPart  editorPart =
+    			PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+    	
+    	if(editorPart  != null) {
+    		IFileEditorInput input = (IFileEditorInput)editorPart.getEditorInput() ;
+    		IFile file = input.getFile();
+    		return file.getParent().getProjectRelativePath().toString();
+    	}
+    	return "";
     }
 
 }

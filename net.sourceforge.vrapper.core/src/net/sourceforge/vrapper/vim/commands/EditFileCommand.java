@@ -2,11 +2,11 @@ package net.sourceforge.vrapper.vim.commands;
 
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 
-public class OpenFileCommand extends CountIgnoringNonRepeatableCommand {
+public class EditFileCommand extends CountIgnoringNonRepeatableCommand {
 	
 	private String filename;
 	
-	public OpenFileCommand(String filename) {
+	public EditFileCommand(String filename) {
 		this.filename = filename;
 	}
 

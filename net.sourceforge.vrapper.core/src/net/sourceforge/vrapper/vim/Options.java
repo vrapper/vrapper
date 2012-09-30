@@ -3,6 +3,7 @@ package net.sourceforge.vrapper.vim;
 import static net.sourceforge.vrapper.platform.Configuration.Option.bool;
 import static net.sourceforge.vrapper.platform.Configuration.Option.integer;
 import static net.sourceforge.vrapper.platform.Configuration.Option.string;
+import static net.sourceforge.vrapper.platform.Configuration.Option.stringNoConstraint;
 import static net.sourceforge.vrapper.utils.VimUtils.set;
 
 import java.util.Set;
@@ -36,8 +37,9 @@ public interface Options {
     // String options:
     public static final Option<String> CLIPBOARD = string("clipboard", "autoselect", "unnamed, autoselect", "cb");
     public static final Option<String> SELECTION = string("selection", "inclusive", "old, inclusive, exclusive", "sel");
+    public static final Option<String> PATH      = stringNoConstraint("path", ".", "pa");
     @SuppressWarnings("unchecked")
-    public static final Set<Option<String>> STRING_OPTIONS = set(CLIPBOARD, SELECTION);
+    public static final Set<Option<String>> STRING_OPTIONS = set(CLIPBOARD, SELECTION, PATH);
 
     // Int options:
     public static final Option<Integer> SCROLL_OFFSET = integer("scrolloff",   0, "so");

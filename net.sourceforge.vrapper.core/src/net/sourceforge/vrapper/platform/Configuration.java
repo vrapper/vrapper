@@ -55,6 +55,10 @@ public interface Configuration {
             return new Option<String>(id, defaultValue, legalValues, alias);
         }
 
+        public static final Option<String> stringNoConstraint(String id, String defaultValue, String... alias) {
+            return new Option<String>(id, defaultValue, null, alias);
+        }
+
         public static final Option<Integer> integer(String id, int defaultValue, String... alias) {
             return new Option<Integer>(id, defaultValue, null, alias);
         }

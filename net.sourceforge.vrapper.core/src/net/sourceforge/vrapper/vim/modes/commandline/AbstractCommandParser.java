@@ -74,14 +74,25 @@ public abstract class AbstractCommandParser {
             text = text.replace('\n', ' ').replace('\r', ' ');
             buffer.append(text);
             // TODO: on Mac OS, Cmd-V should be used
-        } else if (e.equals(KEY_TAB) && buffer.toString().startsWith(":e ")) {
-        	//command starts with ":e " so filename starts at index 3
-        	String prefix = buffer.substring(3);
-        	prefix = tabComplete.getNextMatch(prefix);
-        	
-        	buffer.setLength(0);
-        	buffer.append(":e " + prefix);
-	        position = buffer.length();
+        } else if (e.equals(KEY_TAB)) { //tab-completion for filenames
+        	String prefix = null;
+        	if(buffer.toString().startsWith(":e ")) {
+	        	//command starts with ":e " so filename starts at index 3
+	        	prefix = buffer.substring(3);
+        		prefix = tabComplete.getNextMatch(prefix, false);
+        		buffer.setLength(0);
+        		buffer.append(":e " + prefix);
+        		position = buffer.length();
+        	}
+        	else if(buffer.toString().startsWith(":find ")) {
+	        	//command starts with ":find " so filename starts at index 6
+	        	prefix = buffer.substring(6);
+        		prefix = tabComplete.getNextMatch(prefix, true);
+        		buffer.setLength(0);
+        		buffer.append(":find " + prefix);
+        		position = buffer.length();
+        	}
+        	//else, user hit TAB for no reason
         } else if (e.equals(KEY_UP)) {
             if (modified)
                 history.setTemp(getCommand());

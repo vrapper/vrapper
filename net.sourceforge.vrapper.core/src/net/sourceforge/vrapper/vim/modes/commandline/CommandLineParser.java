@@ -14,10 +14,11 @@ import net.sourceforge.vrapper.vim.commands.CloseCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.ConfigCommand;
 import net.sourceforge.vrapper.vim.commands.ExCommandOperation;
+import net.sourceforge.vrapper.vim.commands.FindFileCommand;
 import net.sourceforge.vrapper.vim.commands.LineRangeOperationCommand;
 import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
-import net.sourceforge.vrapper.vim.commands.OpenFileCommand;
+import net.sourceforge.vrapper.vim.commands.EditFileCommand;
 import net.sourceforge.vrapper.vim.commands.RedoCommand;
 import net.sourceforge.vrapper.vim.commands.RepeatLastSubstitutionCommand;
 import net.sourceforge.vrapper.vim.commands.SaveAllCommand;
@@ -237,7 +238,11 @@ public class CommandLineParser extends AbstractCommandParser {
         
         if(command.startsWith("e ")) {
         	//command starts with "e " so filename starts at index 2
-        	return new OpenFileCommand(command.substring(2));
+        	return new EditFileCommand(command.substring(2));
+        }
+        if(command.startsWith("find ")) {
+        	//command starts with "find " so filename starts at index 5
+        	return new FindFileCommand(command.substring(5));
         }
         
         return null;
