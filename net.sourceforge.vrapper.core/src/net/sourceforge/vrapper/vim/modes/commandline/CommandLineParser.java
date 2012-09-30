@@ -17,6 +17,7 @@ import net.sourceforge.vrapper.vim.commands.ExCommandOperation;
 import net.sourceforge.vrapper.vim.commands.LineRangeOperationCommand;
 import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
+import net.sourceforge.vrapper.vim.commands.OpenFileCommand;
 import net.sourceforge.vrapper.vim.commands.RedoCommand;
 import net.sourceforge.vrapper.vim.commands.RepeatLastSubstitutionCommand;
 import net.sourceforge.vrapper.vim.commands.SaveAllCommand;
@@ -232,6 +233,10 @@ public class CommandLineParser extends AbstractCommandParser {
     		return new TextOperationTextObjectCommand(
 				new ExCommandOperation(command), new SimpleSelection(null)
     		);
+        }
+        
+        if(command.startsWith("e ")) {
+        	return new OpenFileCommand(command.substring(command.indexOf(' ') + 1));
         }
         
         return null;

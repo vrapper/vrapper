@@ -9,4 +9,6 @@ public interface FileService {
 	boolean save();
 	
 	boolean saveAll();
+	
+	boolean openFile(String filename);
 }
