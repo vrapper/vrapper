@@ -236,7 +236,8 @@ public class CommandLineParser extends AbstractCommandParser {
         }
         
         if(command.startsWith("e ")) {
-        	return new OpenFileCommand(command.substring(command.indexOf(' ') + 1));
+        	//command starts with "e " so filename starts at index 2
+        	return new OpenFileCommand(command.substring(2));
         }
         
         return null;
