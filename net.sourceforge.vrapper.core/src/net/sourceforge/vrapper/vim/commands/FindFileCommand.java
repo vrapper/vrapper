@@ -17,7 +17,7 @@ public class FindFileCommand extends CountIgnoringNonRepeatableCommand {
 		String[] paths = editorAdaptor.getConfiguration().get(Options.PATH).split(",");
         boolean success = editorAdaptor.getFileService().findAndOpenFile(filename, paths);
         if(! success) {
-        	editorAdaptor.getUserInterfaceService().setErrorMessage("Could not find file: " + filename);
+        	editorAdaptor.getUserInterfaceService().setErrorMessage("Can't find file \"" + filename + "\" in path");
         }
 	}
 }
