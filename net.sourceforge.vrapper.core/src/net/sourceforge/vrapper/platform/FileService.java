@@ -10,7 +10,7 @@ public interface FileService {
 	
 	boolean saveAll();
 	
-	String findFileInPath(String filename, String previous, String[] paths, boolean getFullPath);
+	String findFileInPath(String filename, String previous, String[] paths);
 	
 	String getFilePathMatch(String prefix, String previous);
 	

@@ -72,28 +72,17 @@ public class EclipseFileService implements FileService {
     
     /**
      * @param filename name of file to find
-     * @param paths list of paths to search for file
-     * @param getFullPath return the relative filename or the fullpath to that filename?
-     * @return path (relative or absolute) to filename
+     * @param previous the previous match found (if any)
+     * @param paths list of paths to search for filename
+     * @return filename found within one of the paths
      */
-    public String findFileInPath(String filename, String previous, String[] paths, boolean getFullPath) {
-    	IProject project = getCurrentSelectedProject();
+    public String findFileInPath(String filename, String previous, String[] paths) {
+    	IContainer dir;
     	for(String path : paths) {
-    		if(path.equals(".") || path.equals("")) { //current file's directory
-    			path = getCurrentFileDir();
-    		}
-    		if(path.equals("/")) { //project root
-    			path = project.getProjectRelativePath().toString();
-    		}
-    		
-    		IFolder dir = project.getFolder(path);
-    		
-    		String fullPath = findNextMatchWithPrefix(path+'/'+filename, previous, dir);
+    		dir = resolvePath(path);
+    		String fullPath = findNextMatchWithPrefix(filename, previous, dir);
     		//findPath just returns filename if no match found
     		if( ! fullPath.equals(filename)) {
-    			if(!getFullPath) {
-    				fullPath = fullPath.substring(path.length()+1);
-    			}
     			return fullPath;
     		}
     	}
@@ -126,14 +115,17 @@ public class EclipseFileService implements FileService {
     	
     	try {
 			for(IResource resource : startDir.members()) {
-				String path = resource.getProjectRelativePath().toString();
+				String path = resource.getName();
 				if(resource.getType() == IResource.FOLDER) {
 					path += '/';
 				}
 				
 				//prefix is in this folder, go into it
 				if(resource.getType() == IResource.FOLDER && prefix.startsWith(path)) {
-					return findNextMatchWithPrefix(prefix, previous, (IFolder)resource);
+					if(previous != null && previous.startsWith(path)) {
+						previous = previous.substring(path.length());
+					}
+					return path + findNextMatchWithPrefix(prefix.substring(path.length()), previous, (IFolder)resource);
 				}
 				//keep looping until we hit the previous match
 				else if( ! foundPrevious) {
@@ -144,6 +136,12 @@ public class EclipseFileService implements FileService {
 				else if(path.startsWith(prefix)) {
 					return path;
 				}
+			}
+			//if we never found the previous, try again
+			//but this time, don't look for previous
+			//(useful when 'previous' was in another path)
+			if( ! foundPrevious) {
+				return findNextMatchWithPrefix(prefix, null, startDir);
 			}
 		} catch (CoreException e) {
 			return prefix;
@@ -163,7 +161,14 @@ public class EclipseFileService implements FileService {
      * @return true if file opened successfully
      */
     public boolean findAndOpenFile(String filename, String paths[]) {
-    	String fullPath = findFileInPath(filename, null, paths, true);
+    	String fullPath = filename;
+    	IContainer dir;
+    	for(String path : paths) {
+    		dir = resolvePath(path);
+    		if(dir.findMember(filename) != null) {
+    			fullPath = dir.getProjectRelativePath().toString() + '/' + filename;
+    		}
+    	}
     	return openFile(fullPath);
     }
     
@@ -199,6 +204,22 @@ public class EclipseFileService implements FileService {
 		}
     	
     	return true;
+    }
+    
+    private IContainer resolvePath(String path) {
+    	IProject project = getCurrentSelectedProject();
+    	IContainer dir;
+    	if(path.equals("/")) { //project root
+    		dir = project;
+    	}
+    	else if(path.equals(".") || path.equals("")) { //current file's directory
+    		path = getCurrentFileDir();
+    		dir = project.getFolder(path);
+    	}
+    	else { //normal directory
+    		dir = project.getFolder(path);
+    	}
+    	return dir;
     }
     
     private IProject getCurrentSelectedProject() {

@@ -37,7 +37,7 @@ public class FilePathTabCompletion {
 		String match;
 		if(searchPath) {
 			String[] paths = editorAdaptor.getConfiguration().get(Options.PATH).split(",");
-			match = editorAdaptor.getFileService().findFileInPath(original, lastAttempt, paths, false);
+			match = editorAdaptor.getFileService().findFileInPath(original, lastAttempt, paths);
 		}
 		else {
 			match = editorAdaptor.getFileService().getFilePathMatch(original, lastAttempt);
