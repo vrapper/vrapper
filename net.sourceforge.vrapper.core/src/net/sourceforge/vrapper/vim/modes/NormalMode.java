@@ -39,6 +39,7 @@ import net.sourceforge.vrapper.vim.commands.CountIgnoringNonRepeatableCommand;
 import net.sourceforge.vrapper.vim.commands.DeleteOperation;
 import net.sourceforge.vrapper.vim.commands.DelimitedText;
 import net.sourceforge.vrapper.vim.commands.DotCommand;
+import net.sourceforge.vrapper.vim.commands.FindFileCommand;
 import net.sourceforge.vrapper.vim.commands.FormatOperation;
 import net.sourceforge.vrapper.vim.commands.InsertLineCommand;
 import net.sourceforge.vrapper.vim.commands.JoinLinesCommand;
@@ -248,6 +249,7 @@ public class NormalMode extends CommandBasedMode {
         Command centerLine = CenterLineCommand.CENTER;
         Command centerBottomLine = CenterLineCommand.BOTTOM;
         Command centerTopLine = CenterLineCommand.TOP;
+        Command findFile = FindFileCommand.INSTANCE;
         Command repeatSubLine = RepeatLastSubstitutionCommand.CURRENT_LINE_ONLY;
         Command repeatSubGlobal = RepeatLastSubstitutionCommand.GLOBALLY;
         Command saveAndClose = new VimCommandSequence(SaveCommand.INSTANCE, CloseCommand.CLOSE);
@@ -306,6 +308,7 @@ public class NormalMode extends CommandBasedMode {
                         leafBind('J', joinLines),
                         leafBind('&', repeatSubLine),
                         transitionBind('g',
+                                leafBind('f', findFile),
                                 leafBind('&', repeatSubGlobal),
                                 leafBind('J', joinLinesDumbWay),
                                 leafBind('p', pasteAfterWithG),

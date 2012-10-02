@@ -31,6 +31,7 @@ import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SelectionBasedTextOperationCommand;
 import net.sourceforge.vrapper.vim.commands.SetMarkCommand;
 import net.sourceforge.vrapper.vim.commands.SwapCaseCommand;
+import net.sourceforge.vrapper.vim.commands.VisualFindFileCommand;
 import net.sourceforge.vrapper.vim.commands.YankOperation;
 import net.sourceforge.vrapper.vim.modes.commandline.CommandLineMode;
 
@@ -124,6 +125,7 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
         Command centerTopLine = CenterLineCommand.TOP;
         Command joinLines = JoinVisualLinesCommand.INSTANCE;
         Command joinLinesDumbWay = JoinVisualLinesCommand.DUMB_INSTANCE;
+        Command findFile = VisualFindFileCommand.INSTANCE;
         State<Command> visualMotions = getVisualMotionState();
         State<Command> visualTextObjects = VisualTextObjectState.INSTANCE;
         State<Command> initialState = RegisterState.wrap(CountingState.wrap(union(
@@ -143,6 +145,7 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
                 leafBind('J', joinLines),
                 leafBind(':', commandLineMode),
                 transitionBind('g',
+                        leafBind('f', findFile),
                         leafBind('J', joinLinesDumbWay),
                         leafBind('q', format)),
                 transitionBind('z',
