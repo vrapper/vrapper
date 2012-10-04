@@ -214,7 +214,7 @@ public class EclipseFileService implements FileService {
     	}
     	else if(path.equals(".") || path.equals("")) { //current file's directory
     		path = getCurrentFileDir();
-    		dir = project.getFolder(path);
+    		dir = "".equals(path) ? project : project.getFolder(path);
     	}
     	else { //normal directory
     		dir = project.getFolder(path);
