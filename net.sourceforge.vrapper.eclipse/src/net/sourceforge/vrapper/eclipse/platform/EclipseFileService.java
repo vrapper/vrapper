@@ -95,10 +95,40 @@ public class EclipseFileService implements FileService {
      * 
      * @param prefix A partial file path we need to match
      * @param previous The previous match we found, find the next one after it
+     * @param startDir name of directory to start search in
      * @return Path to the next file (or directory) that has 'prefix' in its path
      */
-    public String getFilePathMatch(String prefix, String previous) {
-    	return findNextMatchWithPrefix(prefix, previous, getCurrentSelectedProject());
+    public String getFilePathMatch(String prefix, String previous, String startDir) {
+    	IProject project = getCurrentSelectedProject();
+    	boolean absolutePath = false;
+    	IContainer start;
+    	if(prefix.startsWith("/")) {
+    		absolutePath = true;
+    		start = project;
+    		//chop off leading '/' so 'startsWith' comparisons will work
+    		prefix = prefix.substring(1);
+    		//if previous is defined, it's probably an absolute path too
+    		if(previous != null && previous.startsWith("/")) {
+    			previous = previous.substring(1);
+    		}
+    	}
+    	else if("".equals(startDir) || "/".equals(startDir)) {
+    		start = project;
+    	}
+    	else if(".".equals(startDir)) {
+    		start = getCurrentFileDir();
+    	}
+    	else {
+    		start = project.getFolder(startDir);
+    	}
+    	
+    	String nextMatch = findNextMatchWithPrefix(prefix, previous, start);
+    	
+    	//reapply leading '/'
+    	if(absolutePath) {
+    		nextMatch = "/" + nextMatch;
+    	}
+    	return nextMatch;
     }
     
     /**
@@ -156,7 +186,7 @@ public class EclipseFileService implements FileService {
      * Open file with default Eclipse editor.  File may
      * be found under any of the directories within 'paths'.
      * 
-     * @param filename to open
+     * @param filename file to open
      * @param paths list of directories to search for filename
      * @return true if file opened successfully
      */
@@ -173,8 +203,7 @@ public class EclipseFileService implements FileService {
     }
     
     /**
-     * Open file with default Eclipse editor.  Filename is relative
-     * to project root.
+     * Open file with default Eclipse editor.
      * 
      * @param filename project-local path to file
      * @return true if file opened successfully
@@ -187,6 +216,13 @@ public class EclipseFileService implements FileService {
     	IProject project = getCurrentSelectedProject();
     	if(project == null) {
     		return false;
+    	}
+    	
+    	//need to resolve current file's directory
+    	if(filename.startsWith("./")) {
+    		String file = filename.substring(1);
+    		String dir = resolvePath(".").getProjectRelativePath().toString();
+    		filename = dir + file;
     	}
     	
     	IFile fileToBeOpened = project.getFile(filename);
@@ -206,6 +242,10 @@ public class EclipseFileService implements FileService {
     	return true;
     }
     
+    public String getCurrentFilePath() {
+    	return getCurrentFileDir().getProjectRelativePath().toString();
+    }
+    
     private IContainer resolvePath(String path) {
     	IProject project = getCurrentSelectedProject();
     	IContainer dir;
@@ -213,8 +253,7 @@ public class EclipseFileService implements FileService {
     		dir = project;
     	}
     	else if(path.equals(".") || path.equals("")) { //current file's directory
-    		path = getCurrentFileDir();
-    		dir = "".equals(path) ? project : project.getFolder(path);
+    		dir = getCurrentFileDir();
     	}
     	else { //normal directory
     		dir = project.getFolder(path);
@@ -223,27 +262,33 @@ public class EclipseFileService implements FileService {
     }
     
     private IProject getCurrentSelectedProject() {
-    	IEditorPart  editorPart =
-    			PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
-    	
-    	if(editorPart  != null) {
-    		IFileEditorInput input = (IFileEditorInput)editorPart.getEditorInput() ;
-    		IFile file = input.getFile();
+    	IFile file = getCurrentFile();
+    	if(file != null) {
     		return file.getProject();
     	}
     	return null;
     }
     
-    private String getCurrentFileDir() {
+    private IContainer getCurrentFileDir() {
+    	IFile file = getCurrentFile();
+    	if(file != null) {
+    		IProject project = file.getProject();
+    		String dir = file.getParent().getProjectRelativePath().toString();
+    		return "".equals(dir) ? project : project.getFolder(dir);
+    	}
+    	return null;
+    }
+    
+    private IFile getCurrentFile() {
     	IEditorPart  editorPart =
     			PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
     	
     	if(editorPart  != null) {
     		IFileEditorInput input = (IFileEditorInput)editorPart.getEditorInput() ;
     		IFile file = input.getFile();
-    		return file.getParent().getProjectRelativePath().toString();
+    		return file;
     	}
-    	return "";
+    	return null;
     }
 
 }

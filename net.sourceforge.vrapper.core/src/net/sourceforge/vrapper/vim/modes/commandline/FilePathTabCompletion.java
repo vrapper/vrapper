@@ -37,10 +37,15 @@ public class FilePathTabCompletion {
 		String match;
 		if(searchPath) {
 			String[] paths = editorAdaptor.getConfiguration().get(Options.PATH).split(",");
+			for(int i=0; i < paths.length; i++) {
+				if("".equals(paths[i])) { // "" is actually cwd, resolve now
+					paths[i] = getStartDir("");
+				}
+			}
 			match = editorAdaptor.getFileService().findFileInPath(original, lastAttempt, paths);
 		}
 		else {
-			match = editorAdaptor.getFileService().getFilePathMatch(original, lastAttempt);
+			match = editorAdaptor.getFileService().getFilePathMatch(original, lastAttempt, getStartDir(original));
 		}
 		
 		if(match.equals(original)) {
@@ -61,5 +66,17 @@ public class FilePathTabCompletion {
 		}
 		
 		return match;
+	}
+	
+	private String getStartDir(String prefix) {
+		if(prefix.startsWith("/")) {
+			return "";
+		}
+		
+		if(editorAdaptor.getConfiguration().get(Options.AUTO_CHDIR)) {
+			return editorAdaptor.getFileService().getCurrentFilePath();
+		}
+		
+		return editorAdaptor.getRegisterManager().getCurrentWorkingDirectory();
 	}
 }

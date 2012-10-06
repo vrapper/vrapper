@@ -81,6 +81,19 @@ public class CommandLineParser extends AbstractCommandParser {
                 return null;
             }
         };
+        Evaluator printWorkingDir = new Evaluator() {
+            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
+            	String dir;
+            	if(vim.getConfiguration().get(Options.AUTO_CHDIR)) {
+            		dir = vim.getFileService().getCurrentFilePath();
+            	}
+            	else {
+            		dir = vim.getRegisterManager().getCurrentWorkingDirectory();
+            	}
+                vim.getUserInterfaceService().setInfoMessage(dir);
+                return null;
+            }
+        };
         mapping = new EvaluatorMapping();
         // options
         mapping.add("set", buildConfigEvaluator());
@@ -140,6 +153,7 @@ public class CommandLineParser extends AbstractCommandParser {
         mapping.add("noh", nohlsearch);
         mapping.add("hlsearch", hlsearch);
         mapping.add("hls", hlsearch);
+        mapping.add("pwd", printWorkingDir);
     }
 
     private static Evaluator buildConfigEvaluator() {
@@ -243,6 +257,10 @@ public class CommandLineParser extends AbstractCommandParser {
         if(command.startsWith("find ")) {
         	//command starts with "find " so filename starts at index 5
         	return new FindFileCommand(command.substring(5));
+        }
+        if(command.startsWith("cd ")) {
+        	//command starts with "cd " so directory starts at index 3
+        	editor.getRegisterManager().setCurrentWorkingDirectory(command.substring(3));
         }
         
         return null;

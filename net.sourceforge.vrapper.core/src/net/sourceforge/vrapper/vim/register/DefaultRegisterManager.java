@@ -29,6 +29,7 @@ public class DefaultRegisterManager implements RegisterManager {
     private TextOperation lastSubstitution;
     private FindMotion findMotion;
 	private PositionlessSelection lastActiveSelection;
+	private String cwd = "/";
 
     public DefaultRegisterManager() {
         this.registers = new HashMap<String, Register>();
@@ -173,6 +174,14 @@ public class DefaultRegisterManager implements RegisterManager {
 
     public TextOperation getLastSubstitution() {
         return lastSubstitution;
+    }
+    
+    public void setCurrentWorkingDirectory(String cwd) {
+    	this.cwd = cwd;
+    }
+    
+    public String getCurrentWorkingDirectory() {
+    	return cwd;
     }
 
 }

@@ -43,4 +43,6 @@ public interface RegisterManager {
 	void setLastActiveSelection(PositionlessSelection instance);
 	PositionlessSelection getLastActiveSelection();
     public abstract void setDefaultRegister(Register register);
+    public void setCurrentWorkingDirectory(String cwd);
+    public String getCurrentWorkingDirectory();
 }
