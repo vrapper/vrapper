@@ -11,9 +11,11 @@ import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
 import net.sourceforge.vrapper.eclipse.commands.EclipseCommand;
 import net.sourceforge.vrapper.eclipse.keymap.AbstractEclipseSpecificStateProvider;
 import net.sourceforge.vrapper.keymap.State;
+import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.DeselectAllCommand;
 import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
+import net.sourceforge.vrapper.vim.commands.SetMarkCommand;
 import net.sourceforge.vrapper.vim.commands.TextObject;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 
@@ -35,10 +37,9 @@ public class CdtSpecificStateProvider extends AbstractEclipseSpecificStateProvid
     @SuppressWarnings("unchecked")
     protected State<Command> normalModeBindings() {
         State<TextObject> textObjects = NormalMode.textObjects();
-        Command gotoDecl = seq(edit("opendecl"), DeselectAllCommand.INSTANCE); // NOTE: deselect won't work in other editor
         return union(
                 state(
-            		leafCtrlBind(']', gotoDecl),
+            		leafCtrlBind(']', gotoDecl()),
 	                transitionBind('g',
 	                        leafBind('R', edit("text.rename.element")))
                 ),
@@ -54,6 +55,11 @@ public class CdtSpecificStateProvider extends AbstractEclipseSpecificStateProvid
         		transitionBind('g',
     				leafBind('c', editCAndLeaveVisual("toggle.comment")) )
         		);
+    }
+    
+    private static Command gotoDecl() {
+    	// NOTE: deselect won't work in other editor
+    	return seq(new SetMarkCommand(CursorService.LAST_JUMP_MARK), edit("opendecl"), DeselectAllCommand.INSTANCE);
     }
 	
 	private static Command editCAndLeaveVisual(String cmd) {
