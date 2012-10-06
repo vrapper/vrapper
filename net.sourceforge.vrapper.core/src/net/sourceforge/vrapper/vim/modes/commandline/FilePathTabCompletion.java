@@ -27,7 +27,7 @@ public class FilePathTabCompletion {
 	/**
 	 * Given a partial file path, return the closest match
 	 */
-	public String getNextMatch(String prefix, boolean searchPath) {
+	public String getNextMatch(String prefix, boolean searchPath, boolean dirsOnly) {
 		//first time through, or user modified the string
 		if(lastAttempt == null || ! lastAttempt.equals(prefix)) {
 			init(prefix);
@@ -44,6 +44,9 @@ public class FilePathTabCompletion {
 			}
 			match = editorAdaptor.getFileService().findFileInPath(original, lastAttempt, paths);
 		}
+		else if(dirsOnly) {
+			match = editorAdaptor.getFileService().getDirPathMatch(original, lastAttempt, getStartDir(original));
+		}
 		else {
 			match = editorAdaptor.getFileService().getFilePathMatch(original, lastAttempt, getStartDir(original));
 		}
@@ -56,7 +59,7 @@ public class FilePathTabCompletion {
 			//start iterating within that directory rather than restarting
 			if(numMatches == 1) {
 				init(match);
-				return getNextMatch(prefix, searchPath);
+				return getNextMatch(prefix, searchPath, dirsOnly);
 			}
 		}
 		else {

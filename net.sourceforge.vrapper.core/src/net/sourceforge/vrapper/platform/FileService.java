@@ -14,6 +14,8 @@ public interface FileService {
 	
 	String getFilePathMatch(String prefix, String previous, String startDir);
 	
+	String getDirPathMatch(String prefix, String previous, String startDir);
+	
 	boolean openFile(String filename);
 	
 	boolean findAndOpenFile(String filename, String[] paths);

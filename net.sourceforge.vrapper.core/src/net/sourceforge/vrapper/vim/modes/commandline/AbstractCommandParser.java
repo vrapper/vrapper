@@ -79,7 +79,7 @@ public abstract class AbstractCommandParser {
         	if(buffer.toString().startsWith(":e ")) {
 	        	//command starts with ":e " so filename starts at index 3
 	        	prefix = buffer.substring(3);
-        		prefix = tabComplete.getNextMatch(prefix, false);
+        		prefix = tabComplete.getNextMatch(prefix, false, false);
         		buffer.setLength(0);
         		buffer.append(":e " + prefix);
         		position = buffer.length();
@@ -87,9 +87,17 @@ public abstract class AbstractCommandParser {
         	else if(buffer.toString().startsWith(":find ")) {
 	        	//command starts with ":find " so filename starts at index 6
 	        	prefix = buffer.substring(6);
-        		prefix = tabComplete.getNextMatch(prefix, true);
+        		prefix = tabComplete.getNextMatch(prefix, true, false);
         		buffer.setLength(0);
         		buffer.append(":find " + prefix);
+        		position = buffer.length();
+        	}
+        	else if(buffer.toString().startsWith(":cd ")) {
+	        	//command starts with ":cd " so filename starts at index 4
+	        	prefix = buffer.substring(4);
+        		prefix = tabComplete.getNextMatch(prefix, false, true);
+        		buffer.setLength(0);
+        		buffer.append(":cd " + prefix);
         		position = buffer.length();
         	}
         	//else, user hit TAB for no reason

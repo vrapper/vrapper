@@ -125,7 +125,8 @@ public class CommandLineParser extends AbstractCommandParser {
         };
         Evaluator chDir = new Evaluator() {
             public Object evaluate(EditorAdaptor vim, Queue<String> command) {
-            	vim.getRegisterManager().setCurrentWorkingDirectory(command.poll());
+            	String dir = command.isEmpty() ? "/" : command.poll();
+            	vim.getRegisterManager().setCurrentWorkingDirectory(dir);
             	return null;
             }
         };
