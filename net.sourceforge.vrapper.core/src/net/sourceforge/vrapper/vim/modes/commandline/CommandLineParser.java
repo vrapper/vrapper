@@ -12,6 +12,7 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.CloseCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
+import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.ConfigCommand;
 import net.sourceforge.vrapper.vim.commands.ExCommandOperation;
 import net.sourceforge.vrapper.vim.commands.FindFileCommand;
@@ -94,6 +95,41 @@ public class CommandLineParser extends AbstractCommandParser {
                 return null;
             }
         };
+        Evaluator editFile = new Evaluator() {
+            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
+            	if(command.isEmpty()) {
+            		vim.getUserInterfaceService().setErrorMessage("No file name");
+            		return null;
+            	}
+            	
+                try {
+					new EditFileCommand(command.poll()).execute(vim);
+				} catch (CommandExecutionException e) {
+				}
+                return null;
+            }
+        };
+        Evaluator findFile = new Evaluator() {
+            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
+            	if(command.isEmpty()) {
+            		vim.getUserInterfaceService().setErrorMessage("No file name");
+            		return null;
+            	}
+            	
+            	try {
+					new FindFileCommand(command.poll()).execute(vim);
+				} catch (CommandExecutionException e) {
+				}
+            	return null;
+            }
+        };
+        Evaluator chDir = new Evaluator() {
+            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
+            	vim.getRegisterManager().setCurrentWorkingDirectory(command.poll());
+            	return null;
+            }
+        };
+        
         mapping = new EvaluatorMapping();
         // options
         mapping.add("set", buildConfigEvaluator());
@@ -154,6 +190,9 @@ public class CommandLineParser extends AbstractCommandParser {
         mapping.add("hlsearch", hlsearch);
         mapping.add("hls", hlsearch);
         mapping.add("pwd", printWorkingDir);
+        mapping.add("e", editFile);
+        mapping.add("find", findFile);
+        mapping.add("cd", chDir);
     }
 
     private static Evaluator buildConfigEvaluator() {
@@ -224,7 +263,6 @@ public class CommandLineParser extends AbstractCommandParser {
         }
         
         //check against list of known commands
-        //(the ones without arguments)
         StringTokenizer nizer = new StringTokenizer(command);
         Queue<String> tokens = new LinkedList<String>();
         while (nizer.hasMoreTokens()) {
@@ -248,19 +286,6 @@ public class CommandLineParser extends AbstractCommandParser {
     		return new TextOperationTextObjectCommand(
 				new ExCommandOperation(command), new SimpleSelection(null)
     		);
-        }
-        
-        if(command.startsWith("e ")) {
-        	//command starts with "e " so filename starts at index 2
-        	return new EditFileCommand(command.substring(2));
-        }
-        if(command.startsWith("find ")) {
-        	//command starts with "find " so filename starts at index 5
-        	return new FindFileCommand(command.substring(5));
-        }
-        if(command.startsWith("cd ")) {
-        	//command starts with "cd " so directory starts at index 3
-        	editor.getRegisterManager().setCurrentWorkingDirectory(command.substring(3));
         }
         
         return null;
