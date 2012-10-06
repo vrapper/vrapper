@@ -1,4 +1,38 @@
 <div class="newsbox">
+    <div class="date">2012-10-05</div>
+    <h4>Updates to Unstable Update Site</h4>
+    <p>I've updated the unstable update site with a few new features.  Someone made an innocent feature request
+    for the 'gf' command and I ended up implementing a bunch of features related to opening files.  These features
+    can be broken into two categories, the ':e' operations and the ':find' operations.</p>
+    <ul>
+        <li>:e operations</li>
+        <ul>
+            <li>:e &lt;filename&gt; - opens a file relative to current working directory</li>
+            <li>:cd &lt;directory&gt; - changes current working directory</li>
+            <li>:pwd - prints current working directory</li>
+            <li>:set autochdir - automatically change working directory to the parent of whatever file is active</li>
+        </ul>
+        <li>:find operations</li>
+        <ul>
+            <li>:find &lt;filename&gt; - opens a file from a directory in the path</li>
+            <li>:set path=&lt;comma-delimited list of dirs&gt; - list of directories to search in path</li>
+            <li>gf - takes filename under cursor, finds it in path, and opens the file</li>
+            <li>v_gf - similar to gf but takes the current visual selection as the filename</li>
+        </ul>
+    </ul>
+    <p>There are a couple things to note about my implementation.  I see Vrapper as an Eclipse plugin and not a generic
+    Vim replacement so each 'path' and 'current working directory' is rooted at the Eclipse Project root of whatever
+    file is active.  For example, ':e src/main/java/Foo.java'.  So, if you have two files open from two different
+    projects then the project directories searched will depend on which file is active when you enter command-line mode.</p>
+    
+    <p>I don't plan on ever searching absolute paths on the filesystem, but if people don't like being rooted at
+    the Eclipse Project level I could be convinced to go up one level further so you could specify the Eclipse
+    Project name as the first-level directory. For example, ':e MyProject/src/main/java/Foo.java'.</p>
+    
+    <p>Finally, ':e', ':find', and ':cd' all support tab-completion like in Vim.  I'm hoping to also add tab-completion
+    for command-line command names but I haven't done that yet.</p>
+</div>
+<div class="newsbox">
     <div class="date">2012-09-15</div>
     <h4>0.24.0 Released</h4>
     <p>I don't like sitting on unreleased features when I'm not working on anything new.  If I have a list
