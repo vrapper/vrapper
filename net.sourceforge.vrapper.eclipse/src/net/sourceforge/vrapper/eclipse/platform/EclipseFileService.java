@@ -93,14 +93,16 @@ public class EclipseFileService implements FileService {
      * Similar to getFilePathMatch, except only return directories.
      */
 	public String getDirPathMatch(String prefix, String previous, String startDir) {
-		String file = getFilePathMatch(prefix, previous, startDir);
-		if(file.equals(prefix) || file.endsWith("/")) {
-			//either no match or we found a dir
-			//either way, exit
-			return file;
-		}
-		else { //matched a file, try again
-			return getDirPathMatch(prefix, file, startDir);
+		String file;
+		while(true) {
+			file = getFilePathMatch(prefix, previous, startDir);
+			if(file.equals(prefix) || file.endsWith("/")) {
+				//no match or we found a dir
+				//either way, exit
+				return file;
+			}
+			//else, matched a file, try again
+			previous = file;
 		}
 	}
     
