@@ -1,7 +1,8 @@
 package net.sourceforge.vrapper.vim.modes.commandline;
 
-import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.key;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.ctrlKey;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.key;
+import static net.sourceforge.vrapper.vim.commands.Utils.characterType;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.platform.Platform;
@@ -22,6 +23,7 @@ public abstract class AbstractCommandParser {
     protected static final KeyStroke KEY_RETURN = key(SpecialKey.RETURN);
     protected static final KeyStroke KEY_ESCAPE = key(SpecialKey.ESC);
     protected static final KeyStroke KEY_CTRL_C = ctrlKey('c');
+    protected static final KeyStroke KEY_CTRL_W = ctrlKey('w');
     protected static final KeyStroke KEY_BACKSP = key(SpecialKey.BACKSPACE);
     protected static final KeyStroke KEY_DELETE = key(SpecialKey.DELETE);
     protected static final KeyStroke KEY_CTRL_V = key((char) 22);
@@ -74,6 +76,8 @@ public abstract class AbstractCommandParser {
             text = text.replace('\n', ' ').replace('\r', ' ');
             buffer.append(text);
             // TODO: on Mac OS, Cmd-V should be used
+        } else if (e.equals(KEY_CTRL_W)) {
+        	deleteWordBack();
         } else if (e.equals(KEY_TAB)) { //tab-completion for filenames
         	String prefix = null;
         	if(buffer.toString().startsWith(":e ")) {
@@ -139,6 +143,24 @@ public abstract class AbstractCommandParser {
         buffer.setLength(1);
         buffer.append(cmd);
         position = buffer.length();
+    }
+    
+    private void deleteWordBack() {
+    	int offset = buffer.length() -1;
+    	char c1, c2;
+    	while(offset > 0) {
+    		c1 = buffer.charAt(offset -1);
+    		c2 = buffer.charAt(offset);
+    		//this line was stolen from MoveWordLeft because
+    		//I can't call that class with arbitrary text
+    		if(!Character.isWhitespace(c2) && characterType(c1) != characterType(c2)) {
+    			buffer.setLength(offset);
+    			position = buffer.length();
+    			return;
+    		}
+    		offset--;
+    	}
+    	//if no word boundary found, leave initial character (e.g., ':') alone
     }
 
     public int getPosition() {
