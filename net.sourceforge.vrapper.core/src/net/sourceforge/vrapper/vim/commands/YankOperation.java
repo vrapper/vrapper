@@ -37,13 +37,24 @@ public class YankOperation extends SimpleTextOperation {
         editorAdaptor.getRegisterManager().getActiveRegister().setContent(content);
         if (contentType == ContentType.LINES && NormalMode.NAME.equals(editorAdaptor.getCurrentModeName())) {
             //if this is line-wise, move cursor to first line in selection but keep stickyColumn
+        	//(keep stickyColumn for the 'yy' case)
             int lineNo = editorAdaptor.getModelContent().getLineInformationOfOffset(range.getLeftBound().getModelOffset()).getNumber();
             Position stickyPosition = editorAdaptor.getCursorService().stickyColumnAtModelLine(lineNo);
             editorAdaptor.getCursorService().setPosition(stickyPosition, true);
         }
         else {
-            //move cursor to beginning of selection
-            editorAdaptor.getCursorService().setPosition(range.getLeftBound(), true);
+        	Position cursor = editorAdaptor.getCursorService().getPosition();
+        	Position newPos = range.getLeftBound();
+        	//if cursor is at beginning of selection, leave it there
+        	if(cursor.getModelOffset() != newPos.getModelOffset()) {
+        		if(editorAdaptor.getCurrentModeName().contains("visual")) {
+        			//bug in Eclipse Juno? setPosition(range.getLeftBound()) moves the cursor 
+        			//one character before the actual selection (previous line ending when linewise)
+        			newPos = editorAdaptor.getCursorService().newPositionForModelOffset(newPos.getModelOffset()+1);
+        		}
+        		//move cursor to beginning of selection
+        		editorAdaptor.getCursorService().setPosition(newPos, true);
+        	}
         }
     }
 
