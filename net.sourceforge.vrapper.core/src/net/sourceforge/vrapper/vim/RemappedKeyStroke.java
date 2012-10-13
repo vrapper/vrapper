@@ -37,6 +37,12 @@ public class RemappedKeyStroke implements KeyStroke {
     }
 
     @Override
+    public String toString() {
+        String key = getSpecialKey() == null ? Character.toString(getCharacter()) : getSpecialKey().toString();
+        return "RemappedKeyStroke(" + key + ")";
+    }
+
+    @Override
     public boolean equals(Object obj) {
         return delegate.equals(obj);
     }
