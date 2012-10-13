@@ -368,11 +368,14 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
 	                    		currentMode.handleKey(new RemappedKeyStroke(new SimpleKeyStroke(SpecialKey.BACKSPACE), false));
                     		}
                     	}
-                    	//mapping did not complete
+                    	//mapping did not complete or mapping is only one character long
                     	//(we've already displayed the pending characters, so don't re-apply them)
                     	else {
-                    		//display character that didn't complete the mapping and return
-                    		return currentMode.handleKey(key);
+                    		//display only the character that didn't complete the mapping
+                    		//(remove all others)
+                    		while(resultingKeyStrokes.size() > 1) {
+                    			resultingKeyStrokes.remove();
+                    		}
                     	}
                     }
                     //play all resulting key strokes
