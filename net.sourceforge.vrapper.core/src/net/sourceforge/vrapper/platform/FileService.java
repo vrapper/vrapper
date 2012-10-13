@@ -10,11 +10,11 @@ public interface FileService {
 	
 	boolean saveAll();
 	
-	String findFileInPath(String filename, String previous, String[] paths);
+	String findFileInPath(String filename, String previous, boolean reverse, String[] paths);
 	
-	String getFilePathMatch(String prefix, String previous, String startDir);
+	String getFilePathMatch(String prefix, String previous, boolean reverse, String startDir);
 	
-	String getDirPathMatch(String prefix, String previous, String startDir);
+	String getDirPathMatch(String prefix, String previous,  boolean reverse,String startDir);
 	
 	boolean openFile(String filename);
 	

@@ -6,4 +6,5 @@ public interface KeyStroke {
 	char getCharacter();
 	SpecialKey getSpecialKey();
 	boolean isVirtual();
+	boolean withShiftKey();
 }

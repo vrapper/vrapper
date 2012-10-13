@@ -1,5 +1,8 @@
 package net.sourceforge.vrapper.eclipse.platform;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 import net.sourceforge.vrapper.platform.FileService;
 
 import org.eclipse.core.commands.common.CommandException;
@@ -73,14 +76,19 @@ public class EclipseFileService implements FileService {
     /**
      * @param filename name of file to find
      * @param previous the previous match found (if any)
+     * @param reverse search forwards for next match or backwards
      * @param paths list of paths to search for filename
      * @return filename found within one of the paths
      */
-    public String findFileInPath(String filename, String previous, String[] paths) {
+    public String findFileInPath(String filename, String previous, boolean reverse, String[] paths) {
     	IContainer dir;
-    	for(String path : paths) {
+    	String[] toSearch = paths;
+    	if(reverse) {
+    		Collections.reverse(Arrays.asList(toSearch));
+    	}
+    	for(String path : toSearch) {
     		dir = resolvePath(path);
-    		String fullPath = findNextMatchWithPrefix(filename, previous, dir);
+    		String fullPath = findNextMatchWithPrefix(filename, previous, reverse, dir);
     		//findPath just returns filename if no match found
     		if( ! fullPath.equals(filename)) {
     			return fullPath;
@@ -92,10 +100,10 @@ public class EclipseFileService implements FileService {
     /**
      * Similar to getFilePathMatch, except only return directories.
      */
-	public String getDirPathMatch(String prefix, String previous, String startDir) {
+	public String getDirPathMatch(String prefix, String previous, boolean reverse, String startDir) {
 		String file;
 		while(true) {
-			file = getFilePathMatch(prefix, previous, startDir);
+			file = getFilePathMatch(prefix, previous, reverse, startDir);
 			if(file.equals(prefix) || file.endsWith("/")) {
 				//no match or we found a dir
 				//either way, exit
@@ -112,10 +120,11 @@ public class EclipseFileService implements FileService {
      * 
      * @param prefix A partial file path we need to match
      * @param previous The previous match we found, find the next one after it
+     * @param reverse search forwards for next match or backwards
      * @param startDir name of directory to start search in
      * @return Path to the next file (or directory) that has 'prefix' in its path
      */
-    public String getFilePathMatch(String prefix, String previous, String startDir) {
+    public String getFilePathMatch(String prefix, String previous, boolean reverse, String startDir) {
     	IProject project = getCurrentSelectedProject();
     	boolean absolutePath = false;
     	IContainer start;
@@ -139,7 +148,7 @@ public class EclipseFileService implements FileService {
     		start = project.getFolder(startDir);
     	}
     	
-    	String nextMatch = findNextMatchWithPrefix(prefix, previous, start);
+    	String nextMatch = findNextMatchWithPrefix(prefix, previous, reverse, start);
     	
     	//reapply leading '/'
     	if(absolutePath) {
@@ -154,14 +163,19 @@ public class EclipseFileService implements FileService {
      * necessary.
      * @param prefix partial file path to search for
      * @param previous previous match found (if any)
+     * @param reverse search forwards for next match or backwards
      * @param startDir parent directory to start search in
      * @return next file/folder (after 'previous') which contains 'prefix', or 'prefix' if none found
      */
-    private String findNextMatchWithPrefix(String prefix, String previous, IContainer startDir) {
+    private String findNextMatchWithPrefix(String prefix, String previous, boolean reverse, IContainer startDir) {
     	boolean foundPrevious = previous == null;
     	
     	try {
-			for(IResource resource : startDir.members()) {
+    		IResource[] toSearch = startDir.members();
+    		if(reverse) {
+    			Collections.reverse(Arrays.asList(toSearch));
+    		}
+			for(IResource resource : toSearch) {
 				String path = resource.getName();
 				if(resource.getType() == IResource.FOLDER) {
 					path += '/';
@@ -172,7 +186,7 @@ public class EclipseFileService implements FileService {
 					if(previous != null && previous.startsWith(path)) {
 						previous = previous.substring(path.length());
 					}
-					return path + findNextMatchWithPrefix(prefix.substring(path.length()), previous, (IFolder)resource);
+					return path + findNextMatchWithPrefix(prefix.substring(path.length()), previous, reverse, (IFolder)resource);
 				}
 				//keep looping until we hit the previous match
 				else if( ! foundPrevious) {
@@ -188,7 +202,7 @@ public class EclipseFileService implements FileService {
 			//but this time, don't look for previous
 			//(useful when 'previous' was in another path)
 			if( ! foundPrevious) {
-				return findNextMatchWithPrefix(prefix, null, startDir);
+				return findNextMatchWithPrefix(prefix, null, reverse, startDir);
 			}
 		} catch (CoreException e) {
 			return prefix;

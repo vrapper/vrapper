@@ -11,15 +11,30 @@ public class SimpleKeyStroke implements KeyStroke {
 
     private final char character;
     private final SpecialKey specialKey;
+    private final boolean shiftKey;
+    
+    public SimpleKeyStroke(char character, boolean shiftKey) {
+        this.character = character;
+        this.specialKey = null;
+        this.shiftKey = shiftKey;
+    }
+
+    public SimpleKeyStroke(SpecialKey key, boolean shiftKey) {
+        this.character = '\0';
+        this.specialKey = key;
+        this.shiftKey = shiftKey;
+    }
 
     public SimpleKeyStroke(char character) {
         this.character = character;
         this.specialKey = null;
+        this.shiftKey = false;
     }
 
     public SimpleKeyStroke(SpecialKey key) {
         this.character = '\0';
         this.specialKey = key;
+        this.shiftKey = false;
     }
 
     public char getCharacter() {
@@ -28,6 +43,10 @@ public class SimpleKeyStroke implements KeyStroke {
 
     public SpecialKey getSpecialKey() {
         return specialKey;
+    }
+    
+    public boolean withShiftKey() {
+    	return shiftKey;
     }
 
     @Override

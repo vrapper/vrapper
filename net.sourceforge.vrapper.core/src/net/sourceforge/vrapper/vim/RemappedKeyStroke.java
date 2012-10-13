@@ -27,6 +27,10 @@ public class RemappedKeyStroke implements KeyStroke {
     public SpecialKey getSpecialKey() {
         return delegate.getSpecialKey();
     }
+    
+    public boolean withShiftKey() {
+    	return delegate.withShiftKey();
+    }
 
     public boolean isRecursive() {
         return recursive;
