@@ -127,6 +127,8 @@ public class CommandLineParser extends AbstractCommandParser {
             public Object evaluate(EditorAdaptor vim, Queue<String> command) {
             	String dir = command.isEmpty() ? "/" : command.poll();
             	vim.getRegisterManager().setCurrentWorkingDirectory(dir);
+            	//immediately perform a pwd to show new dir
+            	mapping.get("pwd").evaluate(vim, command);
             	return null;
             }
         };
