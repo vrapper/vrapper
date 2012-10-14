@@ -1,11 +1,13 @@
 package net.sourceforge.vrapper.vim.register;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.PositionlessSelection;
 import net.sourceforge.vrapper.utils.Search;
+import net.sourceforge.vrapper.utils.StringUtils;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.TextOperation;
 import net.sourceforge.vrapper.vim.commands.motions.FindMotion;
@@ -176,8 +178,40 @@ public class DefaultRegisterManager implements RegisterManager {
         return lastSubstitution;
     }
     
-    public void setCurrentWorkingDirectory(String cwd) {
-    	this.cwd = cwd;
+    public void setCurrentWorkingDirectory(String newDir) {
+    	//absolute path (or initial set)
+    	if(newDir.startsWith("/") || "/".equals(this.cwd)) {
+    		this.cwd = newDir;
+    	}
+    	//relative path (append to current)
+    	else {
+    		if(!this.cwd.endsWith("/")) {
+    			this.cwd += "/";
+    		}
+    		this.cwd = this.cwd + newDir;
+    	}
+    	
+    	//delete ../ and the dir before it
+    	if(this.cwd.contains("..")) {
+    		String pieces[] = this.cwd.split("/");
+    		ArrayList<String> dirs = new ArrayList<String>();
+    		for(int i=0; i < pieces.length; i++) {
+    			if("..".equals(pieces[i])) {
+    				if( ! dirs.isEmpty()) {
+    					dirs.remove(dirs.size()-1);
+    				}
+    			}
+    			else {
+    				dirs.add(pieces[i]);
+    			}
+    		}
+    		if(dirs.isEmpty()) {
+    			this.cwd = "/";
+    		}
+    		else {
+    			this.cwd = StringUtils.join("/", dirs);
+    		}
+    	}
     }
     
     public String getCurrentWorkingDirectory() {
