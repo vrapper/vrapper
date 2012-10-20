@@ -265,7 +265,13 @@ public class EclipseFileService implements FileService {
     	IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 		IEditorDescriptor desc = PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor(fileToBeOpened.getName());
     	try {
-			page.openEditor(editorInput, desc.getId());
+    		if(desc == null) {
+    			//file doesn't have file extension, Eclipse can't guess its type
+    			page.openEditor(editorInput, "org.eclipse.ui.DefaultTextEditor");
+    		}
+    		else {
+    			page.openEditor(editorInput, desc.getId());
+    		}
 		} catch (PartInitException e) {
 			return false;
 		}
