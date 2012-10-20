@@ -41,6 +41,8 @@ public class CdtSpecificStateProvider extends AbstractEclipseSpecificStateProvid
                 state(
             		leafCtrlBind(']', gotoDecl()),
 	                transitionBind('g',
+	                        leafBind('d', gotoDecl()),
+	                        leafBind('D', gotoDecl()),
 	                        leafBind('R', edit("text.rename.element")))
                 ),
                 prefixedOperatorCmds('g', 'c', editCAndDeselect("toggle.comment"), textObjects),
