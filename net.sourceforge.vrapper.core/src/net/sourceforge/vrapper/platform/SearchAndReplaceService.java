@@ -24,9 +24,9 @@ public interface SearchAndReplaceService {
 	 * @param toFind String to find in the line
 	 * @param replace String to replace toFind with
 	 * @param flags Regex flags like 'g' for global and 'i' for insensitive case
-	 * @return true if match found (and replaced), false if no match
+	 * @return count of replacements performed
 	 */
-    boolean replace(LineInformation line, String toFind, String replace, String flags);
+    int replace(LineInformation line, String toFind, String replace, String flags);
 
 	/**
 	 * Highlights all matches of the given search.

@@ -65,49 +65,59 @@ public class SubstitutionOperation extends SimpleTextOperation {
 			return;
 	    }
 		
-		boolean success;
+		int numReplaces = 0;
+		int lineReplaceCount = 0;
 		if(startLine == endLine) {
 			LineInformation currentLine = editorAdaptor.getModelContent().getLineInformation(startLine);
 			//begin and end compound change so a single 'u' undoes all replaces
 			editorAdaptor.getHistory().beginCompoundChange();
-			success = performReplace(currentLine, find, replace, flags, editorAdaptor);
+			numReplaces = performReplace(currentLine, find, replace, flags, editorAdaptor);
 			editorAdaptor.getHistory().endCompoundChange();
 		}
 		else {
-			success = false;
 			LineInformation line;
+			int lineChanges = 0;
 			
 			//perform search individually on each line in the range
 			//(so :%s without 'g' flag runs once on each line)
 			editorAdaptor.getHistory().beginCompoundChange();
 			for(int i=startLine; i < endLine; i++) {
 				line = editorAdaptor.getModelContent().getLineInformation(i);
-				success = performReplace(line, find, replace, flags, editorAdaptor) || success;
+				lineChanges = performReplace(line, find, replace, flags, editorAdaptor);
+				if(lineChanges > 0) {
+					lineReplaceCount++;
+				}
+				numReplaces += lineChanges;
 			}
 			editorAdaptor.getHistory().endCompoundChange();
 		}
 		
-		if(! success) {
+		if(numReplaces == 0) {
 			editorAdaptor.getUserInterfaceService().setErrorMessage("'"+find+"' not found");
+		}
+		else if(lineReplaceCount > 0) {
+			editorAdaptor.getUserInterfaceService().setInfoMessage(
+					numReplaces + " substitutions on " + lineReplaceCount + " lines"
+			);
 		}
 		
 		//enable '&', 'g&', and ':s' features
 		editorAdaptor.getRegisterManager().setLastSubstitution(this);
 	}
     
-    private boolean performReplace(LineInformation line, String find,
+    private int performReplace(LineInformation line, String find,
     		String replace, String flags, EditorAdaptor editorAdaptor) {
     	//Eclipse regex doesn't handle '^' and '$' like Vim does.
     	//Time for some special cases!
 		if(find.equals("^")) {
 			//insert the text at the beginning of the line
             editorAdaptor.getModelContent().replace(line.getBeginOffset(), 0, replace);
-			return true;
+			return 1;
 		}
 		else if(find.equals("$")) {
 			//insert the text at the end of the line
             editorAdaptor.getModelContent().replace(line.getEndOffset(), 0, replace);
-			return true;
+			return 1;
 		}
 		else {
 			//let Eclipse handle the regex

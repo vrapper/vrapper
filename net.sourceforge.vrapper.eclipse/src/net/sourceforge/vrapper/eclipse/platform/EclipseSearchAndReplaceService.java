@@ -47,7 +47,7 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
         }
     }
     
-    public boolean replace(LineInformation line, String toFind, String replace, String flags) {
+    public int replace(LineInformation line, String toFind, String replace, String flags) {
     	int start = line.getBeginOffset();
     	int end = line.getEndOffset();
     	boolean replaceAll = flags.contains("g");
@@ -56,13 +56,13 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
     	//how many characters will be added/removed?
     	int lengthDiff = replace.length() - toFind.length();
     	int match;
-    	boolean matchFound = false;
+    	int numReplaces = 0;
     	try {
     		while(start < end) {
     			IRegion result = adapter.find(start, toFind, true, caseSensitive, false, true);
     			if(result != null && result.getOffset() < end) {
     				match = result.getOffset();
-    				matchFound = true;
+    				numReplaces++;
     				adapter.replace(replace, true);
     				if(replaceAll) {
     					//don't match on the replacement string
@@ -86,7 +86,7 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
         	//should we log something?
         }
     	
-    	return matchFound;
+    	return numReplaces;
     }
 
     private IRegion find(Search search, int begin) throws BadLocationException {
