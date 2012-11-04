@@ -179,8 +179,8 @@ public class DefaultRegisterManager implements RegisterManager {
     }
     
     public void setCurrentWorkingDirectory(String newDir) {
-    	//absolute path (or initial set)
-    	if(newDir.startsWith("/") || "/".equals(this.cwd)) {
+    	//if absolute path
+    	if(newDir.startsWith("/")) {
     		this.cwd = newDir;
     	}
     	//relative path (append to current)
