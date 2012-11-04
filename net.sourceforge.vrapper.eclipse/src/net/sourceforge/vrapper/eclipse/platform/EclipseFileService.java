@@ -148,8 +148,52 @@ public class EclipseFileService implements FileService {
     		start = project.getFolder(startDir);
     	}
     	
-    	String nextMatch = findNextMatchWithPrefix(prefix, previous, reverse, start);
+    	String unresolvedPathToPrefix = "";
+    	if(prefix.contains("../")) {
+    		//unresolved path still needs to be displayed to user
+    		//even though that isn't the path we use to search
+    		//(e.g., '../foo/../foo/bar' not resolved 'foo/bar')
+    		unresolvedPathToPrefix = prefix.substring(0, prefix.lastIndexOf('/') + 1);
+    		
+    		//after last '/' is the actual prefix we want to match (it may be "")
+    		prefix = prefix.substring(prefix.lastIndexOf('/') + 1);
+    		
+    		//previous is probably in the same unresolved dir as prefix
+    		if(previous != null && previous.startsWith(unresolvedPathToPrefix) ) {
+    			previous = previous.substring(unresolvedPathToPrefix.length());
+    		}
+    		
+    		//resolvePath doesn't know current working directory
+    		//must use absolute path
+    		if(absolutePath) {
+    			start = resolvePath("/"+unresolvedPathToPrefix);
+    		}
+    		else {
+    			start = resolvePath(startDir + "/" + unresolvedPathToPrefix);
+    		}
+    	}
     	
+    	String nextMatch;
+    	if("..".equals(prefix) || prefix.endsWith("/..")) {
+    		if(previous != null) { //if hitting tab on '../', return '..'
+    			//This is a horrible special case that tells the caller that
+    			//there was only one match and therefore it's a directory and
+    			//therefore you should go into that directory... horrible.
+    			//See rant in FilePathTabCompletion.java
+    			nextMatch = prefix;
+    		}
+    		else { //if hitting tab on '..', return '../'
+    			nextMatch = prefix + "/";
+    		}
+    	}
+    	else {
+    		nextMatch = findNextMatchWithPrefix(prefix, previous, reverse, start);
+    	}
+    	
+    	//reapply mess of unresolved '../'
+    	if(unresolvedPathToPrefix.length() > 0) {
+    		nextMatch = unresolvedPathToPrefix + nextMatch;
+    	}
     	//reapply leading '/'
     	if(absolutePath) {
     		nextMatch = "/" + nextMatch;
@@ -228,6 +272,7 @@ public class EclipseFileService implements FileService {
     		dir = resolvePath(path);
     		if(dir.findMember(filename) != null) {
     			fullPath = dir.getProjectRelativePath().toString() + '/' + filename;
+    			break;
     		}
     	}
     	return openFile(fullPath);
@@ -291,6 +336,36 @@ public class EclipseFileService implements FileService {
     	}
     	else if(path.equals(".") || path.equals("")) { //current file's directory
     		dir = getCurrentFileDir();
+    	}
+    	else if(path.contains("../")) { //path that moves into parent directories
+    		if(path.startsWith("/")) {
+    			//absolute path, start at project root
+    			dir = project;
+    		}
+    		else {
+    			//we don't know current working directory,
+    			//try current file dir instead
+    			dir = getCurrentFileDir();
+    		}
+    		
+    		String[] pieces = path.split("/");
+    		for(String piece : pieces) {
+    			if("".equals(piece)) {
+    				//go to next piece (leading '/' or intermediate '//')
+    				continue;
+    			}
+    			
+    			if("..".equals(piece)) {
+    				//if we're not at project root, move up to parent dir
+    				if(! dir.getProjectRelativePath().toString().equals("")) {
+    					dir = dir.getParent();
+    				}
+    			}
+    			else {
+    				//move down a dir
+    				dir = project.getFolder( dir.getProjectRelativePath().toString() + "/" + piece );
+    			}
+    		}
     	}
     	else { //normal directory
     		dir = project.getFolder(path);

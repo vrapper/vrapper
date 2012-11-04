@@ -51,6 +51,19 @@ public class FilePathTabCompletion {
 			match = editorAdaptor.getFileService().getFilePathMatch(original, lastAttempt, reverse, getStartDir(original));
 		}
 		
+		/**
+		 * **** I don't know how to make this cleaner!!! ****
+		 * In Vim, every time you hit <tab> it goes on to the next match.  Once you've
+		 * gone through all the matches, it displays the "prefix" that you originally
+		 * typed. However, if you hit <tab> and there was exactly one match then it
+		 * continues to display the one match rather than displaying the "prefix".
+		 * Except, if that one match is a directory, the next <tab> goes into that
+		 * directory rather than continuing to display the one match.  So, if the next
+		 * match is the prefix (we've wrapped around all possible matches) and there
+		 * was exactly one match prior to that, see if we can go into that directory.
+		 * This gets painful when trying to support ../<tab> because there is always
+		 * exactly one '../' so it's a bunch of special cases.
+		 */
 		if(match.equals(original)) {
 			//if we've looped back around, restart
 			lastAttempt = null;
