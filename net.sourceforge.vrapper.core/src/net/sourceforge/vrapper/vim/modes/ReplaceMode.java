@@ -1,8 +1,12 @@
 package net.sourceforge.vrapper.vim.modes;
 
+import java.util.HashMap;
+
+import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.platform.SimpleConfiguration.NewLine;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.CaretType;
+import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.ChangeToInsertModeCommand;
@@ -21,6 +25,9 @@ public class ReplaceMode extends InsertMode {
 
     public static final String NAME = "replace mode";
     public static final String DISPLAY_NAME = "REPLACE";
+    private int startCursorOffset;
+    private boolean afterNewline = false;
+    private HashMap<Integer, String> replacedChars = new HashMap<Integer, String>();
 
     public ReplaceMode(EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
@@ -40,13 +47,82 @@ public class ReplaceMode extends InsertMode {
     public void enterMode(ModeSwitchHint... args) throws CommandExecutionException {
         editorAdaptor.getEditorSettings().setReplaceMode(true);
         editorAdaptor.getCursorService().setCaret(CaretType.UNDERLINE);
+        startCursorOffset = editorAdaptor.getCursorService().getPosition().getModelOffset();
+        afterNewline = false;
         super.enterMode(args);
     }
 
     @Override
     public void leaveMode(ModeSwitchHint... hints) {
         editorAdaptor.getEditorSettings().setReplaceMode(false);
+        replacedChars.clear();
         super.leaveMode();
+    }
+    
+    /**
+     * Add some wacky logic to support backspace in Replace Mode. We're actually
+     * using Eclipse's Overwrite mode, which replaces characters moving forward
+     * but backspace works as usual.  In Vim, characters are replaced moving
+     * forward (same as Eclipse) but the backspace key restores the previous
+     * character rather than deleting it.  So, I have to hijack the backspace
+     * key press and restore the previous character without telling Eclipse.
+     */
+    @Override
+    public boolean handleKey(KeyStroke stroke) {
+    	int cursorOffset = editorAdaptor.getCursorService().getPosition().getModelOffset();
+    	
+    	if(stroke.equals(BACKSPACE)) { //restore the char that used to be here
+    		cursorOffset--;
+    		if(replacedChars.containsKey(cursorOffset)) {
+    			String toRestore = replacedChars.get(cursorOffset);
+    			
+    			if(afterNewline && VimUtils.isNewLine(toRestore)) {
+    				//don't restore the newline, but we can start
+    				//restoring characters on the next backspace
+    				editorAdaptor.getModelContent().replace(cursorOffset, 1, "");
+    				afterNewline = false;
+    			}
+    			else {
+    				editorAdaptor.getModelContent().replace(cursorOffset, 1, toRestore);
+    			}
+    			//move cursor to before the character we just replaced
+    			Position newPos = editorAdaptor.getCursorService().newPositionForModelOffset(cursorOffset);
+    			editorAdaptor.getCursorService().setPosition(newPos, true);
+    			return true;
+    		}
+    		else if(cursorOffset < startCursorOffset) {
+    			//backspace before our start position,
+    			//just move the cursor (matches Vim behavior)
+    			Position newPos = editorAdaptor.getCursorService().newPositionForModelOffset(cursorOffset);
+    			editorAdaptor.getCursorService().setPosition(newPos, true);
+    			return true;
+    		}
+    		else {
+                //We don't have a character to restore, perform the backspace as
+                //usual even though that may not be the desired behavior. This
+                //can happen if someone pastes a register or executes a mapping.
+                //The number of key strokes entered doesn't match the number of
+                //characters inserted so we didn't get a chance to save off the
+    			//original characters that should be restored.
+    			return super.handleKey(stroke);
+    		}
+    	}
+    	else { //grab the current char before replacing it
+    		String toReplace = editorAdaptor.getModelContent().getText(cursorOffset, 1);
+    		
+    		//If inserting characters after a newline, there are no characters to
+    		//restore.  We don't want to grab the characters from the next line
+    		//(which is what the text at this offset would be).
+    		if(!afterNewline) {
+    			replacedChars.put(cursorOffset, toReplace);
+    		}
+    		
+    		if(VimUtils.isNewLine(toReplace)) {
+    			afterNewline = true;
+    		}
+    		
+            return super.handleKey(stroke);
+    	}
     }
     
     public static class ChangeToReplaceModeCommand extends ChangeToInsertModeCommand {
