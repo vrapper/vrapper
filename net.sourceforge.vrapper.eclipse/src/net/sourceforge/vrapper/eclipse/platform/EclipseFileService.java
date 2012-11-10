@@ -325,7 +325,7 @@ public class EclipseFileService implements FileService {
     }
     
     public String getCurrentFilePath() {
-    	return getCurrentFileDir().getProjectRelativePath().toString();
+    	return "/" + getCurrentFileDir().getProjectRelativePath().toString();
     }
     
     private IContainer resolvePath(String path) {
