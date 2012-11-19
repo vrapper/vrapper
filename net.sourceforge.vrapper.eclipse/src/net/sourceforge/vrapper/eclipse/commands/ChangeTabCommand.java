@@ -2,14 +2,6 @@ package net.sourceforge.vrapper.eclipse.commands;
 
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.Command;
-import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
-
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IEditorReference;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PlatformUI;
 
 /**
  * Emulating vim gt/gT tab cycling behavior.
