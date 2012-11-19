@@ -26,6 +26,7 @@ import net.sourceforge.vrapper.vim.commands.SaveAllCommand;
 import net.sourceforge.vrapper.vim.commands.SaveCommand;
 import net.sourceforge.vrapper.vim.commands.SetOptionCommand;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
+import net.sourceforge.vrapper.vim.commands.SortCommand;
 import net.sourceforge.vrapper.vim.commands.SubstitutionOperation;
 import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
 import net.sourceforge.vrapper.vim.commands.UndoCommand;
@@ -56,6 +57,7 @@ public class CommandLineParser extends AbstractCommandParser {
         Evaluator inoremap = new KeyMapper.Map(false, InsertMode.KEYMAP_NAME);
         Evaluator imap = new KeyMapper.Map(true, InsertMode.KEYMAP_NAME);
         Command save = SaveCommand.INSTANCE;
+        Command sort = SortCommand.INSTANCE;
         Command saveAll = SaveAllCommand.INSTANCE;
         CloseCommand close = CloseCommand.CLOSE;
         Command saveAndClose = new VimCommandSequence(save, close);
@@ -196,6 +198,8 @@ public class CommandLineParser extends AbstractCommandParser {
         mapping.add("e", editFile);
         mapping.add("find", findFile);
         mapping.add("cd", chDir);
+        // Sort lines in the file based on ascii values
+        mapping.add("sort", sort);
     }
 
     private static Evaluator buildConfigEvaluator() {
