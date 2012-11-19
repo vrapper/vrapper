@@ -58,8 +58,6 @@ public class SortCommand extends CountIgnoringNonRepeatableCommand {
     			editorLine = editorLine.substring(0, editorLine.length() - 1);
     		replacementText += editorLine;
     	}
-    	
-		System.out.println(replacementText);
     
 		editorAdaptor.getModelContent().replace(0, length, replacementText);
     }
