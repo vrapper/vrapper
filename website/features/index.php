@@ -1,6 +1,6 @@
 <?php $page="features"; include("../includes/header.html"); ?>
 <div id="features">
-<h3 class="implemented">Implemented as of 0.24.0:</h3>
+<h3 class="implemented">Implemented as of 0.26.0:</h3>
     <ul>
         <li>
             Operators (d, c, y, p, ...
@@ -52,6 +52,17 @@
         </li>
         <li>
             Search / Replace with ":%s/..."
+        </li>
+    </ul>
+    <h3 class="considered">Considered for future versions:</h3>
+    If I can ever figure out how to perform these operations with the Eclipse API I'll add these features.
+    Until that time, I'm hoping someone else might come along with a solution for me.
+    <ul>
+        <li>
+            Visual Block Selection
+        </li>
+        <li>
+            Split Editor Views
         </li>
     </ul>
 </div>
