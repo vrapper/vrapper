@@ -45,8 +45,11 @@ public class SortCommand extends CountIgnoringNonRepeatableCommand {
     			s = "";
     		}
     	}
+    
+    	// If the last line is a new line, we need to explicitly add that
+    	if(nl.equalsIgnoreCase(editorContentArr[editorContentArr.length - 1] + ""))
+			editorContentList.add(nl);
     	
-    	// TODO: Still running into some problems with newlines, but mostly working
     	Collections.sort(editorContentList);
   
     	int size = editorContentList.size();

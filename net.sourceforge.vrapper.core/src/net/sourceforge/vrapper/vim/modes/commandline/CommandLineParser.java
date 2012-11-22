@@ -57,10 +57,10 @@ public class CommandLineParser extends AbstractCommandParser {
         Evaluator inoremap = new KeyMapper.Map(false, InsertMode.KEYMAP_NAME);
         Evaluator imap = new KeyMapper.Map(true, InsertMode.KEYMAP_NAME);
         Command save = SaveCommand.INSTANCE;
-        Command sort = SortCommand.INSTANCE;
         Command saveAll = SaveAllCommand.INSTANCE;
         CloseCommand close = CloseCommand.CLOSE;
         Command saveAndClose = new VimCommandSequence(save, close);
+        Command sort = SortCommand.INSTANCE;
         Evaluator unmap = new KeyMapper.Unmap(AbstractVisualMode.KEYMAP_NAME, NormalMode.KEYMAP_NAME);
         Evaluator nunmap = new KeyMapper.Unmap(NormalMode.KEYMAP_NAME);
         Evaluator vunmap = new KeyMapper.Unmap(AbstractVisualMode.KEYMAP_NAME);
