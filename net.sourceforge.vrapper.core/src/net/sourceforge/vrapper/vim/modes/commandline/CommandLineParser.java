@@ -60,7 +60,6 @@ public class CommandLineParser extends AbstractCommandParser {
         Command saveAll = SaveAllCommand.INSTANCE;
         CloseCommand close = CloseCommand.CLOSE;
         Command saveAndClose = new VimCommandSequence(save, close);
-        Command sort = SortCommand.INSTANCE;
         Evaluator unmap = new KeyMapper.Unmap(AbstractVisualMode.KEYMAP_NAME, NormalMode.KEYMAP_NAME);
         Evaluator nunmap = new KeyMapper.Unmap(NormalMode.KEYMAP_NAME);
         Evaluator vunmap = new KeyMapper.Unmap(AbstractVisualMode.KEYMAP_NAME);
@@ -122,6 +121,31 @@ public class CommandLineParser extends AbstractCommandParser {
 					new FindFileCommand(command.poll()).execute(vim);
 				} catch (CommandExecutionException e) {
 				}
+            	return null;
+            }
+        };
+        Evaluator sort = new Evaluator() {
+            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
+				Command sort = new SortCommand();
+				
+				// vanilla sort
+            	if(command.isEmpty()) {
+            		try {
+            			sort.execute(vim);
+            		} catch (CommandExecutionException e) {
+            			vim.getUserInterfaceService().setErrorMessage("Sort failed.");
+            		}
+            		return null;
+            	}
+        	
+				// Potentially numeric sort
+        		String option = command.poll();
+            	try {
+					new SortCommand(option).execute(vim);
+				} catch (CommandExecutionException e) {
+            		vim.getUserInterfaceService().setErrorMessage("Invalid argument: " + option);
+				}
+            	
             	return null;
             }
         };
@@ -199,7 +223,9 @@ public class CommandLineParser extends AbstractCommandParser {
         mapping.add("find", findFile);
         mapping.add("cd", chDir);
         // Sort lines in the file based on ascii values
+        mapping.add("sor", sort);
         mapping.add("sort", sort);
+        mapping.add("sort!", sort);
     }
 
     private static Evaluator buildConfigEvaluator() {
@@ -268,6 +294,9 @@ public class CommandLineParser extends AbstractCommandParser {
         if(command.length() > 1 && LineRangeOperationCommand.isLineRangeOperation(command)) {
         	return new LineRangeOperationCommand(command);
         }
+      
+        // Reverse sort toggle will just be treated as just another argument
+        command = command.replace("^sort!", "sort !");
         
         //check against list of known commands
         StringTokenizer nizer = new StringTokenizer(command);
@@ -294,6 +323,7 @@ public class CommandLineParser extends AbstractCommandParser {
 				new ExCommandOperation(command), new SimpleSelection(null)
     		);
         }
+       
         
         return null;
     }
