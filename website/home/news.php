@@ -1,4 +1,24 @@
 <div class="newsbox">
+    <div class="date">2012-11-24</div>
+    <h4>0.26.1 Rushed out the door</h4>
+    <p>I released 0.26.0 last week but today I found a defect re-introduced that
+    a lot of people had issues with the first time around.  So I've rushed a
+    0.26.1 release in the hopes of delivering a fix before anyone noticed I re-introduced
+    that defect.</p>
+    
+    <p>The problem was with multi-character mappings while in Eclipse's SmartInsert mode.
+    A surprising number of people use mappings like "imap jj &lt;ESC&gt;" for exiting insert mode.
+    There was a long-standing defect where entering the first character 'j' while inside parentheses,
+    and not completing the mapping, would jump the cursor in front of that first 'j'.  So if you had the 'jj'
+    mapping and typed something innocuous like "for(int j=0;" you would end up with "for(int =0;j)".</p>
+    
+    <p> The root of the issue is with Eclipse helpfully inserting that closing ')' for you.  It somehow throws
+    off Vrapper and offsets the cursor.  This means I can't unit test it because it needs Eclipse
+    interjecting itself for the defect to occur.  Which means it's easy to miss if I re-introduce it.</p>
+    
+    <p>So anyway, defect re-introduced, defect re-fixed (I hope).</p>
+</div>
+<div class="newsbox">
     <div class="date">2012-11-18</div>
     <h4>0.26.0 Released</h4>
     <p>I made a couple more fixes and features since my last news post.  I feel pretty confident in those changes
