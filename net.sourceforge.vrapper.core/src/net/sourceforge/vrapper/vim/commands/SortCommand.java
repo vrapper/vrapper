@@ -88,7 +88,7 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
  *
  */
 public class SortCommand extends CountIgnoringNonRepeatableCommand {
-	
+	/*
 	private static enum Options {
 		
 		Options() {
@@ -105,10 +105,10 @@ public class SortCommand extends CountIgnoringNonRepeatableCommand {
     
 	}
 	
+    */
     private boolean numeric = false;
     
     private boolean reversed = false;
-    
     private boolean ignoreCase = false;
     
     private boolean hex = false;
@@ -130,10 +130,10 @@ public class SortCommand extends CountIgnoringNonRepeatableCommand {
      */
     public SortCommand(String option) throws CommandExecutionException {
         super();
-        if(NUMERIC_SORT.equalsIgnoreCase(option))
-        	numeric = true;
-        else
-        	throw new CommandExecutionException("Invalid argument: " + option);
+        // if(NUMERIC_SORT.equalsIgnoreCase(option))
+        	// numeric = true;
+        //else
+        	//throw new CommandExecutionException("Invalid argument: " + option);
     }
     
 	public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
