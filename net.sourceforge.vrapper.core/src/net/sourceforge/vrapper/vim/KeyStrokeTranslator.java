@@ -55,9 +55,11 @@ public class KeyStrokeTranslator {
                 // should not be evaluated again
                 boolean recursive = !unconsumedKeyStrokes.isEmpty() || lastValue != null;
                 unconsumedKeyStrokes.add(new RemappedKeyStroke(key, recursive));
+                numUnconsumed++;
             }
             if (trans.getNextState() == null) {
-                prependUnconsumed();
+            	//mapping did not complete
+            	unconsumedKeyStrokes.clear();
                 prependLastValue();
                 currentState = null;
             } else {
@@ -65,8 +67,7 @@ public class KeyStrokeTranslator {
             }
         } else {
             // mapping ends here
-            unconsumedKeyStrokes.add(new RemappedKeyStroke(key, true));
-            prependUnconsumed();
+        	unconsumedKeyStrokes.clear();
             prependLastValue();
             currentState = null;
         }
@@ -80,11 +81,6 @@ public class KeyStrokeTranslator {
     public int numUnconsumedKeys() {
     	//how many keys are being swallowed by this completed mapping?
         return numUnconsumed;
-    }
-
-    private void prependUnconsumed() {
-        resultingKeyStrokes.addAll(0, unconsumedKeyStrokes);
-        unconsumedKeyStrokes.clear();
     }
 
     private void prependLastValue() {
