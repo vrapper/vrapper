@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<fragment>
+   <extension
+         point="net.sourceforge.vrapper.eclipse.pssp">
+      <keymap-provider
+            editor-must-subclass="org.python.pydev.editor.PyEdit"
+            id="net.sourceforge.vrapper.eclipse.pydev.keymap.PyDevSpecificStateProvider"
+            name="PyDev-specific provider"
+            provider-class="net.sourceforge.vrapper.eclipse.pydev.keymap.PyDevSpecificStateProvider">
+      </keymap-provider>
+   </extension>
+
+</fragment>
