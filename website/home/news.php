@@ -1,4 +1,28 @@
 <div class="newsbox">
+    <div class="date">2012-11-26</div>
+    <h4>Experimental Optional PyDev Plugin Created</h4>
+    <p>Vrapper has a couple optional plugins to provide support for some Vim
+    commands which require knowledge of the underlying programming language.  So
+    far, we only had plugins for Java (JDT) and C/C++ (CDT). I realized today
+    that it would be trivial to create an optional plugin for PyDev support and
+    a couple people might actually appreciate it.  So I've created an optional
+    PyDev Vrapper plugin and tossed it up on the unstable update site for
+    testing.</p>
+    
+    <p>The PyDev plugin only provides a couple extra commands (similar to our JDT and CDT plugins):</p>
+    <ul>
+        <li>Ctrl+], gd, gD = Go To Declaration</li>
+        <li>gR = Rename Element</li>
+        <li>gc&lt;text object&gt; = Toggle Comment</li>
+        <li>gcc = Toggle Comment (current line)</li>
+        <li>gc also works in visual mode</li>
+    </ul>
+    
+    <p>So there you have it.  Not a whole lot of extra features but some people might find 
+    use for them while writing Python.  Give it a try and hopefully it will become stable enough
+    to include in the next release of Vrapper!</p>
+</div>
+<div class="newsbox">
     <div class="date">2012-11-24</div>
     <h4>0.26.1 Rushed out the door</h4>
     <p>I released 0.26.0 last week but today I found a defect re-introduced that
