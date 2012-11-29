@@ -3,6 +3,7 @@ package net.sourceforge.vrapper.vim.modes.commandline;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.StringTokenizer;
+import java.util.regex.Pattern;
 
 import net.sourceforge.vrapper.platform.Configuration.Option;
 import net.sourceforge.vrapper.utils.Position;
@@ -14,12 +15,12 @@ import net.sourceforge.vrapper.vim.commands.CloseCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.ConfigCommand;
+import net.sourceforge.vrapper.vim.commands.EditFileCommand;
 import net.sourceforge.vrapper.vim.commands.ExCommandOperation;
 import net.sourceforge.vrapper.vim.commands.FindFileCommand;
 import net.sourceforge.vrapper.vim.commands.LineRangeOperationCommand;
 import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
-import net.sourceforge.vrapper.vim.commands.EditFileCommand;
 import net.sourceforge.vrapper.vim.commands.RedoCommand;
 import net.sourceforge.vrapper.vim.commands.RepeatLastSubstitutionCommand;
 import net.sourceforge.vrapper.vim.commands.SaveAllCommand;
@@ -126,24 +127,26 @@ public class CommandLineParser extends AbstractCommandParser {
         };
         Evaluator sort = new Evaluator() {
             public Object evaluate(EditorAdaptor vim, Queue<String> command) {
-				Command sort = new SortCommand();
-				
-				// vanilla sort
-            	if(command.isEmpty()) {
-            		try {
-            			sort.execute(vim);
-            		} catch (CommandExecutionException e) {
-            			vim.getUserInterfaceService().setErrorMessage("Sort failed.");
-            		}
-            		return null;
-            	}
-        	
-				// Potentially numeric sort
-        		String option = command.poll();
+        		String commandStr = "";
+            	while(command.size() > 0)
+            		commandStr += command.poll().trim();
+        				
+    			String[] tmp = commandStr.split("");
+    			String[] optionsArr = new String[tmp.length];
+    			int count = 0;
+    			for(String option : tmp) {
+    				option = option.trim();
+    				if(!option.isEmpty()) {
+    					optionsArr[count] = option;
+    					++count;
+    				}
+    			}
+        		
             	try {
-					new SortCommand(option).execute(vim);
+					new SortCommand(optionsArr).execute(vim);
 				} catch (CommandExecutionException e) {
-            		vim.getUserInterfaceService().setErrorMessage("Invalid argument: " + option);
+					// TODO: Report which argument was invalid
+            		vim.getUserInterfaceService().setErrorMessage("Invalid argument");
 				}
             	
             	return null;
@@ -291,31 +294,28 @@ public class CommandLineParser extends AbstractCommandParser {
         
         //not a number but starts with a number, $, /, ?, +, -, ', . (dot), or , (comma)
         //might be a line range operation
-        if(command.length() > 1 && LineRangeOperationCommand.isLineRangeOperation(command)) {
+        if(command.length() > 1 && LineRangeOperationCommand.isLineRangeOperation(command))
         	return new LineRangeOperationCommand(command);
-        }
-      
+        
         // Reverse sort toggle will just be treated as just another argument
-        command = command.replace("^sort!", "sort !");
+    	command = Pattern.compile("^sort!").matcher(command).replaceAll("sort !");
         
         //check against list of known commands
         StringTokenizer nizer = new StringTokenizer(command);
         Queue<String> tokens = new LinkedList<String>();
-        while (nizer.hasMoreTokens()) {
+        while(nizer.hasMoreTokens())
             tokens.add(nizer.nextToken().trim());
-        }
+        
         EvaluatorMapping platformCommands = editor.getPlatformSpecificStateProvider().getCommands();
-        if (platformCommands != null && platformCommands.contains(tokens.peek())) {
+        if(platformCommands != null && platformCommands.contains(tokens.peek()))
             platformCommands.evaluate(editor, tokens);
-        } else {
+        else
             mapping.evaluate(editor, tokens);
-        }
         
         //is this a substitution definition?
         Command substitution = parseSubstitution(command);
-        if(substitution != null) {
+        if(substitution != null)
         	return substitution;
-        }
         
         //is this an Ex command?
         if(command.length() > 1 && (command.startsWith("g") || command.startsWith("v"))) {
