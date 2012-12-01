@@ -862,6 +862,100 @@ public class NormalModeTests extends CommandTestCase {
                 "fun(call",')',";",
                 "fun",';',"");
 	}
+	
+	@Test
+	public void test_increment() throws Exception {
+	    checkCommand(forKeySeq("<C-a>"),
+	            "xx",'3',"4",
+	            "xx3",'5',"");
+	    
+	    checkCommand(forKeySeq("<C-a>"),
+	            "xx",'3',"4x",
+	            "xx3",'5',"x");
+	    
+	    checkCommand(forKeySeq("<C-a>"),
+	            "xx",'x',"xx34",
+	            "xxxxx3",'5',"");
+	    
+	    checkCommand(forKeySeq("<C-a>"),
+	            "xx",'x',"xx34x",
+	            "xxxxx3",'5',"x");
+	    
+	    checkCommand(forKeySeq("<C-a>"),
+	            "xx",'x',"xxx",
+	            "xx",'x',"xxx");
+	    
+	    checkCommand(forKeySeq("<C-a>"),
+	            "11",'1',"111",
+	            "11111",'2',"");
+	    
+	    checkCommand(forKeySeq("<C-a>"),
+	            "",'9',"",
+	            "1",'0',"");
+	    
+	    checkCommand(forKeySeq("<C-a>"),
+	            "10",'.',"1",
+	            "10.",'2',"");
+	    
+	    checkCommand(forKeySeq("<C-a>"),
+	            "10",'.',"9",
+	            "10.1",'0',"");
+	    
+	    checkCommand(forKeySeq("<C-a>"),
+	            "",'0',"",
+	            "",'1',"");
+	    
+	    checkCommand(forKeySeq("<C-a>"),
+	            "-",'1',"",
+	            "",'0',"");
+	}
+	
+	@Test
+	public void test_decrement() throws Exception {
+	    checkCommand(forKeySeq("<C-x>"),
+	            "xx",'3',"4",
+	            "xx3",'3',"");
+	    
+	    checkCommand(forKeySeq("<C-x>"),
+	            "xx",'3',"4x",
+	            "xx3",'3',"x");
+	    
+	    checkCommand(forKeySeq("<C-x>"),
+	            "xx",'x',"xx34",
+	            "xxxxx3",'3',"");
+	    
+	    checkCommand(forKeySeq("<C-x>"),
+	            "xx",'x',"xx34x",
+	            "xxxxx3",'3',"x");
+	    
+	    checkCommand(forKeySeq("<C-x>"),
+	            "xx",'x',"xxx",
+	            "xx",'x',"xxx");
+	    
+	    checkCommand(forKeySeq("<C-x>"),
+	            "11",'1',"111",
+	            "11111",'0',"");
+	    
+	    checkCommand(forKeySeq("<C-x>"),
+	            "1",'0',"",
+	            "",'9',"");
+	    
+	    checkCommand(forKeySeq("<C-x>"),
+	            "10",'.',"1",
+	            "10.",'0',"");
+	    
+	    checkCommand(forKeySeq("<C-x>"),
+	            "10.1",'0',"",
+	            "10.",'9',"");
+	    
+	    checkCommand(forKeySeq("<C-x>"),
+	            "",'0',"",
+	            "-",'1',"");
+	    
+	    checkCommand(forKeySeq("<C-x>"),
+	            "-",'1',"",
+	            "-",'2',"");
+	}
 
 	@Test
 	public void test_cfx() throws Exception {
