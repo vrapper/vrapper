@@ -12,7 +12,7 @@ public class IncrementDecrementCommand extends CountAwareCommand {
 	
 	private boolean increment;
 	
-	public IncrementDecrementCommand(boolean increment) {
+	private IncrementDecrementCommand(boolean increment) {
 		this.increment = increment;
 	}
 
@@ -46,10 +46,10 @@ public class IncrementDecrementCommand extends CountAwareCommand {
 	 	}
 	 	
 	 	if(increment) {
-	 		numVal++;
+	 		numVal += count;
 	 	}
 	 	else {
-	 		numVal--;
+	 		numVal -= count;
 	 	}
 	 	//convert back to string
 	 	numStr = ""+numVal;
