@@ -920,6 +920,10 @@ public class NormalModeTests extends CommandTestCase {
 	    checkCommand(forKeySeq("5<C-a>"),
 	            "-",'2',"",
 	            "",'3',"");
+	    
+	    checkCommand(forKeySeq("<C-a>"),
+	            "xx",'x',"xx34xx0x234",
+	            "xxxxx3",'5',"xx0x234");
 	}
 	
 	@Test
@@ -1109,6 +1113,10 @@ public class NormalModeTests extends CommandTestCase {
 	    checkCommand(forKeySeq("5<C-a>"),
 	            "",'0',"xabc",
 	            "0xac",'1',"");
+	    
+	    checkCommand(forKeySeq("<C-a>"),
+	            "xx",'x',"x0x234xx34",
+	            "xxxx0x23",'5',"xx34");
 	    
 		//decrement
 	    checkCommand(forKeySeq("<C-x>"),

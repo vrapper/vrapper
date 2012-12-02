@@ -46,13 +46,24 @@ public class IncrementDecrementCommand extends CountAwareCommand {
 	 	LineInformation line = content.getLineInformationOfOffset(cursor.getModelOffset()); 
 	 	int cursorIndex = cursor.getModelOffset() - line.getBeginOffset();
 	 	String text = content.getText(line.getBeginOffset(), line.getLength()); 
+	 	NumBoundary boundary = null;
 	 	
-	 	//first, try hex
-	 	//(it's a superset of the decimal and octal characters)
-	 	NumBoundary boundary = findHex(text, cursorIndex);
-	 	if(boundary == null) {
-	 		//no hex, try decimal and octal
-	 		boundary = findIntegers(text, cursorIndex);
+	 	//Look for both hex and integers (decimal and octal).
+	 	//Hex is a superset of the integer characters
+	 	//so it'll have a different boundary.
+	 	NumBoundary hexBoundary = findHex(text, cursorIndex);
+	 	NumBoundary numBoundary = findIntegers(text, cursorIndex);
+	 	
+	 	//if we found hex, but integers appear first (and aren't the '0' in '0x')
+	 	//then use the integer boundary instead
+	 	//(e.g., 'xxx123xxx0x456' should increment '123', not '0x456')
+	 	if(numBoundary == null ||
+	 			(hexBoundary != null && (numBoundary.numStartIndex >= hexBoundary.numStartIndex ||
+	 			numBoundary.numStartIndex == hexBoundary.numStartIndex - 2))) {
+	 		boundary = hexBoundary;
+	 	}
+	 	else {
+	 		boundary = numBoundary;
 	 	}
 	 	
 	 	String numStr;
