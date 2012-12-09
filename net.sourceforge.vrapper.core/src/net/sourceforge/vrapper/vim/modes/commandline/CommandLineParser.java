@@ -58,7 +58,9 @@ public class CommandLineParser extends AbstractCommandParser {
         Command save = SaveCommand.INSTANCE;
         Command saveAll = SaveAllCommand.INSTANCE;
         CloseCommand close = CloseCommand.CLOSE;
+        CloseCommand closeAll = CloseCommand.CLOSE_ALL;
         Command saveAndClose = new VimCommandSequence(save, close);
+        Command saveAndCloseAll = new VimCommandSequence(saveAll, closeAll);
         Evaluator unmap = new KeyMapper.Unmap(AbstractVisualMode.KEYMAP_NAME, NormalMode.KEYMAP_NAME);
         Evaluator nunmap = new KeyMapper.Unmap(NormalMode.KEYMAP_NAME);
         Evaluator vunmap = new KeyMapper.Unmap(AbstractVisualMode.KEYMAP_NAME);
@@ -142,9 +144,18 @@ public class CommandLineParser extends AbstractCommandParser {
         mapping.add("x", saveAndClose);
         mapping.add("q", close);
         mapping.add("q!", CloseCommand.FORCED_CLOSE);
+        mapping.add("qa", closeAll);
+        mapping.add("qa!", CloseCommand.FORCED_CLOSE_ALL);
+        mapping.add("qall", closeAll);
+        mapping.add("qall!", CloseCommand.FORCED_CLOSE_ALL);
+        mapping.add("quitall", closeAll);
+        mapping.add("quitall!", CloseCommand.FORCED_CLOSE_ALL);
         mapping.add("wa", saveAll);
         mapping.add("wal", saveAll);
         mapping.add("wall", saveAll);
+        mapping.add("wqa", saveAndCloseAll);
+        mapping.add("wqal", saveAndCloseAll);
+        mapping.add("wqall", saveAndCloseAll);
         // non-recursive mapping
         mapping.add("noremap", noremap);
         mapping.add("no", noremap);

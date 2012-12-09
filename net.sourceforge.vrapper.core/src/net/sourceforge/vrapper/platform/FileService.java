@@ -5,6 +5,8 @@ public interface FileService {
 	boolean isEditable();
 
 	boolean close(boolean force);
+	
+	boolean closeAll(boolean force);
 
 	boolean save();
 	
