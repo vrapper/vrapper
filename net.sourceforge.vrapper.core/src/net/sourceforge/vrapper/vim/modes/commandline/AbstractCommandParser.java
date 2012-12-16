@@ -24,9 +24,9 @@ public abstract class AbstractCommandParser {
     protected static final KeyStroke KEY_ESCAPE = key(SpecialKey.ESC);
     protected static final KeyStroke KEY_CTRL_C = ctrlKey('c');
     protected static final KeyStroke KEY_CTRL_W = ctrlKey('w');
+    protected static final KeyStroke KEY_INSERT = key(SpecialKey.INSERT);
     protected static final KeyStroke KEY_BACKSP = key(SpecialKey.BACKSPACE);
     protected static final KeyStroke KEY_DELETE = key(SpecialKey.DELETE);
-    protected static final KeyStroke KEY_CTRL_V = key((char) 22);
     protected static final KeyStroke KEY_UP     = key(SpecialKey.ARROW_UP);
     protected static final KeyStroke KEY_DOWN   = key(SpecialKey.ARROW_DOWN);
     protected static final KeyStroke KEY_RIGHT  = key(SpecialKey.ARROW_RIGHT);
@@ -70,12 +70,14 @@ public abstract class AbstractCommandParser {
                 buffer.replace(position, position+1, "");
                 modified = true;
             }
-        } else if (e.equals(KEY_CTRL_V)) {
+        //use Shift+Insert for paste since Eclipse uses Ctrl+V
+        //(Eclipse uses Shift+Insert too but I think it's acceptable to unbind that one)
+        } else if (e.equals(KEY_INSERT) && e.withShiftKey()) {
             String text = editor.getRegisterManager().getRegister(
                     RegisterManager.REGISTER_NAME_CLIPBOARD).getContent().getText();
             text = text.replace('\n', ' ').replace('\r', ' ');
             buffer.append(text);
-            // TODO: on Mac OS, Cmd-V should be used
+            position = buffer.length();
         } else if (e.equals(KEY_CTRL_W)) {
         	deleteWordBack();
         } else if (e.equals(KEY_TAB)) { //tab-completion for filenames
