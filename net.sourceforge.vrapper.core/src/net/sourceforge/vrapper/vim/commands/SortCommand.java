@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.sourceforge.vrapper.platform.SimpleConfiguration;
 import net.sourceforge.vrapper.utils.IgnoreCaseStringComparator;
@@ -26,11 +28,10 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
  * in the line (after or inside a {pattern} match).
  * One leading '-' is included in the number.
  * 
- * NOT ORIGINALLY PART OF VIM:
- * With [b] sorting is done on the first binary
- * number in the line (after or inside a {pattern}
- * match).  A leading "0b" or "0B" is ignored.
- * One leading '-' is included in the number. 
+ * XXX: NOT ORIGINALLY PART OF VIM
+ *      With [b] sorting is done on the first binary
+ * 		number in the line (after or inside a {pattern}
+ * 		match). 
  * 
  * With [x] sorting is done on the first hexadecimal
  * number in the line (after or inside a {pattern}
@@ -47,6 +48,17 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
  * Note that leading and trailing white space may cause
  * lines to be different.
  *
+ * TODO: Pattern has not yet fully been implemented.
+ * 		 This has been giving me problems, mostly because
+ * 		 of the differences between Java regular expressions
+ * 		 and, well, every other regular expression implementation.
+ * 	
+ * 		 Many of the simple examples in the Vim docs won't work
+ * 		 in a Java regex. The decision has to be made, do we make
+ * 		 the user use Java regex's or do we translate? Translation
+ * 		 would be a huge pain, but it would give the user a 
+ * 		 familiarity benefit. 
+ * 
  * When /{pattern}/ is specified and there is no [r] flag
  * the text matched with {pattern} is skipped, so that
  * you sort on what comes after the match.
@@ -80,17 +92,23 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
  * If {pattern} is empty (e.g. // is specified), the
  * last search pattern is used.  This allows trying out
  * a pattern first. 
+ *
+ * --- XXX: This doesn't apply
+ * ----------------------------------------------------------------------------------
+ * --- Note that using `:sort` with `:global` doesn't sort the 
+ * --- matching lines, it's quite useless. 
+ *
+ * --- XXX: The sorting library is java.util.Collections. 'Nuff said.
+ * ----------------------------------------------------------------------------------
+ * --- The details about sorting depend on the library function used.
+ * --- There is no guarantee that sorting is "stable" or obeys the 
+ * --- current locale. You will have to try it out.
  * 
- * Note that using `:sort` with `:global` doesn't sort the 
- * matching lines, it's quite useless. 
- * 
- * The details about sorting depend on the library function used.
- * There is no guarantee that sorting is "stable" or obeys the 
- * current locale. You will have to try it out.
- *  
- * The sorting can be interrupted, but if you interrupt it too late in the
- * process you may end up with duplicated lines. This also depends on the system
- * library function used. 
+ * --- XXX: This doesn't apply. Not sure how you could interrupt it.  
+ * ----------------------------------------------------------------------------------
+ * --- The sorting can be interrupted, but if you interrupt it too late in the
+ * --- process you may end up with duplicated lines. This also depends on the system
+ * --- library function used. 
  *
  * @author Brian Detweiler
  *
@@ -105,7 +123,8 @@ public class SortCommand extends CountIgnoringNonRepeatableCommand {
 	    OCTAL,
 	    HEX,
 	    UNIQUE,
-	    USE_PATTERN;
+	    USE_PATTERN,
+	    USE_PATTERN_R;
 	}
 
 	
@@ -116,6 +135,8 @@ public class SortCommand extends CountIgnoringNonRepeatableCommand {
 	private static final String OCTAL_FLAG       = "o";
 	private static final String HEX_FLAG 		 = "x";
 	private static final String UNIQUE_FLAG      = "u";
+	private static final String USE_PATTERN      = "p";
+	private static final String USE_PATTERN_R    = "r";
 	
 	/** String containing all the possible option flags */
 	private static final String OPTIONS = REVERSED_FLAG 
@@ -124,7 +145,9 @@ public class SortCommand extends CountIgnoringNonRepeatableCommand {
 										+ BINARY_FLAG
 										+ OCTAL_FLAG
 										+ HEX_FLAG
-										+ UNIQUE_FLAG;
+										+ UNIQUE_FLAG
+										+ USE_PATTERN
+										+ USE_PATTERN_R;
 	
 	// Possible configurations for sort
 	/** ! - reversed sort (entered as a modifier to :sort, as :sort! */
@@ -143,15 +166,24 @@ public class SortCommand extends CountIgnoringNonRepeatableCommand {
     private boolean unique = false;
 	/** /regex pattern/ */
     private boolean usePattern = false;
+	/** /regex pattern/ r */
+    private boolean usePatternR = false;
+    
+    private String pattern = "";
     
     /**
      * sort takes an optional argument of "n" for Numeric sort.
      * @param option
      * @throws CommandExecutionException
      */
-    public SortCommand(String[] options) throws CommandExecutionException {
+    public SortCommand(String[] options, String pattern) throws CommandExecutionException {
         super();
-       
+     
+        if(pattern != null && !pattern.trim().isEmpty()) {
+        	setPattern(pattern);
+        	usePattern = true;
+        }
+        
         for(String option : options) {
         	if(option == null || option.trim().isEmpty())
         		continue;
@@ -169,6 +201,8 @@ public class SortCommand extends CountIgnoringNonRepeatableCommand {
         		hex = true;
         	else if(encodeOption(option) == Options.UNIQUE)
         		unique = true;
+        	 else if(usePattern && encodeOption(option) == Options.USE_PATTERN_R)
+        		usePatternR = true;
 	        else
 	        	throw new CommandExecutionException("Invalid argument: " + option);
         }
@@ -179,6 +213,15 @@ public class SortCommand extends CountIgnoringNonRepeatableCommand {
         if((!numeric && !binary && !hex && !octal) || (numeric ^ binary ^ hex ^ octal));
     	else
         	throw new CommandExecutionException("Invalid argument: " + options);
+       
+        // Validate regex pattern
+        if(usePattern || usePatternR) {
+        	try {
+        		Pattern.compile(pattern);
+        	} catch(Exception e) {
+        		throw new CommandExecutionException("Invalid regular expression " + pattern);
+        	}
+        }
     
         /* XXX: I should mention, adding "i" to a numeric sort of any type will do nothing.
          *      But Vim doesn't throw an error, so we won't either. 
@@ -206,12 +249,18 @@ public class SortCommand extends CountIgnoringNonRepeatableCommand {
     		return Options.NUMERIC;
     	else if(option.equalsIgnoreCase(IGNORE_CASE_FLAG))
     		return Options.IGNORE_CASE;
+    	else if(option.equalsIgnoreCase(BINARY_FLAG))
+    		return Options.BINARY;
     	else if(option.equalsIgnoreCase(OCTAL_FLAG))
     		return Options.OCTAL;
     	else if(option.equalsIgnoreCase(HEX_FLAG))
     		return Options.HEX;
     	else if(option.equalsIgnoreCase(UNIQUE_FLAG))
     		return Options.UNIQUE;
+    	else if(option.equalsIgnoreCase(USE_PATTERN))
+    		return Options.USE_PATTERN;
+    	else if(option.equalsIgnoreCase(USE_PATTERN_R))
+    		return Options.USE_PATTERN_R;
     	
     	return null;
     }
@@ -236,6 +285,10 @@ public class SortCommand extends CountIgnoringNonRepeatableCommand {
     			return HEX_FLAG;
     		case UNIQUE:
     			return UNIQUE_FLAG;
+    		case USE_PATTERN:
+    			return USE_PATTERN;
+    		case USE_PATTERN_R:
+    			return USE_PATTERN_R;
     		default:
     			return null;
     	}
@@ -318,6 +371,12 @@ public class SortCommand extends CountIgnoringNonRepeatableCommand {
 		}
 	}
 
+	/**
+	 * This is where the action happens.
+	 * @param editorAdaptor
+	 * @param line
+	 * @throws Exception
+	 */
     public void doIt(EditorAdaptor editorAdaptor, int line) throws Exception {
   
     	SimpleConfiguration config = new SimpleConfiguration();
@@ -328,6 +387,7 @@ public class SortCommand extends CountIgnoringNonRepeatableCommand {
    
     	char[] editorContentArr = editorContent.toCharArray();
   
+    	// Throw the whole editor into an array separated by newlines
     	List<String> editorContentList = new ArrayList<String>();
     	String s = "";
     	for(char c : editorContentArr) {
@@ -344,23 +404,57 @@ public class SortCommand extends CountIgnoringNonRepeatableCommand {
     	// Otherwise, we can just add the last line
     	else
 			editorContentList.add(s + nl);
+    
+    	// Little trick to get uniques from an ArrayList
+    	if(unique)
+    		editorContentList = new ArrayList<String>(new HashSet<String>(editorContentList));
     	
+    	// Handle various numeric cases
     	if(numeric || binary || octal || hex) {
     		NumericStringComparator nsc = null;
-    		if(binary)
-    			nsc = new NumericStringComparator(BINARY_FLAG);
-    		else if(octal)
-    			nsc = new NumericStringComparator(OCTAL_FLAG);
-    		else if(hex)
-    			nsc = new NumericStringComparator(HEX_FLAG);
-    		else if(numeric)
-    			nsc = new NumericStringComparator(NUMERIC_FLAG);
+    		if(usePattern) {
+	    		if(binary)
+	    			nsc = new NumericStringComparator(BINARY_FLAG, pattern);
+	    		else if(octal)
+	    			nsc = new NumericStringComparator(OCTAL_FLAG, pattern);
+	    		else if(hex)
+	    			nsc = new NumericStringComparator(HEX_FLAG, pattern);
+	    		else if(numeric)
+	    			nsc = new NumericStringComparator(NUMERIC_FLAG, pattern);
+    		} else if(usePatternR) {
+	    		if(binary)
+	    			nsc = new NumericStringComparator(BINARY_FLAG, pattern, "r");
+	    		else if(octal)
+	    			nsc = new NumericStringComparator(OCTAL_FLAG, pattern, "r");
+	    		else if(hex)
+	    			nsc = new NumericStringComparator(HEX_FLAG, pattern, "r");
+	    		else if(numeric)
+	    			nsc = new NumericStringComparator(NUMERIC_FLAG, pattern, "r");
+    		} else {
+	    		if(binary)
+	    			nsc = new NumericStringComparator(BINARY_FLAG);
+	    		else if(octal)
+	    			nsc = new NumericStringComparator(OCTAL_FLAG);
+	    		else if(hex)
+	    			nsc = new NumericStringComparator(HEX_FLAG);
+	    		else if(numeric)
+	    			nsc = new NumericStringComparator(NUMERIC_FLAG);
+    		}
     
     		List<String> numericList = new ArrayList<String>();
     		List<String> nonNumericList = new ArrayList<String>();
     		
     		for(String candidate : editorContentList) {
-    			if(hasNumber(candidate))
+				Pattern p = null;
+		    	Matcher m = null;
+    			if(usePattern || usePatternR) {
+    				p = Pattern.compile(pattern);
+    				m = p.matcher(candidate);
+    			}
+		    	
+    			if((usePattern || usePatternR) && m.matches() && hasNumber(candidate))
+    				numericList.add(candidate);
+    			else if(!(usePattern || usePatternR) && hasNumber(candidate))
     				numericList.add(candidate);
     			else
     				nonNumericList.add(candidate);
@@ -370,15 +464,12 @@ public class SortCommand extends CountIgnoringNonRepeatableCommand {
     		editorContentList = new ArrayList<String>(nonNumericList);
     		editorContentList.addAll(numericList);
     	} else if(ignoreCase) {
+    		// This has no effect on a pattern if a pattern was given
     		IgnoreCaseStringComparator icsc = new IgnoreCaseStringComparator();
     		Collections.sort(editorContentList, icsc);
     	} else
     		Collections.sort(editorContentList);
 
-    	// Little trick to get uniques from an ArrayList
-    	// TODO: test to make sure they stay sorted
-    	if(unique)
-    		editorContentList = new ArrayList<String>(new HashSet<String>(editorContentList));
     	
     	if(reversed)
     		Collections.reverse(editorContentList);
@@ -451,5 +542,13 @@ public class SortCommand extends CountIgnoringNonRepeatableCommand {
 
 	public void setUsePattern(boolean usePattern) {
 		this.usePattern = usePattern;
+	}
+
+	public String getPattern() {
+		return pattern;
+	}
+
+	public void setPattern(String pattern) {
+		this.pattern = pattern;
 	}
 }

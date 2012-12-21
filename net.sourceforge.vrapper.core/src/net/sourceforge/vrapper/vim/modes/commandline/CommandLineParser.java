@@ -3,6 +3,7 @@ package net.sourceforge.vrapper.vim.modes.commandline;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.StringTokenizer;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.sourceforge.vrapper.platform.Configuration.Option;
@@ -130,10 +131,20 @@ public class CommandLineParser extends AbstractCommandParser {
         		String commandStr = "";
             	while(command.size() > 0)
             		commandStr += command.poll().trim();
-        				
+        	
+    			Pattern p = Pattern.compile("/(.*?)/(.*)");
+    			Matcher m = p.matcher(commandStr);
+    	 
+    			String pattern = "";
+    			if(m.matches()) {
+    				pattern = m.group(1);
+    				commandStr = m.group(2);
+    			}
+    			
     			String[] tmp = commandStr.split("");
     			String[] optionsArr = new String[tmp.length];
     			int count = 0;
+    			
     			for(String option : tmp) {
     				option = option.trim();
     				if(!option.isEmpty()) {
@@ -143,7 +154,7 @@ public class CommandLineParser extends AbstractCommandParser {
     			}
         		
             	try {
-					new SortCommand(optionsArr).execute(vim);
+					new SortCommand(optionsArr, pattern).execute(vim);
 				} catch (CommandExecutionException e) {
 					// TODO: Report which argument was invalid
             		vim.getUserInterfaceService().setErrorMessage("Invalid argument");
@@ -291,7 +302,9 @@ public class CommandLineParser extends AbstractCommandParser {
         } catch (NumberFormatException e) {
             // do nothing
         }
-        
+       
+        // TODO: SortCommand should extend a TextOperationTextObject command somehow to 
+        // 		 support ranges -- BRD
         //not a number but starts with a number, $, /, ?, +, -, ', . (dot), or , (comma)
         //might be a line range operation
         if(command.length() > 1 && LineRangeOperationCommand.isLineRangeOperation(command))
