@@ -314,51 +314,19 @@ public class SortCommand extends CountIgnoringNonRepeatableCommand {
      * @return
      */
     private boolean hasNumber(String str) {
-    	if(binary)
-    		return str.contains("0") || str.contains("1");
-    	else if(octal)
-    		return str.contains("0") ||
-    			   str.contains("1") ||
-    			   str.contains("2") ||
-    			   str.contains("3") ||
-    			   str.contains("4") ||
-    			   str.contains("5") ||
-    			   str.contains("6") ||
-    			   str.contains("7");
-    	else if(hex)
-    		return str.contains("0") ||
-    			   str.contains("1") ||
-    			   str.contains("2") ||
-    			   str.contains("3") ||
-    			   str.contains("4") ||
-    			   str.contains("5") ||
-    			   str.contains("6") ||
-    			   str.contains("7") ||
-    			   str.contains("8") ||
-    			   str.contains("9") ||
-    			   str.contains("A") ||
-    			   str.contains("a") ||
-    			   str.contains("B") ||
-    			   str.contains("b") ||
-    			   str.contains("C") ||
-    			   str.contains("c") ||
-    			   str.contains("D") ||
-    			   str.contains("d") ||
-    			   str.contains("E") ||
-    			   str.contains("e") ||
-    			   str.contains("F") ||
-    			   str.contains("f");
-    	else
-    		return str.contains("0") ||
-    			   str.contains("1") ||
-    			   str.contains("2") ||
-    			   str.contains("3") ||
-    			   str.contains("4") ||
-    			   str.contains("5") ||
-    			   str.contains("6") ||
-    			   str.contains("7") ||
-    			   str.contains("8") ||
-    			   str.contains("9");
+    	char[] strArr = str.toCharArray();
+    	for(char c : strArr) {
+    		if(binary && Character.digit(c, 2) != -1)
+				return true;
+    		else if(octal && Character.digit(c, 8) != -1)
+				return true;
+    		else if(hex && Character.digit(c, 16) != -1)
+				return true;
+    		else if(Character.digit(c, 10) != -1)
+				return true;
+    	}
+    	
+    	return false;
     }
     
 	public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
