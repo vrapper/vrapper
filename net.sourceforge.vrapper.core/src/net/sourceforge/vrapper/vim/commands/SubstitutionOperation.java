@@ -49,6 +49,10 @@ public class SubstitutionOperation extends SimpleTextOperation {
 		//'s' or '%s' = fields[0]
 		if(fields.length > 1) {
 			find = fields[1];
+			if(find.length() == 0) {
+				//if no pattern defined, use last search
+				find = editorAdaptor.getRegisterManager().getRegister("/").getContent().getText();
+			}
 		}
 		if(fields.length > 2) {
 			replace = fields[2];

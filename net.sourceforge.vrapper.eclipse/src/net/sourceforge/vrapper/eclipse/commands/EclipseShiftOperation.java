@@ -24,33 +24,41 @@ public abstract class EclipseShiftOperation implements TextOperation {
         this.left = left;
     }
 
-    void execute(EditorAdaptor editorAdaptor, TextRange region,
-            int count) throws CommandExecutionException {
+    void execute(EditorAdaptor editorAdaptor, TextRange region, int count) throws CommandExecutionException {
+    	TextContent modelContent = editorAdaptor.getModelContent();
+    	int startOffset = region.getLeftBound().getModelOffset();
+    	int endOffset = region.getRightBound().getModelOffset();
+    	String action = left ? ITextEditorActionDefinitionIds.SHIFT_LEFT : ITextEditorActionDefinitionIds.SHIFT_RIGHT;
+    	
+    	int startLine;
+    	//if the start is on a newline, put start on the next line
+    	//(otherwise, >i{ will indent the line ending with a '{')
+    	if(VimUtils.isNewLine(modelContent.getText(startOffset, 1))) {
+    		startLine = modelContent.getLineInformationOfOffset(startOffset).getNumber() + 1;
+    		
+    		if(endOffset - startOffset == 1) {
+    			//if one character is selected and it's a newline, ignore
+    			//(<< and >> are ignored on blank lines)
+    			return;
+    		}
+    	}
+    	else {
+    		startLine = modelContent.getLineInformationOfOffset(startOffset).getNumber();
+    	}
+    	
+    	LineInformation endLineInformation = modelContent.getLineInformationOfOffset(endOffset);
+    	String endText = modelContent.getText(endLineInformation.getBeginOffset(), endOffset - endLineInformation.getBeginOffset());
+    	int endLine = endLineInformation.getNumber();
+    	if (endOffset > endLineInformation.getBeginOffset() && !endText.matches("\\s*")) {
+    		// if the right bound is beyond the first character of a line, include that entire line
+    		// (unless everything within the bounds of this line is whitespace)
+    		endLine++;
+    	}
+    	
         try {
-            String action = left ? ITextEditorActionDefinitionIds.SHIFT_LEFT : ITextEditorActionDefinitionIds.SHIFT_RIGHT;
             editorAdaptor.getHistory().beginCompoundChange();
             editorAdaptor.getHistory().lock();
-            TextContent modelContent = editorAdaptor.getModelContent();
-            int startOffset = region.getLeftBound().getModelOffset();
-            int startLine;
-            //if the start is on a newline, put start on the next line
-            //(otherwise, >i{ will indent the line ending with a '{')
-            if(VimUtils.isNewLine(modelContent.getText(startOffset, 1))) {
-            	startLine = modelContent.getLineInformationOfOffset(startOffset).getNumber() + 1;
-            }
-            else {
-            	startLine = modelContent.getLineInformationOfOffset(startOffset).getNumber();
-            }
             
-            int rightBoundOffset = region.getRightBound().getModelOffset();
-            LineInformation endLineInformation = modelContent.getLineInformationOfOffset(rightBoundOffset);
-            String endText = modelContent.getText(endLineInformation.getBeginOffset(), rightBoundOffset - endLineInformation.getBeginOffset());
-            int endLine = endLineInformation.getNumber();
-            if (rightBoundOffset > endLineInformation.getBeginOffset() && !endText.matches("\\s*")) {
-                // if the right bound is beyond the first character of a line, include that entire line
-            	// (unless everything within the bounds of this line is whitespace)
-                endLine++;
-            }
             for (int i = 0; i < count; i++) {
                 editorAdaptor.setSelection(createSelection(editorAdaptor, startLine, endLine));
                 EclipseCommand.doIt(1, action, editorAdaptor);

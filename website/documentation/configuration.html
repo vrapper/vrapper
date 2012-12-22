@@ -115,6 +115,14 @@
         </td>
     </tr>
     <tr>
+        <td>:set&nbsp;autochdir<br/>:set&nbsp;noautochdir</td>
+        <td>:set&nbsp;acd<br />:set&nbsp;noacd</td>
+        <td>Off</td>
+        <td>Automatically change the current working directory to the parent of whatever file is currently active in Eclipse.
+        The current working directory is used by the ':e' command.
+        </td>
+    </tr>
+    <tr>
         <td>:set&nbsp;scrolloff=&lt;N&gt;</td>
         <td>:set&nbsp;so=&lt;N&gt;</td>
         <td>scrolloff=0</td>
@@ -135,6 +143,21 @@
         <td>textwidth=80</td>
         <td>Only used by the 'gq' command to format paragraphs.  Defines max line length when formatting.
         </td>
+    </tr>
+    <tr>
+        <td>:set&nbsp;softtabstop=&lt;N&gt;</td>
+        <td>:set&nbsp;sts=&lt;N&gt;</td>
+        <td>softtabstop=0</td>
+        <td>When using spaces for tabs, set this to the number of spaces inserted for each &lt;TAB&gt; key press
+        and hitting &lt;backspace&gt; in InsertMode will delete that many spaces as if you had deleted a TAB character.
+        </td>
+    </tr>
+    <tr>
+        <td>:set&nbsp;path=&lt;comma-delimited list of dirs&gt;</td>
+        <td>none</td>
+        <td>path=.</td>
+        <td>List of directories searched during the ':find &lt;filename&gt;' command.
+        Default directory of '.' represents directory of the current active file in Eclipse.</td>
     </tr>
     <tr>
         <td>:set&nbsp;clipboard=&lt;name&gt;</td>

@@ -862,6 +862,300 @@ public class NormalModeTests extends CommandTestCase {
                 "fun(call",')',";",
                 "fun",';',"");
 	}
+	
+	@Test
+	public void test_incrementDecimal() throws Exception {
+	    checkCommand(forKeySeq("<C-a>"),
+	            "xx",'3',"4",
+	            "xx3",'5',"");
+	    
+	    checkCommand(forKeySeq("<C-a>"),
+	            "xx",'3',"4x",
+	            "xx3",'5',"x");
+	    
+	    checkCommand(forKeySeq("<C-a>"),
+	            "xx",'x',"xx34",
+	            "xxxxx3",'5',"");
+	    
+	    checkCommand(forKeySeq("<C-a>"),
+	            "xx",'x',"xx34x",
+	            "xxxxx3",'5',"x");
+	    
+	    checkCommand(forKeySeq("<C-a>"),
+	            "xx",'x',"xxx",
+	            "xx",'x',"xxx");
+	    
+	    checkCommand(forKeySeq("<C-a>"),
+	            "11",'1',"111",
+	            "11111",'2',"");
+	    
+	    checkCommand(forKeySeq("<C-a>"),
+	            "",'9',"",
+	            "1",'0',"");
+	    
+	    checkCommand(forKeySeq("<C-a>"),
+	            "10",'.',"1",
+	            "10.",'2',"");
+	    
+	    checkCommand(forKeySeq("<C-a>"),
+	            "10",'.',"9",
+	            "10.1",'0',"");
+	    
+	    checkCommand(forKeySeq("<C-a>"),
+	            "",'0',"",
+	            "",'1',"");
+	    
+	    checkCommand(forKeySeq("<C-a>"),
+	            "-",'1',"",
+	            "",'0',"");
+	    
+	    checkCommand(forKeySeq("<C-a>"),
+	            "",'-',"1",
+	            "",'0',"");
+	    
+	    checkCommand(forKeySeq("5<C-a>"),
+	            "",'0',"",
+	            "",'5',"");
+	    
+	    checkCommand(forKeySeq("5<C-a>"),
+	            "-",'2',"",
+	            "",'3',"");
+	    
+	    checkCommand(forKeySeq("<C-a>"),
+	            "xx",'x',"xx34xx0x234",
+	            "xxxxx3",'5',"xx0x234");
+	}
+	
+	@Test
+	public void test_decrementDecimal() throws Exception {
+	    checkCommand(forKeySeq("<C-x>"),
+	            "xx",'3',"4",
+	            "xx3",'3',"");
+	    
+	    checkCommand(forKeySeq("<C-x>"),
+	            "xx",'3',"4x",
+	            "xx3",'3',"x");
+	    
+	    checkCommand(forKeySeq("<C-x>"),
+	            "xx",'x',"xx34",
+	            "xxxxx3",'3',"");
+	    
+	    checkCommand(forKeySeq("<C-x>"),
+	            "xx",'x',"xx34x",
+	            "xxxxx3",'3',"x");
+	    
+	    checkCommand(forKeySeq("<C-x>"),
+	            "xx",'x',"xxx",
+	            "xx",'x',"xxx");
+	    
+	    checkCommand(forKeySeq("<C-x>"),
+	            "11",'1',"111",
+	            "11111",'0',"");
+	    
+	    checkCommand(forKeySeq("<C-x>"),
+	            "1",'0',"",
+	            "",'9',"");
+	    
+	    checkCommand(forKeySeq("<C-x>"),
+	            "10",'.',"1",
+	            "10.",'0',"");
+	    
+	    checkCommand(forKeySeq("<C-x>"),
+	            "10.1",'0',"",
+	            "10.",'9',"");
+	    
+	    checkCommand(forKeySeq("<C-x>"),
+	            "",'0',"",
+	            "-",'1',"");
+	    
+	    checkCommand(forKeySeq("<C-x>"),
+	            "-",'1',"",
+	            "-",'2',"");
+	    
+	    checkCommand(forKeySeq("5<C-x>"),
+	            "",'0',"",
+	            "-",'5',"");
+	    
+	    checkCommand(forKeySeq("5<C-x>"),
+	            "",'5',"",
+	            "",'0',"");
+	}
+	
+	@Test
+	public void test_incrDecrOctal() {
+		//increment
+	    checkCommand(forKeySeq("<C-a>"),
+	            "xx0",'3',"4",
+	            "xx03",'5',"");
+	    
+	    checkCommand(forKeySeq("<C-a>"),
+	            "xx0",'3',"7",
+	            "xx04",'0',"");
+	    
+	    checkCommand(forKeySeq("<C-a>"),
+	            "xx0",'7',"7",
+	            "xx010",'0',"");
+	    
+	    checkCommand(forKeySeq("<C-a>"),
+	            "xx000",'7',"7",
+	            "xx0010",'0',"");
+	    
+	    checkCommand(forKeySeq("<C-a>"),
+	            "000",'7',"7",
+	            "0010",'0',"");
+	    
+	    checkCommand(forKeySeq("<C-a>"),
+	            "",'0',"077",
+	            "010",'0',"");
+	    
+	    checkCommand(forKeySeq("<C-a>"),
+	            "xx",'x',"x077",
+	            "xxxx010",'0',"");
+	    
+	    checkCommand(forKeySeq("5<C-a>"),
+	            "",'0',"77",
+	            "010",'4',"");
+	    
+	    //decrement
+	    checkCommand(forKeySeq("<C-x>"),
+	            "xx0",'3',"4",
+	            "xx03",'3',"");
+	    
+	    checkCommand(forKeySeq("<C-x>"),
+	            "xx0",'4',"0",
+	            "xx03",'7',"");
+	    
+	    checkCommand(forKeySeq("<C-x>"),
+	            "xx0",'1',"00",
+	            "xx007",'7',"");
+	    
+	    checkCommand(forKeySeq("<C-x>"),
+	            "xx",'x',"x0100",
+	            "xxxx007",'7',"");
+	    
+	    checkCommand(forKeySeq("<C-x>"),
+	            "xx001",'0',"0",
+	            "xx0007",'7',"");
+	    
+	    //not actually octal
+	    checkCommand(forKeySeq("<C-a>"),
+	            "xx0",'1',"90",
+	            "xx19",'1',"");
+	    
+	    checkCommand(forKeySeq("<C-x>"),
+	            "xx0",'1',"90",
+	            "xx18",'9',"");
+	    
+	    checkCommand(forKeySeq("<C-x>"),
+	            "xx0",'9',"8",
+	            "xx9",'7',"");
+	}
+	
+	@Test
+	public void test_incrDecrHex() {
+		//increment
+	    checkCommand(forKeySeq("<C-a>"),
+	            "foo0x",'3',"4",
+	            "foo0x3",'5',"");
+	    
+	    checkCommand(forKeySeq("<C-a>"),
+	            "foo0X",'3',"4",
+	            "foo0X3",'5',"");
+	    
+	    checkCommand(forKeySeq("<C-a>"),
+	            "foo0x0",'3',"4",
+	            "foo0x03",'5',"");
+	    
+	    checkCommand(forKeySeq("<C-a>"),
+	            "foo0x0",'3',"a",
+	            "foo0x03",'b',"");
+	    
+	    checkCommand(forKeySeq("<C-a>"),
+	            "foo0xa0",'3',"a",
+	            "foo0xa03",'b',"");
+	    
+	    checkCommand(forKeySeq("<C-a>"),
+	            "foo0xa0",'0',"f",
+	            "foo0xa01",'0',"");
+	    
+	    checkCommand(forKeySeq("<C-a>"),
+	            "0xa0",'0',"f",
+	            "0xa01",'0',"");
+	    
+	    checkCommand(forKeySeq("<C-a>"),
+	            "0xaa",'a',"a",
+	            "0xaaa",'b',"");
+	    
+	    checkCommand(forKeySeq("<C-a>"),
+	            "0xaa",'a',"ag",
+	            "0xaaa",'b',"g");
+	    
+	    checkCommand(forKeySeq("<C-a>"),
+	            "",'0',"xabc",
+	            "0xab",'d',"");
+	    
+	    checkCommand(forKeySeq("<C-a>"),
+	            "0",'x',"abc",
+	            "0xab",'d',"");
+	    
+	    checkCommand(forKeySeq("<C-a>"),
+	            "xx",'x',"x0xa00f",
+	            "xxxx0xa01",'0',"");
+	    
+	    checkCommand(forKeySeq("<C-a>"),
+	            "aa",'a',"a0xabc",
+	            "aaaa0xab",'d',"");
+	    
+	    checkCommand(forKeySeq("<C-a>"),
+	            "xx",'x',"x0xABCF",
+	            "xxxx0xABD",'0',"");
+	    
+	    checkCommand(forKeySeq("5<C-a>"),
+	            "",'0',"xabc",
+	            "0xac",'1',"");
+	    
+	    checkCommand(forKeySeq("<C-a>"),
+	            "xx",'x',"x0x234xx34",
+	            "xxxx0x23",'5',"xx34");
+	    
+		//decrement
+	    checkCommand(forKeySeq("<C-x>"),
+	            "foo0x",'3',"4",
+	            "foo0x3",'3',"");
+	    
+	    checkCommand(forKeySeq("<C-x>"),
+	            "foo0x0",'3',"4",
+	            "foo0x03",'3',"");
+	    
+	    checkCommand(forKeySeq("<C-x>"),
+	            "foo0x0",'3',"a",
+	            "foo0x03",'9',"");
+	    
+	    checkCommand(forKeySeq("<C-x>"),
+	            "foo0xa0",'3',"a",
+	            "foo0xa03",'9',"");
+	    
+	    checkCommand(forKeySeq("<C-x>"),
+	            "foo0xa0",'1',"0",
+	            "foo0xa00",'f',"");
+	    
+	    checkCommand(forKeySeq("<C-x>"),
+	            "0xa0",'1',"0",
+	            "0xa00",'f',"");
+	    
+	    checkCommand(forKeySeq("<C-x>"),
+	            "xx",'x',"x0xa00f",
+	            "xxxx0xa00",'e',"");
+	    
+	    //not actually hex
+	    checkCommand(forKeySeq("<C-a>"),
+	            "foo0xxa",'0',"f",
+	            "foo0xxa",'1',"f");
+	    
+	    checkCommand(forKeySeq("<C-x>"),
+	            "foo0xxa",'0',"f",
+	            "foo0xxa-",'1',"f");
+	}
 
 	@Test
 	public void test_cfx() throws Exception {

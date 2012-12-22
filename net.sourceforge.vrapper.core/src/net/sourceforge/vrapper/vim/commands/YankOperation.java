@@ -47,11 +47,6 @@ public class YankOperation extends SimpleTextOperation {
         	Position newPos = range.getLeftBound();
         	//if cursor is at beginning of selection, leave it there
         	if(cursor.getModelOffset() != newPos.getModelOffset()) {
-        		if(editorAdaptor.getCurrentModeName().contains("visual")) {
-        			//bug in Eclipse Juno? setPosition(range.getLeftBound()) moves the cursor 
-        			//one character before the actual selection (previous line ending when linewise)
-        			newPos = editorAdaptor.getCursorService().newPositionForModelOffset(newPos.getModelOffset()+1);
-        		}
         		//move cursor to beginning of selection
         		editorAdaptor.getCursorService().setPosition(newPos, true);
         	}

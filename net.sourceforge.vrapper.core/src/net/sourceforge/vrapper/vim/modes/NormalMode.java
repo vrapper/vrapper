@@ -41,6 +41,7 @@ import net.sourceforge.vrapper.vim.commands.DelimitedText;
 import net.sourceforge.vrapper.vim.commands.DotCommand;
 import net.sourceforge.vrapper.vim.commands.FindFileCommand;
 import net.sourceforge.vrapper.vim.commands.FormatOperation;
+import net.sourceforge.vrapper.vim.commands.IncrementDecrementCommand;
 import net.sourceforge.vrapper.vim.commands.InsertLineCommand;
 import net.sourceforge.vrapper.vim.commands.JoinLinesCommand;
 import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
@@ -244,6 +245,8 @@ public class NormalMode extends CommandBasedMode {
         LineEndMotion lineEndMotion = new LineEndMotion(BorderPolicy.LINE_WISE);
         Command substituteLine = new TextOperationTextObjectCommand(change, new MotionTextObject(lineEndMotion));
         Command substituteChar = new TextOperationTextObjectCommand(change, new MotionTextObject(moveRight));
+        Command incrementNum = IncrementDecrementCommand.INCREMENT;
+        Command decrementNum = IncrementDecrementCommand.DECREMENT;
         Command joinLines = JoinLinesCommand.INSTANCE;
         Command joinLinesDumbWay = JoinLinesCommand.DUMB_INSTANCE;
         Command centerLine = CenterLineCommand.CENTER;
@@ -331,6 +334,8 @@ public class NormalMode extends CommandBasedMode {
                                         VimConstants.PRINTABLE_KEYSTROKES)),
                         leafBind('u', undo),
                         leafCtrlBind('r', redo),
+                        leafCtrlBind('a', incrementNum),
+                        leafCtrlBind('x', decrementNum),
                         transitionBind('Z',
                             leafBind('Z', saveAndClose),
                             leafBind('Q', (Command)CloseCommand.FORCED_CLOSE)),

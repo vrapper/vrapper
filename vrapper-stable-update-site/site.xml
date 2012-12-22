@@ -3,16 +3,16 @@
    <description name="Vrapper" url="http://vrapper.sourceforge.net/update-site/stable">
       Stable releases of Vrapper.
    </description>
-   <feature url="features/net.sourceforge.vrapper_0.24.0.jar" id="net.sourceforge.vrapper" version="0.24.0">
+   <feature url="features/net.sourceforge.vrapper_0.26.1.jar" id="net.sourceforge.vrapper" version="0.26.1">
       <category name="Vrapper"/>
    </feature>
-   <feature url="features/net.sourceforge.vrapper.eclipse.cdt.feature_0.24.0.jar" id="net.sourceforge.vrapper.eclipse.cdt.feature" version="0.24.0">
+   <feature url="features/net.sourceforge.vrapper.eclipse.cdt.feature_0.26.1.jar" id="net.sourceforge.vrapper.eclipse.cdt.feature" version="0.26.1">
       <category name="Vrapper"/>
    </feature>
-   <feature url="features/net.sourceforge.vrapper.eclipse.jdt.feature_0.24.0.jar" id="net.sourceforge.vrapper.eclipse.jdt.feature" version="0.24.0">
+   <feature url="features/net.sourceforge.vrapper.eclipse.jdt.feature_0.26.1.jar" id="net.sourceforge.vrapper.eclipse.jdt.feature" version="0.26.1">
       <category name="Vrapper"/>
    </feature>
-   <feature url="features/net.sourceforge.vrapper.plugin.surround_0.24.0.jar" id="net.sourceforge.vrapper.plugin.surround" version="0.24.0">
+   <feature url="features/net.sourceforge.vrapper.plugin.surround_0.26.1.jar" id="net.sourceforge.vrapper.plugin.surround" version="0.26.1">
       <category name="Vrapper"/>
    </feature>
    <category-def name="Vrapper" label="Vrapper"/>
