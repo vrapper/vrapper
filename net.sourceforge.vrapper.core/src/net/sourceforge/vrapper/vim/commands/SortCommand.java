@@ -414,16 +414,16 @@ public class SortCommand extends CountIgnoringNonRepeatableCommand {
 
         int size = editorContentList.size();
         int count = 0;
-        String replacementText = "";
+        StringBuilder replacementText = new StringBuilder();
         for (String editorLine : editorContentList) {
             ++count;
-            if (count == size && editorLine.endsWith(nl))
-                editorLine = editorLine.substring(0, editorLine.length() - 1);
-            replacementText += editorLine;
+            replacementText.append(editorLine);
+            if (count != size) //don't append newline on last line in file
+            	replacementText.append(editorAdaptor.getConfiguration().getNewLine());
         }
 
         int length = editorAdaptor.getModelContent().getTextLength();
         // Replace the contents of the editor with the freshly sorted text
-        editorAdaptor.getModelContent().replace(0, length, replacementText);
+        editorAdaptor.getModelContent().replace(0, length, replacementText.toString());
     }
 }
