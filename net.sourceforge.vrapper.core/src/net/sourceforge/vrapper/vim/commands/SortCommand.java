@@ -8,7 +8,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.sourceforge.vrapper.platform.SimpleConfiguration;
+import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.IgnoreCaseStringComparator;
+import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.NumericStringComparator;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 
@@ -28,7 +30,7 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
  * in the line (after or inside a {pattern} match).
  * One leading '-' is included in the number.
  * 
- * XXX: NOT ORIGINALLY PART OF VIM
+ * XXX: NOT ORIGINALLY PART OF VIM 
  *      With [b] sorting is done on the first binary
  * 		number in the line (after or inside a {pattern}
  * 		match). 
@@ -37,27 +39,27 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
  * number in the line (after or inside a {pattern}
  * match).  A leading "0x" or "0X" is ignored.
  * One leading '-' is included in the number. 
- *
+ * 
  * With [o] sorting is done on the first octal number in
  * the line (after or inside a {pattern} match).
- *  
+ * 
  * With [u] only keep the first of a sequence of
  * identical lines (ignoring case when [i] is used).
  * Without this flag, a sequence of identical lines
  * will be kept in their original order.
  * Note that leading and trailing white space may cause
  * lines to be different.
- *
+ * 
  * TODO: Pattern has not yet fully been implemented.
  * 		 This has been giving me problems, mostly because
  * 		 of the differences between Java regular expressions
- * 		 and, well, every other regular expression implementation.
- * 	
+ * and, well, every other regular expression implementation.
+ * 
  * 		 Many of the simple examples in the Vim docs won't work
  * 		 in a Java regex. The decision has to be made, do we make
  * 		 the user use Java regex's or do we translate? Translation
  * 		 would be a huge pain, but it would give the user a 
- * 		 familiarity benefit. 
+ * familiarity benefit.
  * 
  * When /{pattern}/ is specified and there is no [r] flag
  * the text matched with {pattern} is skipped, so that
@@ -80,7 +82,7 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
  * For example, to sort on only the first three letters
  * of each line:  
  * 			:sort /\a\a\a/ r
- *  
+ * 
  * If a {pattern} is used, any lines which don't have a
  * match for {pattern} are kept in their current order,
  * but separate from the lines which do match {pattern}.
@@ -92,137 +94,119 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
  * If {pattern} is empty (e.g. // is specified), the
  * last search pattern is used.  This allows trying out
  * a pattern first. 
- *
- * --- XXX: This doesn't apply
- * ----------------------------------------------------------------------------------
- * --- Note that using `:sort` with `:global` doesn't sort the 
- * --- matching lines, it's quite useless. 
- *
- * --- XXX: The sorting library is java.util.Collections. 'Nuff said.
- * ----------------------------------------------------------------------------------
- * --- The details about sorting depend on the library function used.
- * --- There is no guarantee that sorting is "stable" or obeys the 
- * --- current locale. You will have to try it out.
  * 
- * --- XXX: This doesn't apply. Not sure how you could interrupt it.  
- * ----------------------------------------------------------------------------------
- * --- The sorting can be interrupted, but if you interrupt it too late in the
- * --- process you may end up with duplicated lines. This also depends on the system
- * --- library function used. 
- *
  * @author Brian Detweiler
- *
+ * 
  */
+// TODO: Extend LineRangeOperationCommand to support ranges
 public class SortCommand extends CountIgnoringNonRepeatableCommand {
 
-	private static enum Options {
-	    REVERSED,
-	    NUMERIC,
-	    IGNORE_CASE,
-	    BINARY,
-	    OCTAL,
-	    HEX,
-	    UNIQUE,
-	    USE_PATTERN,
-	    USE_PATTERN_R;
-	}
+    private static enum Options {
+        REVERSED, 
+        NUMERIC, 
+        IGNORE_CASE, 
+        BINARY, 
+        OCTAL, 
+        HEX, 
+        UNIQUE, 
+        USE_PATTERN, 
+        USE_PATTERN_R;
+    }
 
-	
-	private static final String REVERSED_FLAG    = "!";
-	private static final String NUMERIC_FLAG     = "n";
-	private static final String IGNORE_CASE_FLAG = "i";
-	private static final String BINARY_FLAG      = "b";
-	private static final String OCTAL_FLAG       = "o";
-	private static final String HEX_FLAG 		 = "x";
-	private static final String UNIQUE_FLAG      = "u";
-	private static final String USE_PATTERN      = "p";
-	private static final String USE_PATTERN_R    = "r";
-	
-	/** String containing all the possible option flags */
-	private static final String OPTIONS = REVERSED_FLAG 
-										+ NUMERIC_FLAG
-										+ IGNORE_CASE_FLAG
-										+ BINARY_FLAG
-										+ OCTAL_FLAG
-										+ HEX_FLAG
-										+ UNIQUE_FLAG
-										+ USE_PATTERN
-										+ USE_PATTERN_R;
-	
-	// Possible configurations for sort
-	/** ! - reversed sort (entered as a modifier to :sort, as :sort! */
+    private static final String REVERSED_FLAG = "!";
+    private static final String NUMERIC_FLAG = "n";
+    private static final String IGNORE_CASE_FLAG = "i";
+    private static final String BINARY_FLAG = "b";
+    private static final String OCTAL_FLAG = "o";
+    private static final String HEX_FLAG = "x";
+    private static final String UNIQUE_FLAG = "u";
+    private static final String USE_PATTERN = "p";
+    private static final String USE_PATTERN_R = "r";
+
+    /** String containing all the possible option flags */
+    private static final String OPTIONS = REVERSED_FLAG 
+                                        + NUMERIC_FLAG
+                                        + IGNORE_CASE_FLAG
+                                        + BINARY_FLAG
+                                        + OCTAL_FLAG
+                                        + HEX_FLAG
+                                        + UNIQUE_FLAG
+                                        + USE_PATTERN
+                                        + USE_PATTERN_R;
+
+    // Possible configurations for sort
+    /** ! - reversed sort (entered as a modifier to :sort, as :sort! */
     private boolean reversed = false;
-	/** n - numeric sort */
+    /** n - numeric sort */
     private boolean numeric = false;
-	/** i - ignore case */
+    /** i - ignore case */
     private boolean ignoreCase = false;
-	/** b - binary sort */
+    /** b - binary sort */
     private boolean binary = false;
-	/** x - hexadecimal sort */
+    /** x - hexadecimal sort */
     private boolean hex = false;
-	/** o - octal sort */
+    /** o - octal sort */
     private boolean octal = false;
 	/** u - works like sort -u on the command line - removes duplicate entries and sorts */
     private boolean unique = false;
-	/** /regex pattern/ */
+    /** /regex pattern/ */
     private boolean usePattern = false;
-	/** /regex pattern/ r */
+    /** /regex pattern/ r */
     private boolean usePatternR = false;
-    
+
     private String pattern = "";
-    
+
     /**
-     * sort takes an optional argument of "n" for Numeric sort.
      * @param option
      * @throws CommandExecutionException
      */
     public SortCommand(String[] options, String pattern) throws CommandExecutionException {
         super();
-     
-        if(pattern != null && !pattern.trim().isEmpty()) {
-        	setPattern(pattern);
-        	usePattern = true;
+
+        if (pattern != null && !pattern.trim().isEmpty()) {
+            this.pattern = pattern;
+            usePattern = true;
         }
-        
-        for(String option : options) {
-        	if(option == null || option.trim().isEmpty())
-        		continue;
-        	else if(encodeOption(option) == Options.REVERSED)
-        		reversed = true;
-        	else if(encodeOption(option) == Options.NUMERIC)
-        		numeric = true;
-        	else if(encodeOption(option) == Options.IGNORE_CASE)
-        		ignoreCase = true;
-        	else if(encodeOption(option) == Options.BINARY)
-        		binary = true;
-        	else if(encodeOption(option) == Options.OCTAL)
-        		octal = true;
-        	else if(encodeOption(option) == Options.HEX)
-        		hex = true;
-        	else if(encodeOption(option) == Options.UNIQUE)
-        		unique = true;
-        	 else if(usePattern && encodeOption(option) == Options.USE_PATTERN_R)
-        		usePatternR = true;
-	        else
-	        	throw new CommandExecutionException("Invalid argument: " + option);
+
+        for (String option : options) {
+            if (option == null || option.trim().isEmpty())
+                continue;
+            else if (encodeOption(option) == Options.REVERSED)
+                reversed = true;
+            else if (encodeOption(option) == Options.NUMERIC)
+                numeric = true;
+            else if (encodeOption(option) == Options.IGNORE_CASE)
+                ignoreCase = true;
+            else if (encodeOption(option) == Options.BINARY)
+                binary = true;
+            else if (encodeOption(option) == Options.OCTAL)
+                octal = true;
+            else if (encodeOption(option) == Options.HEX)
+                hex = true;
+            else if (encodeOption(option) == Options.UNIQUE)
+                unique = true;
+            else if (usePattern && encodeOption(option) == Options.USE_PATTERN_R)
+                usePatternR = true;
+            else
+                throw new CommandExecutionException("Invalid argument: " + option);
         }
-       
-       
+
         // SANITY CHECKS
-        // decimal (numeric), binary, hex, octal. Pick one. Or pick none. 
-        if((!numeric && !binary && !hex && !octal) || (numeric ^ binary ^ hex ^ octal));
-    	else
-        	throw new CommandExecutionException("Invalid argument: " + options);
-       
+        // decimal (numeric), binary, hex, octal. Pick one. Or pick none.
+        if ((!numeric && !binary && !hex && !octal) || (numeric ^ binary ^ hex ^ octal))
+            ;
+        else
+            throw new CommandExecutionException("Invalid argument: " + options);
+
         // Validate regex pattern
-        if(usePattern || usePatternR) {
-        	try {
-        		Pattern.compile(pattern);
-        	} catch(Exception e) {
-        		throw new CommandExecutionException("Invalid regular expression " + pattern);
-        	}
+        if (usePattern || usePatternR) {
+            try {
+                Pattern.compile(pattern);
+            } catch (Exception e) {
+                throw new CommandExecutionException("Invalid regular expression " + pattern);
+            }
         }
-    
+
         /* XXX: I should mention, adding "i" to a numeric sort of any type will do nothing.
          *      But Vim doesn't throw an error, so we won't either. 
          *      Of note, Vim does not do a secondary sort. That is, if you were to sort 
@@ -236,287 +220,210 @@ public class SortCommand extends CountIgnoringNonRepeatableCommand {
          *    		2c
          *      Would it be useful to have the secondary ASCII sort, or would this break 
          *      expected functionality? Leaving this up for debate. -- BRD
-         */  
+         */
     }
-    
+
     private Options encodeOption(String option) {
-    	if(option == null || "".equalsIgnoreCase(option) || !OPTIONS.contains(option))
-    		return null;
-    
-    	if(option.equalsIgnoreCase(REVERSED_FLAG))
-    		return Options.REVERSED;
-    	else if(option.equalsIgnoreCase(NUMERIC_FLAG))
-    		return Options.NUMERIC;
-    	else if(option.equalsIgnoreCase(IGNORE_CASE_FLAG))
-    		return Options.IGNORE_CASE;
-    	else if(option.equalsIgnoreCase(BINARY_FLAG))
-    		return Options.BINARY;
-    	else if(option.equalsIgnoreCase(OCTAL_FLAG))
-    		return Options.OCTAL;
-    	else if(option.equalsIgnoreCase(HEX_FLAG))
-    		return Options.HEX;
-    	else if(option.equalsIgnoreCase(UNIQUE_FLAG))
-    		return Options.UNIQUE;
-    	else if(option.equalsIgnoreCase(USE_PATTERN))
-    		return Options.USE_PATTERN;
-    	else if(option.equalsIgnoreCase(USE_PATTERN_R))
-    		return Options.USE_PATTERN_R;
-    	
-    	return null;
+        if (option == null || "".equalsIgnoreCase(option) || !OPTIONS.contains(option))
+            return null;
+
+        if (option.equalsIgnoreCase(REVERSED_FLAG))
+            return Options.REVERSED;
+        else if (option.equalsIgnoreCase(NUMERIC_FLAG))
+            return Options.NUMERIC;
+        else if (option.equalsIgnoreCase(IGNORE_CASE_FLAG))
+            return Options.IGNORE_CASE;
+        else if (option.equalsIgnoreCase(BINARY_FLAG))
+            return Options.BINARY;
+        else if (option.equalsIgnoreCase(OCTAL_FLAG))
+            return Options.OCTAL;
+        else if (option.equalsIgnoreCase(HEX_FLAG))
+            return Options.HEX;
+        else if (option.equalsIgnoreCase(UNIQUE_FLAG))
+            return Options.UNIQUE;
+        else if (option.equalsIgnoreCase(USE_PATTERN))
+            return Options.USE_PATTERN;
+        else if (option.equalsIgnoreCase(USE_PATTERN_R))
+            return Options.USE_PATTERN_R;
+
+        return null;
     }
-    
+
     @SuppressWarnings("unused")
-	private String decodeOption(Options option) {
-    	if(option == null)
-    		return null;
-   
-    	switch(option) {
-    		case REVERSED:
-    			return REVERSED_FLAG;
-    		case NUMERIC:
-    			return NUMERIC_FLAG;
-    		case IGNORE_CASE:
-    			return IGNORE_CASE_FLAG;
-    		case BINARY:
-    			return BINARY_FLAG;
-    		case OCTAL:
-    			return OCTAL_FLAG;
-    		case HEX:
-    			return HEX_FLAG;
-    		case UNIQUE:
-    			return UNIQUE_FLAG;
-    		case USE_PATTERN:
-    			return USE_PATTERN;
-    		case USE_PATTERN_R:
-    			return USE_PATTERN_R;
-    		default:
-    			return null;
-    	}
+    private String decodeOption(Options option) {
+        if (option == null)
+            return null;
+
+        switch (option) {
+        case REVERSED:
+            return REVERSED_FLAG;
+        case NUMERIC:
+            return NUMERIC_FLAG;
+        case IGNORE_CASE:
+            return IGNORE_CASE_FLAG;
+        case BINARY:
+            return BINARY_FLAG;
+        case OCTAL:
+            return OCTAL_FLAG;
+        case HEX:
+            return HEX_FLAG;
+        case UNIQUE:
+            return UNIQUE_FLAG;
+        case USE_PATTERN:
+            return USE_PATTERN;
+        case USE_PATTERN_R:
+            return USE_PATTERN_R;
+        default:
+            return null;
+        }
     }
-   
+
     /**
-     * According to Vim behavior, sorting by number will look at anything
-     * BEGINNING with a number and sort accordingly
+     * According to Vim behavior, sorting by number will look at the FIRST
+     * OCCURRENCE of contiguous number string on a line.
      * The following return true:
-     * 		1
-     * 		9L
-     * 		67 Chevy
-     * 		-29
-     * 		blah blah 5 blah blah
-     * 		0b01010
-     * 		01234567123
-     * 		Ox123
-	 * NOTE: These will match to the very FIRST occurrence of a number
-	 * 		 in their set. If it finds one, then we return true.
-     * 		
+     *      1
+     *      9L
+     *      67 Chevy
+     *      -29
+     *      blah blah 5 blah blah
+     *      0b01010
+     *      01234567123
+     *      Ox123
+     * NOTE: These will match to the very FIRST occurrence of a number in their
+     * set. If it finds one, then we return true.
+     * 
      * @param str
      * @param base
      * @return
      */
     private boolean hasNumber(String str) {
-    	char[] strArr = str.toCharArray();
-    	for(char c : strArr) {
-    		if(binary && Character.digit(c, 2) != -1)
-				return true;
-    		else if(octal && Character.digit(c, 8) != -1)
-				return true;
-    		else if(hex && Character.digit(c, 16) != -1)
-				return true;
-    		else if(Character.digit(c, 10) != -1)
-				return true;
-    	}
-    	
-    	return false;
+        char[] strArr = str.toCharArray();
+        for (char c : strArr) {
+            if (binary && Character.digit(c, 2) != -1)
+                return true;
+            else if (octal && Character.digit(c, 8) != -1)
+                return true;
+            else if (hex && Character.digit(c, 16) != -1)
+                return true;
+            else if (Character.digit(c, 10) != -1)
+                return true;
+        }
+
+        return false;
     }
-    
-	public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
-        int line = editorAdaptor.getViewContent().getLineInformationOfOffset(
-                editorAdaptor.getPosition().getViewOffset()).getNumber();
+
+    public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
         try {
-			doIt(editorAdaptor, line);
-		} catch (Exception e) {
-			throw new CommandExecutionException("sort failed: " + e.getMessage());
-		}
-	}
-
-	/**
-	 * This is where the action happens.
-	 * @param editorAdaptor
-	 * @param line
-	 * @throws Exception
-	 */
-    public void doIt(EditorAdaptor editorAdaptor, int line) throws Exception {
-  
-    	SimpleConfiguration config = new SimpleConfiguration();
-    	String nl = config.getNewLine();
-    	
-    	int length = editorAdaptor.getModelContent().getTextLength();
-    	String editorContent = editorAdaptor.getModelContent().getText(0, length);
-   
-    	char[] editorContentArr = editorContent.toCharArray();
-  
-    	// Throw the whole editor into an array separated by newlines
-    	List<String> editorContentList = new ArrayList<String>();
-    	String s = "";
-    	for(char c : editorContentArr) {
-    		s += c;
-    		if(nl.equalsIgnoreCase(c + "")) {
-    			editorContentList.add(s);
-    			s = "";
-    		}
-    	}
-    
-    	// If the last line is a new line, we need to explicitly add that
-    	if(nl.equalsIgnoreCase(editorContentArr[editorContentArr.length - 1] + ""))
-			editorContentList.add(nl);
-    	// Otherwise, we can just add the last line
-    	else
-			editorContentList.add(s + nl);
-    
-    	// Little trick to get uniques from an ArrayList
-    	if(unique)
-    		editorContentList = new ArrayList<String>(new HashSet<String>(editorContentList));
-    	
-    	// Handle various numeric cases
-    	if(numeric || binary || octal || hex) {
-    		NumericStringComparator nsc = null;
-    		if(usePattern) {
-	    		if(binary)
-	    			nsc = new NumericStringComparator(BINARY_FLAG, pattern);
-	    		else if(octal)
-	    			nsc = new NumericStringComparator(OCTAL_FLAG, pattern);
-	    		else if(hex)
-	    			nsc = new NumericStringComparator(HEX_FLAG, pattern);
-	    		else if(numeric)
-	    			nsc = new NumericStringComparator(NUMERIC_FLAG, pattern);
-    		} else if(usePatternR) {
-	    		if(binary)
-	    			nsc = new NumericStringComparator(BINARY_FLAG, pattern, "r");
-	    		else if(octal)
-	    			nsc = new NumericStringComparator(OCTAL_FLAG, pattern, "r");
-	    		else if(hex)
-	    			nsc = new NumericStringComparator(HEX_FLAG, pattern, "r");
-	    		else if(numeric)
-	    			nsc = new NumericStringComparator(NUMERIC_FLAG, pattern, "r");
-    		} else {
-	    		if(binary)
-	    			nsc = new NumericStringComparator(BINARY_FLAG);
-	    		else if(octal)
-	    			nsc = new NumericStringComparator(OCTAL_FLAG);
-	    		else if(hex)
-	    			nsc = new NumericStringComparator(HEX_FLAG);
-	    		else if(numeric)
-	    			nsc = new NumericStringComparator(NUMERIC_FLAG);
-    		}
-    
-    		List<String> numericList = new ArrayList<String>();
-    		List<String> nonNumericList = new ArrayList<String>();
-    		
-    		for(String candidate : editorContentList) {
-				Pattern p = null;
-		    	Matcher m = null;
-    			if(usePattern || usePatternR) {
-    				p = Pattern.compile(pattern);
-    				m = p.matcher(candidate);
-    			}
-		    	
-    			if((usePattern || usePatternR) && m.matches() && hasNumber(candidate))
-    				numericList.add(candidate);
-    			else if(!(usePattern || usePatternR) && hasNumber(candidate))
-    				numericList.add(candidate);
-    			else
-    				nonNumericList.add(candidate);
-    		}
-    		
-    		Collections.sort(numericList, nsc);
-    		editorContentList = new ArrayList<String>(nonNumericList);
-    		editorContentList.addAll(numericList);
-    	} else if(ignoreCase) {
-    		// This has no effect on a pattern if a pattern was given
-    		IgnoreCaseStringComparator icsc = new IgnoreCaseStringComparator();
-    		Collections.sort(editorContentList, icsc);
-    	} else
-    		Collections.sort(editorContentList);
-
-    	
-    	if(reversed)
-    		Collections.reverse(editorContentList);
-    	
-    	int size = editorContentList.size();
-    	int count = 0;
-    	String replacementText = "";
-    	for(String editorLine : editorContentList) {
-    		++count;
-    		if(count == size && editorLine.endsWith(nl))
-    			editorLine = editorLine.substring(0, editorLine.length() - 1);
-    		replacementText += editorLine;
-    	}
-    	
-    	// Replace the contents of the editor with the freshly sorted text
-		editorAdaptor.getModelContent().replace(0, length, replacementText);
-    }
-    
-    public boolean isNumeric() {
-    	return numeric;
-    }
-    
-    public void setNumeric(boolean numeric) {
-    	this.numeric = numeric;
+            doIt(editorAdaptor);
+        } catch (Exception e) {
+            throw new CommandExecutionException("sort failed: " + e.getMessage());
+        }
     }
 
-	public boolean isReversed() {
-		return reversed;
-	}
+    /**
+     * This is where the action happens.
+     * 
+     * @param editorAdaptor
+     * @throws Exception
+     */
+    public void doIt(EditorAdaptor editorAdaptor) throws Exception {
 
-	public void setReversed(boolean reversed) {
-		this.reversed = reversed;
-	}
+        SimpleConfiguration config = new SimpleConfiguration();
+        String nl = config.getNewLine();
 
-	public boolean isIgnoreCase() {
-		return ignoreCase;
-	}
 
-	public void setIgnoreCase(boolean ignoreCase) {
-		this.ignoreCase = ignoreCase;
-	}
+        // Throw the whole editor into an array separated by newlines
+        TextContent content = editorAdaptor.getModelContent();
+        List<String> editorContentList = new ArrayList<String>();
+        int startLine = 0;
+        int endLine = content.getNumberOfLines();
+        LineInformation line = null;
+        for(int i = startLine; i < endLine; ++i) {
+            line = content.getLineInformation(i);
+            editorContentList.add(content.getText(line.getBeginOffset(), line.getLength()));
+        }
+        
+        // Little trick to get uniques from an ArrayList
+        if (unique)
+            editorContentList = new ArrayList<String>(new HashSet<String>(editorContentList));
 
-	public boolean isHex() {
-		return hex;
-	}
+        // Handle various numeric cases
+        if (numeric || binary || octal || hex) {
+            NumericStringComparator nsc = null;
+            if (usePattern) {
+                if (binary)
+                    nsc = new NumericStringComparator(BINARY_FLAG, pattern);
+                else if (octal)
+                    nsc = new NumericStringComparator(OCTAL_FLAG, pattern);
+                else if (hex)
+                    nsc = new NumericStringComparator(HEX_FLAG, pattern);
+                else if (numeric)
+                    nsc = new NumericStringComparator(NUMERIC_FLAG, pattern);
+            } else if (usePatternR) {
+                if (binary)
+                    nsc = new NumericStringComparator(BINARY_FLAG, pattern, "r");
+                else if (octal)
+                    nsc = new NumericStringComparator(OCTAL_FLAG, pattern, "r");
+                else if (hex)
+                    nsc = new NumericStringComparator(HEX_FLAG, pattern, "r");
+                else if (numeric)
+                    nsc = new NumericStringComparator(NUMERIC_FLAG, pattern, "r");
+            } else {
+                if (binary)
+                    nsc = new NumericStringComparator(BINARY_FLAG);
+                else if (octal)
+                    nsc = new NumericStringComparator(OCTAL_FLAG);
+                else if (hex)
+                    nsc = new NumericStringComparator(HEX_FLAG);
+                else if (numeric)
+                    nsc = new NumericStringComparator(NUMERIC_FLAG);
+            }
 
-	public void setHex(boolean hex) {
-		this.hex = hex;
-	}
+            List<String> numericList = new ArrayList<String>();
+            List<String> nonNumericList = new ArrayList<String>();
 
-	public boolean isOctal() {
-		return octal;
-	}
+            for (String candidate : editorContentList) {
+                Pattern p = null;
+                Matcher m = null;
+                if (usePattern || usePatternR) {
+                    p = Pattern.compile(pattern);
+                    m = p.matcher(candidate);
+                }
 
-	public void setOctal(boolean octal) {
-		this.octal = octal;
-	}
+                if ((usePattern || usePatternR) && m.matches() && hasNumber(candidate))
+                    numericList.add(candidate);
+                else if (!(usePattern || usePatternR) && hasNumber(candidate))
+                    numericList.add(candidate);
+                else
+                    nonNumericList.add(candidate);
+            }
 
-	public boolean isUnique() {
-		return unique;
-	}
+            Collections.sort(numericList, nsc);
+            editorContentList = new ArrayList<String>(nonNumericList);
+            editorContentList.addAll(numericList);
+        } else if (ignoreCase) {
+            // This has no effect on a pattern if a pattern was given
+            IgnoreCaseStringComparator icsc = new IgnoreCaseStringComparator();
+            Collections.sort(editorContentList, icsc);
+        } else
+            Collections.sort(editorContentList);
 
-	public void setUnique(boolean unique) {
-		this.unique = unique;
-	}
+        if (reversed)
+            Collections.reverse(editorContentList);
 
-	public boolean isUsePattern() {
-		return usePattern;
-	}
+        int size = editorContentList.size();
+        int count = 0;
+        String replacementText = "";
+        for (String editorLine : editorContentList) {
+            ++count;
+            if (count == size && editorLine.endsWith(nl))
+                editorLine = editorLine.substring(0, editorLine.length() - 1);
+            replacementText += editorLine;
+        }
 
-	public void setUsePattern(boolean usePattern) {
-		this.usePattern = usePattern;
-	}
-
-	public String getPattern() {
-		return pattern;
-	}
-
-	public void setPattern(String pattern) {
-		this.pattern = pattern;
-	}
+        int length = editorAdaptor.getModelContent().getTextLength();
+        // Replace the contents of the editor with the freshly sorted text
+        editorAdaptor.getModelContent().replace(0, length, replacementText);
+    }
 }
