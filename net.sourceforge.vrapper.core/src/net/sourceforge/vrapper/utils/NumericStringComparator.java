@@ -152,7 +152,6 @@ public class NumericStringComparator implements Comparator<String>{
     	String newLine = config.getNewLine();
     	
     	try {
-    		System.out.println("Comparator string: " + str);
 	    	if(binary) {
 				Pattern number = Pattern.compile(".*?((0|1)+)(.|" + newLine + ")*");
 		    	Matcher m = number.matcher(str);
