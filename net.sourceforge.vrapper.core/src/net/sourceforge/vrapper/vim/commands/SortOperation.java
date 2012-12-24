@@ -424,20 +424,20 @@ public class SortOperation extends SimpleTextOperation {
             Collections.reverse(editorContentList);
 
         StringBuilder replacementText = new StringBuilder();
-        int size = editorContentList.size();
+        int total = content.getNumberOfLines();
         int count = 0;
         String newline = editorAdaptor.getConfiguration().getNewLine();
         for (String editorLine : editorContentList) {
             ++count;
             replacementText.append(editorLine);
-            if (count != size) //don't append newline on last line in file
+            if (count != total) //don't append newline on last line in file
             	replacementText.append(newline);
         }
 
         // Replace the contents of the range with the freshly sorted text
         editorAdaptor.getModelContent().replace(
         		startLine.getBeginOffset(),
-        		endLine.getEndOffset() - startLine.getBeginOffset(),
+        		endLine.getBeginOffset() - startLine.getBeginOffset(),
         		replacementText.toString()
 		);
     }
