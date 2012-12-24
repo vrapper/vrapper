@@ -46,6 +46,14 @@ public class VrapperPlugin extends AbstractUIPlugin implements IStartup, Log {
     private static final String COMMAND_TOGGLE_VRAPPER = "net.sourceforge.vrapper.eclipse.commands.toggle";
     
     private static final IPreferencesService PREFERENCES_SERVICE = Platform.getPreferencesService();
+    // private static final IEclipsePreferences PLUGIN_PREFERENCES = InstanceScope.INSTANCE.getNode(PLUGIN_ID);
+    /* XXX: The "new way" of creating InstanceScope was introduced in Eclipse Juno (4.2) so moving to the new way 
+     * 		would actually break all backwards compatibility with the 3.x series of Eclipse. I'd rather not do 
+     * 		that just yet. There are other solutions based on Eclipse (e.g., Aptana and Flash Builder) which are 
+     *	    still on a 3.x version of Eclipse and I don't want to break Vrapper for all of those users until I 
+     *      have to. I want to give everyone as long as possible to move to the 4.x series of Eclipse. 
+     *      -- Github exchange with keforbes on why we're leaving this alone for now.
+     */
     private static final IEclipsePreferences PLUGIN_PREFERENCES = new InstanceScope().getNode(PLUGIN_ID);
 
 	private static MouseButtonListener mouseButton = new MouseButtonListener();

@@ -3,6 +3,8 @@ package net.sourceforge.vrapper.vim.modes.commandline;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.sourceforge.vrapper.platform.Configuration.Option;
 import net.sourceforge.vrapper.utils.Position;
@@ -14,18 +16,19 @@ import net.sourceforge.vrapper.vim.commands.CloseCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.ConfigCommand;
+import net.sourceforge.vrapper.vim.commands.EditFileCommand;
 import net.sourceforge.vrapper.vim.commands.ExCommandOperation;
 import net.sourceforge.vrapper.vim.commands.FindFileCommand;
 import net.sourceforge.vrapper.vim.commands.LineRangeOperationCommand;
 import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
-import net.sourceforge.vrapper.vim.commands.EditFileCommand;
 import net.sourceforge.vrapper.vim.commands.RedoCommand;
 import net.sourceforge.vrapper.vim.commands.RepeatLastSubstitutionCommand;
 import net.sourceforge.vrapper.vim.commands.SaveAllCommand;
 import net.sourceforge.vrapper.vim.commands.SaveCommand;
 import net.sourceforge.vrapper.vim.commands.SetOptionCommand;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
+import net.sourceforge.vrapper.vim.commands.SortCommand;
 import net.sourceforge.vrapper.vim.commands.SubstitutionOperation;
 import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
 import net.sourceforge.vrapper.vim.commands.UndoCommand;
@@ -125,6 +128,43 @@ public class CommandLineParser extends AbstractCommandParser {
             	return null;
             }
         };
+        Evaluator sort = new Evaluator() {
+            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
+        		String commandStr = "";
+            	while(command.size() > 0)
+            		commandStr += command.poll().trim();
+        	
+    			Pattern p = Pattern.compile("/(.*?)/(.*)");
+    			Matcher m = p.matcher(commandStr);
+    	 
+    			String pattern = "";
+    			if(m.matches()) {
+    				pattern = m.group(1);
+    				commandStr = m.group(2);
+    			}
+    			
+    			String[] tmp = commandStr.split("");
+    			String[] optionsArr = new String[tmp.length];
+    			int count = 0;
+    			
+    			for(String option : tmp) {
+    				option = option.trim();
+    				if(!option.isEmpty()) {
+    					optionsArr[count] = option;
+    					++count;
+    				}
+    			}
+        		
+            	try {
+					new SortCommand(optionsArr, pattern).execute(vim);
+				} catch (CommandExecutionException e) {
+					// TODO: Report which argument was invalid
+            		vim.getUserInterfaceService().setErrorMessage("Invalid argument");
+				}
+            	
+            	return null;
+            }
+        };
         Evaluator chDir = new Evaluator() {
             public Object evaluate(EditorAdaptor vim, Queue<String> command) {
             	String dir = command.isEmpty() ? "/" : command.poll();
@@ -207,6 +247,10 @@ public class CommandLineParser extends AbstractCommandParser {
         mapping.add("e", editFile);
         mapping.add("find", findFile);
         mapping.add("cd", chDir);
+        // Sort lines in the file based on ascii values
+        mapping.add("sor", sort);
+        mapping.add("sort", sort);
+        mapping.add("sort!", sort);
     }
 
     private static Evaluator buildConfigEvaluator() {
@@ -269,31 +313,33 @@ public class CommandLineParser extends AbstractCommandParser {
         } catch (NumberFormatException e) {
             // do nothing
         }
-        
+       
+        // TODO: SortCommand should extend a TextOperationTextObject command somehow to 
+        // 		 support ranges -- BRD
         //not a number but starts with a number, $, /, ?, +, -, ', . (dot), or , (comma)
         //might be a line range operation
-        if(command.length() > 1 && LineRangeOperationCommand.isLineRangeOperation(command)) {
+        if(command.length() > 1 && LineRangeOperationCommand.isLineRangeOperation(command))
         	return new LineRangeOperationCommand(command);
-        }
+        
+        // Reverse sort toggle will just be treated as just another argument
+    	command = Pattern.compile("^sort!").matcher(command).replaceAll("sort !");
         
         //check against list of known commands
         StringTokenizer nizer = new StringTokenizer(command);
         Queue<String> tokens = new LinkedList<String>();
-        while (nizer.hasMoreTokens()) {
+        while(nizer.hasMoreTokens())
             tokens.add(nizer.nextToken().trim());
-        }
+        
         EvaluatorMapping platformCommands = editor.getPlatformSpecificStateProvider().getCommands();
-        if (platformCommands != null && platformCommands.contains(tokens.peek())) {
+        if(platformCommands != null && platformCommands.contains(tokens.peek()))
             platformCommands.evaluate(editor, tokens);
-        } else {
+        else
             mapping.evaluate(editor, tokens);
-        }
         
         //is this a substitution definition?
         Command substitution = parseSubstitution(command);
-        if(substitution != null) {
+        if(substitution != null)
         	return substitution;
-        }
         
         //is this an Ex command?
         if(command.length() > 1 && (command.startsWith("g") || command.startsWith("v"))) {
@@ -301,6 +347,7 @@ public class CommandLineParser extends AbstractCommandParser {
 				new ExCommandOperation(command), new SimpleSelection(null)
     		);
         }
+       
         
         return null;
     }
