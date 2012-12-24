@@ -12,36 +12,15 @@ import net.sourceforge.vrapper.platform.SimpleConfiguration;
  * @author Brian Detweiler
  */
 public class NumericStringComparator implements Comparator<String>{
-
-	private static enum NumericStringOptions {
-	    NUMERIC,
-	    BINARY,
-	    OCTAL,
-	    HEX,
-	    USE_PATTERN,
-	    USE_PATTERN_R
-	}
 	
 	private static final String NUMERIC_FLAG   = "n";
 	private static final String BINARY_FLAG    = "b";
 	private static final String OCTAL_FLAG     = "o";
 	private static final String HEX_FLAG       = "x";
-	private static final String USE_PATTERN    = "p";
-	private static final String USE_PATTERN_R  = "r";
 	
-	/** String containing all the possible option flags */
-	private static final String OPTIONS = NUMERIC_FLAG
-										+ BINARY_FLAG
-										+ OCTAL_FLAG
-										+ HEX_FLAG
-										+ USE_PATTERN
-										+ USE_PATTERN_R;
-	
-	@SuppressWarnings("unused")
-	private boolean numeric     = false;
-	private boolean binary   	= false;
-	private boolean octal	    = false;
-	private boolean hex   		= false;
+	private boolean binary      = false;
+	private boolean octal       = false;
+	private boolean hex         = false;
 	private boolean usePattern  = false;
 	private boolean usePatternR = false;
 
@@ -51,88 +30,36 @@ public class NumericStringComparator implements Comparator<String>{
 		super();
 	}
 	
-	public NumericStringComparator(String option) throws Exception {
+	public NumericStringComparator(String option, String pattern, boolean patternR) throws Exception {
 		super();
     	if(option == null || option.trim().isEmpty())
     		return;
     		
-    	if(encodeOption(option) == NumericStringOptions.NUMERIC)
-    		numeric = true;
-    	else if(encodeOption(option) == NumericStringOptions.BINARY)
-    		binary = true;
-    	else if(encodeOption(option) == NumericStringOptions.OCTAL)
-    		octal = true;
-    	else if(encodeOption(option) == NumericStringOptions.HEX)
-    		hex = true; 
-    	else
-    		throw new Exception("Invalid argument: " + option);
-	}
-	
-	public NumericStringComparator(String option, String pattern) throws Exception {
-		super();
-		
-		try {
-			Pattern.compile(pattern);
-		} catch(Exception e) {
-			throw new Exception("Invalid pattern " + pattern);
-		}
-		
-		setOption(option);
-		setUsePattern(true); 
-		setPattern(pattern);
-	}
-	
-	public NumericStringComparator(String option, String pattern, String patternR) throws Exception {
-		super();
-		
-		try {
-			Pattern.compile(pattern);
-		} catch(Exception e) {
-			throw new Exception("Invalid pattern " + pattern);
-		}
-		
-		setOption(option);
-		usePatternR = true; 
-		setPattern(pattern); 
-	}
-	
-	private void setOption(String option) throws Exception {
-		
-    	if(option == null || option.trim().isEmpty())
-    		return;
-    	
-    	if(encodeOption(option) == NumericStringOptions.NUMERIC)
-    		numeric = true;
-    	else if(encodeOption(option) == NumericStringOptions.BINARY)
-    		binary = true;
-    	else if(encodeOption(option) == NumericStringOptions.OCTAL)
-    		octal = true;
-    	else if(encodeOption(option) == NumericStringOptions.HEX)
-    		hex = true; 
-    	else
-    		throw new Exception("Invalid argument: " + option);
-	}
-   
-    private NumericStringOptions encodeOption(String option) {
-    	if(option == null || "".equalsIgnoreCase(option) || !OPTIONS.contains(option))
-    		return null;
-    
     	if(option.equalsIgnoreCase(NUMERIC_FLAG))
-    		return NumericStringOptions.NUMERIC;
+    		; //numeric is assumed, no need for a flag
     	else if(option.equalsIgnoreCase(BINARY_FLAG))
-    		return NumericStringOptions.BINARY;
+    		binary = true;
     	else if(option.equalsIgnoreCase(OCTAL_FLAG))
-    		return NumericStringOptions.OCTAL;
+    		octal = true;
     	else if(option.equalsIgnoreCase(HEX_FLAG))
-    		return NumericStringOptions.HEX;
-    	else if(option.equalsIgnoreCase(USE_PATTERN))
-    		return NumericStringOptions.USE_PATTERN;
-    	else if(option.equalsIgnoreCase(USE_PATTERN_R))
-    		return NumericStringOptions.USE_PATTERN_R;
+    		hex = true; 
+    	else
+    		throw new Exception("Invalid argument: " + option);
     	
-    	return null;
-    }
-    
+    	if(pattern != null) {
+    		try {
+    			Pattern.compile(pattern);
+    		} catch(Exception e) {
+    			throw new Exception("Invalid pattern " + pattern);
+    		}
+
+    		this.pattern = pattern;
+    		usePattern = true;
+    		
+    		usePatternR = patternR; 
+    	}
+	}
+	
     /**
      * Gets the first number in the string with respect to the base.
      * In decimal mode, it handles negative numbers.
@@ -175,7 +102,7 @@ public class NumericStringComparator implements Comparator<String>{
 					return new BigInteger(m.group(1), 16).doubleValue();
 				
 				throw new Exception("No hex string found.");
-	    	} else {
+	    	} else { //assume numeric ('n')
 	    		// Checks for both negative and non-negative numbers
 	    		Pattern number = Pattern.compile(".*?([-]?[0-9]+)(.|" + newLine + ")*");
 				Matcher m = number.matcher(str);
@@ -226,21 +153,5 @@ public class NumericStringComparator implements Comparator<String>{
 			return -1;
 		
 		return 0;
-	}
-
-	public String getPattern() {
-		return pattern;
-	}
-
-	public void setPattern(String pattern) {
-		this.pattern = pattern;
-	}
-
-	public boolean isUsePattern() {
-		return usePattern;
-	}
-
-	public void setUsePattern(boolean usePattern) {
-		this.usePattern = usePattern;
 	}
 }

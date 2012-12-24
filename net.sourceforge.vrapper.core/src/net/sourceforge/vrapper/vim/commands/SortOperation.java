@@ -101,38 +101,14 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
  */
 public class SortOperation extends SimpleTextOperation {
 
-    private static enum Options {
-        REVERSED, 
-        NUMERIC, 
-        IGNORE_CASE, 
-        BINARY, 
-        OCTAL, 
-        HEX, 
-        UNIQUE, 
-        USE_PATTERN, 
-        USE_PATTERN_R;
-    }
-
-    private static final String REVERSED_FLAG = "!";
-    private static final String NUMERIC_FLAG = "n";
+    private static final String REVERSED_FLAG    = "!";
+    private static final String NUMERIC_FLAG     = "n";
     private static final String IGNORE_CASE_FLAG = "i";
-    private static final String BINARY_FLAG = "b";
-    private static final String OCTAL_FLAG = "o";
-    private static final String HEX_FLAG = "x";
-    private static final String UNIQUE_FLAG = "u";
-    private static final String USE_PATTERN = "p";
-    private static final String USE_PATTERN_R = "r";
-
-    /** String containing all the possible option flags */
-    private static final String OPTIONS = REVERSED_FLAG 
-                                        + NUMERIC_FLAG
-                                        + IGNORE_CASE_FLAG
-                                        + BINARY_FLAG
-                                        + OCTAL_FLAG
-                                        + HEX_FLAG
-                                        + UNIQUE_FLAG
-                                        + USE_PATTERN
-                                        + USE_PATTERN_R;
+    private static final String BINARY_FLAG      = "b";
+    private static final String OCTAL_FLAG       = "o";
+    private static final String HEX_FLAG         = "x";
+    private static final String UNIQUE_FLAG      = "u";
+    private static final String USE_PATTERN_R    = "r";
 
     // Possible configurations for sort
     /** ! - reversed sort (entered as a modifier to :sort, as :sort! */
@@ -154,7 +130,7 @@ public class SortOperation extends SimpleTextOperation {
     /** /regex pattern/ r */
     private boolean usePatternR = false;
 
-    private String pattern = "";
+    private String pattern = null;
 
     public SortOperation(String commandStr) {
         super();
@@ -167,43 +143,31 @@ public class SortOperation extends SimpleTextOperation {
         	pattern = m.group(1);
         	commandStr = m.group(2);
         }
-
-        String[] tmp = commandStr.split("");
-        String[] options= new String[tmp.length];
-        int count = 0;
-
-        for(String option : tmp) {
-        	option = option.trim();
-        	if(!option.isEmpty()) {
-        		options[count] = option;
-        		++count;
-        	}
-        }
         
-
         if (pattern != null && !pattern.trim().isEmpty()) {
             this.pattern = pattern;
             usePattern = true;
         }
 
+        String[] options = commandStr.split("");
         for (String option : options) {
             if (option == null || option.trim().isEmpty())
                 continue;
-            else if (encodeOption(option) == Options.REVERSED)
+            else if (option.equalsIgnoreCase(REVERSED_FLAG))
                 reversed = true;
-            else if (encodeOption(option) == Options.NUMERIC)
+            else if (option.equalsIgnoreCase(NUMERIC_FLAG))
                 numeric = true;
-            else if (encodeOption(option) == Options.IGNORE_CASE)
+            else if (option.equalsIgnoreCase(IGNORE_CASE_FLAG))
                 ignoreCase = true;
-            else if (encodeOption(option) == Options.BINARY)
+            else if (option.equalsIgnoreCase(BINARY_FLAG))
                 binary = true;
-            else if (encodeOption(option) == Options.OCTAL)
+            else if (option.equalsIgnoreCase(OCTAL_FLAG))
                 octal = true;
-            else if (encodeOption(option) == Options.HEX)
+            else if (option.equalsIgnoreCase(HEX_FLAG))
                 hex = true;
-            else if (encodeOption(option) == Options.UNIQUE)
+            else if (option.equalsIgnoreCase(UNIQUE_FLAG))
                 unique = true;
-            else if (usePattern && encodeOption(option) == Options.USE_PATTERN_R)
+            else if (usePattern && option.equalsIgnoreCase(USE_PATTERN_R))
                 usePatternR = true;
         }
 
@@ -221,61 +185,6 @@ public class SortOperation extends SimpleTextOperation {
          * Would it be useful to have the secondary ASCII sort, or would this break 
          * expected functionality? Leaving this up for debate. -- BRD
          */
-    }
-
-    private Options encodeOption(String option) {
-        if (option == null || "".equalsIgnoreCase(option) || !OPTIONS.contains(option))
-            return null;
-
-        if (option.equalsIgnoreCase(REVERSED_FLAG))
-            return Options.REVERSED;
-        else if (option.equalsIgnoreCase(NUMERIC_FLAG))
-            return Options.NUMERIC;
-        else if (option.equalsIgnoreCase(IGNORE_CASE_FLAG))
-            return Options.IGNORE_CASE;
-        else if (option.equalsIgnoreCase(BINARY_FLAG))
-            return Options.BINARY;
-        else if (option.equalsIgnoreCase(OCTAL_FLAG))
-            return Options.OCTAL;
-        else if (option.equalsIgnoreCase(HEX_FLAG))
-            return Options.HEX;
-        else if (option.equalsIgnoreCase(UNIQUE_FLAG))
-            return Options.UNIQUE;
-        else if (option.equalsIgnoreCase(USE_PATTERN))
-            return Options.USE_PATTERN;
-        else if (option.equalsIgnoreCase(USE_PATTERN_R))
-            return Options.USE_PATTERN_R;
-
-        return null;
-    }
-
-    @SuppressWarnings("unused")
-    private String decodeOption(Options option) {
-        if (option == null)
-            return null;
-
-        switch (option) {
-        case REVERSED:
-            return REVERSED_FLAG;
-        case NUMERIC:
-            return NUMERIC_FLAG;
-        case IGNORE_CASE:
-            return IGNORE_CASE_FLAG;
-        case BINARY:
-            return BINARY_FLAG;
-        case OCTAL:
-            return OCTAL_FLAG;
-        case HEX:
-            return HEX_FLAG;
-        case UNIQUE:
-            return UNIQUE_FLAG;
-        case USE_PATTERN:
-            return USE_PATTERN;
-        case USE_PATTERN_R:
-            return USE_PATTERN_R;
-        default:
-            return null;
-        }
     }
 
     /**
@@ -362,34 +271,14 @@ public class SortOperation extends SimpleTextOperation {
         // Handle various numeric cases
         if (numeric || binary || octal || hex) {
             NumericStringComparator nsc = null;
-            if (usePattern) {
-                if (binary)
-                    nsc = new NumericStringComparator(BINARY_FLAG, pattern);
-                else if (octal)
-                    nsc = new NumericStringComparator(OCTAL_FLAG, pattern);
-                else if (hex)
-                    nsc = new NumericStringComparator(HEX_FLAG, pattern);
-                else if (numeric)
-                    nsc = new NumericStringComparator(NUMERIC_FLAG, pattern);
-            } else if (usePatternR) {
-                if (binary)
-                    nsc = new NumericStringComparator(BINARY_FLAG, pattern, "r");
-                else if (octal)
-                    nsc = new NumericStringComparator(OCTAL_FLAG, pattern, "r");
-                else if (hex)
-                    nsc = new NumericStringComparator(HEX_FLAG, pattern, "r");
-                else if (numeric)
-                    nsc = new NumericStringComparator(NUMERIC_FLAG, pattern, "r");
-            } else {
-                if (binary)
-                    nsc = new NumericStringComparator(BINARY_FLAG);
-                else if (octal)
-                    nsc = new NumericStringComparator(OCTAL_FLAG);
-                else if (hex)
-                    nsc = new NumericStringComparator(HEX_FLAG);
-                else if (numeric)
-                    nsc = new NumericStringComparator(NUMERIC_FLAG);
-            }
+            if (binary)
+            	nsc = new NumericStringComparator(BINARY_FLAG, pattern, usePatternR);
+            else if (octal)
+            	nsc = new NumericStringComparator(OCTAL_FLAG, pattern, usePatternR);
+            else if (hex)
+            	nsc = new NumericStringComparator(HEX_FLAG, pattern, usePatternR);
+            else if (numeric)
+            	nsc = new NumericStringComparator(NUMERIC_FLAG, pattern, usePatternR);
 
             List<String> numericList = new ArrayList<String>();
             List<String> nonNumericList = new ArrayList<String>();
