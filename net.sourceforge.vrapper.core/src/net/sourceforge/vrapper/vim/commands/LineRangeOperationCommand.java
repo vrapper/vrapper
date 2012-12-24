@@ -304,6 +304,9 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
     	else if(operation == 'd') {
     		return DeleteOperation.INSTANCE;
     	}
+    	else if(operation == 's' && remainingChars.startsWith("sort")) {
+    		return new SortOperation(remainingChars.substring(4));
+    	}
     	else if(operation == 's') {
     		return new SubstitutionOperation(remainingChars);
     	}

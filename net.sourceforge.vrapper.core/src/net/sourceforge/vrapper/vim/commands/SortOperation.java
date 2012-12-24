@@ -7,11 +7,12 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.sourceforge.vrapper.platform.SimpleConfiguration;
 import net.sourceforge.vrapper.platform.TextContent;
+import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.IgnoreCaseStringComparator;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.NumericStringComparator;
+import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 
 /**
@@ -98,8 +99,7 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
  * @author Brian Detweiler
  * 
  */
-// TODO: Extend LineRangeOperationCommand to support ranges
-public class SortCommand extends CountIgnoringNonRepeatableCommand {
+public class SortOperation extends SimpleTextOperation {
 
     private static enum Options {
         REVERSED, 
@@ -156,12 +156,30 @@ public class SortCommand extends CountIgnoringNonRepeatableCommand {
 
     private String pattern = "";
 
-    /**
-     * @param option
-     * @throws CommandExecutionException
-     */
-    public SortCommand(String[] options, String pattern) throws CommandExecutionException {
+    public SortOperation(String commandStr) {
         super();
+        
+        Pattern p = Pattern.compile("/(.*?)/(.*)");
+        Matcher m = p.matcher(commandStr);
+
+        String pattern = null;
+        if(m.matches()) {
+        	pattern = m.group(1);
+        	commandStr = m.group(2);
+        }
+
+        String[] tmp = commandStr.split("");
+        String[] options= new String[tmp.length];
+        int count = 0;
+
+        for(String option : tmp) {
+        	option = option.trim();
+        	if(!option.isEmpty()) {
+        		options[count] = option;
+        		++count;
+        	}
+        }
+        
 
         if (pattern != null && !pattern.trim().isEmpty()) {
             this.pattern = pattern;
@@ -187,39 +205,21 @@ public class SortCommand extends CountIgnoringNonRepeatableCommand {
                 unique = true;
             else if (usePattern && encodeOption(option) == Options.USE_PATTERN_R)
                 usePatternR = true;
-            else
-                throw new CommandExecutionException("Invalid argument: " + option);
         }
 
-        // SANITY CHECKS
-        // decimal (numeric), binary, hex, octal. Pick one. Or pick none.
-        if ((!numeric && !binary && !hex && !octal) || (numeric ^ binary ^ hex ^ octal))
-            ;
-        else
-            throw new CommandExecutionException("Invalid argument: " + options);
-
-        // Validate regex pattern
-        if (usePattern || usePatternR) {
-            try {
-                Pattern.compile(pattern);
-            } catch (Exception e) {
-                throw new CommandExecutionException("Invalid regular expression " + pattern);
-            }
-        }
-
-        /* XXX: I should mention, adding "i" to a numeric sort of any type will do nothing.
-         *      But Vim doesn't throw an error, so we won't either. 
-         *      Of note, Vim does not do a secondary sort. That is, if you were to sort 
-         *      numerically on the following:
-         *          1b
-         *          2c
-         *          1a
-         *    	it would be sorted in Vim as follows:
-         *    		1b
-         *    		1a
-         *    		2c
-         *      Would it be useful to have the secondary ASCII sort, or would this break 
-         *      expected functionality? Leaving this up for debate. -- BRD
+        /* I should mention, adding "i" to a numeric sort of any type will do nothing.
+         * But Vim doesn't throw an error, so we won't either. 
+         * Of note, Vim does not do a secondary sort. That is, if you were to sort 
+         * numerically on the following:
+         *   1b
+         *   2c
+         *   1a
+         * it would be sorted in Vim as follows:
+         *   1b
+         *   1a
+         *   2c
+         * Would it be useful to have the secondary ASCII sort, or would this break 
+         * expected functionality? Leaving this up for debate. -- BRD
          */
     }
 
@@ -298,24 +298,42 @@ public class SortCommand extends CountIgnoringNonRepeatableCommand {
      * @return
      */
     private boolean hasNumber(String str) {
+    	int radix = 10;
+    	     if(binary) radix = 2;
+    	else if(octal)  radix = 8;
+    	else if(hex)    radix = 16;
+    	
         char[] strArr = str.toCharArray();
         for (char c : strArr) {
-            if (binary && Character.digit(c, 2) != -1)
-                return true;
-            else if (octal && Character.digit(c, 8) != -1)
-                return true;
-            else if (hex && Character.digit(c, 16) != -1)
-                return true;
-            else if (Character.digit(c, 10) != -1)
+            if (Character.digit(c, radix) != -1)
                 return true;
         }
 
         return false;
     }
 
-    public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
+
+	@Override
+	public void execute(EditorAdaptor editorAdaptor, TextRange region, ContentType contentType) throws CommandExecutionException {
         try {
-            doIt(editorAdaptor);
+        	TextContent content = editorAdaptor.getModelContent();
+        	LineInformation startLine;
+        	LineInformation endLine;
+        	
+        	if(region == null) {
+        		startLine = content.getLineInformation(0);
+        		endLine = content.getLineInformation(content.getNumberOfLines());
+        	}
+        	else {
+        		startLine = content.getLineInformationOfOffset(region.getLeftBound().getModelOffset());
+        		endLine = content.getLineInformationOfOffset(region.getRightBound().getModelOffset());
+        	}
+        	
+        	//don't sort if only one line
+        	//(or if start and end are somehow swapped)
+        	if(startLine.getNumber() < endLine.getNumber())
+	            doIt(editorAdaptor, startLine, endLine);
+        	
         } catch (Exception e) {
             throw new CommandExecutionException("sort failed: " + e.getMessage());
         }
@@ -327,19 +345,12 @@ public class SortCommand extends CountIgnoringNonRepeatableCommand {
      * @param editorAdaptor
      * @throws Exception
      */
-    public void doIt(EditorAdaptor editorAdaptor) throws Exception {
-
-        SimpleConfiguration config = new SimpleConfiguration();
-        String nl = config.getNewLine();
-
-
+    public void doIt(EditorAdaptor editorAdaptor, LineInformation startLine, LineInformation endLine) throws Exception {
         // Throw the whole editor into an array separated by newlines
         TextContent content = editorAdaptor.getModelContent();
         List<String> editorContentList = new ArrayList<String>();
-        int startLine = 0;
-        int endLine = content.getNumberOfLines();
         LineInformation line = null;
-        for(int i = startLine; i < endLine; ++i) {
+        for(int i = startLine.getNumber(); i < endLine.getNumber(); ++i) {
             line = content.getLineInformation(i);
             editorContentList.add(content.getText(line.getBeginOffset(), line.getLength()));
         }
@@ -412,18 +423,26 @@ public class SortCommand extends CountIgnoringNonRepeatableCommand {
         if (reversed)
             Collections.reverse(editorContentList);
 
+        StringBuilder replacementText = new StringBuilder();
         int size = editorContentList.size();
         int count = 0;
-        StringBuilder replacementText = new StringBuilder();
+        String newline = editorAdaptor.getConfiguration().getNewLine();
         for (String editorLine : editorContentList) {
             ++count;
             replacementText.append(editorLine);
             if (count != size) //don't append newline on last line in file
-            	replacementText.append(editorAdaptor.getConfiguration().getNewLine());
+            	replacementText.append(newline);
         }
 
-        int length = editorAdaptor.getModelContent().getTextLength();
-        // Replace the contents of the editor with the freshly sorted text
-        editorAdaptor.getModelContent().replace(0, length, replacementText.toString());
+        // Replace the contents of the range with the freshly sorted text
+        editorAdaptor.getModelContent().replace(
+        		startLine.getBeginOffset(),
+        		endLine.getEndOffset() - startLine.getBeginOffset(),
+        		replacementText.toString()
+		);
     }
+
+	public TextOperation repetition() {
+		return this;
+	}
 }

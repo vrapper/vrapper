@@ -7,6 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.sourceforge.vrapper.platform.Configuration.Option;
+import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Search;
 import net.sourceforge.vrapper.utils.VimUtils;
@@ -28,7 +29,7 @@ import net.sourceforge.vrapper.vim.commands.SaveAllCommand;
 import net.sourceforge.vrapper.vim.commands.SaveCommand;
 import net.sourceforge.vrapper.vim.commands.SetOptionCommand;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
-import net.sourceforge.vrapper.vim.commands.SortCommand;
+import net.sourceforge.vrapper.vim.commands.SortOperation;
 import net.sourceforge.vrapper.vim.commands.SubstitutionOperation;
 import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
 import net.sourceforge.vrapper.vim.commands.UndoCommand;
@@ -133,33 +134,11 @@ public class CommandLineParser extends AbstractCommandParser {
         		String commandStr = "";
             	while(command.size() > 0)
             		commandStr += command.poll().trim();
-        	
-    			Pattern p = Pattern.compile("/(.*?)/(.*)");
-    			Matcher m = p.matcher(commandStr);
-    	 
-    			String pattern = "";
-    			if(m.matches()) {
-    				pattern = m.group(1);
-    				commandStr = m.group(2);
-    			}
-    			
-    			String[] tmp = commandStr.split("");
-    			String[] optionsArr = new String[tmp.length];
-    			int count = 0;
-    			
-    			for(String option : tmp) {
-    				option = option.trim();
-    				if(!option.isEmpty()) {
-    					optionsArr[count] = option;
-    					++count;
-    				}
-    			}
         		
             	try {
-					new SortCommand(optionsArr, pattern).execute(vim);
+					new SortOperation(commandStr).execute(vim, null, ContentType.LINES);
 				} catch (CommandExecutionException e) {
-					// TODO: Report which argument was invalid
-            		vim.getUserInterfaceService().setErrorMessage("Invalid argument");
+            		vim.getUserInterfaceService().setErrorMessage(e.getMessage());
 				}
             	
             	return null;
