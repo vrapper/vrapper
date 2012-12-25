@@ -9,7 +9,6 @@ import java.util.regex.Pattern;
 
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.ContentType;
-import net.sourceforge.vrapper.utils.IgnoreCaseStringComparator;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.NumericStringComparator;
 import net.sourceforge.vrapper.utils.TextRange;
@@ -306,8 +305,7 @@ public class SortOperation extends SimpleTextOperation {
             editorContentList.addAll(numericList);
         } else if (ignoreCase) {
             // This has no effect on a pattern if a pattern was given
-            IgnoreCaseStringComparator icsc = new IgnoreCaseStringComparator();
-            Collections.sort(editorContentList, icsc);
+            Collections.sort(editorContentList, String.CASE_INSENSITIVE_ORDER);
         } else
             Collections.sort(editorContentList);
 
