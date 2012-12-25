@@ -3,8 +3,6 @@ package net.sourceforge.vrapper.vim.modes.commandline;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.StringTokenizer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import net.sourceforge.vrapper.platform.Configuration.Option;
 import net.sourceforge.vrapper.utils.ContentType;
@@ -293,15 +291,15 @@ public class CommandLineParser extends AbstractCommandParser {
             // do nothing
         }
        
-        // TODO: SortCommand should extend a TextOperationTextObject command somehow to 
-        // 		 support ranges -- BRD
         //not a number but starts with a number, $, /, ?, +, -, ', . (dot), or , (comma)
         //might be a line range operation
         if(command.length() > 1 && LineRangeOperationCommand.isLineRangeOperation(command))
         	return new LineRangeOperationCommand(command);
         
         // Reverse sort toggle will just be treated as just another argument
-    	command = Pattern.compile("^sort!").matcher(command).replaceAll("sort !");
+        if(command.startsWith("sort!")) {
+        	command = command.replace("sort!", "sort !");
+        }
         
         //check against list of known commands
         StringTokenizer nizer = new StringTokenizer(command);
