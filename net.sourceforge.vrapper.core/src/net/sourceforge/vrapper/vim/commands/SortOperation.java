@@ -283,15 +283,17 @@ public class SortOperation extends SimpleTextOperation {
             List<String> numericList = new ArrayList<String>();
             List<String> nonNumericList = new ArrayList<String>();
 
+            Pattern p = null;
+            Matcher m = null;
             for (String candidate : editorContentList) {
-                Pattern p = null;
-                Matcher m = null;
                 if (usePattern || usePatternR) {
                     p = Pattern.compile(pattern);
                     m = p.matcher(candidate);
                     
                     if(m.matches() && hasNumber(candidate))
                     	numericList.add(candidate);
+                    else
+                    	nonNumericList.add(candidate);
                 }
                 else if (hasNumber(candidate))
                     numericList.add(candidate);
