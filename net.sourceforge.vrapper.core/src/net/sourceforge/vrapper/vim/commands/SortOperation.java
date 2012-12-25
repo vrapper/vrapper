@@ -289,11 +289,11 @@ public class SortOperation extends SimpleTextOperation {
                 if (usePattern || usePatternR) {
                     p = Pattern.compile(pattern);
                     m = p.matcher(candidate);
+                    
+                    if(m.matches() && hasNumber(candidate))
+                    	numericList.add(candidate);
                 }
-
-                if ((usePattern || usePatternR) && m.matches() && hasNumber(candidate))
-                    numericList.add(candidate);
-                else if (!(usePattern || usePatternR) && hasNumber(candidate))
+                else if (hasNumber(candidate))
                     numericList.add(candidate);
                 else
                     nonNumericList.add(candidate);
