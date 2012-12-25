@@ -12,10 +12,13 @@ import java.util.Queue;
 
 import net.sourceforge.vrapper.core.tests.utils.VimTestCase;
 import net.sourceforge.vrapper.platform.Configuration.Option;
+import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.Command;
+import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.LineRangeOperationCommand;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
+import net.sourceforge.vrapper.vim.commands.SortOperation;
 import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.modes.commandline.CommandLineMode;
@@ -93,6 +96,59 @@ public class CommandLineTests extends VimTestCase {
     	command = parser.parseAndExecute(":", "?foo?,/bar/d");
     	assertNotNull(command);
     	assertTrue(command instanceof LineRangeOperationCommand);
+    }
+    
+    @Test
+    public void testSort() throws CommandExecutionException {
+    	content.setText("3\n2\n1\n10");
+    	new SortOperation("").execute(adaptor, null, ContentType.LINES);
+    	assertEquals("1\n10\n2\n3", content.getText());
+    	
+    	new SortOperation("!").execute(adaptor, null, ContentType.LINES);
+    	assertEquals("3\n2\n10\n1", content.getText());
+    	
+    	new SortOperation("n").execute(adaptor, null, ContentType.LINES);
+    	assertEquals("1\n2\n3\n10", content.getText());
+    	
+    	new SortOperation("!n").execute(adaptor, null, ContentType.LINES);
+    	assertEquals("10\n3\n2\n1", content.getText());
+    	
+    	content.setText("c\n3\n2\nb\n10\n1\na");
+    	new SortOperation("").execute(adaptor, null, ContentType.LINES);
+    	assertEquals("1\n10\n2\n3\na\nb\nc", content.getText());
+    	
+    	content.setText("c\n3\n2\nb\n10\n1\na");
+    	new SortOperation("n").execute(adaptor, null, ContentType.LINES);
+    	assertEquals("c\nb\na\n1\n2\n3\n10", content.getText());
+    	
+    	content.setText("c\n3\n2\nb\n10\n1\na");
+    	new SortOperation("n!").execute(adaptor, null, ContentType.LINES);
+    	assertEquals("10\n3\n2\n1\na\nb\nc", content.getText());
+    	
+    	content.setText("c\n3\n2\nb\n10\n1\na");
+    	new SortOperation("x").execute(adaptor, null, ContentType.LINES);
+    	assertEquals("1\n2\n3\na\nb\nc\n10", content.getText());
+    	
+    	content.setText("c\n3\n2\nb\nxx\n10\n1\na");
+    	new SortOperation("x").execute(adaptor, null, ContentType.LINES);
+    	assertEquals("xx\n1\n2\n3\na\nb\nc\n10", content.getText());
+    	
+    	content.setText("bb3\naa4\ncc2\ndd1");
+    	new SortOperation("").execute(adaptor, null, ContentType.LINES);
+    	
+    	new SortOperation("n").execute(adaptor, null, ContentType.LINES);
+    	assertEquals("dd1\ncc2\nbb3\naa4", content.getText());
+    	
+    	new SortOperation("x").execute(adaptor, null, ContentType.LINES);
+    	assertEquals("aa4\nbb3\ncc2\ndd1", content.getText());
+    	
+    	content.setText("1xx5\n3xx3\n2xx4\n4xx2");
+    	new SortOperation("n").execute(adaptor, null, ContentType.LINES);
+    	assertEquals("1xx5\n2xx4\n3xx3\n4xx2", content.getText());
+    	
+    	content.setText("1xx5\n3xx3\n2xx4\n4xx2");
+    	new SortOperation("/xx/ n").execute(adaptor, null, ContentType.LINES);
+    	assertEquals("4xx2\n3xx3\n2xx4\n1xx5", content.getText());
     }
 	
 	@Test
