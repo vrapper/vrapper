@@ -131,7 +131,9 @@ public class CommandLineParser extends AbstractCommandParser {
             public Object evaluate(EditorAdaptor vim, Queue<String> command) {
         		String commandStr = "";
             	while(command.size() > 0)
-            		commandStr += command.poll().trim();
+            		//attempt to preserve spacing in case a pattern is in use
+            		//(if you attempt to sort with "/foo    bar/" it won't work)
+            		commandStr += command.poll() + " ";
         		
             	try {
 					new SortOperation(commandStr).execute(vim, null, ContentType.LINES);
@@ -340,7 +342,7 @@ public class CommandLineParser extends AbstractCommandParser {
     	}
     	//any non-alphanumeric character can be a delimiter
     	//(this check is to avoid treating ":set" as a substitution)
-    	if(command.startsWith("s") && !VimUtils.isWordCharacter(""+command.charAt(1))) {
+    	if(command.startsWith("s") && VimUtils.isPatternDelimiter(""+command.charAt(1))) {
     		//null TextRange is a special case for "current line"
     		return new TextOperationTextObjectCommand(
 				new SubstitutionOperation(command), new SimpleSelection(null)

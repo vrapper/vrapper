@@ -2,6 +2,7 @@ package net.sourceforge.vrapper.vim.commands;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -12,6 +13,7 @@ import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.NumericStringComparator;
 import net.sourceforge.vrapper.utils.TextRange;
+import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 
 /**
@@ -122,7 +124,7 @@ public class SortOperation extends SimpleTextOperation {
     private boolean hex = false;
     /** o - octal sort */
     private boolean octal = false;
-	/** u - works like sort -u on the command line - removes duplicate entries and sorts */
+	/** u - unique - removes duplicate entries */
     private boolean unique = false;
     /** /regex pattern/ */
     private boolean usePattern = false;
@@ -134,18 +136,13 @@ public class SortOperation extends SimpleTextOperation {
     public SortOperation(String commandStr) {
         super();
         
-        Pattern p = Pattern.compile("/(.*?)/(.*)");
-        Matcher m = p.matcher(commandStr);
-
-        String pattern = null;
-        if(m.matches()) {
-        	pattern = m.group(1);
-        	commandStr = m.group(2);
-        }
-        
-        if (pattern != null && !pattern.trim().isEmpty()) {
-            this.pattern = pattern;
+        pattern = parsePattern(commandStr);
+        if(pattern != null) {
+        	//remove pattern so we don't attempt to parse options from it
+        	commandStr = commandStr.replace(pattern, "");
             usePattern = true;
+            //remove pattern delimiters (e.g., '/')
+            pattern = pattern.substring(1, pattern.length() -1);
         }
 
         String[] options = commandStr.split("");
@@ -169,21 +166,39 @@ public class SortOperation extends SimpleTextOperation {
             else if (usePattern && option.equalsIgnoreCase(USE_PATTERN_R))
                 usePatternR = true;
         }
-
-        /* I should mention, adding "i" to a numeric sort of any type will do nothing.
-         * But Vim doesn't throw an error, so we won't either. 
-         * Of note, Vim does not do a secondary sort. That is, if you were to sort 
-         * numerically on the following:
-         *   1b
-         *   2c
-         *   1a
-         * it would be sorted in Vim as follows:
-         *   1b
-         *   1a
-         *   2c
-         * Would it be useful to have the secondary ASCII sort, or would this break 
-         * expected functionality? Leaving this up for debate. -- BRD
-         */
+    }
+    
+    /**
+     * Patterns can have any non-word character as a delimiter.
+     * For example, "/pattern/", "_pattern_", or ":pattern:".
+     * Find the first non-word character in the string and see
+     * if it has a match.  If it does, return that string.
+     * @param command - string of :sort options
+     * @return - string pattern (with delimiters), or null if none found
+     */
+    private String parsePattern(String command) {
+        char[] chars = command.toCharArray();
+        String c;
+        for (int i=0; i < chars.length; i++) {
+        	c = chars[i] + "";
+        	if(c.trim().isEmpty()) {
+        		//skip (but don't remove) whitespace
+        		continue;
+        	}
+            if (VimUtils.isPatternDelimiter(c)) {
+            	//this could be a pattern delimiter
+            	int match = command.indexOf(c.charAt(0), i+1);
+            	if(match == -1) {
+            		//we found a non-word character with no match
+            		//probably an invalid character
+            		return null;
+            	}
+            	else {
+            		return command.substring(i, match+1);
+            	}
+            }
+        }
+        return null;
     }
 
     /**
@@ -205,12 +220,15 @@ public class SortOperation extends SimpleTextOperation {
      * @param base
      * @return
      */
-    private boolean hasNumber(String str) {
+    private boolean hasNumber(String str, int offset) {
     	int radix = 10;
     	     if(binary) radix = 2;
     	else if(octal)  radix = 8;
     	else if(hex)    radix = 16;
     	
+    	if(offset > 0) {
+    		str = str.substring(offset);
+    	}
         char[] strArr = str.toCharArray();
         for (char c : strArr) {
             if (Character.digit(c, radix) != -1)
@@ -257,6 +275,7 @@ public class SortOperation extends SimpleTextOperation {
         // Throw the whole editor into an array separated by newlines
         TextContent content = editorAdaptor.getModelContent();
         List<String> editorContentList = new ArrayList<String>();
+        Comparator<String> comp = null;
         LineInformation line = null;
         for(int i = startLine.getNumber(); i < endLine.getNumber(); ++i) {
             line = content.getLineInformation(i);
@@ -266,48 +285,61 @@ public class SortOperation extends SimpleTextOperation {
         // Little trick to get uniques from an ArrayList
         if (unique)
             editorContentList = new ArrayList<String>(new HashSet<String>(editorContentList));
-
-        // Handle various numeric cases
-        if (numeric || binary || octal || hex) {
-            NumericStringComparator nsc = null;
-            if (binary)
-            	nsc = new NumericStringComparator(BINARY_FLAG, pattern, usePatternR);
-            else if (octal)
-            	nsc = new NumericStringComparator(OCTAL_FLAG, pattern, usePatternR);
-            else if (hex)
-            	nsc = new NumericStringComparator(HEX_FLAG, pattern, usePatternR);
-            else if (numeric)
-            	nsc = new NumericStringComparator(NUMERIC_FLAG, pattern, usePatternR);
-
-            List<String> numericList = new ArrayList<String>();
-            List<String> nonNumericList = new ArrayList<String>();
-
-            Pattern p = null;
+        
+        List<String> candidateList = editorContentList;
+        List<Integer> candidateOffsetList = new ArrayList<Integer>();
+        List<String> nonCandidateList = new ArrayList<String>();
+        if(usePattern) {
+            Pattern p = Pattern.compile(pattern);
             Matcher m = null;
-            for (String candidate : editorContentList) {
-                if (usePattern || usePatternR) {
-                    p = Pattern.compile(pattern);
-                    m = p.matcher(candidate);
-                    
-                    if(m.matches() && hasNumber(candidate))
-                    	numericList.add(candidate);
-                    else
-                    	nonNumericList.add(candidate);
-                }
-                else if (hasNumber(candidate))
-                    numericList.add(candidate);
-                else
-                    nonNumericList.add(candidate);
-            }
+            String candidate;
+            for (int i=0; i < candidateList.size(); i++) {
+            	candidate = candidateList.get(i);
+            	m = p.matcher(candidate);
 
-            Collections.sort(numericList, nsc);
-            editorContentList = new ArrayList<String>(nonNumericList);
-            editorContentList.addAll(numericList);
-        } else if (ignoreCase) {
-            // This has no effect on a pattern if a pattern was given
-            Collections.sort(editorContentList, String.CASE_INSENSITIVE_ORDER);
-        } else
-            Collections.sort(editorContentList);
+            	if(m.matches()) {
+            		candidateOffsetList.add( usePatternR ? m.start() : m.end() );
+            	}
+            	else {
+                	candidateList.remove(i);
+                	i--;
+            		nonCandidateList.add(candidate);
+            	}
+            }
+            
+            comp = null; //TODO: ascii pattern comparator
+        }
+
+        if (numeric || binary || octal || hex) {
+        	comp = new NumericStringComparator(binary, octal, hex, pattern, usePatternR);
+
+        	String candidate;
+        	int candidateOffset;
+            for (int i=0; i < candidateList.size(); i++) {
+            	candidate = candidateList.get(i);
+            	candidateOffset = candidateOffsetList.size() > i ? candidateOffsetList.get(i) : -1;
+                if (! hasNumber(candidate, candidateOffset)) {
+                	candidateList.remove(candidate);
+                	i--;
+                    nonCandidateList.add(candidate);
+                }
+            }
+        } 
+        else if(ignoreCase) {
+        	comp = String.CASE_INSENSITIVE_ORDER;
+        }
+        
+        
+        if(comp == null) { //normal ascii sort
+            Collections.sort(candidateList);
+        }
+        else {
+            Collections.sort(candidateList, comp);
+        }
+        
+        //add non-sorted rows before sorted rows
+        editorContentList = new ArrayList<String>(nonCandidateList);
+        editorContentList.addAll(candidateList);
 
         if (reversed)
             Collections.reverse(editorContentList);
@@ -332,6 +364,6 @@ public class SortOperation extends SimpleTextOperation {
     }
 
 	public TextOperation repetition() {
-		return this;
+		return null;
 	}
 }

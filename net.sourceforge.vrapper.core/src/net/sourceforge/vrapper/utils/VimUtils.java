@@ -22,6 +22,7 @@ import net.sourceforge.vrapper.vim.VimConstants;
 public class VimUtils {
 
     public static final Pattern COMPILED_WORD_CHAR_PATTERN = Pattern.compile(VimConstants.WORD_CHAR_PATTERN);
+    public static final Pattern COMPILED_PATTERN_DELIM_PATTERN = Pattern.compile(VimConstants.PATTERN_DELIM_PATTERN);
 
     private VimUtils() {
         // no instance
@@ -83,6 +84,10 @@ public class VimUtils {
 
     public static boolean isWordCharacter(String s) {
         return VimUtils.COMPILED_WORD_CHAR_PATTERN.matcher(s).find();
+    }
+    
+    public static boolean isPatternDelimiter(String s) {
+        return VimUtils.COMPILED_PATTERN_DELIM_PATTERN.matcher(s).find();
     }
 
     public static boolean isBlank(String s) {

@@ -13,49 +13,34 @@ import net.sourceforge.vrapper.platform.SimpleConfiguration;
  */
 public class NumericStringComparator implements Comparator<String>{
 	
-	private static final String NUMERIC_FLAG   = "n";
-	private static final String BINARY_FLAG    = "b";
-	private static final String OCTAL_FLAG     = "o";
-	private static final String HEX_FLAG       = "x";
-	
 	private boolean binary      = false;
 	private boolean octal       = false;
 	private boolean hex         = false;
 	private boolean usePattern  = false;
 	private boolean usePatternR = false;
 
-	private String pattern 	    = "";
+	private Pattern compiledPattern = null;
 	
 	public NumericStringComparator() {
 		super();
 	}
 	
-	public NumericStringComparator(String option, String pattern, boolean patternR) throws Exception {
+	public NumericStringComparator(boolean binary, boolean octal, boolean hex, String pattern, boolean patternR) throws Exception {
 		super();
-    	if(option == null || option.trim().isEmpty())
-    		return;
     		
-    	if(option.equalsIgnoreCase(NUMERIC_FLAG))
-    		; //numeric is assumed, no need for a flag
-    	else if(option.equalsIgnoreCase(BINARY_FLAG))
-    		binary = true;
-    	else if(option.equalsIgnoreCase(OCTAL_FLAG))
-    		octal = true;
-    	else if(option.equalsIgnoreCase(HEX_FLAG))
-    		hex = true; 
-    	else
-    		throw new Exception("Invalid argument: " + option);
+    	//numeric is assumed, no need for a flag
+    	this.binary = binary;
+    	this.octal = octal;
+    	this.hex = hex; 
     	
     	if(pattern != null) {
     		try {
-    			Pattern.compile(pattern);
+    			compiledPattern = Pattern.compile(pattern);
     		} catch(Exception e) {
     			throw new Exception("Invalid pattern " + pattern);
     		}
 
-    		this.pattern = pattern;
     		usePattern = true;
-    		
     		usePatternR = patternR; 
     	}
 	}
@@ -129,19 +114,16 @@ public class NumericStringComparator implements Comparator<String>{
 	public int compare(String str1, String str2) {
 
 		if(usePatternR) {
-			Pattern p = Pattern.compile(pattern);
-			Matcher m = p.matcher("(" + str1 + ")");
-			str1 = m.group(1);
-			m = p.matcher(str2);
-			str2 = m.group(1);
+			Matcher m = compiledPattern.matcher(str1);
+			str1 = str1.substring(m.start(), str1.length());
+			m = compiledPattern.matcher(str2);
+			str2 = str2.substring(m.start(), str2.length());
 		}
-		
-		if(usePattern) {
-			Pattern p = Pattern.compile(pattern);
-			Matcher m = p.matcher(str1);
-			str1 = m.replaceFirst("");
-			m = p.matcher(str2);
-			str2 = m.replaceFirst("");
+		else if(usePattern) {
+			Matcher m = compiledPattern.matcher(str1);
+			str1 = str1.substring(m.end(), str1.length());
+			m = compiledPattern.matcher(str2);
+			str2 = str2.substring(m.end(), str2.length());
 		}
 		
 		double dub1 = getFirstNumber(str1);
