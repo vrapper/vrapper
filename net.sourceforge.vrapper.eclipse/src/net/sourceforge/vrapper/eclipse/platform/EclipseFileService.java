@@ -15,7 +15,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IWorkbenchCommandConstants;
 import org.eclipse.ui.IWorkbenchPage;
@@ -48,14 +47,7 @@ public class EclipseFileService implements FileService {
     public boolean closeAll(boolean force) {
     	IWorkbenchPage page = editor.getSite().getPage();
         if (force || page.getDirtyEditors().length == 0) {
-        	//Calling page.closeAllEditors() doesn't send the close event so 
-        	//Vrapper tries to find the cursor position of a closed editor and gets
-        	//a NullPointer. Instead, iterate through all editors and close them
-        	//the normal way.
-        	IEditorReference[] references = page.getEditorReferences();
-        	for(IEditorReference ref : references) {
-        		((AbstractTextEditor)ref.getEditor(false)).close(false);
-        	}
+        	page.closeAllEditors(false);
             return true;
         }
         return false;
