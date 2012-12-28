@@ -346,6 +346,20 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         macroRecorder = new MacroRecorder(registerManager, userInterfaceService);
     }
 
+    /**
+     * Note from Kevin: This method is a major source of frustration for me.
+     * It has to handle the following scenarios but I can't unit test them:
+     * - multi-character mapping completed in InsertMode and NormalMode
+     * - multi-character mapping *not* completed in InsertMode and NormalMode
+     *   - "nmap zx gg" and type 'zt'
+     *   - "imap jj <ESC>" and type 'jk'
+     * - display pending character in InsertMode
+     *   - and delete pending character when mapping completed
+     * - don't move cursor when not completing a multi-character mapping while inside parentheses
+     *   - "for(int j=0)"  when 'j' is part of a mapping ("imap jj <ESC>")
+     *   - (Eclipse moves the cursor on me in its "Smart Insert" mode with auto-closing parentheses)
+     * - single-character mapping in InsertMode (perform mapping but don't display pending character)
+     */
     private boolean handleKey0(KeyStroke key) {
         if (currentMode != null) {
             KeyMap map = currentMode.resolveKeyMap(keyMapProvider);
@@ -361,15 +375,21 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
                     	if(resultingKeyStrokes.isEmpty()) {
                     		return currentMode.handleKey(key);
                     	}
-                    	//mapping completed
-                    	//(delete all the pending characters we had displayed)
+                    	//there are resulting key strokes,
+                    	//mapping exited either successfully or unsuccessfully
                     	else if(keyStrokeTranslator.numUnconsumedKeys() > 0) {
-                    		for(int i=0; i < keyStrokeTranslator.numUnconsumedKeys(); i++) {
-	                    		currentMode.handleKey(new RemappedKeyStroke(new SimpleKeyStroke(SpecialKey.BACKSPACE), false));
+                    		if(keyStrokeTranslator.didMappingSucceed()) {
+                    			//delete all the pending characters we had displayed
+                    			for(int i=0; i < keyStrokeTranslator.numUnconsumedKeys(); i++) {
+                    				currentMode.handleKey(new RemappedKeyStroke(new SimpleKeyStroke(SpecialKey.BACKSPACE), false));
+                    			}
+                    		}
+                    		else {
+                    			//we've already displayed all but this most recent key
+                    			return currentMode.handleKey(key);
                     		}
                     	}
-                    	//else, mapping did not complete (we've already displayed the pending characters)
-                    	//or mapping is only one character long (no pending characters to remove)
+                    	//else, mapping is only one character long (no pending characters to remove)
                     }
                     //play all resulting key strokes
                     while (!resultingKeyStrokes.isEmpty()) {

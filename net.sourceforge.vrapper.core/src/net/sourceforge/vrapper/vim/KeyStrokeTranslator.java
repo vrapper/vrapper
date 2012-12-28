@@ -24,6 +24,7 @@ public class KeyStrokeTranslator {
     private final List<RemappedKeyStroke> unconsumedKeyStrokes;
     private final LinkedList<RemappedKeyStroke> resultingKeyStrokes;
     private int numUnconsumed = 0;
+    private boolean mappingSucceeded = false;
 
     public KeyStrokeTranslator() {
         unconsumedKeyStrokes = new LinkedList<RemappedKeyStroke>();
@@ -40,17 +41,20 @@ public class KeyStrokeTranslator {
             }
             //begin new mapping, make sure values are reset
             resultingKeyStrokes.clear();
+            unconsumedKeyStrokes.clear();
             numUnconsumed = 0;
+            mappingSucceeded = true;
         } else {
             trans = currentState.press(key);
         }
         if (trans != null) {
             // mapping exists
             if (trans.getValue() != null) {
+            	//mapping completed successfully
                 lastValue = trans.getValue();
                 numUnconsumed = unconsumedKeyStrokes.size();
                 unconsumedKeyStrokes.clear();
-            } else {
+            } else { //mapping pending
                 // as long as no preliminary result is found, keystrokes
                 // should not be evaluated again
                 boolean recursive = !unconsumedKeyStrokes.isEmpty() || lastValue != null;
@@ -58,18 +62,20 @@ public class KeyStrokeTranslator {
                 numUnconsumed++;
             }
             if (trans.getNextState() == null) {
-            	//mapping did not complete
-            	unconsumedKeyStrokes.clear();
+            	//mapping completed
                 prependLastValue();
                 currentState = null;
             } else {
+            	//mapping still pending
                 currentState = trans.getNextState();
             }
         } else {
-            // mapping ends here
-        	unconsumedKeyStrokes.clear();
+            // mapping was not completed
+            unconsumedKeyStrokes.add(new RemappedKeyStroke(key, true));
+            prependUnconsumed();
             prependLastValue();
             currentState = null;
+            mappingSucceeded = false;
         }
         return true;
     }
@@ -81,6 +87,15 @@ public class KeyStrokeTranslator {
     public int numUnconsumedKeys() {
     	//how many keys are being swallowed by this completed mapping?
         return numUnconsumed;
+    }
+
+    public boolean didMappingSucceed() {
+        return mappingSucceeded;
+    }
+
+    private void prependUnconsumed() {
+        resultingKeyStrokes.addAll(0, unconsumedKeyStrokes);
+        unconsumedKeyStrokes.clear();
     }
 
     private void prependLastValue() {
