@@ -274,6 +274,7 @@ public class SortOperation extends SimpleTextOperation {
     public void doIt(EditorAdaptor editorAdaptor, LineInformation startLine, LineInformation endLine) throws Exception {
         // Throw the whole editor into an array separated by newlines
         TextContent content = editorAdaptor.getModelContent();
+        int total = content.getNumberOfLines();
         List<String> editorContentList = new ArrayList<String>();
         Comparator<String> comp = null;
         LineInformation line = null;
@@ -283,8 +284,10 @@ public class SortOperation extends SimpleTextOperation {
         }
         
         // Little trick to get uniques from an ArrayList
-        if (unique)
+        if (unique) {
             editorContentList = new ArrayList<String>(new HashSet<String>(editorContentList));
+            total = editorContentList.size();
+        }
         
         List<String> candidateList = editorContentList;
         List<Integer> candidateOffsetList = new ArrayList<Integer>();
@@ -345,13 +348,12 @@ public class SortOperation extends SimpleTextOperation {
             Collections.reverse(editorContentList);
 
         StringBuilder replacementText = new StringBuilder();
-        int total = content.getNumberOfLines();
         int count = 0;
         String newline = editorAdaptor.getConfiguration().getNewLine();
         for (String editorLine : editorContentList) {
             ++count;
             replacementText.append(editorLine);
-            if (count != total) //don't append newline on last line in file
+            if (count < total) //don't append newline on last line in file
             	replacementText.append(newline);
         }
 
