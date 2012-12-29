@@ -52,6 +52,25 @@ public class EclipseFileService implements FileService {
         }
         return false;
     }
+    
+    public boolean closeOthers(boolean force) {
+    	IWorkbenchPage page = editor.getSite().getPage();
+        if (force || page.getDirtyEditors().length == 0) {
+        	IHandlerService handlerService = (IHandlerService) PlatformUI
+                    .getWorkbench().getService(IHandlerService.class);
+            try {
+            	//this operation will prompt if you have unsaved changes
+            	//(meaning :only! doesn't actually work)
+            	//how can I invoke this operation without that prompt?
+                handlerService.executeCommand(IWorkbenchCommandConstants.FILE_CLOSE_OTHERS, null);
+            } catch (CommandException e) {
+                return false;
+            } 
+        	
+        	return true;
+        }
+        return false;
+    }
 
     public boolean save() {
         if (editor.isDirty() && editor.isEditable()) {

@@ -7,6 +7,8 @@ public interface FileService {
 	boolean close(boolean force);
 	
 	boolean closeAll(boolean force);
+	
+	boolean closeOthers(boolean force);
 
 	boolean save();
 	

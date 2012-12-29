@@ -175,6 +175,8 @@ public class CommandLineParser extends AbstractCommandParser {
         mapping.add("wqa", saveAndCloseAll);
         mapping.add("wqal", saveAndCloseAll);
         mapping.add("wqall", saveAndCloseAll);
+        mapping.add("only", CloseCommand.CLOSE_OTHERS);
+        mapping.add("only!", CloseCommand.FORCED_CLOSE_OTHERS);
         // non-recursive mapping
         mapping.add("noremap", noremap);
         mapping.add("no", noremap);
