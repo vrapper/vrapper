@@ -248,7 +248,7 @@ public class SortOperation extends SimpleTextOperation {
         	
         	if(region == null) {
         		startLine = content.getLineInformation(0);
-        		endLine = content.getLineInformation(content.getNumberOfLines());
+        		endLine = content.getLineInformation(content.getNumberOfLines() - 1);
         	}
         	else {
         		startLine = content.getLineInformationOfOffset(region.getLeftBound().getModelOffset());
@@ -278,7 +278,7 @@ public class SortOperation extends SimpleTextOperation {
         List<String> editorContentList = new ArrayList<String>();
         Comparator<String> comp = null;
         LineInformation line = null;
-        for(int i = startLine.getNumber(); i < endLine.getNumber(); ++i) {
+        for(int i = startLine.getNumber(); i <= endLine.getNumber(); ++i) {
             line = content.getLineInformation(i);
             editorContentList.add(content.getText(line.getBeginOffset(), line.getLength()));
         }
@@ -360,7 +360,7 @@ public class SortOperation extends SimpleTextOperation {
         // Replace the contents of the range with the freshly sorted text
         editorAdaptor.getModelContent().replace(
         		startLine.getBeginOffset(),
-        		endLine.getBeginOffset() - startLine.getBeginOffset(),
+        		endLine.getEndOffset() - startLine.getBeginOffset(),
         		replacementText.toString()
 		);
     }
