@@ -4,10 +4,20 @@ import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 
-// FIXME: In Vim, if line ends with dot, two spaces are inserted isnead of one
-// when joining lines. It's not implemented here.
-// I (Krzysiek) don't like that feature anyway, so if you are going to implement it,
-// please provide an option to turn if off ;-)
+/* FIXME: In Vim, if line ends with dot, two spaces are inserted instead of one
+ * when joining lines. It's not implemented here.
+ * I (Krzysiek) don't like that feature anyway, so if you are going to implement it,
+ * please provide an option to turn if off ;-)
+ */ 
+ /* There's an interesting article on why two spaces were used after a period here:
+ * http://www.writersdigest.com/online-editor/how-many-spaces-after-a-period
+ * 
+ *     The “two spaces after period” rule was instituted during the days of 
+ *     typewriters. Typewriters had only one font, so all the letters were 
+ *     monospaced, or took up the same amount of space.
+ * 
+ * An on/off switch for .vrapperrc would be best -- BRD
+ */
 
 public class JoinLinesCommand extends CountAwareCommand {
 
@@ -51,7 +61,9 @@ public class JoinLinesCommand extends CountAwareCommand {
                     glue = "";
                 for (int j = 0; j < secondLine.length() && Character.isWhitespace(secondLine.charAt(j)); j++)
                     bolOffset++;
-                if (modelContent.getText(bolOffset, 1).charAt(0) == ')')
+                if(secondLine.length() == 0)
+                    glue = "";
+                else if (modelContent.getText(bolOffset, 1).charAt(0) == ')')
                     glue = "";
             } else
                 glue = "";
