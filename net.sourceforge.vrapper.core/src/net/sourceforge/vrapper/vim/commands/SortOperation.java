@@ -252,7 +252,7 @@ public class SortOperation extends SimpleTextOperation {
         	}
         	else {
         		startLine = content.getLineInformationOfOffset(region.getLeftBound().getModelOffset());
-        		endLine = content.getLineInformationOfOffset(region.getRightBound().getModelOffset());
+        		endLine = content.getLineInformationOfOffset(region.getRightBound().getModelOffset() - 1);
         	}
         	
         	//don't sort if only one line
@@ -273,22 +273,37 @@ public class SortOperation extends SimpleTextOperation {
      */
     public void doIt(EditorAdaptor editorAdaptor, LineInformation startLine, LineInformation endLine) throws Exception {
         // Throw the whole editor into an array separated by newlines
+        String newline = editorAdaptor.getConfiguration().getNewLine();
         TextContent content = editorAdaptor.getModelContent();
-        int total = content.getNumberOfLines();
+        int totalLinesInEditor = content.getNumberOfLines();
+        int totalLengthOfRange = 0;
         List<String> editorContentList = new ArrayList<String>();
         Comparator<String> comp = null;
         LineInformation line = null;
+       
+        /* 
+         * Step 1: Put editor text into a sortable array
+         *         This may be the whole editor or a range
+         */
         for(int i = startLine.getNumber(); i <= endLine.getNumber(); ++i) {
             line = content.getLineInformation(i);
-            editorContentList.add(content.getText(line.getBeginOffset(), line.getLength()));
+            String lineStr = content.getText(line.getBeginOffset(), line.getLength());
+            totalLengthOfRange += line.getLength();
+            editorContentList.add(lineStr);
         }
-        
-        // Little trick to get uniques from an ArrayList
+       
+        /*
+         * Step 2: If u was specified, get all unique lines 
+         *         and remove the rest
+         */
         if (unique) {
             editorContentList = new ArrayList<String>(new HashSet<String>(editorContentList));
-            total = editorContentList.size();
+            totalLinesInEditor = editorContentList.size();
         }
-        
+       
+        /*
+         * Step 3: If a pattern was used, handle it
+         */
         List<String> candidateList = editorContentList;
         List<Integer> candidateOffsetList = new ArrayList<Integer>();
         List<String> nonCandidateList = new ArrayList<String>();
@@ -296,7 +311,7 @@ public class SortOperation extends SimpleTextOperation {
             Pattern p = Pattern.compile(pattern);
             Matcher m = null;
             String candidate;
-            for (int i=0; i < candidateList.size(); i++) {
+            for (int i = 0; i < candidateList.size(); i++) {
             	candidate = candidateList.get(i);
             	m = p.matcher(candidate);
 
@@ -313,6 +328,10 @@ public class SortOperation extends SimpleTextOperation {
             comp = null; //TODO: ascii pattern comparator
         }
 
+        /*
+         * Step 4: If a numeric sort was called, separate numeric vs. non-numeric
+         *         Also handle ignore case
+         */
         if (numeric || binary || octal || hex) {
         	comp = new NumericStringComparator(binary, octal, hex, pattern, usePatternR);
 
@@ -327,41 +346,50 @@ public class SortOperation extends SimpleTextOperation {
                     nonCandidateList.add(candidate);
                 }
             }
-        } 
-        else if(ignoreCase) {
+        } else if(ignoreCase) {
         	comp = String.CASE_INSENSITIVE_ORDER;
         }
         
-        
-        if(comp == null) { //normal ascii sort
+        /*
+         * Step 5: Perform the actual sorting on all sortable candidates
+         */
+        if(comp == null) { // normal ascii sort
             Collections.sort(candidateList);
-        }
-        else {
+        } else {
             Collections.sort(candidateList, comp);
         }
         
-        //add non-sorted rows before sorted rows
+        // Add non-sorted rows before sorted rows, per Vim behavior
         editorContentList = new ArrayList<String>(nonCandidateList);
         editorContentList.addAll(candidateList);
 
-        if (reversed)
+        if (reversed) {
             Collections.reverse(editorContentList);
-
-        StringBuilder replacementText = new StringBuilder();
-        int count = 0;
-        String newline = editorAdaptor.getConfiguration().getNewLine();
-        for (String editorLine : editorContentList) {
-            ++count;
-            replacementText.append(editorLine);
-            if (count < total) //don't append newline on last line in file
-            	replacementText.append(newline);
         }
 
-        // Replace the contents of the range with the freshly sorted text
+        /*
+         * Step 6: Append newlines to everything but the very last line of the editor
+         */
+        StringBuilder replacementText = new StringBuilder();
+        int count = startLine.getNumber();
+        for (String editorLine : editorContentList) {
+            if(count != totalLinesInEditor - 1) {
+                totalLengthOfRange += newline.length();
+                editorLine += newline;
+            }
+            ++count;
+            replacementText.append(editorLine);
+        }
+        
+        /*
+         * Step 7: Replace the contents of the editor with the freshly sorted text
+         *         This applies to a range, or the whole editor
+         */
         editorAdaptor.getModelContent().replace(
         		startLine.getBeginOffset(),
-        		endLine.getEndOffset() - startLine.getBeginOffset(),
+        		totalLengthOfRange,
         		replacementText.toString()
+        		
 		);
     }
 
