@@ -289,6 +289,9 @@ public class SortOperation extends SimpleTextOperation {
             line = content.getLineInformation(i);
             String lineStr = content.getText(line.getBeginOffset(), line.getLength());
             totalLengthOfRange += line.getLength();
+            if(line.getNumber() < totalLinesInEditor) {
+                totalLengthOfRange += newline.length();
+            }
             editorContentList.add(lineStr);
         }
        
@@ -374,7 +377,6 @@ public class SortOperation extends SimpleTextOperation {
         int count = startLine.getNumber();
         for (String editorLine : editorContentList) {
             if(count != totalLinesInEditor - 1) {
-                totalLengthOfRange += newline.length();
                 editorLine += newline;
             }
             ++count;

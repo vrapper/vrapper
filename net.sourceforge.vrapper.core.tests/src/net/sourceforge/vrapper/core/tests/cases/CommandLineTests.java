@@ -160,7 +160,7 @@ public class CommandLineTests extends VimTestCase {
     	assertEquals("a\na\na\na\nb\nb\nc", content.getText());
     	
     	new SortOperation("u").execute(adaptor, null, ContentType.LINES);
-    	assertEquals("a\nb\nc\n", content.getText());
+    	assertEquals("a\nb\nc", content.getText());
     	
     	content.setText("a\na\nA\nA\nb\nb\nc");
     	new SortOperation("").execute(adaptor, null, ContentType.LINES);
@@ -178,10 +178,8 @@ public class CommandLineTests extends VimTestCase {
     	new SortOperation("i").execute(adaptor, null, ContentType.LINES);
     	assertEquals("a\na\nA\nA\nb\nb\nc", content.getText());
     	
-    	/*
     	new SortOperation("u").execute(adaptor, null, ContentType.LINES);
-    	assertEquals("A\na\nb\nc\n", content.getText());
-    	*/
+    	assertEquals("A\na\nb\nc", content.getText());
     	
     	/*
     	 * uniqueness check doesn't support case-insensitive
