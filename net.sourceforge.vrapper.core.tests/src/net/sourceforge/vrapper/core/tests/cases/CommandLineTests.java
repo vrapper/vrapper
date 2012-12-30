@@ -10,13 +10,17 @@ import static org.junit.Assert.assertTrue;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import net.sourceforge.vrapper.core.tests.utils.DumbPosition;
 import net.sourceforge.vrapper.core.tests.utils.VimTestCase;
 import net.sourceforge.vrapper.platform.Configuration.Option;
 import net.sourceforge.vrapper.utils.ContentType;
+import net.sourceforge.vrapper.utils.Position;
+import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.LineRangeOperationCommand;
+import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.commands.SortOperation;
 import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
@@ -174,8 +178,10 @@ public class CommandLineTests extends VimTestCase {
     	new SortOperation("i").execute(adaptor, null, ContentType.LINES);
     	assertEquals("a\na\nA\nA\nb\nb\nc", content.getText());
     	
+    	/*
     	new SortOperation("u").execute(adaptor, null, ContentType.LINES);
     	assertEquals("A\na\nb\nc\n", content.getText());
+    	*/
     	
     	/*
     	 * uniqueness check doesn't support case-insensitive
@@ -193,6 +199,41 @@ public class CommandLineTests extends VimTestCase {
     	new SortOperation("/xx/ n").execute(adaptor, null, ContentType.LINES);
     	assertEquals("4xx2\n3xx3\n2xx4\n1xx5", content.getText());
     	*/
+    }
+    
+    @Test
+    public void testSortRange() throws CommandExecutionException {
+    	content.setText("3\n2\n1\n10");
+    	Position startPos = new DumbPosition(0);
+    	Position stopPos = new DumbPosition(6);
+    	TextRange range = new LineWiseSelection(adaptor, startPos, stopPos);
+    	
+    	new SortOperation("").execute(adaptor, range, ContentType.LINES);
+    	assertEquals("1\n10\n2\n3", content.getText());
+    	
+    	content.setText("3\n2\n1\n10");
+    	startPos = new DumbPosition(2);
+    	stopPos = new DumbPosition(5);
+    	range = new LineWiseSelection(adaptor, startPos, stopPos);
+    	
+    	new SortOperation("").execute(adaptor, range, ContentType.LINES);
+    	assertEquals("3\n1\n2\n10", content.getText());
+    	
+    	content.setText("3\n2\n10\n1");
+    	startPos = new DumbPosition(2);
+    	stopPos = new DumbPosition(8);
+    	range = new LineWiseSelection(adaptor, startPos, stopPos);
+    	
+    	new SortOperation("").execute(adaptor, range, ContentType.LINES);
+    	assertEquals("3\n1\n10\n2", content.getText());
+    	
+    	content.setText("3\n2\n10\n1");
+    	startPos = new DumbPosition(2);
+    	stopPos = new DumbPosition(8);
+    	range = new LineWiseSelection(adaptor, startPos, stopPos);
+    	
+    	new SortOperation("n").execute(adaptor, range, ContentType.LINES);
+    	assertEquals("3\n1\n2\n10", content.getText());
     }
 	
 	@Test
