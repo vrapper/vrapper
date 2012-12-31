@@ -3,8 +3,9 @@ package net.sourceforge.vrapper.vim.commands;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.ContentType;
@@ -298,7 +299,16 @@ public class SortOperation extends SimpleTextOperation {
          *         and remove the rest
          */
         if (unique) {
-            editorContentList = new ArrayList<String>(new HashSet<String>(editorContentList));
+        	//use a Set to remove all duplicates for us
+        	Set<String> set;
+        	if(ignoreCase) {
+        		//TreeSet can take a Comparator as an argument to constructor
+        		set = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+        	} else {
+        		set = new TreeSet<String>();
+        	}
+        	set.addAll(editorContentList);
+            editorContentList = new ArrayList<String>(set);
             totalLinesInEditor = editorContentList.size();
         }
        
