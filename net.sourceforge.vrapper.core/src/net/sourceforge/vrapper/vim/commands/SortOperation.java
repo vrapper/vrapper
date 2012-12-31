@@ -245,20 +245,23 @@ public class SortOperation extends SimpleTextOperation {
         	TextContent content = editorAdaptor.getModelContent();
         	LineInformation startLine;
         	LineInformation endLine;
+        	int length;
         	
         	if(region == null) {
         		startLine = content.getLineInformation(0);
         		endLine = content.getLineInformation(content.getNumberOfLines() - 1);
+        		length = endLine.getEndOffset() - startLine.getBeginOffset();
         	}
         	else {
         		startLine = content.getLineInformationOfOffset(region.getLeftBound().getModelOffset());
         		endLine = content.getLineInformationOfOffset(region.getRightBound().getModelOffset() - 1);
+        		length = region.getModelLength();
         	}
         	
         	//don't sort if only one line
         	//(or if start and end are somehow swapped)
         	if(startLine.getNumber() < endLine.getNumber())
-	            doIt(editorAdaptor, startLine, endLine);
+	            doIt(editorAdaptor, startLine, endLine, length);
         	
         } catch (Exception e) {
             throw new CommandExecutionException("sort failed: " + e.getMessage());
@@ -271,12 +274,12 @@ public class SortOperation extends SimpleTextOperation {
      * @param editorAdaptor
      * @throws Exception
      */
-    public void doIt(EditorAdaptor editorAdaptor, LineInformation startLine, LineInformation endLine) throws Exception {
+    public void doIt(EditorAdaptor editorAdaptor, LineInformation startLine,
+    		LineInformation endLine, int totalLengthOfRange) throws Exception {
         // Throw the whole editor into an array separated by newlines
         String newline = editorAdaptor.getConfiguration().getNewLine();
         TextContent content = editorAdaptor.getModelContent();
         int totalLinesInEditor = content.getNumberOfLines();
-        int totalLengthOfRange = 0;
         List<String> editorContentList = new ArrayList<String>();
         Comparator<String> comp = null;
         LineInformation line = null;
@@ -288,10 +291,6 @@ public class SortOperation extends SimpleTextOperation {
         for(int i = startLine.getNumber(); i <= endLine.getNumber(); ++i) {
             line = content.getLineInformation(i);
             String lineStr = content.getText(line.getBeginOffset(), line.getLength());
-            totalLengthOfRange += line.getLength();
-            if(line.getNumber() < totalLinesInEditor) {
-                totalLengthOfRange += newline.length();
-            }
             editorContentList.add(lineStr);
         }
        
