@@ -104,6 +104,10 @@ public class CommandLineTests extends VimTestCase {
     
     @Test
     public void testSort() throws CommandExecutionException {
+    	content.setText("single line");
+    	new SortOperation("").execute(adaptor, null, ContentType.LINES);
+    	assertEquals("single line", content.getText());
+    	
     	content.setText("3\n2\n1\n10");
     	new SortOperation("").execute(adaptor, null, ContentType.LINES);
     	assertEquals("1\n10\n2\n3", content.getText());
@@ -198,14 +202,30 @@ public class CommandLineTests extends VimTestCase {
     	content.setText("1xx5\n3xx3\n2xx4\n4xx2\naxxb");
     	new SortOperation("/xx/").execute(adaptor, null, ContentType.LINES);
     	assertEquals("4xx2\n3xx3\n2xx4\n1xx5\naxxb", content.getText());
+    	
+    	content.setText("1xx5\n3xx3\n2xx4\n4xx2\naxxa");
+    	new SortOperation("/xx/ n").execute(adaptor, null, ContentType.LINES);
+    	assertEquals("axxa\n4xx2\n3xx3\n2xx4\n1xx5", content.getText());
+    	
+    	content.setText("1xx5\n3xx3\n2xx4\n4xx2\naxxb\nfoo");
+    	new SortOperation("/xx/").execute(adaptor, null, ContentType.LINES);
+    	assertEquals("foo\n4xx2\n3xx3\n2xx4\n1xx5\naxxb", content.getText());
     }
     
     @Test
     public void testSortRange() throws CommandExecutionException {
-    	content.setText("3\n2\n1\n10");
-    	Position startPos = new DumbPosition(0);
+    	content.setText("one\ntwo\nthree");
+    	Position startPos = new DumbPosition(4);
     	Position stopPos = new DumbPosition(6);
     	TextRange range = new LineWiseSelection(adaptor, startPos, stopPos);
+    	
+    	new SortOperation("").execute(adaptor, range, ContentType.LINES);
+    	assertEquals("one\ntwo\nthree", content.getText());
+    	
+    	content.setText("3\n2\n1\n10");
+    	startPos = new DumbPosition(0);
+    	stopPos = new DumbPosition(6);
+    	range = new LineWiseSelection(adaptor, startPos, stopPos);
     	
     	new SortOperation("").execute(adaptor, range, ContentType.LINES);
     	assertEquals("1\n10\n2\n3", content.getText());
@@ -226,13 +246,13 @@ public class CommandLineTests extends VimTestCase {
     	new SortOperation("").execute(adaptor, range, ContentType.LINES);
     	assertEquals("3\n1\n10\n2", content.getText());
     	
-    	content.setText("3\n2\n10\n1");
-    	startPos = new DumbPosition(2);
-    	stopPos = new DumbPosition(8);
+    	content.setText("a\nb\nc\n3\n2\n10\n1");
+    	startPos = new DumbPosition(9);
+    	stopPos = new DumbPosition(14);
     	range = new LineWiseSelection(adaptor, startPos, stopPos);
     	
     	new SortOperation("n").execute(adaptor, range, ContentType.LINES);
-    	assertEquals("3\n1\n2\n10", content.getText());
+    	assertEquals("a\nb\nc\n3\n1\n2\n10", content.getText());
     }
 	
 	@Test
