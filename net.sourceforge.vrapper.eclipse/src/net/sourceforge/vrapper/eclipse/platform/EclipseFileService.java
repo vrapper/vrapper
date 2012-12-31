@@ -47,6 +47,15 @@ public class EclipseFileService implements FileService {
     public boolean closeAll(boolean force) {
     	IWorkbenchPage page = editor.getSite().getPage();
         if (force || page.getDirtyEditors().length == 0) {
+        	//This method works, but NormalMode will throw a NullPointerException
+        	//when trying to get the cursor position because all editors are closed
+        	//(so there is no cursor). The exception is benign since there are no
+        	//open editors but it still sucks. I don't understand why :q doesn't
+        	//throw a similar exception when closing the last tab.  I still think
+        	//this method is the best approach though because it doesn't require
+        	//all editors to extend AbstractTextEditor (which Vrapper requires). 
+        	//This means we can close all tabs, including the ones Vrapper is not
+        	//enabled on.
         	page.closeAllEditors(false);
             return true;
         }
