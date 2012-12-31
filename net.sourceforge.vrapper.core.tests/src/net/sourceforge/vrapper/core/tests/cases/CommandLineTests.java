@@ -191,12 +191,13 @@ public class CommandLineTests extends VimTestCase {
     	new SortOperation("n").execute(adaptor, null, ContentType.LINES);
     	assertEquals("1xx5\n2xx4\n3xx3\n4xx2", content.getText());
     	
-    	/*
-    	 * pattern doesn't work right now
     	content.setText("1xx5\n3xx3\n2xx4\n4xx2");
     	new SortOperation("/xx/ n").execute(adaptor, null, ContentType.LINES);
     	assertEquals("4xx2\n3xx3\n2xx4\n1xx5", content.getText());
-    	*/
+    	
+    	content.setText("1xx5\n3xx3\n2xx4\n4xx2\naxxb");
+    	new SortOperation("/xx/").execute(adaptor, null, ContentType.LINES);
+    	assertEquals("4xx2\n3xx3\n2xx4\n1xx5\naxxb", content.getText());
     }
     
     @Test

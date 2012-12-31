@@ -19,11 +19,7 @@ public class NumericStringComparator implements Comparator<String>{
 	private boolean usePattern  = false;
 	private boolean usePatternR = false;
 
-	private Pattern compiledPattern = null;
-	
-	public NumericStringComparator() {
-		super();
-	}
+	private String pattern = null;
 	
 	public NumericStringComparator(boolean binary, boolean octal, boolean hex, String pattern, boolean patternR) throws Exception {
 		super();
@@ -34,12 +30,7 @@ public class NumericStringComparator implements Comparator<String>{
     	this.hex = hex; 
     	
     	if(pattern != null) {
-    		try {
-    			compiledPattern = Pattern.compile(pattern);
-    		} catch(Exception e) {
-    			throw new Exception("Invalid pattern " + pattern);
-    		}
-
+    		this.pattern = pattern;
     		usePattern = true;
     		usePatternR = patternR; 
     	}
@@ -113,17 +104,9 @@ public class NumericStringComparator implements Comparator<String>{
 	 */
 	public int compare(String str1, String str2) {
 
-		if(usePatternR) {
-			Matcher m = compiledPattern.matcher(str1);
-			str1 = str1.substring(m.start(), str1.length());
-			m = compiledPattern.matcher(str2);
-			str2 = str2.substring(m.start(), str2.length());
-		}
-		else if(usePattern) {
-			Matcher m = compiledPattern.matcher(str1);
-			str1 = str1.substring(m.end(), str1.length());
-			m = compiledPattern.matcher(str2);
-			str2 = str2.substring(m.end(), str2.length());
+		if(usePattern) {
+			str1 = str1.substring(usePatternR ? str1.indexOf(pattern) : str1.indexOf(pattern) + pattern.length());
+			str2 = str2.substring(usePatternR ? str2.indexOf(pattern) : str2.indexOf(pattern) + pattern.length());
 		}
 		
 		double dub1 = getFirstNumber(str1);

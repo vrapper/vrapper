@@ -5,13 +5,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.NumericStringComparator;
+import net.sourceforge.vrapper.utils.PatternSortComparator;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
@@ -310,15 +309,12 @@ public class SortOperation extends SimpleTextOperation {
         List<Integer> candidateOffsetList = new ArrayList<Integer>();
         List<String> nonCandidateList = new ArrayList<String>();
         if(usePattern) {
-            Pattern p = Pattern.compile(pattern);
-            Matcher m = null;
             String candidate;
             for (int i = 0; i < candidateList.size(); i++) {
             	candidate = candidateList.get(i);
-            	m = p.matcher(candidate);
 
-            	if(m.matches()) {
-            		candidateOffsetList.add( usePatternR ? m.start() : m.end() );
+            	if(candidate.contains(pattern)) {
+            		candidateOffsetList.add( usePatternR ? candidate.indexOf(pattern) : candidate.indexOf(pattern) + pattern.length() );
             	}
             	else {
                 	candidateList.remove(i);
@@ -327,7 +323,7 @@ public class SortOperation extends SimpleTextOperation {
             	}
             }
             
-            comp = null; //TODO: ascii pattern comparator
+            comp = new PatternSortComparator(pattern, usePatternR);
         }
 
         /*
