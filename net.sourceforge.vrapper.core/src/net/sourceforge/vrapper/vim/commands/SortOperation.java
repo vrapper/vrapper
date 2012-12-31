@@ -388,6 +388,11 @@ public class SortOperation extends SimpleTextOperation {
         		replacementText.toString()
         		
 		);
+        //put cursor at beginning of sorted text
+        editorAdaptor.setPosition(
+        		editorAdaptor.getCursorService().newPositionForModelOffset(startLine.getBeginOffset()),
+        		true
+        );
     }
 
 	public TextOperation repetition() {
