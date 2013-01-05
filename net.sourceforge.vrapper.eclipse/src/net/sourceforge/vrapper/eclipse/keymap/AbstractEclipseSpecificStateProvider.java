@@ -20,7 +20,7 @@ import net.sourceforge.vrapper.vim.modes.commandline.EvaluatorMapping;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 
-public abstract class AbstractEclipseSpecificStateProvider implements
+public class AbstractEclipseSpecificStateProvider implements
         PlatformSpecificStateProvider, Comparable<AbstractEclipseSpecificStateProvider> {
 
     protected final HashMap<String, State<Command>> states = new HashMap<String, State<Command>>();
