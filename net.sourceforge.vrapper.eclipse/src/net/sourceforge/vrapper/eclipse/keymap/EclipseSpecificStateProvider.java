@@ -34,6 +34,11 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
     public EclipseSpecificStateProvider() {
         commands.add("eclipseaction", new EclipseActionEvaluator(false));
         commands.add("eclipseaction!", new EclipseActionEvaluator(true));
+        
+    	commands.add("tabnext",     (Command)ChangeTabCommand.NEXT_EDITOR);
+    	commands.add("tabn",        (Command)ChangeTabCommand.NEXT_EDITOR);
+    	commands.add("tabprevious", (Command)ChangeTabCommand.PREVIOUS_EDITOR);
+    	commands.add("tabp",        (Command)ChangeTabCommand.PREVIOUS_EDITOR);
     }
 
     @Override
