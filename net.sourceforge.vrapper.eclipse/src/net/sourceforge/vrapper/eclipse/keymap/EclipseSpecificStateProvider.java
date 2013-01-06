@@ -12,6 +12,7 @@ import net.sourceforge.vrapper.eclipse.commands.ChangeTabCommand;
 import net.sourceforge.vrapper.eclipse.commands.EclipseShiftOperation;
 import net.sourceforge.vrapper.eclipse.commands.EclipseVisualMotionCommand;
 import net.sourceforge.vrapper.eclipse.commands.ToggleFoldingCommand;
+import net.sourceforge.vrapper.eclipse.commands.UpdateCommand;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.StateUtils;
@@ -39,6 +40,10 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
     	commands.add("tabn",        (Command)ChangeTabCommand.NEXT_EDITOR);
     	commands.add("tabprevious", (Command)ChangeTabCommand.PREVIOUS_EDITOR);
     	commands.add("tabp",        (Command)ChangeTabCommand.PREVIOUS_EDITOR);
+    	
+    	// Implements :up/:update - like write, but only if file has changed
+    	commands.add("up",          (Command)UpdateCommand.INSTANCE);
+    	commands.add("update",      (Command)UpdateCommand.INSTANCE);
     }
 
     @Override
