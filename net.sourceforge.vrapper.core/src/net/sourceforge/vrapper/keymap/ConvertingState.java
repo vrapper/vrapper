@@ -21,7 +21,7 @@ public class ConvertingState<T1, T2> implements State<T1> {
     }
 
     public State<T1> union(State<T1> other) {
-        if (other instanceof ConvertingState<?,?>)
+        if (other instanceof ConvertingState<?, ?>)
         	VrapperLog.info("TODO: implement ConvertingState's union efficently");
         return new UnionState<T1>(this, other);
     }
