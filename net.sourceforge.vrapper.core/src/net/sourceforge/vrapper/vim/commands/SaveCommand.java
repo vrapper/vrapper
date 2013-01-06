@@ -12,5 +12,4 @@ public class SaveCommand extends CountIgnoringNonRepeatableCommand {
             throws CommandExecutionException {
         editorAdaptor.getFileService().save();
     }
-
 }

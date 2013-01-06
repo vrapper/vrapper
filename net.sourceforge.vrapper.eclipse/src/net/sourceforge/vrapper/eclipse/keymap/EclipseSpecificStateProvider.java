@@ -11,6 +11,7 @@ import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
 import net.sourceforge.vrapper.eclipse.commands.ChangeTabCommand;
 import net.sourceforge.vrapper.eclipse.commands.EclipseShiftOperation;
 import net.sourceforge.vrapper.eclipse.commands.EclipseVisualMotionCommand;
+import net.sourceforge.vrapper.eclipse.commands.TabNewCommand;
 import net.sourceforge.vrapper.eclipse.commands.ToggleFoldingCommand;
 import net.sourceforge.vrapper.eclipse.commands.UpdateCommand;
 import net.sourceforge.vrapper.keymap.SpecialKey;
@@ -32,6 +33,7 @@ import net.sourceforge.vrapper.vim.modes.NormalMode;
 @SuppressWarnings("unchecked")
 public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStateProvider {
 
+    // Loaded on Eclipse start
     public EclipseSpecificStateProvider() {
         commands.add("eclipseaction", new EclipseActionEvaluator(false));
         commands.add("eclipseaction!", new EclipseActionEvaluator(true));
@@ -41,9 +43,15 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
     	commands.add("tabprevious", (Command)ChangeTabCommand.PREVIOUS_EDITOR);
     	commands.add("tabp",        (Command)ChangeTabCommand.PREVIOUS_EDITOR);
     	
+    	// Calls New Wizard dialogue
+    	commands.add("tabe",        (Command)TabNewCommand.NEW_EDITOR);
+    	commands.add("tabedit",     (Command)TabNewCommand.NEW_EDITOR);
+    	commands.add("tabnew",      (Command)TabNewCommand.NEW_EDITOR);
+    	
     	// Implements :up/:update - like write, but only if file has changed
     	commands.add("up",          (Command)UpdateCommand.INSTANCE);
     	commands.add("update",      (Command)UpdateCommand.INSTANCE);
+    	
     }
 
     @Override
