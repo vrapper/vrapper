@@ -21,16 +21,41 @@ public interface UserInterfaceService {
      * Indicates the current mode of the editor.
      */
     void setEditorMode(String modeName);
-
+    
+    /**
+     * Get editor mode value
+     */
+    String getCurrentEditorMode();
+    
+    /**
+     * For the :ascii command - prints ASCII values of the char under the cursor
+     */
+    void setAsciiValues(String asciiValue, int decValue, String hexValue, String octalValue);
+    
+    /**
+     * For unit testing the :ascii command
+     */
+    String getLastAsciiValue();
+    
     /**
      * Message of any kind.
      */
     void setInfoMessage(String content);
+    
+    /**
+     * Get last Info status message
+     */
+    String getLastInfoValue();
 
     /**
      * Error message, e.g. no search results found.
      */
     void setErrorMessage(String content);
+    
+    /**
+     * Get last Error status message
+     */
+    String getLastErrorValue();
 
     /**
      * Whether a macro is currently being recorded.

@@ -17,6 +17,7 @@ import net.sourceforge.vrapper.eclipse.commands.UpdateCommand;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.StateUtils;
+import net.sourceforge.vrapper.vim.commands.AsciiCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.DeselectAllCommand;
 import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
@@ -35,6 +36,13 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
 
     // Loaded on Eclipse start
     public EclipseSpecificStateProvider() {
+        /* TODO: Write an interpreter that will read partial commands
+         * example: tabedit can be invoked by typing any of the following:
+         *      tabe
+         *      tabed
+         *      tabedi
+         *      tabedit
+         */
         commands.add("eclipseaction", new EclipseActionEvaluator(false));
         commands.add("eclipseaction!", new EclipseActionEvaluator(true));
         
@@ -52,6 +60,8 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
     	commands.add("up",          (Command)UpdateCommand.INSTANCE);
     	commands.add("update",      (Command)UpdateCommand.INSTANCE);
     	
+    	commands.add("as",          (Command)AsciiCommand.INSTANCE);
+    	commands.add("ascii",       (Command)AsciiCommand.INSTANCE);
     }
 
     @Override
@@ -99,6 +109,8 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
                         leafBind('c', dontRepeat(editText("folding.collapse"))),
                         leafBind('M', dontRepeat(editText("folding.collapse_all")))),
                 transitionBind('g',
+                        // FIXME: The ASCII display is getting wiped out by another call to the info line
+                        leafBind('a', (Command)AsciiCommand.INSTANCE),
                         leafBind('t', (Command)ChangeTabCommand.NEXT_EDITOR),
                         leafBind('T', (Command)ChangeTabCommand.PREVIOUS_EDITOR)),
                 leafCtrlBind('f', dontRepeat(go("pageDown"))),

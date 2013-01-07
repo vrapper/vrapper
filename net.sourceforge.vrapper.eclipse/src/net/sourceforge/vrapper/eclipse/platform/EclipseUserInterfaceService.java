@@ -17,6 +17,11 @@ public class EclipseUserInterfaceService implements UserInterfaceService {
     private final StatusLine statusLine;
     private final IEditorPart editor;
     private final ModeContributionItem vimInputModeItem;
+    
+    // For unit tests
+    private String lastAsciiValue = "";
+    private String lastInfoValue = "";
+    private String lastErrorValue = "";
     private String currentMode;
 
     public EclipseUserInterfaceService(IEditorPart editor, ITextViewer textViewer) {
@@ -36,19 +41,49 @@ public class EclipseUserInterfaceService implements UserInterfaceService {
         currentMode = "-- " + modeName + " --";
         vimInputModeItem.setText(currentMode);
     }
+    
+    public String getCurrentEditorMode() {
+        return currentMode;
+    }
+   
+    // For :ascii command
+    public void setAsciiValues(String asciiValue, int decValue, String hexValue, String octalValue) {
+        String asciiValueText = "<" + asciiValue + ">  " 
+                              + decValue + ",  "
+                              + "Hex " + hexValue + ",  "
+                              + "Octal " + octalValue;
+        lastAsciiValue = asciiValueText;
+        setErrorMessage(null);
+        setInfoMessage(asciiValueText);
+    }
+   
+    public String getLastAsciiValue() {
+        return lastAsciiValue;
+    }
 
     public void setErrorMessage(String content) {
         editor.getEditorSite().getActionBars().getStatusLineManager().setErrorMessage(content);
+        lastErrorValue = content;
     }
+    
 
+    public String getLastErrorValue() {
+        return lastErrorValue;
+    }
+    
     public void setInfoMessage(String content) {
         editor.getEditorSite().getActionBars().getStatusLineManager().setMessage(content);
+        lastInfoValue = content;
+    }
+    
+    public String getLastInfoValue() {
+        return lastInfoValue;
     }
 
     private ModeContributionItem getContributionItem() {
-        String name = CONTRIBUTION_ITEM_NAME+editor.getEditorSite().getId();
+        String name = CONTRIBUTION_ITEM_NAME + editor.getEditorSite().getId();
         IStatusLineManager manager = editor.getEditorSite().getActionBars().getStatusLineManager();
-        ModeContributionItem  item = (ModeContributionItem) manager.find(name);
+        ModeContributionItem item = (ModeContributionItem) manager.find(name);
         if (item == null) {
             item = new ModeContributionItem(name);
             try {

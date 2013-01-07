@@ -217,6 +217,27 @@ public class CommandLineTests extends VimTestCase {
     	new SortOperation("").execute(adaptor, null, ContentType.LINES);
     	assertEquals("-1\n0\n1\n2\n3", content.getText());
     }
+   
+    @Test
+    public void testAscii() throws CommandExecutionException {
+        /*
+         TODO: Trying to get the last set values of the UserInterfaceService for testing
+               but values are always null. Could use some help with this. -- BRD
+    	content.setText("");
+    	AsciiCommand.INSTANCE.execute(adaptor);
+    	// Should be NUL
+    	String expected = null;
+    	String actual = userInterfaceService.getLastInfoValue();
+    	assertEquals(expected, actual);
+    	
+    	content.setText("r");
+    	AsciiCommand.INSTANCE.execute(adaptor);
+    	expected = "<r>  114,  Hex 72,  Octal 162";
+    	actual = userInterfaceService.getLastInfoValue();
+    	assertEquals(expected, actual);
+    	*/
+    }
+    
     
     @Test
     public void testSortRange() throws CommandExecutionException {
