@@ -13,7 +13,6 @@ import net.sourceforge.vrapper.eclipse.commands.EclipseShiftOperation;
 import net.sourceforge.vrapper.eclipse.commands.EclipseVisualMotionCommand;
 import net.sourceforge.vrapper.eclipse.commands.TabNewCommand;
 import net.sourceforge.vrapper.eclipse.commands.ToggleFoldingCommand;
-import net.sourceforge.vrapper.eclipse.commands.UpdateCommand;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.StateUtils;
@@ -36,13 +35,6 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
 
     // Loaded on Eclipse start
     public EclipseSpecificStateProvider() {
-        /* TODO: Write an interpreter that will read partial commands
-         * example: tabedit can be invoked by typing any of the following:
-         *      tabe
-         *      tabed
-         *      tabedi
-         *      tabedit
-         */
         commands.add("eclipseaction", new EclipseActionEvaluator(false));
         commands.add("eclipseaction!", new EclipseActionEvaluator(true));
         
@@ -55,13 +47,6 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
     	commands.add("tabe",        (Command)TabNewCommand.NEW_EDITOR);
     	commands.add("tabedit",     (Command)TabNewCommand.NEW_EDITOR);
     	commands.add("tabnew",      (Command)TabNewCommand.NEW_EDITOR);
-    	
-    	// Implements :up/:update - like write, but only if file has changed
-    	commands.add("up",          (Command)UpdateCommand.INSTANCE);
-    	commands.add("update",      (Command)UpdateCommand.INSTANCE);
-    	
-    	commands.add("as",          (Command)AsciiCommand.INSTANCE);
-    	commands.add("ascii",       (Command)AsciiCommand.INSTANCE);
     }
 
     @Override

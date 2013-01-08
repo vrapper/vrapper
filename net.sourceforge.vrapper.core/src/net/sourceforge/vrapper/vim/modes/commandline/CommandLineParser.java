@@ -11,6 +11,7 @@ import net.sourceforge.vrapper.utils.Search;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
+import net.sourceforge.vrapper.vim.commands.AsciiCommand;
 import net.sourceforge.vrapper.vim.commands.CloseCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
@@ -57,6 +58,7 @@ public class CommandLineParser extends AbstractCommandParser {
         Evaluator vmap = new KeyMapper.Map(true, VisualMode.KEYMAP_NAME);
         Evaluator inoremap = new KeyMapper.Map(false, InsertMode.KEYMAP_NAME);
         Evaluator imap = new KeyMapper.Map(true, InsertMode.KEYMAP_NAME);
+        Command ascii = AsciiCommand.INSTANCE;
         Command save = SaveCommand.INSTANCE;
         Command saveAll = SaveAllCommand.INSTANCE;
         CloseCommand close = CloseCommand.CLOSE;
@@ -154,11 +156,19 @@ public class CommandLineParser extends AbstractCommandParser {
             }
         };
         
+        /* TODO: Write an interpreter that will read partial commands
+         * example: :wall can be invoked by typing any of the following:
+         *     :wa
+         *     :wal
+         *     :wall
+         */
         mapping = new EvaluatorMapping();
         // options
         mapping.add("set", buildConfigEvaluator());
         // save, close
         mapping.add("w", save);
+    	mapping.add("up", save);
+    	mapping.add("update", save);
         mapping.add("wq", saveAndClose);
         mapping.add("x", saveAndClose);
         mapping.add("q", close);
@@ -232,6 +242,9 @@ public class CommandLineParser extends AbstractCommandParser {
         mapping.add("sor", sort);
         mapping.add("sort", sort);
         mapping.add("sort!", sort);
+        // Display the ascii values of the character under the cursor
+    	mapping.add("as",    ascii);
+    	mapping.add("ascii", ascii);
     }
 
     private static Evaluator buildConfigEvaluator() {

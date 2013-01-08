@@ -27,7 +27,11 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
  *              Finding the position in the alphabet is not straightforward in EBCDIC.
  *              There are gaps in the code table.
  *              'a' + 1 == 'b', but: 'i' + 7 == 'j' and 'r' + 8 == 's'
- *      
+ * 
+ * NOTE: Sometimes when executing this, it will appear then disappear. Rerunning the 
+ *       command will make it stick. I think this has to do with the shared nature of 
+ *       the "Info" bar. It may refresh and clear out the text we just set. May need
+ *       to make UserInterfaceService a little smarter somehow. -- BRD
  * @author Brian Detweiler
  */
 public class AsciiCommand extends AbstractCommand {
@@ -84,9 +88,9 @@ public class AsciiCommand extends AbstractCommand {
         }
         
         String asciiStr = editorAdaptor.getModelContent().getText(offset, 1);
-        char[] asciiChr = asciiStr.toCharArray();
-        char ascii = asciiChr[0];
-        asciiStr = ascii + "";
+        char ascii = '\0';
+        if(asciiStr.length() == 1)
+            ascii = asciiStr.toCharArray()[0];
        
         switch(ascii) {
             case CTRL_AT :
