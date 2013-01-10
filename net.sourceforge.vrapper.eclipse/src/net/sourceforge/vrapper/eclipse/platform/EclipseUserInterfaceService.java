@@ -22,6 +22,7 @@ public class EclipseUserInterfaceService implements UserInterfaceService {
     private String lastAsciiValue = "";
     private String lastInfoValue = "";
     private String lastErrorValue = "";
+    private boolean asciiSet;
     private String currentMode;
 
     public EclipseUserInterfaceService(IEditorPart editor, ITextViewer textViewer) {
@@ -119,5 +120,13 @@ public class EclipseUserInterfaceService implements UserInterfaceService {
 
     public void setRecording(boolean b) {
     	vimInputModeItem.setRecording(b);
+    }
+
+    public boolean isAsciiSet() {
+        return asciiSet;
+    }
+
+    public void setAsciiSet(boolean asciiSet) {
+        this.asciiSet = asciiSet;
     }
 }

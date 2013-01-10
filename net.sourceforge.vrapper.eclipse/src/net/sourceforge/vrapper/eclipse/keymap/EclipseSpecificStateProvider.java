@@ -94,7 +94,6 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
                         leafBind('c', dontRepeat(editText("folding.collapse"))),
                         leafBind('M', dontRepeat(editText("folding.collapse_all")))),
                 transitionBind('g',
-                        // FIXME: The ASCII display is getting wiped out by another call to the info line
                         leafBind('a', (Command)AsciiCommand.INSTANCE),
                         leafBind('t', (Command)ChangeTabCommand.NEXT_EDITOR),
                         leafBind('T', (Command)ChangeTabCommand.PREVIOUS_EDITOR)),

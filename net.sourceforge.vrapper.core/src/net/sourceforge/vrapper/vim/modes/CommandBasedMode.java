@@ -275,8 +275,17 @@ public abstract class CommandBasedMode extends AbstractMode {
             }
         }
 
-        editorAdaptor.getUserInterfaceService().setInfoMessage(
-                commandBuffer.toString());
+        /* The ASCII info will be overwritten with the commandBuffer
+         * if we don't do this check. This allows for "ga" in normal mode.
+         */
+        if(editorAdaptor.getUserInterfaceService().isAsciiSet()) {
+            resetCommandBuffer();
+            editorAdaptor.getUserInterfaceService().setInfoMessage(editorAdaptor.getUserInterfaceService().getLastAsciiValue());
+            editorAdaptor.getUserInterfaceService().setAsciiSet(false);
+        } else {
+            editorAdaptor.getUserInterfaceService().setInfoMessage(
+                    commandBuffer.toString());
+        }
 
         // FIXME: has some issues with sticky column
         placeCursor();
@@ -305,7 +314,14 @@ public abstract class CommandBasedMode extends AbstractMode {
     /**
      * this is a hook method which is called when command execution is done
      */
-    // TODO: better name
+    /* TODO: better name
+     * NOTE: commandDone isn't the worst name ever.
+     *       Possible suggestions: cleanup(), afterCommand()
+     *       Another suggestion - unless we're adding more to commandDone(),
+     *       why not just change resetCommandBuffer() access to protected
+     *       and scrap commandDone() optionally changing the name of 
+     *       resetCommandBuffer(). Just some thoughts on this TODO -- BRD
+     */
     protected void commandDone() {
         resetCommandBuffer();
     }

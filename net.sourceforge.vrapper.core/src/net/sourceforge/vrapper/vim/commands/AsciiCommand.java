@@ -90,7 +90,7 @@ public class AsciiCommand extends AbstractCommand {
         String asciiStr = editorAdaptor.getModelContent().getText(offset, 1);
         char ascii = '\0';
         if(asciiStr.length() == 1)
-            ascii = asciiStr.toCharArray()[0];
+            ascii = asciiStr.charAt(0);
        
         switch(ascii) {
             case CTRL_AT :
@@ -194,6 +194,7 @@ public class AsciiCommand extends AbstractCommand {
                                             (int)ascii,
                                             String.format("%02x", (int)ascii),
                                             String.format("%03o", (int)ascii));
+        userInterfaceService.setAsciiSet(true);
     }
 
     public Command repetition() {

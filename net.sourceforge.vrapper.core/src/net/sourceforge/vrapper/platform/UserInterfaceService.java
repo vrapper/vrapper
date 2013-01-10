@@ -61,4 +61,16 @@ public interface UserInterfaceService {
      * Whether a macro is currently being recorded.
      */
     void setRecording(boolean recording);
+   
+    /**
+     * Set to true when running an :ascii/ga command. 
+     * Set to false when completing command. Keeps Info line from getting wiped out.
+     * @param asciiSet
+     */
+    void setAsciiSet(boolean asciiSet);
+   
+    /**
+     * Called in CommandBasedMode to determine whether or not to wipe out the Info line text.
+     */
+    boolean isAsciiSet();
 }

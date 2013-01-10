@@ -35,6 +35,8 @@ public class SnapshotTests extends VimTestCase {
             public String getCurrentEditorMode() { return null; }
             public String getLastInfoValue() { return null; }
             public String getLastErrorValue() { return null; }
+            public void setAsciiSet(boolean asciiSet) { }
+            public boolean isAsciiSet() { return false; }
         });
         reloadEditorAdaptor();
         adaptor.changeModeSafely(NormalMode.NAME);
