@@ -26,6 +26,7 @@ import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.VimConstants;
+import net.sourceforge.vrapper.vim.commands.AsciiCommand;
 import net.sourceforge.vrapper.vim.commands.BorderPolicy;
 import net.sourceforge.vrapper.vim.commands.CenterLineCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
@@ -311,6 +312,7 @@ public class NormalMode extends CommandBasedMode {
                         leafBind('J', joinLines),
                         leafBind('&', repeatSubLine),
                         transitionBind('g',
+                        		leafBind('a', (Command)AsciiCommand.INSTANCE),
                                 leafBind('f', findFile),
                                 leafBind('&', repeatSubGlobal),
                                 leafBind('J', joinLinesDumbWay),

@@ -16,7 +16,6 @@ import net.sourceforge.vrapper.eclipse.commands.ToggleFoldingCommand;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.StateUtils;
-import net.sourceforge.vrapper.vim.commands.AsciiCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.DeselectAllCommand;
 import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
@@ -94,7 +93,6 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
                         leafBind('c', dontRepeat(editText("folding.collapse"))),
                         leafBind('M', dontRepeat(editText("folding.collapse_all")))),
                 transitionBind('g',
-                        leafBind('a', (Command)AsciiCommand.INSTANCE),
                         leafBind('t', (Command)ChangeTabCommand.NEXT_EDITOR),
                         leafBind('T', (Command)ChangeTabCommand.PREVIOUS_EDITOR)),
                 leafCtrlBind('f', dontRepeat(go("pageDown"))),
