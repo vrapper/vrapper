@@ -16,10 +16,12 @@ import net.sourceforge.vrapper.eclipse.commands.ToggleFoldingCommand;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.StateUtils;
+import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.DeselectAllCommand;
 import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
 import net.sourceforge.vrapper.vim.commands.SelectionBasedTextOperationCommand;
+import net.sourceforge.vrapper.vim.commands.SetMarkCommand;
 import net.sourceforge.vrapper.vim.commands.TextObject;
 import net.sourceforge.vrapper.vim.modes.KeyMapResolver;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
@@ -93,7 +95,7 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
                         leafBind('c', dontRepeat(editText("folding.collapse"))),
                         leafBind('M', dontRepeat(editText("folding.collapse_all")))),
                 transitionBind('g',
-                        leafBind(';', dontRepeat(editText("gotoLastEditPosition"))),
+                        leafBind(';', gotoLastEdit()),
                         leafBind('t', (Command)ChangeTabCommand.NEXT_EDITOR),
                         leafBind('T', (Command)ChangeTabCommand.PREVIOUS_EDITOR)),
                 leafCtrlBind('f', dontRepeat(go("pageDown"))),
@@ -111,6 +113,12 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
          );
         return normalModeBindings;
     }
+    
+	protected Command gotoLastEdit() {
+		//'g;' should let you go through your change list but Eclipse
+		//only keeps track of the one previous edit location
+		return seq(new SetMarkCommand(CursorService.LAST_JUMP_MARK), dontRepeat(editText("gotoLastEditPosition")));
+	}
     
     @Override
     protected State<Command> insertModeBindings() {
