@@ -39,10 +39,17 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
         commands.add("eclipseaction", new EclipseActionEvaluator(false));
         commands.add("eclipseaction!", new EclipseActionEvaluator(true));
         
+    	commands.add("ls",          dontRepeat(cmd("org.eclipse.ui.window.openEditorDropDown")));
+    	commands.add("buffers",     dontRepeat(cmd("org.eclipse.ui.window.openEditorDropDown")));
+        
     	commands.add("tabnext",     (Command)ChangeTabCommand.NEXT_EDITOR);
     	commands.add("tabn",        (Command)ChangeTabCommand.NEXT_EDITOR);
+    	commands.add("bnext",       (Command)ChangeTabCommand.NEXT_EDITOR);
+    	commands.add("bn",          (Command)ChangeTabCommand.NEXT_EDITOR);
     	commands.add("tabprevious", (Command)ChangeTabCommand.PREVIOUS_EDITOR);
     	commands.add("tabp",        (Command)ChangeTabCommand.PREVIOUS_EDITOR);
+    	commands.add("bprevious",   (Command)ChangeTabCommand.PREVIOUS_EDITOR);
+    	commands.add("bp",          (Command)ChangeTabCommand.PREVIOUS_EDITOR);
     	
     	// Calls New Wizard dialogue
     	commands.add("tabe",        (Command)TabNewCommand.NEW_EDITOR);

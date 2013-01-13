@@ -173,6 +173,10 @@ public class CommandLineParser extends AbstractCommandParser {
         mapping.add("x", saveAndClose);
         mapping.add("q", close);
         mapping.add("q!", CloseCommand.FORCED_CLOSE);
+        mapping.add("bdelete", close);
+        mapping.add("bdelete!", CloseCommand.FORCED_CLOSE);
+        mapping.add("bd", close);
+        mapping.add("bd!", CloseCommand.FORCED_CLOSE);
         mapping.add("qa", closeAll);
         mapping.add("qa!", CloseCommand.FORCED_CLOSE_ALL);
         mapping.add("qall", closeAll);
