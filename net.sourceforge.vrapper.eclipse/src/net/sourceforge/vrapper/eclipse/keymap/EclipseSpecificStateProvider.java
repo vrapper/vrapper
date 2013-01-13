@@ -93,6 +93,7 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
                         leafBind('c', dontRepeat(editText("folding.collapse"))),
                         leafBind('M', dontRepeat(editText("folding.collapse_all")))),
                 transitionBind('g',
+                        leafBind(';', dontRepeat(editText("gotoLastEditPosition"))),
                         leafBind('t', (Command)ChangeTabCommand.NEXT_EDITOR),
                         leafBind('T', (Command)ChangeTabCommand.PREVIOUS_EDITOR)),
                 leafCtrlBind('f', dontRepeat(go("pageDown"))),
