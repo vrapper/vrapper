@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="net.sourceforge.vrapper.eclipse.cdt.feature"
-      label="Vrapper - C/C++ (CDT) Extensions (Optional)"
+      label="Vrapper - C/C++ Extensions (Optional, requires CDT)"
       version="0.27.20130112"
       provider-name="Vrapper Team">
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="net.sourceforge.vrapper.eclipse.pydev.feature"
-      label="Vrapper - Python (PyDev) Extensions (Optional)"
+      label="Vrapper - Python Extensions (Optional, requires PyDev)"
       version="0.27.20130112"
       provider-name="Vrapper Team">
 

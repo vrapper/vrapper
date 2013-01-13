@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="net.sourceforge.vrapper.eclipse.jdt.feature"
-      label="Vrapper - Java (JDT) Extensions (Optional)"
+      label="Vrapper - Java Extensions (Optional, requires JDT)"
       version="0.27.20130112"
       provider-name="Vrapper Team">
 
