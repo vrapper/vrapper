@@ -311,41 +311,45 @@ public class CommandLineParser extends AbstractCommandParser {
         } catch (NumberFormatException e) {
             // do nothing
         }
+        
+        /** First, check for all operations which are not whitespace-delimited **/
        
         //not a number but starts with a number, $, /, ?, +, -, ', . (dot), or , (comma)
         //might be a line range operation
         if(command.length() > 1 && LineRangeOperationCommand.isLineRangeOperation(command))
         	return new LineRangeOperationCommand(command);
         
-        // Reverse sort toggle will just be treated as just another argument
-        if(command.startsWith("sort!")) {
-        	command = command.replace("sort!", "sort !");
-        }
-        
-        //check against list of known commands
-        StringTokenizer nizer = new StringTokenizer(command);
-        Queue<String> tokens = new LinkedList<String>();
-        while(nizer.hasMoreTokens())
-            tokens.add(nizer.nextToken().trim());
-        
-        EvaluatorMapping platformCommands = editor.getPlatformSpecificStateProvider().getCommands();
-        if(platformCommands != null && platformCommands.contains(tokens.peek()))
-            platformCommands.evaluate(editor, tokens);
-        else
-            mapping.evaluate(editor, tokens);
-        
-        //is this a substitution definition?
+        //might be a substitution definition
         Command substitution = parseSubstitution(command);
         if(substitution != null)
         	return substitution;
         
-        //is this an Ex command?
+        //might be an Ex command
         if(command.length() > 1 && (command.startsWith("g") || command.startsWith("v"))) {
     		return new TextOperationTextObjectCommand(
 				new ExCommandOperation(command), new SimpleSelection(null)
     		);
         }
-       
+        
+        // Reverse sort toggle will be treated as just another argument
+        if(command.startsWith("sort!")) {
+        	command = command.replace("sort!", "sort !");
+        }
+        
+        /** Now check against list of known commands (whitespace-delimited) **/
+        
+        //tokenize based on whitespace
+        StringTokenizer nizer = new StringTokenizer(command);
+        Queue<String> tokens = new LinkedList<String>();
+        while(nizer.hasMoreTokens())
+            tokens.add(nizer.nextToken().trim());
+        
+        //see if a command is defined for the first token
+        EvaluatorMapping platformCommands = editor.getPlatformSpecificStateProvider().getCommands();
+        if(platformCommands != null && platformCommands.contains(tokens.peek()))
+            platformCommands.evaluate(editor, tokens);
+        else
+            mapping.evaluate(editor, tokens);
         
         return null;
     }
