@@ -325,7 +325,8 @@ public class CommandLineParser extends AbstractCommandParser {
         	return substitution;
         
         //might be an Ex command
-        if(command.length() > 1 && (command.startsWith("g") || command.startsWith("v"))) {
+        if(command.length() > 1 && (command.startsWith("g") || command.startsWith("v"))
+        		&& VimUtils.isPatternDelimiter(""+command.charAt(1))) {
     		return new TextOperationTextObjectCommand(
 				new ExCommandOperation(command), new SimpleSelection(null)
     		);
