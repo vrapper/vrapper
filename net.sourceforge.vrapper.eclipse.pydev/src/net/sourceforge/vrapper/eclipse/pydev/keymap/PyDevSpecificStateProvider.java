@@ -4,7 +4,6 @@ import static net.sourceforge.vrapper.keymap.StateUtils.union;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafCtrlBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.prefixedOperatorCmds;
-import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.operatorCmds;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
@@ -41,8 +40,7 @@ public class PyDevSpecificStateProvider extends AbstractEclipseSpecificStateProv
 	                        leafBind('D', gotoDecl()),
 	                        leafBind('R', (Command)new EclipseCommand("org.python.pydev.refactoring.ui.actions.RenameCommand")))
                 ),
-                prefixedOperatorCmds('g', 'c', actionAndDeselect("togglecomment"), textObjects),
-                operatorCmds('=', action("pyFormatStd"), textObjects)
+                prefixedOperatorCmds('g', 'c', actionAndDeselect("togglecomment"), textObjects)
                 );
     }
 
@@ -50,7 +48,6 @@ public class PyDevSpecificStateProvider extends AbstractEclipseSpecificStateProv
     @SuppressWarnings("unchecked")
     protected State<Command> visualModeBindings() {
         return state(
-        		leafBind('=', actionAndLeaveVisual("pyFormatStd")),
         		transitionBind('g',
     				leafBind('c', actionAndLeaveVisual("togglecomment")) )
         		);
