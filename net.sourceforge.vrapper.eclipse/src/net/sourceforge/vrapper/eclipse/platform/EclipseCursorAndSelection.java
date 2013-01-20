@@ -240,6 +240,14 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
 			if (enabled) {
 				int offset = e.caretOffset;
 	            stickyColumn = textViewer.getTextWidget().getLocationAtOffset(offset).x;
+	            //if the desired stickyColumn is off the screen to the left
+	            //(horizontal scrollbars are scrolled to the right) then I get a
+	            //negative number here, which throws an IllegalArgumentException
+	            //later.  You would think '0' would be the best fallback value but
+	            //that throws an IllegalArgumentException too.  For some reason,
+	            //'2' is the 'x' value of the first column.
+	            stickyColumn = Math.max(2, stickyColumn);
+	            
 				// if the user clicks to the right of the line end
 				// (i.e. the newline is selected) stick to EOL
 				LineInformation line = textContent.getViewContent().getLineInformationOfOffset(offset);

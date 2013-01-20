@@ -1,4 +1,37 @@
 <div class="newsbox">
+    <div class="date">2013-01-12</div>
+    <h4>Updates to Unstable Update Site</h4>
+    <p>I've received a lot of help from a contributor in the last couple weeks
+    so a lot of minor features have been added as he learns the code.  I'm hoping
+    to release the next stable version at the end of January since it appears I've
+    hit my stride with a two-month release cycle.</p>
+    
+    <p>The unstable update site has been updated with the following changes since 0.26.1:</p>
+    <ul>
+        <li>Added optional PyDev plugin for Python Vrapper users</li>
+        <li>Added support for &lt;C-a&gt; and &lt;C-x&gt; increment/decrement operations</li>
+        <li>Added support for :only</li>
+        <li>Added support for :tabnext and :tabprevious</li>
+        <li>Added support for :tabnew (invokes Eclipse's New File dialog)</li>
+        <li>Added support for :update (performs :w)</li>
+        <li>Added support for :ascii and 'ga'</li>
+        <li>Added support for :qall and :wqall</li>
+        <ul>
+            <li>This throws a benign NullPointerException which I can't figure out</li>
+        </ul>
+        <li>Added basic support for :sort</li>
+        <ul>
+            <li>supports '!', 'i', 'n', 'x', 'o', 'u' flags</li>
+            <li>supports /pattern/ with strings only (no regex)</li>
+        </ul>
+        <li>Shift+Insert will now paste clipboard contents in CommandLineMode</li>
+        <li>Fixed problem with multi-character operations whose first character was also used in a mapping</li>
+    </ul>
+    
+    <p>As with all Ctrl key bindings in Vrapper, you have to unbind those keys in Eclipse first for
+    Vrapper to receive them.  The same is true of Shift+Insert since Eclipse has a mapping for that too.</p>
+</div>
+<div class="newsbox">
     <div class="date">2012-11-26</div>
     <h4>Experimental Optional PyDev Plugin Created</h4>
     <p>Vrapper has a couple optional plugins to provide support for some Vim
@@ -196,139 +229,6 @@
     
     <p>Aside from those issues, everything is looking good.  See the previous news posts for all the features/fixes
     we've included since 0.20.0.  I think it's a pretty impressive list given that 0.20.0 was released less than 2 months ago.</p>
-</div>
-<div class="newsbox">
-    <div class="date">2012-06-23</div>
-    <h4>2 weeks later, no new release</h4>
-    <p>2 weeks ago, I said that if the code sat idle for 2 weeks I'd release 0.22.0.  Well, it didn't sit idle.
-    So I'll try again; if the code can sit idle for 2 weeks I'll release version 0.22.0.</p>
-    
-    <p>Changes since last news posting are:</p>
-    
-    <ul>
-        <li>Added basic support for :g, :g!, :v</li>
-        <ul>
-            <li>Supports 'd', 's' and 'normal' operations</li>
-            <li>:g/foo/d</li>
-            <li>:g/foo/s/bar/baz/</li>
-            <li>:g/foo/normal wwdw</li>
-            <li>:'<,'>g/foo/d</li>
-            <li>:help :g</li>
-        </ul>
-        <li>Added support for 'unnamed' clipboard</li>
-        <ul>
-            <li>Uses system clipboard</li>
-            <li>:set clipboard=unnamed</li>
-        </ul>
-        <li>Added support for 't' text object</li>
-        <ul>
-            <li>dit = delete contents of XML tag the cursor is within</li>
-            <li>dat = delete contents and the XML tag the cursor is within</li>
-        </ul>
-        <li>Removed H, M, and L mapping from JDT plugin</li>
-        <ul>
-            <li>I don't know why they were overriding the default H, M, and L operations</li>
-        </ul>
-        <li>Fixed inconsistency with mouse click not updating sticky column</li>
-    </ul>
-</div>
-<div class="newsbox">
-    <div class="date">2012-06-09</div>
-    <h4>Further updates to unstable update site</h4>
-    <p>Work is still progressing quickly towards a 0.22.0 release.  If I can just let the code sit idle
-    for 2 weeks I'll probably release it.  There's nothing else pending that I plan on adding but we've
-    had some great contributions from others lately and I don't want to rush them.</p>
-    
-    <p>Changes since last news posting are:</p>
-    
-    <ul>
-        <li>Added history for all command-line based modes</li>
-        <ul>
-            <li>Use up/down arrow</li>
-        </ul>
-        <li>Added cursor to all command-line based modes</li>
-        <ul>
-            <li>Use left/right arrow</li>
-        </ul>
-        <li>Added support for 'ZZ' (like :wq) and 'ZQ' (like :q!)</li>
-        <li>Added support for r&lt;character&gt; in visual mode</li>
-        <li>Added more tweaks to the new substitution command</li>
-        <li>Fixed issue with '.' after performing a 'R' replace</li>
-        <li>Fixed issue with '.' after performing a visual-mode change</li>
-        <li>Fixed issue with '.' after performing a 'gt' or 'gT'</li>
-        <li>Fixed issue with '%' in visual mode</li>
-        <li>Fixed compatibility issue when joining a line that begins with ')'</li>
-    </ul>
-    
-    <p>Looking back at that list, I only worked on the easy things.
-    All the difficult pieces were submitted by contributors.  Thanks for all your help!</p>
-</div>
-<div class="newsbox">
-    <div class="date">2012-05-28</div>
-    <h4>Updates to unstable update site</h4>
-    <p>Vrapper version 0.20.0 was released two weeks ago and I already feel like I'm ready to release 0.22.0.
-    It's been a productive weekend for me with lots of new features.  I promise to wait a little while to make
-    sure these features are stable but I think there is already enough here to be a new release.</p>
-    <p>The unstable update site currently includes the following features:</p>
-    
-<ul>
-<li>Added support for the much-requested substitution feature!</li>
-  <ul>
-  <li>Supports the 'g' and 'i' flags</li>
-  <li>Supports Eclipse's flavor of regex</li>
-  <ul>
-  <li>:s/foo(.+)foo/bar$1bar/</li>
-  </ul>
-  <li>Supports '%' and any line range definition</li>
-  <ul>
-  <li>:s/foo/bar/g</li>
-  <li>:%s/foo/bar/g</li>
-  <li>:2,5s/foo/bar/g</li>
-  </ul>
-  <li>This feature will require lots of testing.  It's extremely complex and nuanced.
-   I'd like to hope that this implementation can cover the majority of use cases though.</li>
-  </ul>
-<li>Added support for '&', 'g&', and ':s' for repeating last substitution</li>
-<li>Added support for '+' and '-' without leading '.' in line range operations</li>
-  <ul>
-  <li>:-1,+1d == :.-1,.+1d</li>
-  </ul>
-<li>Added support for searches in line range operations</li>
-  <ul>
-  <li>?something? searches above current line, /something/ searches below current line</li>
-  <li>:1,/foo/d</li>
-  <li>:?something?,+4y</li>
-  <li>:?something?,/foo/y</li>
-  </ul>
-<li>Added mapping for Ctrl+N and Ctrl+P to Eclipse's word completion operation</li>
-  <ul>
-  <li>Eclipse operation Alt+/</li>
-  <li>Not quite content assist, but it's close</li>
-  </ul>
-<li>Refactored save operations so they play nicely with AnyEdit plugin</li>
-<li>Fixed an issue in Vrapper when 100+ files were open in Ecilpse</li>
-<li>Fixed issue with performing 'undo' after disabling Vrapper</li>
-</ul>
-
-Also, a few updates to the optional CDT plugin (JDT plugin already has these features):
-<ul>
-    <li>Added support for 'gR' to rename element</li>
-    <li>Added support for 'gc' to comment/uncomment lines</li>
-    <li>Added support for '=' to auto-indent lines</li>
-</ul>
-    
-</div>
-<div class="newsbox">
-    <div class="date">2012-05-14</div>
-    <h4>0.20.0 Released</h4>
-    <p>I let the code sit idle for two weeks and no defects were filed.  Therefore, I'm releasing Vrapper version 0.20.0 as promised.
-    Rather than listing the changes since 0.18.0, I'll let you look at the previous three news posts where I listed them as they were introduced.</p>
-    <p>For anyone using the unstable update site, version 0.19.20120428 is the same as 0.20.0.</p>
-    <p>Thanks to all the contributors and users of Vrapper!  According to the statistics on Eclipse's Marketplace, Vrapper is the #1 vim plugin for Eclipse! 
-    <a href="http://marketplace.eclipse.org/metrics/installs">http://marketplace.eclipse.org/metrics/installs</a></p>
-    <p>As of this writing, Vrapper is #56 out of the 1,340 total plugins installable from Eclipse Marketplace.  Emacs+ is #46 but I won't take that personally.
-    There is of course the caveat that this only tracks installs through Eclipse Marketplace.
-     This means I have no idea how we rank compared to eclim since they use their own installer.</p>
 </div>
 
 <a href="old_index.php">Older Posts &gt;&gt;</a><br/>

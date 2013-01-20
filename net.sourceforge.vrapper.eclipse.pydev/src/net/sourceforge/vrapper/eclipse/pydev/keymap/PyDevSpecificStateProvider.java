@@ -3,7 +3,6 @@ package net.sourceforge.vrapper.eclipse.pydev.keymap;
 import static net.sourceforge.vrapper.keymap.StateUtils.union;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafCtrlBind;
-import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.operatorCmds;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.prefixedOperatorCmds;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
@@ -22,7 +21,7 @@ import net.sourceforge.vrapper.vim.modes.NormalMode;
 public class PyDevSpecificStateProvider extends AbstractEclipseSpecificStateProvider {
 	
     public PyDevSpecificStateProvider() {
-        //addFormatCommands(action("format"));
+        addFormatCommands(action("pyFormatStd"));
     }
 
     private static Command action(String cmd) {
@@ -42,7 +41,6 @@ public class PyDevSpecificStateProvider extends AbstractEclipseSpecificStateProv
 	                        leafBind('R', (Command)new EclipseCommand("org.python.pydev.refactoring.ui.actions.RenameCommand")))
                 ),
                 prefixedOperatorCmds('g', 'c', actionAndDeselect("togglecomment"), textObjects)
-                //operatorCmds('=', action("pyFormatStd"), textObjects)
                 );
     }
 
@@ -50,7 +48,6 @@ public class PyDevSpecificStateProvider extends AbstractEclipseSpecificStateProv
     @SuppressWarnings("unchecked")
     protected State<Command> visualModeBindings() {
         return state(
-        		//leafBind('=', actionAndLeaveVisual("pyFormatStd")),
         		transitionBind('g',
     				leafBind('c', actionAndLeaveVisual("togglecomment")) )
         		);
