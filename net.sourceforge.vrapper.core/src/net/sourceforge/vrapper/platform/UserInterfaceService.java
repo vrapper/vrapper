@@ -33,9 +33,14 @@ public interface UserInterfaceService {
     void setAsciiValues(String asciiValue, int decValue, String hexValue, String octalValue);
     
     /**
-     * For unit testing the :ascii command
+     * 
      */
-    String getLastAsciiValue();
+    String getLastCommandResultValue();
+    
+    /**
+     * 
+     */
+    void setLastCommandResultValue(String lastCommandResultValue);
     
     /**
      * Message of any kind.
@@ -67,10 +72,10 @@ public interface UserInterfaceService {
      * Set to false when completing command. Keeps Info line from getting wiped out.
      * @param asciiSet
      */
-    void setAsciiSet(boolean asciiSet);
+    void setInfoSet(boolean infoSet);
    
     /**
      * Called in CommandBasedMode to determine whether or not to wipe out the Info line text.
      */
-    boolean isAsciiSet();
+    boolean isInfoSet();
 }

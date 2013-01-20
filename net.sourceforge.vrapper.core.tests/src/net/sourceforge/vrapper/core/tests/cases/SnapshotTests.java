@@ -31,12 +31,13 @@ public class SnapshotTests extends VimTestCase {
                 System.err.println(content);
             }
             public void setAsciiValues(String asciiValue, int decValue, String hexValue, String octalValue) { }
-            public String getLastAsciiValue() { return null; }
+            public String getLastCommandResultValue() { return null; }
+            public void setLastCommandResultValue(String lastCommandResultValue) { }
             public String getCurrentEditorMode() { return null; }
             public String getLastInfoValue() { return null; }
             public String getLastErrorValue() { return null; }
-            public void setAsciiSet(boolean asciiSet) { }
-            public boolean isAsciiSet() { return false; }
+            public void setInfoSet(boolean infoSet) { }
+            public boolean isInfoSet() { return false; }
         });
         reloadEditorAdaptor();
         adaptor.changeModeSafely(NormalMode.NAME);

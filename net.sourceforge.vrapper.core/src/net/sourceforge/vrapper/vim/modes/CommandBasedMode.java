@@ -275,16 +275,25 @@ public abstract class CommandBasedMode extends AbstractMode {
             }
         }
 
-        /* The ASCII info will be overwritten with the commandBuffer
-         * if we don't do this check. This allows for "ga" in normal mode.
+        /* If you're setting the info bar as the result of a command, 
+         * we don't want to immediately clear that status out. For example, 
+         * "ga" shows the ASCII code for the character under the cursor. 
+         * If we don't do this check, it will not get a chance to show the
+         * info text.
          */
-        if(editorAdaptor.getUserInterfaceService().isAsciiSet()) {
+        if(editorAdaptor.getUserInterfaceService().isInfoSet()) {
+            // Currently, the Info bar probably has the letters of the command we were typing
             resetCommandBuffer();
-            editorAdaptor.getUserInterfaceService().setInfoMessage(editorAdaptor.getUserInterfaceService().getLastAsciiValue());
-            editorAdaptor.getUserInterfaceService().setAsciiSet(false);
-        } else {
+            
+            // Now reset the info bar with the results from the command we just executed
             editorAdaptor.getUserInterfaceService().setInfoMessage(
-                    commandBuffer.toString());
+                    editorAdaptor.getUserInterfaceService().getLastCommandResultValue());
+            
+            // Setting this to false makes sure we don't come back here until
+            // we execute another command
+            editorAdaptor.getUserInterfaceService().setInfoSet(false);
+        } else {
+            editorAdaptor.getUserInterfaceService().setInfoMessage(commandBuffer.toString());
         }
 
         // FIXME: has some issues with sticky column

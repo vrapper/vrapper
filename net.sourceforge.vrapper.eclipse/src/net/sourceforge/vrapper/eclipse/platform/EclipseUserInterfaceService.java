@@ -17,12 +17,21 @@ public class EclipseUserInterfaceService implements UserInterfaceService {
     private final StatusLine statusLine;
     private final IEditorPart editor;
     private final ModeContributionItem vimInputModeItem;
-    
-    // For unit tests
-    private String lastAsciiValue = "";
+   
     private String lastInfoValue = "";
     private String lastErrorValue = "";
-    private boolean asciiSet;
+    
+    /* When a normal-mode command is entered, the letters you type
+     * are displayed in the info status bar. If your command puts
+     * something in the info bar, since it is shared, we want to 
+     * first wipe out the command letters, and the replace it with
+     * the command result. Setting infoSet to true, and storing the
+     * command result in lastCommandResultValue will accomplish this.
+     * See CommandBasedMode.java for the if/else logic on this. -- BRD
+     */
+    private boolean infoSet;
+    private String lastCommandResultValue = "";
+    
     private String currentMode;
 
     public EclipseUserInterfaceService(IEditorPart editor, ITextViewer textViewer) {
@@ -53,20 +62,23 @@ public class EclipseUserInterfaceService implements UserInterfaceService {
                               + decValue + ",  "
                               + "Hex " + hexValue + ",  "
                               + "Octal " + octalValue;
-        lastAsciiValue = asciiValueText;
+        lastCommandResultValue = asciiValueText;
         setErrorMessage(null);
         setInfoMessage(asciiValueText);
     }
    
-    public String getLastAsciiValue() {
-        return lastAsciiValue;
+    public String getLastCommandResultValue() {
+        return lastCommandResultValue;
     }
 
+    public void setLastCommandResultValue(String lastCommandResultValue) {
+        this.lastCommandResultValue = lastCommandResultValue;
+    }
+    
     public void setErrorMessage(String content) {
         editor.getEditorSite().getActionBars().getStatusLineManager().setErrorMessage(content);
         lastErrorValue = content;
     }
-    
 
     public String getLastErrorValue() {
         return lastErrorValue;
@@ -122,11 +134,12 @@ public class EclipseUserInterfaceService implements UserInterfaceService {
     	vimInputModeItem.setRecording(b);
     }
 
-    public boolean isAsciiSet() {
-        return asciiSet;
+    public boolean isInfoSet() {
+        return infoSet;
     }
 
-    public void setAsciiSet(boolean asciiSet) {
-        this.asciiSet = asciiSet;
+    public void setInfoSet(boolean infoSet) {
+        this.infoSet = infoSet;
     }
+
 }

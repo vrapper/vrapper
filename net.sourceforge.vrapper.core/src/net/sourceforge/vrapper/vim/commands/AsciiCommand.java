@@ -194,7 +194,7 @@ public class AsciiCommand extends AbstractCommand {
                                             (int)ascii,
                                             String.format("%02x", (int)ascii),
                                             String.format("%03o", (int)ascii));
-        userInterfaceService.setAsciiSet(true);
+        userInterfaceService.setInfoSet(true);
     }
 
     public Command repetition() {
