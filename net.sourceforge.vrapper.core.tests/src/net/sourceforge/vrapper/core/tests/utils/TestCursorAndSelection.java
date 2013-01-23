@@ -70,9 +70,7 @@ public class TestCursorAndSelection implements CursorService, SelectionService {
 	}
 
 	public void setSelection(Selection selection) {
-		if (selection != null)
-			this.position = selection.getEnd();
-		this.selection = selection;
+	    setSelection(selection, false);
 	}
 
 	public void setLineWiseSelection(boolean lineWise) {
@@ -92,4 +90,9 @@ public class TestCursorAndSelection implements CursorService, SelectionService {
         // do nothing
     }
 
+    public void setSelection(Selection selection, boolean leaveVisualMode) {
+		if (selection != null)
+			this.position = selection.getEnd();
+		this.selection = selection;
+    }
 }

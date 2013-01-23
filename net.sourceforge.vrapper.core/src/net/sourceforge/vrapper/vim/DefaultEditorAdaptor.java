@@ -263,7 +263,11 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     }
 
     public void setSelection(Selection selection) {
-        selectionService.setSelection(selection);
+        selectionService.setSelection(selection, false);
+    }
+    
+    public void setSelection(Selection selection, boolean leaveVisualMode) {
+        selectionService.setSelection(selection, leaveVisualMode);
     }
 
     public CursorService getCursorService() {

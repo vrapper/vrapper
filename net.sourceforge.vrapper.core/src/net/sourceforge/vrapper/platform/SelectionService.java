@@ -9,6 +9,8 @@ public interface SelectionService {
      * @param selection - new selection; null to deselect all
      */
     void setSelection(Selection selection);
+    
+    void setSelection(Selection selection, boolean leaveVisualMode);
 
     /**
      * @return new selection; null if nothing is selected
