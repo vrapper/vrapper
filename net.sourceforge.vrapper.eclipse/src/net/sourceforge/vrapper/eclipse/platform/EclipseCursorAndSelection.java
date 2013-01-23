@@ -163,10 +163,6 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         setSelection(newSelection, false);
     }
     
-    /* TODO: When entering Visual mode and leaving without selecting anything,
-     *       the cursor is being advanced. I think this is because of the 
-     *       line caret vs. block caret offsets.
-     */
     public void setSelection(Selection newSelection, boolean leaveVisualMode) {
         if (newSelection == null) {
             int cursorPos = converter.widgetOffset2ModelOffset(textViewer.getTextWidget().getCaretOffset());
