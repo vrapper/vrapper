@@ -1,4 +1,30 @@
 <div class="newsbox">
+    <div class="date">2013-01-29</div>
+    <h4>0.28.0 Released</h4>
+    <p>The code stayed relatively idle for the last couple weeks so I'm releasing 0.28.0.
+    It includes all the changes listed in the previous news post along with a few other
+    minor changes:</p>
+    
+    <ul>
+        <li>Added support for :bd, :bp, :bn, and :ls</li>
+        <li>Added basic support for 'g;'</li>
+        <ul>
+            <li>Only goes to previous edit location, no change lists</li>
+        </ul>
+        <li>Fixed off-by-one issue with cursor position after exiting VisualMode</li>
+    </ul>
+    
+    <p>We have a pile of new feature requests that I'm itching to work on so I wanted to get
+    0.28.0 out into the world before I start making some destabilizing changes.</p>
+    
+    <p>Finally, I like to use my release announcements to include a little bit of shameless
+    self-congratulation.  Vrapper has gone 7 consecutive months with 800+ installs via
+    the Eclipse Marketplace in each month!  There have been a couple months where we almost
+    cracked 1,000 installs in a single month but it hasn't happened yet.  This means Vrapper
+    is holding its place at #50 for installs across all 1,500 Eclipse plugins available via
+    the Marketplace!  I think that's pretty impressive.</p>
+</div>
+<div class="newsbox">
     <div class="date">2013-01-12</div>
     <h4>Updates to Unstable Update Site</h4>
     <p>I've received a lot of help from a contributor in the last couple weeks
