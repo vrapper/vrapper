@@ -6,7 +6,7 @@
         <th>Description</th>
     </tr>
     <tr>
-        <td>:w</td>
+        <td>:w<br/>:update</td>
         <td>Writes the edited file to disk.</td>
     </tr>
     <tr>
@@ -19,8 +19,17 @@
             save.</td>
     </tr>
     <tr>
+        <td>:qall</td>
+        <td>Closes all editors if nothing was changed since the last
+            save.</td>
+    </tr>
+    <tr>
         <td>:wq<br />:x</td>
         <td>Writes the edited file to disk and closes the editor.</td>
+    </tr>
+    <tr>
+        <td>:wqall</td>
+        <td>Writes all edited files to disk and closes all editors.</td>
     </tr>
     <tr>
         <td>:q!</td>
@@ -41,6 +50,10 @@
             or the whole text if nothing is selected.</td>
     </tr>
     <tr>
+        <td>:ascii</td>
+        <td>Display the ascii value of the character under the cursor</td>
+    </tr>
+    <tr>
         <td>:&lt;number&gt;</td>
         <td>Jumps to line &lt;number&gt;.</td>
     </tr>
@@ -59,6 +72,30 @@
     <tr>
         <td>:find &lt;filename&gt;</td>
         <td>Opens a file found in the list of directories defined by 'path' variable.</td>
+    </tr>
+    <tr>
+        <td>:tabnext<br/>:bnext<br/>:bn</td>
+        <td>Move to next Eclipse editor (tab)</td>
+    </tr>
+    <tr>
+        <td>:tabprevious<br/>:bprevious<br/>:bp</td>
+        <td>Move to previous Eclipse editor (tab)</td>
+    </tr>
+    <tr>
+        <td>:bdelete<br/>:bd</td>
+        <td>Close current editor (tab)</td>
+    </tr>
+    <tr>
+        <td>:only</td>
+        <td>Close all "other" Eclipse editors (close other tabs)</td>
+    </tr>
+    <tr>
+        <td>:tabnew</td>
+        <td>Invoke Eclipse's New File dialog</td>
+    </tr>
+    <tr>
+        <td>:ls</td>
+        <td>List all open editors</td>
     </tr>
     <tr>
         <td><nobr>:[%]s/&lt;search&gt;/&lt;replace&gt;/[g|i]</nobr></td>
@@ -102,6 +139,24 @@
         </td>
         </tr>
         </table>
+        </td>
+    </tr>
+    <tr>
+        <td><nobr>:[range,range]sort[!] [/pattern/] [i|n|x|o|u]</nobr></td>
+        <td>Sort lines in entire file or over specified range.
+        <ul>
+        <li>Supports '!' flag for reverse sort</li>
+        <li>Supports 'i' flag for case-insensitive sort</li>
+        <li>Supports 'n' flag for numeric sort</li>
+        <li>Supports 'x' flag for hex-numeric sort</li>
+        <li>Supports 'o' flag for octal-numeric sort</li>
+        <li>Supports 'u' flag for unique sort (remove duplicates)</li>
+        <li>Supports /pattern/ to only sort lines (within the range) which include /pattern/</li>
+        <ul>
+        <li>Strings only, no regex</li>
+        <li>Sort will compare the text at cursor position after the /pattern/ match</li>
+        </ul>
+        </ul>
         </td>
     </tr>
     <tr>

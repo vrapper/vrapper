@@ -5,21 +5,23 @@ that you can install to further enhance Vrapper's features.  These plugins eithe
 extra dependencies which everyone might not have installed, or they provide behaviors
 which aren't found in Vim.
 
-<h3>CDT and JDT Plugins</h3>
-<p>The CDT and JDT plugins access Eclipse features found only in the CDT package (C++ Development Tools)
-or in the JDT package (Java Development Tools).  If you do any C++ development in Eclipse, chances are
+<h3>CDT, JDT, and PyDev Plugins</h3>
+<p>The CDT, JDT, and PyDev plugins access Eclipse features found only in the CDT package (C++ Development Tools)
+the JDT package (Java Development Tools), or PyDev package (Python Development).  If you do any C++ development in Eclipse, chances are
 you already have CDT installed.  Likewise with JDT for Java development.  The Vrapper CDT plugin has
-a dependency on the CDT package and the Vrapper JDT plugin has a dependency on the JDT package.</p>
-<p>Both plugins provide the following commands:</p>
+a dependency on the CDT package, the Vrapper JDT plugin has a dependency on the JDT package,
+and the Vrapper PyDev plugin has a dependency on the PyDev package.</p>
+<p>Each of these plugins provide the following commands:</p>
 <ul>
 	<li>gcc (comment/uncomment current line)</li>
 	<li>gc&lt;text object&gt; (comment/uncomment text object)</li>
-	<li>== (auto-indent current line)</li>
-	<li>=&lt;text object&gt; (auto-indent text object)</li>
+	<li>== (auto-indent current line, not applicable for PyDev)</li>
+	<li>=&lt;text object&gt; (auto-indent text object, not applicable for PyDev)</li>
 	<li>Ctrl+] (go to declaration of object under cursor)</li>
 	<li>gd (go to declaration of object under cursor)</li>
 	<li>gD (go to declaration of object under cursor)</li>
 	<li>gR (rename element)</li>
+	<li>:format (call underlying language's source code formatter)</li>
 </ul>
 
 <p>In addition to this, the JDT plugin also provides these commands:</p>
