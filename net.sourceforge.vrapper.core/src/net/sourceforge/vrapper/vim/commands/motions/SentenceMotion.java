@@ -27,6 +27,11 @@ import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 public class SentenceMotion extends CountAwareMotion {
     public static final SentenceMotion FORWARD = new SentenceMotion(true);
     public static final SentenceMotion BACKWARD = new SentenceMotion(false);
+
+    //. ? or ! followed by an optional ) ] " or '
+    //followed by a number of spaces, followed by any non-whitespace char
+    //(grouping is on that non-whitespace char so we can get its index)
+    private static final Pattern pattern = Pattern.compile(".+?[.?!][)\\]\"']*\\s+(\\S).+?");
     
     private boolean forward;
     
@@ -43,6 +48,7 @@ public class SentenceMotion extends CountAwareMotion {
         for (int i = 0; i < count; i++) {
         	position = doIt(editorAdaptor, position);
         }
+        
         return editorAdaptor.getPosition().setModelOffset(position);
 	}
 	
@@ -50,14 +56,21 @@ public class SentenceMotion extends CountAwareMotion {
         TextContent modelContent = editorAdaptor.getModelContent();
         
         LineInformation line = modelContent.getLineInformationOfOffset(position);
+        LineInformation lineTmp;
         int offset = getSentenceBoundaryOffset(line, position, modelContent);
         
         while(offset == -1) {
         	if(forward) {
         		if(modelContent.getNumberOfLines() > line.getNumber()) {
+        			lineTmp = line;
         			//get next line, starting at beginning of line
         			line = modelContent.getLineInformation(line.getNumber() + 1);
         			position = line.getBeginOffset();
+        			//empty lines are sentence boundaries too
+        			if(line.getLength() == 0 && lineTmp.getLength() != 0 ||
+        				line.getLength() != 0 && lineTmp.getLength() == 0) {
+        				return line.getBeginOffset();
+        			}
         		}
         		else {
         			//already on last line in file, move cursor to the end
@@ -66,9 +79,15 @@ public class SentenceMotion extends CountAwareMotion {
         	}
         	else { //backwards
         		if(line.getNumber() > 0) {
+        			lineTmp = line;
         			//get previous line, starting at end of line
         			line = modelContent.getLineInformation(line.getNumber() - 1);
         			position = line.getEndOffset();
+        			//empty lines are sentence boundaries too
+        			if(line.getLength() == 0 && lineTmp.getLength() != 0 ||
+        				line.getLength() != 0 && lineTmp.getLength() == 0) {
+        				return line.getBeginOffset();
+        			}
         		}
         		else {
         			//already on first line in file, move cursor to beginning
@@ -96,13 +115,9 @@ public class SentenceMotion extends CountAwareMotion {
         	text = modelContent.getText(begin, position - begin);
         }
         
-        //. ? or ! followed by an optional ) ] " or '
-        //followed by a number of spaces, followed by any non-whitespace char
-        Pattern pattern = Pattern.compile(".+?[.?!][)\\]\"']*\\s+(\\S).+?");
-        Matcher match = pattern.matcher(text);
-        
         //collect start index of each match
         List<Integer> matches = new ArrayList<Integer>();
+        Matcher match = pattern.matcher(text);
         while(match.find()) { matches.add(match.start(1)); }
         
         if(matches.size() > 0) {
