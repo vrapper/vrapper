@@ -53,6 +53,7 @@ import net.sourceforge.vrapper.vim.commands.motions.MoveWordRight;
 import net.sourceforge.vrapper.vim.commands.motions.ParagraphMotion;
 import net.sourceforge.vrapper.vim.commands.motions.ParenthesesMove;
 import net.sourceforge.vrapper.vim.commands.motions.SearchResultMotion;
+import net.sourceforge.vrapper.vim.commands.motions.SentenceMotion;
 import net.sourceforge.vrapper.vim.commands.motions.ViewPortMotion;
 import net.sourceforge.vrapper.vim.commands.motions.WordSearchMotion;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
@@ -120,6 +121,8 @@ public abstract class CommandBasedMode extends AbstractMode {
             final Motion WORDEndLeft = MoveBigWORDEndLeft.INSTANCE;
             final Motion paragraphForward = ParagraphMotion.FORWARD;
             final Motion paragraphBackward = ParagraphMotion.BACKWARD;
+            final Motion sentenceForward = SentenceMotion.FORWARD;
+            final Motion sentenceBackward = SentenceMotion.BACKWARD;
             // TODO: move this to eclipse module
             // final Motion eclipseWordRight = go("wordNext", EXCLUSIVE);
             // final Motion eclipseWordLeft = go("wordPrevious", EXCLUSIVE);
@@ -188,6 +191,8 @@ public abstract class CommandBasedMode extends AbstractMode {
                     leafBind('B', WORDLeft),
                     leafBind('}', paragraphForward),
                     leafBind('{', paragraphBackward),
+                    leafBind(')', sentenceForward),
+                    leafBind('(', sentenceBackward),
                     leafBind('G', GoToLineMotion.LAST_LINE), // XXX: counts
                     leafBind('H', highMove),
                     leafBind('M', middleMove),
