@@ -41,20 +41,6 @@ import net.sourceforge.vrapper.vim.commands.motions.SearchResultMotion;
  */
 public class ConstructorWrappers {
     private static final Map<String, KeyStroke> keyNames = createKeyMap();
-//    @SuppressWarnings("serial")
-    // FIXME: this is all going to be replaced by some JLex/JFlex stuff
-//    static final Map<String, SpecialKey> specialKeys = Collections.unmodifiableMap(new HashMap<String, SpecialKey>() {{
-//        put("LEFT",  SpecialKey.ARROW_LEFT);
-//        put("RIGHT", SpecialKey.ARROW_RIGHT);
-//        put("UP",    SpecialKey.ARROW_UP);
-//        put("DOWN",  SpecialKey.ARROW_DOWN);
-//        put("CR",    SpecialKey.RETURN);
-//        put("ENTER", SpecialKey.RETURN);
-//        for (SpecialKey key: SpecialKey.values()) {
-//            String keyName = key.toString();
-//            put(keyName, key);
-//        }
-//    }});
 
     @SuppressWarnings("serial")
     static final Map<SpecialKey, String> specialKeyNames = Collections.unmodifiableMap(new HashMap<SpecialKey, String>() {{
@@ -86,8 +72,14 @@ public class ConstructorWrappers {
                 KeyStroke stroke = null;
                 if (sb.length() > 0) {
                     sb.deleteCharAt(sb.length()-1);
-                    String key = sb.toString();
-                    stroke = keyNames.get(key.toUpperCase());
+                    String key = sb.toString().toUpperCase();
+                    if(key.startsWith("S-")) { //Shift
+                    	SpecialKey special = keyNames.get( key.substring(2) ).getSpecialKey();
+                    	stroke = new SimpleKeyStroke(special, true);
+                    }
+                    else {
+                    	stroke = keyNames.get(key);
+                    }
                 }
                 if (stroke != null) {
                     result.add(stroke);

@@ -75,6 +75,9 @@ public class SimpleKeyStroke implements KeyStroke {
         if (specialKey != other.getSpecialKey()) {
             return false;
         }
+        if (withShiftKey() != other.withShiftKey()) {
+        	return false;
+        }
         return true;
     }
 
