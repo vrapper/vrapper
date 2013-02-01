@@ -57,6 +57,7 @@ public class SentenceMotion extends CountAwareMotion {
         
         LineInformation line = modelContent.getLineInformationOfOffset(position);
         LineInformation lineTmp;
+        int posTmp;
         int offset = getSentenceBoundaryOffset(line, position, modelContent);
         
         while(offset == -1) {
@@ -80,13 +81,16 @@ public class SentenceMotion extends CountAwareMotion {
         	else { //backwards
         		if(line.getNumber() > 0) {
         			lineTmp = line;
+        			posTmp = position;
         			//get previous line, starting at end of line
         			line = modelContent.getLineInformation(line.getNumber() - 1);
         			position = line.getEndOffset();
         			//empty lines are sentence boundaries too
         			if(line.getLength() == 0 && lineTmp.getLength() != 0 ||
         				line.getLength() != 0 && lineTmp.getLength() == 0) {
-        				return line.getBeginOffset();
+        				//if posTmp was already at the beginning of this line, go to previous line
+        				//otherwise, go to beginning of this line
+        				return posTmp == lineTmp.getBeginOffset() ? line.getBeginOffset() : lineTmp.getBeginOffset();
         			}
         		}
         		else {
