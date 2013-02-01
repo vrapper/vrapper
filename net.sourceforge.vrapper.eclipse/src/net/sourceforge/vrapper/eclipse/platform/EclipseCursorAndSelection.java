@@ -281,6 +281,12 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     }
 
     public Position getMark(String id) {
+    	//`` and '' are the same position, so we need to return that position
+    	//regardless of which way the user accessed it
+    	if(id.equals("`")) {
+    		id = LAST_JUMP_MARK;
+    	}
+    	
         org.eclipse.jface.text.Position p = marks.get(id);
         if (p == null || p.isDeleted) {
             marks.remove(id);
