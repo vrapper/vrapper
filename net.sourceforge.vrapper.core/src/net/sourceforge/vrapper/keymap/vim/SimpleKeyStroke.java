@@ -75,7 +75,8 @@ public class SimpleKeyStroke implements KeyStroke {
         if (specialKey != other.getSpecialKey()) {
             return false;
         }
-        if (withShiftKey() != other.withShiftKey()) {
+        //only check shift key if it doesn't change the keycode
+        if (specialKey != null && withShiftKey() != other.withShiftKey()) {
         	return false;
         }
         return true;
