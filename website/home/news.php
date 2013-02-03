@@ -1,4 +1,28 @@
 <div class="newsbox">
+    <div class="date">2013-02-03</div>
+    <h4>Updates to unstable update site</h4>
+    <p>When I released 0.28.0 a couple days ago I mentioned that I wanted to release it mostly because
+    I had a pile of feature requests I was itching to work on.  Well, it's less than
+    a week later and I've already got a bunch of new features available on the unstable update site. They are:</p>
+    
+    <ul>
+        <li>Add support for '(' and ')' sentence motions</li>
+        <li>Add support for Shift key in mappings '&ltS-' (e.g., &lt;S-Left&gt;)</li>
+        <li>Add support for Alt (meta) key in mappings '&lt;A-' and '&lt;M-' (e.g., &lt;A-x&gt;)</li>
+        <li>Add support for 'g;' and 'g,' to traverse changelist</li>
+        <li>Add support for `` to jump to last cursor position</li>
+        <ul>
+            <li>Similar to '' to jump to last line position</li>
+        </ul>
+        <li>Fix issue where modifying text above a mark would offset that mark's position</li>
+        <ul>
+            <li>Mark positions should now stay accurate as the document changes</li>
+        </ul>
+    </ul>
+    
+    <p>It's been a productive couple of days.</p>
+</div>
+<div class="newsbox">
     <div class="date">2013-01-29</div>
     <h4>0.28.0 Released</h4>
     <p>The code stayed relatively idle for the last couple weeks so I'm releasing 0.28.0.
