@@ -282,16 +282,31 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
 
     public void setMark(String id, Position position) {
         org.eclipse.jface.text.Position p = new org.eclipse.jface.text.Position(position.getModelOffset());
-        marks.put(id, p);
+        try {
+        	//add listener so Position automatically updates as the document changes
+			textViewer.getDocument().addPosition(p);
+		} catch (BadLocationException e) {
+			e.printStackTrace();
+			return;
+		}
         
         if(id == LAST_EDIT_MARK) {
         	changeList.add(p);
         	if(changeList.size() > 100) {
-        		changeList.remove(0);
+        		//remove (and stop tracking changes for) old positions
+        		textViewer.getDocument().removePosition( changeList.remove(0) );
         	}
         	//new edit, restart index position
-        	changeListIndex = changeList.size() -1;
+        	changeListIndex = changeList.size();
         }
+        else if(marks.containsKey(id)) {
+        	//we're about to overwrite an old position
+        	//no need to track its changes anymore
+        	textViewer.getDocument().removePosition( marks.get(id) );
+        }
+        
+        //update mark position
+        marks.put(id, p);
     }
 
     public Position getMark(String id) {
@@ -303,7 +318,8 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     	
         org.eclipse.jface.text.Position p = marks.get(id);
         if (p == null || p.isDeleted) {
-            marks.remove(id);
+        	//leave deleted entries in marks Map
+        	//in case an 'undo' brings it back
             return null;
         }
         int offset = p.getOffset();
@@ -321,23 +337,30 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     }
     
     private Position getChangeLocation(int index) {
-    	if(index < 0) {
+    	if(changeList.size() == 0) {
     		return null;
     	}
-    	else if(index < changeList.size()) {
-    		 org.eclipse.jface.text.Position p = changeList.get(index);
-    		 if(p == null || p.isDeleted) {
-    			 changeList.remove(index);
-    			 changeListIndex = changeList.size() -1;
-    			 return null;
-    		 }
-    		 else {
-    			 changeListIndex = index; //prepare for next invocation
-    			 return newPositionForModelOffset(p.getOffset());
-    		 }
-    	}
-    	return null;
     	
+    	if(index < 0) {
+    		index = 0;
+    	}
+    	else if(index >= changeList.size()) {
+    		index = changeList.size() -1;
+    	}
+    	
+    	org.eclipse.jface.text.Position p = changeList.get(index);
+    	if(p == null || p.isDeleted) {
+    		changeList.remove(index);
+    		changeListIndex = changeList.size();
+    		if(p != null) { //deleted
+    			textViewer.getDocument().removePosition(p);
+    		}
+    		return null;
+    	}
+    	else {
+    		changeListIndex = index; //prepare for next invocation
+    		return newPositionForModelOffset(p.getOffset());
+    	}
     }
 
 }
