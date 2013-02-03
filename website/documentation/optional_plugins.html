@@ -12,24 +12,24 @@ you already have CDT installed.  Likewise with JDT for Java development.  The Vr
 a dependency on the CDT package, the Vrapper JDT plugin has a dependency on the JDT package,
 and the Vrapper PyDev plugin has a dependency on the PyDev package.</p>
 <p>Each of these plugins provide the following commands:</p>
-<ul>
-	<li>gcc (comment/uncomment current line)</li>
-	<li>gc&lt;text object&gt; (comment/uncomment text object)</li>
-	<li>== (auto-indent current line, not applicable for PyDev)</li>
-	<li>=&lt;text object&gt; (auto-indent text object, not applicable for PyDev)</li>
-	<li>Ctrl+] (go to declaration of object under cursor)</li>
-	<li>gd (go to declaration of object under cursor)</li>
-	<li>gD (go to declaration of object under cursor)</li>
-	<li>gR (rename element)</li>
-	<li>:format (call underlying language's source code formatter)</li>
-</ul>
+<table class="commands">
+    <tr><td>gcc</td><td>comment/uncomment current line</td></tr>
+	<tr><td>gc&lt;text object&gt;</td><td>comment/uncomment text object</td></tr>
+	<tr><td>== </td><td>auto-indent current line (not applicable for PyDev)</td></tr>
+	<tr><td>=&lt;text object&gt;</td><td>auto-indent text object (not applicable for PyDev)</td></tr>
+	<tr><td>Ctrl+]<br/>gd<br/>gD</td><td>go to declaration of object under cursor</td></tr>
+	<tr><td>gR</td><td>rename element</td></tr>
+	<tr><td>:format</td><td>call underlying language's source code formatter</td></tr>
+</table>
 
+<br/>
 <p>In addition to this, the JDT plugin also provides these commands:</p>
-<ul>
-	<li>gr (activate Eclipse's 'refactor' menu)</li>
-	<li>gm (activate Eclipse's 'source' menu)</li>
-</ul>
+<table class="commands">
+	<tr><td>gr</td><td>activate Eclipse's 'refactor' menu</td></tr>
+	<tr><td>gm</td><td>activate Eclipse's 'source' menu</td></tr>
+</table>
 
+<br/>
 <p>
 We are able to define a mapping for any Eclipse operation within
 the org.eclipse.cdt.ui.edit.* or org.eclipse.jdt.ui.edit.text.java.*
