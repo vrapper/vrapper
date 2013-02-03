@@ -1,6 +1,8 @@
 package net.sourceforge.vrapper.eclipse.platform;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import net.sourceforge.vrapper.eclipse.ui.CaretUtils;
@@ -41,6 +43,8 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     private final SelectionChangeListener selectionChangeListener;
     private final StickyColumnUpdater caretListener;
     private final Map<String, org.eclipse.jface.text.Position> marks;
+    private final List<org.eclipse.jface.text.Position> changeList;
+    private int changeListIndex;
     private final Configuration configuration;
     private final EclipseTextContent textContent;
 
@@ -53,6 +57,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         selectionChangeListener = new SelectionChangeListener();
         caretListener = new StickyColumnUpdater();
         marks = new HashMap<String, org.eclipse.jface.text.Position>();
+        changeList = new ArrayList<org.eclipse.jface.text.Position>();
         textViewer.getTextWidget().addSelectionListener(selectionChangeListener);
         textViewer.getTextWidget().addCaretListener(caretListener);
         textViewer.getDocument().addPositionCategory(POSITION_CATEGORY_NAME);
@@ -278,6 +283,12 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     public void setMark(String id, Position position) {
         org.eclipse.jface.text.Position p = new org.eclipse.jface.text.Position(position.getModelOffset());
         marks.put(id, p);
+        
+        if(id == LAST_EDIT_MARK) {
+        	changeList.add(p);
+        	//new edit, restart index position
+        	changeListIndex = changeList.size() -1;
+        }
     }
 
     public Position getMark(String id) {
@@ -294,6 +305,36 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         }
         int offset = p.getOffset();
         return newPositionForModelOffset(offset);
+    }
+    
+    public Position getNextChangeLocation(int count) {
+    	int index = changeListIndex + count;
+    	return getChangeLocation(index);
+    }
+    
+    public Position getPrevChangeLocation(int count) {
+    	int index = changeListIndex - count;
+    	return getChangeLocation(index);
+    }
+    
+    private Position getChangeLocation(int index) {
+    	if(index < 0) {
+    		return null;
+    	}
+    	else if(index < changeList.size()) {
+    		 org.eclipse.jface.text.Position p = changeList.get(index);
+    		 if(p == null || p.isDeleted) {
+    			 changeList.remove(index);
+    			 changeListIndex = changeList.size() -1;
+    			 return null;
+    		 }
+    		 else {
+    			 changeListIndex = index; //prepare for next invocation
+    			 return newPositionForModelOffset(p.getOffset());
+    		 }
+    	}
+    	return null;
+    	
     }
 
 }

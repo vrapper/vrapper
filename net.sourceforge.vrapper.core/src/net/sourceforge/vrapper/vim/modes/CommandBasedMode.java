@@ -28,6 +28,7 @@ import net.sourceforge.vrapper.vim.commands.SwitchRegisterCommand;
 import net.sourceforge.vrapper.vim.commands.VimCommandSequence;
 import net.sourceforge.vrapper.vim.commands.motions.ContinueFindingMotion;
 import net.sourceforge.vrapper.vim.commands.motions.FindMotion;
+import net.sourceforge.vrapper.vim.commands.motions.GoToEditLocation;
 import net.sourceforge.vrapper.vim.commands.motions.GoToLineMotion;
 import net.sourceforge.vrapper.vim.commands.motions.GoToMarkMotion;
 import net.sourceforge.vrapper.vim.commands.motions.HalfPageUpDownMotion;
@@ -100,11 +101,6 @@ public abstract class CommandBasedMode extends AbstractMode {
             final Motion moveDownNonWhitespace = MoveUpDownNonWhitespace.MOVE_DOWN;
             final Motion moveUpNonWhitespace = MoveUpDownNonWhitespace.MOVE_UP;
             final Motion moveToColumn = MoveToColumn.INSTANCE;
-            // final Motion findNext = new
-            // EclipseMoveCommand("org.eclipse.ui.edit.findNext", EXCLUSIVE);
-            // final Motion findPrevious = new
-            // EclipseMoveCommand("org.eclipse.ui.edit.findPrevious",
-            // EXCLUSIVE);
             final Motion findNext = SearchResultMotion.FORWARD;
             final Motion findPrevious = SearchResultMotion.BACKWARD;
             final Motion findWordNext = WordSearchMotion.FORWARD;
@@ -123,9 +119,6 @@ public abstract class CommandBasedMode extends AbstractMode {
             final Motion paragraphBackward = ParagraphMotion.BACKWARD;
             final Motion sentenceForward = SentenceMotion.FORWARD;
             final Motion sentenceBackward = SentenceMotion.BACKWARD;
-            // TODO: move this to eclipse module
-            // final Motion eclipseWordRight = go("wordNext", EXCLUSIVE);
-            // final Motion eclipseWordLeft = go("wordPrevious", EXCLUSIVE);
             final Motion lineStart = LineStartMotion.NON_WHITESPACE;
             final Motion column0 = LineStartMotion.COLUMN0;
             final Motion lineEnd = new LineEndMotion(EXCLUSIVE); // NOTE: it's
@@ -212,16 +205,12 @@ public abstract class CommandBasedMode extends AbstractMode {
                     transitionBind(']', 
                     		leafBind(')', matchCloseParen),
                     		leafBind('}', matchCloseCurly)),
-                    // leafBind('(', javaGoTo("previous.member", LINE_WISE)), //
-                    // XXX: vim non-compatible; XXX: make java-agnostic
-                    // leafBind(')', javaGoTo("next.member", LINE_WISE)), //
-                    // XXX: vim non-compatible; XXX: make java-agnostic
                     transitionBind('g',
                             leafBind('g', GoToLineMotion.FIRST_LINE),
                             leafBind('*', findWordForwardLenient),
                             leafBind('#', findWordBackwardLenient),
-                            // leafBind('w', eclipseWordRight),
-                            // leafBind('b', eclipseWordLeft),
+                            leafBind(';', GoToEditLocation.BACKWARDS),
+                            leafBind(',', GoToEditLocation.FORWARD),
                             leafBind('e', wordEndLeft),
                             leafBind('E', WORDEndLeft)));
         }

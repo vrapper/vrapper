@@ -95,4 +95,14 @@ public class TestCursorAndSelection implements CursorService, SelectionService {
 			this.position = selection.getEnd();
 		this.selection = selection;
     }
+
+	public Position getNextChangeLocation(int count) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Position getPrevChangeLocation(int count) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

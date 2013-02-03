@@ -64,4 +64,10 @@ public interface CursorService {
      *         been set
      */
     Position getMark(String id);
+    
+    /**
+     * Access change lists, 'g;' and 'g,'.
+     */
+    Position getNextChangeLocation(int count);
+    Position getPrevChangeLocation(int count);
 }
