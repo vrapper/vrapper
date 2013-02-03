@@ -1,8 +1,8 @@
 package net.sourceforge.vrapper.vim.commands;
 
-import net.sourceforge.vrapper.vim.EditorAdaptor;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.repeat;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
+import net.sourceforge.vrapper.vim.EditorAdaptor;
 
 public class RepeatInsertionCommand extends CountAwareCommand {
 

@@ -1,11 +1,10 @@
 package net.sourceforge.vrapper.vim.commands;
 
+import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.modes.ExecuteCommandHint;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
-
-import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
 
 class ChangeOperationRepetition implements TextOperation {
 

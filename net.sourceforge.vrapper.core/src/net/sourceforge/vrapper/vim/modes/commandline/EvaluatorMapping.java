@@ -2,8 +2,8 @@ package net.sourceforge.vrapper.vim.modes.commandline;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Queue;
 import java.util.Map.Entry;
+import java.util.Queue;
 
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.Command;

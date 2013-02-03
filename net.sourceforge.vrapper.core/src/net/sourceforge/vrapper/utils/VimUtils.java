@@ -7,8 +7,8 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import net.sourceforge.vrapper.platform.SearchAndReplaceService;
-import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.platform.SimpleConfiguration.NewLine;
+import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.VimConstants;
 

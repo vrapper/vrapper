@@ -2,8 +2,8 @@ package net.sourceforge.vrapper.vim.commands.motions;
 
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Search;
-import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.utils.SearchOffset.End;
+import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.BorderPolicy;
