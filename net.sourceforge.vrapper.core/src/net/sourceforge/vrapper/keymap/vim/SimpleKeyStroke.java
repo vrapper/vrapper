@@ -8,29 +8,34 @@ public class SimpleKeyStroke implements KeyStroke {
     private final char character;
     private final SpecialKey specialKey;
     private final boolean shiftKey;
+    private final boolean altKey;
     
-    public SimpleKeyStroke(char character, boolean shiftKey) {
+    public SimpleKeyStroke(char character, boolean shiftKey, boolean altKey) {
         this.character = character;
         this.specialKey = null;
         this.shiftKey = shiftKey;
+        this.altKey = altKey;
     }
 
-    public SimpleKeyStroke(SpecialKey key, boolean shiftKey) {
+    public SimpleKeyStroke(SpecialKey key, boolean shiftKey, boolean altKey) {
         this.character = '\0';
         this.specialKey = key;
         this.shiftKey = shiftKey;
+        this.altKey = altKey;
     }
 
     public SimpleKeyStroke(char character) {
         this.character = character;
         this.specialKey = null;
         this.shiftKey = false;
+        this.altKey = false;
     }
 
     public SimpleKeyStroke(SpecialKey key) {
         this.character = '\0';
         this.specialKey = key;
         this.shiftKey = false;
+        this.altKey = false;
     }
 
     public char getCharacter() {
@@ -43,6 +48,10 @@ public class SimpleKeyStroke implements KeyStroke {
     
     public boolean withShiftKey() {
     	return shiftKey;
+    }
+    
+    public boolean withAltKey() {
+    	return altKey;
     }
 
     @Override
@@ -73,6 +82,9 @@ public class SimpleKeyStroke implements KeyStroke {
             return false;
         }
         if (specialKey != other.getSpecialKey()) {
+            return false;
+        }
+        if (altKey != other.withAltKey()) {
             return false;
         }
         //only check shift key if it doesn't change the keycode

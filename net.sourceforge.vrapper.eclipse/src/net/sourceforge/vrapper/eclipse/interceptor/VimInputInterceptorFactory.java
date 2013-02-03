@@ -107,12 +107,13 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
             }
             KeyStroke keyStroke;
             boolean shiftKey = (event.stateMask & SWT.SHIFT) != 0;
+            boolean altKey   = (event.stateMask & SWT.ALT)   != 0;
             if(specialKeys.containsKey(event.keyCode)) {
-                keyStroke = new SimpleKeyStroke(specialKeys.get(event.keyCode), shiftKey);
+                keyStroke = new SimpleKeyStroke(specialKeys.get(event.keyCode), shiftKey, altKey);
             } else if (specialChars.containsKey(event.character)) {
-                keyStroke = new SimpleKeyStroke(specialChars.get(event.character), shiftKey);
+                keyStroke = new SimpleKeyStroke(specialChars.get(event.character), shiftKey, altKey);
             } else {
-                keyStroke = new SimpleKeyStroke(event.character, shiftKey);
+                keyStroke = new SimpleKeyStroke(event.character, shiftKey, altKey);
             }
             event.doit = !editorAdaptor.handleKey(keyStroke);
         }

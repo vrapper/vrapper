@@ -56,9 +56,6 @@ public class ConstructorWrappers {
 
     //    private static final Pattern pattern = Pattern.compile("<(.+)>");
 
-    /*
-     * TODO: use DFA, parse more 'special' keys
-     */
     public static Iterable<KeyStroke> parseKeyStrokes(String s) {
         List<KeyStroke> result = new ArrayList<KeyStroke>();
         for (int i = 0; i < s.length(); i++) {
@@ -73,13 +70,7 @@ public class ConstructorWrappers {
                 if (sb.length() > 0) {
                     sb.deleteCharAt(sb.length()-1);
                     String key = sb.toString().toUpperCase();
-                    if(key.startsWith("S-")) { //Shift
-                    	SpecialKey special = keyNames.get( key.substring(2) ).getSpecialKey();
-                    	stroke = new SimpleKeyStroke(special, true);
-                    }
-                    else {
-                    	stroke = keyNames.get(key);
-                    }
+                    stroke = parseSpecialKey(key);
                 }
                 if (stroke != null) {
                     result.add(stroke);
@@ -89,6 +80,51 @@ public class ConstructorWrappers {
             }
         }
         return result;
+    }
+    
+    /**
+     * Parse the KeyStoke found within '<' and '>' tags.
+     * For example:
+     * <Insert>
+     * <Left>
+     * <S-Home>
+     * <A-X>
+     * <M-Left>
+     * @param key - String found within '<' and '>'
+     * @return KeyStroke representing key's Key
+     */
+    private static KeyStroke parseSpecialKey(String key) {
+    	KeyStroke stroke = null;
+    	if(key.startsWith("S-")) { //Shift
+    		KeyStroke k = keyNames.get( key.substring(2) );
+    		if(k != null) {
+    			if(k.getSpecialKey() != null) {
+    				stroke = new SimpleKeyStroke(k.getSpecialKey(), true, false);
+    			}
+    			else {
+    				stroke = new SimpleKeyStroke(k.getCharacter(), true, false);
+    			}
+    		}
+    	}
+    	else if(key.startsWith("A-") || key.startsWith("M-")) { //Alt (Meta)
+    		if(keyNames.containsKey( key.substring(2) )) {
+    			KeyStroke k = keyNames.get( key.substring(2) );
+    			if(k.getSpecialKey() != null) {
+    				stroke = new SimpleKeyStroke(k.getSpecialKey(), false, true);
+    			}
+    			else {
+    				stroke = new SimpleKeyStroke(k.getCharacter(), false, true);
+    			}
+    		}
+    		else if(key.length() == 3) { //normal character, not special key (e.g., <A-x>)
+    			//force lower-case! (don't allow Shift+Alt+<char>)
+    			stroke = new SimpleKeyStroke(key.toLowerCase().charAt(2), false, true);
+    		}
+    	}
+    	else {
+    		stroke = keyNames.get(key);
+    	}
+    	return stroke;
     }
 
     public static String keyStrokesToString(Iterable<KeyStroke> strokes) {

@@ -7,4 +7,5 @@ public interface KeyStroke {
 	SpecialKey getSpecialKey();
 	boolean isVirtual();
 	boolean withShiftKey();
+	boolean withAltKey();
 }

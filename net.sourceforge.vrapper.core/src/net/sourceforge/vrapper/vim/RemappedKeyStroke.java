@@ -32,6 +32,10 @@ public class RemappedKeyStroke implements KeyStroke {
     	return delegate.withShiftKey();
     }
 
+	public boolean withAltKey() {
+		return delegate.withAltKey();
+	}
+
     public boolean isRecursive() {
         return recursive;
     }
