@@ -120,6 +120,7 @@ public class ConstructorWrappers {
     			//force lower-case! (don't allow Shift+Alt+<char>)
     			stroke = new SimpleKeyStroke(key.toLowerCase().charAt(2), false, true);
     		}
+    		//else, ignore (if it isn't a keyName, and not a char, what is it?)
     	}
     	else {
     		stroke = keyNames.get(key);
