@@ -286,6 +286,9 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         
         if(id == LAST_EDIT_MARK) {
         	changeList.add(p);
+        	if(changeList.size() > 100) {
+        		changeList.remove(0);
+        	}
         	//new edit, restart index position
         	changeListIndex = changeList.size() -1;
         }
