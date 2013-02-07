@@ -241,6 +241,7 @@ public class CommandLineParser extends AbstractCommandParser {
         mapping.add("pwd", printWorkingDir);
         mapping.add("e", editFile);
         mapping.add("find", findFile);
+        mapping.add("tabf", findFile);
         mapping.add("cd", chDir);
         // Sort lines in the file based on ascii values
         mapping.add("sor", sort);

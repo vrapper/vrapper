@@ -90,12 +90,13 @@ public abstract class AbstractCommandParser {
         		buffer.append(":e " + prefix);
         		position = buffer.length();
         	}
-        	else if(buffer.toString().startsWith(":find ")) {
+        	else if(buffer.toString().startsWith(":find ") ||
+        			buffer.toString().startsWith(":tabf ") ) {
 	        	//command starts with ":find " so filename starts at index 6
 	        	prefix = buffer.substring(6);
         		prefix = tabComplete.getNextMatch(prefix, true, false, e.withShiftKey());
-        		buffer.setLength(0);
-        		buffer.append(":find " + prefix);
+        		buffer.setLength(6);
+        		buffer.append(prefix);
         		position = buffer.length();
         	}
         	else if(buffer.toString().startsWith(":cd ")) {
