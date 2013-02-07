@@ -190,6 +190,8 @@ public class CommandLineParser extends AbstractCommandParser {
         mapping.add("wqal", saveAndCloseAll);
         mapping.add("wqall", saveAndCloseAll);
         mapping.add("only", CloseCommand.CLOSE_OTHERS);
+        mapping.add("tabo", CloseCommand.CLOSE_OTHERS);
+        mapping.add("tabonly", CloseCommand.CLOSE_OTHERS);
         mapping.add("only!", CloseCommand.FORCED_CLOSE_OTHERS);
         // non-recursive mapping
         mapping.add("noremap", noremap);
@@ -242,6 +244,7 @@ public class CommandLineParser extends AbstractCommandParser {
         mapping.add("e", editFile);
         mapping.add("find", findFile);
         mapping.add("tabf", findFile);
+        mapping.add("tabfind", findFile);
         mapping.add("cd", chDir);
         // Sort lines in the file based on ascii values
         mapping.add("sor", sort);
