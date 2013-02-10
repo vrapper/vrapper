@@ -42,7 +42,8 @@ public class SubstitutionOperation extends SimpleTextOperation {
     	
 		//whatever character is after 's' is our delimiter
 		String delim = "" + substitution.charAt( substitution.indexOf('s') + 1);
-		String[] fields = substitution.split(delim);
+		//split on the delimiter, unless that delimiter is escaped with a backslash (:s/\/\///)
+		String[] fields = substitution.split("(?<!\\\\)"+delim);
 		String find = "";
 		String replace = "";
 		String flags = "";
