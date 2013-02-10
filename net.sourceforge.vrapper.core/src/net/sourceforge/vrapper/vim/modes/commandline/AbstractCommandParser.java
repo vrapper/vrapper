@@ -31,7 +31,7 @@ public abstract class AbstractCommandParser {
     protected static final KeyStroke KEY_DOWN   = key(SpecialKey.ARROW_DOWN);
     protected static final KeyStroke KEY_RIGHT  = key(SpecialKey.ARROW_RIGHT);
     protected static final KeyStroke KEY_LEFT   = key(SpecialKey.ARROW_LEFT);
-    protected static final KeyStroke KEY_TAB    = key(SpecialKey.TAB);
+    protected static final SpecialKey KEY_TAB   = SpecialKey.TAB;
     protected final StringBuffer buffer;
     protected final EditorAdaptor editor;
     private final CommandLineHistory history = CommandLineHistory.INSTANCE;
@@ -80,7 +80,7 @@ public abstract class AbstractCommandParser {
             position = buffer.length();
         } else if (e.equals(KEY_CTRL_W)) {
         	deleteWordBack();
-        } else if (e.equals(KEY_TAB)) { //tab-completion for filenames
+        } else if (e.getSpecialKey() == KEY_TAB) { //tab-completion for filenames
         	String prefix = null;
         	if(buffer.toString().startsWith(":e ")) {
 	        	//command starts with ":e " so filename starts at index 3
