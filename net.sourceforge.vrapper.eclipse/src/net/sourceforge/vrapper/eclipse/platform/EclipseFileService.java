@@ -1,7 +1,9 @@
 package net.sourceforge.vrapper.eclipse.platform;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import net.sourceforge.vrapper.platform.FileService;
 
@@ -27,6 +29,8 @@ import org.eclipse.ui.texteditor.AbstractTextEditor;
 public class EclipseFileService implements FileService {
 
     private final AbstractTextEditor editor;
+    private String lastFindPath;
+    private String lastFindPrevious;
 
     public EclipseFileService(AbstractTextEditor editor) {
         this.editor = editor;
@@ -118,17 +122,45 @@ public class EclipseFileService implements FileService {
      * @return filename found within one of the paths
      */
     public String findFileInPath(String filename, String previous, boolean reverse, String[] paths) {
-    	IContainer dir;
-    	String[] toSearch = paths;
-    	if(reverse) {
-    		Collections.reverse(Arrays.asList(toSearch));
+    	//expand all '**' wildcards (if any)
+    	List<String> dirs = new ArrayList<String>();
+    	for(String path : paths) {
+    		if(path.endsWith("**")) {
+    			List<String> expandedDirs = getWildcardDirectoryNames(path);
+    			dirs.addAll(expandedDirs);
+    		}
+    		else {
+    			dirs.add(path);
+    		}
     	}
-    	for(String path : toSearch) {
+    	
+    	if(reverse) {
+    		Collections.reverse(dirs);
+    	}
+    	
+    	//if we had a previous match, reset our starting point
+    	//(start in the directory of 'previous')
+    	if(lastFindPath != null && lastFindPrevious.equals(previous)) {
+    		for(int i=0; i < dirs.size(); i++) {
+    			//check index '0' each time since we're modifying the list
+    			if(dirs.get(0).equals(lastFindPath)) {
+    				//the item we want will start the iteration
+    				break;
+    			}
+    			//move this item to the end of the list
+    			dirs.add( dirs.remove(0) );
+    		}
+    	}
+    	
+    	IContainer dir;
+    	for(String path : dirs) {
     		dir = resolvePath(path);
     		String fullPath = findNextMatchWithPrefix(filename, previous, reverse, dir);
-    		//findPath just returns filename if no match found
+    		//findPath returns filename if no match found
     		if( ! fullPath.equals(filename)) {
-    			return fullPath;
+    			lastFindPath = path;
+    			lastFindPrevious = fullPath;
+    			return  fullPath;
     		}
     	}
     	return filename;
@@ -271,7 +303,7 @@ public class EclipseFileService implements FileService {
 				}
 				//keep looping until we hit the previous match
 				else if( ! foundPrevious) {
-					if(path.equals(previous)) {
+					if(path.equals(previous) || resource.getProjectRelativePath().toString().equals(previous)) {
 						foundPrevious = true;
 					}
 				}
@@ -363,6 +395,64 @@ public class EclipseFileService implements FileService {
     
     public String getCurrentFilePath() {
     	return "/" + getCurrentFileDir().getProjectRelativePath().toString();
+    }
+    
+    /**
+     * The '**' wildcard should be expanded to represent all subdirectories
+     * of its parent.  Take the 'path' variable (which should end in '**')
+     * and expand out all its corresponding directories.
+     * @param path - a path which ends with '**'
+     * @return List of path Strings representing all subdirectories of the '**'
+     */
+    private List<String> getWildcardDirectoryNames(String path) {
+    	IContainer start;
+    	if(path.equals("**")) {
+    		start = getCurrentSelectedProject();
+    	}
+    	else {
+    		//everything up to the '**' (/foo/bar/**)
+    		start = resolvePath( path.substring(0, path.indexOf('*')) );
+    	}
+    	
+    	ArrayList<IResource> folders = new ArrayList<IResource>();
+    	try {
+    		folders.add(start);
+    		IResource[] members = start.members();
+    		getAllDirectories(folders, members);
+    	} catch (CoreException e) {
+    		e.printStackTrace();
+    		return null;
+    	} 
+    	
+    	ArrayList<String> dirs = new ArrayList<String>();
+    	for(IResource folder : folders) {
+    		//note that "root" will have a path of "" which is fixed below
+    		dirs.add(folder.getProjectRelativePath().toString());
+    	}
+    	//alphabetical order so we iterate correctly
+    	Collections.sort(dirs);
+    	
+    	if(path.equals("**") || path.equals("/**")) { //if 'root' is in this list
+    		for(int i=0; i < dirs.size(); i++) {
+    			if(dirs.get(i).equals("")) {
+    				//treat root "" as "/" because "" is treated as current dir elsewhere in the algorithm
+    				//also, force "/" to be the first item in the list (otherwise, '.' dirs get precedence)
+    				dirs.remove(i);
+    				dirs.add(0, "/");
+    			}
+    		}
+    	}
+    	
+    	return dirs;
+    }
+    
+    private void getAllDirectories(List<IResource> folders, IResource[] members) throws CoreException {
+    	for(IResource member : members) {
+    		if(member.getType() == IResource.FOLDER) {
+    			folders.add(member);
+    			getAllDirectories(folders, ((IContainer)member).members());
+    		}
+    	}
     }
     
     private IContainer resolvePath(String path) {
