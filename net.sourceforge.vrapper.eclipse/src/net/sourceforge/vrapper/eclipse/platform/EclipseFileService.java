@@ -123,16 +123,7 @@ public class EclipseFileService implements FileService {
      */
     public String findFileInPath(String filename, String previous, boolean reverse, String[] paths) {
     	//expand all '**' wildcards (if any)
-    	List<String> dirs = new ArrayList<String>();
-    	for(String path : paths) {
-    		if(path.endsWith("**")) {
-    			List<String> expandedDirs = getWildcardDirectoryNames(path);
-    			dirs.addAll(expandedDirs);
-    		}
-    		else {
-    			dirs.add(path);
-    		}
-    	}
+    	List<String> dirs = expandPathNames(paths);
     	
     	if(reverse) {
     		Collections.reverse(dirs);
@@ -335,9 +326,10 @@ public class EclipseFileService implements FileService {
      * @return true if file opened successfully
      */
     public boolean findAndOpenFile(String filename, String paths[]) {
+    	List<String> expandedPaths = expandPathNames(paths);
     	String fullPath = filename;
     	IContainer dir;
-    	for(String path : paths) {
+    	for(String path : expandedPaths) {
     		dir = resolvePath(path);
     		if(dir.findMember(filename) != null) {
     			fullPath = dir.getProjectRelativePath().toString() + '/' + filename;
@@ -395,6 +387,27 @@ public class EclipseFileService implements FileService {
     
     public String getCurrentFilePath() {
     	return "/" + getCurrentFileDir().getProjectRelativePath().toString();
+    }
+    
+    /**
+     * Given a list of paths, replace any paths ending in '**' with
+     * all subdirectories within that path.  Expanded directories are
+     * inserted in place to preserve ordering of the path items.
+     * I'm returning a List simply because I don't have a need to
+     * convert it back to an array.
+     */
+    private List<String> expandPathNames(String[] paths) {
+    	List<String> dirs = new ArrayList<String>();
+    	for(String path : paths) {
+    		if(path.endsWith("**")) {
+    			List<String> expandedDirs = getWildcardDirectoryNames(path);
+    			dirs.addAll(expandedDirs);
+    		}
+    		else {
+    			dirs.add(path);
+    		}
+    	}
+    	return dirs;
     }
     
     /**
