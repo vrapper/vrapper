@@ -17,6 +17,8 @@ public interface CursorService {
      */
     void setPosition(Position position, boolean updateColumn);
 
+    void setYankOperation(boolean yankOperation);
+    
     /**
      * Makes sticky column stick to end of line
      */

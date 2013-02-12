@@ -38,6 +38,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     private int stickyColumn;
     private boolean stickToEOL = false;
     private boolean isReversed = false;
+    private boolean yankOperation = false;
     private final ITextViewerExtension5 converter;
     private Selection selection;
     private final SelectionChangeListener selectionChangeListener;
@@ -173,8 +174,12 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
             int cursorPos = converter.widgetOffset2ModelOffset(textViewer.getTextWidget().getCaretOffset());
             // Back up one if we are leaving visual mode
             // This is to compensate for the emulated block cursor vs. Eclipse's line cursor -- BRD
-            if(leaveVisualMode && !isReversed)
+            if(leaveVisualMode && !isReversed && !yankOperation)
                 --cursorPos;
+           
+            if(yankOperation)
+                yankOperation = false;
+            
             
             textViewer.setSelectedRange(cursorPos, 0);
             selection = null;
@@ -361,6 +366,10 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     		changeListIndex = index; //prepare for next invocation
     		return newPositionForModelOffset(p.getOffset());
     	}
+    }
+    
+    public void setYankOperation(boolean yankOperation) {
+        this.yankOperation = yankOperation;
     }
 
 }

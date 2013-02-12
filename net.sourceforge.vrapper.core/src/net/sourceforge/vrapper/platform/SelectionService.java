@@ -11,6 +11,8 @@ public interface SelectionService {
     void setSelection(Selection selection);
     
     void setSelection(Selection selection, boolean leaveVisualMode);
+    
+    void setYankOperation(boolean yankOperation);
 
     /**
      * @return new selection; null if nothing is selected

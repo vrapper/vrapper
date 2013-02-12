@@ -15,6 +15,7 @@ public class TestCursorAndSelection implements CursorService, SelectionService {
 	private Position position = new DumbPosition(0);
 	private Selection selection;
 	private CaretType caretType;
+	private boolean yankOperation = false;
     private TextContent content;
     private int stickyColumnNo;
 
@@ -105,4 +106,8 @@ public class TestCursorAndSelection implements CursorService, SelectionService {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+    public void setYankOperation(boolean yankOperation) {
+        this.yankOperation = yankOperation;
+    }
 }

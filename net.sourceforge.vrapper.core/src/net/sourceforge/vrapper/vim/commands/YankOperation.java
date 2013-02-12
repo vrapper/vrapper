@@ -29,6 +29,7 @@ public class YankOperation extends SimpleTextOperation {
         //if we're expecting lines and this text doesn't end in a newline,
         //manually append a newline to the end
         //(this to handle yanking the last line of a file)
+        editorAdaptor.getCursorService().setYankOperation(true);
         if (contentType == ContentType.LINES && (text.length() == 0 || ! VimUtils.isNewLine(text.substring(text.length()-1)))) {
             text += editorAdaptor.getConfiguration().getNewLine();
         }
@@ -48,6 +49,7 @@ public class YankOperation extends SimpleTextOperation {
         	//if cursor is at beginning of selection, leave it there
         	if(cursor.getModelOffset() != newPos.getModelOffset()) {
         		//move cursor to beginning of selection
+        		editorAdaptor.getCursorService().setPosition(newPos, true);
         		editorAdaptor.getCursorService().setPosition(newPos, true);
         	}
         }
