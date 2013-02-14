@@ -23,10 +23,21 @@ public class EditFileCommand extends CountIgnoringNonRepeatableCommand {
 				filename = editorAdaptor.getRegisterManager().getCurrentWorkingDirectory() + "/" + filename;
 			}
 		}
-        boolean success = editorAdaptor.getFileService().openFile(filename);
-        if(! success) {
-        	editorAdaptor.getUserInterfaceService().setErrorMessage("Could not open file: " + filename);
-        }
+		if(! editorAdaptor.getFileService().openFile(filename)) {
+			//if file doesn't exist, this is a 'create' operation
+			if(editorAdaptor.getFileService().createFile(filename)) {
+				//if create succeeded, immediately open the file
+				if(editorAdaptor.getFileService().openFile(filename)) {
+					editorAdaptor.getUserInterfaceService().setInfoMessage("\""+filename+"\" [New File]");
+				}
+				else {
+					editorAdaptor.getUserInterfaceService().setErrorMessage("Could not open file: " + filename);
+				}
+			}
+			else { //couldn't open or create this file
+				editorAdaptor.getUserInterfaceService().setErrorMessage("Could not open file: " + filename);
+			}
+		}
 	}
 
 }

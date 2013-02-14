@@ -1,5 +1,7 @@
 package net.sourceforge.vrapper.eclipse.platform;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -111,6 +113,34 @@ public class EclipseFileService implements FileService {
     		return false;
     	} 
 
+    	return true;
+    }
+    
+    /**
+     * Create a new (empty) file at the location specified.
+     * @param filename - full path of file to be created
+     * @return true if success
+     */
+    public boolean createFile(String filename) {
+    	IProject project = getCurrentSelectedProject();
+    	IFile file = project.getFile(filename);
+    	if(file.exists()) {
+    		return false;
+    	}
+    	
+    	try {
+    		//I have to create a dummy instance of InputStream to create an empty file.
+    		//If I send in 'null' as the InputStream, Eclipse flags the file as 'not local'
+    		//which causes lots of issues.
+			file.create(new InputStream() {
+				@Override
+				public int read() throws IOException {
+					return -1;
+				}
+			}, false, null);
+		} catch (CoreException e) {
+			return false;
+		}
     	return true;
     }
     

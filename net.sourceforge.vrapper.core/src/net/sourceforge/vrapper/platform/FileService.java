@@ -14,6 +14,8 @@ public interface FileService {
 	
 	boolean saveAll();
 	
+	boolean createFile(String filename);
+	
 	String findFileInPath(String filename, String previous, boolean reverse, String[] paths);
 	
 	String getFilePathMatch(String prefix, String previous, boolean reverse, String startDir);
