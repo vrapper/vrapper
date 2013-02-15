@@ -59,6 +59,8 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
 
     private static final String CONFIG_FILE_NAME = ".vrapperrc";
     private static final String WINDOWS_CONFIG_FILE_NAME = "_vrapperrc";
+    private static final String VIMRC = ".vimrc";
+    private static final String WINDOWS_VIMRC = "_vimrc";
     private EditorMode currentMode;
     private final Map<String, EditorMode> modeMap = new HashMap<String, EditorMode>();
     private final TextContent modelContent;
@@ -172,6 +174,12 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         if( ! config.exists()) { //if no .vrapperrc, look for _vrapperrc
         	config =  new File(homeDir, WINDOWS_CONFIG_FILE_NAME);
         }
+        if( ! config.exists()) { //if no _vrapperrc, look for .vimrc
+        	config =  new File(homeDir, VIMRC);
+        }
+        if( ! config.exists()) { //if no .vimrc, look for _vimrc
+        	config =  new File(homeDir, WINDOWS_VIMRC);
+        }
         
         if(config.exists()) {
         	BufferedReader reader = null;
@@ -179,7 +187,43 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         		reader = new BufferedReader(new FileReader(config));
         		String line;
         		CommandLineParser parser = new CommandLineParser(this);
+        		String trimmed;
         		while((line = reader.readLine()) != null) {
+        			//*** skip over everything in a .vimrc file that we don't support ***//
+        			trimmed = line.trim().toLowerCase();
+        			//ignore comments and key mappings we don't support
+        			if(trimmed.equals("") || trimmed.startsWith("\"") || trimmed.startsWith("let")
+        					|| trimmed.contains("<leader>") || trimmed.contains("<silent>")) {
+        				continue;
+        			}
+        			if(trimmed.startsWith("if")) {
+        				//skip all conditional statements
+        				while((line = reader.readLine()) != null) {
+        					if(line.trim().toLowerCase().startsWith("endif")) {
+        						break;
+        					}
+        				}
+        				continue; //skip "endif" line
+        			}
+        			if(trimmed.startsWith("func")) {
+        				//skip all function declarations
+        				while((line = reader.readLine()) != null) {
+        					if(line.trim().toLowerCase().startsWith("endfunc")) {
+        						break;
+        					}
+        				}
+        				continue; //skip "endfunction" line
+        			}
+        			if(trimmed.startsWith("try")) {
+        				//skip all try declarations
+        				while((line = reader.readLine()) != null) {
+        					if(line.trim().toLowerCase().startsWith("endtry")) {
+        						break;
+        					}
+        				}
+        				continue; //skip "endtry" line
+        			}
+        			//attempt to parse this line
         			parser.parseAndExecute(null, line.trim());
         		}
         	} catch (FileNotFoundException e) {
