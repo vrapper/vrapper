@@ -16,8 +16,6 @@ public interface CursorService {
      * @param updateColumn should "sticky" column be updated?
      */
     void setPosition(Position position, boolean updateColumn);
-
-    void setYankOperation(boolean yankOperation);
     
     /**
      * Makes sticky column stick to end of line

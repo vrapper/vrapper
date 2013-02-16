@@ -29,7 +29,6 @@ public class YankOperation extends SimpleTextOperation {
         //if we're expecting lines and this text doesn't end in a newline,
         //manually append a newline to the end
         //(this to handle yanking the last line of a file)
-        editorAdaptor.getCursorService().setYankOperation(true);
         if (contentType == ContentType.LINES && (text.length() == 0 || ! VimUtils.isNewLine(text.substring(text.length()-1)))) {
             text += editorAdaptor.getConfiguration().getNewLine();
         }

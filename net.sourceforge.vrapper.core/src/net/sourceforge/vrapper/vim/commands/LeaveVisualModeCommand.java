@@ -18,7 +18,7 @@ public class LeaveVisualModeCommand extends CountIgnoringNonRepeatableCommand {
     }
 
     public static void doIt(EditorAdaptor editorAdaptor) throws CommandExecutionException {
-        editorAdaptor.setSelection(null, true);
+        editorAdaptor.setSelection(null);
         editorAdaptor.changeMode(NormalMode.NAME);
     }
 }

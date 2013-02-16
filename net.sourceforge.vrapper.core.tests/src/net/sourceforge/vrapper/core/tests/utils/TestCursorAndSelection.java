@@ -15,7 +15,6 @@ public class TestCursorAndSelection implements CursorService, SelectionService {
 	private Position position = new DumbPosition(0);
 	private Selection selection;
 	private CaretType caretType;
-	private boolean yankOperation = false;
     private TextContent content;
     private int stickyColumnNo;
 
@@ -71,7 +70,9 @@ public class TestCursorAndSelection implements CursorService, SelectionService {
 	}
 
 	public void setSelection(Selection selection) {
-	    setSelection(selection, false);
+		if (selection != null)
+			this.position = selection.getEnd();
+		this.selection = selection;
 	}
 
 	public void setLineWiseSelection(boolean lineWise) {
@@ -91,12 +92,6 @@ public class TestCursorAndSelection implements CursorService, SelectionService {
         // do nothing
     }
 
-    public void setSelection(Selection selection, boolean leaveVisualMode) {
-		if (selection != null)
-			this.position = selection.getEnd();
-		this.selection = selection;
-    }
-
 	public Position getNextChangeLocation(int count) {
 		// TODO Auto-generated method stub
 		return null;
@@ -106,8 +101,4 @@ public class TestCursorAndSelection implements CursorService, SelectionService {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-    public void setYankOperation(boolean yankOperation) {
-        this.yankOperation = yankOperation;
-    }
 }

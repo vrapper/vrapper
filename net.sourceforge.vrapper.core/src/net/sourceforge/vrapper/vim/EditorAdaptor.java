@@ -55,7 +55,6 @@ public interface EditorAdaptor {
     Position getPosition();
     void setPosition(Position destination, boolean updateStickyColumn);
     void setSelection(Selection selection);
-    void setSelection(Selection selection, boolean leaveVisualMode);
     Selection getSelection();
     <T>T getService(Class<T> serviceClass);
     void useGlobalRegisters();

@@ -37,8 +37,6 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     private final ITextViewer textViewer;
     private int stickyColumn;
     private boolean stickToEOL = false;
-    private boolean isReversed = false;
-    private boolean yankOperation = false;
     private final ITextViewerExtension5 converter;
     private Selection selection;
     private final SelectionChangeListener selectionChangeListener;
@@ -164,33 +162,16 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         Position to =   new TextViewerPosition(textViewer, Space.MODEL, end);
         return new SimpleSelection(new StartEndTextRange(from, to));
     }
-
-    public void setSelection(Selection newSelection) {
-        setSelection(newSelection, false);
-    }
     
-    public void setSelection(Selection newSelection, boolean leaveVisualMode) {
+    public void setSelection(Selection newSelection) {
         if (newSelection == null) {
-            int cursorPos = converter.widgetOffset2ModelOffset(textViewer.getTextWidget().getCaretOffset());
-            // Back up one if we are leaving visual mode
-            // This is to compensate for the emulated block cursor vs. Eclipse's line cursor -- BRD
-            if(leaveVisualMode && !isReversed && !yankOperation)
-                --cursorPos;
-           
-            if(yankOperation)
-                yankOperation = false;
-            
-            
-            textViewer.setSelectedRange(cursorPos, 0);
+            Point point = textViewer.getSelectedRange();
+            textViewer.setSelectedRange(point.x, 0);
             selection = null;
         } else {
             textViewer.getTextWidget().setCaretOffset(newSelection.getStart().getViewOffset());
             int from = newSelection.getStart().getModelOffset();
             int length = !newSelection.isReversed() ? newSelection.getModelLength() : -newSelection.getModelLength();
-            if(length < 0)
-                isReversed = true;
-            else
-                isReversed = false;
             // linewise selection includes final newline, this means the cursor
             // is placed in the line below the selection by eclipse. this
             // corrects that behaviour
@@ -366,10 +347,6 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     		changeListIndex = index; //prepare for next invocation
     		return newPositionForModelOffset(p.getOffset());
     	}
-    }
-    
-    public void setYankOperation(boolean yankOperation) {
-        this.yankOperation = yankOperation;
     }
 
 }
