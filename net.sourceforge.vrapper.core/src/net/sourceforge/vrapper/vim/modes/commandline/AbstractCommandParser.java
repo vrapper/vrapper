@@ -20,18 +20,18 @@ import net.sourceforge.vrapper.vim.register.RegisterManager;
  */
 public abstract class AbstractCommandParser {
 
-    protected static final KeyStroke KEY_RETURN = key(SpecialKey.RETURN);
-    protected static final KeyStroke KEY_ESCAPE = key(SpecialKey.ESC);
-    protected static final KeyStroke KEY_CTRL_C = ctrlKey('c');
-    protected static final KeyStroke KEY_CTRL_W = ctrlKey('w');
-    protected static final KeyStroke KEY_INSERT = key(SpecialKey.INSERT);
-    protected static final KeyStroke KEY_BACKSP = key(SpecialKey.BACKSPACE);
-    protected static final KeyStroke KEY_DELETE = key(SpecialKey.DELETE);
-    protected static final KeyStroke KEY_UP     = key(SpecialKey.ARROW_UP);
-    protected static final KeyStroke KEY_DOWN   = key(SpecialKey.ARROW_DOWN);
-    protected static final KeyStroke KEY_RIGHT  = key(SpecialKey.ARROW_RIGHT);
-    protected static final KeyStroke KEY_LEFT   = key(SpecialKey.ARROW_LEFT);
-    protected static final SpecialKey KEY_TAB   = SpecialKey.TAB;
+    protected static final KeyStroke KEY_RETURN  = key(SpecialKey.RETURN);
+    protected static final KeyStroke KEY_ESCAPE  = key(SpecialKey.ESC);
+    protected static final KeyStroke KEY_CTRL_C  = ctrlKey('c');
+    protected static final KeyStroke KEY_CTRL_W  = ctrlKey('w');
+    protected static final KeyStroke KEY_BACKSP  = key(SpecialKey.BACKSPACE);
+    protected static final KeyStroke KEY_DELETE  = key(SpecialKey.DELETE);
+    protected static final KeyStroke KEY_UP      = key(SpecialKey.ARROW_UP);
+    protected static final KeyStroke KEY_DOWN    = key(SpecialKey.ARROW_DOWN);
+    protected static final KeyStroke KEY_RIGHT   = key(SpecialKey.ARROW_RIGHT);
+    protected static final KeyStroke KEY_LEFT    = key(SpecialKey.ARROW_LEFT);
+    protected static final SpecialKey KEY_TAB    = SpecialKey.TAB;
+    protected static final SpecialKey KEY_INSERT = SpecialKey.INSERT;
     protected final StringBuffer buffer;
     protected final EditorAdaptor editor;
     private final CommandLineHistory history = CommandLineHistory.INSTANCE;
@@ -72,7 +72,7 @@ public abstract class AbstractCommandParser {
             }
         //use Shift+Insert for paste since Eclipse uses Ctrl+V
         //(Eclipse uses Shift+Insert too but I think it's acceptable to unbind that one)
-        } else if (e.equals(KEY_INSERT) && e.withShiftKey()) {
+        } else if (e.getSpecialKey() == KEY_INSERT && e.withShiftKey()) {
             String text = editor.getRegisterManager().getRegister(
                     RegisterManager.REGISTER_NAME_CLIPBOARD).getContent().getText();
             text = text.replace('\n', ' ').replace('\r', ' ');
