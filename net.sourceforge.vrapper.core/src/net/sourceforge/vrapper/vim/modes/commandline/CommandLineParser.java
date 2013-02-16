@@ -155,6 +155,16 @@ public class CommandLineParser extends AbstractCommandParser {
             	return null;
             }
         };
+        Evaluator sourceConfigFile = new Evaluator() {
+            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
+            	if(command.isEmpty()) {
+            		vim.getUserInterfaceService().setErrorMessage("Argument required");
+            		return null;
+            	}
+            	vim.sourceConfigurationFile(command.poll());
+            	return null;
+            }
+        };
         
         /* TODO: Write an interpreter that will read partial commands
          * example: :wall can be invoked by typing any of the following:
@@ -165,6 +175,7 @@ public class CommandLineParser extends AbstractCommandParser {
         mapping = new EvaluatorMapping();
         // options
         mapping.add("set", buildConfigEvaluator());
+        mapping.add("source", sourceConfigFile);
         // save, close
         mapping.add("w", save);
     	mapping.add("up", save);

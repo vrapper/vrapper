@@ -59,8 +59,6 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
 
     private static final String CONFIG_FILE_NAME = ".vrapperrc";
     private static final String WINDOWS_CONFIG_FILE_NAME = "_vrapperrc";
-    private static final String VIMRC = ".vimrc";
-    private static final String WINDOWS_VIMRC = "_vimrc";
     private EditorMode currentMode;
     private final Map<String, EditorMode> modeMap = new HashMap<String, EditorMode>();
     private final TextContent modelContent;
@@ -164,22 +162,27 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
             configuration.setNewLine(newLine);
         }
     }
-
+    
     private void readConfiguration() {
         if (!SHOULD_READ_RC_FILE) {
             return;
         }
+        String filename = CONFIG_FILE_NAME;
         File homeDir = new File(System.getProperty("user.home"));
-        File config = new File(homeDir, CONFIG_FILE_NAME);
+        File config = new File(homeDir, filename);
         if( ! config.exists()) { //if no .vrapperrc, look for _vrapperrc
-        	config =  new File(homeDir, WINDOWS_CONFIG_FILE_NAME);
+        	filename = WINDOWS_CONFIG_FILE_NAME;
+        	config =  new File(homeDir, filename);
         }
-        if( ! config.exists()) { //if no _vrapperrc, look for .vimrc
-        	config =  new File(homeDir, VIMRC);
+        
+        if(config.exists()) {
+        	sourceConfigurationFile(filename);
         }
-        if( ! config.exists()) { //if no .vimrc, look for _vimrc
-        	config =  new File(homeDir, WINDOWS_VIMRC);
-        }
+    }
+
+    public void sourceConfigurationFile(String filename) {
+        File homeDir = new File(System.getProperty("user.home"));
+        File config = new File(homeDir, filename);
         
         if(config.exists()) {
         	BufferedReader reader = null;

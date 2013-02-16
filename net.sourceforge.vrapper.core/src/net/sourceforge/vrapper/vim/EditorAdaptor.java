@@ -51,6 +51,7 @@ public interface EditorAdaptor {
     PlatformSpecificStateProvider getPlatformSpecificStateProvider();
     SearchAndReplaceService getSearchAndReplaceService();
 
+    void sourceConfigurationFile(String filename);
     Position getPosition();
     void setPosition(Position destination, boolean updateStickyColumn);
     void setSelection(Selection selection);
