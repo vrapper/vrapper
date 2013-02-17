@@ -1156,6 +1156,65 @@ public class NormalModeTests extends CommandTestCase {
 	            "foo0xxa",'0',"f",
 	            "foo0xxa-",'1',"f");
 	}
+	
+	@Test
+	public void test_sentenceMotion() throws Exception {
+	    checkCommand(forKeySeq(")"),
+	            "This ",'i',"s a sentence",
+	            "This is a sentenc", 'e', "");
+	    
+	    checkCommand(forKeySeq(")"),
+	            "This ",'i',"s a sentence.  This is another one.",
+	            "This is a sentence.  ",'T',"his is another one.");
+	    
+	    checkCommand(forKeySeq(")"),
+	            "This ",'i',"s a sentence?????  This is another one.",
+	            "This is a sentence?????  ",'T',"his is another one.");
+	    
+	    checkCommand(forKeySeq(")"),
+	            "This ",'i',"s a sentence?????')  This is another one.",
+	            "This is a sentence?????')  ",'T',"his is another one.");
+	    
+	    checkCommand(forKeySeq(")"),
+	            "This ",'i',"s a sentence\n\n\nThis is another one.",
+	            "This is a sentence\n",'\n',"\nThis is another one.");
+	    
+	    checkCommand(forKeySeq(")"),
+	            "This is a sentence\n",'\n',"\nThis is another one.",
+	            "This is a sentence\n\n\n",'T',"his is another one.");
+	    
+	    checkCommand(forKeySeq("("),
+	            "This ",'i',"s a sentence",
+	            "", 'T', "his is a sentence");
+	    
+	    checkCommand(forKeySeq("("),
+	            "This is a sentence.  This i", 's', " another one.",
+	            "This is a sentence.  ", 'T', "his is another one.");
+	    
+	    checkCommand(forKeySeq("("),
+	            "This is a sentence.  ", 'T', "his is another one.",
+	            "", 'T', "his is a sentence.  This is another one.");
+	    
+	    checkCommand(forKeySeq("("),
+	            "This is a sentence\n\n\n", 'T', "his is another one.",
+	            "This is a sentence\n\n",'\n',"This is another one.");
+	    
+	    checkCommand(forKeySeq("("),
+	            "This is a sentence\n\n",'\n',"This is another one.",
+	            "", 'T', "his is a sentence\n\n\nThis is another one.");
+	    
+	    checkCommand(forKeySeq("("),
+	            "This is a sentence?????')  ", 'T', "his is another one.",
+	            "", 'T', "his is a sentence?????')  This is another one.");
+	    
+	    checkCommand(forKeySeq(")"),
+	            "This is a sentenc", 'e', "",
+	            "This is a sentenc", 'e', "");
+	    
+	    checkCommand(forKeySeq("("),
+	            "", 'T', "his is a sentence",
+	            "", 'T', "his is a sentence");
+	}
 
 	@Test
 	public void test_cfx() throws Exception {
