@@ -356,7 +356,7 @@ public class NormalMode extends CommandBasedMode {
         Position pos = editorAdaptor.getPosition();
         int offset = pos.getViewOffset();
         LineInformation line = editorAdaptor.getViewContent().getLineInformationOfOffset(offset);
-        if (isEnabled && line.getEndOffset() == offset && line.getLength() > 0) {
+        if (isEnabled && line.getEndOffset() == offset && line.getRegionLength() > 0) {
             editorAdaptor.setPosition(pos.addViewOffset(-1), false);
         }
     }

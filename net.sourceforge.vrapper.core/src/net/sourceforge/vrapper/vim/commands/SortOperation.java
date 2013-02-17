@@ -290,7 +290,7 @@ public class SortOperation extends SimpleTextOperation {
          */
         for(int i = startLine.getNumber(); i <= endLine.getNumber(); ++i) {
             line = content.getLineInformation(i);
-            String lineStr = content.getText(line.getBeginOffset(), line.getLength());
+            String lineStr = content.getText(line.getBeginOffset(), line.getRegionLength());
             editorContentList.add(lineStr);
         }
        

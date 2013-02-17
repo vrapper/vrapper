@@ -62,20 +62,20 @@ public class SentenceMotion extends CountAwareMotion {
         
         while(offset == -1) {
         	if(forward) {
-        		if(modelContent.getNumberOfLines() > line.getNumber()) {
+        		if(modelContent.getNumberOfLines() > (line.getNumber() + 1)) {
         			lineTmp = line;
         			//get next line, starting at beginning of line
         			line = modelContent.getLineInformation(line.getNumber() + 1);
         			position = line.getBeginOffset();
         			//empty lines are sentence boundaries too
-        			if(line.getLength() == 0 && lineTmp.getLength() != 0 ||
-        				line.getLength() != 0 && lineTmp.getLength() == 0) {
+        			if(line.getRegionLength() == 0 && lineTmp.getRegionLength() != 0 ||
+        				line.getRegionLength() != 0 && lineTmp.getRegionLength() == 0) {
         				return line.getBeginOffset();
         			}
         		}
         		else {
         			//already on last line in file, move cursor to the end
-        			return line.getEndOffset();
+        			return line.isEmpty() ? line.getBeginOffset() : line.getEndOffset();
         		}
         	}
         	else { //backwards
@@ -86,8 +86,8 @@ public class SentenceMotion extends CountAwareMotion {
         			line = modelContent.getLineInformation(line.getNumber() - 1);
         			position = line.getEndOffset();
         			//empty lines are sentence boundaries too
-        			if(line.getLength() == 0 && lineTmp.getLength() != 0 ||
-        				line.getLength() != 0 && lineTmp.getLength() == 0) {
+        			if(line.getRegionLength() == 0 && lineTmp.getRegionLength() != 0 ||
+        				line.getRegionLength() != 0 && lineTmp.getRegionLength() == 0) {
         				//if posTmp was already at the beginning of this line, go to previous line
         				//otherwise, go to beginning of this line
         				return posTmp == lineTmp.getBeginOffset() ? line.getBeginOffset() : lineTmp.getBeginOffset();
@@ -110,7 +110,7 @@ public class SentenceMotion extends CountAwareMotion {
         int begin = line.getBeginOffset();
         String text;
         if(forward) {
-        	int length = line.getLength() - (position - begin);
+        	int length = line.getRegionLength() - (position - begin);
         	//start at cursor, get text to end of line
         	text = modelContent.getText(position, length);
         }

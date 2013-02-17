@@ -53,12 +53,12 @@ public class JoinLinesCommand extends CountAwareCommand {
             LineInformation secondLnInfo = modelContent.getLineInformation(firstLnInfo.getNumber() + 1);
             int eolOffset = firstLnInfo.getEndOffset();
             int bolOffset = secondLnInfo.getBeginOffset();
-            String secondLineText = modelContent.getText(bolOffset, secondLnInfo.getLength());
+            String secondLineText = modelContent.getText(bolOffset, secondLnInfo.getRegionLength());
             LineInformation lastLineInfo = modelContent.getLineInformation(modelContent.getNumberOfLines() - 1);
             String glue;
             if (isSmart) {
                 glue = " ";
-                if (firstLnInfo.getLength() > 0 && Character.isWhitespace(modelContent.getText(eolOffset - 1, 1).charAt(0)))
+                if (firstLnInfo.getRegionLength() > 0 && Character.isWhitespace(modelContent.getText(eolOffset - 1, 1).charAt(0)))
                     glue = "";
                 for (int j = 0; j < secondLineText.length() && Character.isWhitespace(secondLineText.charAt(j)); j++)
                     bolOffset++;
