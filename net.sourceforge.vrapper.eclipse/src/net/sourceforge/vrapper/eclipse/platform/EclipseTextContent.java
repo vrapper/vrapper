@@ -7,7 +7,6 @@ import net.sourceforge.vrapper.utils.TextRange;
 
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.ITextViewerExtension5;
 import org.eclipse.swt.custom.StyledText;
@@ -40,11 +39,15 @@ public class EclipseTextContent {
     protected class ModelSideTextContent implements TextContent {
 
         public LineInformation getLineInformation(int line) {
+            IDocument doc = textViewer.getDocument();
             try {
-                IRegion region = textViewer.getDocument().getLineInformation(
-                        line);
-                return new LineInformation(line, region.getOffset(), region
-                        .getLength());
+                int lineOffset = doc.getLineOffset(line);
+                int lineLength = doc.getLineLength(line);
+                int regionLength = doc.getLineInformation(line).getLength();
+                boolean isBlankLine = lineLength == 1 && doc.getLineDelimiter(line) != null;
+                
+                return new LineInformation(line, lineOffset, lineLength,
+                        regionLength, isBlankLine);
             } catch (BadLocationException e) {
                 throw new RuntimeException(e);
             }
@@ -110,15 +113,20 @@ public class EclipseTextContent {
     protected class ViewSideTextContent implements TextContent  {
 
         public LineInformation getLineInformation(int line) {
-            line = converter.widgetLine2ModelLine(line);
-            IRegion region;
+            int modelLine = converter.widgetLine2ModelLine(line);
+            IDocument doc = textViewer.getDocument();
             try {
-                region = textViewer.getDocument().getLineInformation(line);
+                int lineOffset = doc.getLineOffset(modelLine);
+                int lineLength = doc.getLineLength(modelLine);
+                int regionLength = doc.getLineInformation(modelLine).getLength();
+                boolean isBlankLine = lineLength == 1 && doc.getLineDelimiter(modelLine) != null;
+                
+                return new LineInformation(line,
+                        converter.modelOffset2WidgetOffset(lineOffset),
+                        lineLength, regionLength, isBlankLine);
             } catch (BadLocationException e) {
                 throw new RuntimeException(e);
             }
-            return new LineInformation(converter.modelLine2WidgetLine(line),
-                    converter.modelOffset2WidgetOffset(region.getOffset()), region.getLength());
         }
 
         public LineInformation getLineInformationOfOffset(int offset) {

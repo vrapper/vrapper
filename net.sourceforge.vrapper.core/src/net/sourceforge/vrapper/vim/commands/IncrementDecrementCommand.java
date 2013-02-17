@@ -45,7 +45,7 @@ public class IncrementDecrementCommand extends CountAwareCommand {
 		TextContent content = editorAdaptor.getModelContent(); 
 	 	LineInformation line = content.getLineInformationOfOffset(cursor.getModelOffset()); 
 	 	int cursorIndex = cursor.getModelOffset() - line.getBeginOffset();
-	 	String text = content.getText(line.getBeginOffset(), line.getLength()); 
+	 	String text = content.getText(line.getBeginOffset(), line.getRegionLength()); 
 	 	NumBoundary boundary = null;
 	 	
 	 	//Look for both hex and integers (decimal and octal).

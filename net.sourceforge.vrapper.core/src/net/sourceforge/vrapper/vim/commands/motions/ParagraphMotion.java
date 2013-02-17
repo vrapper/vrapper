@@ -47,6 +47,13 @@ public class ParagraphMotion extends CountAwareMotion {
         }
         
         lineNo = moveMore(modelContent, lineNo);
+        if (lineNo < 0) {
+            lineNo = 0;
+        }
+        else if (lineNo >= modelContent.getNumberOfLines()){
+            lineNo = modelContent.getNumberOfLines() - 1;
+        }
+        
         int offset = modelContent.getLineInformation(lineNo).getBeginOffset();
         return editorAdaptor.getPosition().setModelOffset(offset);
     }
@@ -65,8 +72,13 @@ public class ParagraphMotion extends CountAwareMotion {
     
     private boolean doesLineEmptinessEqual(boolean equalWhat, TextContent content, int lineNo) {
         boolean isInRange = (lineNo + step >= 0) && (lineNo + step <= content.getNumberOfLines());
-        boolean isEmpty = content.getLineInformation(lineNo).getLength() == 0;
-        return isInRange && (isEmpty == equalWhat);
+        if (!isInRange) {
+            return false;
+        }
+        
+        LineInformation lineInfo = content.getLineInformation(lineNo);
+        boolean isEmpty = lineInfo.isEmpty() || lineInfo.isBlankLine();
+        return isEmpty == equalWhat;
     }
 
     public BorderPolicy borderPolicy() {

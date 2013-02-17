@@ -163,7 +163,7 @@ public class ExCommandOperation extends SimpleTextOperation {
 	private boolean processLine(String pattern, boolean findMatch, SimpleTextOperation operation,
 			LineInformation line, EditorAdaptor editorAdaptor) {
 		boolean operationPerformed = false;
-		String text = editorAdaptor.getModelContent().getText(line.getBeginOffset(), line.getLength());
+		String text = editorAdaptor.getModelContent().getText(line.getBeginOffset(), line.getRegionLength());
 		//Java's matches() method expects to match the entire string.
 		//If the user isn't explicitly matching beginning or end of
 		//a String, fake it out so Java is happy.
