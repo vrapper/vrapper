@@ -180,7 +180,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         }
     }
 
-    public void sourceConfigurationFile(String filename) {
+    public boolean sourceConfigurationFile(String filename) {
         File homeDir = new File(System.getProperty("user.home"));
         File config = new File(homeDir, filename);
         
@@ -242,6 +242,10 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         			}
         		}
         	}
+        	return true;
+        }
+        else {
+        	return false;
         }
     }
 

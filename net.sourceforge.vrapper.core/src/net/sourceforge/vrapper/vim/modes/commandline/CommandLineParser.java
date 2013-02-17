@@ -161,7 +161,10 @@ public class CommandLineParser extends AbstractCommandParser {
             		vim.getUserInterfaceService().setErrorMessage("Argument required");
             		return null;
             	}
-            	vim.sourceConfigurationFile(command.poll());
+            	String filename = command.poll();
+            	if( ! vim.sourceConfigurationFile(filename) ) {
+            		vim.getUserInterfaceService().setErrorMessage("Can't open file " + filename);
+            	}
             	return null;
             }
         };
