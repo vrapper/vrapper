@@ -12,7 +12,7 @@ public class ParagraphMotion extends CountAwareMotion {
     public static final ParagraphMotion BACKWARD = new ParagraphMotion(false);
     public static final ParagraphMotion TO_FORWARD = new ParagraphMotion(true) {
         protected int moveMore(TextContent modelContent, int lineNo) {
-            while (isLineEmpty(modelContent, lineNo))
+            while (isInRange(modelContent, lineNo) && isLineEmpty(modelContent, lineNo))
                 lineNo += step;
             return lineNo;
         };
