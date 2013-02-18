@@ -12,7 +12,7 @@ public class ParagraphMotion extends CountAwareMotion {
     public static final ParagraphMotion BACKWARD = new ParagraphMotion(false);
     public static final ParagraphMotion TO_FORWARD = new ParagraphMotion(true) {
         protected int moveMore(TextContent modelContent, int lineNo) {
-            while (isLineEmpty(modelContent, lineNo))
+            while (isInRange(modelContent, lineNo) && isLineEmpty(modelContent, lineNo))
                 lineNo += step;
             return lineNo;
         };
@@ -40,14 +40,20 @@ public class ParagraphMotion extends CountAwareMotion {
         
         int lineNo = currentLine.getNumber();
         for (int i = 0; i < count; i++) {
-            while (isLineEmpty(modelContent, lineNo))
+            while (isInRange(modelContent, lineNo) && isLineEmpty(modelContent, lineNo))
                 lineNo += step;
-            while (isLineNonEmpty(modelContent, lineNo))
+            while (isInRange(modelContent, lineNo) && isLineNonEmpty(modelContent, lineNo))
                 lineNo += step;
         }
         
         lineNo = moveMore(modelContent, lineNo);
         int offset = modelContent.getLineInformation(lineNo).getBeginOffset();
+        
+        // If we are moving forward and we are on the last line, then put cursor
+        // at the end of the line
+        if (step > 0 && ((lineNo + 1) == modelContent.getNumberOfLines())) {
+            offset = modelContent.getLineInformation(lineNo).getEndOffset();
+        }
         return editorAdaptor.getPosition().setModelOffset(offset);
     }
 
@@ -63,10 +69,13 @@ public class ParagraphMotion extends CountAwareMotion {
         return doesLineEmptinessEqual(false, content, lineNo);
     }
     
+    protected boolean isInRange(TextContent content, int lineNo) {
+        return (lineNo + step >= 0) && (lineNo + step < content.getNumberOfLines());
+    }
+    
     private boolean doesLineEmptinessEqual(boolean equalWhat, TextContent content, int lineNo) {
-        boolean isInRange = (lineNo + step >= 0) && (lineNo + step <= content.getNumberOfLines());
         boolean isEmpty = content.getLineInformation(lineNo).getLength() == 0;
-        return isInRange && (isEmpty == equalWhat);
+        return isEmpty == equalWhat;
     }
 
     public BorderPolicy borderPolicy() {
