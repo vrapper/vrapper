@@ -62,7 +62,7 @@ public class SentenceMotion extends CountAwareMotion {
         
         while(offset == -1) {
         	if(forward) {
-        		if(modelContent.getNumberOfLines() > line.getNumber()) {
+        		if(modelContent.getNumberOfLines() > (line.getNumber() + 1)) {
         			lineTmp = line;
         			//get next line, starting at beginning of line
         			line = modelContent.getLineInformation(line.getNumber() + 1);
