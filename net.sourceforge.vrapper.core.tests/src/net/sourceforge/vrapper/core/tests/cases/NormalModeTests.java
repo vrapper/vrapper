@@ -815,13 +815,19 @@ public class NormalModeTests extends CommandTestCase {
                 "sth   ",'s',"th");
         checkCommand(forKeySeq("2J"),
                 "s",'t',"h\nsth\nsth",
-                "sth sth",' ',"sth");
+                "sth", ' ', "sth\nsth");
         checkCommand(forKeySeq("J"),
                 "s",'t',"h\n   sth",
                 "sth",' ',"sth");
         checkCommand(forKeySeq("JJ"),
                 "s",'t',"h\n\nsth",
                 "sth ",'s',"th");
+        checkCommand(forKeySeq("J"),
+                "",'\n',"hello",
+                "",'h',"ello");
+        checkCommand(forKeySeq("3J"),
+                "th",'i',"s\njoins\nthree lines",
+                "this joins",' ',"three lines");
     }
 
 	@Test
@@ -831,7 +837,7 @@ public class NormalModeTests extends CommandTestCase {
                 "sth",'s',"th");
         checkCommand(forKeySeq("2gJ"),
                 "s",'t',"h\nsth\nsth",
-                "sthsth",'s',"th");
+                "sth",'s',"th\nsth");
         checkCommand(forKeySeq("gJ"),
                 "s",'t',"h\n   sth",
                 "sth",' ',"  sth");

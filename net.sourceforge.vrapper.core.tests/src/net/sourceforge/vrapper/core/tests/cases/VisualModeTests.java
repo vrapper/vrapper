@@ -274,6 +274,9 @@ public class VisualModeTests extends CommandTestCase {
 		checkLeavingCommand(forKeySeq("gJ"),
 				false,  "new Hell","o\nW","orld();\n//;-)",
 				"new Hello",'W',"orld();\n//;-)");
+		checkLeavingCommand(forKeySeq("J"),
+				false,  "","\n\nh","ello",
+				"",'h',"ello");
     }
 	
 	@Test

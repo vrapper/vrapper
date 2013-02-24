@@ -33,7 +33,7 @@ public class JoinLinesCommand extends CountAwareCommand {
     public void execute(EditorAdaptor editorAdaptor, int count)
             throws CommandExecutionException {
         if (count == NO_COUNT_GIVEN)
-            count = 1;
+            count = 2;
         try {
             editorAdaptor.getHistory().beginCompoundChange();
             doIt(editorAdaptor, count, isSmart);
@@ -42,10 +42,22 @@ public class JoinLinesCommand extends CountAwareCommand {
         }
     }
 
+    /**
+     * @param editorAdaptor
+     * @param count
+     *            number of lines to be joined from current position. If count <
+     *            2, then two lines will be joined
+     * @param isSmart
+     * @throws CommandExecutionException
+     */
     public static void doIt(EditorAdaptor editorAdaptor, int count, boolean isSmart)
             throws CommandExecutionException {
+        if (count < 2) {
+            count = 2;
+        }
+        
         TextContent modelContent = editorAdaptor.getModelContent();
-        for (int i = 0; i < count; i++) {
+        for (int i = 1; i < count; i++) {
             int modelOffset = editorAdaptor.getPosition().getModelOffset();
             LineInformation firstLnInfo = modelContent.getLineInformationOfOffset(modelOffset);
             if (firstLnInfo.getNumber() + 1 == modelContent.getNumberOfLines())
@@ -58,7 +70,14 @@ public class JoinLinesCommand extends CountAwareCommand {
             String glue;
             if (isSmart) {
                 glue = " ";
-                if (firstLnInfo.getLength() > 0 && Character.isWhitespace(modelContent.getText(eolOffset - 1, 1).charAt(0)))
+                
+                // If there is only newline on the first line, then don't add
+                // any space between joined lines (this behavior is not
+                // documented in Vim manual, but experiments show that it works
+                // this way)
+                if (firstLnInfo.getLength() == 0)
+                    glue = "";
+                else if (Character.isWhitespace(modelContent.getText(eolOffset - 1, 1).charAt(0)))
                     glue = "";
                 for (int j = 0; j < secondLineText.length() && Character.isWhitespace(secondLineText.charAt(j)); j++)
                     bolOffset++;
@@ -69,6 +88,7 @@ public class JoinLinesCommand extends CountAwareCommand {
                     glue = "";
             } else
                 glue = "";
+                
             modelContent.replace(eolOffset, bolOffset - eolOffset, glue);
             editorAdaptor.setPosition(editorAdaptor.getPosition().setModelOffset(eolOffset), true);
         }
