@@ -191,7 +191,14 @@
             There are lists with action ids for
             <a href="http://help.eclipse.org/help33/topic/org.eclipse.platform.doc.isv/reference/api/org/eclipse/ui/texteditor/IWorkbenchActionDefinitionIds.html">workbench</a>,
             <a href="http://help.eclipse.org/help33/topic/org.eclipse.platform.doc.isv/reference/api/org/eclipse/ui/texteditor/ITextEditorActionDefinitionIds.html">text editors</a>,
-            and <a href="http://help.eclipse.org/ganymede/topic/org.eclipse.jdt.doc.isv/reference/api/org/eclipse/jdt/ui/actions/IJavaEditorActionDefinitionIds.html">java editors</a>.</td>
+            and <a href="http://help.eclipse.org/ganymede/topic/org.eclipse.jdt.doc.isv/reference/api/org/eclipse/jdt/ui/actions/IJavaEditorActionDefinitionIds.html">java editors</a>.
+            <br/><br/>
+            For example, if I wanted to define an action for JDT's "Find all References in Workspace" I would put the following in my .vrapperrc file:<br/>
+            <b>eclipseaction findref org.eclipse.jdt.ui.edit.text.java.search.references.in.workspace</b><br/>
+            I could then call that command with <b>:findref</b><br/>
+            If I wanted to map that action to the keys 'gr' I would put this in my .vrapperrc file:<br/>
+            <b>nmap gr :findref&lt;enter&gt;</b>
+        </td>
     </tr>
     <tr>
         <td>:eclipseaction!&nbsp;&lt;name&gt;&nbsp;&lt;id&gt;</td>
