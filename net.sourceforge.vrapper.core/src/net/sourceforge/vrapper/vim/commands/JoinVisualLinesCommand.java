@@ -1,6 +1,7 @@
 package net.sourceforge.vrapper.vim.commands;
 
 import net.sourceforge.vrapper.platform.TextContent;
+import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
@@ -27,7 +28,13 @@ public class JoinVisualLinesCommand extends AbstractCommand {
             editorAdaptor.getHistory().beginCompoundChange();
             editorAdaptor.changeMode(NormalMode.NAME);
             editorAdaptor.setPosition(from, false);
-            JoinLinesCommand.doIt(editorAdaptor, lastLineNo - firstLineNo, isSmart);
+            
+            int length = 1 + lastLineNo - firstLineNo;
+            if (ContentType.LINES.equals(selection.getContentType(editorAdaptor.getConfiguration()))) {
+                length--;
+            }
+            
+            JoinLinesCommand.doIt(editorAdaptor, Math.max(2, length), isSmart);
         } finally {
             editorAdaptor.getHistory().endCompoundChange();
         }
