@@ -176,10 +176,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
             // is placed in the line below the selection by eclipse. this
             // corrects that behaviour
             if (ContentType.LINES.equals(newSelection.getContentType(configuration))) {
-                if (newSelection.isReversed()) {
-                    from -= 1;
-                    length += 1;
-                } else {
+                if (!newSelection.isReversed()) {
                     length -=1;
                 }
             }
