@@ -54,6 +54,7 @@ import net.sourceforge.vrapper.vim.commands.OptionDependentTextObject;
 import net.sourceforge.vrapper.vim.commands.PasteAfterCommand;
 import net.sourceforge.vrapper.vim.commands.PasteBeforeCommand;
 import net.sourceforge.vrapper.vim.commands.PlaybackMacroCommand;
+import net.sourceforge.vrapper.vim.commands.QuoteDelimitedText;
 import net.sourceforge.vrapper.vim.commands.RecordMacroCommand;
 import net.sourceforge.vrapper.vim.commands.RedoCommand;
 import net.sourceforge.vrapper.vim.commands.RepeatLastSubstitutionCommand;
@@ -124,9 +125,9 @@ public class NormalMode extends CommandBasedMode {
         final DelimitedText inSquareBracket = new SimpleDelimitedText('[', ']');
         final DelimitedText inBrace = new SimpleDelimitedText('{', '}');
         final DelimitedText inAngleBrace = new SimpleDelimitedText('<', '>');
-        final DelimitedText inString = new SimpleDelimitedText('"');
-        final DelimitedText inGraveString = new SimpleDelimitedText('`');
-        final DelimitedText inChar = new SimpleDelimitedText('\'');
+        final DelimitedText inString = new QuoteDelimitedText('"');
+        final DelimitedText inGraveString = new QuoteDelimitedText('`');
+        final DelimitedText inChar = new QuoteDelimitedText('\'');
         final DelimitedText inTag = new XmlTagDelimitedText();
 
         delimitedTexts = state(

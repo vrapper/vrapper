@@ -529,6 +529,30 @@ public class NormalModeTests extends CommandTestCase {
         checkCommand(forKeySeq("di'"),
                 "'abc",'\'',"def'",
                 "'",'\'',"def'");
+        
+        checkCommand(forKeySeq("di'"),
+        		"foo'f",'o',"o'foo",
+        		"foo'",'\'',"foo");
+        
+        checkCommand(forKeySeq("di'"),
+        		"'foo'foo",'\'',"foo'",
+        		"'foo'foo'",'\'',"");
+        
+        checkCommand(forKeySeq("di'"),
+        		"'foofoo",'\'',"foo'",
+        		"'",'\'',"foo'");
+        
+        checkCommand(forKeySeq("di'"),
+        		"no quotes",' ',"to be found",
+        		"no quotes",' ',"to be found");
+        
+        checkCommand(forKeySeq("di'"),
+        		"something ",'b',"efore quotes 'foo' after",
+        		"something before quotes '",'\''," after");
+        
+        checkCommand(forKeySeq("di'"),
+        		"some'thing' ",'b',"efore quotes after",
+        		"some'thing' ",'b',"efore quotes after");
     }
 
 	@Test
