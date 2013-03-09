@@ -24,6 +24,7 @@ import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.commands.RedoCommand;
 import net.sourceforge.vrapper.vim.commands.RepeatLastSubstitutionCommand;
+import net.sourceforge.vrapper.vim.commands.RetabOperation;
 import net.sourceforge.vrapper.vim.commands.SaveAllCommand;
 import net.sourceforge.vrapper.vim.commands.SaveCommand;
 import net.sourceforge.vrapper.vim.commands.SetOptionCommand;
@@ -139,6 +140,22 @@ public class CommandLineParser extends AbstractCommandParser {
         		
             	try {
 					new SortOperation(commandStr).execute(vim, null, ContentType.LINES);
+				} catch (CommandExecutionException e) {
+            		vim.getUserInterfaceService().setErrorMessage(e.getMessage());
+				}
+            	
+            	return null;
+            }
+        };
+        Evaluator retab = new Evaluator() {
+            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
+        		String commandStr = "";
+            	while(command.size() > 0)
+            		// attempt to preserve spacing
+            		commandStr += command.poll() + " ";
+        		
+            	try {
+					new RetabOperation(commandStr).execute(vim, null, ContentType.LINES);
 				} catch (CommandExecutionException e) {
             		vim.getUserInterfaceService().setErrorMessage(e.getMessage());
 				}
@@ -264,6 +281,12 @@ public class CommandLineParser extends AbstractCommandParser {
         mapping.add("sor", sort);
         mapping.add("sort", sort);
         mapping.add("sort!", sort);
+        mapping.add("ret", retab);
+        mapping.add("reta", retab);
+        mapping.add("retab", retab);
+        mapping.add("ret!", retab);
+        mapping.add("reta!", retab);
+        mapping.add("retab!", retab);
         // Display the ascii values of the character under the cursor
     	mapping.add("as",    ascii);
     	mapping.add("ascii", ascii);
@@ -354,6 +377,18 @@ public class CommandLineParser extends AbstractCommandParser {
         if(command.startsWith("sort!")) {
         	command = command.replace("sort!", "sort !");
         }
+       
+        // TODO: Need a parser for partial commands so we can avoid this redundancy
+        // Replace all spaces, not just tabs
+        if(command.startsWith("ret!")) {
+        	command = command.replace("ret!", "ret !");
+        }
+        if(command.startsWith("reta!")) {
+        	command = command.replace("reta!", "reta !");
+        }
+        if(command.startsWith("retab!")) {
+        	command = command.replace("retab!", "retab !");
+        }
         
         /** Now check against list of known commands (whitespace-delimited) **/
         
@@ -421,6 +456,20 @@ public class CommandLineParser extends AbstractCommandParser {
         NO_GLOBAL_REGISTERS {
             public Object evaluate(EditorAdaptor vim, Queue<String> command) {
                 vim.useLocalRegisters();
+                return null;
+            }
+        },
+        EXPAND_TAB {
+            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
+                vim.getConfiguration().set(Options.EXPAND_TAB, Boolean.TRUE);
+                vim.getEditorSettings().setShowLineNumbers(true);
+                return null;
+            }
+        },
+        NO_EXPAND_TAB {
+            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
+                vim.getConfiguration().set(Options.EXPAND_TAB, Boolean.FALSE);
+                vim.getEditorSettings().setShowLineNumbers(false);
                 return null;
             }
         },

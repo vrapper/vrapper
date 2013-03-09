@@ -27,10 +27,13 @@ public interface Options {
     public static final Option<Boolean> IM_DISABLE         = bool("imdisable",    false, "imd");
     public static final Option<Boolean> VISUAL_MOUSE       = bool("visualmouse",  true,  "vm");
     public static final Option<Boolean> AUTO_CHDIR         = bool("autochdir",    false, "acd");
+    // TODO: This is an Eclipse setting under Window->Preferences->Editors->Text Editors->"Insert spaces for tabs"
+    //       Changing this value should change the Eclipse configuration too. -- BRD
+    public static final Option<Boolean> EXPAND_TAB         = bool("expandtab",    true,  "et");
 
     @SuppressWarnings("unchecked")
     public static final Set<Option<Boolean>> BOOLEAN_OPTIONS = set(
-            SMART_INDENT, AUTO_INDENT, ATOMIC_INSERT, IGNORE_CASE, SMART_CASE,
+            EXPAND_TAB, SMART_INDENT, AUTO_INDENT, ATOMIC_INSERT, IGNORE_CASE, SMART_CASE,
             SANE_CW, SANE_Y, SEARCH_HIGHLIGHT, SEARCH_REGEX,
             INCREMENTAL_SEARCH, LINE_NUMBERS, SHOW_WHITESPACE, IM_DISABLE,
             VISUAL_MOUSE, AUTO_CHDIR);
@@ -47,6 +50,10 @@ public interface Options {
     public static final Option<Integer> SCROLL_JUMP   = integer("scrolljump",  1, "sj");
     public static final Option<Integer> TEXT_WIDTH    = integer("textwidth",  80, "tw");
     public static final Option<Integer> SOFT_TAB      = integer("softtabstop", 0, "sts");
+    // TODO: This is an Eclipse setting under Window->Preferences->Editors->Text Editors->"Displayed tab width"
+    //       Changing this value should change the Eclipse configuration too. -- BRD
+    public static final Option<Integer> TAB_STOP      = integer("tabstop",     8, "ts");
+    
     @SuppressWarnings("unchecked")
-    public static final Set<Option<Integer>> INT_OPTIONS = set(SCROLL_JUMP, SCROLL_OFFSET, TEXT_WIDTH, SOFT_TAB);
+    public static final Set<Option<Integer>> INT_OPTIONS = set(SCROLL_JUMP, SCROLL_OFFSET, TEXT_WIDTH, SOFT_TAB, TAB_STOP);
 }

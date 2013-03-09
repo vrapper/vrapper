@@ -22,6 +22,8 @@ import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.LineRangeOperationCommand;
 import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
+import net.sourceforge.vrapper.vim.commands.RetabOperation;
+import net.sourceforge.vrapper.vim.commands.SimpleTextOperation;
 import net.sourceforge.vrapper.vim.commands.SortOperation;
 import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
@@ -100,6 +102,23 @@ public class CommandLineTests extends VimTestCase {
     	command = parser.parseAndExecute(":", "?foo?,/bar/d");
     	assertNotNull(command);
     	assertTrue(command instanceof LineRangeOperationCommand);
+    }
+    
+    @Test
+    public void testRetab() throws CommandExecutionException {
+    	SimpleTextOperation retabCommand = (SimpleTextOperation) new RetabOperation(null);
+    	
+    	content.setText("\t");
+    	retabCommand.execute(adaptor, null, ContentType.LINES);
+    	assertEquals("    ", content.getText());
+    	
+    	content.setText("line\n\t\t\tnew\tline\n\t\tABC");
+    	retabCommand.execute(adaptor, null, ContentType.LINES);
+    	assertEquals("line\n            new    line\n        ABC", content.getText());
+    	
+    	content.setText("\t\t\t\n\t\n\n\t\t\t\n\t");
+    	retabCommand.execute(adaptor, null, ContentType.LINES);
+    	assertEquals("            \n    \n\n            \n    ", content.getText());
     }
     
     @Test
