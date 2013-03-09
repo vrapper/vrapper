@@ -84,7 +84,7 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
     			}
     		}
     		else { //building second part of range
-    			if(!insideSearchDef && isOperationChar(next)) {
+    			if(!insideSearchDef && isOperationChar(next) && ! stopStr.endsWith("'")) {
     				operationChar = next;
     				//if 's', we're defining a substitution for the range
     				remainingChars = command.substring(i);
