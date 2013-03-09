@@ -53,6 +53,34 @@ public class EvaluatorMapping implements Evaluator {
     public Evaluator getDefaultCase() {
         return defaultCase;
     }
+    
+    /**
+     * Check to see if this partial name matches exactly one
+     * command name.  If it does, return the full name of that
+     * command.  If no match is found, or if multiple matches
+     * are found, return null.
+     * For example, getNameFromPartial("tabprev") returns "tabprevious"
+     * @param partial - String which may or may not be a subset of a command name
+     * @return Full command name if exactly one match, otherwise null
+     */
+    public String getNameFromPartial(String partial) {
+    	String commandName = null;
+    	for(String name : actions.keySet()) {
+    		if(name.startsWith(partial)) {
+    			if(commandName == null) {
+    				//this is our first match
+    				//(but keep looping in case there are more)
+    				commandName = name;
+    			}
+    			else {
+    				//multiple matches
+    				return null;
+    			}
+    		}
+    	}
+    	
+    	return commandName;
+    }
 
     /** Adds all actions from other EvaluatorMapping.
      *

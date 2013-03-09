@@ -396,16 +396,32 @@ public class CommandLineParser extends AbstractCommandParser {
         
         //tokenize based on whitespace
         StringTokenizer nizer = new StringTokenizer(command);
-        Queue<String> tokens = new LinkedList<String>();
+        LinkedList<String> tokens = new LinkedList<String>();
         while(nizer.hasMoreTokens())
             tokens.add(nizer.nextToken().trim());
         
         //see if a command is defined for the first token
         EvaluatorMapping platformCommands = editor.getPlatformSpecificStateProvider().getCommands();
-        if(platformCommands != null && platformCommands.contains(tokens.peek()))
+        if(platformCommands != null && platformCommands.contains(tokens.peek())) {
             platformCommands.evaluate(editor, tokens);
-        else
+        }
+        else if(mapping != null && mapping.contains(tokens.peek())) {
             mapping.evaluate(editor, tokens);
+        }
+        else { //see if there is a partial match
+            String commandName = platformCommands.getNameFromPartial(tokens.peek());
+            if(commandName != null) {
+            	tokens.set(0, commandName);
+            	platformCommands.evaluate(editor, tokens);
+            }
+            else {
+            	commandName = mapping.getNameFromPartial(tokens.peek());
+            	if(commandName != null) {
+	            	tokens.set(0, commandName);
+	            	mapping.evaluate(editor, tokens);
+            	}
+            }
+        }
         
         return null;
     }
