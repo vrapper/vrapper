@@ -22,6 +22,10 @@ public class TestTextContent implements TextContent {
 	}
 
 	public LineInformation getLineInformation(int line) {
+	    if (line >= getNumberOfLines()) {
+	        throw new RuntimeException("Line is out of range");
+	    }
+	    
         int index = 0;
         int currLine = 0;
         while(currLine < line && index < buffer.length()) {

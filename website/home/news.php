@@ -1,4 +1,43 @@
 <div class="newsbox">
+    <div class="date">2013-03-09</div>
+    <h4>More updates to unstable update site</h4>
+    <p>It's been over a month since my last update so I decided to look
+    through our commit log and see what we've been working on lately.  Here
+    is the list of changes to the unstable update site since my last news post:</p>
+    <ul>
+        <li>Added support for '**' in path variable</li>
+        <ul>
+            <li>e.g., :set path=src/main/java/**</li>
+            <li>Tells :find to search all subdirectories for a filename</li>
+        </ul>
+        <li>Added support for :source</li>
+        <ul>
+            <li>You can now "source .vimrc" in your .vrapperrc</li>
+        </ul>
+        <li>Added support for 'cursorline' option</li>
+        <ul>
+            <li>enable/disable highlighting line with cursor</li>
+        </ul>
+        <li>Create new file when ":e &lt;filename&gt;" doesn't exist</li>
+        <li>Added support for :tabonly (alias of :only)</li>
+        <li>Added support for :tabf (alias of :find)</li>
+        <li>Allow '+' to be omitted in line range operations</li>
+        <ul>
+            <li>".5" == ".+5"</li>
+        </ul>
+        <li>Fixed behavior with quote text objects to match Vim's behavior</li>
+        <ul>
+            <li>ci" will only look for quotes on current line now</li>
+        </ul>
+        <li>Fixed issue with escaping delimiter character in substitution</li>
+        <li>Fixed a couple defects in sentence motions, paragraph motions, and joining multiple lines</li>
+    </ul>
+    
+    <p>I've received a lot of help from contributors in this last month, which
+    makes me feel like things are moving quickly.  I still think a two-month release
+    cycle works well for us though, so I'll probably wait until the end of March to release this next version.</p>
+</div>
+<div class="newsbox">
     <div class="date">2013-02-03</div>
     <h4>Updates to unstable update site</h4>
     <p>When I released 0.28.0 a couple days ago I mentioned that I wanted to release it mostly because

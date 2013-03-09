@@ -3,5 +3,21 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.jdt_3.7.2.v201202080800.jar"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.jdt.apt.core_3.3.500.v20110420-1015.jar"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.jdt.apt.pluggable.core_1.0.400.v20110305-1450.jar"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.jdt.apt.ui_3.3.300.v20110305-1450.jar"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.jdt.compiler.apt_1.0.400.v0110816-0800.jar"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.jdt.compiler.tool_1.0.100.v_B79_R37x.jar"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.jdt.core_3.7.3.v20120119-1537.jar"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.jdt.core.manipulation_1.4.0.v20110928-1453.jar"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.jdt.debug.ui_3.6.1.v20111006_r372.jar"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.jdt.doc.user_3.7.1.r372_v20111103.jar"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.jdt.junit_3.7.0.v20110928-1453.jar"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.jdt.junit.core_3.7.0.v20110928-1453.jar"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.jdt.junit.runtime_3.4.300.v20110928-1453.jar"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.jdt.junit4.runtime_1.1.200.v20110928-1453.jar"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.jdt.launching_3.6.1.v20111006_r372.jar"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.jdt.ui_3.7.2.v20120109-1427.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -27,16 +27,17 @@ public interface Options {
     public static final Option<Boolean> IM_DISABLE         = bool("imdisable",    false, "imd");
     public static final Option<Boolean> VISUAL_MOUSE       = bool("visualmouse",  true,  "vm");
     public static final Option<Boolean> AUTO_CHDIR         = bool("autochdir",    false, "acd");
+    public static final Option<Boolean> HIGHLIGHT_CURSOR_LINE = bool("cursorline",   false, "cul");
     // TODO: This is an Eclipse setting under Window->Preferences->Editors->Text Editors->"Insert spaces for tabs"
     //       Changing this value should change the Eclipse configuration too. -- BRD
     public static final Option<Boolean> EXPAND_TAB         = bool("expandtab",    true,  "et");
-
+    
     @SuppressWarnings("unchecked")
     public static final Set<Option<Boolean>> BOOLEAN_OPTIONS = set(
             EXPAND_TAB, SMART_INDENT, AUTO_INDENT, ATOMIC_INSERT, IGNORE_CASE, SMART_CASE,
             SANE_CW, SANE_Y, SEARCH_HIGHLIGHT, SEARCH_REGEX,
             INCREMENTAL_SEARCH, LINE_NUMBERS, SHOW_WHITESPACE, IM_DISABLE,
-            VISUAL_MOUSE, AUTO_CHDIR);
+            VISUAL_MOUSE, AUTO_CHDIR, HIGHLIGHT_CURSOR_LINE);
 
     // String options:
     public static final Option<String> CLIPBOARD = string("clipboard", "autoselect", "unnamed, autoselect", "cb");

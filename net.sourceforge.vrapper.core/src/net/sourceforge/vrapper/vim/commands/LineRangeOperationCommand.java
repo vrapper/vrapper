@@ -1,5 +1,8 @@
 package net.sourceforge.vrapper.vim.commands;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.LineInformation;
@@ -81,7 +84,7 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
     			}
     		}
     		else { //building second part of range
-    			if(!insideSearchDef && isOperationChar(next)) {
+    			if(!insideSearchDef && isOperationChar(next) && ! stopStr.endsWith("'")) {
     				operationChar = next;
     				//if 's', we're defining a substitution for the range
     				remainingChars = command.substring(i);
@@ -140,6 +143,9 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
     	String modifierDef = "";
     	char modifier = 0;
     	String[] pieces;
+    	Pattern endsWithNumber = Pattern.compile("^.+?(\\d+)$");
+    	Matcher match = endsWithNumber.matcher(range);
+    	
     	//are there modifiers like 3+2 or .-4 or 'a+6?
     	if(range.contains("+")) {
     		modifier = '+';
@@ -152,6 +158,13 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
     		pieces = range.split("-");
     		lineDef = pieces[0];
     		modifierDef = pieces[1];
+    	}
+    	else if(match.matches()) {
+    		//if no '+' or '-' specified, '+' is implicit
+    		// ".5" == ".+5"
+    		modifier = '+';
+    		lineDef = range.substring(0, match.start(1));
+    		modifierDef = match.group(1);
     	}
     	else { //no modifiers
     		lineDef = range;

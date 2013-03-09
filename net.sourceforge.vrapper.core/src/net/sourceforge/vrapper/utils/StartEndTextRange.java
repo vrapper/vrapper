@@ -51,22 +51,37 @@ public class StartEndTextRange implements TextRange {
         TextContent txt = editor.getModelContent();
         LineInformation sLine = txt.getLineInformationOfOffset(from.getModelOffset());
         LineInformation eLine = txt.getLineInformationOfOffset(to.getModelOffset());
-        if (sLine.getNumber() > eLine.getNumber())
-            return lines(editor, to, from);
+        
         CursorService cs = editor.getCursorService();
-        int startIndex = sLine.getBeginOffset();
-        int nextLineNo = eLine.getNumber() + 1;
-        int endIndex;
-        if (nextLineNo < txt.getNumberOfLines())
-            endIndex = txt.getLineInformation(nextLineNo).getBeginOffset();
-        else {
-            endIndex = txt.getTextLength();
-            if (sLine.getNumber() == 0)
-                startIndex = 0;
+        int firstLine, nextLineTolastLine;
+        if (sLine.getNumber() > eLine.getNumber()) {
+            firstLine = eLine.getNumber();
+            nextLineTolastLine = sLine.getNumber() + 1;
         }
-        return new StartEndTextRange(
-                cs.newPositionForModelOffset(startIndex),
-                cs.newPositionForModelOffset(endIndex));
+        else {
+            firstLine = sLine.getNumber();
+            nextLineTolastLine = eLine.getNumber() + 1;
+        }
+        
+        int beginOffset = txt.getLineInformation(firstLine).getBeginOffset(), endOffset;
+        if (nextLineTolastLine < txt.getNumberOfLines())
+            endOffset = txt.getLineInformation(nextLineTolastLine).getBeginOffset();
+        else {
+            endOffset = txt.getTextLength();
+            if (firstLine == 0)
+                beginOffset = 0;
+        }
+        
+        if (sLine.getNumber() > eLine.getNumber()) {
+            return new StartEndTextRange(
+                    cs.newPositionForModelOffset(endOffset),
+                    cs.newPositionForModelOffset(beginOffset));
+        }
+        else {
+            return new StartEndTextRange(
+                    cs.newPositionForModelOffset(beginOffset),
+                    cs.newPositionForModelOffset(endOffset));
+        }
     }
 
     public static TextRange exclusive(Position from, Position to) {
