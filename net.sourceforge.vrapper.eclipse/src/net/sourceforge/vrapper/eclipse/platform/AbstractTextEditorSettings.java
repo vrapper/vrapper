@@ -44,6 +44,10 @@ public class AbstractTextEditorSettings implements UnderlyingEditorSettings {
         EditorsUI.getPreferenceStore().setValue(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_SHOW_WHITESPACE_CHARACTERS , show);
     }
     
+    public void setHighlightCursorLine(boolean highlight) {
+        EditorsUI.getPreferenceStore().setValue(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_CURRENT_LINE , highlight);
+    }
+
     public void disableInputMethod() {
         //Reset IME (Input Method editor) so Japanese keyboards can use normal-mode's key-bindings
         Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();

@@ -297,23 +297,25 @@ public class CommandLineParser extends AbstractCommandParser {
             }
         }
         // overwrites hlsearch/nohlsearch commands
-        Evaluator numberToggle = new OptionDependentEvaluator(Options.LINE_NUMBERS, ConfigAction.NO_LINE_NUMBERS, ConfigAction.LINE_NUMBERS);
-        Evaluator listToggle = new OptionDependentEvaluator(Options.SHOW_WHITESPACE, ConfigAction.NO_SHOW_WHITESPACE, ConfigAction.SHOW_WHITESPACE);
         config.add("globalregisters", ConfigAction.GLOBAL_REGISTERS);
         config.add("noglobalregisters", ConfigAction.NO_GLOBAL_REGISTERS);
         config.add("localregisters", ConfigAction.NO_GLOBAL_REGISTERS);
         config.add("nolocalregisters", ConfigAction.GLOBAL_REGISTERS);
-        config.add("number", ConfigAction.LINE_NUMBERS);
-        config.add("nonumber", ConfigAction.NO_LINE_NUMBERS);
-        config.add("nu", ConfigAction.LINE_NUMBERS);
-        config.add("nonu", ConfigAction.NO_LINE_NUMBERS);
-        config.add("number!", numberToggle);
-        config.add("nu!", numberToggle);
-        config.add("list", ConfigAction.SHOW_WHITESPACE);
-        config.add("nolist", ConfigAction.NO_SHOW_WHITESPACE);
-        config.add("list!", listToggle);
+        addActionsToBooleanOption(config, Options.LINE_NUMBERS, ConfigAction.LINE_NUMBERS, ConfigAction.NO_LINE_NUMBERS);
+        addActionsToBooleanOption(config, Options.SHOW_WHITESPACE, ConfigAction.SHOW_WHITESPACE, ConfigAction.NO_SHOW_WHITESPACE);
+        addActionsToBooleanOption(config, Options.HIGHLIGHT_CURSOR_LINE, ConfigAction.HIGHLIGHT_CURSOR_LINE, ConfigAction.NO_HIGHLIGHT_CURSOR_LINE);
 
         return config;
+    }
+    
+    private static void addActionsToBooleanOption(EvaluatorMapping config,
+            Option<Boolean> option, ConfigAction enable, ConfigAction disable) {
+        Evaluator toggle = new OptionDependentEvaluator(option, disable, enable);
+        for (String alias : option.getAllNames()) {
+            config.add(alias, enable);
+            config.add("no" + alias, disable);
+            config.add(alias + "!", toggle);
+        }
     }
 
     public CommandLineParser(EditorAdaptor vim) {
@@ -449,6 +451,20 @@ public class CommandLineParser extends AbstractCommandParser {
             public Object evaluate(EditorAdaptor vim, Queue<String> command) {
                 vim.getConfiguration().set(Options.SHOW_WHITESPACE, Boolean.FALSE);
                 vim.getEditorSettings().setShowWhitespace(false);
+                return null;
+            }
+        },
+        HIGHLIGHT_CURSOR_LINE {
+            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
+                vim.getConfiguration().set(Options.HIGHLIGHT_CURSOR_LINE, Boolean.TRUE);
+                vim.getEditorSettings().setHighlightCursorLine(true);
+                return null;
+            }
+        },
+        NO_HIGHLIGHT_CURSOR_LINE {
+            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
+                vim.getConfiguration().set(Options.HIGHLIGHT_CURSOR_LINE, Boolean.FALSE);
+                vim.getEditorSettings().setHighlightCursorLine(false);
                 return null;
             }
         }
