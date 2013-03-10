@@ -64,6 +64,11 @@ public class EvaluatorMapping implements Evaluator {
      * @return Full command name if exactly one match, otherwise null
      */
     public String getNameFromPartial(String partial) {
+    	//chop off trailing "!", it isn't part of the command name
+    	if(partial.endsWith("!")) {
+    		partial = partial.substring(0, partial.length()-1);
+    	}
+    	
     	String commandName = null;
     	for(String name : actions.keySet()) {
     		if(name.startsWith(partial)) {

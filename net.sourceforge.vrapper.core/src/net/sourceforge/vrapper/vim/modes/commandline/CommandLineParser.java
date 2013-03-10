@@ -66,6 +66,10 @@ public class CommandLineParser extends AbstractCommandParser {
         CloseCommand closeAll = CloseCommand.CLOSE_ALL;
         Command saveAndClose = new VimCommandSequence(save, close);
         Command saveAndCloseAll = new VimCommandSequence(saveAll, closeAll);
+        Evaluator quit = new EvaluatorWithExclaim(CloseCommand.CLOSE, CloseCommand.FORCED_CLOSE);
+        Evaluator quitAll = new EvaluatorWithExclaim(CloseCommand.CLOSE_ALL, CloseCommand.FORCED_CLOSE_ALL);
+        Evaluator quitOthers = new EvaluatorWithExclaim(CloseCommand.CLOSE_OTHERS, CloseCommand.FORCED_CLOSE_OTHERS);
+        
         Evaluator unmap = new KeyMapper.Unmap(AbstractVisualMode.KEYMAP_NAME, NormalMode.KEYMAP_NAME);
         Evaluator nunmap = new KeyMapper.Unmap(NormalMode.KEYMAP_NAME);
         Evaluator vunmap = new KeyMapper.Unmap(AbstractVisualMode.KEYMAP_NAME);
@@ -186,44 +190,23 @@ public class CommandLineParser extends AbstractCommandParser {
             }
         };
         
-        /* TODO: Write an interpreter that will read partial commands
-         * example: :wall can be invoked by typing any of the following:
-         *     :wa
-         *     :wal
-         *     :wall
-         */
         mapping = new EvaluatorMapping();
         // options
         mapping.add("set", buildConfigEvaluator());
         mapping.add("source", sourceConfigFile);
         // save, close
         mapping.add("w", save);
-    	mapping.add("up", save);
+        mapping.add("wall", saveAll);
+        mapping.add("wqall", saveAndCloseAll);
     	mapping.add("update", save);
         mapping.add("wq", saveAndClose);
         mapping.add("x", saveAndClose);
-        mapping.add("q", close);
-        mapping.add("q!", CloseCommand.FORCED_CLOSE);
-        mapping.add("bdelete", close);
-        mapping.add("bdelete!", CloseCommand.FORCED_CLOSE);
-        mapping.add("bd", close);
-        mapping.add("bd!", CloseCommand.FORCED_CLOSE);
-        mapping.add("qa", closeAll);
-        mapping.add("qa!", CloseCommand.FORCED_CLOSE_ALL);
-        mapping.add("qall", closeAll);
-        mapping.add("qall!", CloseCommand.FORCED_CLOSE_ALL);
-        mapping.add("quitall", closeAll);
-        mapping.add("quitall!", CloseCommand.FORCED_CLOSE_ALL);
-        mapping.add("wa", saveAll);
-        mapping.add("wal", saveAll);
-        mapping.add("wall", saveAll);
-        mapping.add("wqa", saveAndCloseAll);
-        mapping.add("wqal", saveAndCloseAll);
-        mapping.add("wqall", saveAndCloseAll);
-        mapping.add("only", CloseCommand.CLOSE_OTHERS);
-        mapping.add("tabo", CloseCommand.CLOSE_OTHERS);
-        mapping.add("tabonly", CloseCommand.CLOSE_OTHERS);
-        mapping.add("only!", CloseCommand.FORCED_CLOSE_OTHERS);
+        mapping.add("q", quit);
+        mapping.add("bdelete", quit);
+        mapping.add("qall", quitAll);
+        mapping.add("quitall", quitAll);
+        mapping.add("only", quitOthers);
+        mapping.add("tabonly", quitOthers);
         // non-recursive mapping
         mapping.add("noremap", noremap);
         mapping.add("no", noremap);
@@ -274,21 +257,10 @@ public class CommandLineParser extends AbstractCommandParser {
         mapping.add("pwd", printWorkingDir);
         mapping.add("e", editFile);
         mapping.add("find", findFile);
-        mapping.add("tabf", findFile);
         mapping.add("tabfind", findFile);
         mapping.add("cd", chDir);
-        // Sort lines in the file based on ascii values
-        mapping.add("sor", sort);
         mapping.add("sort", sort);
-        mapping.add("sort!", sort);
-        mapping.add("ret", retab);
-        mapping.add("reta", retab);
         mapping.add("retab", retab);
-        mapping.add("ret!", retab);
-        mapping.add("reta!", retab);
-        mapping.add("retab!", retab);
-        // Display the ascii values of the character under the cursor
-    	mapping.add("as",    ascii);
     	mapping.add("ascii", ascii);
     }
 
@@ -375,23 +347,6 @@ public class CommandLineParser extends AbstractCommandParser {
     		);
         }
         
-        // Reverse sort toggle will be treated as just another argument
-        if(command.startsWith("sort!")) {
-        	command = command.replace("sort!", "sort !");
-        }
-       
-        // TODO: Need a parser for partial commands so we can avoid this redundancy
-        // Replace all spaces, not just tabs
-        if(command.startsWith("ret!")) {
-        	command = command.replace("ret!", "ret !");
-        }
-        if(command.startsWith("reta!")) {
-        	command = command.replace("reta!", "reta !");
-        }
-        if(command.startsWith("retab!")) {
-        	command = command.replace("retab!", "retab !");
-        }
-        
         /** Now check against list of known commands (whitespace-delimited) **/
         
         //tokenize based on whitespace
@@ -399,6 +354,19 @@ public class CommandLineParser extends AbstractCommandParser {
         LinkedList<String> tokens = new LinkedList<String>();
         while(nizer.hasMoreTokens())
             tokens.add(nizer.nextToken().trim());
+            
+        //separate '!' from command name
+        if(tokens.peek().endsWith("!")) {
+        	String tok = tokens.poll();
+        	if(tokens.isEmpty()) {
+        		tokens.add(tok.substring(0, tok.length()-1));
+        		tokens.add("!");
+        	}
+        	else {
+        		tokens.set(0, tok.substring(0, tok.length()-1));
+        		tokens.set(1, "!");
+        	}
+        }
         
         //see if a command is defined for the first token
         EvaluatorMapping platformCommands = editor.getPlatformSpecificStateProvider().getCommands();
@@ -417,7 +385,7 @@ public class CommandLineParser extends AbstractCommandParser {
             else {
             	commandName = mapping.getNameFromPartial(tokens.peek());
             	if(commandName != null) {
-	            	tokens.set(0, commandName);
+            		tokens.set(0, commandName);
 	            	mapping.evaluate(editor, tokens);
             	}
             }
@@ -534,6 +502,31 @@ public class CommandLineParser extends AbstractCommandParser {
             }
         }
             ;
+    }
+    
+    private static class EvaluatorWithExclaim implements Evaluator {
+    	Command without;
+    	Command with;
+    	
+    	private EvaluatorWithExclaim(Command withoutExclaim, Command withExclaim) {
+    		this.without = withoutExclaim;
+    		this.with = withExclaim;
+    	}
+    	
+    	public Object evaluate(EditorAdaptor vim, Queue<String> command) {
+    		try {
+    			if(command.peek().endsWith("!")) {
+    				with.execute(vim);
+    			}
+    			else {
+    				without.execute(vim);
+    			}
+    		} catch (CommandExecutionException e) {
+    			vim.getUserInterfaceService().setErrorMessage(e.getMessage());
+    		}
+    		return null;
+    	}
+    	
     }
 
     private static class OptionDependentEvaluator implements Evaluator {
