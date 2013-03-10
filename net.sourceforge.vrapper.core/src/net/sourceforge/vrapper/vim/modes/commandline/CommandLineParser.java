@@ -363,8 +363,8 @@ public class CommandLineParser extends AbstractCommandParser {
         		tokens.add("!");
         	}
         	else {
-        		tokens.set(0, tok.substring(0, tok.length()-1));
-        		tokens.set(1, "!");
+        		tokens.add(0, tok.substring(0, tok.length()-1));
+        		tokens.add(1, "!");
         	}
         }
         
