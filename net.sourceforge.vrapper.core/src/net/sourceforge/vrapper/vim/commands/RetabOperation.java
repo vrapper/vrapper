@@ -76,10 +76,6 @@ public class RetabOperation extends SimpleTextOperation {
         if(commandStr == null)
             return;
       
-        commandStr = commandStr.replace("retab", "");
-        commandStr = commandStr.replace("reta", "");
-        commandStr = commandStr.replace("ret", "");
-      
         // Replaces equivalent number of spaces with tab if expandtab is not on
         if(commandStr.contains(REPLACE_NORMAL_SPACE))
             replaceNormalSpace = true;
