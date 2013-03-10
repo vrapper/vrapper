@@ -388,6 +388,9 @@ public class CommandLineParser extends AbstractCommandParser {
             		tokens.set(0, commandName);
 	            	mapping.evaluate(editor, tokens);
             	}
+            	else {
+            		editor.getUserInterfaceService().setErrorMessage("Not an editor command: " + tokens.peek());
+            	}
             }
         }
         
@@ -515,7 +518,7 @@ public class CommandLineParser extends AbstractCommandParser {
     	
     	public Object evaluate(EditorAdaptor vim, Queue<String> command) {
     		try {
-    			if(command.peek().endsWith("!")) {
+    			if( !command.isEmpty() && command.peek().endsWith("!")) {
     				with.execute(vim);
     			}
     			else {
