@@ -77,8 +77,11 @@ public class RetabOperation extends SimpleTextOperation {
             return;
       
         // Replaces equivalent number of spaces with tab if expandtab is not on
-        if(commandStr.contains(REPLACE_NORMAL_SPACE))
+        if(commandStr.contains(REPLACE_NORMAL_SPACE)) {
             replaceNormalSpace = true;
+            //remove '!' so it won't affect the parseInt below
+            commandStr = commandStr.replace(REPLACE_NORMAL_SPACE, "");
+        }
        
         // New tab character
         if(commandStr.length() > 0) {
