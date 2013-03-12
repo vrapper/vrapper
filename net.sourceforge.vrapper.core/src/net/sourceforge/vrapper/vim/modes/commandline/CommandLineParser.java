@@ -354,6 +354,11 @@ public class CommandLineParser extends AbstractCommandParser {
         LinkedList<String> tokens = new LinkedList<String>();
         while(nizer.hasMoreTokens())
             tokens.add(nizer.nextToken().trim());
+        
+        if(tokens.isEmpty()) {
+        	//someone hit "enter" without providing a command
+        	return null;
+        }
             
         //separate '!' from command name
         if(tokens.peek().endsWith("!")) {
