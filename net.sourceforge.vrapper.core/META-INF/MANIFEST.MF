@@ -14,5 +14,5 @@ Export-Package: net.sourceforge.vrapper.keymap,
  net.sourceforge.vrapper.vim.modes,
  net.sourceforge.vrapper.vim.modes.commandline,
  net.sourceforge.vrapper.vim.register
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Eclipse-BuddyPolicy: dependent

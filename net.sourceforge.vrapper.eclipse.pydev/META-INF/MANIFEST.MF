@@ -5,4 +5,4 @@ Bundle-SymbolicName: net.sourceforge.vrapper.eclipse.pydev;singleton:=true
 Bundle-Version: 0.29.20130311
 Fragment-Host: net.sourceforge.vrapper.eclipse;bundle-version="0.29.20130311"
 Require-Bundle: org.python.pydev;bundle-version="2.6.0"
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
