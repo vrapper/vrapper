@@ -8,8 +8,10 @@ import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.vim.VisualMotionState;
 import net.sourceforge.vrapper.keymap.vim.VisualMotionState.Motion2VMC;
 import net.sourceforge.vrapper.utils.CaretType;
+import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.LocalConfiguration;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeToSearchModeCommand;
@@ -72,9 +74,11 @@ public class LinewiseVisualMode extends AbstractVisualMode {
     @Override
     protected void fixSelection() {
         Selection selection = editorAdaptor.getSelection();
-        Position start = selection.getStart();
-        Position end = selection.getEnd();
-        editorAdaptor.setSelection(new LineWiseSelection(editorAdaptor, start, end));
+        if (!selection.getContentType(editorAdaptor.getConfiguration()).equals(ContentType.LINES)) {
+            Position start = selection.getStart();
+            Position end = selection.getEnd();
+            editorAdaptor.setSelection(new LineWiseSelection(editorAdaptor, start, end));
+        }
     }
 
 }

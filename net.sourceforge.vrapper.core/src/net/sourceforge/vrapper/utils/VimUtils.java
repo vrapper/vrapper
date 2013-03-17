@@ -93,6 +93,23 @@ public class VimUtils {
     public static boolean isBlank(String s) {
         return s == null || s.trim().equals("");
     }
+    
+    /**
+     * @return true, if line contains only whitespace characters
+     */
+    public static boolean isLineBlank(TextContent content, int lineNo) {
+        LineInformation line = content.getLineInformation(lineNo);
+        return VimUtils.isBlank(content.getText(line.getBeginOffset(), line.getLength()));
+    }
+    
+    /**
+     * @return true, if the last character in the text buffer is newline
+     */
+    public static boolean endsWithEOL(EditorAdaptor editor) {
+        TextContent content = editor.getModelContent();
+        LineInformation line = content.getLineInformation(content.getNumberOfLines() - 1);
+        return line.getNumber() > 0 && line.getLength() == 0;
+    }
 
     /**
      * Calculates an offset position. Line breaks are not counted.
