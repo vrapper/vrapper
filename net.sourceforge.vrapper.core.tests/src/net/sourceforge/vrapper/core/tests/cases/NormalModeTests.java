@@ -586,6 +586,169 @@ public class NormalModeTests extends CommandTestCase {
     }
 	
 	@Test
+    public void test_dap() {
+	    // "1ac\n\n3ac\n4ac\n\n  \n7ac\n\n  \n\n11ac\n12ac"
+        checkCommand(forKeySeq("dap"),
+                "",'1',"ac\n\n3ac\n4ac\n\n  \n7ac\n\n  \n\n11ac\n12ac",
+                "",'3',"ac\n4ac\n\n  \n7ac\n\n  \n\n11ac\n12ac");
+        checkCommand(forKeySeq("dap"),
+                "1ac\n",'\n',"3ac\n4ac\n\n  \n7ac\n\n  \n\n11ac\n12ac",
+                "1ac\n",'\n',"  \n7ac\n\n  \n\n11ac\n12ac");
+        checkCommand(forKeySeq("dap"),
+                "1ac\n\n",'3',"ac\n4ac\n\n  \n7ac\n\n  \n\n11ac\n12ac",
+                "1ac\n\n",'7',"ac\n\n  \n\n11ac\n12ac");
+        checkCommand(forKeySeq("dap"),
+                "1ac\n\n3ac\n",'4',"ac\n\n  \n7ac\n\n  \n\n11ac\n12ac",
+                "1ac\n\n",'7',"ac\n\n  \n\n11ac\n12ac");
+        checkCommand(forKeySeq("dap"),
+                "1ac\n\n3ac\n4ac\n\n  \n",'7',"ac\n\n  \n\n11ac\n12ac",
+                "1ac\n\n3ac\n4ac\n\n  \n",'1',"1ac\n12ac");
+        
+        // Special cases for file end sections ("do nothing")
+        checkCommand(forKeySeq("dap"),
+                "1ac\n\n3ac\n4ac\n\n  \n7ac\n\n  \n\n11ac\n12ac\n",'\n',"\n",
+                "1ac\n\n3ac\n4ac\n\n  \n7ac\n\n  \n\n11ac\n12ac\n",'\n',"\n");
+        
+        checkCommand(forKeySeq("dap"),
+                "\n\n\n",'f',"oo\nbar\n\n\n\n",
+                "\n\n\n",EOF,"");
+        checkCommand(forKeySeq("dap"),
+                "\n",'\n',"",
+                "\n",'\n',"");
+        checkCommand(forKeySeq("dap"),
+                "hello\n",'w',"orld",
+                "",EOF,"");
+        checkCommand(forKeySeq("dap"),
+                "hello\n",'w',"orld\n",
+                "",EOF,"");
+        checkCommand(forKeySeq("dap"),
+                "",'\n',"\nhello\nworld\n",
+                "",EOF,"");
+        checkCommand(forKeySeq("dap"),
+                "\n\n",'h',"ello\nworld",
+                "",EOF,"");
+        checkCommand(forKeySeq("dap"),
+                "",'h',"ello",
+                "",EOF,"");
+        checkCommand(forKeySeq("dap"),
+                "",EOF,"",
+                "",EOF,"");
+                
+        checkCommand(forKeySeq("dap"),
+                "1ac\n\n3ac\n4ac\n\n  \n7ac\n\n",' '," \n\n11ac\n12ac",
+                "1ac\n\n3ac\n4ac\n\n  \n",'7',"ac");
+        checkCommand(forKeySeq("dap"),
+                "1ac\n\n3ac\n4ac\n\n  \n7ac\n\n  \n",'\n',"11ac\n12ac",
+                "1ac\n\n3ac\n4ac\n\n  \n",'7',"ac");
+        
+        // Special cases for file end sections
+        checkCommand(forKeySeq("dap"),
+                "1ac\n\n3ac\n4ac\n\n  \n7ac\n\n  \n\n",'1',"1ac\n12ac",
+                "1ac\n\n3ac\n4ac\n\n  \n",'7',"ac");
+        checkCommand(forKeySeq("dap"),
+                "1ac\n\n3ac\n4ac\n\n  \n7ac\n\n  \n\n11ac\n",'1',"2ac",
+                "1ac\n\n3ac\n4ac\n\n  \n",'7',"ac");
+	}
+	
+	@Test
+    public void test_2dap() {
+        checkCommand(forKeySeq("2dap"),
+                "",'1',"ac\n\n3ac\n4ac\n\n  \n7ac\n\n  \n\n11ac\n12ac",
+                "",'7',"ac\n\n  \n\n11ac\n12ac");
+        checkCommand(forKeySeq("2dap"),
+                "1ac\n",'\n',"3ac\n4ac\n\n  \n7ac\n\n  \n\n11ac\n12ac",
+                "1ac\n",'\n',"  \n\n11ac\n12ac");
+        checkCommand(forKeySeq("2dap"),
+                "1ac\n\n",'3',"ac\n4ac\n\n  \n7ac\n\n  \n\n11ac\n12ac",
+                "1ac\n\n",'1',"1ac\n12ac");
+        
+        checkCommand(forKeySeq("2dap"),
+                "1ac\n\n3ac\n4ac\n",'\n',"  \n7ac\n\n  \n\n11ac\n12ac",
+                "1ac\n\n3ac\n",'4',"ac");
+        checkCommand(forKeySeq("2dap"),
+                "1ac\n\n3ac\n4ac\n\n  \n",'7',"ac\n\n  \n\n11ac\n12ac",
+                "1ac\n\n3ac\n",'4',"ac");
+	}
+	
+	@Test
+    public void test_dip() {
+        checkCommand(forKeySeq("dip"),
+                "",'1',"ac\n\n3ac\n4ac\n\n  \n7ac\n\n  \n\n11ac\n12ac",
+                "",'\n',"3ac\n4ac\n\n  \n7ac\n\n  \n\n11ac\n12ac");
+        checkCommand(forKeySeq("dip"),
+                "1ac\n",'\n',"3ac\n4ac\n\n  \n7ac\n\n  \n\n11ac\n12ac",
+                "1ac\n",'3',"ac\n4ac\n\n  \n7ac\n\n  \n\n11ac\n12ac");
+        checkCommand(forKeySeq("dip"),
+                "1ac\n\n",'3',"ac\n4ac\n\n  \n7ac\n\n  \n\n11ac\n12ac",
+                "1ac\n\n",'\n',"  \n7ac\n\n  \n\n11ac\n12ac");
+        checkCommand(forKeySeq("dip"),
+                "1ac\n\n3ac\n",'4',"ac\n\n  \n7ac\n\n  \n\n11ac\n12ac",
+                "1ac\n\n",'\n',"  \n7ac\n\n  \n\n11ac\n12ac");
+        checkCommand(forKeySeq("dip"),
+                "1ac\n\n3ac\n4ac\n\n  \n7ac\n\n",' '," \n\n11ac\n12ac",
+                "1ac\n\n3ac\n4ac\n\n  \n7ac\n",'1',"1ac\n12ac");
+        
+        // Special cases for file end sections
+        checkCommand(forKeySeq("dip"),
+                "1ac\n\n3ac\n4ac\n\n  \n7ac\n\n  \n\n",'1',"1ac\n12ac",
+                "1ac\n\n3ac\n4ac\n\n  \n7ac\n\n  \n",EOF,"");
+        checkCommand(forKeySeq("dip"),
+                "1ac\n\n3ac\n4ac\n\n  \n7ac\n\n  \n\n11ac\n",'1',"2ac",
+                "1ac\n\n3ac\n4ac\n\n  \n7ac\n\n  \n",EOF,"");
+        
+        checkCommand(forKeySeq("dip"),
+                "\n\n\n",'f',"oo\nbar\n\n\n\n",
+                "\n\n\n",'\n',"\n\n");
+        checkCommand(forKeySeq("dip"),
+                "\n",'\n',"",
+                "",EOF,"");
+        checkCommand(forKeySeq("dip"),
+                "hello\n",'w',"orld",
+                "",EOF,"");
+        checkCommand(forKeySeq("dip"),
+                "hello\n",'w',"orld\n",
+                "",EOF,"");
+        checkCommand(forKeySeq("dip"),
+                "\n\n",'h',"ello\nworld",
+                "\n",EOF,"");
+        checkCommand(forKeySeq("dip"),
+                "",'h',"ello",
+                "",EOF,"");
+        checkCommand(forKeySeq("dip"),
+                "",EOF,"",
+                "",EOF,"");
+        
+        // Cases for buffers with EOL at the end
+        checkCommand(forKeySeq("dip"),
+                "\n\n",'h',"ello\nworld\n",
+                "\n\n",EOF,"");
+        checkCommand(forKeySeq("dip"),
+                "1ac\n\n3ac\n4ac\n\n  \n7ac\n\n  \n\n11ac\n12ac\n",'\n',"\n",
+                "1ac\n\n3ac\n4ac\n\n  \n7ac\n\n  \n\n11ac\n12ac\n",EOF,"");
+	}
+	
+	@Test
+    public void test_2dip() {
+        checkCommand(forKeySeq("2dip"),
+                "",'1',"ac\n\n3ac\n4ac\n\n  \n7ac\n\n  \n\n11ac\n12ac",
+                "",'3',"ac\n4ac\n\n  \n7ac\n\n  \n\n11ac\n12ac");
+        checkCommand(forKeySeq("2dip"),
+                "1ac\n",'\n',"3ac\n4ac\n\n  \n7ac\n\n  \n\n11ac\n12ac",
+                "1ac\n",'\n',"  \n7ac\n\n  \n\n11ac\n12ac");
+        checkCommand(forKeySeq("2dip"),
+                "1ac\n\n",'3',"ac\n4ac\n\n  \n7ac\n\n  \n\n11ac\n12ac",
+                "1ac\n\n",'7',"ac\n\n  \n\n11ac\n12ac");
+        checkCommand(forKeySeq("2dip"),
+                "1ac\n\n3ac\n4ac\n\n  \n7ac\n",'\n',"  \n\n11ac\n12ac",
+                "1ac\n\n3ac\n4ac\n\n  \n",'7',"ac");
+        
+        // Cases for buffers with EOL at the end
+        checkCommand(forKeySeq("2dip"),
+                "1ac\n\n3ac\n4ac\n\n  \n7ac\n",'\n',"  \n\n11ac\n12ac\n",
+                "1ac\n\n3ac\n4ac\n\n  \n7ac\n",EOF,"");
+	}
+
+	@Test
 	public void test_gq_mergeLines() {
 		//Some of these tests move the cursor when they shouldn't;
 		//some of these tests append a newline when they shouldn't.
@@ -693,7 +856,7 @@ public class NormalModeTests extends CommandTestCase {
                 "/* this",' ',"line will be split multiple times */",
                 "", '/', "* this\n* line\n* will\n* be\n* split\n* multiple\n* times\n* */\n");
 	}
-
+	
 	@Test
     public void testSurroundPlugin_ds() {
         when(platform.getPlatformSpecificStateProvider()).thenReturn(SurroundStateProvider.INSTANCE);
