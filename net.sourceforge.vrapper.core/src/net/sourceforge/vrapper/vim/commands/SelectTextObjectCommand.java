@@ -22,7 +22,21 @@ public class SelectTextObjectCommand extends CountAwareCommand {
         switch (textObject.getContentType(editorAdaptor.getConfiguration())) {
         case TEXT_RECTANGLE: throw new UnsupportedOperationException("rectangular selection");
         case LINES:
-            selection = new LineWiseSelection(editorAdaptor, region.getStart(), region.getEnd());
+            /**
+             * TODO: ugly casting. The problem is, that if textObject already
+             * returns a LineWiseSelection, then by creating new instance of
+             * LineWiseSelection from the old one we extend the selected range
+             * by one line. This is due implementation of LineWiseSelection,
+             * whose getEnd() points to the line AFTER the actual selection. It
+             * might be solved by refactoring TextRange with introduction of
+             * linewise range (by line numbers)
+             */
+            if (region instanceof LineWiseSelection) {
+                selection = (LineWiseSelection) region;
+            }
+            else {
+                selection = new LineWiseSelection(editorAdaptor, region.getStart(), region.getEnd());
+            }
             newMode = LinewiseVisualMode.NAME;
             break;
         case TEXT:
