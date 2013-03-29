@@ -59,7 +59,8 @@
     </tr>
     <tr>
         <td>:e &lt;filename&gt;</td>
-        <td>Opens a file relative to the current working directory.</td>
+        <td>Opens a file relative to the current working directory.<br/>
+            If &lt;filename&gt; doesn't exist, create a new file in the current working directory.</td>
     </tr>
     <tr>
         <td>:cd &lt;directory&gt;</td>
@@ -70,7 +71,7 @@
         <td>Print current working directory.</td>
     </tr>
     <tr>
-        <td>:find &lt;filename&gt;</td>
+        <td>:find &lt;filename&gt;<br/>:tabfind &lt;filename&gt;</td>
         <td>Opens a file found in the list of directories defined by 'path' variable.</td>
     </tr>
     <tr>
@@ -86,7 +87,7 @@
         <td>Close current editor (tab)</td>
     </tr>
     <tr>
-        <td>:only</td>
+        <td>:only<br/>:tabonly</td>
         <td>Close all "other" Eclipse editors (close other tabs)</td>
     </tr>
     <tr>
@@ -96,6 +97,10 @@
     <tr>
         <td>:ls</td>
         <td>List all open editors</td>
+    </tr>
+    <tr>
+        <td>:source &lt;filename&gt;</td>
+        <td>Include another config file (e.g., ":source .vimrc") to extend current configuration</td>
     </tr>
     <tr>
         <td><nobr>:[%]s/&lt;search&gt;/&lt;replace&gt;/[g|i]</nobr></td>
@@ -157,6 +162,18 @@
         <li>Sort will compare the text at cursor position after the /pattern/ match</li>
         </ul>
         </ul>
+        </td>
+    </tr>
+    <tr>
+        <td>:retab[!] [N]</td>
+        <td>Replace all tabs with spaces (or spaces with tabs) within the file.
+            <ul>
+                <li>If '!' is specified, replace all spaces with equivalent number of tabs</li>
+                <li>If 'N' is specified, replace each tab with 'N'
+                    spaces rather than the value stored in 'tabstop' config property.</li>
+            </ul>
+            If neither '!' nor 'N' is specified, the behavior is determined by the 'expandtab' and 'tabstop'
+            config properties.
         </td>
     </tr>
     <tr>

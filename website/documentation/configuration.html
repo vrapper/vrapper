@@ -115,6 +115,13 @@
         </td>
     </tr>
     <tr>
+        <td>:set&nbsp;cursorline<br/>:set&nbsp;nocursorline</td>
+        <td>:set&nbsp;cul<br />:set&nbsp;nocul</td>
+        <td>Off</td>
+        <td>Show/Hide highlight on line with cursor.
+        </td>
+    </tr>
+    <tr>
         <td>:set&nbsp;autochdir<br/>:set&nbsp;noautochdir</td>
         <td>:set&nbsp;acd<br />:set&nbsp;noacd</td>
         <td>Off</td>
@@ -153,11 +160,25 @@
         </td>
     </tr>
     <tr>
+        <td>:set&nbsp;tabstop=&lt;N&gt;</td>
+        <td>:set&nbsp;ts=&lt;N&gt;</td>
+        <td>tabstop=8</td>
+        <td>Only used by :retab operation.  Determines number of spaces used to replace each tab in current file
+            when 'expandtab' is enabled.</td>
+    </tr>
+    <tr>
+        <td>:set&nbsp;expandtab<br/>:set&nbsp;noexpandtab</td>
+        <td>:set&nbsp;et<br />:set&nbsp;noet</td>
+        <td>On</td>
+        <td>Only used by :retab operation.  Determines whether :retab should replace all tabs with spaces (true) or spaces with tabs (false).</td>
+    </tr>
+    <tr>
         <td>:set&nbsp;path=&lt;comma-delimited list of dirs&gt;</td>
         <td>none</td>
         <td>path=.</td>
         <td>List of directories searched during the ':find &lt;filename&gt;' command.
-        Default directory of '.' represents directory of the current active file in Eclipse.</td>
+        Default directory of '.' represents directory of the current active file in Eclipse.
+        A path may end in '**' to represent "all sub-directories".<br/>For example, ":set path=src/main/java/**"</td>
     </tr>
     <tr>
         <td>:set&nbsp;clipboard=&lt;name&gt;</td>
@@ -255,7 +276,9 @@
 <p>It is possible to map multiple keys to multiple other keys, e.g.
    ":ino jj &lt;ESC&gt;" or ":nn cw ce".</p>
    <p>Special characters can be mapped by using the notation &lt;NAME&gt;.
-   Control characters are mapped by using &lt;C-x&gt; where x is a character from A-Z. Here is a list of special character names:</p>
+   Control characters are mapped by using &lt;C-x&gt;, where x is a character from A-Z. Similarly, Alt (meta) characters
+   are mapped by using &lt;A-x&gt; or &lt;M-x&gt; and Shift characters are mapped by using &lt;S-x&gt;.
+   Here is a list of special character names:</p>
    <ul class="commands">
        <li>GT</li>
        <li>LT</li>
@@ -286,8 +309,8 @@ Vrapper should now receive the keystrokes and your mapping should work
 correctly.</p>
 <h3>Configuration File</h3>
 <p>The options described above only change the behaviour of the editor in which they are set.
-To change the default configuration, a file is used. When a new editor is opened, the plugin checks for a file called ".vrapperrc"
-in the user's home directory (or "_vrapperrc" to make it easier for Windows people). If found, the commands in the file are executed. You may use any
+To change the default configuration, a file is used. When a new editor is opened, the plugin checks for a file called "<b>.vrapperrc</b>"
+in the user's home directory (or "<b>_vrapperrc</b>" to make it easier for Windows people). If found, the commands in the file are executed. You may use any
 configuration command in this file. As with ".vimrc" files, the leading ":" is omitted in the configuration file.</p>
 <p>This is an example of the contents of a configuration file:</p>
 <pre>
