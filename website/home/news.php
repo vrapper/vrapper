@@ -1,4 +1,30 @@
 <div class="newsbox">
+    <div class="date">2013-03-29</div>
+    <h4>0.30.0 Released</h4>
+    <p>Looks like I'm hitting my stride with a two-month release cycle.  0.30.0
+    is released and ready for use.  There were only a few changes since my last
+    update which were included in this release:</p>
+    <ul>
+        <li>Added support for :retab operation</li>
+        <li>Added support for partial command-line names</li>
+        <ul>
+            <li>e.g., :tabprev, :tabpre, :tabpr, etc. all work now</li>
+        </ul>
+        <li>Reimplemented paragraph text objects to match Vim's behavior</li>
+    </ul>
+    
+    <p>The partial command-line names work pretty well as long as there isn't a name collision.
+    For example, ':tabne' could be ':tabnew' or ':tabnext'.  Vim has some way to define precedence but
+    Vrapper will just fail when this happens.  I think the current solution should work in most cases
+    but there will be a couple places where you may still need to be explicit with the name.  Either way,
+    this is an improvement over the previous implementation which required me to explicitly define every
+    partial name supported.  Now I only need to explicitly define the collisions like ':tabn' going to ':tabnext'.</p>
+    
+    <p>Also, as I mentioned in my previous post, there was a lot of code submitted by contributors this release.
+    I'm glad people are willing to help me out and constantly improve Vrapper.  Thank you for helping to
+    keep this project alive!</p>
+</div>
+<div class="newsbox">
     <div class="date">2013-03-09</div>
     <h4>More updates to unstable update site</h4>
     <p>It's been over a month since my last update so I decided to look
