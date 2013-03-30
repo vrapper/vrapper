@@ -47,6 +47,19 @@ public class SearchCommandParser extends AbstractCommandParser {
         boolean caseSensitive = ! editor.getConfiguration().get(Options.IGNORE_CASE)
             || (editor.getConfiguration().get(Options.SMART_CASE)
                 && StringUtils.containsUppercase(keyword));
+        
+        //special case to override global 'ignorecase' property (see :help \c)
+        if(keyword.contains("\\c")) {
+        	int index = keyword.indexOf("\\c");
+        	caseSensitive = false;
+        	//replaceAll doesn't like \\c, so cut out the characters this way
+        	keyword = keyword.substring(0, index) + keyword.substring(index+2);
+        }
+        if(keyword.contains("\\C")) {
+        	int index = keyword.indexOf("\\C");
+        	caseSensitive = true;
+        	keyword = keyword.substring(0, index) + keyword.substring(index+2);
+        }
         //can't mix wholeWord and regex search, Eclipse chokes
         //(if we're searching for wholeWord it isn't a regex anyway)
         boolean useRegExp = !wholeWord && editor.getConfiguration().get(Options.SEARCH_REGEX);
