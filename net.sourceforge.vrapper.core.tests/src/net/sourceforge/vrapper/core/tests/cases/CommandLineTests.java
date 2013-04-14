@@ -6,6 +6,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -107,6 +108,9 @@ public class CommandLineTests extends VimTestCase {
     @Test
     public void testRetab() throws CommandExecutionException {
     	SimpleTextOperation retabCommand = (SimpleTextOperation) new RetabOperation(null);
+    
+    	when(configuration.get(Options.EXPAND_TAB)).thenReturn(true);
+    	when(configuration.get(Options.TAB_STOP)).thenReturn(4);
     	
     	content.setText("\t");
     	retabCommand.execute(adaptor, null, ContentType.LINES);
