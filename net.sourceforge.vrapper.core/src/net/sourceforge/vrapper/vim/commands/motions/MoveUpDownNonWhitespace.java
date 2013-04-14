@@ -12,23 +12,27 @@ import net.sourceforge.vrapper.vim.commands.MotionCommand;
  */
 public class MoveUpDownNonWhitespace extends CountAwareMotion {
 
-    public static final MoveUpDownNonWhitespace MOVE_DOWN = new MoveUpDownNonWhitespace(true);
-    public static final MoveUpDownNonWhitespace MOVE_UP = new MoveUpDownNonWhitespace(false);
+    public static final MoveUpDownNonWhitespace MOVE_DOWN_LESS_ONE = new MoveUpDownNonWhitespace(true, 0);
+    public static final MoveUpDownNonWhitespace MOVE_DOWN = new MoveUpDownNonWhitespace(true, 1);
+    public static final MoveUpDownNonWhitespace MOVE_UP = new MoveUpDownNonWhitespace(false, 1);
     private boolean down = false;
-    
-    private MoveUpDownNonWhitespace(boolean down) {
-    	this.down = down;
+    private int defaultAmount = 1;
+
+    private MoveUpDownNonWhitespace(boolean down, int defaultAmount) {
+        this.down = down;
+        this.defaultAmount = defaultAmount;
     }
 
     @Override
-    public Position destination(EditorAdaptor editorAdaptor, int count)
-            throws CommandExecutionException {
-    	if(down) {
-    		MotionCommand.doIt(editorAdaptor, MoveDown.INSTANCE.withCount(count));
-    	}
-    	else {
-    		MotionCommand.doIt(editorAdaptor, MoveUp.INSTANCE.withCount(count));
-    	}
+    public Position destination(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
+        int linesToMove = count + defaultAmount;
+        if (linesToMove > 0) {
+            if (down) {
+                MotionCommand.doIt(editorAdaptor, MoveDown.INSTANCE.withCount(linesToMove - 1));
+            } else {
+                MotionCommand.doIt(editorAdaptor, MoveUp.INSTANCE.withCount(linesToMove - 1));
+            }
+        }
         return LineStartMotion.NON_WHITESPACE.destination(editorAdaptor);
     }
 
