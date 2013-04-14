@@ -99,6 +99,7 @@ public abstract class CommandBasedMode extends AbstractMode {
             final Motion moveUp = MoveUp.INSTANCE;
             final Motion moveDown = MoveDown.INSTANCE;
             final Motion moveDownNonWhitespace = MoveUpDownNonWhitespace.MOVE_DOWN;
+            final Motion moveDownLessOneNonWhitespace = MoveUpDownNonWhitespace.MOVE_DOWN_LESS_ONE;
             final Motion moveUpNonWhitespace = MoveUpDownNonWhitespace.MOVE_UP;
             final Motion moveToColumn = MoveToColumn.INSTANCE;
             final Motion findNext = SearchResultMotion.FORWARD;
@@ -150,6 +151,7 @@ public abstract class CommandBasedMode extends AbstractMode {
                     leafBind(SpecialKey.RETURN, moveDownNonWhitespace),
                     leafBind('+', moveDownNonWhitespace),
                     leafBind('-', moveUpNonWhitespace),
+                    leafBind('_', moveDownLessOneNonWhitespace),
                     leafBind(' ', (Motion) MoveRightAcrossLines.INSTANCE),
                     leafBind(SpecialKey.BACKSPACE, (Motion) MoveLeftAcrossLines.INSTANCE),
                     leafBind(SpecialKey.ARROW_LEFT, moveLeft),
