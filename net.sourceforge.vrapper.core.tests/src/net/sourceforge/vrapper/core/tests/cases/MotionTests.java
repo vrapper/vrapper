@@ -127,6 +127,44 @@ public class MotionTests extends CommandTestCase {
 				"something ", 's', "omething\n	something something\nelse",
 				"something something\n	", 's', "omething something\nelse");
 	}
+	   
+    @Test
+    public void testMoveDownLessOne() {
+        Motion moveDownLessOne = MoveUpDownNonWhitespace.MOVE_DOWN_LESS_ONE;
+        checkMotion(moveDownLessOne,
+                "something ", 's', "omething",
+                "", 's', "omething something");
+        
+        //should stay on the same line
+        checkMotion(moveDownLessOne,
+                "line 1\nlin",'e'," 2\nline 3",
+                "line 1\n",'l',"ine 2\nline 3");
+        
+        checkMotion(moveDownLessOne,
+                "line 1\nline 2\nli",'n',"e 3",
+                "line 1\nline 2\n",'l',"ine 3");
+        
+        //the motion needs to be given a count of 2 to actually move down
+        checkMotion(moveDownLessOne, 2,
+                "something ", 's', "omething\nsomething something\nelse",
+                "something something\n", 's', "omething something\nelse");
+        
+        //otherwise it stays on the current line
+        checkMotion(moveDownLessOne,
+                "something ", 's', "omething\nsomething something\nelse",
+                "",'s',"omething something\nsomething something\nelse");
+        
+        //leading spaces
+        checkMotion(moveDownLessOne,
+                "    something ", 's', "omething\nsomething else",
+                "    ",'s',"omething something\nsomething else");
+        
+        //leading tab
+        checkMotion(moveDownLessOne,
+                "   something ", 's', "omething",
+                "   ",'s',"omething something");
+    
+    }
 
 	public void testCommonMoveWordWORDRight(Motion wordMotion) {
 		// simple stuff
