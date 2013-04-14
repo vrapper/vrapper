@@ -70,6 +70,10 @@ public class EclipseFileService implements FileService {
     
     public boolean closeOthers(boolean force) {
     	IWorkbenchPage page = editor.getSite().getPage();
+    	if(page.getEditorReferences().length < 2) {
+    		return true;
+    	}
+    	
         if (force || page.getDirtyEditors().length == 0) {
         	IHandlerService handlerService = (IHandlerService) PlatformUI
                     .getWorkbench().getService(IHandlerService.class);
