@@ -4,7 +4,7 @@ public interface FileService {
 
 	boolean isEditable();
 
-	void revertFile();
+	boolean revertFile();
 	
 	boolean close(boolean force);
 	

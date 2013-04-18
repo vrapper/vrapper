@@ -42,14 +42,19 @@ public class EclipseFileService implements FileService {
         return editor.isEditable();
     }
     
-    public void revertFile() {
+    private boolean runCommand(String commandId) {
     	IHandlerService handlerService = (IHandlerService) PlatformUI
                 .getWorkbench().getService(IHandlerService.class);
         try {
-			handlerService.executeCommand(IWorkbenchCommandConstants.FILE_REVERT, null);
+			handlerService.executeCommand(commandId, null);
 		} catch (CommandException e) {
-			//is there any reason why this would fail?
+			return false;
 		}
+    	return true;
+    }
+    
+    public boolean revertFile() {
+    	return runCommand(IWorkbenchCommandConstants.FILE_REVERT);
     }
 
     public boolean close(boolean force) {
@@ -85,18 +90,10 @@ public class EclipseFileService implements FileService {
     	}
     	
         if (force || page.getDirtyEditors().length == 0) {
-        	IHandlerService handlerService = (IHandlerService) PlatformUI
-                    .getWorkbench().getService(IHandlerService.class);
-            try {
-            	//this operation will prompt if you have unsaved changes
-            	//(meaning :only! doesn't actually work)
-            	//how can I invoke this operation without that prompt?
-                handlerService.executeCommand(IWorkbenchCommandConstants.FILE_CLOSE_OTHERS, null);
-            } catch (CommandException e) {
-                return false;
-            } 
-        	
-        	return true;
+        	//this operation will prompt if you have unsaved changes
+        	//(meaning :only! doesn't actually work)
+        	//how can I invoke this operation without that prompt?
+        	return runCommand(IWorkbenchCommandConstants.FILE_CLOSE_OTHERS);
         }
         return false;
     }
@@ -105,29 +102,13 @@ public class EclipseFileService implements FileService {
         if (editor.isDirty() && editor.isEditable()) {
         	//use the handler service so it sends all the right "save" events
         	//to any listeners (such as the AnyEdit plugin)
-        	IHandlerService handlerService = (IHandlerService) PlatformUI
-                    .getWorkbench().getService(IHandlerService.class);
-            try {
-                handlerService.executeCommand(IWorkbenchCommandConstants.FILE_SAVE, null);
-            } catch (CommandException e) {
-                return false;
-            } 
-        	
-            return true;
+        	return runCommand(IWorkbenchCommandConstants.FILE_SAVE);
         }
         return false;
     }
     
     public boolean saveAll() {
-    	IHandlerService handlerService = (IHandlerService) PlatformUI
-    			.getWorkbench().getService(IHandlerService.class);
-    	try {
-    		handlerService.executeCommand(IWorkbenchCommandConstants.FILE_SAVE_ALL, null);
-    	} catch (CommandException e) {
-    		return false;
-    	} 
-
-    	return true;
+    	return runCommand(IWorkbenchCommandConstants.FILE_SAVE_ALL);
     }
     
     /**
