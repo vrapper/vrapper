@@ -80,6 +80,11 @@ public class ParagraphMotion extends CountAwareMotion {
     public boolean updateStickyColumn() {
         return true;
     }
+    
+    @Override
+    public boolean isJump() {
+        return true;
+    }
 
     public static class ParagraphTextObject extends AbstractTextObject {
 

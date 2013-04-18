@@ -141,4 +141,9 @@ public class SentenceMotion extends CountAwareMotion {
 	public boolean updateStickyColumn() {
 		return true;
 	}
+	
+	@Override
+	public boolean isJump() {
+	    return true;
+	}
 }
