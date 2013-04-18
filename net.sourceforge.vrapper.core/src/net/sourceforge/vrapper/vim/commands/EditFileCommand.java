@@ -11,8 +11,12 @@ public class EditFileCommand extends CountIgnoringNonRepeatableCommand {
 		this.filename = filename;
 	}
 
-	public void execute(EditorAdaptor editorAdaptor)
-			throws CommandExecutionException {
+	public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
+		
+		if("!".equals(filename)) {
+			editorAdaptor.getFileService().revertFile();
+			return;
+		}
 		
 		//if not an absolute path
 		if(!filename.startsWith("/")) {

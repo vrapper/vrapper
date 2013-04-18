@@ -41,6 +41,16 @@ public class EclipseFileService implements FileService {
     public boolean isEditable() {
         return editor.isEditable();
     }
+    
+    public void revertFile() {
+    	IHandlerService handlerService = (IHandlerService) PlatformUI
+                .getWorkbench().getService(IHandlerService.class);
+        try {
+			handlerService.executeCommand(IWorkbenchCommandConstants.FILE_REVERT, null);
+		} catch (CommandException e) {
+			//is there any reason why this would fail?
+		}
+    }
 
     public boolean close(boolean force) {
         if (force || !editor.isDirty()) {
