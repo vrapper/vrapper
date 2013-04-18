@@ -127,7 +127,8 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
      */
     private boolean isOperationChar(char c) {
     	//what other operations do we support?
-    	return c == 'd' || c == 'y' || c == 's' || c == 'v' || c == 'g' || c == 'r';
+    	return c == 'd' || c == 'y' || c == 's' || c == 'v' || c == 'g'
+    			|| c == 'r' || c == 't' || c == 'c' || c == 'm' ;
     }
     
     /**
@@ -332,6 +333,12 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
     	}
     	else if(operation == 'r' && (remainingChars.startsWith("ret"))) {
     	    return new RetabOperation(remainingChars);
+    	}
+    	else if(operation == 'c' || operation == 't') {
+    		return new CopyMoveLinesOperation(remainingChars, false);
+    	}
+    	else if(operation == 'm') {
+    		return new CopyMoveLinesOperation(remainingChars, true);
     	}
     	else {
     		editorAdaptor.getUserInterfaceService().setErrorMessage("Unknown operation for range: " + operation);
