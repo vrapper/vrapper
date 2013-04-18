@@ -25,6 +25,10 @@ public class YankOperation extends SimpleTextOperation {
     }
 
     public static void doIt(EditorAdaptor editorAdaptor, TextRange range, ContentType contentType) {
+    	if(range == null) {
+    		return;
+    	}
+    	
         String text = editorAdaptor.getModelContent().getText(range.getLeftBound().getModelOffset(), range.getModelLength());
         //if we're expecting lines and this text doesn't end in a newline,
         //manually append a newline to the end

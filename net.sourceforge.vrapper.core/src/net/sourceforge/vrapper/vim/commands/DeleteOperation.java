@@ -29,6 +29,10 @@ public class DeleteOperation extends SimpleTextOperation {
     }
 
     public static void doIt(EditorAdaptor editorAdaptor, TextRange range, ContentType contentType) {
+    	if(range == null) {
+    		return;
+    	}
+    	
         YankOperation.doIt(editorAdaptor, range, contentType);
 
         if (editorAdaptor.getFileService().isEditable()) {
