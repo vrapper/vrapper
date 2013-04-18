@@ -143,7 +143,7 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
     	String modifierDef = "";
     	char modifier = 0;
     	String[] pieces;
-    	Pattern endsWithNumber = Pattern.compile("^.+?(\\d+)$");
+    	Pattern endsWithNumber = Pattern.compile("^\\D+?(\\d+)$");
     	Matcher match = endsWithNumber.matcher(range);
     	
     	//are there modifiers like 3+2 or .-4 or 'a+6?
