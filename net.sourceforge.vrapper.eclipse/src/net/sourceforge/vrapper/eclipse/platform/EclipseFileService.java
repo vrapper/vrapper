@@ -37,6 +37,25 @@ public class EclipseFileService implements FileService {
     public EclipseFileService(AbstractTextEditor editor) {
         this.editor = editor;
     }
+    
+    /**
+     * Open the current file in gvim to perform any operations Vrapper doesn't
+     * support. The cursor will be in the exact same position in gvim as it was
+     * in Vrapper.  As soon as you save and close gvim, Eclipse will notice the
+     * file changed and ask to reload.
+     */
+    public boolean openInGvim(String gvimpath, int row, int col) {
+    	Process p;
+    	String filePath = getCurrentFile().getRawLocation().toString();
+		try {
+			String[] cmd = { gvimpath, "+" + row, "-c", "normal " + col + "|", "-n", filePath };
+			p = Runtime.getRuntime().exec(cmd);
+	    	p.waitFor();
+		} catch (Exception e) {
+			return false;
+		}
+		return true;
+    }
 
     public boolean isEditable() {
         return editor.isEditable();

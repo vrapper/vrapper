@@ -22,6 +22,7 @@ import net.sourceforge.vrapper.vim.commands.FindFileCommand;
 import net.sourceforge.vrapper.vim.commands.LineRangeOperationCommand;
 import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
+import net.sourceforge.vrapper.vim.commands.OpenInGvimCommand;
 import net.sourceforge.vrapper.vim.commands.RedoCommand;
 import net.sourceforge.vrapper.vim.commands.RepeatLastSubstitutionCommand;
 import net.sourceforge.vrapper.vim.commands.RetabOperation;
@@ -256,6 +257,7 @@ public class CommandLineParser extends AbstractCommandParser {
         mapping.add("hls", hlsearch);
         mapping.add("pwd", printWorkingDir);
         mapping.add("e", editFile);
+        mapping.add("vim", OpenInGvimCommand.INSTANCE);
         mapping.add("find", findFile);
         mapping.add("tabfind", findFile);
         mapping.add("cd", chDir);

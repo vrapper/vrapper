@@ -2,6 +2,8 @@ package net.sourceforge.vrapper.platform;
 
 public interface FileService {
 
+	boolean openInGvim(String gvimpath, int row, int col);
+	
 	boolean isEditable();
 
 	boolean revertFile();

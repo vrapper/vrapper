@@ -43,8 +43,9 @@ public interface Options {
     public static final Option<String> CLIPBOARD = string("clipboard", "autoselect", "unnamed, autoselect", "cb");
     public static final Option<String> SELECTION = string("selection", "inclusive", "old, inclusive, exclusive", "sel");
     public static final Option<String> PATH      = stringNoConstraint("path", ".", "pa");
+    public static final Option<String> GVIM_PATH = stringNoConstraint("gvimpath", "/usr/bin/gvim", "gvp");
     @SuppressWarnings("unchecked")
-    public static final Set<Option<String>> STRING_OPTIONS = set(CLIPBOARD, SELECTION, PATH);
+    public static final Set<Option<String>> STRING_OPTIONS = set(CLIPBOARD, SELECTION, PATH, GVIM_PATH);
 
     // Int options:
     public static final Option<Integer> SCROLL_OFFSET = integer("scrolloff",   0, "so");
