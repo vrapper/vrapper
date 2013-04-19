@@ -1,11 +1,10 @@
 package net.sourceforge.vrapper.vim.commands;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.ContentType;
+import net.sourceforge.vrapper.utils.LineAddressParser;
 import net.sourceforge.vrapper.utils.LineInformation;
+import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 
@@ -23,24 +22,13 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
  */
 public class CopyMoveLinesOperation extends SimpleTextOperation {
 	
-	private int destination;
+	private String address;
 	private boolean move; //move (true) or copy (false)
-    private Pattern endsWithNumber = Pattern.compile("^\\D+?(\\d+)$");
 	
-	public CopyMoveLinesOperation(int destination, boolean move) {
-		this.destination = destination;
-		this.move = move;
-	}
-	
-	public CopyMoveLinesOperation(String destination, boolean move) {
-    	Matcher match = endsWithNumber.matcher(destination);
-    	
-    	if(match.matches()) {
-			this.destination = Integer.parseInt(match.group(1));
-    	}
-    	else {
-    		this.destination = -1;
-    	}
+	public CopyMoveLinesOperation(String address, boolean move) {
+		//address should be something like "co 12" or "co .+3"
+		//chop off the operation and space, leaving the definition
+    	this.address = address.substring(address.indexOf(' ')).trim();
     	this.move = move;
 	}
 
@@ -53,25 +41,26 @@ public class CopyMoveLinesOperation extends SimpleTextOperation {
 	public void execute(EditorAdaptor editorAdaptor, TextRange region,
 			ContentType contentType) throws CommandExecutionException {
 		
-		if(destination < 1) {
-			return;
+		Position destination = LineAddressParser.parseAddressPosition(address, editorAdaptor);
+		
+		if(destination == null) {
+			throw new CommandExecutionException("Invalid address");
 		}
 		
 		TextContent content = editorAdaptor.getModelContent();
 		String lines = content.getText(region);
-		int length = region.getModelLength();
-		
-		if(destination >= content.getNumberOfLines()) {
-			destination = content.getNumberOfLines();
-		}
-		LineInformation destLine = content.getLineInformation(destination);
+		//destination might be a position in the middle of a line
+		LineInformation line = content.getLineInformationOfOffset(destination.getModelOffset());
+		int offset = content.getLineInformation(line.getNumber() + 1).getBeginOffset();
 		
 		editorAdaptor.getHistory().beginCompoundChange();
-		content.replace(destLine.getBeginOffset(), 0, lines);
+		content.replace(offset, 0, lines);
     		
 		if(move) {
-			content.replace(region.getStart().getModelOffset(), length, "");
+			//remove the old content
+			content.replace(region.getStart().getModelOffset(), region.getModelLength(), "");
 		}
+		
 		editorAdaptor.getHistory().endCompoundChange();
 	}
 
