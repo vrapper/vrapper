@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.FileService;
 
 import org.eclipse.core.commands.common.CommandException;
@@ -45,15 +46,23 @@ public class EclipseFileService implements FileService {
      * file changed and ask to reload.
      */
     public boolean openInGvim(String gvimpath, int row, int col) {
-    	Process p;
+    	if(editor.isDirty()) {
+    		editor.doSave(null);
+    	}
     	String filePath = getCurrentFile().getRawLocation().toString();
-		try {
-			String[] cmd = { gvimpath, "+" + row, "-c", "normal " + col + "|", "-n", filePath };
-			p = Runtime.getRuntime().exec(cmd);
-	    	p.waitFor();
-		} catch (Exception e) {
-			return false;
-		}
+    	final String[] cmd = { gvimpath, "+" + row, "-c", "normal " + col + "|", "-n", filePath };
+    	new Thread() {
+    		public void run() {
+    			try {
+    				Process p = Runtime.getRuntime().exec(cmd);
+    				p.waitFor();
+    				//tell eclipse to reload the file
+    				runCommand("org.eclipse.ui.file.refresh");
+    			} catch (Exception e) {
+    				VrapperLog.error(e.getMessage());
+    			}
+    		}
+    	}.start();
 		return true;
     }
 
