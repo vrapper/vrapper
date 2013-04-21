@@ -42,8 +42,7 @@ public class EclipseFileService implements FileService {
     /**
      * Open the current file in gvim to perform any operations Vrapper doesn't
      * support. The cursor will be in the exact same position in gvim as it was
-     * in Vrapper.  As soon as you save and close gvim, Eclipse will notice the
-     * file changed and ask to reload.
+     * in Vrapper.  As soon as you save and close gvim, the file will be reloaded.
      */
     public boolean openInGvim(String gvimpath, int row, int col) {
     	if(editor.isDirty()) {
@@ -57,7 +56,7 @@ public class EclipseFileService implements FileService {
     				Process p = Runtime.getRuntime().exec(cmd);
     				p.waitFor();
     				//tell eclipse to reload the file
-    				runCommand("org.eclipse.ui.file.refresh");
+    				runCommand(IWorkbenchCommandConstants.FILE_REFRESH);
     			} catch (Exception e) {
     				VrapperLog.error(e.getMessage());
     			}
