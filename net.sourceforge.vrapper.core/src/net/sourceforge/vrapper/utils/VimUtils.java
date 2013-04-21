@@ -77,6 +77,15 @@ public class VimUtils {
         int offset = getFirstNonWhiteSpaceOffset(content, info);
         return content.getText(offset, info.getEndOffset() - offset);
     }
+    
+    public static boolean containsNewLine(String s) {
+    	for(String newline : VimConstants.NEWLINE) {
+    		if(s.contains(newline)) {
+    			return true;
+    		}
+    	}
+    	return false;
+    }
 
     public static boolean isNewLine(String s) {
         return VimConstants.NEWLINE.contains(s);

@@ -8,6 +8,7 @@ import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.PositionlessSelection;
 import net.sourceforge.vrapper.utils.Search;
 import net.sourceforge.vrapper.utils.StringUtils;
+import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.TextOperation;
 import net.sourceforge.vrapper.vim.commands.motions.FindMotion;
@@ -183,7 +184,7 @@ public class DefaultRegisterManager implements RegisterManager {
     }
     
     public void setLastDelete(RegisterContent register) {
-    	if(register.getPayloadType() == ContentType.TEXT) {
+    	if( ! VimUtils.containsNewLine(register.getText())) {
     		getRegister(REGISTER_SMALL_DELETE).setContent(register);
     	}
     	else {
