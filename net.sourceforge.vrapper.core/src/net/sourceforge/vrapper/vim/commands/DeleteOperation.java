@@ -7,6 +7,8 @@ import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.register.RegisterContent;
+import net.sourceforge.vrapper.vim.register.RegisterManager;
 
 public class DeleteOperation extends SimpleTextOperation {
 
@@ -33,7 +35,13 @@ public class DeleteOperation extends SimpleTextOperation {
     		return;
     	}
     	
-        YankOperation.doIt(editorAdaptor, range, contentType);
+        YankOperation.doIt(editorAdaptor, range, contentType, false);
+        RegisterManager registerManager = editorAdaptor.getRegisterManager();
+        if(registerManager.isDefaultRegisterActive()) {
+        	//get what YankOperation just set
+        	RegisterContent register = registerManager.getActiveRegister().getContent();
+        	registerManager.setLastDelete(register);
+        }
 
         if (editorAdaptor.getFileService().isEditable()) {
             TextContent txtContent = editorAdaptor.getModelContent();

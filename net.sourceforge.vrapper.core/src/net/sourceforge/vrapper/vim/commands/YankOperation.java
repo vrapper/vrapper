@@ -7,6 +7,7 @@ import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.register.RegisterContent;
+import net.sourceforge.vrapper.vim.register.RegisterManager;
 import net.sourceforge.vrapper.vim.register.StringRegisterContent;
 
 public class YankOperation extends SimpleTextOperation {
@@ -17,14 +18,14 @@ public class YankOperation extends SimpleTextOperation {
 
     @Override
     public void execute(EditorAdaptor editorAdaptor, TextRange region, ContentType contentType) {
-        doIt(editorAdaptor, region, contentType);
+        doIt(editorAdaptor, region, contentType, true);
     }
 
     public TextOperation repetition() {
         return null;
     }
 
-    public static void doIt(EditorAdaptor editorAdaptor, TextRange range, ContentType contentType) {
+    public static void doIt(EditorAdaptor editorAdaptor, TextRange range, ContentType contentType, boolean setLastYank) {
     	if(range == null) {
     		return;
     	}
@@ -38,7 +39,12 @@ public class YankOperation extends SimpleTextOperation {
         }
         
         RegisterContent content = new StringRegisterContent(contentType, text);
-        editorAdaptor.getRegisterManager().getActiveRegister().setContent(content);
+        RegisterManager registerManager = editorAdaptor.getRegisterManager();
+        registerManager.getActiveRegister().setContent(content);
+        if(setLastYank && registerManager.isDefaultRegisterActive()) {
+        	registerManager.setLastYank(content);
+        }
+        
         if (contentType == ContentType.LINES && NormalMode.NAME.equals(editorAdaptor.getCurrentModeName())) {
             //if this is line-wise, move cursor to first line in selection but keep stickyColumn
         	//(keep stickyColumn for the 'yy' case)

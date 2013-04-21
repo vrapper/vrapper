@@ -13,12 +13,13 @@ import net.sourceforge.vrapper.vim.commands.motions.FindMotion;
  */
 public interface RegisterManager {
 
-    public static final String REGISTER_NAME_UNNAMED = "\"";
-    public static final String REGISTER_NAME_INSERT = ".";
+    public static final String REGISTER_NAME_UNNAMED   = "\"";
+    public static final String REGISTER_NAME_INSERT    = ".";
     public static final String REGISTER_NAME_CLIPBOARD = "*";
-    public static final String REGISTER_NAME_SEARCH = "/";
+    public static final String REGISTER_NAME_SEARCH    = "/";
+    public static final String REGISTER_SMALL_DELETE   = "-";
     public static final String REGISTER_NAME_BLACKHOLE = "_";
-    public static final String REGISTER_NAME_LAST = "@";
+    public static final String REGISTER_NAME_LAST      = "@";
 
     Register getRegister(String name);
     Register getDefaultRegister();
@@ -35,6 +36,8 @@ public interface RegisterManager {
     Command getLastInsertion();
     void setLastSubstitution(TextOperation operation);
     TextOperation getLastSubstitution();
+    void setLastYank(RegisterContent register);
+    void setLastDelete(RegisterContent register);
     void setLastFindMotion(FindMotion motion);
     FindMotion getLastFindMotion();
     Search getSearch();

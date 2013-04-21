@@ -178,6 +178,27 @@ public class DefaultRegisterManager implements RegisterManager {
         return lastSubstitution;
     }
     
+    public void setLastYank(RegisterContent register) {
+    	getRegister("0").setContent(register);
+    }
+    
+    public void setLastDelete(RegisterContent register) {
+    	if(register.getPayloadType() == ContentType.TEXT) {
+    		getRegister(REGISTER_SMALL_DELETE).setContent(register);
+    	}
+    	else {
+    		//shift all previous deletes to the next index
+    		for(int i=8; i > 0; i--) {
+    			String key = ""+i;
+    			if(registers.containsKey(key)) {
+    				getRegister(""+(i+1)).setContent(getRegister(key).getContent());
+    			}
+    		}
+    		//set new delete to "1
+    		getRegister("1").setContent(register);
+    	}
+    }
+    
     public void setCurrentWorkingDirectory(String newDir) {
     	//if absolute path
     	if(newDir.startsWith("/")) {
