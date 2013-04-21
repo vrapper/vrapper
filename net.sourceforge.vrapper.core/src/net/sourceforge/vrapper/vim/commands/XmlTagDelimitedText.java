@@ -27,6 +27,8 @@ public class XmlTagDelimitedText implements DelimitedText {
     //regex usually stops at newlines but open tags might have
     //multiple lines of attributes.  So, include newlines in search.
     private static final String XML_TAG_REGEX = "<([^<]|\n)*?>";
+    private static final Pattern tagPattern = Pattern.compile(XML_TAG_REGEX);
+    
     private TextRange endTag;
 	
 	/**
@@ -144,26 +146,20 @@ public class XmlTagDelimitedText implements DelimitedText {
     private TextRange findNextTag(Position start, EditorAdaptor editorAdaptor) throws CommandExecutionException {
         TextContent content = editorAdaptor.getModelContent();
         int startPos = start.getModelOffset();
-        
-        String text = content.getText(startPos, content.getTextLength() - startPos);
-        
-        Pattern tag = Pattern.compile(XML_TAG_REGEX);
-        Matcher matcher = tag.matcher(text);
-        
+        String textAfterStartPos = getText(editorAdaptor, startPos, content.getTextLength());
+        return rangeForFirstXmlTagWithOffset(editorAdaptor, textAfterStartPos, startPos);
+    }
+
+    private TextRange rangeForFirstXmlTagWithOffset(EditorAdaptor editorAdaptor, String text, int startPos) throws CommandExecutionException {
+        Matcher matcher = tagPattern.matcher(text);
+        TextRange range = null;
         if (matcher.find()) {
             int matchStart = matcher.start() + startPos;
             int matchEnd = matcher.end() + startPos;
             return getRange(editorAdaptor, matchStart, matchEnd);
         } else {
-    		//we couldn't find a tag
             throw new CommandExecutionException("The cursor is not within an XML tag");
         }
-    }
-
-    private TextRange getRange(EditorAdaptor editorAdaptor, int start, int end) {
-        Position matchBegin = editorAdaptor.getPosition().setModelOffset(start);
-        Position matchEnd   = editorAdaptor.getPosition().setModelOffset(end);
-        return new StartEndTextRange(matchBegin, matchEnd);
     }
     
     /**
@@ -171,29 +167,35 @@ public class XmlTagDelimitedText implements DelimitedText {
      * close tag.  We'll let the calling method figure out what to do with it.
      */
     private TextRange findPreviousTag(Position start, EditorAdaptor editorAdaptor) throws CommandExecutionException {
-        TextContent content = editorAdaptor.getModelContent();
         int startPos = start.getModelOffset();
-        
-        String text = content.getText(0, startPos);
-        
-        Pattern tag = Pattern.compile(XML_TAG_REGEX);
-        Matcher matcher = tag.matcher(text);
-        
-        
-        // grab the last match
+        String textBeforeStartPos = getText(editorAdaptor, 0, startPos);
+        return rangeForLastXmlTag(editorAdaptor, textBeforeStartPos);
+    }
+
+    private TextRange rangeForLastXmlTag(EditorAdaptor editorAdaptor, String text) throws CommandExecutionException {
+        Matcher matcher = tagPattern.matcher(text);
         TextRange range = null;
         while (matcher.find()) {
             int matchStart = matcher.start();
             int matchEnd = matcher.end();
             range = getRange(editorAdaptor, matchStart, matchEnd);
-        } 
+        }
         
         if (range != null) {
             return range;
         } else {
-            //we couldn't find a tag
             throw new CommandExecutionException("The cursor is not within an XML tag");
         }
+    }
+    
+    private String getText(EditorAdaptor editorAdaptor, int from, int to) {
+        return editorAdaptor.getModelContent().getText(from, to - from);
+    }
+
+    private TextRange getRange(EditorAdaptor editorAdaptor, int start, int end) {
+        Position matchBegin = editorAdaptor.getPosition().setModelOffset(start);
+        Position matchEnd   = editorAdaptor.getPosition().setModelOffset(end);
+        return new StartEndTextRange(matchBegin, matchEnd);
     }
     
     /**
