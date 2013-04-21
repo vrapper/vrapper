@@ -39,6 +39,7 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
         
     	commands.add("ls",          dontRepeat(cmd("org.eclipse.ui.window.openEditorDropDown")));
     	commands.add("buffers",     dontRepeat(cmd("org.eclipse.ui.window.openEditorDropDown")));
+    	commands.add("maximize",    dontRepeat(cmd("org.eclipse.ui.window.maximizePart")));
         
     	commands.add("tabnext",     (Command)ChangeTabCommand.NEXT_EDITOR);
     	//have to define this or else 'tabn' is expanded to 'tabnew'
