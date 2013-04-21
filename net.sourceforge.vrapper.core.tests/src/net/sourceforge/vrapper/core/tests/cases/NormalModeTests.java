@@ -678,8 +678,48 @@ public class NormalModeTests extends CommandTestCase {
                 "<tag>",'<',"/tag>");
         
         checkCommand(forKeySeq("dit"),
+                "he",'l',"lo <tag>content</tag>",
+                "he",'l',"lo <tag>content</tag>");
+        
+        checkCommand(forKeySeq("dit"),
+                "<tag>content</tag> out",'s',"ide",
+                "<tag>content</tag> out",'s',"ide");
+        
+        checkCommand(forKeySeq("dit"),
+                "<tag",'>',"content</tag>",
+                "<tag>",'<',"/tag>");
+        
+        checkCommand(forKeySeq("dit"),
                 "<tag><tag>co",'n',"tent</tag></tag>",
                 "<tag><tag>",'<',"/tag></tag>");
+	}
+	
+	@Test
+	public void test_dit_multiline() {
+        checkCommand(forKeySeq("dit"),
+                "<tag\nother>co",'n',"tent</tag>",
+                "<tag\nother>",'<',"/tag>");
+	}
+	
+	@Test
+	public void test_dit_withinClosing() {
+        checkCommand(forKeySeq("dit"),
+                "<tag>content</t",'a',"g>",
+                "<tag>",'<',"/tag>");
+	}
+	
+	@Test
+	public void test_dit_withinOpening() {
+        checkCommand(forKeySeq("dit"),
+                "<t",'a',"g>content</tag>",
+                "<tag>",'<',"/tag>");
+	}
+	
+	@Test
+	public void test_2dit() {
+        checkCommand(forKeySeq("2dit"),
+                "<tag><tag>co",'n',"tent</tag></tag>",
+                "<tag>",'<',"/tag>");
 	}
 	
 	@Test
@@ -694,6 +734,14 @@ public class NormalModeTests extends CommandTestCase {
         checkCommand(forKeySeq("dit"),
                 "<aaaa>\n<tag>co",'n',"tent</tag>",
                 "<aaaa>\n<tag>",'<',"/tag>");
+	}
+	
+	@Test
+	public void test_dit_interweaved() {
+	    checkCommand(forKeySeq("dit"),
+	            "<a><b>con",'t',"ent</a></b>",
+	            "<a><b>",'<',"/b>");
+	            
 	}
 	
 	@Test
