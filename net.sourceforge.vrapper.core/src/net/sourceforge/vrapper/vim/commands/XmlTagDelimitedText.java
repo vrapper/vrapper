@@ -1,8 +1,12 @@
 package net.sourceforge.vrapper.vim.commands;
 
 import java.util.Stack;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.SearchAndReplaceService;
+import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Search;
 import net.sourceforge.vrapper.utils.SearchOffset;
@@ -19,8 +23,11 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
  * This aligns with how Vim handles things.
  */
 public class XmlTagDelimitedText implements DelimitedText {
-	
-	private TextRange endTag;
+    
+    //regex usually stops at newlines but open tags might have
+    //multiple lines of attributes.  So, include newlines in search.
+    private static final String XML_TAG_REGEX = "<([^<]|\n)*?>";
+    private TextRange endTag;
 	
 	/**
 	 * Find the open tag this cursor is inside.  To do that,
@@ -86,14 +93,14 @@ public class XmlTagDelimitedText implements DelimitedText {
     	String contents;
     	String tagName;
     	
-    	while(true) { //we'll either hit a 'return' or throw an exception
+    	while (true) { //we'll either hit a 'return' or throw an exception
     		tag = findNextTag(start, editorAdaptor);
     		contents = editorAdaptor.getModelContent().getText(tag);
     		start = tag.getRightBound(); //prepare for next iteration
-    		
+
     		if(contents.startsWith("</")) { //close tag
     			tagName = getClosingTagName(tag, editorAdaptor);
-    			if(openTags.empty() ) {
+    			if(openTags.empty()) {
     				//we hit a close tag before finding any open tags
     				//the cursor must be inside this tag
     				return tag;
@@ -135,17 +142,58 @@ public class XmlTagDelimitedText implements DelimitedText {
      * close tag.  We'll let the calling method figure out what to do with it.
      */
     private TextRange findNextTag(Position start, EditorAdaptor editorAdaptor) throws CommandExecutionException {
-    	//regex usually stops at newlines but open tags might have
-    	//multiple lines of attributes.  So, include newlines in search.
-    	Search findTag = new Search("<(.|\n)*?>", false, false, true, SearchOffset.NONE, true);
-    	SearchAndReplaceService searchAndReplace = editorAdaptor.getSearchAndReplaceService();
-    	SearchResult result = searchAndReplace.find(findTag, start);
-    	if( ! result.isFound()) {
+        TextContent content = editorAdaptor.getModelContent();
+        int startPos = start.getModelOffset();
+        
+        String text = content.getText(startPos, content.getTextLength() - startPos);
+        
+        Pattern tag = Pattern.compile(XML_TAG_REGEX);
+        Matcher matcher = tag.matcher(text);
+        
+        if (matcher.find()) {
+            int matchStart = matcher.start() + startPos;
+            int matchEnd = matcher.end() + startPos;
+            return getRange(editorAdaptor, matchStart, matchEnd);
+        } else {
     		//we couldn't find a tag
             throw new CommandExecutionException("The cursor is not within an XML tag");
-    	}
-    	
-    	return new StartEndTextRange(result.getLeftBound(), result.getRightBound());
+        }
+    }
+
+    private TextRange getRange(EditorAdaptor editorAdaptor, int start, int end) {
+        Position matchBegin = editorAdaptor.getPosition().setModelOffset(start);
+        Position matchEnd   = editorAdaptor.getPosition().setModelOffset(end);
+        return new StartEndTextRange(matchBegin, matchEnd);
+    }
+    
+    /**
+     * Search for the previous XML tag before start.  Can either be an open tag or
+     * close tag.  We'll let the calling method figure out what to do with it.
+     */
+    private TextRange findPreviousTag(Position start, EditorAdaptor editorAdaptor) throws CommandExecutionException {
+        TextContent content = editorAdaptor.getModelContent();
+        int startPos = start.getModelOffset();
+        
+        String text = content.getText(0, startPos);
+        
+        Pattern tag = Pattern.compile(XML_TAG_REGEX);
+        Matcher matcher = tag.matcher(text);
+        
+        
+        // grab the last match
+        TextRange range = null;
+        while (matcher.find()) {
+            int matchStart = matcher.start();
+            int matchEnd = matcher.end();
+            range = getRange(editorAdaptor, matchStart, matchEnd);
+        } 
+        
+        if (range != null) {
+            return range;
+        } else {
+            //we couldn't find a tag
+            throw new CommandExecutionException("The cursor is not within an XML tag");
+        }
     }
     
     /**
@@ -158,8 +206,8 @@ public class XmlTagDelimitedText implements DelimitedText {
     	String contents;
     	String tagName;
     	
-    	while(true) { //we'll either hit a 'return' or throw an exception
-    		tag = findPreviousTag(start, editorAdaptor, toFindTagName);
+    	while (true) { //we'll either hit a 'return' or throw an exception
+    		tag = findPreviousTag(start, editorAdaptor);
     		contents = editorAdaptor.getModelContent().getText(tag);
     		start = tag.getLeftBound(); //prepare for next iteration
     		
@@ -192,24 +240,6 @@ public class XmlTagDelimitedText implements DelimitedText {
     			}
     		}
     	}
-    }
-    
-    /**
-     * Search for the previous XML tag before start.  Can either be an open tag or
-     * close tag.  We'll let the calling method figure out what to do with it.
-     */
-    private TextRange findPreviousTag(Position start, EditorAdaptor editorAdaptor, String toFindTagName) throws CommandExecutionException {
-    	//regex usually stops at newlines but open tags might have
-    	//multiple lines of attributes.  So, include newlines in search.
-    	Search findTag = new Search("<(.|\n)*?>", true, false, true, SearchOffset.NONE, true);
-    	SearchAndReplaceService searchAndReplace = editorAdaptor.getSearchAndReplaceService();
-    	SearchResult result = searchAndReplace.find(findTag, start);
-    	if( ! result.isFound()) {
-    		//we couldn't find a tag
-            throw new CommandExecutionException("Could not find matching open tag for </"+toFindTagName+">");
-    	}
-    	
-    	return new StartEndTextRange(result.getLeftBound(), result.getRightBound());
     }
     
     /**

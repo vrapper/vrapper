@@ -22,6 +22,7 @@ import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
 import net.sourceforge.vrapper.vim.register.StringRegisterContent;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class NormalModeTests extends CommandTestCase {
@@ -668,6 +669,40 @@ public class NormalModeTests extends CommandTestCase {
         checkCommand(forKeySeq("2dap"),
                 "1ac\n\n3ac\n4ac\n\n  \n",'7',"ac\n\n  \n\n11ac\n12ac",
                 "1ac\n\n3ac\n",'4',"ac");
+	}
+	
+	@Test
+	public void test_dit() {
+        checkCommand(forKeySeq("dit"),
+                "<tag>co",'n',"tent</tag>",
+                "<tag>",'<',"/tag>");
+        
+        checkCommand(forKeySeq("dit"),
+                "<tag><tag>co",'n',"tent</tag></tag>",
+                "<tag><tag>",'<',"/tag></tag>");
+	}
+	
+	@Test
+	public void test_dit_otherOpener() {
+        checkCommand(forKeySeq("dit"),
+                "<\n<tag>co",'n',"tent</tag>",
+                "<\n<tag>",'<',"/tag>");
+	}
+	
+	@Test
+	public void test_dit_hangingOpeningTag() {
+        checkCommand(forKeySeq("dit"),
+                "<aaaa>\n<tag>co",'n',"tent</tag>",
+                "<aaaa>\n<tag>",'<',"/tag>");
+	}
+	
+	@Test
+	@Ignore
+	public void test_dit_containsOpening() {
+	    // pretty tricky to implement this I think, but it's how Vim does it.
+        checkCommand(forKeySeq("dit"),
+                "<tag prop=\"<\">co",'n',"tent</tag>",
+                "<tag prop=\"<\">",'<',"/tag>");
 	}
 	
 	@Test

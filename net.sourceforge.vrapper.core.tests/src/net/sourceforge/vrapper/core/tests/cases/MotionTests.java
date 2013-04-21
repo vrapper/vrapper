@@ -487,7 +487,6 @@ public class MotionTests extends CommandTestCase {
 				"", 'S', "o" + longWord + "isntit");
 	}
 
-
 	public void testCommonMoveWordWORDEndLeft(Motion wordMotion) {
 		// simple stuff
 		checkMotion(wordMotion,
@@ -574,6 +573,7 @@ public class MotionTests extends CommandTestCase {
 
 	@Test
 	public void testMoveWORDEndLeft() {
+
 		Motion moveWORDEndLeft = MoveBigWORDEndLeft.INSTANCE;
 
 		testCommonMoveWordWORDEndLeft(moveWORDEndLeft);
@@ -798,7 +798,6 @@ public class MotionTests extends CommandTestCase {
                 "e",'i',"ns\n\nzwei\n\ndrei\n\nPolizei!",
                 "eins\n\nzwei\n\ndrei\n",'\n',"Polizei!");
     }
-
 	
 	@Test
     public void testParagraphBackwardMotion() {
