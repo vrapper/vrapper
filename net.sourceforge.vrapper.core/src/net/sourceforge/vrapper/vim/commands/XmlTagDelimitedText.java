@@ -4,13 +4,8 @@ import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.sourceforge.vrapper.platform.CursorService;
-import net.sourceforge.vrapper.platform.SearchAndReplaceService;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.Position;
-import net.sourceforge.vrapper.utils.Search;
-import net.sourceforge.vrapper.utils.SearchOffset;
-import net.sourceforge.vrapper.utils.SearchResult;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
@@ -26,11 +21,14 @@ public class XmlTagDelimitedText implements DelimitedText {
     
     //regex usually stops at newlines but open tags might have
     //multiple lines of attributes.  So, include newlines in search.
+    
     private static final String XML_TAG_REGEX = "<([^<]|\n)*?>";
     
     private static final Pattern tagPattern = Pattern.compile(XML_TAG_REGEX);
     
-    private static final String XML_NAME_REGEX = "</?([^ \n]*)[ \n]?.*>";
+	private static final String XML_TAG_NAME_REGEX = "([^ \n\t]*)";
+    private static final String XML_PARAMETERS_REGEX = "(\n|.)*";
+    private static final String XML_NAME_REGEX = "</?" + XML_TAG_NAME_REGEX + XML_PARAMETERS_REGEX + ">";
     
     private static final Pattern tagNamePattern = Pattern.compile(XML_NAME_REGEX);
     
@@ -240,7 +238,6 @@ public class XmlTagDelimitedText implements DelimitedText {
 
     private TextRange rangeForFirstXmlTagWithOffset(EditorAdaptor editorAdaptor, String text, int startPos) throws CommandExecutionException {
         Matcher matcher = tagPattern.matcher(text);
-        TextRange range = null;
         if (matcher.find()) {
             int matchStart = matcher.start() + startPos;
             int matchEnd = matcher.end() + startPos;
