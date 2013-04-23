@@ -715,6 +715,21 @@ public class NormalModeTests extends CommandTestCase {
                 "<tag>",'<',"/tag>");
 	}
 	
+    @Test
+    public void test_dit_singleTag() {
+        checkCommand(forKeySeq("dit"),
+                "<tag><tag/>co",'n',"tent</tag>",
+                "<tag>",'<',"/tag>");
+        
+        checkCommand(forKeySeq("dit"),
+                "<tag>co",'n',"tent<tag/></tag>",
+                "<tag>",'<',"/tag>");
+        
+        checkCommand(forKeySeq("dit"),
+                "<tag><tag/>co",'n',"tent<tag/></tag>",
+                "<tag>",'<',"/tag>");
+    }
+	
 	@Test
 	public void test_2dit() {
         checkCommand(forKeySeq("2dit"),
