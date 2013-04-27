@@ -671,6 +671,36 @@ public class NormalModeTests extends CommandTestCase {
                 "1ac\n\n3ac\n",'4',"ac");
 	}
 	
+	@Test public void test_cit_inTag() {
+	    checkCommand(forKeySeq("cit"),
+			"<tag>with",' ',"text in it</tag>",
+			"<tag>",'<',"/tag>");
+		assertYanked(ContentType.TEXT, "with text in it");
+	}
+	
+	@Test public void test_cit_onStartTag() {
+	    checkCommand(forKeySeq("cit"),
+			"<ta",'g',">with text in it</tag>",
+			"<tag>",'<',"/tag>");
+		assertYanked(ContentType.TEXT, "with text in it");
+	}
+	
+	@Test public void test_cit_onEndTag() {
+	    checkCommand(forKeySeq("cit"),
+			"<tag>with text in it</t",'a',"g>",
+			"<tag>",'<',"/tag>");
+		assertYanked(ContentType.TEXT, "with text in it");
+	}
+	
+	@Test
+	@Ignore
+	public void test_cit_beforeTag() {
+	    checkCommand(forKeySeq("cit"),
+			"   ",' ',"<tag>with text in it</tag>",
+			"<tag>",'<',"/tag>");
+		assertYanked(ContentType.TEXT, "with text in it");
+	}
+	
 	@Test
 	public void test_dit() {
         checkCommand(forKeySeq("dit"),
