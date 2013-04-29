@@ -5,6 +5,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.sourceforge.vrapper.platform.TextContent;
+import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
@@ -72,25 +73,69 @@ public class XmlTagDelimitedText implements DelimitedText {
     }
 
     /**
-     * Account for the possibility that we're inside an opening or closing tag
+     * Account for the possibility that we're in front of a tag (indentation) or inside an opening or closing tag.
+     * @throws CommandExecutionException 
      */
-    private Position getStartingPosition(EditorAdaptor editorAdaptor) {
+    private Position getStartingPosition(EditorAdaptor editorAdaptor) throws CommandExecutionException {
         Position beginningPosition = editorAdaptor.getCursorService().getPosition();
+        
+        if (insideIndentation(beginningPosition, editorAdaptor)) {
+            // we are in the indentation at the start of a line, move to tags on the right.
+            TextRange tag = findNextTag(beginningPosition, editorAdaptor);
+            String contents = editorAdaptor.getModelContent().getText(tag);
+            if (isCloseTag(contents)) {
+                beginningPosition = tag.getLeftBound();
+            } else {
+                beginningPosition = tag.getRightBound();
+            }
+        } else {
+            
+            if (insideOpeningTag(beginningPosition, editorAdaptor)) {
+                //move to the end of the opening tag we're inside
+                while (characterAt(beginningPosition,editorAdaptor) != '>') {
+                    beginningPosition = beginningPosition.addModelOffset(1);
+                }
+            }
+            
+            if (insideClosingTag(beginningPosition, editorAdaptor)) {
+                //move to the beginning of the closing tag we're inside
+                while (characterAt(beginningPosition,editorAdaptor) != '<') {
+                    beginningPosition = beginningPosition.addModelOffset(-1);
+                }
+            }
+        }
     	
-    	if (insideOpeningTag(beginningPosition, editorAdaptor)) {
-    	    //move to the end of the opening tag we're inside
-    	    while (characterAt(beginningPosition,editorAdaptor) != '>') {
-    	        beginningPosition = beginningPosition.addModelOffset(1);
-    	    }
-    	}
-    	
-    	if (insideClosingTag(beginningPosition, editorAdaptor)) {
-    	    //move to the beginning of the closing tag we're inside
-    	    while (characterAt(beginningPosition,editorAdaptor) != '<') {
-    	        beginningPosition = beginningPosition.addModelOffset(-1);
-    	    }
-    	}
         return beginningPosition;
+    }
+    
+    private boolean insideIndentation(Position position, EditorAdaptor editorAdaptor) throws CommandExecutionException {
+        boolean isIndentation = false;
+        
+        if (Character.isWhitespace(characterAt(position, editorAdaptor))) {
+            LineInformation currentLine = editorAdaptor.getModelContent().getLineInformationOfOffset(
+                                        position.getModelOffset());
+            // Check if anything on this line before position is whitespace as well.
+            int column = position.getModelOffset() - currentLine.getBeginOffset();
+            String lineText = editorAdaptor.getModelContent().getText(
+                        currentLine.getBeginOffset(), currentLine.getLength());
+            int i = column;
+            while (i >= 0 && Character.isWhitespace(lineText.charAt(i))) {
+                i--;
+            }
+            if (i < 0) {
+                // If everything on the left is whitespace, check if this is indentation for any tag to the right.
+                TextRange nextTag = findNextTag(position, editorAdaptor);
+                int tagColumn = nextTag.getLeftBound().getModelOffset() - currentLine.getBeginOffset();
+                if (tagColumn < lineText.length()) {
+                    i = column;
+                    while (i < tagColumn && Character.isWhitespace(lineText.charAt(i))) {
+                        i++;
+                    }
+                    isIndentation = (i == tagColumn);
+                }
+            }
+        }
+        return isIndentation;
     }
     
     private boolean insideOpeningTag(Position position, EditorAdaptor editorAdaptor) {
