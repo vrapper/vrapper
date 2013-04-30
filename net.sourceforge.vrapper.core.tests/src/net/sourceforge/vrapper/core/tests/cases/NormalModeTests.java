@@ -693,13 +693,103 @@ public class NormalModeTests extends CommandTestCase {
 	}
 	
 	@Test
-	@Ignore
-	public void test_cit_beforeTag() {
-	    checkCommand(forKeySeq("cit"),
+	public void test_dit_indentationBeforeTag() {
+	    checkCommand(forKeySeq("dit"),
 			"   ",' ',"<tag>with text in it</tag>",
-			"<tag>",'<',"/tag>");
+			"    <tag>",'<',"/tag>");
 		assertYanked(ContentType.TEXT, "with text in it");
+
+        checkCommand(forKeySeq("dit"),
+                "<tag>\n",
+                ' ',"    text\n" +
+        		"</tag>",
+        		
+                "<tag>",'<',"/tag>");
+            
+        checkCommand(forKeySeq("dit"),
+                "<tag1>\n",
+                ' ',"   <tag2>text</tag2>\n" +
+                "</tag1>",
+                
+                "<tag1>\n" +
+                "    <tag2>",'<',"/tag2>\n" +
+                "</tag1>");
+        
+        checkCommand(forKeySeq("dit"),
+                "<tag1>\n",
+                ' ',"   <tag2><tag3>text</tag3></tag2>\n" +
+                "</tag1>",
+                
+                "<tag1>\n" +
+                "    <tag2>",'<',"/tag2>\n" +
+                "</tag1>");
+        
+        checkCommand(forKeySeq("dat"),
+                "<tag1>\n",
+                ' ',"   <tag2>text</tag2>\n" +
+                "</tag1>",
+                        
+                "<tag1>\n" +
+                "   ",' ',"\n" +
+                "</tag1>");
+		
+	    checkCommand(forKeySeq("dat"),
+                "<tag1>\n" +
+                "    <tag2>\n",
+                ' ',"       text\n" +
+        		"    </tag2>\n" +
+                "</tag1>",
+                
+                "<tag1>\n" +
+                "   ",' ',"\n" +
+                "</tag1>");
+
+	       checkCommand(forKeySeq("dat"),
+                "<tag1>\n" +
+                "    <tag2>\n",
+                ' ',"       \n" +
+                "        <tag3>ok</tag3>\n" +
+                "    </tag2>\n" +
+                "</tag1>",
+                
+                "<tag1>\n" +
+                "   ",' ',"\n" +
+                "</tag1>");
+	    
+        checkCommand(forKeySeq("dat"),
+                "<tag1>\n",
+                ' ', "   <tag2>\n" +
+                "        text\n" +
+                "    </tag2>\n" +
+                "</tag1>",
+                
+                "<tag1>\n" +
+                "   ",' ',"\n" +
+                "</tag1>");
+        
+        checkCommand(forKeySeq("dat"),
+                "<tag1>\n" +
+                "    <tag2>\n" +
+                "        text\n",
+        		' ', "   </tag2>\n" +
+                "</tag1>",
+                
+                "<tag1>\n" +
+                "   ",' ',"\n" +
+                "</tag1>");
 	}
+	
+    @Test
+    public void test_dit_betweenAttributes() {
+        // Just make sure that indentation code isn't triggered when starting on whitespace
+        checkCommand(forKeySeq("dat"),
+            " <tag1 lang=\"en-US\"",' ',"state=\"Utah\"><tag2>with text in it</tag2></tag1>",
+            "", ' ', "");
+        
+        checkCommand(forKeySeq("dit"),
+                " <tag1 lang=\"en-US\"",' ',"state=\"Utah\"><tag2>with text in it</tag2></tag1>",
+                " <tag1 lang=\"en-US\" state=\"Utah\">", '<', "/tag1>");
+    }
 	
 	@Test
 	public void test_dit() {
