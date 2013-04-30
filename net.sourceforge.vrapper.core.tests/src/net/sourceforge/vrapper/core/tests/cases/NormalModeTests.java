@@ -783,6 +783,13 @@ public class NormalModeTests extends CommandTestCase {
                 "</tag1>");
 	}
 	
+	@Test
+	public void test_dat_endOfLine() {
+        checkCommand(forKeySeq("dat"),
+                " <tag1></tag1>", ' ', "\n",
+                " <tag1></tag1>", ' ', "\n");
+	}
+
     @Test
     public void test_dit_betweenAttributes() {
         // Just make sure that indentation code isn't triggered when starting on whitespace
