@@ -673,31 +673,35 @@ public class NormalModeTests extends CommandTestCase {
 	
 	@Test public void test_cit_inTag() {
 	    checkCommand(forKeySeq("cit"),
-			"<tag>with",' ',"text in it</tag>",
-			"<tag>",'<',"/tag>");
+	            "<tag>with",' ',"text in it</tag>",
+	            "<tag>",'<',"/tag>");
 		assertYanked(ContentType.TEXT, "with text in it");
 	}
 	
 	@Test public void test_cit_onStartTag() {
 	    checkCommand(forKeySeq("cit"),
-			"<ta",'g',">with text in it</tag>",
-			"<tag>",'<',"/tag>");
+	            "<ta",'g',">with text in it</tag>",
+	            "<tag>",'<',"/tag>");
 		assertYanked(ContentType.TEXT, "with text in it");
 	}
 	
 	@Test public void test_cit_onEndTag() {
 	    checkCommand(forKeySeq("cit"),
-			"<tag>with text in it</t",'a',"g>",
-			"<tag>",'<',"/tag>");
+	            "<tag>with text in it</t",'a',"g>",
+	            "<tag>",'<',"/tag>");
 		assertYanked(ContentType.TEXT, "with text in it");
 	}
 	
 	@Test
 	public void test_dit_indentationBeforeTag() {
 	    checkCommand(forKeySeq("dit"),
-			"   ",' ',"<tag>with text in it</tag>",
-			"    <tag>",'<',"/tag>");
+	            "   ",' ',"<tag>with text in it</tag>",
+	            "    <tag>",'<',"/tag>");
 		assertYanked(ContentType.TEXT, "with text in it");
+		
+	   checkCommand(forKeySeq("dit"),
+                "",' ',"<tag>with text in it</tag>",
+                " <tag>",'<',"/tag>");
 
         checkCommand(forKeySeq("dit"),
                 "<tag>\n",
@@ -783,8 +787,8 @@ public class NormalModeTests extends CommandTestCase {
     public void test_dit_betweenAttributes() {
         // Just make sure that indentation code isn't triggered when starting on whitespace
         checkCommand(forKeySeq("dat"),
-            " <tag1 lang=\"en-US\"",' ',"state=\"Utah\"><tag2>with text in it</tag2></tag1>",
-            "", ' ', "");
+                " <tag1 lang=\"en-US\"",' ',"state=\"Utah\"><tag2>with text in it</tag2></tag1>",
+                "", ' ', "");
         
         checkCommand(forKeySeq("dit"),
                 " <tag1 lang=\"en-US\"",' ',"state=\"Utah\"><tag2>with text in it</tag2></tag1>",
