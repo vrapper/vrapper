@@ -789,6 +789,14 @@ public class NormalModeTests extends CommandTestCase {
                 " <tag1></tag1>", ' ', "\n",
                 " <tag1></tag1>", ' ', "\n");
 	}
+	
+	@Test
+	@Ignore
+	public void test_vatd_endOfLine() {
+        checkCommand(forKeySeq("vatd"),
+                " <tag1></tag1>", ' ', "\n",
+                " <tag1></tag1>", ' ', "\n");
+	}
 
     @Test
     public void test_dit_betweenAttributes() {
