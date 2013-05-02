@@ -1,4 +1,31 @@
 <div class="newsbox">
+    <div class="date">2013-05-01</div>
+    <h4>Updates to unstable update site</h4>
+    <p>I've hit my stride with a two-month release cycle so I'm also trying to
+    make a habit of posting status updates once a month. In addition to the
+    usual requests for more Vim features, in the last month I received a couple
+    requests for features which aren't in Vim but our users wanted anyway.</p>
+    <p>The unstable update site currently has the following changes:</p>
+    <ul>
+        <li>Add support for '\c' and '\C' in search to temporarily override ignorecase setting</li>
+        <li>Add support for '_' motion</li>
+        <li>Add support for ':e!' to revert file</li>
+        <li>Add support for "0-"9 and "- delete and yank registers</li>
+        <li>Add support for ':maximize' command to maximize editor area</li>
+        <li>Add support for ':copy' and ':move' operations</li>
+        <ul>
+            <li>Useful with line range operations ':10,20 copy 140'</li>
+        </ul>
+        <li>Add support for ':vim' command</li>
+        <ul>
+            <li>Launches current file in gvim (so you can do things Vrapper doesn't support)</li>
+            <li>After saving and quitting gvim, Eclipse will reload the file</li>
+            <li>Path to gvim is defined by 'gvimpath' property (defaults to /usr/bin/gvim)</li>
+        </ul>
+        <li>Refactored XML text object parsing to be more compliant with Vim</li>
+    </ul>
+</div>
+<div class="newsbox">
     <div class="date">2013-03-29</div>
     <h4>0.30.0 Released</h4>
     <p>Looks like I'm hitting my stride with a two-month release cycle.  0.30.0
