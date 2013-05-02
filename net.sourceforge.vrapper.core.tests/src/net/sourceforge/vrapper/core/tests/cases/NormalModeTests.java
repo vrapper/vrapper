@@ -791,11 +791,11 @@ public class NormalModeTests extends CommandTestCase {
 	}
 	
 	@Test
-	@Ignore
 	public void test_vatd_endOfLine() {
+	    // EvilCaret would cause a StringOutOfBoundsException when at end of line.
         checkCommand(forKeySeq("vatd"),
-                " <tag1></tag1>", ' ', "\n",
-                " <tag1></tag1>", ' ', "\n");
+                " <tag1></tag1>", ' ', "\r",
+                " <tag1></tag1>", '\r', "");
 	}
 
     @Test
