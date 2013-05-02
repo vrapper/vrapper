@@ -695,6 +695,16 @@ public class NormalModeTests extends CommandTestCase {
 	}
 	
 	@Test
+	public void test_dit_comment() {
+        checkCommand(forKeySeq("dit"),
+                "<tag><!-- comment -->",' ',"</tag>",
+                "<tag>",'<',"/tag>");
+        checkCommand(forKeySeq("dit"),
+                "<tag>",'<',"!-- comment --></tag>",
+                "<tag>",'<',"/tag>");
+	}
+	
+	@Test
 	public void test_dit_multiline() {
         checkCommand(forKeySeq("dit"),
                 "<tag\nother>co",'n',"tent</tag>",
