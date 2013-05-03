@@ -18,7 +18,11 @@ public class ComplexOptionEvaluator implements Evaluator {
             return null;
         }
         String optName = next.substring(0, index).trim();
-        String value = next.substring(index+1)+StringUtils.join(" ", command);
+        String value = next.substring(index+1);
+        if(command.size() > 0) {
+        	//restore preceding space and spaces between tokens
+        	value += " " + StringUtils.join(" ", command);
+        }
         Option<String> strOpt;
         Option<Integer> intOpt;
         try {
