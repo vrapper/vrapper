@@ -671,6 +671,145 @@ public class NormalModeTests extends CommandTestCase {
                 "1ac\n\n3ac\n",'4',"ac");
 	}
 	
+	@Test public void test_cit_inTag() {
+	    checkCommand(forKeySeq("cit"),
+	            "<tag>with",' ',"text in it</tag>",
+	            "<tag>",'<',"/tag>");
+		assertYanked(ContentType.TEXT, "with text in it");
+	}
+	
+	@Test public void test_cit_onStartTag() {
+	    checkCommand(forKeySeq("cit"),
+	            "<ta",'g',">with text in it</tag>",
+	            "<tag>",'<',"/tag>");
+		assertYanked(ContentType.TEXT, "with text in it");
+	}
+	
+	@Test public void test_cit_onEndTag() {
+	    checkCommand(forKeySeq("cit"),
+	            "<tag>with text in it</t",'a',"g>",
+	            "<tag>",'<',"/tag>");
+		assertYanked(ContentType.TEXT, "with text in it");
+	}
+	
+	@Test
+	public void test_dit_indentationBeforeTag() {
+	    checkCommand(forKeySeq("dit"),
+	            "   ",' ',"<tag>with text in it</tag>",
+	            "    <tag>",'<',"/tag>");
+		assertYanked(ContentType.TEXT, "with text in it");
+		
+	   checkCommand(forKeySeq("dit"),
+                "",' ',"<tag>with text in it</tag>",
+                " <tag>",'<',"/tag>");
+
+        checkCommand(forKeySeq("dit"),
+                "<tag>\n",
+                ' ',"    text\n" +
+        		"</tag>",
+        		
+                "<tag>",'<',"/tag>");
+            
+        checkCommand(forKeySeq("dit"),
+                "<tag1>\n",
+                ' ',"   <tag2>text</tag2>\n" +
+                "</tag1>",
+                
+                "<tag1>\n" +
+                "    <tag2>",'<',"/tag2>\n" +
+                "</tag1>");
+        
+        checkCommand(forKeySeq("dit"),
+                "<tag1>\n",
+                ' ',"   <tag2><tag3>text</tag3></tag2>\n" +
+                "</tag1>",
+                
+                "<tag1>\n" +
+                "    <tag2>",'<',"/tag2>\n" +
+                "</tag1>");
+        
+        checkCommand(forKeySeq("dat"),
+                "<tag1>\n",
+                ' ',"   <tag2>text</tag2>\n" +
+                "</tag1>",
+                        
+                "<tag1>\n" +
+                "   ",' ',"\n" +
+                "</tag1>");
+		
+	    checkCommand(forKeySeq("dat"),
+                "<tag1>\n" +
+                "    <tag2>\n",
+                ' ',"       text\n" +
+        		"    </tag2>\n" +
+                "</tag1>",
+                
+                "<tag1>\n" +
+                "   ",' ',"\n" +
+                "</tag1>");
+
+	       checkCommand(forKeySeq("dat"),
+                "<tag1>\n" +
+                "    <tag2>\n",
+                ' ',"       \n" +
+                "        <tag3>ok</tag3>\n" +
+                "    </tag2>\n" +
+                "</tag1>",
+                
+                "<tag1>\n" +
+                "   ",' ',"\n" +
+                "</tag1>");
+	    
+        checkCommand(forKeySeq("dat"),
+                "<tag1>\n",
+                ' ', "   <tag2>\n" +
+                "        text\n" +
+                "    </tag2>\n" +
+                "</tag1>",
+                
+                "<tag1>\n" +
+                "   ",' ',"\n" +
+                "</tag1>");
+        
+        checkCommand(forKeySeq("dat"),
+                "<tag1>\n" +
+                "    <tag2>\n" +
+                "        text\n",
+        		' ', "   </tag2>\n" +
+                "</tag1>",
+                
+                "<tag1>\n" +
+                "   ",' ',"\n" +
+                "</tag1>");
+	}
+	
+	@Test
+	public void test_dat_endOfLine() {
+        checkCommand(forKeySeq("dat"),
+                " <tag1></tag1>", ' ', "\n",
+                " <tag1></tag1>", ' ', "\n");
+	}
+	
+	@Test
+	public void test_vatd_endOfLine() {
+	    // EvilCaret would cause a StringOutOfBoundsException when at end of line.
+        checkCommand(forKeySeq("vatd"),
+                " <tag1></tag1>", ' ', "\r",
+                " <tag1></tag1>", '\r', "");
+	}
+
+    @Test
+    public void test_dit_betweenAttributes() {
+        // Just make sure that indentation code isn't triggered when starting on whitespace
+        checkCommand(forKeySeq("dat"),
+                " <tag1 lang=\"en-US\"",' ',"state=\"Utah\"><tag2>with text in it</tag2></tag1>",
+                "", ' ', "");
+        
+        checkCommand(forKeySeq("dit"),
+                " <tag1 lang=\"en-US\"",' ',"state=\"Utah\"><tag2>with text in it</tag2></tag1>",
+                " <tag1 lang=\"en-US\" state=\"Utah\">", '<', "/tag1>");
+    }
+	
 	@Test
 	public void test_dit() {
         checkCommand(forKeySeq("dit"),
