@@ -8,6 +8,8 @@ import net.sourceforge.vrapper.eclipse.keymap.AbstractEclipseSpecificStateProvid
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.vim.GoThereState;
 import net.sourceforge.vrapper.keymap.vim.TextObjectState;
+import net.sourceforge.vrapper.keymap.vim.VisualMotionState;
+import net.sourceforge.vrapper.keymap.vim.VisualMotionState.Motion2VMC;
 import net.sourceforge.vrapper.platform.PlatformSpecificStateProvider;
 import net.sourceforge.vrapper.plugin.ipmotion.commands.motions.ImprovedParagraphMotion;
 import net.sourceforge.vrapper.vim.commands.ChangeOperation;
@@ -48,5 +50,18 @@ public class ImprovedParagraphProvider extends AbstractEclipseSpecificStateProvi
                 operatorCmds('c', change, ipObjects),
                 operatorCmds('y', yank,   ipObjects),
                 motionCommands);
+    }
+    
+    @Override
+    @SuppressWarnings("unchecked")
+    protected State<Command> visualModeBindings() {
+        final Motion paragraphBackward = ImprovedParagraphMotion.BACKWARD;
+        final Motion paragraphForward = ImprovedParagraphMotion.FORWARD;
+        
+        final State<Motion> ipMotions = state(
+                leafBind('{', paragraphBackward),
+                leafBind('}', paragraphForward));
+//        final State<Command> motionCommands = new GoThereState(ipMotions);
+        return new VisualMotionState(Motion2VMC.CHARWISE, ipMotions);
     }
 }
