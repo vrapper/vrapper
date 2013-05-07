@@ -109,7 +109,7 @@ public class BlockWiseSelection implements Selection {
     public static int getWidth(final TextContent textContent, final Selection selection) {
         final int leftX = getX(textContent, selection);
         final int rightX = getXOffset(textContent, selection.getEnd().getModelOffset());
-        return rightX - leftX + 1;
+        return rightX - leftX;
     }
 
     public static int getHeight(final TextContent textContent, final Selection selection) {

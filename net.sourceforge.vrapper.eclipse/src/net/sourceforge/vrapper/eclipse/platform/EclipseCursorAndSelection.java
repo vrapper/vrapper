@@ -24,6 +24,7 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.ITextViewerExtension5;
+import org.eclipse.jface.text.JFaceTextUtil;
 import org.eclipse.swt.custom.CaretEvent;
 import org.eclipse.swt.custom.CaretListener;
 import org.eclipse.swt.custom.StyledText;
@@ -200,8 +201,21 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
                 final int y = BlockWiseSelection.getY(textContent.getModelContent(), newSelection);
                 final int w = BlockWiseSelection.getWidth(textContent.getModelContent(), newSelection);
                 final int h = BlockWiseSelection.getHeight(textContent.getModelContent(), newSelection);
-                System.out.println(x + "," + y + "," + w + "," + h);
-                styled.setBlockSelectionBounds(x, y, w, h);
+                
+                // convert to units Eclipse wants
+                final int charWidth = JFaceTextUtil.getAverageCharWidth(styled);
+                final int xPixel = (x + 1) * charWidth;
+                final int yPixel = styled.getLinePixel(y);
+                final int wPixel = (w - 1) * charWidth;
+                final int hPixel = styled.getLinePixel(h);
+                
+                System.out.println("Line: " + x + "," + y + "," + w + "," + h);
+                System.out.println(" Pix: " + xPixel + "," + yPixel + "," + wPixel + "," + hPixel);
+                styled.setBlockSelectionBounds(xPixel, yPixel, wPixel, hPixel);
+                System.out.println("?? " + newSelection.getStart().getViewOffset() 
+                        + " vs " + newSelection.getStart().getModelOffset());
+                System.out.println(styled.getCaretOffset() + " -> " +
+                        textContent.getModelContent().getLineInformationOfOffset(styled.getCaretOffset()).getNumber());
             } else {
                 textViewer.getTextWidget().setBlockSelection(false);
                 textViewer.setSelectedRange(from, length);
