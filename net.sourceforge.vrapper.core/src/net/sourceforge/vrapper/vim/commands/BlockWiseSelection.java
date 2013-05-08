@@ -1,6 +1,7 @@
 package net.sourceforge.vrapper.vim.commands;
 
 import net.sourceforge.vrapper.platform.Configuration;
+import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.Position;
@@ -26,6 +27,13 @@ public class BlockWiseSelection implements Selection {
         @Override
         public String toString() {
             return String.format("%d %d - %d %d", left, top, right, bottom);
+        }
+
+        public Position getULPosition(final EditorAdaptor editorAdaptor) {
+            final CursorService cs = editorAdaptor.getCursorService();
+            final TextContent textContent = editorAdaptor.getModelContent();
+            final int begin = textContent.getLineInformation(top).getBeginOffset();
+            return cs.newPositionForModelOffset(begin + left);
         }
     }
 

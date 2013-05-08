@@ -1,33 +1,49 @@
 package net.sourceforge.vrapper.vim.commands;
 
+import net.sourceforge.vrapper.platform.TextContent;
+import net.sourceforge.vrapper.utils.ContentType;
+import net.sourceforge.vrapper.utils.Position;
+import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.BlockWiseSelection.Rect;
 
 public class SelectionBasedTextOperationCommand extends CountAwareCommand {
 
 	protected final TextOperation command;
 	protected final boolean changeMode;
 
-    public SelectionBasedTextOperationCommand(TextOperation command) {
+    public SelectionBasedTextOperationCommand(final TextOperation command) {
     	this(command, true);
     }
 
-	protected SelectionBasedTextOperationCommand(TextOperation command, boolean leavesVisualMode) {
+	protected SelectionBasedTextOperationCommand(final TextOperation command, final boolean leavesVisualMode) {
 		this.command = command;
 		this.changeMode = leavesVisualMode;
 	}
 
 	@Override
-	public void execute(EditorAdaptor editorAdaptor, int count)
+	public void execute(final EditorAdaptor editorAdaptor, final int count)
 			throws CommandExecutionException {
 		editorAdaptor.rememberLastActiveSelection();
-		TextObject selection = editorAdaptor.getSelection();
-		command.execute(editorAdaptor, count, selection);
+		final TextContent textContent = editorAdaptor.getModelContent();
+		final TextObject selection = editorAdaptor.getSelection();
+		if (selection.getContentType(editorAdaptor.getConfiguration()) == ContentType.TEXT_RECTANGLE) {
+		    System.out.println("VisualBlock#execute!");
+		    final Rect rect = BlockWiseSelection.getRect(textContent, (Selection) selection);
+		    final Position ul = rect.getULPosition(editorAdaptor);
+		    final TextObject firstLine = new SimpleSelection(StartEndTextRange
+		            .inclusive(ul, ul.addModelOffset(rect.width())));
+    		command.execute(editorAdaptor, count, firstLine);
+		} else {
+    		command.execute(editorAdaptor, count, selection);
+		}
 		if (changeMode)
 			LeaveVisualModeCommand.doIt(editorAdaptor);
 	}
 
-	public CountAwareCommand repetition() {
-        TextOperation wrappedRepetition = command.repetition();
+	@Override
+    public CountAwareCommand repetition() {
+        final TextOperation wrappedRepetition = command.repetition();
         if (wrappedRepetition != null) {
             return new Repetition(wrappedRepetition);
         }
@@ -36,7 +52,7 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
 	
 	/** A variant of SelectionBasedTextOperation that doesn't change mode. */
 	public static class DontChangeMode extends SelectionBasedTextOperationCommand {
-		public DontChangeMode(TextOperation command) {
+		public DontChangeMode(final TextOperation command) {
 			super(command, false);
 		}
 	}
@@ -44,14 +60,14 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
 	/** Repetition of SelectionBasedTextOperation */
 	public class Repetition extends CountAwareCommand {
 		
-		private TextOperation repetition;
+		private final TextOperation repetition;
 		
-		public Repetition(TextOperation repeat) {
+		public Repetition(final TextOperation repeat) {
 			this.repetition = repeat;
 		}
 
 		@Override
-		public void execute(EditorAdaptor editorAdaptor, int count)
+		public void execute(final EditorAdaptor editorAdaptor, final int count)
 				throws CommandExecutionException {
 			repetition.execute(editorAdaptor, count, editorAdaptor.getLastActiveSelection());
 			if (changeMode)
