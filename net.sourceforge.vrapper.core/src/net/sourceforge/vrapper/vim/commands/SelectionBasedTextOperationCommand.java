@@ -30,10 +30,22 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
 		if (selection.getContentType(editorAdaptor.getConfiguration()) == ContentType.TEXT_RECTANGLE) {
 		    System.out.println("VisualBlock#execute!");
 		    final Rect rect = BlockWiseSelection.getRect(textContent, (Selection) selection);
+		    final int width = rect.width();
 		    final Position ul = rect.getULPosition(editorAdaptor);
-		    final TextObject firstLine = new SimpleSelection(StartEndTextRange
-		            .inclusive(ul, ul.addModelOffset(rect.width())));
+		    final TextObject firstLine = newSelection(ul, width);
     		command.execute(editorAdaptor, count, firstLine);
+    		
+    		if (changeMode) {
+    		    final int height = rect.height();
+        		final TextOperation repetition = command.repetition();
+    		    for (int i=1; i < height; i++) {
+    		        rect.top++;
+    		        final Position newUl = rect.getULPosition(editorAdaptor);
+    		        final TextObject nextLine = newSelection(newUl, width);
+    		        repetition.execute(editorAdaptor, count, nextLine);
+    		    }
+    		}
+    		
 		} else {
     		command.execute(editorAdaptor, count, selection);
 		}
@@ -41,7 +53,12 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
 			LeaveVisualModeCommand.doIt(editorAdaptor);
 	}
 
-	@Override
+	private static TextObject newSelection(final Position ul, final int width) {
+	    return new SimpleSelection(StartEndTextRange
+		            .inclusive(ul, ul.addModelOffset(width)));
+    }
+
+    @Override
     public CountAwareCommand repetition() {
         final TextOperation wrappedRepetition = command.repetition();
         if (wrappedRepetition != null) {
