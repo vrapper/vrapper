@@ -3,7 +3,6 @@ package net.sourceforge.vrapper.vim.commands;
 import net.sourceforge.vrapper.platform.Configuration;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.ContentType;
-import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
@@ -12,6 +11,23 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 
 /** FIXME Make sure this works in all cases */
 public class BlockWiseSelection implements Selection {
+    
+    public static class Rect {
+        public int left, top, right, bottom;
+        
+        public int width() {
+            return right - left;
+        }
+        
+        public int height() {
+            return bottom - top + 1; // same row should be "1" height
+        }
+        
+        @Override
+        public String toString() {
+            return String.format("%d %d - %d %d", left, top, right, bottom);
+        }
+    }
 
     private final Position from;
     private final Position to;
@@ -88,31 +104,19 @@ public class BlockWiseSelection implements Selection {
         return to;
     }
     
-    private static int getLine(final TextContent textContent, final int modelOffset) {
-        final LineInformation info = textContent.getLineInformationOfOffset(modelOffset);
-        return info.getNumber();
+    public static Rect getRect(final TextContent textContent, final Selection selection) {
+        final Rect ret = new Rect();
+        final int fromX = VimUtils.calculateColForPosition(textContent, selection.getFrom());
+        final int fromY = VimUtils.calculateLine(textContent, selection.getFrom());
+        final int toX = VimUtils.calculateColForPosition(textContent, selection.getTo());
+        final int toY = VimUtils.calculateLine(textContent, selection.getTo());
+        
+        ret.left  = Math.min(toX, fromX);
+        ret.top   = Math.min(toY, fromY);
+        ret.right = Math.max(toX, fromX);
+        ret.bottom= Math.max(toY, fromY);
+        
+        return ret;
     }
-
-    public static int getX(final TextContent textContent, final Selection selection) {
-        final int modelOffset = selection.getLeftBound().getModelOffset();
-        return VimUtils.calculateColForOffset(textContent, modelOffset);
-    }
-
-    public static int getY(final TextContent textContent, final Selection selection) {
-        return getLine(textContent, selection.getLeftBound().getModelOffset());
-    }
-    
-    public static int getWidth(final TextContent textContent, final Selection selection) {
-        final int leftX = getX(textContent, selection);
-        final int rightX = VimUtils.calculateColForPosition(textContent, selection.getRightBound());
-        return rightX - leftX;
-    }
-
-    public static int getHeight(final TextContent textContent, final Selection selection) {
-        final int top = getY(textContent, selection);
-        final int bottom = getLine(textContent, selection.getRightBound().getModelOffset());
-        return bottom - top + 1;
-    }
-
 
 }

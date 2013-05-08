@@ -17,6 +17,7 @@ import net.sourceforge.vrapper.utils.Space;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.commands.BlockWiseSelection;
+import net.sourceforge.vrapper.vim.commands.BlockWiseSelection.Rect;
 import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 
@@ -192,30 +193,21 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
             selection = newSelection;
             selectionChangeListener.disable();
             if (ContentType.TEXT_RECTANGLE.equals(newSelection.getContentType(configuration))) {
-                System.out.println("TEXT_RECTANGLE!");
                 // block selection
                 final StyledText styled = textViewer.getTextWidget();
                 styled.setBlockSelection(true);
                 
-                final int x = BlockWiseSelection.getX(textContent.getModelContent(), newSelection);
-                final int y = BlockWiseSelection.getY(textContent.getModelContent(), newSelection);
-                final int w = BlockWiseSelection.getWidth(textContent.getModelContent(), newSelection);
-                final int h = BlockWiseSelection.getHeight(textContent.getModelContent(), newSelection);
+                final Rect rect = BlockWiseSelection.getRect(textContent.getModelContent(), newSelection);
                 
                 // convert to units Eclipse wants
                 final int charWidth = JFaceTextUtil.getAverageCharWidth(styled);
-                final int xPixel = (x + 1) * charWidth;
-                final int yPixel = styled.getLinePixel(y);
-                final int wPixel = w * charWidth;
-                final int hPixel = styled.getLinePixel(h);
+                final int xPixel = (rect.left + 1) * charWidth;
+                final int yPixel = styled.getLinePixel(rect.top);
+                final int wPixel = rect.width() * charWidth;
+                final int hPixel = styled.getLinePixel(rect.height());
                 
-                System.out.println("Line: " + x + "," + y + "," + w + "," + h);
-                System.out.println(" Pix: " + xPixel + "," + yPixel + "," + wPixel + "," + hPixel);
+                System.out.println("Line: " + rect);
                 styled.setBlockSelectionBounds(xPixel, yPixel, wPixel, hPixel);
-                System.out.println("?? " + newSelection.getStart().getViewOffset() 
-                        + " vs " + newSelection.getStart().getModelOffset());
-                System.out.println(styled.getCaretOffset() + " -> " +
-                        textContent.getModelContent().getLineInformationOfOffset(styled.getCaretOffset()).getNumber());
             } else {
                 textViewer.getTextWidget().setBlockSelection(false);
                 textViewer.setSelectedRange(from, length);

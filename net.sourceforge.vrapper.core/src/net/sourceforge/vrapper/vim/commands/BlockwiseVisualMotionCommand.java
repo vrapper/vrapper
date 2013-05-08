@@ -24,8 +24,8 @@ public class BlockwiseVisualMotionCommand extends AbstractVisualMotionCommand {
         final Position from = oldSelection.getFrom(); // always constant
         final Position oldTo = oldSelection.getTo(); // always constant
         Position to = editorAdaptor.getPosition();
-        System.out.println("extendSelection ? " + to.getModelOffset() 
-                + " <= " + from.getModelOffset());
+//        System.out.println("extendSelection ? " + to.getModelOffset() 
+//                + " <= " + from.getModelOffset());
         
         final TextContent text = editorAdaptor.getModelContent();
         final int fromCol = VimUtils.calculateColForPosition(text, from);
@@ -44,8 +44,8 @@ public class BlockwiseVisualMotionCommand extends AbstractVisualMotionCommand {
                 to = cs.newPositionForModelOffset(to.getModelOffset()-1); // decrement normal
             }
             
-            System.out.println("extendSelection left " + from.getModelOffset() 
-                    + " -> " + to.getModelOffset());
+//            System.out.println("extendSelection left " + from.getModelOffset() 
+//                    + " -> " + to.getModelOffset());
     		editorAdaptor.setSelection(new BlockWiseSelection(editorAdaptor, 
     		        from, to));
         } else {
@@ -54,8 +54,8 @@ public class BlockwiseVisualMotionCommand extends AbstractVisualMotionCommand {
                 to = cs.newPositionForModelOffset(to.getModelOffset()-1); // decrement normal
             }
             
-            System.out.println("extendSelection (" + sameColumn + "/" + sameRow +"): " + oldSelection);
-            System.out.println("extendSelection right " + from.getModelOffset() + " -> " + to.getModelOffset());
+//            System.out.println("extendSelection (" + sameColumn + "/" + sameRow +"): " + oldSelection);
+//            System.out.println("extendSelection right " + from.getModelOffset() + " -> " + to.getModelOffset());
     		editorAdaptor.setSelection(new BlockWiseSelection(editorAdaptor, from, to));
         }
     }
@@ -68,7 +68,6 @@ public class BlockwiseVisualMotionCommand extends AbstractVisualMotionCommand {
 			oldSelection = new BlockWiseSelection(editorAdaptor, position, position);
 			editorAdaptor.setSelection(oldSelection);
 		}
-        System.out.println("getSelection: " + oldSelection);
 		return oldSelection;
     }
 
