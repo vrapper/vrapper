@@ -206,7 +206,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
                 final int charWidth = JFaceTextUtil.getAverageCharWidth(styled);
                 final int xPixel = (x + 1) * charWidth;
                 final int yPixel = styled.getLinePixel(y);
-                final int wPixel = (w - 1) * charWidth;
+                final int wPixel = w * charWidth;
                 final int hPixel = styled.getLinePixel(h);
                 
                 System.out.println("Line: " + x + "," + y + "," + w + "," + h);

@@ -27,6 +27,7 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.AsciiCommand;
+import net.sourceforge.vrapper.vim.commands.BlockWiseSelection;
 import net.sourceforge.vrapper.vim.commands.BorderPolicy;
 import net.sourceforge.vrapper.vim.commands.CenterLineCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
@@ -270,15 +271,16 @@ public class NormalMode extends CommandBasedMode {
                         editorAdaptor.setSelection(new SimpleSelection(new StartEndTextRange(position, position)));
                     }
                 });
-        final Command afterEnteringBlockVisual = afterEnteringVisualInc;/*new CountIgnoringNonRepeatableCommand() {
+        final Command afterEnteringBlockVisual = new CountIgnoringNonRepeatableCommand() {
             
             @Override
             public void execute(final EditorAdaptor editorAdaptor)
                     throws CommandExecutionException {
                 final Position position = editorAdaptor.getPosition();
+//                final Position next = editorAdaptor.getCursorService().newPositionForModelOffset(position.getModelOffset()+1);
                 editorAdaptor.setSelection(new BlockWiseSelection(editorAdaptor, position, position));
             }
-        };*/
+        };
         final Command selectLine = new CountIgnoringNonRepeatableCommand() {
             @Override
             public void execute(final EditorAdaptor editorAdaptor) throws CommandExecutionException {

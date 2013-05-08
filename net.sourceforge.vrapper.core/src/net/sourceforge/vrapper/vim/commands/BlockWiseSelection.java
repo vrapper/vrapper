@@ -7,6 +7,7 @@ import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
+import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 
 /** FIXME Make sure this works in all cases */
@@ -87,34 +88,29 @@ public class BlockWiseSelection implements Selection {
         return to;
     }
     
-    private static int getXOffset(final TextContent textContent, final int modelOffset) {
-        final LineInformation info = textContent.getLineInformationOfOffset(modelOffset);
-        return modelOffset - info.getBeginOffset();
-    }
-    
     private static int getLine(final TextContent textContent, final int modelOffset) {
         final LineInformation info = textContent.getLineInformationOfOffset(modelOffset);
         return info.getNumber();
     }
 
     public static int getX(final TextContent textContent, final Selection selection) {
-        final int modelOffset = selection.getStart().getModelOffset();
-        return getXOffset(textContent, modelOffset);
+        final int modelOffset = selection.getLeftBound().getModelOffset();
+        return VimUtils.calculateColForOffset(textContent, modelOffset);
     }
 
     public static int getY(final TextContent textContent, final Selection selection) {
-        return getLine(textContent, selection.getStart().getModelOffset());
+        return getLine(textContent, selection.getLeftBound().getModelOffset());
     }
     
     public static int getWidth(final TextContent textContent, final Selection selection) {
         final int leftX = getX(textContent, selection);
-        final int rightX = getXOffset(textContent, selection.getEnd().getModelOffset());
+        final int rightX = VimUtils.calculateColForPosition(textContent, selection.getRightBound());
         return rightX - leftX;
     }
 
     public static int getHeight(final TextContent textContent, final Selection selection) {
         final int top = getY(textContent, selection);
-        final int bottom = getLine(textContent, selection.getEnd().getModelOffset());
+        final int bottom = getLine(textContent, selection.getRightBound().getModelOffset());
         return bottom - top + 1;
     }
 

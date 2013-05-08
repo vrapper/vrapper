@@ -33,7 +33,7 @@ public class VimUtils {
      *            a string (of length 1).
      * @return whether s contains a single whitespace character.
      */
-    public static boolean isWhiteSpace(String s) {
+    public static boolean isWhiteSpace(final String s) {
         return VimConstants.WHITESPACE.contains(s);
     }
 
@@ -42,11 +42,11 @@ public class VimUtils {
      *            a line in the text.
      * @return the offset where the first non-whitespace character occurs in the given line.
      */
-    public static int getFirstNonWhiteSpaceOffset(TextContent content, LineInformation line) {
+    public static int getFirstNonWhiteSpaceOffset(final TextContent content, final LineInformation line) {
         int index = line.getBeginOffset();
-        int end = line.getEndOffset();
+        final int end = line.getEndOffset();
         while (index < end) {
-            String s = content.getText(index, 1);
+            final String s = content.getText(index, 1);
             if (!isWhiteSpace(s)) {
                 break;
             }
@@ -62,8 +62,8 @@ public class VimUtils {
      *            a line in the text.
      * @return the whitespace at the begin of the given line.
      */
-    public static String getIndent(TextContent content, LineInformation line) {
-        int offset = getFirstNonWhiteSpaceOffset(content, line);
+    public static String getIndent(final TextContent content, final LineInformation line) {
+        final int offset = getFirstNonWhiteSpaceOffset(content, line);
         return content.getText(line.getBeginOffset(), offset - line.getBeginOffset());
     }
 
@@ -73,13 +73,13 @@ public class VimUtils {
      *            a line in the text.
      * @return the content of the given line, without preceeding whitespace.
      */
-    public static String getWithoutIndent(TextContent content, LineInformation info) {
-        int offset = getFirstNonWhiteSpaceOffset(content, info);
+    public static String getWithoutIndent(final TextContent content, final LineInformation info) {
+        final int offset = getFirstNonWhiteSpaceOffset(content, info);
         return content.getText(offset, info.getEndOffset() - offset);
     }
     
-    public static boolean containsNewLine(String s) {
-    	for(String newline : VimConstants.NEWLINE) {
+    public static boolean containsNewLine(final String s) {
+    	for(final String newline : VimConstants.NEWLINE) {
     		if(s.contains(newline)) {
     			return true;
     		}
@@ -87,44 +87,59 @@ public class VimUtils {
     	return false;
     }
 
-    public static boolean isNewLine(String s) {
+    public static boolean isNewLine(final String s) {
         return VimConstants.NEWLINE.contains(s);
     }
 
-    public static boolean isWordCharacter(String s) {
+    public static boolean isWordCharacter(final String s) {
         return VimUtils.COMPILED_WORD_CHAR_PATTERN.matcher(s).find();
     }
     
-    public static boolean isPatternDelimiter(String s) {
+    public static boolean isPatternDelimiter(final String s) {
         return VimUtils.COMPILED_PATTERN_DELIM_PATTERN.matcher(s).find();
     }
 
-    public static boolean isBlank(String s) {
+    public static boolean isBlank(final String s) {
         return s == null || s.trim().equals("");
     }
     
     /**
      * @return true, if line contains only whitespace characters
      */
-    public static boolean isLineBlank(TextContent content, int lineNo) {
-        LineInformation line = content.getLineInformation(lineNo);
+    public static boolean isLineBlank(final TextContent content, final int lineNo) {
+        final LineInformation line = content.getLineInformation(lineNo);
         return VimUtils.isBlank(content.getText(line.getBeginOffset(), line.getLength()));
     }
     
     /**
      * @return true, if the last character in the text buffer is newline
      */
-    public static boolean endsWithEOL(EditorAdaptor editor) {
-        TextContent content = editor.getModelContent();
-        LineInformation line = content.getLineInformation(content.getNumberOfLines() - 1);
+    public static boolean endsWithEOL(final EditorAdaptor editor) {
+        final TextContent content = editor.getModelContent();
+        final LineInformation line = content.getLineInformation(content.getNumberOfLines() - 1);
         return line.getNumber() > 0 && line.getLength() == 0;
     }
+    
+    public static int calculateColForPosition(final TextContent p, final Position position) {
+        return calculateColForOffset(p, position.getModelOffset());
+    }
+    
+    public static int calculateColForOffset(final TextContent p, final int modelOffset) {
+        final LineInformation line = p.getLineInformationOfOffset(modelOffset);
+        return modelOffset - line.getBeginOffset();
+    }
+    
+    public static int calculateLine(final TextContent text, final Position position) {
+        final LineInformation line = text.getLineInformationOfOffset(position.getModelOffset());
+        return line.getNumber();
+    }
+
 
     /**
      * Calculates an offset position. Line breaks are not counted.
      * @param position TODO
      */
-    public static int calculatePositionForOffset(TextContent p, int position, int offset) {
+    public static int calculatePositionForOffset(final TextContent p, int position, final int offset) {
         LineInformation line = p.getLineInformationOfOffset(position);
         if (offset < 0) {
             int i = -offset;
@@ -132,7 +147,7 @@ public class VimUtils {
                 if(position > line.getBeginOffset()) {
                     position -=1;
                 } else {
-                    int nextLine = line.getNumber()-1;
+                    final int nextLine = line.getNumber()-1;
                     if (nextLine < 0) {
                         break;
                     }
@@ -148,7 +163,7 @@ public class VimUtils {
                 if(position < end) {
                     position +=1;
                 } else {
-                    int nextLine = line.getNumber()+1;
+                    final int nextLine = line.getNumber()+1;
                     if (nextLine > p.getNumberOfLines()-1) {
                         break;
                     }
@@ -163,7 +178,7 @@ public class VimUtils {
         return position;
     }
 
-    public static String stripLastNewline(String text) {
+    public static String stripLastNewline(final String text) {
         if (text.endsWith(NewLine.WINDOWS.nl)) {
             return text.substring(0, text.length()-2);
         }
@@ -173,21 +188,21 @@ public class VimUtils {
         return text;
     }
 
-    public static final <T> Set<T> set(T... content) {
+    public static final <T> Set<T> set(final T... content) {
         return Collections.unmodifiableSet(new HashSet<T>(Arrays.asList(content)));
     }
 
-    public static SearchResult wrapAroundSearch(EditorAdaptor vim, Search search,
-            Position position) {
+    public static SearchResult wrapAroundSearch(final EditorAdaptor vim, final Search search,
+            final Position position) {
         SearchResult result2;
-        SearchAndReplaceService searcher = vim.getSearchAndReplaceService();
+        final SearchAndReplaceService searcher = vim.getSearchAndReplaceService();
         SearchResult result = searcher.find(search, position);
         if (result.isFound()) {
             result2 = result;
         } else {
             // redo search from beginning / end of document
-            TextContent p = vim.getModelContent();
-            int index = search.isBackward() ? p.getLineInformation(p.getNumberOfLines()-1).getEndOffset()-1 : 0;
+            final TextContent p = vim.getModelContent();
+            final int index = search.isBackward() ? p.getLineInformation(p.getNumberOfLines()-1).getEndOffset()-1 : 0;
             result = searcher.find(search, position.setModelOffset(index));
             result2 = result;
         }
