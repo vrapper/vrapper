@@ -11,7 +11,58 @@ import net.sourceforge.vrapper.vim.commands.BlockWiseSelection.Rect;
 
 public class SelectionBasedTextOperationCommand extends CountAwareCommand {
 
-	protected final TextOperation command;
+	public static class BlockwiseRepeatCommand implements Command {
+	    
+	    private final TextOperation command;
+        private final int count;
+
+        public BlockwiseRepeatCommand(final TextOperation command, final int count) {
+	        this.command = command;
+	        this.count = count;
+	    }
+
+        @Override
+        public Command repetition() {
+            return this;
+        }
+
+        @Override
+        public Command withCount(final int count) {
+            return this;
+        }
+
+        @Override
+        public int getCount() {
+            return count;
+        }
+
+        @Override
+        public void execute(final EditorAdaptor editorAdaptor)
+                throws CommandExecutionException {
+            
+            final TextContent textContent = editorAdaptor.getModelContent();
+            final Selection selection = editorAdaptor.getSelection();
+		    final Rect rect = BlockWiseSelection.getRect(textContent, selection);
+		    
+            doIt(editorAdaptor, command, getCount(), rect);
+        }
+        
+        public static void doIt(final EditorAdaptor editorAdaptor, final TextOperation command, final int count, final Rect rect) 
+                throws CommandExecutionException {
+		    final int height = rect.height();
+		    final int width = rect.width();
+    		final TextOperation repetition = command.repetition();
+		    for (int i=1; i < height; i++) {
+		        rect.top++;
+		        final Position newUl = rect.getULPosition(editorAdaptor);
+		        final TextObject nextLine = newSelection(newUl, width);
+		        repetition.execute(editorAdaptor, count, nextLine);
+		    }
+        }
+
+    }
+
+    protected final TextOperation command;
 	protected final boolean changeMode;
 
     public SelectionBasedTextOperationCommand(final TextOperation command) {
@@ -42,14 +93,7 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
     		command.execute(editorAdaptor, count, firstLine);
     		
     		if (changeMode) {
-    		    final int height = rect.height();
-        		final TextOperation repetition = command.repetition();
-    		    for (int i=1; i < height; i++) {
-    		        rect.top++;
-    		        final Position newUl = rect.getULPosition(editorAdaptor);
-    		        final TextObject nextLine = newSelection(newUl, width);
-    		        repetition.execute(editorAdaptor, count, nextLine);
-    		    }
+    		    BlockwiseRepeatCommand.doIt(editorAdaptor, command, count, rect);
     		}
     		
 		    history.unlock("block-action");
