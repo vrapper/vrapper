@@ -31,7 +31,7 @@ public class BlockwiseVisualMode extends AbstractVisualMode {
     @Override
     public void enterMode(final ModeSwitchHint... args) throws CommandExecutionException {
         System.out.println("ENTER blockwise");
-        final CaretType caret = CaretType.VERTICAL_BAR;
+        final CaretType caret = CaretType.LEFT_SHIFTED_RECTANGULAR;
 //        if (editorAdaptor.getConfiguration().get(Options.SELECTION).equals("exclusive"))
 //            caret = CaretType.VERTICAL_BAR;
         editorAdaptor.getCursorService().setCaret(caret);
@@ -42,6 +42,7 @@ public class BlockwiseVisualMode extends AbstractVisualMode {
     public void leaveMode(final ModeSwitchHint... hints)
             throws CommandExecutionException {
         System.out.println("LEAVE blockwise");
+        editorAdaptor.setSelection(null);
         super.leaveMode(hints);
     }
 
