@@ -7,18 +7,18 @@ import net.sourceforge.vrapper.vim.modes.WithCountHint;
 
 public class ChangeToInsertModeCommand extends CountAwareCommand {
 
-    private final Command command;
+    protected final Command command;
 
     public ChangeToInsertModeCommand() {
         this(null);
     }
 
-	public ChangeToInsertModeCommand(Command command) {
+	public ChangeToInsertModeCommand(final Command command) {
         this.command = command;
     }
 
     @Override
-	public void execute(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
+	public void execute(final EditorAdaptor editorAdaptor, final int count) throws CommandExecutionException {
         if (command != null)
       		editorAdaptor.changeMode(InsertMode.NAME, new ExecuteCommandHint.OnEnter(command),
       		                                          new WithCountHint(count));

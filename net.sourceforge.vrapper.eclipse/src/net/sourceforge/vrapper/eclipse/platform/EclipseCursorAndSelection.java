@@ -206,7 +206,6 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
                 final int wPixel = rect.width() * charWidth;
                 final int hPixel = styled.getLinePixel(rect.height());
                 
-                System.out.println("Line: " + rect);
                 styled.setBlockSelectionBounds(xPixel, yPixel, wPixel, hPixel);
             } else {
                 textViewer.getTextWidget().setBlockSelection(false);

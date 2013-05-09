@@ -61,7 +61,7 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
 			LeaveVisualModeCommand.doIt(editorAdaptor);
 	}
 
-	private static TextObject newSelection(final Position ul, final int width) {
+	public static TextObject newSelection(final Position ul, final int width) {
 	    return new SimpleSelection(StartEndTextRange
 		            .inclusive(ul, ul.addModelOffset(width)));
     }
