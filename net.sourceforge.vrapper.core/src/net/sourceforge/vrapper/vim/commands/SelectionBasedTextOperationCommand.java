@@ -5,6 +5,7 @@ import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
+import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.BlockWiseSelection.Rect;
 
@@ -60,10 +61,13 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
 		if (changeMode)
 			LeaveVisualModeCommand.doIt(editorAdaptor);
 	}
+	
+	public static TextRange newRange(final Position ul, final int width) {
+	    return StartEndTextRange.inclusive(ul, ul.addModelOffset(width));
+	}
 
 	public static TextObject newSelection(final Position ul, final int width) {
-	    return new SimpleSelection(StartEndTextRange
-		            .inclusive(ul, ul.addModelOffset(width)));
+	    return new SimpleSelection(newRange(ul, width));
     }
 
     @Override

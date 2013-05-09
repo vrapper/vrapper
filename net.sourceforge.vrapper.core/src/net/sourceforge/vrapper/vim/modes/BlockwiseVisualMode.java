@@ -1,8 +1,11 @@
 package net.sourceforge.vrapper.vim.modes;
 
 import static net.sourceforge.vrapper.keymap.StateUtils.union;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.changeCaret;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.convertKeyStroke;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.vim.VisualMotionState;
 import net.sourceforge.vrapper.keymap.vim.VisualMotionState.Motion2VMC;
@@ -11,12 +14,14 @@ import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.PositionlessSelection;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.BlockWiseSelection;
 import net.sourceforge.vrapper.vim.commands.BlockWiseSelection.Rect;
 import net.sourceforge.vrapper.vim.commands.ChangeToInsertModeCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
+import net.sourceforge.vrapper.vim.commands.ReplaceCommand;
 import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.motions.BlockSelectionMotion;
 import net.sourceforge.vrapper.vim.commands.motions.Motion;
@@ -140,10 +145,14 @@ public class BlockwiseVisualMode extends AbstractVisualMode {
         final Motion eol = BlockSelectionMotion.COLUMN_END;
         
         final State<Command> parentState = super.buildInitialState();
-        return union(parentState, state(
+        return union(state(
                 leafBind('I', (Command) new BlockwiseChangeToInsertModeCommand(new MotionCommand(bol))),
-                leafBind('A', (Command) new BlockwiseChangeToInsertModeCommand(new MotionCommand(eol)))
-                ));
+                leafBind('A', (Command) new BlockwiseChangeToInsertModeCommand(new MotionCommand(eol))),
+                transitionBind('r', changeCaret(CaretType.UNDERLINE),
+                        convertKeyStroke(
+                                ReplaceCommand.VisualBlock.VISUALBLOCK_KEYSTROKE,
+                                VimConstants.PRINTABLE_KEYSTROKES_WITH_NL))
+                ), parentState);
     }
     
     @Override
