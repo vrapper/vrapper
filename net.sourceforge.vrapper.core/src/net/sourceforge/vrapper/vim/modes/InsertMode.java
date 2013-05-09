@@ -106,6 +106,7 @@ public class InsertMode extends AbstractMode {
 
         count = 1;
         command = null;
+        mOnLeaveHint = null;
 
         try {
             editorAdaptor.getViewportService().setRepaint(false);

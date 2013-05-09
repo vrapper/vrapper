@@ -4,6 +4,7 @@ import net.sourceforge.vrapper.platform.HistoryService;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.Position;
+import net.sourceforge.vrapper.utils.PositionlessSelection;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
@@ -15,10 +16,12 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
 	    
 	    private final TextOperation command;
         private final int count;
+        private final boolean commitHistory;
 
-        public BlockwiseRepeatCommand(final TextOperation command, final int count) {
+        public BlockwiseRepeatCommand(final TextOperation command, final int count, final boolean commitHistory) {
 	        this.command = command;
 	        this.count = count;
+	        this.commitHistory = commitHistory;
 	    }
 
         @Override
@@ -40,11 +43,17 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
         public void execute(final EditorAdaptor editorAdaptor)
                 throws CommandExecutionException {
             
-            final TextContent textContent = editorAdaptor.getModelContent();
-            final Selection selection = editorAdaptor.getSelection();
-		    final Rect rect = BlockWiseSelection.getRect(textContent, selection);
+            final PositionlessSelection selection = editorAdaptor.getRegisterManager().getLastActiveSelection();
+		    final Rect rect = BlockWiseSelection.getRect(editorAdaptor, selection);
+            System.out.println("Execute BlockwiseRepeatCommand" + rect);
 		    
             doIt(editorAdaptor, command, getCount(), rect);
+            
+            if (commitHistory) {
+                final HistoryService history = editorAdaptor.getHistory();
+                history.unlock("block-action");
+                history.endCompoundChange();
+            }
         }
         
         public static void doIt(final EditorAdaptor editorAdaptor, final TextOperation command, final int count, final Rect rect) 

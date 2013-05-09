@@ -3,6 +3,7 @@ package net.sourceforge.vrapper.vim.commands;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
 import net.sourceforge.vrapper.platform.HistoryService;
 import net.sourceforge.vrapper.utils.ContentType;
+import net.sourceforge.vrapper.utils.PositionlessSelection;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.modes.ExecuteCommandHint;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
@@ -38,7 +39,9 @@ public class ChangeOperation implements TextOperation {
     @Override
     public void execute(final EditorAdaptor editorAdaptor, final int count, final TextObject textObject) throws CommandExecutionException {
         final Command beforeInsertCmd = getHintCommand(editorAdaptor, count, textObject);
-        if (ContentType.TEXT_RECTANGLE.equals(textObject.getContentType(editorAdaptor.getConfiguration()))) {
+        final PositionlessSelection lastSel = editorAdaptor.getRegisterManager().getLastActiveSelection();
+        if (textObject instanceof Selection
+                && ContentType.TEXT_RECTANGLE.equals(lastSel.getContentType(editorAdaptor.getConfiguration()))) {
             // insert in block mode
             final HistoryService history = editorAdaptor.getHistory();
             history.beginCompoundChange();
@@ -61,12 +64,8 @@ public class ChangeOperation implements TextOperation {
         return result;
     }
     
-    static Command getLeaveHintCommand(final EditorAdaptor editorAdaptor, final int count, final TextObject textObject) {
-        Command result = new TextOperationTextObjectCommand(DeleteOperation.INSTANCE, textObject).withCount(count);
-        if (ContentType.TEXT_RECTANGLE.equals(textObject.getContentType(editorAdaptor.getConfiguration()))) {
-            result = seq(result, InsertLineCommand.PRE_CURSOR);
-        }
-        return result;
+    Command getLeaveHintCommand(final EditorAdaptor editorAdaptor, final int count, final TextObject textObject) {
+        return new SelectionBasedTextOperationCommand.BlockwiseRepeatCommand(this, count, true);
     }
     
 }
