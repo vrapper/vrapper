@@ -197,7 +197,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
                 final StyledText styled = textViewer.getTextWidget();
                 styled.setBlockSelection(true);
                 
-                final Rect rect = BlockWiseSelection.getRect(textContent.getModelContent(), newSelection);
+                final Rect rect = BlockWiseSelection.getViewRect(textContent.getViewContent(), newSelection);
                 
                 // convert to units Eclipse wants
                 final int charWidth = JFaceTextUtil.getAverageCharWidth(styled);

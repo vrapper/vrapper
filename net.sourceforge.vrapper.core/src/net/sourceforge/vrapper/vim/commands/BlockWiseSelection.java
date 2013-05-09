@@ -131,6 +131,22 @@ public class BlockWiseSelection implements Selection {
     public static Rect getRect(final TextContent textContent, final Selection selection) {
         return getRect(textContent, selection.getFrom(), selection.getTo());
     }
+    
+    public static Rect getViewRect(final TextContent viewContent, final Selection selection) {
+
+        final Rect ret = new Rect();
+        final int fromX = VimUtils.calculateColForOffset(viewContent, selection.getFrom().getViewOffset());
+        final int fromY = VimUtils.calculateLine(viewContent, selection.getFrom().getViewOffset());
+        final int toX = VimUtils.calculateColForOffset(viewContent, selection.getTo().getViewOffset());
+        final int toY = VimUtils.calculateLine(viewContent, selection.getTo().getViewOffset());
+        
+        ret.left  = Math.min(toX, fromX);
+        ret.top   = Math.min(toY, fromY);
+        ret.right = Math.max(toX, fromX);
+        ret.bottom= Math.max(toY, fromY);
+        
+        return ret;
+    }
 
     public static Rect getRect(final EditorAdaptor editorAdaptor, final PositionlessSelection lastSel) 
             throws CommandExecutionException {

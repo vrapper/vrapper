@@ -129,9 +129,13 @@ public class VimUtils {
         return modelOffset - line.getBeginOffset();
     }
     
-    public static int calculateLine(final TextContent text, final Position position) {
-        final LineInformation line = text.getLineInformationOfOffset(position.getModelOffset());
+    public static int calculateLine(final TextContent text, final int offset) {
+        final LineInformation line = text.getLineInformationOfOffset(offset);
         return line.getNumber();
+    }
+    
+    public static int calculateLine(final TextContent text, final Position position) {
+        return calculateLine(text, position.getModelOffset());
     }
 
 
