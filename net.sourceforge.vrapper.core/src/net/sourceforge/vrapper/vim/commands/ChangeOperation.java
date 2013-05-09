@@ -15,7 +15,6 @@ class ChangeOperationRepetition implements TextOperation {
     public void execute(final EditorAdaptor editorAdaptor, final int count,
             final TextObject textObject) throws CommandExecutionException {
         final Command lastInsertion = editorAdaptor.getRegisterManager().getLastInsertion();
-        System.out.println("Execute change rep! " + lastInsertion);
         seq(ChangeOperation.getHintCommand(editorAdaptor, count, textObject), lastInsertion).execute(editorAdaptor);
     }
 

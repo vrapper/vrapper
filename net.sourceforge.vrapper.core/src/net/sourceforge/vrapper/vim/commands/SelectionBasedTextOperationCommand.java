@@ -11,6 +11,7 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.BlockWiseSelection.Rect;
 import net.sourceforge.vrapper.vim.register.Register;
 import net.sourceforge.vrapper.vim.register.RegisterContent;
+import net.sourceforge.vrapper.vim.register.RegisterManager;
 import net.sourceforge.vrapper.vim.register.StringRegisterContent;
 
 public class SelectionBasedTextOperationCommand extends CountAwareCommand {
@@ -74,7 +75,6 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
 		    if (legal) {
                 final TextObject blockSelection = editorAdaptor.getRegisterManager().getLastActiveSelection();
     		    final Rect rect = BlockWiseSelection.getRect(editorAdaptor, blockSelection);
-    		    System.out.println("Height: " + rect.height());
     		    
                 doIt(editorAdaptor, command, getCount(), rect);
 		    }
@@ -88,16 +88,27 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
         
         public static void doIt(final EditorAdaptor editorAdaptor, final TextOperation command, final int count, final Rect rect) 
                 throws CommandExecutionException {
+            
+            final RegisterManager registers = editorAdaptor.getRegisterManager();
+            final Register defaultRegister = registers.getDefaultRegister();
+            final Register lastEditRegister = registers.getLastEditRegister();
+            
 		    final int height = rect.height();
 		    final int width = rect.width();
-    		final TextOperation repetition = command.repetition();
+    		TextOperation repetition = command.repetition();
 		    for (int i=1; i < height; i++) {
 		        rect.top++;
 		        final Position newUl = rect.getULPosition(editorAdaptor);
 		        editorAdaptor.setPosition(newUl, false);
 		        final TextObject nextLine = newSelection(newUl, width);
+		        
+		        final RegisterContent content = lastEditRegister.getContent();
 		        repetition.execute(editorAdaptor, count, nextLine);
-		        System.out.println("Execute @" + rect);
+		        
+		        lastEditRegister.setContent(content);
+		        registers.setActiveRegister(defaultRegister); // return to default reg
+		        
+		        repetition = repetition.repetition();
 		    }
         }
 
