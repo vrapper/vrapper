@@ -24,6 +24,7 @@ import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.commands.ReplaceCommand;
 import net.sourceforge.vrapper.vim.commands.Selection;
+import net.sourceforge.vrapper.vim.commands.SwapCaseCommand;
 import net.sourceforge.vrapper.vim.commands.motions.BlockSelectionMotion;
 import net.sourceforge.vrapper.vim.commands.motions.Motion;
 import net.sourceforge.vrapper.vim.register.Register;
@@ -145,10 +146,13 @@ public class BlockwiseVisualMode extends AbstractVisualMode {
         final Motion bol = BlockSelectionMotion.COLUMN_START;
         final Motion eol = BlockSelectionMotion.COLUMN_END;
         
+        final Command swapCase = SwapCaseCommand.VISUALBLOCK_INSTANCE;
+        
         final State<Command> parentState = super.buildInitialState();
         return union(state(
                 leafBind('I', (Command) new BlockwiseChangeToInsertModeCommand(new MotionCommand(bol))),
                 leafBind('A', (Command) new BlockwiseChangeToInsertModeCommand(new MotionCommand(eol))),
+                leafBind('~', swapCase),
                 transitionBind('r', changeCaret(CaretType.UNDERLINE),
                         convertKeyStroke(
                                 ReplaceCommand.VisualBlock.VISUALBLOCK_KEYSTROKE,
