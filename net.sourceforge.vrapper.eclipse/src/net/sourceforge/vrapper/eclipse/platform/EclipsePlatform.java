@@ -5,15 +5,20 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 import net.sourceforge.vrapper.eclipse.keymap.AbstractEclipseSpecificStateProvider;
 import net.sourceforge.vrapper.eclipse.keymap.UnionStateProvider;
+import net.sourceforge.vrapper.eclipse.mode.AbstractEclipseSpecificModeProvider;
+import net.sourceforge.vrapper.eclipse.mode.UnionModeProvider;
 import net.sourceforge.vrapper.eclipse.utils.Utils;
+import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.Configuration;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.FileService;
 import net.sourceforge.vrapper.platform.HistoryService;
 import net.sourceforge.vrapper.platform.Platform;
+import net.sourceforge.vrapper.platform.PlatformSpecificModeProvider;
 import net.sourceforge.vrapper.platform.PlatformSpecificStateProvider;
 import net.sourceforge.vrapper.platform.SearchAndReplaceService;
 import net.sourceforge.vrapper.platform.SelectionService;
@@ -46,6 +51,7 @@ public class EclipsePlatform implements Platform {
     private final AbstractTextEditor underlyingEditor;
     private final SearchAndReplaceService searchAndReplaceService;
     private static final Map<String, PlatformSpecificStateProvider> providerCache = new HashMap<String, PlatformSpecificStateProvider>();
+    private static final AtomicReference<PlatformSpecificModeProvider> modeProviderCache= new AtomicReference<PlatformSpecificModeProvider>();
 
     public EclipsePlatform(AbstractTextEditor abstractTextEditor,
             ITextViewer textViewer, Configuration sharedConfiguration) {
@@ -131,6 +137,15 @@ public class EclipsePlatform implements Platform {
         return providerCache.get(className);
     }
 
+    public PlatformSpecificModeProvider getPlatformSpecificModeProvider() {
+        if (modeProviderCache.get() == null) {
+            PlatformSpecificModeProvider provider = buildPlatformSpecificModeProvider();
+            // Only set this once.
+            modeProviderCache.compareAndSet(null, provider);
+        }
+        return modeProviderCache.get();
+    }
+
     public SearchAndReplaceService getSearchAndReplaceService() {
         return searchAndReplaceService;
     }
@@ -153,6 +168,22 @@ public class EclipsePlatform implements Platform {
         Collections.sort(matched);
         return new UnionStateProvider("extensions for "
                 + underlyingEditor.getClass().getName(), matched);
+    }
+
+    private PlatformSpecificModeProvider buildPlatformSpecificModeProvider() {
+        IExtensionRegistry registry = org.eclipse.core.runtime.Platform.getExtensionRegistry();
+        IConfigurationElement[] elements = registry
+                .getConfigurationElementsFor("net.sourceforge.vrapper.eclipse.psmp");
+        List<AbstractEclipseSpecificModeProvider> matched = new ArrayList<AbstractEclipseSpecificModeProvider>();
+        for (IConfigurationElement element : elements) {
+            try {
+                matched.add((AbstractEclipseSpecificModeProvider)
+                        element.createExecutableExtension("provider-class"));
+            } catch (Exception e) {
+                VrapperLog.error("error while building mode providers", e);
+            }
+        }
+        return new UnionModeProvider("Extension modes", matched);
     }
 
 }

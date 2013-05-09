@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
@@ -22,6 +23,7 @@ import net.sourceforge.vrapper.platform.FileService;
 import net.sourceforge.vrapper.platform.HistoryService;
 import net.sourceforge.vrapper.platform.KeyMapProvider;
 import net.sourceforge.vrapper.platform.Platform;
+import net.sourceforge.vrapper.platform.PlatformSpecificModeProvider;
 import net.sourceforge.vrapper.platform.PlatformSpecificStateProvider;
 import net.sourceforge.vrapper.platform.SearchAndReplaceService;
 import net.sourceforge.vrapper.platform.SelectionService;
@@ -77,6 +79,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     private final UnderlyingEditorSettings editorSettings;
     private final LocalConfiguration configuration;
     private final PlatformSpecificStateProvider platformSpecificStateProvider;
+    private final PlatformSpecificModeProvider platformSpecificModeProvider;
     private final SearchAndReplaceService searchAndReplaceService;
     private MacroRecorder macroRecorder;
     private MacroPlayer macroPlayer;
@@ -109,6 +112,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         };
         this.configuration.addListener(listener);
         this.platformSpecificStateProvider = editor.getPlatformSpecificStateProvider();
+        this.platformSpecificModeProvider = editor.getPlatformSpecificModeProvider();
         this.searchAndReplaceService = editor.getSearchAndReplaceService();
         viewportService = editor.getViewportService();
         userInterfaceService = editor.getUserInterfaceService();
@@ -253,8 +257,20 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     public void changeMode(String modeName, ModeSwitchHint... args) throws CommandExecutionException {
         EditorMode newMode = modeMap.get(modeName);
         if (newMode == null) {
-            VrapperLog.error(format("There is no mode named '%s'",  modeName));
-            return;
+            // Load extension modes
+            List<EditorMode> modes = platformSpecificModeProvider.getModes(this);
+            for (EditorMode mode : modes) {
+                if (modeMap.containsKey(mode.getName())) {
+                    VrapperLog.error(format("Mode '%s' was already loaded!", mode.getName()));
+                } else {
+                    modeMap.put(mode.getName(), mode);
+                }
+            }
+            newMode = modeMap.get(modeName);
+            if (newMode == null) {
+                VrapperLog.error(format("There is no mode named '%s'",  modeName));
+                return;
+            }
         }
         if (currentMode != newMode) {
         	EditorMode oldMode = currentMode;
