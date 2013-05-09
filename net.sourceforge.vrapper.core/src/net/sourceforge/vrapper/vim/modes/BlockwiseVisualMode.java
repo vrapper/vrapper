@@ -13,6 +13,7 @@ import net.sourceforge.vrapper.platform.HistoryService;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.PositionlessSelection;
+import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.BlockWiseSelection;
@@ -65,7 +66,7 @@ public class BlockwiseVisualMode extends AbstractVisualMode {
 	        
 	        final StringRegisterContent stringInsert = (StringRegisterContent) content;
 	        final String string = stringInsert.getText();
-	        if (string.indexOf('\n') > -1) {
+	        if (VimUtils.containsNewLine(string)) {
 	            finish(editorAdaptor);
 	            return; // don't repeat if there's a linebreak
 	        }

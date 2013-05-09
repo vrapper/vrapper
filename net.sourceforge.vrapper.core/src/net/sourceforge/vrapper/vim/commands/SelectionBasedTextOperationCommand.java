@@ -6,6 +6,7 @@ import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
+import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.BlockWiseSelection.Rect;
 import net.sourceforge.vrapper.vim.register.Register;
@@ -59,7 +60,7 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
             	         
         	        final StringRegisterContent stringInsert = (StringRegisterContent) content;
         	        final String string = stringInsert.getText();
-        	        if (string.indexOf('\n') > -1) {
+        	        if (VimUtils.containsNewLine(string)) {
         	            legal = false;
         	        } else {
             	        
