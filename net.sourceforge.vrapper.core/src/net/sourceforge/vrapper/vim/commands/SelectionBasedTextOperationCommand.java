@@ -1,5 +1,6 @@
 package net.sourceforge.vrapper.vim.commands;
 
+import net.sourceforge.vrapper.platform.HistoryService;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.Position;
@@ -33,6 +34,11 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
 		    final int width = rect.width();
 		    final Position ul = rect.getULPosition(editorAdaptor);
 		    final TextObject firstLine = newSelection(ul, width);
+		    
+		    final HistoryService history = editorAdaptor.getHistory();
+		    history.beginCompoundChange();
+		    history.lock("block-action");
+		    
     		command.execute(editorAdaptor, count, firstLine);
     		
     		if (changeMode) {
@@ -45,6 +51,9 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
     		        repetition.execute(editorAdaptor, count, nextLine);
     		    }
     		}
+    		
+		    history.unlock("block-action");
+    		history.endCompoundChange();
     		
 		} else {
     		command.execute(editorAdaptor, count, selection);
