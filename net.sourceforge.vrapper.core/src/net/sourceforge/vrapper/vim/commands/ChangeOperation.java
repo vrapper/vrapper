@@ -1,7 +1,6 @@
 package net.sourceforge.vrapper.vim.commands;
 
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
-import net.sourceforge.vrapper.platform.HistoryService;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.PositionlessSelection;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
@@ -16,6 +15,7 @@ class ChangeOperationRepetition implements TextOperation {
     public void execute(final EditorAdaptor editorAdaptor, final int count,
             final TextObject textObject) throws CommandExecutionException {
         final Command lastInsertion = editorAdaptor.getRegisterManager().getLastInsertion();
+        System.out.println("Execute change rep! " + lastInsertion);
         seq(ChangeOperation.getHintCommand(editorAdaptor, count, textObject), lastInsertion).execute(editorAdaptor);
     }
 
@@ -43,11 +43,9 @@ public class ChangeOperation implements TextOperation {
         if (textObject instanceof Selection
                 && ContentType.TEXT_RECTANGLE.equals(lastSel.getContentType(editorAdaptor.getConfiguration()))) {
             // insert in block mode
-            final HistoryService history = editorAdaptor.getHistory();
-            history.beginCompoundChange();
-            history.lock("block-action");
+            // the SelectionBasedTextOperationCommand already locked history for us
             
-            final Command afterInsertCmd = getLeaveHintCommand(editorAdaptor, count, textObject);
+            final Command afterInsertCmd = getLeaveHintCommand(editorAdaptor, count, lastSel);
             editorAdaptor.changeMode(InsertMode.NAME, new ExecuteCommandHint.OnEnter(beforeInsertCmd),
                     new ExecuteCommandHint.OnLeave(afterInsertCmd));
         } else {
@@ -65,7 +63,7 @@ public class ChangeOperation implements TextOperation {
     }
     
     Command getLeaveHintCommand(final EditorAdaptor editorAdaptor, final int count, final TextObject textObject) {
-        return new SelectionBasedTextOperationCommand.BlockwiseRepeatCommand(this, count, true);
+        return new SelectionBasedTextOperationCommand.BlockwiseRepeatCommand(this, count, true, true);
     }
     
 }

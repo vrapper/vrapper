@@ -5,7 +5,6 @@ import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.Position;
-import net.sourceforge.vrapper.utils.PositionlessSelection;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
@@ -35,6 +34,7 @@ public class BlockWiseSelection implements Selection {
             final int begin = textContent.getLineInformation(top).getBeginOffset();
             return cs.newPositionForModelOffset(begin + left);
         }
+
     }
 
     private final Position from;
@@ -148,7 +148,7 @@ public class BlockWiseSelection implements Selection {
         return ret;
     }
 
-    public static Rect getRect(final EditorAdaptor editorAdaptor, final PositionlessSelection lastSel) 
+    public static Rect getRect(final EditorAdaptor editorAdaptor, final TextObject lastSel) 
             throws CommandExecutionException {
         final TextRange range = lastSel.getRegion(editorAdaptor, 1);
         return getRect(editorAdaptor.getModelContent(), range.getStart(), range.getEnd());

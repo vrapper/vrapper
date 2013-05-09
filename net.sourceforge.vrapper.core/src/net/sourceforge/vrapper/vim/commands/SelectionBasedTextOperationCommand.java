@@ -4,11 +4,13 @@ import net.sourceforge.vrapper.platform.HistoryService;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.Position;
-import net.sourceforge.vrapper.utils.PositionlessSelection;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.BlockWiseSelection.Rect;
+import net.sourceforge.vrapper.vim.register.Register;
+import net.sourceforge.vrapper.vim.register.RegisterContent;
+import net.sourceforge.vrapper.vim.register.StringRegisterContent;
 
 public class SelectionBasedTextOperationCommand extends CountAwareCommand {
 
@@ -16,11 +18,14 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
 	    
 	    private final TextOperation command;
         private final int count;
+        private final boolean doesInsert;
         private final boolean commitHistory;
 
-        public BlockwiseRepeatCommand(final TextOperation command, final int count, final boolean commitHistory) {
+        public BlockwiseRepeatCommand(final TextOperation command, final int count, 
+                final boolean doesInsert, final boolean commitHistory) {
 	        this.command = command;
 	        this.count = count;
+	        this.doesInsert = doesInsert;
 	        this.commitHistory = commitHistory;
 	    }
 
@@ -43,11 +48,35 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
         public void execute(final EditorAdaptor editorAdaptor)
                 throws CommandExecutionException {
             
-            final PositionlessSelection selection = editorAdaptor.getRegisterManager().getLastActiveSelection();
-		    final Rect rect = BlockWiseSelection.getRect(editorAdaptor, selection);
-            System.out.println("Execute BlockwiseRepeatCommand" + rect);
+		    boolean legal = true;
+		    if (doesInsert) {
+    		    final Register lastEdit = editorAdaptor.getRegisterManager().getLastEditRegister();
+    	        final RegisterContent content = lastEdit.getContent();
+    	        if (!(content instanceof StringRegisterContent)) {
+    	            legal = false;
+    	        } else {
+        
+            	         
+        	        final StringRegisterContent stringInsert = (StringRegisterContent) content;
+        	        final String string = stringInsert.getText();
+        	        if (string.indexOf('\n') > -1) {
+        	            legal = false;
+        	        } else {
+            	        
+            	        // re-position to beginning of insert
+            	        final Position newStart = editorAdaptor.getPosition().addModelOffset(-string.length() + 1);
+            	        editorAdaptor.setPosition(newStart, false);
+        	        }
+    	        }
+		    }
 		    
-            doIt(editorAdaptor, command, getCount(), rect);
+		    if (legal) {
+                final TextObject blockSelection = editorAdaptor.getRegisterManager().getLastActiveSelection();
+    		    final Rect rect = BlockWiseSelection.getRect(editorAdaptor, blockSelection);
+    		    System.out.println("Height: " + rect.height());
+    		    
+                doIt(editorAdaptor, command, getCount(), rect);
+		    }
             
             if (commitHistory) {
                 final HistoryService history = editorAdaptor.getHistory();
@@ -64,8 +93,10 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
 		    for (int i=1; i < height; i++) {
 		        rect.top++;
 		        final Position newUl = rect.getULPosition(editorAdaptor);
+		        editorAdaptor.setPosition(newUl, false);
 		        final TextObject nextLine = newSelection(newUl, width);
 		        repetition.execute(editorAdaptor, count, nextLine);
+		        System.out.println("Execute @" + rect);
 		    }
         }
 
@@ -103,10 +134,10 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
     		
     		if (changeMode) {
     		    BlockwiseRepeatCommand.doIt(editorAdaptor, command, count, rect);
-    		}
     		
-		    history.unlock("block-action");
-    		history.endCompoundChange();
+    		    history.unlock("block-action");
+        		history.endCompoundChange();
+    		}
     		
 		} else {
     		command.execute(editorAdaptor, count, selection);
