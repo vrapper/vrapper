@@ -4,6 +4,7 @@ import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
+import net.sourceforge.vrapper.utils.PositionlessSelection;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.BlockWiseSelection;
 import net.sourceforge.vrapper.vim.commands.BlockWiseSelection.Rect;
@@ -43,19 +44,17 @@ public class BlockSelectionMotion implements Motion {
         final Selection selection = editorAdaptor.getSelection();
         if (selection == null)
             throw new CommandExecutionException("BlockSelectionMotion must have a selection!");
-//        if (selection.getContentType(editorAdaptor.getConfiguration()) != ContentType.TEXT_RECTANGLE)
-//            throw new CommandExecutionException("BlockSelectionMotion can only be used with a block selection!");
         
+        final PositionlessSelection lastSel = editorAdaptor.getRegisterManager().getLastActiveSelection();
         final CursorService cs = editorAdaptor.getCursorService();
         final TextContent mc = editorAdaptor.getModelContent();
-        final Position pos = editorAdaptor.getPosition();
-        final LineInformation line = mc.getLineInformationOfOffset(pos.getModelOffset());
         
-        final Rect rect = BlockWiseSelection.getRect(mc, selection);
+        final Rect rect = BlockWiseSelection.getRect(editorAdaptor, lastSel);
+        final LineInformation line = mc.getLineInformation(rect.top);
         if (gotoStart) {
             return cs.newPositionForModelOffset(line.getBeginOffset() + rect.left);
         } else {
-            return cs.newPositionForModelOffset(line.getBeginOffset() + rect.width());
+            return cs.newPositionForModelOffset(line.getBeginOffset() + rect.right + 1);
         }
     }
 

@@ -29,7 +29,6 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
 		final TextContent textContent = editorAdaptor.getModelContent();
 		final TextObject selection = editorAdaptor.getSelection();
 		if (selection.getContentType(editorAdaptor.getConfiguration()) == ContentType.TEXT_RECTANGLE) {
-		    System.out.println("VisualBlock#execute!");
 		    final Rect rect = BlockWiseSelection.getRect(textContent, (Selection) selection);
 		    final int width = rect.width();
 		    final Position ul = rect.getULPosition(editorAdaptor);

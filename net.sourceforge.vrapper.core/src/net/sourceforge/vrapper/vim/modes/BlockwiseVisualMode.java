@@ -20,6 +20,29 @@ import net.sourceforge.vrapper.vim.commands.motions.Motion;
 
 public class BlockwiseVisualMode extends AbstractVisualMode {
 
+    private static class BlockwiseChangeToInsertModeCommand extends
+            ChangeToInsertModeCommand implements Command {
+
+        public BlockwiseChangeToInsertModeCommand(final Command command) {
+            super(command);
+        }
+
+        @Override
+        public void execute(final EditorAdaptor editorAdaptor)
+                throws CommandExecutionException {
+            editorAdaptor.rememberLastActiveSelection();
+            super.execute(editorAdaptor);
+        }
+        
+            
+        @Override
+        public void execute(final EditorAdaptor editorAdaptor, final int count)
+                throws CommandExecutionException {
+            editorAdaptor.rememberLastActiveSelection();
+            super.execute(editorAdaptor, count);
+        }
+    }
+
     public static final String NAME = "block visual mode";
     public static final String DISPLAY_NAME = "BLOCK VISUAL";    
 
@@ -45,8 +68,8 @@ public class BlockwiseVisualMode extends AbstractVisualMode {
         
         final State<Command> parentState = super.buildInitialState();
         return union(parentState, state(
-                leafBind('I', (Command) new ChangeToInsertModeCommand(new MotionCommand(bol))),
-                leafBind('A', (Command) new ChangeToInsertModeCommand(new MotionCommand(eol)))
+                leafBind('I', (Command) new BlockwiseChangeToInsertModeCommand(new MotionCommand(bol))),
+                leafBind('A', (Command) new BlockwiseChangeToInsertModeCommand(new MotionCommand(eol)))
                 ));
     }
     

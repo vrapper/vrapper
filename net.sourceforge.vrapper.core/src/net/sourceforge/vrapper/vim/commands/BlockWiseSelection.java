@@ -5,12 +5,12 @@ import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.Position;
+import net.sourceforge.vrapper.utils.PositionlessSelection;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 
-/** FIXME Make sure this works in all cases */
 public class BlockWiseSelection implements Selection {
     
     public static class Rect {
@@ -112,12 +112,13 @@ public class BlockWiseSelection implements Selection {
         return to;
     }
     
-    public static Rect getRect(final TextContent textContent, final Selection selection) {
+    private static Rect getRect(final TextContent textContent, final Position from, final Position to) {
+        
         final Rect ret = new Rect();
-        final int fromX = VimUtils.calculateColForPosition(textContent, selection.getFrom());
-        final int fromY = VimUtils.calculateLine(textContent, selection.getFrom());
-        final int toX = VimUtils.calculateColForPosition(textContent, selection.getTo());
-        final int toY = VimUtils.calculateLine(textContent, selection.getTo());
+        final int fromX = VimUtils.calculateColForPosition(textContent, from);
+        final int fromY = VimUtils.calculateLine(textContent, from);
+        final int toX = VimUtils.calculateColForPosition(textContent, to);
+        final int toY = VimUtils.calculateLine(textContent, to);
         
         ret.left  = Math.min(toX, fromX);
         ret.top   = Math.min(toY, fromY);
@@ -125,6 +126,16 @@ public class BlockWiseSelection implements Selection {
         ret.bottom= Math.max(toY, fromY);
         
         return ret;
+    }
+    
+    public static Rect getRect(final TextContent textContent, final Selection selection) {
+        return getRect(textContent, selection.getFrom(), selection.getTo());
+    }
+
+    public static Rect getRect(final EditorAdaptor editorAdaptor, final PositionlessSelection lastSel) 
+            throws CommandExecutionException {
+        final TextRange range = lastSel.getRegion(editorAdaptor, 1);
+        return getRect(editorAdaptor.getModelContent(), range.getStart(), range.getEnd());
     }
 
 }
