@@ -25,5 +25,8 @@ Export-Package: net.sourceforge.vrapper.eclipse.commands;
    net.sourceforge.vrapper.keymap,
    net.sourceforge.vrapper.eclipse.commands,
    net.sourceforge.vrapper.platform,
-   net.sourceforge.vrapper.vim"
+   net.sourceforge.vrapper.vim",
+ net.sourceforge.vrapper.eclipse.mode;
+  uses:="net.sourceforge.vrapper.vim.modes,
+   net.sourceforge.vrapper.platform"
 Eclipse-BuddyPolicy: dependent
