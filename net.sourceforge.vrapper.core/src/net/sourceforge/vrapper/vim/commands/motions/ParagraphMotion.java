@@ -20,18 +20,18 @@ public class ParagraphMotion extends CountAwareMotion {
     
     protected final int step;
 
-    private ParagraphMotion(boolean moveForward) {
+    protected ParagraphMotion(final boolean moveForward) {
         step = moveForward ? 1 : -1;
     }
 
     @Override
-    public Position destination(EditorAdaptor editorAdaptor, int count)
+    public Position destination(final EditorAdaptor editorAdaptor, int count)
             throws CommandExecutionException {
         if (count == NO_COUNT_GIVEN)
             count = 1;
         
-        TextContent modelContent = editorAdaptor.getModelContent();
-        LineInformation currentLine = modelContent.getLineInformationOfOffset(editorAdaptor.getPosition().getModelOffset());
+        final TextContent modelContent = editorAdaptor.getModelContent();
+        final LineInformation currentLine = modelContent.getLineInformationOfOffset(editorAdaptor.getPosition().getModelOffset());
         
         int lineNo = currentLine.getNumber();
         for (int i = 0; i < count; i++) {
@@ -52,31 +52,33 @@ public class ParagraphMotion extends CountAwareMotion {
         return editorAdaptor.getPosition().setModelOffset(offset);
     }
 
-    protected int moveMore(TextContent modelContent, int lineNo) {
+    protected int moveMore(final TextContent modelContent, final int lineNo) {
         return lineNo;
     }
 
-    protected boolean isLineEmpty(TextContent content, int lineNo) {
+    protected boolean isLineEmpty(final TextContent content, final int lineNo) {
         return doesLineEmptinessEqual(true, content, lineNo);
     }
     
-    protected boolean isLineNonEmpty(TextContent content, int lineNo) {
+    protected boolean isLineNonEmpty(final TextContent content, final int lineNo) {
         return doesLineEmptinessEqual(false, content, lineNo);
     }
     
-    protected boolean isInRange(TextContent content, int lineNo) {
+    protected boolean isInRange(final TextContent content, final int lineNo) {
         return (lineNo + step >= 0) && (lineNo + step < content.getNumberOfLines());
     }
     
-    private boolean doesLineEmptinessEqual(boolean equalWhat, TextContent content, int lineNo) {
-        boolean isEmpty = content.getLineInformation(lineNo).getLength() == 0;
+    protected boolean doesLineEmptinessEqual(final boolean equalWhat, final TextContent content, final int lineNo) {
+        final boolean isEmpty = content.getLineInformation(lineNo).getLength() == 0;
         return isEmpty == equalWhat;
     }
     
+    @Override
     public BorderPolicy borderPolicy() {
         return BorderPolicy.EXCLUSIVE;
     }
 
+    @Override
     public boolean updateStickyColumn() {
         return true;
     }
@@ -88,14 +90,15 @@ public class ParagraphMotion extends CountAwareMotion {
 
     public static class ParagraphTextObject extends AbstractTextObject {
 
-        private boolean outer;
+        private final boolean outer;
         
-        public ParagraphTextObject(boolean outer) {
+        public ParagraphTextObject(final boolean outer) {
             super();
             this.outer = outer;
         }
 
-        public TextRange getRegion(EditorAdaptor editorAdaptor, int count)
+        @Override
+        public TextRange getRegion(final EditorAdaptor editorAdaptor, int count)
                 throws CommandExecutionException {
             if (count == NO_COUNT_GIVEN) {
                 count = 1;
@@ -103,18 +106,18 @@ public class ParagraphMotion extends CountAwareMotion {
            
             // EOL "lines" at the end of the text buffer will be of the same
             // type (blank, non-blank) as the previous line
-            boolean endsWithEOL = VimUtils.endsWithEOL(editorAdaptor);
+            final boolean endsWithEOL = VimUtils.endsWithEOL(editorAdaptor);
             
-            TextContent content = editorAdaptor.getModelContent();
+            final TextContent content = editorAdaptor.getModelContent();
             int startLineNo = content.getLineInformationOfOffset(editorAdaptor.getPosition().getModelOffset()).getNumber();
             if (endsWithEOL && startLineNo > 0 &&
                     (startLineNo + 1) == content.getNumberOfLines()) {
                 startLineNo--;
             }
             
-            boolean cursorOnBlank = isLineBlank(content, startLineNo);
+            final boolean cursorOnBlank = isLineBlank(content, startLineNo);
             while (startLineNo > 0) {
-                boolean upperLineIsBlank = isLineBlank(content, startLineNo - 1);
+                final boolean upperLineIsBlank = isLineBlank(content, startLineNo - 1);
                 if (cursorOnBlank ^ upperLineIsBlank) {
                     break;
                 }
@@ -206,7 +209,7 @@ public class ParagraphMotion extends CountAwareMotion {
                                 endLineNo++;
                             }
                             else {
-                                boolean lowerLineIsBlank = isLineBlank(content, endLineNo + 1);
+                                final boolean lowerLineIsBlank = isLineBlank(content, endLineNo + 1);
                                 if (isCurrentSectionBlank ^ lowerLineIsBlank) {
                                     break;
                                 }
@@ -236,12 +239,13 @@ public class ParagraphMotion extends CountAwareMotion {
                 endLineNo--;
             }
             
-            Position startPos = editorAdaptor.getPosition().setModelOffset(content.getLineInformation(startLineNo).getBeginOffset());
-            Position endPos = editorAdaptor.getPosition().setModelOffset(content.getLineInformation(endLineNo).getEndOffset()); ;
+            final Position startPos = editorAdaptor.getPosition().setModelOffset(content.getLineInformation(startLineNo).getBeginOffset());
+            final Position endPos = editorAdaptor.getPosition().setModelOffset(content.getLineInformation(endLineNo).getEndOffset()); ;
             return new LineWiseSelection(editorAdaptor, startPos, endPos);
         }
 
-        public ContentType getContentType(Configuration configuration) {
+        @Override
+        public ContentType getContentType(final Configuration configuration) {
             return ContentType.LINES;
         }
     }
