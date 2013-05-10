@@ -261,7 +261,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
 
     @Override
     public void changeMode(final String modeName, final ModeSwitchHint... args) throws CommandExecutionException {
-        final EditorMode newMode = modeMap.get(modeName);
+        EditorMode newMode = modeMap.get(modeName);
         if (newMode == null) {
             // Load extension modes
             List<EditorMode> modes = platformSpecificModeProvider.getModes(this);
