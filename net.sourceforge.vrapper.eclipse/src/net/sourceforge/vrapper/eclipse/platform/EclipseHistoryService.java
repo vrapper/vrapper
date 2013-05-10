@@ -15,7 +15,7 @@ public class EclipseHistoryService implements IUndoManager, IUndoManagerExtensio
     private String lockName = "";
     private final StyledText textWidget;
 
-    public EclipseHistoryService(StyledText textWidget, IUndoManager delegate) {
+    public EclipseHistoryService(final StyledText textWidget, final IUndoManager delegate) {
         this.textWidget = textWidget;
         this.delegate = delegate;
     }
@@ -25,82 +25,97 @@ public class EclipseHistoryService implements IUndoManager, IUndoManagerExtensio
      * that a parent class can lock and unlock without a child class
      * unknowingly locking and unlocking, removing that parent's lock.
      */
-    public void lock(String name) {
+    @Override
+    public void lock(final String name) {
     	if(!locked) {
     		locked = true;
     		lockName = name;
     	}
     }
     
-    public void unlock(String name) {
+    @Override
+    public void unlock(final String name) {
     	if(locked && lockName.equals(name)) {
     		locked = false;
     		lockName = "";
     	}
     }
 
+    @Override
     public void lock() {
         lock("unnamed");
     }
 
+    @Override
     public void unlock() {
         unlock("unnamed");
     }
 
+    @Override
     public void beginCompoundChange() {
         if (!locked) {
             delegate.beginCompoundChange();
         }
     }
 
+    @Override
     public void endCompoundChange() {
         if (!locked) {
             delegate.endCompoundChange();
         }
     }
 
-    public void connect(ITextViewer arg0) {
+    @Override
+    public void connect(final ITextViewer arg0) {
         delegate.connect(arg0);
     }
 
+    @Override
     public void disconnect() {
         delegate.disconnect();
     }
 
+    @Override
     public void undo() {
         delegate.undo();
         deselectAll();
     }
 
+    @Override
     public void redo() {
         delegate.redo();
         deselectAll();
     }
 
+    @Override
     public boolean undoable() {
         return delegate.undoable();
     }
 
+    @Override
     public boolean redoable() {
         return delegate.redoable();
     }
 
+    @Override
     public void reset() {
         delegate.reset();
     }
 
-    public void setMaximalUndoLevel(int arg0) {
+    @Override
+    public void setMaximalUndoLevel(final int arg0) {
         delegate.setMaximalUndoLevel(arg0);
     }
 
     private void deselectAll() {
         // XXX: we acheive some degree of Vim compatibility by jumping
         // to beginning of selection; this is hackish
-        int caretOffset = textWidget.getSelection().x;
+        final int caretOffset = textWidget.getSelection().x;
         textWidget.setSelection(caretOffset);
     }
 
-	public IUndoContext getUndoContext() {
+	@Override
+    public IUndoContext getUndoContext() {
 		if (delegate instanceof IUndoManagerExtension) {
 			return ((IUndoManagerExtension)delegate).getUndoContext();
 		}

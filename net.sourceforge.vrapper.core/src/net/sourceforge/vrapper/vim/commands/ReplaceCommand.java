@@ -3,14 +3,17 @@ package net.sourceforge.vrapper.vim.commands;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.platform.Configuration;
+import net.sourceforge.vrapper.platform.HistoryService;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.Function;
 import net.sourceforge.vrapper.utils.LineInformation;
+import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StringUtils;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
+import net.sourceforge.vrapper.vim.commands.BlockWiseSelection.Rect;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 
 /**
@@ -21,7 +24,8 @@ import net.sourceforge.vrapper.vim.modes.NormalMode;
 public abstract class ReplaceCommand extends AbstractModelSideCommand {
 
     public static final Function<Command, KeyStroke> KEYSTROKE_CONVERTER = new Function<Command, KeyStroke>() {
-        public Command call(KeyStroke arg) {
+        @Override
+        public Command call(final KeyStroke arg) {
             if (SpecialKey.RETURN.equals(arg.getSpecialKey())) {
                 return Newline.INSTANCE;
             }
@@ -30,9 +34,9 @@ public abstract class ReplaceCommand extends AbstractModelSideCommand {
     };
 
     @Override
-    protected int execute(TextContent c, int offset, int count) {
-        LineInformation line = c.getLineInformationOfOffset(offset);
-        int targetOffset = offset + count - 1;
+    protected int execute(final TextContent c, final int offset, final int count) {
+        final LineInformation line = c.getLineInformationOfOffset(offset);
+        final int targetOffset = offset + count - 1;
         if (targetOffset < line.getEndOffset()) {
             return replace(c, offset, count, targetOffset);
         }
@@ -43,19 +47,19 @@ public abstract class ReplaceCommand extends AbstractModelSideCommand {
     
     public static class Visual extends ReplaceCommand {
         private final char replaceChar;
-        private int selectionOffset;
-        private String selectionText;
+        protected int selectionOffset;
+        protected String selectionText;
 
-        public Visual(char replacement) {
+        public Visual(final char replacement) {
             super();
             this.replaceChar = replacement;
         }
 
         @Override
-        public void execute(EditorAdaptor editorAdaptor)
+        public void execute(final EditorAdaptor editorAdaptor)
                 throws CommandExecutionException {
         	//grab current selection
-        	TextRange selectionRange = editorAdaptor.getSelection().getRegion(editorAdaptor, 0);
+        	final TextRange selectionRange = editorAdaptor.getSelection().getRegion(editorAdaptor, 0);
         	selectionOffset = selectionRange.getLeftBound().getModelOffset();
         	selectionText = editorAdaptor.getModelContent().getText(selectionRange);
         	replace(editorAdaptor.getModelContent(), selectionOffset, 1, selectionOffset);
@@ -63,7 +67,7 @@ public abstract class ReplaceCommand extends AbstractModelSideCommand {
         }
 
 		@Override
-        protected int replace(TextContent c, int offset, int count, int targetOffset) {
+        protected int replace(final TextContent c, final int offset, final int count, final int targetOffset) {
         	String s = "";
         	for(int i=0; i < selectionText.length(); i++) {
         		//replace every character *except* newlines
@@ -74,25 +78,67 @@ public abstract class ReplaceCommand extends AbstractModelSideCommand {
         }
         
         public static final Function<Command, KeyStroke> VISUAL_KEYSTROKE = new Function<Command, KeyStroke>() {
-        	public Command call(KeyStroke arg) {
+        	@Override
+            public Command call(final KeyStroke arg) {
         		return new Visual(arg.getCharacter());
         	}
         };
     
+    }
+    
+    public static class VisualBlock extends Visual {
+        
+        public VisualBlock(final char replacement) {
+            super(replacement);
+        }
+        
+        @Override
+        public void execute(final EditorAdaptor editorAdaptor) throws CommandExecutionException {
+            
+            final HistoryService history = editorAdaptor.getHistory();
+            history.beginCompoundChange();
+            history.lock("block-action");
+            
+            final TextContent textContent = editorAdaptor.getModelContent();
+            final Rect rect = BlockWiseSelection.getRect(textContent, editorAdaptor.getSelection());
+            final int selectionStart = rect.getULPosition(editorAdaptor).getModelOffset();
+            
+            final int height = rect.height();
+            final int width = rect.width();
+            for (int i=0; i < height; i++) {
+                final Position ul = rect.getULPosition(editorAdaptor);
+                selectionText = textContent.getText(SelectionBasedTextOperationCommand.newRange(ul, width));
+                selectionOffset = ul.getModelOffset();
+            	replace(textContent, ul.getModelOffset(), 1, selectionStart);
+                rect.top++;
+            }
+            
+            history.unlock("block-action");
+            history.endCompoundChange();
+            
+            editorAdaptor.changeMode(NormalMode.NAME);
+        }
+        
+        public static final Function<Command, KeyStroke> VISUALBLOCK_KEYSTROKE = new Function<Command, KeyStroke>() {
+        	@Override
+            public Command call(final KeyStroke arg) {
+        		return new VisualBlock(arg.getCharacter());
+        	}
+        };
     }
 
     private static class Character extends ReplaceCommand {
 
         private final char replacement;
 
-        public Character(char replacement) {
+        public Character(final char replacement) {
             super();
             this.replacement = replacement;
         }
 
         @Override
-        protected int replace(TextContent c, int offset, int count, int targetOffset) {
-            String s = StringUtils.multiply(""+replacement, count);
+        protected int replace(final TextContent c, final int offset, final int count, final int targetOffset) {
+            final String s = StringUtils.multiply(""+replacement, count);
             c.replace(offset, s.length(), s);
             return targetOffset;
         }
@@ -107,10 +153,10 @@ public abstract class ReplaceCommand extends AbstractModelSideCommand {
         private boolean autoIndent;
 
         @Override
-        public void execute(EditorAdaptor editorAdaptor)
+        public void execute(final EditorAdaptor editorAdaptor)
                 throws CommandExecutionException {
             // hack to access the configuration
-            Configuration conf = editorAdaptor.getConfiguration();
+            final Configuration conf = editorAdaptor.getConfiguration();
             newLine = conf.getNewLine();
             smartIndent = conf.get(Options.SMART_INDENT);
             autoIndent = conf.get(Options.AUTO_INDENT);
@@ -118,16 +164,16 @@ public abstract class ReplaceCommand extends AbstractModelSideCommand {
         }
 
         @Override
-        int replace(TextContent c, int offset, int count, int targetOffset) {
-            LineInformation line = c.getLineInformationOfOffset(offset);
+        int replace(final TextContent c, final int offset, final int count, final int targetOffset) {
+            final LineInformation line = c.getLineInformationOfOffset(offset);
             if (smartIndent) {
                 c.replace(offset, targetOffset-offset+1, "");
                 c.smartInsert(offset, newLine);
             } else {
-                String indent = autoIndent ? VimUtils.getIndent(c, line) : "";
+                final String indent = autoIndent ? VimUtils.getIndent(c, line) : "";
                 c.replace(offset, targetOffset-offset+1, newLine+indent);
             }
-            LineInformation nextLine = c.getLineInformation(line.getNumber()+1);
+            final LineInformation nextLine = c.getLineInformation(line.getNumber()+1);
             return VimUtils.getFirstNonWhiteSpaceOffset(c, nextLine);
         }
 

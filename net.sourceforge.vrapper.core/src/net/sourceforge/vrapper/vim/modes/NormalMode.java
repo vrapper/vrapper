@@ -27,6 +27,7 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.AsciiCommand;
+import net.sourceforge.vrapper.vim.commands.BlockWiseSelection;
 import net.sourceforge.vrapper.vim.commands.BorderPolicy;
 import net.sourceforge.vrapper.vim.commands.CenterLineCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
@@ -87,7 +88,6 @@ import net.sourceforge.vrapper.vim.commands.motions.MoveWordEndRightForChange;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordRight;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordRightForUpdate;
-import net.sourceforge.vrapper.vim.commands.motions.ParagraphMotion;
 import net.sourceforge.vrapper.vim.commands.motions.ParagraphMotion.ParagraphTextObject;
 import net.sourceforge.vrapper.vim.modes.commandline.CommandLineMode;
 
@@ -100,14 +100,14 @@ public class NormalMode extends CommandBasedMode {
     private static State<DelimitedText> delimitedTexts;
     private static State<Motion> textMotions;
 
-    public NormalMode(EditorAdaptor editorAdaptor) {
+    public NormalMode(final EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     protected KeyMapResolver buildKeyMapResolver() {
-        State<String> state = union(
+        final State<String> state = union(
                 state(
                     leafBind('r', KeyMapResolver.NO_KEYMAP),
                     leafBind('z', KeyMapResolver.NO_KEYMAP),
@@ -116,7 +116,7 @@ public class NormalMode extends CommandBasedMode {
                 getKeyMapsForMotions(),
                 editorAdaptor.getPlatformSpecificStateProvider().getKeyMaps(NAME));
         final State<String> countEater = new CountConsumingState<String>(state);
-        State<String> registerKeymapState = new RegisterKeymapState(KEYMAP_NAME, countEater);
+        final State<String> registerKeymapState = new RegisterKeymapState(KEYMAP_NAME, countEater);
         return new KeyMapResolver(registerKeymapState, KEYMAP_NAME);
     }
     @SuppressWarnings("unchecked")
@@ -203,8 +203,9 @@ public class NormalMode extends CommandBasedMode {
     @Override
     @SuppressWarnings("unchecked")
     protected State<Command> buildInitialState() {
-        Command visualMode = new ChangeModeCommand(VisualMode.NAME);
-        Command linewiseVisualMode = new ChangeModeCommand(LinewiseVisualMode.NAME);
+        final Command visualMode = new ChangeModeCommand(VisualMode.NAME);
+        final Command linewiseVisualMode = new ChangeModeCommand(LinewiseVisualMode.NAME);
+        final Command blockwiseVisualMode = new ChangeModeCommand(BlockwiseVisualMode.NAME);
 
         final Motion moveLeft = MoveLeft.INSTANCE;
         final Motion moveRight = MoveRight.INSTANCE;
@@ -222,7 +223,7 @@ public class NormalMode extends CommandBasedMode {
         final TextObject toEol = new MotionTextObject(eol);
         final TextObject toEolForY = new OptionDependentTextObject(Options.SANE_Y, eol, wholeLineEol);
 
-        State<TextObject> textObjects = textObjects();
+        final State<TextObject> textObjects = textObjects();
         State<TextObject> textObjectsForChange = union(
                 state(
                         leafBind('w', wordForCw),
@@ -230,57 +231,69 @@ public class NormalMode extends CommandBasedMode {
                 textObjects);
         textObjectsForChange = CountingState.wrap(textObjectsForChange);
 
-        TextOperation delete = DeleteOperation.INSTANCE;
-        TextOperation change = ChangeOperation.INSTANCE;
-        TextOperation yank   = YankOperation.INSTANCE;
-        TextOperation format = FormatOperation.INSTANCE;
-        Command undo = UndoCommand.INSTANCE;
-        Command redo = RedoCommand.INSTANCE;
-        Command pasteAfter  = PasteAfterCommand.CURSOR_ON_TEXT;
-        Command pasteBefore = PasteBeforeCommand.CURSOR_ON_TEXT;
-        Command pasteAfterWithG  = PasteAfterCommand.CURSOR_AFTER_TEXT;
-        Command pasteBeforeWithG = PasteBeforeCommand.CURSOR_AFTER_TEXT;
-        Command deleteNext = new TextOperationTextObjectCommand(delete, new MotionTextObject(moveRight));
-        Command deletePrevious = new TextOperationTextObjectCommand(delete, new MotionTextObject(moveLeft));
-        Command repeatLastOne = DotCommand.INSTANCE;
-        Command tildeCmd = SwapCaseCommand.INSTANCE;
-        Command stickToEOL = StickToEOLCommand.INSTANCE;
-        LineEndMotion lineEndMotion = new LineEndMotion(BorderPolicy.LINE_WISE);
-        Command substituteLine = new TextOperationTextObjectCommand(change, new MotionTextObject(lineEndMotion));
-        Command substituteChar = new TextOperationTextObjectCommand(change, new MotionTextObject(moveRight));
-        Command incrementNum = IncrementDecrementCommand.INCREMENT;
-        Command decrementNum = IncrementDecrementCommand.DECREMENT;
-        Command joinLines = JoinLinesCommand.INSTANCE;
-        Command joinLinesDumbWay = JoinLinesCommand.DUMB_INSTANCE;
-        Command centerLine = CenterLineCommand.CENTER;
-        Command centerBottomLine = CenterLineCommand.BOTTOM;
-        Command centerTopLine = CenterLineCommand.TOP;
-        Command findFile = FindFileCommand.INSTANCE;
-        Command repeatSubLine = RepeatLastSubstitutionCommand.CURRENT_LINE_ONLY;
-        Command repeatSubGlobal = RepeatLastSubstitutionCommand.GLOBALLY;
-        Command saveAndClose = new VimCommandSequence(SaveCommand.INSTANCE, CloseCommand.CLOSE);
+        final TextOperation delete = DeleteOperation.INSTANCE;
+        final TextOperation change = ChangeOperation.INSTANCE;
+        final TextOperation yank   = YankOperation.INSTANCE;
+        final TextOperation format = FormatOperation.INSTANCE;
+        final Command undo = UndoCommand.INSTANCE;
+        final Command redo = RedoCommand.INSTANCE;
+        final Command pasteAfter  = PasteAfterCommand.CURSOR_ON_TEXT;
+        final Command pasteBefore = PasteBeforeCommand.CURSOR_ON_TEXT;
+        final Command pasteAfterWithG  = PasteAfterCommand.CURSOR_AFTER_TEXT;
+        final Command pasteBeforeWithG = PasteBeforeCommand.CURSOR_AFTER_TEXT;
+        final Command deleteNext = new TextOperationTextObjectCommand(delete, new MotionTextObject(moveRight));
+        final Command deletePrevious = new TextOperationTextObjectCommand(delete, new MotionTextObject(moveLeft));
+        final Command repeatLastOne = DotCommand.INSTANCE;
+        final Command tildeCmd = SwapCaseCommand.INSTANCE;
+        final Command stickToEOL = StickToEOLCommand.INSTANCE;
+        final LineEndMotion lineEndMotion = new LineEndMotion(BorderPolicy.LINE_WISE);
+        final Command substituteLine = new TextOperationTextObjectCommand(change, new MotionTextObject(lineEndMotion));
+        final Command substituteChar = new TextOperationTextObjectCommand(change, new MotionTextObject(moveRight));
+        final Command incrementNum = IncrementDecrementCommand.INCREMENT;
+        final Command decrementNum = IncrementDecrementCommand.DECREMENT;
+        final Command joinLines = JoinLinesCommand.INSTANCE;
+        final Command joinLinesDumbWay = JoinLinesCommand.DUMB_INSTANCE;
+        final Command centerLine = CenterLineCommand.CENTER;
+        final Command centerBottomLine = CenterLineCommand.BOTTOM;
+        final Command centerTopLine = CenterLineCommand.TOP;
+        final Command findFile = FindFileCommand.INSTANCE;
+        final Command repeatSubLine = RepeatLastSubstitutionCommand.CURRENT_LINE_ONLY;
+        final Command repeatSubGlobal = RepeatLastSubstitutionCommand.GLOBALLY;
+        final Command saveAndClose = new VimCommandSequence(SaveCommand.INSTANCE, CloseCommand.CLOSE);
 
-        Command afterEnteringVisualInc = new OptionDependentCommand<String>(Options.SELECTION, "inclusive",
+        final Command afterEnteringVisualInc = new OptionDependentCommand<String>(Options.SELECTION, "inclusive",
                 new VisualMotionCommand(moveRight));
-        Command afterEnteringVisualExc = new OptionDependentCommand<String>(Options.SELECTION, "exclusive",
+        final Command afterEnteringVisualExc = new OptionDependentCommand<String>(Options.SELECTION, "exclusive",
                 new CountIgnoringNonRepeatableCommand() {
-                    public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
-                        Position position = editorAdaptor.getPosition();
+                    @Override
+                    public void execute(final EditorAdaptor editorAdaptor) throws CommandExecutionException {
+                        final Position position = editorAdaptor.getPosition();
                         editorAdaptor.setSelection(new SimpleSelection(new StartEndTextRange(position, position)));
                     }
                 });
-        Command selectLine = new CountIgnoringNonRepeatableCommand() {
-            public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
-                        Position position = editorAdaptor.getPosition();
+        final Command afterEnteringBlockVisual = new CountIgnoringNonRepeatableCommand() {
+            
+            @Override
+            public void execute(final EditorAdaptor editorAdaptor)
+                    throws CommandExecutionException {
+                final Position position = editorAdaptor.getPosition();
+//                final Position next = editorAdaptor.getCursorService().newPositionForModelOffset(position.getModelOffset()+1);
+                editorAdaptor.setSelection(new BlockWiseSelection(editorAdaptor, position, position));
+            }
+        };
+        final Command selectLine = new CountIgnoringNonRepeatableCommand() {
+            @Override
+            public void execute(final EditorAdaptor editorAdaptor) throws CommandExecutionException {
+                        final Position position = editorAdaptor.getPosition();
                         editorAdaptor.setSelection(new LineWiseSelection(editorAdaptor, position, position));
             }
         };
-        Command afterEnteringVisual = seq(afterEnteringVisualInc, afterEnteringVisualExc);
+        final Command afterEnteringVisual = seq(afterEnteringVisualInc, afterEnteringVisualExc);
 
-        State<Command> motionCommands = new GoThereState(motions);
-        Command nextResult = motionCommands.press(key('n')).getValue();
+        final State<Command> motionCommands = new GoThereState(motions);
+        final Command nextResult = motionCommands.press(key('n')).getValue();
 
-        State<Command> platformSpecificState = getPlatformSpecificState(NAME);
+        final State<Command> platformSpecificState = getPlatformSpecificState(NAME);
         return RegisterState.wrap(CountingState.wrap(union(
                 platformSpecificState,
                 operatorCmdsWithUpperCase('d', delete, toEol,     textObjects),
@@ -302,6 +315,7 @@ public class NormalMode extends CommandBasedMode {
                         leafBind('O', (Command) new ChangeToInsertModeCommand(InsertLineCommand.PRE_CURSOR)),
                         leafBind('v', seq(visualMode, afterEnteringVisual)),
                         leafBind('V', dontRepeat(seq(linewiseVisualMode, selectLine))),
+                        leafCtrlBind('v', dontRepeat(seq(blockwiseVisualMode, afterEnteringBlockVisual))),
                         leafBind('p', pasteAfter),
                         leafBind('.', repeatLastOne),
                         leafBind('P', pasteBefore),
@@ -355,9 +369,9 @@ public class NormalMode extends CommandBasedMode {
 
     @Override
     protected void placeCursor() {
-        Position pos = editorAdaptor.getPosition();
-        int offset = pos.getViewOffset();
-        LineInformation line = editorAdaptor.getViewContent().getLineInformationOfOffset(offset);
+        final Position pos = editorAdaptor.getPosition();
+        final int offset = pos.getViewOffset();
+        final LineInformation line = editorAdaptor.getViewContent().getLineInformationOfOffset(offset);
         if (isEnabled && line.getEndOffset() == offset && line.getLength() > 0) {
             editorAdaptor.setPosition(pos.addViewOffset(-1), false);
         }
@@ -370,23 +384,26 @@ public class NormalMode extends CommandBasedMode {
         editorAdaptor.getRegisterManager().activateDefaultRegister();
     }
 
-    public void enterMode(ModeSwitchHint... args) throws CommandExecutionException {
+    @Override
+    public void enterMode(final ModeSwitchHint... args) throws CommandExecutionException {
         placeCursor();
         editorAdaptor.getCursorService().setCaret(CaretType.RECTANGULAR);
         super.enterMode(args);
         if (args.length > 0 && args[0] instanceof ExecuteCommandHint) {
         	try {
 		        executeCommand(((ExecuteCommandHint.OnEnter) args[0]).getCommand());
-        	} catch (CommandExecutionException e) {
+        	} catch (final CommandExecutionException e) {
         		editorAdaptor.getUserInterfaceService().setErrorMessage(e.getMessage());
         	}
         }
     }
 
+    @Override
     public String getName() {
         return NAME;
     }
 
+    @Override
     public String getDisplayName() {
         return DISPLAY_NAME;
     }

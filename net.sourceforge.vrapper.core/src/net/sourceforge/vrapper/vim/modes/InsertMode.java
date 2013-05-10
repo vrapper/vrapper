@@ -66,15 +66,18 @@ public class InsertMode extends AbstractMode {
      */
     private Command command;
     private int count;
+    private ExecuteCommandHint mOnLeaveHint;
 
-    public InsertMode(EditorAdaptor editorAdaptor) {
+    public InsertMode(final EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
     }
 
+    @Override
     public String getName() {
         return NAME;
     }
     
+    @Override
     public String getDisplayName() {
         return DISPLAY_NAME;
     }
@@ -84,10 +87,11 @@ public class InsertMode extends AbstractMode {
      *            command to perform on entering insert mode
      * @throws CommandExecutionException
      */
-    public void enterMode(ModeSwitchHint... args) throws CommandExecutionException {
+    @Override
+    public void enterMode(final ModeSwitchHint... args) throws CommandExecutionException {
     	boolean initMode = true;
     	boolean lockHistory = true;
-        for (ModeSwitchHint hint: args) {
+        for (final ModeSwitchHint hint: args) {
         	if(hint == DONT_SAVE_STATE) {
         		initMode = false;
         	}
@@ -102,21 +106,27 @@ public class InsertMode extends AbstractMode {
 
         count = 1;
         command = null;
+        mOnLeaveHint = null;
 
         try {
             editorAdaptor.getViewportService().setRepaint(false);
 
-            for (ModeSwitchHint hint : args) {
+            for (final ModeSwitchHint hint : args) {
                 if (hint instanceof WithCountHint) {
-                    WithCountHint cast = (WithCountHint) hint;
+                    final WithCountHint cast = (WithCountHint) hint;
                     count = cast.getCount();
                 }
-                if (hint instanceof ExecuteCommandHint) {
-                    ExecuteCommandHint cast = (ExecuteCommandHint) hint;
+                
+                final boolean isOnLeave = hint instanceof ExecuteCommandHint.OnLeave;
+                if (hint instanceof ExecuteCommandHint
+                        && !isOnLeave) { // this SEEMS correct...?
+                    final ExecuteCommandHint cast = (ExecuteCommandHint) hint;
                     cast.getCommand().execute(editorAdaptor);
+                } else if (isOnLeave) {
+                    mOnLeaveHint = (ExecuteCommandHint) hint;
                 }
             }
-        } catch (CommandExecutionException e) {
+        } catch (final CommandExecutionException e) {
             if (editorAdaptor.getConfiguration().get(Options.ATOMIC_INSERT)) {
                 editorAdaptor.getHistory().unlock();
                 editorAdaptor.getHistory().endCompoundChange();
@@ -132,9 +142,10 @@ public class InsertMode extends AbstractMode {
         super.enterMode(args);
     }
 
-    public void leaveMode(ModeSwitchHint... hints) {
+    @Override
+    public void leaveMode(final ModeSwitchHint... hints) {
         boolean moveCursor = true;
-        for (ModeSwitchHint hint: hints) {
+        for (final ModeSwitchHint hint: hints) {
             if (hint == InsertMode.DONT_MOVE_CURSOR) {
                 moveCursor = false;
             }
@@ -150,7 +161,7 @@ public class InsertMode extends AbstractMode {
             try {
                 if (moveCursor)
                     MotionCommand.doIt(editorAdaptor, MoveLeft.INSTANCE);
-            } catch (CommandExecutionException e) {
+            } catch (final CommandExecutionException e) {
                 editorAdaptor.getUserInterfaceService().setErrorMessage(
                         e.getMessage());
             }
@@ -170,7 +181,7 @@ public class InsertMode extends AbstractMode {
             try {
                 editorAdaptor.getRegisterManager().getLastEdit().withCount(
                         count - 1).execute(editorAdaptor);
-            } catch (CommandExecutionException e) {
+            } catch (final CommandExecutionException e) {
                 editorAdaptor.getUserInterfaceService().setErrorMessage(
                         e.getMessage());
             }
@@ -178,9 +189,9 @@ public class InsertMode extends AbstractMode {
     }
 
     private void saveTypedText() {
-        Register lastEditRegister = editorAdaptor.getRegisterManager().getLastEditRegister();
-        TextContent content = editorAdaptor.getModelContent();
-        Position position = editorAdaptor.getCursorService().getPosition();
+        final Register lastEditRegister = editorAdaptor.getRegisterManager().getLastEditRegister();
+        final TextContent content = editorAdaptor.getModelContent();
+        final Position position = editorAdaptor.getCursorService().getPosition();
         if(startEditPosition.getModelOffset() > editorAdaptor.getModelContent().getTextLength()) {
         	//if the file is shorter than where we started,
         	//update so we aren't at an invalid position
@@ -188,15 +199,15 @@ public class InsertMode extends AbstractMode {
 				        			editorAdaptor.getModelContent().getTextLength()
 			        			);
         }
-        String text = content.getText(new StartEndTextRange(startEditPosition, position));
-        RegisterContent registerContent = new StringRegisterContent(ContentType.TEXT, text);
+        final String text = content.getText(new StartEndTextRange(startEditPosition, position));
+        final RegisterContent registerContent = new StringRegisterContent(ContentType.TEXT, text);
         lastEditRegister.setContent(registerContent);
-        Command repetition = createRepetition(lastEditRegister, text);
+        final Command repetition = createRepetition(lastEditRegister, text);
         editorAdaptor.getRegisterManager().setLastInsertion(
                 count > 1 ? repetition.withCount(count) : repetition);
     }
 
-    protected Command createRepetition(Register lastEditRegister, String text) {
+    protected Command createRepetition(final Register lastEditRegister, final String text) {
         Command repetition = null;
         if (command != null)
             repetition = command.repetition();
@@ -207,12 +218,13 @@ public class InsertMode extends AbstractMode {
         ));
     }
 
-    public boolean handleKey(KeyStroke stroke) {
-        Transition<Command> transition = currentState.press(stroke);
+    @Override
+    public boolean handleKey(final KeyStroke stroke) {
+        final Transition<Command> transition = currentState.press(stroke);
         if (transition != null && transition.getValue() != null) {
         	try {
         		transition.getValue().execute(editorAdaptor);
-        	} catch (CommandExecutionException e) {
+        	} catch (final CommandExecutionException e) {
         		editorAdaptor.getUserInterfaceService().setErrorMessage(e.getMessage());
         	}
         }
@@ -220,6 +232,15 @@ public class InsertMode extends AbstractMode {
             editorAdaptor.changeModeSafely(NormalMode.NAME);
             if (editorAdaptor.getConfiguration().get(Options.IM_DISABLE)) {
             	editorAdaptor.getEditorSettings().disableInputMethod();
+            }
+            if (mOnLeaveHint != null && stroke.equals(ESC)) {
+                // ctrl+c is "cancel," it seems
+                try {
+                    mOnLeaveHint.getCommand().execute(editorAdaptor);
+                } catch (final CommandExecutionException e) {
+                    editorAdaptor.getUserInterfaceService().setErrorMessage(
+                            e.getMessage());
+                }
             }
             return true;
 		} else if (stroke.equals(CTRL_R)) {
@@ -253,12 +274,12 @@ public class InsertMode extends AbstractMode {
      * delete that many spaces as if it was a single tab character.
      */
     private boolean softTabDelete() {
-    	TextContent model = editorAdaptor.getModelContent();
-    	int softTabStop = editorAdaptor.getConfiguration().get(Options.SOFT_TAB);
-    	int pos = editorAdaptor.getPosition().getModelOffset();
-    	int start = model.getLineInformationOfOffset(pos).getBeginOffset();
+    	final TextContent model = editorAdaptor.getModelContent();
+    	final int softTabStop = editorAdaptor.getConfiguration().get(Options.SOFT_TAB);
+    	final int pos = editorAdaptor.getPosition().getModelOffset();
+    	final int start = model.getLineInformationOfOffset(pos).getBeginOffset();
     	//text before cursor
-    	String text = model.getText(start, pos - start);
+    	final String text = model.getText(start, pos - start);
     	
     	//get number of consecutive spaces
     	int spaceCount = 0;
@@ -293,12 +314,12 @@ public class InsertMode extends AbstractMode {
     	return true;
     }
 
-    private void handleVirtualStroke(KeyStroke stroke) {
-        TextContent c = editorAdaptor.getModelContent();
+    private void handleVirtualStroke(final KeyStroke stroke) {
+        final TextContent c = editorAdaptor.getModelContent();
         if (SpecialKey.BACKSPACE.equals(stroke.getSpecialKey())) {
-            int pos = editorAdaptor.getPosition().getModelOffset();
+            final int pos = editorAdaptor.getPosition().getModelOffset();
             int pos2;
-            LineInformation line = c.getLineInformationOfOffset(pos);
+            final LineInformation line = c.getLineInformationOfOffset(pos);
             if (pos > 0) {
                 if (pos > line.getBeginOffset()) {
                     pos2 = pos - 1;
@@ -321,9 +342,9 @@ public class InsertMode extends AbstractMode {
         }
     }
 
-    private boolean allowed(KeyStroke stroke) {
+    private boolean allowed(final KeyStroke stroke) {
         // TODO: option to allow arrows
-        SpecialKey specialKey = stroke.getSpecialKey();
+        final SpecialKey specialKey = stroke.getSpecialKey();
         if (specialKey != null) {
             return VimConstants.SPECIAL_KEYS_ALLOWED_FOR_INSERT
                     .contains(specialKey);
@@ -348,7 +369,8 @@ public class InsertMode extends AbstractMode {
         ));
     }
 
-    public KeyMap resolveKeyMap(KeyMapProvider provider) {
+    @Override
+    public KeyMap resolveKeyMap(final KeyMapProvider provider) {
         return provider.getKeyMap(KEYMAP_NAME);
     }
 
@@ -357,11 +379,12 @@ public class InsertMode extends AbstractMode {
 
         private final int offset;
 
-        public MoveRightOverLineBreak(int offset) {
+        public MoveRightOverLineBreak(final int offset) {
             this.offset = offset;
         }
 
-        public void execute(EditorAdaptor editorAdaptor)
+        @Override
+        public void execute(final EditorAdaptor editorAdaptor)
                 throws CommandExecutionException {
             editorAdaptor.setPosition(editorAdaptor.getPosition()
                     .addModelOffset(offset), true);
@@ -370,7 +393,7 @@ public class InsertMode extends AbstractMode {
 
     public static class SimpleInsertCommandSequence extends VimCommandSequence {
 
-        public SimpleInsertCommandSequence(Command... commands) {
+        public SimpleInsertCommandSequence(final Command... commands) {
             super(commands);
         }
 
@@ -378,11 +401,12 @@ public class InsertMode extends AbstractMode {
         public Command withCount(final int count) {
             return new CountIgnoringNonRepeatableCommand() {
 
-                public void execute(EditorAdaptor editorAdaptor)
+                @Override
+                public void execute(final EditorAdaptor editorAdaptor)
                         throws CommandExecutionException {
                     SimpleInsertCommandSequence.this.execute(editorAdaptor);
                     for (int i = 1; i < count; i++) {
-                        Position pos = editorAdaptor.getPosition();
+                        final Position pos = editorAdaptor.getPosition();
                         editorAdaptor.setPosition(pos.addModelOffset(1), false);
                         SimpleInsertCommandSequence.this.execute(editorAdaptor);
                     }
