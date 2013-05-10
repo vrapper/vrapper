@@ -39,7 +39,7 @@ public class ChangeOperation implements TextOperation {
     public void execute(final EditorAdaptor editorAdaptor, final int count, final TextObject textObject) throws CommandExecutionException {
         final Command beforeInsertCmd = getHintCommand(editorAdaptor, count, textObject);
         final PositionlessSelection lastSel = editorAdaptor.getRegisterManager().getLastActiveSelection();
-        if (textObject instanceof Selection
+        if (textObject instanceof Selection && lastSel != null
                 && ContentType.TEXT_RECTANGLE.equals(lastSel.getContentType(editorAdaptor.getConfiguration()))) {
             // insert in block mode
             // the SelectionBasedTextOperationCommand already locked history for us
