@@ -3,6 +3,7 @@ package net.sourceforge.vrapper.vim.commands;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
+import net.sourceforge.vrapper.vim.modes.BlockwiseVisualMode;
 import net.sourceforge.vrapper.vim.modes.LinewiseVisualMode;
 import net.sourceforge.vrapper.vim.modes.VisualMode;
 
@@ -10,17 +11,20 @@ public class SelectTextObjectCommand extends CountAwareCommand {
 
     private final TextObject textObject;
 
-    public SelectTextObjectCommand(TextObject textObject) {
+    public SelectTextObjectCommand(final TextObject textObject) {
         this.textObject = textObject;
     }
 
     @Override
-    public void execute(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
-        TextRange region = textObject.getRegion(editorAdaptor, count);
+    public void execute(final EditorAdaptor editorAdaptor, final int count) throws CommandExecutionException {
+        final TextRange region = textObject.getRegion(editorAdaptor, count);
         Selection selection;
         String newMode;
         switch (textObject.getContentType(editorAdaptor.getConfiguration())) {
-        case TEXT_RECTANGLE: throw new UnsupportedOperationException("rectangular selection");
+        case TEXT_RECTANGLE: 
+            selection = new BlockWiseSelection(editorAdaptor, region.getStart(), region.getEnd());
+            newMode = BlockwiseVisualMode.NAME;
+            break;
         case LINES:
             /**
              * TODO: ugly casting. The problem is, that if textObject already
