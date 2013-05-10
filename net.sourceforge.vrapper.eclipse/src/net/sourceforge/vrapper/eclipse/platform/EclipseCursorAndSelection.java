@@ -204,9 +204,14 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
                 final int xPixel = (rect.left + 1) * charWidth;
                 final int yPixel = styled.getLinePixel(rect.top);
                 final int wPixel = rect.width() * charWidth;
-                final int hPixel = styled.getLinePixel(rect.height());
+                final int hPixel = styled.getLinePixel(rect.bottom + 1) - yPixel;
                 
-                styled.setBlockSelectionBounds(xPixel, yPixel, wPixel, hPixel);
+                // getLinePixel is relative to the top of the viewport,
+                //  not the top of the document; however, setBlockSelectionBounds
+                //  wants pixels relative to the document. awesome
+                final int scrollOffsetY = styled.getTopPixel() + yPixel;
+                
+                styled.setBlockSelectionBounds(xPixel, scrollOffsetY, wPixel, hPixel);
             } else {
                 textViewer.getTextWidget().setBlockSelection(false);
                 textViewer.setSelectedRange(from, length);

@@ -56,6 +56,8 @@ public class BlockwiseVisualMotionCommand extends AbstractVisualMotionCommand {
 //            System.out.println("extendSelection right " + from.getModelOffset() + " -> " + to.getModelOffset());
     		editorAdaptor.setSelection(new BlockWiseSelection(editorAdaptor, from, to));
         }
+        
+//        System.out.println("New selection: " + BlockWiseSelection.getRect(text, editorAdaptor.getSelection()));
     }
 
     @Override
