@@ -30,16 +30,14 @@ public class BlockwiseVisualMotionCommand extends AbstractVisualMotionCommand {
         final TextContent text = editorAdaptor.getModelContent();
         final int fromCol = VimUtils.calculateColForPosition(text, from);
         final int toCol = VimUtils.calculateColForPosition(text, to);
-        final boolean sameColumn = fromCol == toCol;
         final boolean sameRow = VimUtils.calculateLine(text, oldTo) == VimUtils.calculateLine(text, to);
         
         if (to.getModelOffset() <= from.getModelOffset()) {
             // cross back
-            // TODO vertical part
                     
             // if they're the same column, we should decrement one more
             // so there's no bizarre empty column
-            if (sameColumn) {
+            if (fromCol < toCol && !sameRow) {
                 final CursorService cs = editorAdaptor.getCursorService();
                 to = cs.newPositionForModelOffset(to.getModelOffset()-1); // decrement normal
             }
