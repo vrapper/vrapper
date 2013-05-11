@@ -1,6 +1,7 @@
 package net.sourceforge.vrapper.plugin.surround.commands;
 
 import net.sourceforge.vrapper.platform.TextContent;
+import net.sourceforge.vrapper.plugin.surround.state.DelimiterHolder;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
@@ -10,13 +11,11 @@ import net.sourceforge.vrapper.vim.commands.DelimitedText;
 public class ChangeDelimiterCommand extends CountAwareCommand {
 
     private final DelimitedText delimitedText;
-    private final String left;
-    private final String right;
+    private final DelimiterHolder delimiters;
 
-    public ChangeDelimiterCommand(DelimitedText delimitedText, String left, String right) {
+    public ChangeDelimiterCommand(DelimitedText delimitedText, DelimiterHolder delimiters) {
         this.delimitedText = delimitedText;
-        this.left = left;
-        this.right = right;
+        this.delimiters = delimiters;
     }
 
     @Override
@@ -25,8 +24,8 @@ public class ChangeDelimiterCommand extends CountAwareCommand {
             editorAdaptor.getHistory().beginCompoundChange();
             TextRange rightRange = delimitedText.rightDelimiter(editorAdaptor, count);
             TextRange leftRange = delimitedText.leftDelimiter(editorAdaptor, count);
-            change(editorAdaptor, rightRange, right);
-            change(editorAdaptor, leftRange, left);
+            change(editorAdaptor, rightRange, delimiters.getRight());
+            change(editorAdaptor, leftRange, delimiters.getLeft());
             // TODO: option to turn it off?
             editorAdaptor.getCursorService().setPosition(leftRange.getLeftBound(), true);
         } finally {

@@ -1,6 +1,6 @@
 package net.sourceforge.vrapper.plugin.surround.state;
 
-import static net.sourceforge.vrapper.plugin.surround.state.DelimiterStrings.DELIMITER_STRINGS;
+import static net.sourceforge.vrapper.plugin.surround.state.DelimiterValues.DELIMITER_HOLDERS;
 import net.sourceforge.vrapper.keymap.SequenceState;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.plugin.surround.commands.ChangeDelimiterCommand;
@@ -8,10 +8,10 @@ import net.sourceforge.vrapper.utils.Function;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.DelimitedText;
 
-public class ChangeDelimiterState extends SequenceState<Command, DelimitedText, String> {
+public class ChangeDelimiterState extends SequenceState<Command, DelimitedText, DelimiterHolder> {
 
     public ChangeDelimiterState(State<DelimitedText> wrapped) {
-        super(wrapped, DELIMITER_STRINGS);
+        super(wrapped, DELIMITER_HOLDERS);
     }
 
     @Override
@@ -20,11 +20,10 @@ public class ChangeDelimiterState extends SequenceState<Command, DelimitedText, 
     }
 
     @Override
-    protected Function<Command, String> getConverter(final DelimitedText delimitedText) {
-        return new Function<Command, String>() {
-                public Command call(String arg) {
-                    String[] split = arg.split("\0");
-                    return new ChangeDelimiterCommand(delimitedText, split[0], split[1]);
+    protected Function<Command, DelimiterHolder> getConverter(final DelimitedText delimitedText) {
+        return new Function<Command, DelimiterHolder>() {
+                public Command call(DelimiterHolder arg) {
+                    return new ChangeDelimiterCommand(delimitedText, arg);
                 }
         };
     }
