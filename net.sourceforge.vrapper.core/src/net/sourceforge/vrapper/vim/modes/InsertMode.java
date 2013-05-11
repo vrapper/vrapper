@@ -22,6 +22,7 @@ import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
+import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.VimConstants;
@@ -30,6 +31,7 @@ import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.CountIgnoringNonRepeatableCommand;
 import net.sourceforge.vrapper.vim.commands.DeleteOperation;
 import net.sourceforge.vrapper.vim.commands.InsertAdjacentCharacter;
+import net.sourceforge.vrapper.vim.commands.InsertLineCommand;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.commands.MotionTextObject;
 import net.sourceforge.vrapper.vim.commands.PasteBeforeCommand;
@@ -60,6 +62,7 @@ public class InsertMode extends AbstractMode {
     protected State<Command> currentState = buildState();
 
     private Position startEditPosition;
+    private boolean enteredWithO = false;
 
     /**
      * Command to be used before insertion
@@ -117,13 +120,18 @@ public class InsertMode extends AbstractMode {
                     count = cast.getCount();
                 }
                 
-                final boolean isOnLeave = hint instanceof ExecuteCommandHint.OnLeave;
-                if (hint instanceof ExecuteCommandHint
-                        && !isOnLeave) { // this SEEMS correct...?
-                    final ExecuteCommandHint cast = (ExecuteCommandHint) hint;
-                    cast.getCommand().execute(editorAdaptor);
-                } else if (isOnLeave) {
-                    mOnLeaveHint = (ExecuteCommandHint) hint;
+                if (hint instanceof ExecuteCommandHint) {
+                    if (hint instanceof ExecuteCommandHint.OnLeave) {
+                        mOnLeaveHint = (ExecuteCommandHint) hint;
+                    }
+                    else { //onEnter, execute command now
+                        Command command = ((ExecuteCommandHint) hint).getCommand();
+                        command.execute(editorAdaptor);
+                        if(command instanceof InsertLineCommand) {
+                            //entered insert mode via 'o' or 'O'
+                            enteredWithO = true;
+                        }
+                    }
                 }
             }
         } catch (final CommandExecutionException e) {
@@ -199,6 +207,18 @@ public class InsertMode extends AbstractMode {
 				        			editorAdaptor.getModelContent().getTextLength()
 			        			);
         }
+        else if(enteredWithO && position.getModelOffset() == startEditPosition.getModelOffset()) {
+            //if we entered InsertMode via 'o' or 'O' but didn't enter any text,
+            //remove any auto-inserted indentation
+            final int startOfLine = content.getLineInformationOfOffset(position.getModelOffset()).getBeginOffset();
+            final String indent = content.getText(startOfLine, position.getModelOffset() - startOfLine);
+            if(indent.length() > 0 && VimUtils.isBlank(indent)) {
+                content.replace(startOfLine, indent.length(), "");
+            }
+        }
+        //reset value in case we re-enter InsertMode
+        enteredWithO = false;
+        
         final String text = content.getText(new StartEndTextRange(startEditPosition, position));
         final RegisterContent registerContent = new StringRegisterContent(ContentType.TEXT, text);
         lastEditRegister.setContent(registerContent);
