@@ -3,6 +3,8 @@ package net.sourceforge.vrapper.eclipse.platform;
 import net.sourceforge.vrapper.eclipse.ui.ModeContributionItem;
 import net.sourceforge.vrapper.eclipse.ui.StatusLine;
 import net.sourceforge.vrapper.platform.UserInterfaceService;
+import net.sourceforge.vrapper.vim.ModeChangeHintReceiver;
+import net.sourceforge.vrapper.vim.modes.InsertMode;
 
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.text.ITextViewer;
@@ -16,7 +18,10 @@ public class EclipseUserInterfaceService implements UserInterfaceService {
 
     private final StatusLine statusLine;
     private final IEditorPart editor;
+    private final ITextViewer textViewer;
     private final ModeContributionItem vimInputModeItem;
+    
+    private LinkedModeHandler linkedModeHandler;
    
     private String lastInfoValue = "";
     private String lastErrorValue = "";
@@ -34,31 +39,41 @@ public class EclipseUserInterfaceService implements UserInterfaceService {
     
     private String currentMode;
 
-    public EclipseUserInterfaceService(IEditorPart editor, ITextViewer textViewer) {
+    public EclipseUserInterfaceService(final IEditorPart editor, final ITextViewer textViewer) {
         this.editor = editor;
+        this.textViewer = textViewer;
         statusLine = new StatusLine(textViewer.getTextWidget());
         vimInputModeItem = getContributionItem();
         setEditorMode(VRAPPER_DISABLED);
         editor.getSite().getWorkbenchWindow().getPartService().addPartListener(new PartChangeListener());
     }
 
-    public void setCommandLine(String content, int position) {
+    @Override
+    public void setCommandLine(final String content, final int position) {
         statusLine.setContent(content);
         statusLine.setCaretPosition(position);
     }
 
-    public void setEditorMode(String modeName) {
+    @Override
+    public void setEditorMode(final String modeName) {
         currentMode = "-- " + modeName + " --";
         vimInputModeItem.setText(currentMode);
+        
+        if (InsertMode.DISPLAY_NAME.equals(modeName) && linkedModeHandler != null) {
+            // if there's a linked mode, we want to be notified about it
+            linkedModeHandler.onCheckForLinkedMode(textViewer.getDocument());
+        }
     }
     
+    @Override
     public String getCurrentEditorMode() {
         return currentMode;
     }
    
     // For :ascii command
-    public void setAsciiValues(String asciiValue, int decValue, String hexValue, String octalValue) {
-        String asciiValueText = "<" + asciiValue + ">  " 
+    @Override
+    public void setAsciiValues(final String asciiValue, final int decValue, final String hexValue, final String octalValue) {
+        final String asciiValueText = "<" + asciiValue + ">  " 
                               + decValue + ",  "
                               + "Hex " + hexValue + ",  "
                               + "Octal " + octalValue;
@@ -67,41 +82,47 @@ public class EclipseUserInterfaceService implements UserInterfaceService {
         setInfoMessage(asciiValueText);
     }
    
+    @Override
     public String getLastCommandResultValue() {
         return lastCommandResultValue;
     }
 
-    public void setLastCommandResultValue(String lastCommandResultValue) {
+    @Override
+    public void setLastCommandResultValue(final String lastCommandResultValue) {
         this.lastCommandResultValue = lastCommandResultValue;
     }
     
-    public void setErrorMessage(String content) {
+    @Override
+    public void setErrorMessage(final String content) {
         editor.getEditorSite().getActionBars().getStatusLineManager().setErrorMessage(content);
         lastErrorValue = content;
     }
 
+    @Override
     public String getLastErrorValue() {
         return lastErrorValue;
     }
     
-    public void setInfoMessage(String content) {
+    @Override
+    public void setInfoMessage(final String content) {
         editor.getEditorSite().getActionBars().getStatusLineManager().setMessage(content);
         lastInfoValue = content;
     }
     
+    @Override
     public String getLastInfoValue() {
         return lastInfoValue;
     }
 
     private ModeContributionItem getContributionItem() {
-        String name = CONTRIBUTION_ITEM_NAME + editor.getEditorSite().getId();
-        IStatusLineManager manager = editor.getEditorSite().getActionBars().getStatusLineManager();
+        final String name = CONTRIBUTION_ITEM_NAME + editor.getEditorSite().getId();
+        final IStatusLineManager manager = editor.getEditorSite().getActionBars().getStatusLineManager();
         ModeContributionItem item = (ModeContributionItem) manager.find(name);
         if (item == null) {
             item = new ModeContributionItem(name);
             try {
                 manager.insertBefore("ElementState", item);
-            } catch (IllegalArgumentException e) {
+            } catch (final IllegalArgumentException e) {
                 manager.add(item);
             }
             manager.update(true);
@@ -111,35 +132,50 @@ public class EclipseUserInterfaceService implements UserInterfaceService {
 
     private final class PartChangeListener implements IPartListener {
 
-        public void partActivated(IWorkbenchPart arg0) {
+        @Override
+        public void partActivated(final IWorkbenchPart arg0) {
             if (arg0 == editor) {
                 vimInputModeItem.setText(currentMode);
             }
         }
 
-        public void partBroughtToTop(IWorkbenchPart arg0) { }
+        @Override
+        public void partBroughtToTop(final IWorkbenchPart arg0) { }
 
-        public void partClosed(IWorkbenchPart arg0) {
+        @Override
+        public void partClosed(final IWorkbenchPart arg0) {
             if (arg0 == editor) {
                 editor.getSite().getWorkbenchWindow().getPartService().removePartListener(this);
             }
         }
 
-        public void partDeactivated(IWorkbenchPart arg0) { }
+        @Override
+        public void partDeactivated(final IWorkbenchPart arg0) { }
 
-        public void partOpened(IWorkbenchPart arg0) { }
+        @Override
+        public void partOpened(final IWorkbenchPart arg0) { }
     }
 
-    public void setRecording(boolean b) {
+    @Override
+    public void setRecording(final boolean b) {
     	vimInputModeItem.setRecording(b);
     }
 
+    @Override
     public boolean isInfoSet() {
         return infoSet;
     }
 
-    public void setInfoSet(boolean infoSet) {
+    @Override
+    public void setInfoSet(final boolean infoSet) {
         this.infoSet = infoSet;
     }
 
+    public void setModeChangeHintReceiver(final ModeChangeHintReceiver editorAdaptor) {
+        if (linkedModeHandler != null) {
+            linkedModeHandler.unregisterListener(textViewer.getDocument());
+        }
+        linkedModeHandler = new LinkedModeHandler(editorAdaptor);
+        linkedModeHandler.registerListener(textViewer.getDocument());
+    }
 }

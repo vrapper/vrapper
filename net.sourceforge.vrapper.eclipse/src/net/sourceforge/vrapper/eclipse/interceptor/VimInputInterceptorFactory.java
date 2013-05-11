@@ -84,9 +84,11 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
     private static final Configuration sharedConfiguration = new SimpleConfiguration();
 
     public InputInterceptor createInterceptor(AbstractTextEditor abstractTextEditor, ITextViewer textViewer) {
-        EditorAdaptor editorAdaptor = new DefaultEditorAdaptor(
-                new EclipsePlatform(abstractTextEditor, textViewer, sharedConfiguration),
+        EclipsePlatform platform = new EclipsePlatform(abstractTextEditor, textViewer, sharedConfiguration);
+        DefaultEditorAdaptor editorAdaptor = new DefaultEditorAdaptor(
+                platform,
                 globalRegisterManager, VrapperPlugin.isVrapperEnabled());
+        platform.setModeChangeHintReceiver(editorAdaptor);
         return new VimInputInterceptor(editorAdaptor);
     }
 

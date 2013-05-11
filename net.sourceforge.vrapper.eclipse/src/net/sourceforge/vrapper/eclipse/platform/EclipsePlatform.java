@@ -28,6 +28,7 @@ import net.sourceforge.vrapper.platform.UnderlyingEditorSettings;
 import net.sourceforge.vrapper.platform.UserInterfaceService;
 import net.sourceforge.vrapper.platform.ViewportService;
 import net.sourceforge.vrapper.utils.DefaultKeyMapProvider;
+import net.sourceforge.vrapper.vim.ModeChangeHintReceiver;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
@@ -53,8 +54,8 @@ public class EclipsePlatform implements Platform {
     private static final Map<String, PlatformSpecificStateProvider> providerCache = new HashMap<String, PlatformSpecificStateProvider>();
     private static final AtomicReference<PlatformSpecificModeProvider> modeProviderCache= new AtomicReference<PlatformSpecificModeProvider>();
 
-    public EclipsePlatform(AbstractTextEditor abstractTextEditor,
-            ITextViewer textViewer, Configuration sharedConfiguration) {
+    public EclipsePlatform(final AbstractTextEditor abstractTextEditor,
+            final ITextViewer textViewer, final Configuration sharedConfiguration) {
         underlyingEditor = abstractTextEditor;
         configuration = sharedConfiguration;
         textContent = new EclipseTextContent(textViewer);
@@ -70,9 +71,9 @@ public class EclipsePlatform implements Platform {
                 abstractTextEditor);
         searchAndReplaceService = new EclipseSearchAndReplaceService(abstractTextEditor, textViewer);
         if (textViewer instanceof ITextViewerExtension6) {
-            IUndoManager delegate = ((ITextViewerExtension6) textViewer)
+            final IUndoManager delegate = ((ITextViewerExtension6) textViewer)
                     .getUndoManager();
-            EclipseHistoryService manager = new EclipseHistoryService(
+            final EclipseHistoryService manager = new EclipseHistoryService(
                     textViewer.getTextWidget(), delegate);
             textViewer.setUndoManager(manager);
             this.historyService = manager;
@@ -80,84 +81,99 @@ public class EclipsePlatform implements Platform {
             this.historyService = new DummyHistoryService();
         }
     }
-
+        
+    @Override
     public CursorService getCursorService() {
         return cursorAndSelection;
     }
 
+    @Override
     public TextContent getModelContent() {
         return textContent.getModelContent();
     }
 
+    @Override
     public SelectionService getSelectionService() {
         return cursorAndSelection;
     }
 
+    @Override
     public TextContent getViewContent() {
         return textContent.getViewContent();
     }
 
+    @Override
     public FileService getFileService() {
         return fileService;
     }
 
+    @Override
     public ViewportService getViewportService() {
         return viewportService;
     }
 
+    @Override
     public HistoryService getHistoryService() {
         return historyService;
     }
 
+    @Override
     public ServiceProvider getServiceProvider() {
         return serviceProvider;
     }
 
+    @Override
     public UserInterfaceService getUserInterfaceService() {
         return userInterfaceService;
     }
 
+    @Override
     public DefaultKeyMapProvider getKeyMapProvider() {
         return keyMapProvider;
     }
 
+    @Override
     public UnderlyingEditorSettings getUnderlyingEditorSettings() {
         return underlyingEditorSettings;
     }
 
+    @Override
     public Configuration getConfiguration() {
         return configuration;
     }
 
+    @Override
     public PlatformSpecificStateProvider getPlatformSpecificStateProvider() {
-        String className = underlyingEditor.getClass().getName();
+        final String className = underlyingEditor.getClass().getName();
         if (!providerCache.containsKey(className)) {
             providerCache.put(className, buildPlatformSpecificStateProvider());
         }
         return providerCache.get(className);
     }
 
+    @Override
     public PlatformSpecificModeProvider getPlatformSpecificModeProvider() {
         if (modeProviderCache.get() == null) {
-            PlatformSpecificModeProvider provider = buildPlatformSpecificModeProvider();
+            final PlatformSpecificModeProvider provider = buildPlatformSpecificModeProvider();
             // Only set this once.
             modeProviderCache.compareAndSet(null, provider);
         }
         return modeProviderCache.get();
     }
 
+    @Override
     public SearchAndReplaceService getSearchAndReplaceService() {
         return searchAndReplaceService;
     }
 
     private PlatformSpecificStateProvider buildPlatformSpecificStateProvider() {
-        IExtensionRegistry registry = org.eclipse.core.runtime.Platform
+        final IExtensionRegistry registry = org.eclipse.core.runtime.Platform
                 .getExtensionRegistry();
-        IConfigurationElement[] elements = registry
+        final IConfigurationElement[] elements = registry
                 .getConfigurationElementsFor("net.sourceforge.vrapper.eclipse.pssp");
-        List<AbstractEclipseSpecificStateProvider> matched = new ArrayList<AbstractEclipseSpecificStateProvider>();
-        for (IConfigurationElement element : elements) {
-            AbstractEclipseSpecificStateProvider provider = (AbstractEclipseSpecificStateProvider) Utils
+        final List<AbstractEclipseSpecificStateProvider> matched = new ArrayList<AbstractEclipseSpecificStateProvider>();
+        for (final IConfigurationElement element : elements) {
+            final AbstractEclipseSpecificStateProvider provider = (AbstractEclipseSpecificStateProvider) Utils
                     .createGizmoForElementConditionally(
                             underlyingEditor, "editor-must-subclass",
                             element, "provider-class");
@@ -171,19 +187,23 @@ public class EclipsePlatform implements Platform {
     }
 
     private PlatformSpecificModeProvider buildPlatformSpecificModeProvider() {
-        IExtensionRegistry registry = org.eclipse.core.runtime.Platform.getExtensionRegistry();
-        IConfigurationElement[] elements = registry
+        final IExtensionRegistry registry = org.eclipse.core.runtime.Platform.getExtensionRegistry();
+        final IConfigurationElement[] elements = registry
                 .getConfigurationElementsFor("net.sourceforge.vrapper.eclipse.psmp");
-        List<AbstractEclipseSpecificModeProvider> matched = new ArrayList<AbstractEclipseSpecificModeProvider>();
-        for (IConfigurationElement element : elements) {
+        final List<AbstractEclipseSpecificModeProvider> matched = new ArrayList<AbstractEclipseSpecificModeProvider>();
+        for (final IConfigurationElement element : elements) {
             try {
                 matched.add((AbstractEclipseSpecificModeProvider)
                         element.createExecutableExtension("provider-class"));
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 VrapperLog.error("error while building mode providers", e);
             }
         }
         return new UnionModeProvider("Extension modes", matched);
+    }
+
+    public void setModeChangeHintReceiver(final ModeChangeHintReceiver receiver) {
+        userInterfaceService.setModeChangeHintReceiver(receiver);
     }
 
 }

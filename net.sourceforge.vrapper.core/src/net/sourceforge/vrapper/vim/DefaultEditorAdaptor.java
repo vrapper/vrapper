@@ -54,7 +54,7 @@ import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
 import net.sourceforge.vrapper.vim.register.Register;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
 
-public class DefaultEditorAdaptor implements EditorAdaptor {
+public class DefaultEditorAdaptor implements EditorAdaptor, ModeChangeHintReceiver {
 
     // ugly global option, so unit tests can disable it
     // in order to be .vrapperrc-agnostic
@@ -264,8 +264,8 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         EditorMode newMode = modeMap.get(modeName);
         if (newMode == null) {
             // Load extension modes
-            List<EditorMode> modes = platformSpecificModeProvider.getModes(this);
-            for (EditorMode mode : modes) {
+            final List<EditorMode> modes = platformSpecificModeProvider.getModes(this);
+            for (final EditorMode mode : modes) {
                 if (modeMap.containsKey(mode.getName())) {
                     VrapperLog.error(format("Mode '%s' was already loaded!", mode.getName()));
                 } else {
