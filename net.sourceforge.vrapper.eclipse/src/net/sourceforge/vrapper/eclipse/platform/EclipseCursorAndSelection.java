@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.sourceforge.vrapper.eclipse.ui.CaretUtils;
+import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.Configuration;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.SelectionService;
@@ -277,7 +278,13 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         public void caretMoved(final CaretEvent e) {
 			if (enabled) {
 				final int offset = e.caretOffset;
-	            stickyColumn = textViewer.getTextWidget().getLocationAtOffset(offset).x;
+				try {
+					stickyColumn = textViewer.getTextWidget().getLocationAtOffset(offset).x;
+				}
+				catch(IllegalArgumentException ex) {
+					VrapperLog.info("Caught IllegalArgumentException in EclipseCursorAndSelection.caretMoved(): " + ex.getLocalizedMessage());
+					stickyColumn = -1; //this will be fixed below
+				}
 	            //if the desired stickyColumn is off the screen to the left
 	            //(horizontal scrollbars are scrolled to the right) then I get a
 	            //negative number here, which throws an IllegalArgumentException
