@@ -6,7 +6,7 @@ import net.sourceforge.vrapper.platform.PlatformSpecificModeProvider;
  * Base implementation of {@link PlatformSpecificModeProvider} to provide new command line
  * modes.
  * 
- * @author jacobsb
+ * @author Bert Jacobs
  */
 public abstract class AbstractEclipseSpecificModeProvider
         implements PlatformSpecificModeProvider {
