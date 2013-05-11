@@ -1,16 +1,16 @@
 package net.sourceforge.vrapper.eclipse.platform;
 
 
+import net.sourceforge.vrapper.utils.ContentType;
+import net.sourceforge.vrapper.utils.VimUtils;
+import net.sourceforge.vrapper.vim.register.Register;
+import net.sourceforge.vrapper.vim.register.RegisterContent;
+import net.sourceforge.vrapper.vim.register.StringRegisterContent;
+
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Display;
-
-import net.sourceforge.vrapper.utils.ContentType;
-import net.sourceforge.vrapper.vim.VimConstants;
-import net.sourceforge.vrapper.vim.register.Register;
-import net.sourceforge.vrapper.vim.register.RegisterContent;
-import net.sourceforge.vrapper.vim.register.StringRegisterContent;
 
 public class SWTClipboardRegister implements Register {
 	
@@ -25,8 +25,9 @@ public class SWTClipboardRegister implements Register {
     	if (s == null) {
     		return RegisterContent.DEFAULT_CONTENT;
     	}
-        if (s.endsWith(VimConstants.REGISTER_NEWLINE)
-                || s.startsWith(VimConstants.REGISTER_NEWLINE)) {
+    	//don't assume copied text matches OS newline type
+        if (s.length() > 0 &&
+        		(VimUtils.isNewLine(""+s.charAt(0)) || VimUtils.isNewLine(""+s.charAt(s.length()-1)))) {
             return new StringRegisterContent(ContentType.LINES, s);
         }
         return new StringRegisterContent(ContentType.TEXT, s);
