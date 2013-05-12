@@ -26,13 +26,13 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.ITextViewerExtension5;
-import org.eclipse.jface.text.JFaceTextUtil;
 import org.eclipse.swt.custom.CaretEvent;
 import org.eclipse.swt.custom.CaretListener;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Caret;
 
 public class EclipseCursorAndSelection implements CursorService, SelectionService {
@@ -201,12 +201,15 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
                 final Rect rect = BlockWiseSelection.getViewRect(textContent.getViewContent(), newSelection);
                 
                 // convert to units Eclipse wants
-                final int charWidth = JFaceTextUtil.getAverageCharWidth(styled);
-                final int xPixel = (rect.left + 1) * charWidth;
+//                final int charWidth = JFaceTextUtil.getAverageCharWidth(styled);
                 final int yPixel = styled.getLinePixel(rect.top);
-                final int wPixel = rect.width() * charWidth;
                 final int hPixel = styled.getLinePixel(rect.bottom + 1) - yPixel;
                 
+                final int start = rect.getULOffset(textContent.getViewContent());
+                final Rectangle row = styled.getTextBounds(start, start + rect.width());
+                final int xPixel = row.x;
+                final int wPixel = row.width;
+
                 // getLinePixel is relative to the top of the viewport,
                 //  not the top of the document; however, setBlockSelectionBounds
                 //  wants pixels relative to the document. awesome
@@ -281,7 +284,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
 				try {
 					stickyColumn = textViewer.getTextWidget().getLocationAtOffset(offset).x;
 				}
-				catch(IllegalArgumentException ex) {
+				catch(final IllegalArgumentException ex) {
 					VrapperLog.info("Caught IllegalArgumentException in EclipseCursorAndSelection.caretMoved(): " + ex.getLocalizedMessage());
 					stickyColumn = -1; //this will be fixed below
 				}

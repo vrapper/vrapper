@@ -27,12 +27,16 @@ public class BlockWiseSelection implements Selection {
         public String toString() {
             return String.format("%d %d - %d %d", left, top, right, bottom);
         }
+        
+        public int getULOffset(final TextContent textContent) {
+            return textContent.getLineInformation(top).getBeginOffset() + left;
+        }
 
         public Position getULPosition(final EditorAdaptor editorAdaptor) {
             final CursorService cs = editorAdaptor.getCursorService();
             final TextContent textContent = editorAdaptor.getModelContent();
-            final int begin = textContent.getLineInformation(top).getBeginOffset();
-            return cs.newPositionForModelOffset(begin + left);
+            final int ulOffset = getULOffset(textContent);
+            return cs.newPositionForModelOffset(ulOffset);
         }
 
     }

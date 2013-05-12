@@ -47,21 +47,21 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
 
     private Selection lastSelection;
 
-    public AbstractVisualMode(EditorAdaptor editorAdaptor) {
+    public AbstractVisualMode(final EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     protected KeyMapResolver buildKeyMapResolver() {
-        State<String> state = union(
+        final State<String> state = union(
                 state(
                     leafBind('z', KeyMapResolver.NO_KEYMAP),
                     leafBind('r', KeyMapResolver.NO_KEYMAP)),
                 getKeyMapsForMotions(),
                 editorAdaptor.getPlatformSpecificStateProvider().getKeyMaps(VisualMode.NAME));
         final State<String> countEater = new CountConsumingState<String>(state);
-        State<String> registerKeymapState = new RegisterKeymapState(KEYMAP_NAME, countEater);
+        final State<String> registerKeymapState = new RegisterKeymapState(KEYMAP_NAME, countEater);
         return new KeyMapResolver(registerKeymapState, KEYMAP_NAME);
     }
 
@@ -73,11 +73,12 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
     //        }
         }
 
-    public void enterMode(ModeSwitchHint... hints) throws CommandExecutionException {
+    @Override
+    public void enterMode(final ModeSwitchHint... hints) throws CommandExecutionException {
         boolean fixSelection = false;
         boolean keepSelection = false;
         boolean recallSelection = false;
-        for (ModeSwitchHint hint: hints) {
+        for (final ModeSwitchHint hint: hints) {
             if (hint == FIX_SELECTION_HINT) {
             	keepSelection = true;
                 fixSelection = true;
@@ -101,7 +102,7 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
     }
     
     @Override
-    public void leaveMode(ModeSwitchHint... hints)
+    public void leaveMode(final ModeSwitchHint... hints)
     		throws CommandExecutionException {
     	lastSelection = editorAdaptor.getSelection();
     	super.leaveMode(hints);
@@ -112,23 +113,23 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
     @Override
     @SuppressWarnings("unchecked")
     protected State<Command> buildInitialState() {
-        Command leaveVisual = LeaveVisualModeCommand.INSTANCE;
-        Command yank   = new SelectionBasedTextOperationCommand(YankOperation.INSTANCE);
-        Command delete = new SelectionBasedTextOperationCommand(DeleteOperation.INSTANCE);
-        Command paste  = new SelectionBasedTextOperationCommand(PasteOperation.INSTANCE);
-        Command change = new SelectionBasedTextOperationCommand.DontChangeMode(ChangeOperation.INSTANCE);
-        Command format = new SelectionBasedTextOperationCommand(FormatOperation.INSTANCE);
-        Command swapCase = SwapCaseCommand.VISUAL_INSTANCE;
-        Command commandLineMode = new ChangeModeCommand(CommandLineMode.NAME, CommandLineMode.FROM_VISUAL);
-        Command centerLine = CenterLineCommand.CENTER;
-        Command centerBottomLine = CenterLineCommand.BOTTOM;
-        Command centerTopLine = CenterLineCommand.TOP;
-        Command joinLines = JoinVisualLinesCommand.INSTANCE;
-        Command joinLinesDumbWay = JoinVisualLinesCommand.DUMB_INSTANCE;
-        Command findFile = VisualFindFileCommand.INSTANCE;
-        State<Command> visualMotions = getVisualMotionState();
-        State<Command> visualTextObjects = VisualTextObjectState.INSTANCE;
-        State<Command> initialState = RegisterState.wrap(CountingState.wrap(union(
+        final Command leaveVisual = LeaveVisualModeCommand.INSTANCE;
+        final Command yank   = new SelectionBasedTextOperationCommand(YankOperation.INSTANCE);
+        final Command delete = new SelectionBasedTextOperationCommand(DeleteOperation.INSTANCE);
+        final Command paste  = new SelectionBasedTextOperationCommand(PasteOperation.INSTANCE);
+        final Command change = new SelectionBasedTextOperationCommand.DontChangeMode(ChangeOperation.INSTANCE);
+        final Command format = new SelectionBasedTextOperationCommand(FormatOperation.INSTANCE);
+        final Command swapCase = SwapCaseCommand.VISUAL_INSTANCE;
+        final Command commandLineMode = new ChangeModeCommand(CommandLineMode.NAME, CommandLineMode.FROM_VISUAL);
+        final Command centerLine = CenterLineCommand.CENTER;
+        final Command centerBottomLine = CenterLineCommand.BOTTOM;
+        final Command centerTopLine = CenterLineCommand.TOP;
+        final Command joinLines = JoinVisualLinesCommand.INSTANCE;
+        final Command joinLinesDumbWay = JoinVisualLinesCommand.DUMB_INSTANCE;
+        final Command findFile = VisualFindFileCommand.INSTANCE;
+        final State<Command> visualMotions = getVisualMotionState();
+        final State<Command> visualTextObjects = VisualTextObjectState.INSTANCE;
+        final State<Command> initialState = RegisterState.wrap(CountingState.wrap(union(
                 getPlatformSpecificState(NAME),
                 state(
                 leafBind(SpecialKey.ESC, leaveVisual),
