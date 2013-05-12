@@ -13,4 +13,6 @@ import net.sourceforge.vrapper.vim.modes.ModeSwitchHint;
 public interface ModeChangeHintReceiver {
 
     void changeModeSafely(String name, ModeSwitchHint... args);
+    
+    String getCurrentModeName();
 }

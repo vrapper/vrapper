@@ -1,6 +1,7 @@
 package net.sourceforge.vrapper.eclipse.platform;
 
 import net.sourceforge.vrapper.vim.ModeChangeHintReceiver;
+import net.sourceforge.vrapper.vim.modes.InsertMode;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 
 import org.eclipse.jface.text.DocumentEvent;
@@ -8,6 +9,7 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentListener;
 import org.eclipse.jface.text.link.ILinkedModeListener;
 import org.eclipse.jface.text.link.LinkedModeModel;
+import org.eclipse.swt.widgets.Display;
 
 public class LinkedModeHandler implements IDocumentListener, ILinkedModeListener {
 
@@ -18,20 +20,16 @@ public class LinkedModeHandler implements IDocumentListener, ILinkedModeListener
     }
 
     public void onCheckForLinkedMode(final IDocument document) {
-        new Thread() {
+        // make sure to check AFTER the
+        //  current UI stuff is done
+        //  (sometimes eclipse is weird)
+        Display.getCurrent().asyncExec(new Runnable() {
             @Override
             public void run() {
                 
-                // make sure to check AFTER the
-                //  current UI stuff is done
-                //  (sometimes eclipse is weird)
-                try {
-                    Thread.sleep(50);
-                } catch (final InterruptedException e) { }
-                
                 checkInternal(document);
             }
-        }.start();
+        });
     }
     
     protected void checkInternal(final IDocument document) {
@@ -40,6 +38,12 @@ public class LinkedModeHandler implements IDocumentListener, ILinkedModeListener
         if (model != null) {
             model.removeLinkingListener(LinkedModeHandler.this); // just in case, don't be a dup
             model.addLinkingListener(LinkedModeHandler.this);
+            
+            // if in insert, stay; otherwise, make sure
+            //  we're in normal mode
+            if (!InsertMode.NAME.equals(hintReceiver.getCurrentModeName())) {
+                hintReceiver.changeModeSafely(NormalMode.NAME);
+            }
         }
     }
 
