@@ -49,8 +49,11 @@ public class LinkedModeHandler implements IDocumentListener, ILinkedModeListener
 
     @Override
     public void left(final LinkedModeModel model, final int flags) {
-        // left linked mode! We should now be in Normal mode
-        hintReceiver.changeModeSafely(NormalMode.NAME);
+        // left linked mode! We should now be in Normal mode,
+        //  depending on the exit flag
+        if ((flags & ILinkedModeListener.EXIT_ALL) != 0) {
+            hintReceiver.changeModeSafely(NormalMode.NAME);
+        }
     }
 
     @Override
