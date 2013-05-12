@@ -215,7 +215,14 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
                 //  wants pixels relative to the document. awesome
                 final int scrollOffsetY = styled.getTopPixel() + yPixel;
                 
-                styled.setBlockSelectionBounds(xPixel, scrollOffsetY, wPixel, hPixel);
+                // getTextBounds is apparently also relative to the viewport
+                final int scrollOffsetX = styled.getHorizontalPixel() + xPixel;
+                
+                styled.setBlockSelectionBounds(
+                        scrollOffsetX, 
+                        scrollOffsetY, 
+                        wPixel, 
+                        hPixel);
             } else {
                 textViewer.getTextWidget().setBlockSelection(false);
                 textViewer.setSelectedRange(from, length);
