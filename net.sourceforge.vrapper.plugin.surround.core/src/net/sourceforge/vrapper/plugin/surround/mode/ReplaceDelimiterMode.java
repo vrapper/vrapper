@@ -42,7 +42,7 @@ public class ReplaceDelimiterMode extends AbstractCommandLineMode {
     
     @Override
     protected char activationChar() {
-        return replacement.getTemplate().charAt(0);
+        return replacement.getTemplate(editorAdaptor, toWrap).charAt(0);
     }
 
     @Override
@@ -53,7 +53,7 @@ public class ReplaceDelimiterMode extends AbstractCommandLineMode {
             replacement = hint.replacement;
         }
         super.enterMode(args);
-        String replacementTemplate = replacement.getTemplate();
+        String replacementTemplate = replacement.getTemplate(editorAdaptor, toWrap);
         for (int i = 1; i < replacementTemplate.length(); i++) {
             handleKey(ConstructorWrappers.key(replacementTemplate.charAt(i)));
         }

@@ -22,10 +22,6 @@ public abstract class AbstractDynamicDelimiterHolder implements DelimiterHolder 
         return displayName;
     }
     
-    public String getTemplate() {
-        return template;
-    }
-    
     @Override
     public String getLeft() {
         throw new IllegalStateException("Delimiters weren't updated!");
@@ -34,6 +30,14 @@ public abstract class AbstractDynamicDelimiterHolder implements DelimiterHolder 
     @Override
     public String getRight() {
         throw new IllegalStateException("Delimiters weren't updated!");
+    }
+    
+    /**
+     * Get the template from which the user starts editing. Can be based on previous value of
+     * delimited text.
+     */
+    public String getTemplate(EditorAdaptor vim, DelimitedText toWrap) {
+        return template;
     }
     
     /**
