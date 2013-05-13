@@ -39,12 +39,10 @@ public abstract class AbstractDynamicDelimiterHolder implements DelimiterHolder 
     /**
      * Create a new DelimiterHolder instance based on the text whose delimiters need to be replaced.
      * @param vim {@link EditorAdaptor} for the current editor.
-     * @param count number of times the {@link DelimitedText} expression in <tt>toWrap</tt> needs to
-     *  be executed.
      * @param toWrap {@link DelimitedText} instance of the text whose delimiters will have to be
      *  replaced.
      * @param newDelimiterInput TODO
      * @return a new {@link DelimiterHolder} instance containing the updated delimiters. 
      */
-    public abstract DelimiterHolder update(EditorAdaptor vim, int count, DelimitedText toWrap, String newDelimiterInput) throws CommandExecutionException;
+    public abstract DelimiterHolder update(EditorAdaptor vim, DelimitedText toWrap, String newDelimiterInput) throws CommandExecutionException;
 }

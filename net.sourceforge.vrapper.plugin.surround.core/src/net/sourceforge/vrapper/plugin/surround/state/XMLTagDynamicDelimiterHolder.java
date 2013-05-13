@@ -12,10 +12,9 @@ public class XMLTagDynamicDelimiterHolder extends AbstractDynamicDelimiterHolder
     }
 
     @Override
-    public DelimiterHolder update(EditorAdaptor vim, int count, DelimitedText toWrap,
-            String newDelimiterInput) throws CommandExecutionException {
-        TextRange leftDelimiterRange = toWrap.leftDelimiter(vim, count);
-        TextRange rightDelimiterRange = toWrap.rightDelimiter(vim, count);
+    public DelimiterHolder update(EditorAdaptor vim, DelimitedText toWrap, String newDelimiterInput) throws CommandExecutionException {
+        TextRange leftDelimiterRange = toWrap.leftDelimiter(vim, 0);
+        TextRange rightDelimiterRange = toWrap.rightDelimiter(vim, 0);
         
         String leftDelimiter = vim.getModelContent().getText(leftDelimiterRange);
         String rightDelimiter = vim.getModelContent().getText(rightDelimiterRange);

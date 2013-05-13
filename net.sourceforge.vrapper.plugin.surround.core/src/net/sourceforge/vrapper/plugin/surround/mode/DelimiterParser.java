@@ -28,7 +28,7 @@ public class DelimiterParser extends AbstractCommandParser {
     public Command parseAndExecute(String first, String command) {
         DelimiterHolder newDelimiters;
         try {
-            newDelimiters = replacement.update(editor, 0, toWrap, first + command);
+            newDelimiters = replacement.update(editor, toWrap, first + command);
             return new ChangeDelimiterCommand(toWrap, newDelimiters);
         } catch (CommandExecutionException e) {
             VrapperLog.error("Failed to update dynamic delimiters!", e);
