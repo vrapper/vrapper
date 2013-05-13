@@ -8,7 +8,7 @@ import net.sourceforge.vrapper.vim.commands.DelimitedText;
 public class XMLTagDynamicDelimiterHolder extends AbstractDynamicDelimiterHolder {
 
     public XMLTagDynamicDelimiterHolder() {
-        super("tag");
+        super("tag", "<");
     }
 
     @Override

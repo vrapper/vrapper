@@ -10,5 +10,13 @@
             provider-class="net.sourceforge.vrapper.plugin.surround.provider.SurroundStateProvider">
       </keymap-provider>
    </extension>
+   <extension
+         point="net.sourceforge.vrapper.eclipse.psmp">
+      <mode-provider
+            id="net.sourceforge.vrapper.plugin.surround.SurroundXMLTagInputMode"
+            name="net.sourceforge.vrapper.plugin.surround.SurroundXMLTagInputMode"
+            provider-class="net.sourceforge.vrapper.plugin.surround.provider.SurroundModesProvider">
+      </mode-provider>
+   </extension>
 
 </plugin>

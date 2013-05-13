@@ -11,13 +11,19 @@ import net.sourceforge.vrapper.vim.commands.DelimitedText;
 public abstract class AbstractDynamicDelimiterHolder implements DelimiterHolder {
     
     private String displayName;
+    private String template;
     
-    public AbstractDynamicDelimiterHolder(String displayName) {
+    public AbstractDynamicDelimiterHolder(String displayName, String template) {
         this.displayName = displayName;
+        this.template = template;
     }
     
     public String getDelimiterDisplayName() {
         return displayName;
+    }
+    
+    public String getTemplate() {
+        return template;
     }
     
     @Override
@@ -29,7 +35,7 @@ public abstract class AbstractDynamicDelimiterHolder implements DelimiterHolder 
     public String getRight() {
         throw new IllegalStateException("Delimiters weren't updated!");
     }
-
+    
     /**
      * Create a new DelimiterHolder instance based on the text whose delimiters need to be replaced.
      * @param vim {@link EditorAdaptor} for the current editor.
