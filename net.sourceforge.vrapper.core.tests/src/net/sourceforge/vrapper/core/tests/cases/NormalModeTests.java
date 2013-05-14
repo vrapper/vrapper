@@ -932,6 +932,52 @@ public class NormalModeTests extends CommandTestCase {
 	}
 	
 	@Test
+	public void test_delimiters() {
+        checkCommand(forKeySeq("di("),
+                "before (mi",'d',"dle) after",
+                "before (",')'," after");
+        checkCommand(forKeySeq("di)"),
+                "before (mi",'d',"dle) after",
+                "before (",')'," after");
+        checkCommand(forKeySeq("di{"),
+                "before {mi",'d',"dle} after",
+                "before {",'}'," after");
+        checkCommand(forKeySeq("di}"),
+                "before {mi",'d',"dle} after",
+                "before {",'}'," after");
+        checkCommand(forKeySeq("di["),
+                "before [mi",'d',"dle] after",
+                "before [",']'," after");
+        checkCommand(forKeySeq("di]"),
+                "before [mi",'d',"dle] after",
+                "before [",']'," after");
+        checkCommand(forKeySeq("di>"),
+                "before <mi",'d',"dle> after",
+                "before <",'>'," after");
+        //why does this fail in JUnit but work manually?
+        //checkCommand(forKeySeq("di<"),
+        //      "before <mi",'d',"dle> after",
+        //      "before <",'>'," after");
+        checkCommand(forKeySeq("di{"),
+                "function {\n",'f',"oo\n}",
+                "function {\n",'}',"");
+        checkCommand(forKeySeq("di{"),
+                "fu", 'n', "ction {\nfoo\n}",
+                "fu", 'n', "ction {\nfoo\n}");
+        checkCommand(forKeySeq("di{"),
+                "function {\n",'f',"oo\n     }",
+                "function {\n",'\n',"     }");
+        //this doesn't actually match Vim's behavior
+        //(Vim would leave the newline between '{' and '}')
+        checkCommand(forKeySeq("di{"),
+                "function { same line\n",'f',"oo\n}",
+                "function {",'}',"");
+        checkCommand(forKeySeq("di{"),
+                "function { same line\n",'f',"oo\nsame line}",
+                "function {",'}',"");
+	}
+	
+	@Test
     public void test_dip() {
         checkCommand(forKeySeq("dip"),
                 "",'1',"ac\n\n3ac\n4ac\n\n  \n7ac\n\n  \n\n11ac\n12ac",
