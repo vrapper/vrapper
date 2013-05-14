@@ -235,6 +235,10 @@ public class DefaultEditorAdaptor implements EditorAdaptor, ModeChangeHintReceiv
         				}
         				continue; //skip "endtry" line
         			}
+        			if(trimmed.startsWith(":")) {
+        			    //leading ':' is optional, skip it if it exists
+        			    line = line.substring(line.indexOf(':') +1);
+        			}
         			//attempt to parse this line
         			parser.parseAndExecute(null, line.trim());
         		}
