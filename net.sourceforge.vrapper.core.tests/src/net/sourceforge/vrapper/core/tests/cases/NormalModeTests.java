@@ -8,6 +8,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import net.sourceforge.vrapper.core.tests.utils.CommandTestCase;
+import net.sourceforge.vrapper.platform.PlatformSpecificModeProvider;
+import net.sourceforge.vrapper.plugin.surround.provider.SurroundModesProvider;
 import net.sourceforge.vrapper.plugin.surround.provider.SurroundStateProvider;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.ContentType;
@@ -1227,6 +1229,61 @@ public class NormalModeTests extends CommandTestCase {
                 "fn",'(',"argument);");
     }
 
+	@Test
+    public void testSurroundPlugin_cs_input() {
+        when(platform.getPlatformSpecificStateProvider()).thenReturn(SurroundStateProvider.INSTANCE);
+        when(platform.getPlatformSpecificModeProvider()).thenReturn(
+                (PlatformSpecificModeProvider) new SurroundModesProvider());
+        reloadEditorAdaptor();
+        checkCommand(forKeySeq("cs[tok<RETURN>"),
+                "fn[ar",'g',"ument];",
+                "fn",'<',"ok>argument</ok>;");
+        checkCommand(forKeySeq("cs)<LT>p><RETURN>"),
+                "fn(ar",'g',"ument);",
+                "fn",'<',"p>argument</p>;");
+        checkCommand(forKeySeq("yswtok<RETURN>"),
+                "fn[ar",'g',"ument];",
+                "fn[ar",'<',"ok>gument</ok>];");
+        checkCommand(forKeySeq("ysE<LT>p<RETURN>"),
+                "fn(ar",'g',"ument);",
+                "fn(ar",'<',"p>gument);</p>");
+    }
+
+	@Test
+    public void testSurroundPlugin_cs_replaceTag() {
+        when(platform.getPlatformSpecificStateProvider()).thenReturn(SurroundStateProvider.INSTANCE);
+        when(platform.getPlatformSpecificModeProvider()).thenReturn(
+                (PlatformSpecificModeProvider) new SurroundModesProvider());
+        reloadEditorAdaptor();
+        // Simple replaces
+        checkCommand(forKeySeq("cst<LT>ok<RETURN>"),
+                "<root>\r",' ',"   <property>nill</property>\r</root>",
+                "<root>\r    ",'<',"ok>nill</ok>\r</root>");
+        checkCommand(forKeySeq("cst<LT>ok<GT><RETURN>"),
+                "<root>\r",' ',"   <property>nill</property>\r</root>",
+                "<root>\r    ",'<',"ok>nill</ok>\r</root>");
+        
+        // Replace tag, keep attributes (no <GT> at end of replacement)
+        checkCommand(forKeySeq("cst<LT>ok<RETURN>"),
+                "<root>\r",' ',"   <property value=\"nill\"></property>\r</root>",
+                "<root>\r    ",'<',"ok value=\"nill\"></ok>\r</root>");
+        
+        // Replace tag, remove attributes (see <GT> at end of replacement)
+        checkCommand(forKeySeq("cst<LT>ok<GT><RETURN>"),
+                "<root>\r",' ',"   <property value=\"nill\"></property>\r</root>",
+                "<root>\r    ",'<',"ok></ok>\r</root>");
+        
+        // Replace tag, add extra attributes (no <GT> at end of replacement)
+        checkCommand(forKeySeq("cst<LT>ok type=\"String\"<RETURN>"),
+                "<root>\r",' ',"   <property value=\"nill\"></property>\r</root>",
+                "<root>\r    ",'<',"ok type=\"String\" value=\"nill\"></ok>\r</root>");
+        
+        // Replace tag, overwrite attribute (<GT> at end of replacement)
+        checkCommand(forKeySeq("cst<LT>ok type=\"String\"<GT><RETURN>"),
+                "<root>\r",' ',"   <property value=\"nill\"></property>\r</root>",
+                "<root>\r    ",'<',"ok type=\"String\"></ok>\r</root>");
+    }
+	
 	@Test
     public void testSurroundPlugin_ys() {
         when(platform.getPlatformSpecificStateProvider()).thenReturn(SurroundStateProvider.INSTANCE);
