@@ -1,4 +1,5 @@
 package net.sourceforge.vrapper.core.tests.cases;
+
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -796,6 +797,10 @@ public class NormalModeTests extends CommandTestCase {
         checkCommand(forKeySeq("vatd"),
                 " <tag1></tag1>", ' ', "\r",
                 " <tag1></tag1>", '\r', "");
+	    // Another StringOutOfBoundsException was caused when on an empty line.
+        checkCommand(forKeySeq("vatd"),
+                " <tag1>\r", '\r', "</tag1>\r",
+                " ", '\r', "");
 	}
 
     @Test
