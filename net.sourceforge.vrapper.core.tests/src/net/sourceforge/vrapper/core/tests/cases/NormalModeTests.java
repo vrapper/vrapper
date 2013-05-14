@@ -975,6 +975,31 @@ public class NormalModeTests extends CommandTestCase {
         checkCommand(forKeySeq("di{"),
                 "function { same line\n",'f',"oo\nsame line}",
                 "function {",'}',"");
+
+        checkCommand(forKeySeq("da("),
+                "before (mi",'d',"dle) after",
+                "before ",' ',"after");
+        checkCommand(forKeySeq("da)"),
+                "before (mi",'d',"dle) after",
+                "before ",' ',"after");
+        checkCommand(forKeySeq("da{"),
+                "before {mi",'d',"dle} after",
+                "before ",' ',"after");
+        checkCommand(forKeySeq("da}"),
+                "before {mi",'d',"dle} after",
+                "before ",' ',"after");
+        checkCommand(forKeySeq("da["),
+                "before [mi",'d',"dle] after",
+                "before ",' ',"after");
+        checkCommand(forKeySeq("da]"),
+                "before [mi",'d',"dle] after",
+                "before ",' ',"after");
+        checkCommand(forKeySeq("da>"),
+                "before <mi",'d',"dle> after",
+                "before ",' ',"after");
+        checkCommand(forKeySeq("da{"),
+                "function {\n",'f',"oo\n     }",
+                "function",' ',"");
 	}
 	
 	@Test
