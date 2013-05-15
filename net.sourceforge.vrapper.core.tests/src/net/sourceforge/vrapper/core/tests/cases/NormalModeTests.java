@@ -803,6 +803,14 @@ public class NormalModeTests extends CommandTestCase {
         checkCommand(forKeySeq("vatd"),
                 " <tag1>\r", '\r', "</tag1>\r",
                 " ", '\r', "");
+	    // EvilCaret may also cause a StringOutOfBoundsException when sitting on the newline char
+        //  in windows.
+        checkCommand(forKeySeq("vatd"),
+                " <tag1>", '\r', "\n</tag1>\r",
+                " ", '\r', "");
+        checkCommand(forKeySeq("vatd"),
+                " <tag1>\r", '\n', "</tag1>\r",
+                " ", '\r', "");
 	}
 
     @Test

@@ -10,7 +10,6 @@ import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
-import net.sourceforge.vrapper.vim.modes.VisualMode;
 
 /**
  * The cursor is inside a pair of XML tags.  Find the open tag *before* the cursor
@@ -80,15 +79,6 @@ public class XmlTagDelimitedText implements DelimitedText {
     private Position getStartingPosition(EditorAdaptor editorAdaptor) throws CommandExecutionException {
         Position beginningPosition = editorAdaptor.getCursorService().getPosition();
         
-        if (VisualMode.NAME.equals(editorAdaptor.getCurrentModeName())) {
-        	//workaround for hack in EvilCaret.java
-            Selection selection = editorAdaptor.getSelection();
-            if (selection != null && selection.getStart().getModelOffset() < selection.getEnd().getModelOffset()) {
-                beginningPosition = beginningPosition.addModelOffset(-1);
-            }
-        }
-
-        
         if (insideIndentation(beginningPosition, editorAdaptor)) {
             // we are in the indentation at the start of a line, move to tags on the right.
             TextRange tag = findNextTag(beginningPosition, editorAdaptor);
@@ -128,8 +118,9 @@ public class XmlTagDelimitedText implements DelimitedText {
             int column = position.getModelOffset() - currentLine.getBeginOffset();
             String lineText = editorAdaptor.getModelContent().getText(
                         currentLine.getBeginOffset(), currentLine.getLength());
-            if(lineText.length() == 0) {
-            	//blank line
+
+            // Check for blank line or if we are outside of line contents.
+            if (lineText.length() == 0 || column < 0 || column >= lineText.length()) {
             	return false;
             }
             
