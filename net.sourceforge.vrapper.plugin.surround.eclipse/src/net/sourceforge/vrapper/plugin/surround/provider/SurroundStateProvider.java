@@ -7,6 +7,7 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionB
 import net.sourceforge.vrapper.eclipse.keymap.AbstractEclipseSpecificStateProvider;
 import net.sourceforge.vrapper.keymap.ConvertingState;
 import net.sourceforge.vrapper.keymap.State;
+import net.sourceforge.vrapper.keymap.vim.CountingState;
 import net.sourceforge.vrapper.platform.PlatformSpecificStateProvider;
 import net.sourceforge.vrapper.plugin.surround.commands.DeleteDelimitersCommand;
 import net.sourceforge.vrapper.plugin.surround.commands.FullLineTextObject;
@@ -43,7 +44,7 @@ public class SurroundStateProvider extends AbstractEclipseSpecificStateProvider 
         State<Command> addDelimiterState = new AddDelimiterState(
         		union(
     				state(leafBind('s', (TextObject) new FullLineTextObject())),
-	        		NormalMode.textObjects()
+	        		CountingState.wrap(NormalMode.textObjects())
         		));
         return state(
                 transitionBind('d', transitionBind('s', deleteDelimiterState)),
