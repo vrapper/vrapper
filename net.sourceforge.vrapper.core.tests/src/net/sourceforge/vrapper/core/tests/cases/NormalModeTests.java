@@ -1299,6 +1299,14 @@ public class NormalModeTests extends CommandTestCase {
         checkCommand(forKeySeq("ysiwb"),
                 "so",'m',"ething",
                 "",'(',"something)");
+
+        checkCommand(forKeySeq("ys2iwb"),
+                "so",'m',"ething funny",
+                "",'(',"something funny)");
+
+        checkCommand(forKeySeq("yssb"),
+                "so",'m',"ething funny",
+                "",'(',"something funny)");
     }
 
 	@Test
