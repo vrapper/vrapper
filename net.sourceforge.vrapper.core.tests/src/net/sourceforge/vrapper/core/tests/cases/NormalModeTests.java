@@ -791,6 +791,12 @@ public class NormalModeTests extends CommandTestCase {
         checkCommand(forKeySeq("dat"),
                 " <tag1></tag1>", ' ', "\n",
                 " <tag1></tag1>", ' ', "\n");
+        checkCommand(forKeySeq("dat"),
+                " <tag1></tag1", '>', "\r",
+                "", ' ', "\r");
+        checkCommand(forKeySeq("dat"),
+                " <tag1></tag1>", '\r', "",
+                "", ' ', "\r");
 	}
 	
 	@Test
@@ -799,6 +805,10 @@ public class NormalModeTests extends CommandTestCase {
         checkCommand(forKeySeq("vatd"),
                 " <tag1></tag1>", ' ', "\r",
                 " <tag1></tag1>", '\r', "");
+	    // Make sure that tag gets matched when EvilCaret pushed the cursor past the end of line.
+        checkCommand(forKeySeq("vatd"),
+                " <tag1></tag1>", '\r', "",
+                " ", '\r', "");
 	    // Another StringOutOfBoundsException was caused when on an empty line.
         checkCommand(forKeySeq("vatd"),
                 " <tag1>\r", '\r', "</tag1>\r",
