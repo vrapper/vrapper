@@ -47,7 +47,7 @@ public class MacroRecorder {
         recording = true;
         this.macroName = macroName;
         strokes = new ArrayList<KeyStroke>();
-        uiService.setRecording(true);
+        uiService.setRecording(true, macroName);
     }
 
     /**
@@ -67,7 +67,7 @@ public class MacroRecorder {
         registerManager.getRegister(macroName).setContent(content);
         strokes = null;
         macroName = null;
-        uiService.setRecording(false);
+        uiService.setRecording(false, macroName);
     }
 
     /**

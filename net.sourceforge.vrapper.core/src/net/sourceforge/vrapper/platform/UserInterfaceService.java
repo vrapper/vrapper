@@ -65,7 +65,7 @@ public interface UserInterfaceService {
     /**
      * Whether a macro is currently being recorded.
      */
-    void setRecording(boolean recording);
+    void setRecording(boolean recording, String macroName);
    
     /**
      * Set to true when running an :ascii/ga command. 

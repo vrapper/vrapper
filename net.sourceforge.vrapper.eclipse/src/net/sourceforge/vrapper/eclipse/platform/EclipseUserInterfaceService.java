@@ -20,15 +20,15 @@ public class EclipseUserInterfaceService implements UserInterfaceService {
     private final IEditorPart editor;
     private final ITextViewer textViewer;
     private final ModeContributionItem vimInputModeItem;
-    
+
     private LinkedModeHandler linkedModeHandler;
-   
+
     private String lastInfoValue = "";
     private String lastErrorValue = "";
-    
+
     /* When a normal-mode command is entered, the letters you type
      * are displayed in the info status bar. If your command puts
-     * something in the info bar, since it is shared, we want to 
+     * something in the info bar, since it is shared, we want to
      * first wipe out the command letters, and the replace it with
      * the command result. Setting infoSet to true, and storing the
      * command result in lastCommandResultValue will accomplish this.
@@ -36,8 +36,9 @@ public class EclipseUserInterfaceService implements UserInterfaceService {
      */
     private boolean infoSet;
     private String lastCommandResultValue = "";
-    
+
     private String currentMode;
+    private String currentModeName;
 
     public EclipseUserInterfaceService(final IEditorPart editor, final ITextViewer textViewer) {
         this.editor = editor;
@@ -56,24 +57,25 @@ public class EclipseUserInterfaceService implements UserInterfaceService {
 
     @Override
     public void setEditorMode(final String modeName) {
+        currentModeName = modeName.toUpperCase();
         currentMode = "-- " + modeName + " --";
         vimInputModeItem.setText(currentMode);
-        
+
         if (InsertMode.DISPLAY_NAME.equals(modeName) && linkedModeHandler != null) {
             // if there's a linked mode, we want to be notified about it
             linkedModeHandler.onCheckForLinkedMode(textViewer.getDocument());
         }
     }
-    
+
     @Override
     public String getCurrentEditorMode() {
         return currentMode;
     }
-   
+
     // For :ascii command
     @Override
     public void setAsciiValues(final String asciiValue, final int decValue, final String hexValue, final String octalValue) {
-        final String asciiValueText = "<" + asciiValue + ">  " 
+        final String asciiValueText = "<" + asciiValue + ">  "
                               + decValue + ",  "
                               + "Hex " + hexValue + ",  "
                               + "Octal " + octalValue;
@@ -81,7 +83,7 @@ public class EclipseUserInterfaceService implements UserInterfaceService {
         setErrorMessage(null);
         setInfoMessage(asciiValueText);
     }
-   
+
     @Override
     public String getLastCommandResultValue() {
         return lastCommandResultValue;
@@ -91,7 +93,7 @@ public class EclipseUserInterfaceService implements UserInterfaceService {
     public void setLastCommandResultValue(final String lastCommandResultValue) {
         this.lastCommandResultValue = lastCommandResultValue;
     }
-    
+
     @Override
     public void setErrorMessage(final String content) {
         editor.getEditorSite().getActionBars().getStatusLineManager().setErrorMessage(content);
@@ -102,13 +104,13 @@ public class EclipseUserInterfaceService implements UserInterfaceService {
     public String getLastErrorValue() {
         return lastErrorValue;
     }
-    
+
     @Override
     public void setInfoMessage(final String content) {
         editor.getEditorSite().getActionBars().getStatusLineManager().setMessage(content);
         lastInfoValue = content;
     }
-    
+
     @Override
     public String getLastInfoValue() {
         return lastInfoValue;
@@ -157,8 +159,9 @@ public class EclipseUserInterfaceService implements UserInterfaceService {
     }
 
     @Override
-    public void setRecording(final boolean b) {
-    	vimInputModeItem.setRecording(b);
+    public void setRecording(final boolean b, final String macroName) {
+        setEditorMode(currentModeName);
+        vimInputModeItem.setRecording(b, macroName);
     }
 
     @Override
