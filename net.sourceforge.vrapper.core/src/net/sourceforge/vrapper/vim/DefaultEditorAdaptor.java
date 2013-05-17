@@ -83,6 +83,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor, ModeChangeHintReceiv
     private final SearchAndReplaceService searchAndReplaceService;
     private MacroRecorder macroRecorder;
     private MacroPlayer macroPlayer;
+    private String editorType;
 
     public DefaultEditorAdaptor(final Platform editor, final RegisterManager registerManager, final boolean isActive) {
         this.modelContent = editor.getModelContent();
@@ -121,6 +122,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor, ModeChangeHintReceiv
         keyStrokeTranslator = new KeyStrokeTranslator();
         macroRecorder = new MacroRecorder(registerManager, userInterfaceService);
         macroPlayer = null;
+        this.editorType = editor.getEditorType();
 
         fileService = editor.getFileService();
         __set_modes(this);
@@ -542,5 +544,9 @@ public class DefaultEditorAdaptor implements EditorAdaptor, ModeChangeHintReceiv
     public String getCurrentModeName() {
 		return currentMode != null ? currentMode.getName() : null;
 	}
+
+    public String getEditorType() {
+        return editorType;
+    }
 
 }

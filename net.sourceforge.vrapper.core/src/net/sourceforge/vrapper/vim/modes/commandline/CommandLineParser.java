@@ -328,6 +328,15 @@ public class CommandLineParser extends AbstractCommandParser {
         } catch (NumberFormatException e) {
             // do nothing
         }
+        // See if command is for a particular editor type only (when parsing .vrapperrc).
+        if (AutoCmdParser.INSTANCE.validate(editor, command)) {
+            AutoCmdParser.INSTANCE.parse(editor, command);
+            if (AutoCmdParser.INSTANCE.getCommand() != null) {
+                command = AutoCmdParser.INSTANCE.getCommand();
+            } else {
+                return AutoCmdParser.INSTANCE;
+            }
+        }
         
         /** First, check for all operations which are not whitespace-delimited **/
        
