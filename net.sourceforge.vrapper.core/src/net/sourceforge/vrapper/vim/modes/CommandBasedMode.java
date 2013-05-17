@@ -51,6 +51,7 @@ import net.sourceforge.vrapper.vim.commands.motions.MoveWordEndLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordEndRight;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordRight;
+import net.sourceforge.vrapper.vim.commands.motions.PageScrollMotion;
 import net.sourceforge.vrapper.vim.commands.motions.ParagraphMotion;
 import net.sourceforge.vrapper.vim.commands.motions.ParenthesesMove;
 import net.sourceforge.vrapper.vim.commands.motions.SearchResultMotion;
@@ -158,6 +159,12 @@ public abstract class CommandBasedMode extends AbstractMode {
                     leafBind(SpecialKey.ARROW_DOWN, moveDown),
                     leafBind(SpecialKey.ARROW_UP, moveUp),
                     leafBind(SpecialKey.ARROW_RIGHT, moveRight),
+                    leafCtrlBind('f', PageScrollMotion.SCROLL_PGDN),
+                    leafCtrlBind('b', PageScrollMotion.SCROLL_PGUP),
+                    leafCtrlBind('d', PageScrollMotion.SCROLL_HALF_PGDN),
+                    leafCtrlBind('u', PageScrollMotion.SCROLL_HALF_PGUP),
+                    leafBind(SpecialKey.PAGE_DOWN, PageScrollMotion.SCROLL_PGDN),
+                    leafBind(SpecialKey.PAGE_UP, PageScrollMotion.SCROLL_PGUP),
                     leafBind(';', findForward),
                     leafBind(',', findBackward),
                     transitionBind('t', convertKeyStroke(FindMotion

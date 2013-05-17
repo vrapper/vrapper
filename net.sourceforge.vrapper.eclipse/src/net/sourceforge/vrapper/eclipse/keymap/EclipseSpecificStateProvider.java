@@ -13,7 +13,6 @@ import net.sourceforge.vrapper.eclipse.commands.EclipseShiftOperation;
 import net.sourceforge.vrapper.eclipse.commands.EclipseVisualMotionCommand;
 import net.sourceforge.vrapper.eclipse.commands.TabNewCommand;
 import net.sourceforge.vrapper.eclipse.commands.ToggleFoldingCommand;
-import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.StateUtils;
 import net.sourceforge.vrapper.vim.commands.Command;
@@ -36,11 +35,11 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
     public EclipseSpecificStateProvider() {
         commands.add("eclipseaction", new EclipseActionEvaluator(false));
         commands.add("eclipseaction!", new EclipseActionEvaluator(true));
-        
+
     	commands.add("ls",          dontRepeat(cmd("org.eclipse.ui.window.openEditorDropDown")));
     	commands.add("buffers",     dontRepeat(cmd("org.eclipse.ui.window.openEditorDropDown")));
     	commands.add("maximize",    dontRepeat(cmd("org.eclipse.ui.window.maximizePart")));
-        
+
     	commands.add("tabnext",     (Command)ChangeTabCommand.NEXT_EDITOR);
     	//have to define this or else 'tabn' is expanded to 'tabnew'
     	commands.add("tabn",        (Command)ChangeTabCommand.NEXT_EDITOR);
@@ -49,7 +48,7 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
     	commands.add("bprevious",   (Command)ChangeTabCommand.PREVIOUS_EDITOR);
     	commands.add("tabrewind",     (Command)ChangeTabCommand.FIRST_EDITOR);
     	commands.add("tablast",     (Command)ChangeTabCommand.LAST_EDITOR);
-    	
+
     	// Calls New Wizard dialogue
     	commands.add("tabedit",     (Command)TabNewCommand.NEW_EDITOR);
     	commands.add("tabnew",      (Command)TabNewCommand.NEW_EDITOR);
@@ -60,17 +59,11 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
         Command leaveVisual = LeaveVisualModeCommand.INSTANCE;
         Command shiftRight = new SelectionBasedTextOperationCommand(EclipseShiftOperation.Visual.RIGHT);
         Command shiftLeft = new SelectionBasedTextOperationCommand(EclipseShiftOperation.Visual.LEFT);
-        Command pageUp = new EclipseVisualMotionCommand("org.eclipse.ui.edit.text.goto.pageUp");
-        Command pageDown = new EclipseVisualMotionCommand("org.eclipse.ui.edit.text.goto.pageDown");
 
         return state(
             transitionBind('g',
                     leafBind('U', seq(editText("upperCase"),      leaveVisual)),
                     leafBind('u', seq(editText("lowerCase"),      leaveVisual))),
-            leafBind(SpecialKey.PAGE_DOWN, pageDown),
-            leafBind(SpecialKey.PAGE_UP, pageUp),
-            leafCtrlBind('f', pageDown),
-            leafCtrlBind('b', pageUp),
             leafBind('>', shiftRight),
             leafBind('<', shiftLeft));
     }
@@ -102,10 +95,6 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
                 transitionBind('g',
                         leafBind('t', (Command)ChangeTabCommand.NEXT_EDITOR),
                         leafBind('T', (Command)ChangeTabCommand.PREVIOUS_EDITOR)),
-                leafCtrlBind('f', dontRepeat(go("pageDown"))),
-                leafCtrlBind('b', dontRepeat(go("pageUp"))),
-                leafBind(SpecialKey.PAGE_DOWN, dontRepeat(go("pageDown"))),
-                leafBind(SpecialKey.PAGE_UP, dontRepeat(go("pageUp"))),
                 leafCtrlBind('y', dontRepeat(editText("scroll.lineUp"))),
                 leafCtrlBind('e', dontRepeat(editText("scroll.lineDown"))),
                 leafCtrlBind('i', dontRepeat(cmd("org.eclipse.ui.navigate.forwardHistory"))),
@@ -117,7 +106,7 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
          );
         return normalModeBindings;
     }
-    
+
     @Override
     protected State<Command> insertModeBindings() {
     	return state(

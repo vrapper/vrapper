@@ -31,7 +31,7 @@ public interface Options {
     // TODO: This is an Eclipse setting under Window->Preferences->Editors->Text Editors->"Insert spaces for tabs"
     //       Changing this value should change the Eclipse configuration too. -- BRD
     public static final Option<Boolean> EXPAND_TAB         = bool("expandtab",    true,  "et");
-    
+
     @SuppressWarnings("unchecked")
     public static final Set<Option<Boolean>> BOOLEAN_OPTIONS = set(
             EXPAND_TAB, SMART_INDENT, AUTO_INDENT, ATOMIC_INSERT, IGNORE_CASE, SMART_CASE,
@@ -48,14 +48,15 @@ public interface Options {
     public static final Set<Option<String>> STRING_OPTIONS = set(CLIPBOARD, SELECTION, PATH, GVIM_PATH);
 
     // Int options:
-    public static final Option<Integer> SCROLL_OFFSET = integer("scrolloff",   0, "so");
-    public static final Option<Integer> SCROLL_JUMP   = integer("scrolljump",  1, "sj");
+    public static final Option<Integer> SCROLL_OFFSET = integer("scrolloff",  0, "so");
+    public static final Option<Integer> SCROLL        = integer("scroll",     0, "scr");
+    public static final Option<Integer> SCROLL_JUMP   = integer("scrolljump", 1, "sj");
     public static final Option<Integer> TEXT_WIDTH    = integer("textwidth",  80, "tw");
     public static final Option<Integer> SOFT_TAB      = integer("softtabstop", 0, "sts");
     // TODO: This is an Eclipse setting under Window->Preferences->Editors->Text Editors->"Displayed tab width"
     //       Changing this value should change the Eclipse configuration too. -- BRD
     public static final Option<Integer> TAB_STOP      = integer("tabstop",     8, "ts");
-    
+
     @SuppressWarnings("unchecked")
-    public static final Set<Option<Integer>> INT_OPTIONS = set(SCROLL_JUMP, SCROLL_OFFSET, TEXT_WIDTH, SOFT_TAB, TAB_STOP);
+    public static final Set<Option<Integer>> INT_OPTIONS = set(SCROLL_JUMP, SCROLL, SCROLL_OFFSET, TEXT_WIDTH, SOFT_TAB, TAB_STOP);
 }
