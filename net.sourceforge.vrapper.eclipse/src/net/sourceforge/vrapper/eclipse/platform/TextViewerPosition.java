@@ -30,7 +30,7 @@ public class TextViewerPosition extends AbstractPosition {
     }
 
     public Position addViewOffset(int delta) {
-        return new TextViewerPosition(converter, Space.MODEL, getModelOffset() + delta);
+        return new TextViewerPosition(converter, Space.VIEW, getViewOffset() + delta);
     }
 
     public int getModelOffset() {
