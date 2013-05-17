@@ -56,6 +56,8 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         this.configuration = configuration;
         this.textViewer = textViewer;
         this.textContent = textContent;
+        StyledText tw = textViewer.getTextWidget();
+        this.stickyColumn = tw.getLeftMargin();
         converter = OffsetConverter.create(textViewer);
         selectionChangeListener = new SelectionChangeListener();
         caretListener = new StickyColumnUpdater();
@@ -77,7 +79,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
 	    	caretListener.disable();
     	}
     	int viewOffset = position.getViewOffset();
-    	if(viewOffset == -1) {
+    	if (viewOffset < 0) {
     		//Something went screwy, avoid getting into a bad state.
     		//Just put the cursor at offset 0.
     		viewOffset = 0;
@@ -93,7 +95,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         if (!stickToEOL) {
             try {
                 final int y = tw.getLocationAtOffset(tw.getOffsetAtLine(lineNo)).y;
-                final int offset = tw.getOffsetAtLocation(new Point(stickyColumn, y));
+                final int offset = tw.getOffsetAtLocation(new Point(stickyColumn - tw.getHorizontalPixel(), y));
                 return new TextViewerPosition(textViewer, Space.VIEW, offset);
             } catch (final IllegalArgumentException e) {
                 // fall through silently and return line end
@@ -171,7 +173,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         final Position to =   new TextViewerPosition(textViewer, Space.MODEL, end);
         return new SimpleSelection(new StartEndTextRange(from, to));
     }
-    
+
     @Override
     public void setSelection(final Selection newSelection) {
         if (newSelection == null) {
@@ -197,14 +199,14 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
                 // block selection
                 final StyledText styled = textViewer.getTextWidget();
                 styled.setBlockSelection(true);
-                
+
                 final Rect rect = BlockWiseSelection.getViewRect(textContent.getViewContent(), newSelection);
-                
+
                 // convert to units Eclipse wants
 //                final int charWidth = JFaceTextUtil.getAverageCharWidth(styled);
                 final int yPixel = styled.getLinePixel(rect.top);
                 final int hPixel = styled.getLinePixel(rect.bottom + 1) - yPixel;
-                
+
                 final int start = rect.getULOffset(textContent.getViewContent());
                 final Rectangle row = styled.getTextBounds(start, start + rect.width());
                 final int xPixel = row.x;
@@ -214,14 +216,14 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
                 //  not the top of the document; however, setBlockSelectionBounds
                 //  wants pixels relative to the document. awesome
                 final int scrollOffsetY = styled.getTopPixel() + yPixel;
-                
+
                 // getTextBounds is apparently also relative to the viewport
                 final int scrollOffsetX = styled.getHorizontalPixel() + xPixel;
-                
+
                 styled.setBlockSelectionBounds(
-                        scrollOffsetX, 
-                        scrollOffsetY, 
-                        wPixel, 
+                        scrollOffsetX,
+                        scrollOffsetY,
+                        wPixel,
                         hPixel);
             } else {
                 textViewer.getTextWidget().setBlockSelection(false);
@@ -279,30 +281,17 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
             enabled = false;
         }
     }
-    
+
     private final class StickyColumnUpdater implements CaretListener {
-    	
+
         boolean enabled = true;
-        
+
 		@Override
         public void caretMoved(final CaretEvent e) {
 			if (enabled) {
 				final int offset = e.caretOffset;
-				try {
-					stickyColumn = textViewer.getTextWidget().getLocationAtOffset(offset).x;
-				}
-				catch(final IllegalArgumentException ex) {
-					VrapperLog.info("Caught IllegalArgumentException in EclipseCursorAndSelection.caretMoved(): " + ex.getLocalizedMessage());
-					stickyColumn = -1; //this will be fixed below
-				}
-	            //if the desired stickyColumn is off the screen to the left
-	            //(horizontal scrollbars are scrolled to the right) then I get a
-	            //negative number here, which throws an IllegalArgumentException
-	            //later.  You would think '0' would be the best fallback value but
-	            //that throws an IllegalArgumentException too.  For some reason,
-	            //'2' is the 'x' value of the first column.
-	            stickyColumn = Math.max(2, stickyColumn);
-	            
+	            StyledText textWidget = textViewer.getTextWidget();
+                stickyColumn = textWidget.getLocationAtOffset(offset).x + textWidget.getHorizontalPixel();
 				// if the user clicks to the right of the line end
 				// (i.e. the newline is selected) stick to EOL
 				final LineInformation line = textContent.getViewContent().getLineInformationOfOffset(offset);
@@ -317,7 +306,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         public void disable() {
             enabled = false;
         }
-    	
+
     }
 
     @Override
@@ -330,7 +319,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
 			e.printStackTrace();
 			return;
 		}
-        
+
         if(id == LAST_EDIT_MARK) {
         	changeList.add(p);
         	if(changeList.size() > 100) {
@@ -345,7 +334,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         	//no need to track its changes anymore
         	textViewer.getDocument().removePosition( marks.get(id) );
         }
-        
+
         //update mark position
         marks.put(id, p);
     }
@@ -357,7 +346,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     	if(id.equals("`")) {
     		id = LAST_JUMP_MARK;
     	}
-    	
+
         final org.eclipse.jface.text.Position p = marks.get(id);
         if (p == null || p.isDeleted) {
         	//leave deleted entries in marks Map
@@ -367,31 +356,31 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         final int offset = p.getOffset();
         return newPositionForModelOffset(offset);
     }
-    
+
     @Override
     public Position getNextChangeLocation(final int count) {
     	final int index = changeListIndex + count;
     	return getChangeLocation(index);
     }
-    
+
     @Override
     public Position getPrevChangeLocation(final int count) {
     	final int index = changeListIndex - count;
     	return getChangeLocation(index);
     }
-    
+
     private Position getChangeLocation(int index) {
     	if(changeList.size() == 0) {
     		return null;
     	}
-    	
+
     	if(index < 0) {
     		index = 0;
     	}
     	else if(index >= changeList.size()) {
     		index = changeList.size() -1;
     	}
-    	
+
     	final org.eclipse.jface.text.Position p = changeList.get(index);
     	if(p == null || p.isDeleted) {
     		changeList.remove(index);
