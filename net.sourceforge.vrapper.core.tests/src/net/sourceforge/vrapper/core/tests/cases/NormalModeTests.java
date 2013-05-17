@@ -801,14 +801,14 @@ public class NormalModeTests extends CommandTestCase {
 	
 	@Test
 	public void test_vatd_endOfLine() {
+	    // Make sure that tag gets matched when EvilCaret pushed the cursor towards the end of line.
+        checkCommand(forKeySeq("vatd"),
+                " <tag1></tag1", '>', "\r",
+                " ", '\r', "");
 	    // EvilCaret would cause a StringOutOfBoundsException when at end of line.
         checkCommand(forKeySeq("vatd"),
                 " <tag1></tag1>", ' ', "\r",
                 " <tag1></tag1>", '\r', "");
-	    // Make sure that tag gets matched when EvilCaret pushed the cursor past the end of line.
-        checkCommand(forKeySeq("vatd"),
-                " <tag1></tag1>", '\r', "",
-                " ", '\r', "");
 	    // Another StringOutOfBoundsException was caused when on an empty line.
         checkCommand(forKeySeq("vatd"),
                 " <tag1>\r", '\r', "</tag1>\r",
