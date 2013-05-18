@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IWorkbenchCommandConstants;
 import org.eclipse.ui.IWorkbenchPage;
@@ -93,36 +94,35 @@ public class EclipseFileService implements FileService {
     }
     
     public boolean closeAll(boolean force) {
+        boolean success = false;
     	IWorkbenchPage page = editor.getSite().getPage();
         if (force || page.getDirtyEditors().length == 0) {
-        	//This method works, but NormalMode will throw a NullPointerException
-        	//when trying to get the cursor position because all editors are closed
-        	//(so there is no cursor). The exception is benign since there are no
-        	//open editors but it still sucks. I don't understand why :q doesn't
-        	//throw a similar exception when closing the last tab.  I still think
-        	//this method is the best approach though because it doesn't require
-        	//all editors to extend AbstractTextEditor (which Vrapper requires). 
-        	//This means we can close all tabs, including the ones Vrapper is not
-        	//enabled on.
-        	page.closeAllEditors(false);
-            return true;
+            // Don't close the current editor until the others are successfully closed,
+            //   otherwise the user might jump to an editor where Vrapper isn't active or supported.
+            success = closeOthers(force);
+            success = success && close(force);
         }
-        return false;
+        return success;
     }
     
     public boolean closeOthers(boolean force) {
-    	IWorkbenchPage page = editor.getSite().getPage();
-    	if(page.getEditorReferences().length < 2) {
-    		return true;
-    	}
-    	
-        if (force || page.getDirtyEditors().length == 0) {
-        	//this operation will prompt if you have unsaved changes
-        	//(meaning :only! doesn't actually work)
-        	//how can I invoke this operation without that prompt?
-        	return runCommand(IWorkbenchCommandConstants.FILE_CLOSE_OTHERS);
+        IWorkbenchPage page = editor.getSite().getPage();
+        if(page.getEditorReferences().length < 2) {
+            return true;
         }
-        return false;
+        
+        boolean success = (force || page.getDirtyEditors().length == 0);
+
+        // Vim behavior is to close all clean editors, yet keep the dirty ones if force is false.
+        IEditorPart current = page.getActiveEditor();
+        IEditorReference[] references = page.getEditorReferences();
+        for (IEditorReference reference : references) {
+            IEditorPart editor = reference.getEditor(true);
+            if ( ! editor.equals(current) && (force || ! editor.isDirty())) {
+                page.closeEditor(editor, false);
+            }
+        }
+        return success;
     }
 
     public boolean save() {
