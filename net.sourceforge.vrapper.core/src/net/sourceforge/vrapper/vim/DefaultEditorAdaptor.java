@@ -52,6 +52,7 @@ import net.sourceforge.vrapper.vim.modes.commandline.SearchMode;
 import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
 import net.sourceforge.vrapper.vim.register.Register;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
+import net.sourceforge.vrapper.vim.register.SimpleRegister;
 
 public class DefaultEditorAdaptor implements EditorAdaptor, ModeChangeHintReceiver {
 
@@ -97,7 +98,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor, ModeChangeHintReceiv
         this.editorSettings = editor.getUnderlyingEditorSettings();
         this.configuration = new SimpleLocalConfiguration(editor.getConfiguration());
         final LocalConfigurationListener listener = new LocalConfigurationListener() {
-            
+
             @Override
             public <T> void optionChanged(final Option<T> option, final T oldValue, final T newValue) {
                 if("clipboard".equals(option.getId())) {
@@ -105,11 +106,10 @@ public class DefaultEditorAdaptor implements EditorAdaptor, ModeChangeHintReceiv
                         final Register clipboardRegister = DefaultEditorAdaptor.this.getRegisterManager().getRegister(RegisterManager.REGISTER_NAME_CLIPBOARD);
                         DefaultEditorAdaptor.this.getRegisterManager().setDefaultRegister(clipboardRegister);
                     } else {
-                        final Register unnamedRegister = DefaultEditorAdaptor.this.getRegisterManager().getRegister(RegisterManager.REGISTER_NAME_UNNAMED);
-                        DefaultEditorAdaptor.this.getRegisterManager().setDefaultRegister(unnamedRegister);
+                        DefaultEditorAdaptor.this.getRegisterManager().setDefaultRegister(new SimpleRegister());
                     }
                 }
-                
+
             }
         };
         this.configuration.addListener(listener);
@@ -171,7 +171,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor, ModeChangeHintReceiv
             configuration.setNewLine(newLine);
         }
     }
-    
+
     private void readConfiguration() {
         if (!SHOULD_READ_RC_FILE) {
             return;
@@ -183,7 +183,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor, ModeChangeHintReceiv
         	filename = WINDOWS_CONFIG_FILE_NAME;
         	config =  new File(homeDir, filename);
         }
-        
+
         if(config.exists()) {
         	sourceConfigurationFile(filename);
         }
@@ -193,7 +193,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor, ModeChangeHintReceiv
     public boolean sourceConfigurationFile(final String filename) {
         final File homeDir = new File(System.getProperty("user.home"));
         final File config = new File(homeDir, filename);
-        
+
         if(config.exists()) {
         	BufferedReader reader = null;
         	try {
