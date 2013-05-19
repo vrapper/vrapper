@@ -1,70 +1,83 @@
 package net.sourceforge.vrapper.eclipse.commands;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.AbstractCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TabFolder;
 
 /**
  * Emulating vim gt/gT tab cycling behavior.
  *
  * Not straightforward.
  */
-public class ChangeTabCommand extends EclipseCommand {
+public class ChangeTabCommand extends AbstractCommand {
 
-    private static final String PREVIOUS_ACTION = "org.eclipse.ui.navigate.previousTab";
-    private static final String NEXT_ACTION = "org.eclipse.ui.navigate.nextTab";
+    private final static int FORWARD = SWT.TRAVERSE_PAGE_NEXT;
+    private final static int BACKWARD = SWT.TRAVERSE_PAGE_PREVIOUS;
+
+    public static ChangeTabCommand NEXT_EDITOR = new ChangeTabCommand(FORWARD);
+    public static ChangeTabCommand PREVIOUS_EDITOR = new ChangeTabCommand(BACKWARD);
+
     private int count = NO_COUNT_GIVEN;
-    
-    public static ChangeTabCommand NEXT_EDITOR = new ChangeTabCommand(NEXT_ACTION);
-    public static ChangeTabCommand PREVIOUS_EDITOR = new ChangeTabCommand(PREVIOUS_ACTION);
+    private int direction;
 
-    private ChangeTabCommand(String action) {
-    	super(action);
+    private ChangeTabCommand(int direction) {
+        this.direction = direction;
     }
 
     public Command withCount(int count) {
-    	this.count = count;
+        this.count = count;
         return this;
     }
 
     public Command repetition() {
         return null;
     }
-    
+
     public void execute(EditorAdaptor editorAdaptor) {
-    	if(count == NO_COUNT_GIVEN) {
-    		count = 1;
-    	}
-    	//<n>gt goes to the <n>th tab, not gt <n> times
-    	//if(count > 1) {
-    	//	moveToTab(editorAdaptor, count - 1);
-    	//}
-    	for(int i=0; i < count; i++) {
-    		doIt(1, getCommandName(), editorAdaptor);
-    	}
-    	
-    	//reset the count since this instance is used as a static
-    	//(we might call this command again in a new context)
-    	count = NO_COUNT_GIVEN;
-    }
-
-    /*
-    public void moveToTab(EditorAdaptor editorAdaptor, int index) throws CommandExecutionException {
-        IWorkbench workbench = PlatformUI.getWorkbench();
-        IWorkbenchWindow activeWorkbenchWindow = workbench.getActiveWorkbenchWindow();
-        IWorkbenchPage activePage = activeWorkbenchWindow.getActivePage();
-
-        IEditorPart[] editors;
-        IEditorReference[] editorReferences = activePage.getEditorReferences();
-        editors = new IEditorPart[editorReferences.length];
-        for(int i=0; i < editorReferences.length; i++) {
-        	IEditorReference eRef = editorReferences[i];
-        	editors[i] = eRef.getEditor(true);
+        // [NOTE] This code is based on org.eclipse.ui.internal.handlers.TraversePageHandler
+        
+        // Ideally we'd grab the StyledText widget from the current editor, but it takes some
+        // refactoring to get access to it.
+        // This should work as well because the currently focused editor is where vrapper runs.
+        Control focusControl = Display.getCurrent().getFocusControl();
+        
+        Deque<Control> tabControls = new ArrayDeque<Control>();
+        if (focusControl != null) {
+            Control control = focusControl;
+            while (control != null && ! (control instanceof Shell)) {
+                if (control instanceof CTabFolder || control instanceof TabFolder) {
+                    tabControls.add(control);
+                }
+                if (control.traverse(direction)) {
+                    break;
+                }
+                control = control.getParent();
+            }
         }
-
-        int nextEditorIndex = index % editors.length;
-        IEditorPart nextEditor = editors[nextEditorIndex];
-        activePage.activate(nextEditor);
+        
+        // [TODO] If the current editor is a multi-page editor (e.g. XML editors), then it
+        //  seems that the CTabFolder in the list is the one belonging to the editor, not the
+        //  one belonging to the workspace which actually switches editors.
+        // Implement old, repeated tab switching behavior until we get the right CTabFolder,
+        //  and then we can finally call setSelection() as it should.
+        if (count != NO_COUNT_GIVEN) {
+            for (int i = 1; i < count; i++) {
+                tabControls.peekLast().traverse(direction);
+            }
+        }
+        
+        // reset the count since this instance is used as a static
+        // (we might call this command again in a new context)
+        count = NO_COUNT_GIVEN;
     }
-    */
-
 }
