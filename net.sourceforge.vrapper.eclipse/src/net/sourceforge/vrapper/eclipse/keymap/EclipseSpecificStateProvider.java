@@ -47,6 +47,8 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
     	commands.add("bnext",       (Command)ChangeTabCommand.NEXT_EDITOR);
     	commands.add("tabprevious", (Command)ChangeTabCommand.PREVIOUS_EDITOR);
     	commands.add("bprevious",   (Command)ChangeTabCommand.PREVIOUS_EDITOR);
+    	commands.add("tabrewind",     (Command)ChangeTabCommand.FIRST_EDITOR);
+    	commands.add("tablast",     (Command)ChangeTabCommand.LAST_EDITOR);
     	
     	// Calls New Wizard dialogue
     	commands.add("tabedit",     (Command)TabNewCommand.NEW_EDITOR);
