@@ -116,12 +116,16 @@ public class EclipseFileService implements FileService {
         // Vim behavior is to close all clean editors, yet keep the dirty ones if force is false.
         IEditorPart current = page.getActiveEditor();
         IEditorReference[] references = page.getEditorReferences();
+        List<IEditorReference> toClose = new ArrayList<IEditorReference>();
         for (IEditorReference reference : references) {
-            IEditorPart editor = reference.getEditor(true);
-            if ( ! editor.equals(current) && (force || ! editor.isDirty())) {
-                page.closeEditor(editor, false);
+            IEditorPart editor = reference.getEditor(false);
+            // If editor == null, then it was never restored in this session and cannot be dirty.
+            if (editor == null
+                    || (! editor.equals(current) && (force || ! editor.isDirty()))) {
+                toClose.add(reference);
             }
         }
+        page.closeEditors(toClose.toArray(new IEditorReference[toClose.size()]), false);
         return success;
     }
 
