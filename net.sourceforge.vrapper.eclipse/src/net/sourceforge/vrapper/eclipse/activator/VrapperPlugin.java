@@ -37,7 +37,7 @@ public class VrapperPlugin extends AbstractUIPlugin implements IStartup, Log {
     public static final String PLUGIN_ID = "net.sourceforge.vrapper.eclipse";
 
     // The shared instance
-    private static VrapperPlugin plugin;
+    static VrapperPlugin plugin;
 
     private static boolean vrapperEnabled;
 
@@ -73,21 +73,9 @@ public class VrapperPlugin extends AbstractUIPlugin implements IStartup, Log {
         super.start(context);
         plugin = this;
         VrapperLog.setImplementation(this);
-        getWorkbench().getDisplay().asyncExec(new Runnable() {
-            public void run() {
-                restoreVimEmulationInActiveEditors();
-                addEditorListeners();
-                addShutdownListener();
-            }
-        });
     }
 
     public void earlyStartup() {
-        getWorkbench().getDisplay().asyncExec(new Runnable() {
-            public void run() {
-                toggleVrapper();
-            }
-        });
     }
 
     @Override
@@ -102,7 +90,7 @@ public class VrapperPlugin extends AbstractUIPlugin implements IStartup, Log {
     	storeVimEmulationOfActiveEditors();
     }
 
-    private void restoreVimEmulationInActiveEditors() {
+    void restoreVimEmulationInActiveEditors() {
         IWorkbenchWindow[] windows = plugin.getWorkbench().getWorkbenchWindows();
         for (IWorkbenchWindow window: windows) {
             for (IWorkbenchPage page: window.getPages()) {
@@ -118,7 +106,7 @@ public class VrapperPlugin extends AbstractUIPlugin implements IStartup, Log {
         addEditorListeners();
     }
 
-    private void addEditorListeners() {
+    void addEditorListeners() {
         for (IWorkbenchWindow window: plugin.getWorkbench().getWorkbenchWindows()) {
             addInterceptingListener(window);
         }
@@ -138,7 +126,7 @@ public class VrapperPlugin extends AbstractUIPlugin implements IStartup, Log {
         window.getWorkbench().getDisplay().addFilter(SWT.MouseUp, mouseButton);
     }
     
-    private void addShutdownListener() {
+    void addShutdownListener() {
         getWorkbench().addWorkbenchListener(new IWorkbenchListener() {
             public void postShutdown(IWorkbench arg0) { }
 
@@ -158,7 +146,7 @@ public class VrapperPlugin extends AbstractUIPlugin implements IStartup, Log {
     	PLUGIN_PREFERENCES.putBoolean(KEY_VRAPPER_ENABLED, vrapperEnabled);
     }
 
-    private void toggleVrapper() {
+    void toggleVrapper() {
         boolean enable = PREFERENCES_SERVICE.getBoolean(PLUGIN_ID, KEY_VRAPPER_ENABLED, true, null);
         if (enable) {
             IHandlerService s = (IHandlerService) getWorkbench().getService(IHandlerService.class);

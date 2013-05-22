@@ -30,3 +30,4 @@ Export-Package: net.sourceforge.vrapper.eclipse.commands;
   uses:="net.sourceforge.vrapper.vim.modes,
    net.sourceforge.vrapper.platform"
 Eclipse-BuddyPolicy: dependent
+Bundle-ActivationPolicy: lazy
