@@ -39,6 +39,8 @@ import net.sourceforge.vrapper.vim.commands.PasteRegisterCommand;
 import net.sourceforge.vrapper.vim.commands.SwitchRegisterCommand;
 import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
 import net.sourceforge.vrapper.vim.commands.VimCommandSequence;
+import net.sourceforge.vrapper.vim.commands.motions.LineStartMotion;
+import net.sourceforge.vrapper.vim.commands.motions.Motion;
 import net.sourceforge.vrapper.vim.commands.motions.MoveLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordLeft;
 import net.sourceforge.vrapper.vim.modes.commandline.PasteRegisterMode;
@@ -60,7 +62,9 @@ public class InsertMode extends AbstractMode {
     public static final KeyStroke CTRL_C = ctrlKey('c');
     public static final KeyStroke CTRL_R = ctrlKey('r');
     public static final KeyStroke CTRL_O = ctrlKey('o');
-    
+    public static final KeyStroke CTRL_U = ctrlKey('u');
+    public static final KeyStroke CTRL_W = ctrlKey('w');
+
     protected State<Command> currentState = buildState();
 
     private Position startEditPosition;
@@ -81,7 +85,7 @@ public class InsertMode extends AbstractMode {
     public String getName() {
         return NAME;
     }
-    
+
     @Override
     public String getDisplayName() {
         return DISPLAY_NAME;
@@ -121,7 +125,7 @@ public class InsertMode extends AbstractMode {
                     final WithCountHint cast = (WithCountHint) hint;
                     count = cast.getCount();
                 }
-                
+
                 if (hint instanceof ExecuteCommandHint) {
                     if (hint instanceof ExecuteCommandHint.OnLeave) {
                         mOnLeaveHint = (ExecuteCommandHint) hint;
@@ -221,7 +225,7 @@ public class InsertMode extends AbstractMode {
         }
         //reset value in case we re-enter InsertMode
         enteredWithO = false;
-        
+
         final String text = content.getText(new StartEndTextRange(startEditPosition, position));
         final RegisterContent registerContent = new StringRegisterContent(ContentType.TEXT, text);
         lastEditRegister.setContent(registerContent);
@@ -273,6 +277,40 @@ public class InsertMode extends AbstractMode {
 		} else if (stroke.equals(CTRL_O)) {
 		    //perform a single NormalMode command then return to InsertMode
 		    editorAdaptor.changeModeSafely(NormalMode.NAME, RETURN_TO_INSERTMODE);
+        } else if (stroke.equals(CTRL_U) || stroke.equals(CTRL_W)) {
+            Motion motion;
+            Position pos;
+            try {
+                CursorService cur = editorAdaptor.getCursorService();
+                int cursorPos = cur.getPosition().getModelOffset();
+                TextContent txt = editorAdaptor.getModelContent();
+                int startEditPos = startEditPosition.getModelOffset();
+                LineInformation line = txt.getLineInformationOfOffset(cursorPos);
+                if (stroke.equals(CTRL_U)) {
+                    motion = LineStartMotion.NON_WHITESPACE;
+                } else {
+                    motion = MoveWordLeft.INSTANCE;
+                }
+                pos = motion.destination(editorAdaptor);
+                if (pos.getModelOffset() < line.getBeginOffset() || pos.getModelOffset() == cursorPos) {
+                    motion = LineStartMotion.COLUMN0;
+                    pos = motion.destination(editorAdaptor);
+                }
+                int position = pos.getModelOffset();
+                if (cursorPos == line.getBeginOffset()) {
+                    position = txt.getLineInformation(line.getNumber() - 1).getEndOffset();
+                } else {
+                    if (cursorPos > startEditPos && position < startEditPos) {
+                        position = startEditPos;
+                    }
+                }
+                int length =  cursorPos - position;
+                txt.replace(position, length, "");
+                if (position < startEditPos) {
+                    startEditPosition = startEditPosition.setModelOffset(position);
+                }
+            } catch (CommandExecutionException e) { }
+            return true;
         } else if (!allowed(stroke)) {
             startEditPosition = editorAdaptor.getCursorService().getPosition();
             count = 1;
@@ -282,7 +320,7 @@ public class InsertMode extends AbstractMode {
                 editorAdaptor.getHistory().beginCompoundChange();
                 editorAdaptor.getHistory().lock();
             }
-        } else if (stroke.equals(BACKSPACE) 
+        } else if (stroke.equals(BACKSPACE)
         		&& editorAdaptor.getConfiguration().get(Options.SOFT_TAB) > 1) {
         	//soft tab stop is enabled, check to see if there are spaces
         	return softTabDelete();
@@ -294,7 +332,7 @@ public class InsertMode extends AbstractMode {
         }
         return false;
     }
-    
+
     /**
      * If there are <softTabStop> number of spaces before the cursor
      * delete that many spaces as if it was a single tab character.
@@ -306,7 +344,7 @@ public class InsertMode extends AbstractMode {
     	final int start = model.getLineInformationOfOffset(pos).getBeginOffset();
     	//text before cursor
     	final String text = model.getText(start, pos - start);
-    	
+
     	//get number of consecutive spaces
     	int spaceCount = 0;
     	for(int i = text.length() -1; i >= 0; i--) {
@@ -315,12 +353,12 @@ public class InsertMode extends AbstractMode {
     		}
     		spaceCount++;
     	}
-    	
+
     	if(spaceCount < softTabStop) {
     		//backspace key behaves as normal
     		return false;
     	}
-    	
+
     	int toDelete = 0;
     	if(spaceCount % softTabStop == 0) {
     		//exactly <softTabStop> space characters
@@ -332,11 +370,11 @@ public class InsertMode extends AbstractMode {
     		//delete up to the closest soft tab stop
     		toDelete = spaceCount % softTabStop;
     	}
-    	
+
     	model.replace(pos - toDelete, toDelete, "");
     	editorAdaptor.setPosition(editorAdaptor.getCursorService()
     			.newPositionForModelOffset(pos - toDelete), false);
-    	
+
     	return true;
     }
 
@@ -377,7 +415,7 @@ public class InsertMode extends AbstractMode {
         }
         return true;
     }
-    
+
     @SuppressWarnings("unchecked")
     protected State<Command> buildState() {
         State<Command> platformSpecificState = editorAdaptor.getPlatformSpecificStateProvider().getState(NAME);
@@ -387,7 +425,6 @@ public class InsertMode extends AbstractMode {
         return RegisterState.wrap(union(
             platformSpecificState,
             state(
-            		leafCtrlBind('w', (Command)new TextOperationTextObjectCommand(DeleteOperation.INSTANCE, new MotionTextObject(MoveWordLeft.INSTANCE))),
             		leafCtrlBind('a', (Command)PasteRegisterCommand.PASTE_LAST_INSERT),
             		leafCtrlBind('e', (Command)InsertAdjacentCharacter.LINE_BELOW),
             		leafCtrlBind('y', (Command)InsertAdjacentCharacter.LINE_ABOVE)
