@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import net.sourceforge.vrapper.eclipse.utils.Utils;
 import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.FileService;
 
@@ -27,6 +28,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.IHandlerService;
+import org.eclipse.ui.internal.part.IMultiPageEditorSiteHolder;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 
@@ -87,8 +89,24 @@ public class EclipseFileService implements FileService {
 
     public boolean close(boolean force) {
         if (force || !editor.isDirty()) {
-            editor.close(false);
-            return true;
+
+        	final IWorkbenchPage workbenchPage = editor.getSite().getPage();
+
+        	// 'editor' could be a page in a multi-part editor, and not all of them delegate the
+        	// close operation to their parent editor.
+        	// Get hold of the entire editor, and close that one instead.
+            final IEditorPart topLevelEditor = workbenchPage.getActiveEditor();
+            
+            // Run async to avoid a NullPointerException in Vrapper (it has likely something to do
+            //  with a disposed component).
+            //  Async code will only run when Vrapper has processed all of its input.
+        	editor.getSite().getShell().getDisplay().asyncExec(new Runnable() {
+                @Override
+                public void run() {
+                    workbenchPage.closeEditor(topLevelEditor, false);
+                }
+            });
+        	return true;
         }
         return false;
     }
