@@ -15,7 +15,10 @@ public interface RegisterManager {
 
     public static final String REGISTER_NAME_UNNAMED   = "\"";
     public static final String REGISTER_NAME_INSERT    = ".";
-    public static final String REGISTER_NAME_CLIPBOARD = "*";
+    /** System clipboard register. */
+    public static final String REGISTER_NAME_CLIPBOARD = "+";
+    /** "Last selection" clipboard register. */
+    public static final String REGISTER_NAME_SELECTION = "*";
     public static final String REGISTER_NAME_SEARCH    = "/";
     public static final String REGISTER_SMALL_DELETE   = "-";
     public static final String REGISTER_NAME_BLACKHOLE = "_";

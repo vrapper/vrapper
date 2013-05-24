@@ -9,8 +9,8 @@ public class SWTRegisterManager extends DefaultRegisterManager {
 
 	public SWTRegisterManager(Display d) {
 		super();
-        registers.put(RegisterManager.REGISTER_NAME_CLIPBOARD, new SWTClipboardRegister(d));
+        SWTClipboardRegister clipboardRegister = new SWTClipboardRegister(d);
+        registers.put(RegisterManager.REGISTER_NAME_CLIPBOARD, clipboardRegister);
+        registers.put(RegisterManager.REGISTER_NAME_SELECTION, clipboardRegister);
 	}
-
-	
 }
