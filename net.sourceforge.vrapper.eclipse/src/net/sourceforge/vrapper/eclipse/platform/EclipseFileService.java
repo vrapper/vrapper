@@ -50,7 +50,7 @@ public class EclipseFileService implements FileService {
     		editor.doSave(null);
     	}
     	String filePath = getCurrentFile().getRawLocation().toString();
-    	final String[] cmd = { gvimpath, "+" + row, "-c", "normal zv" + col + "|", "-f", "-n", filePath };
+    	final String[] cmd = { gvimpath, "+" + row, "-c", "normal zv" + col + "|", "-c", "set nobackup", "-f", "-n", filePath };
     	new Thread() {
     		public void run() {
     			try {
