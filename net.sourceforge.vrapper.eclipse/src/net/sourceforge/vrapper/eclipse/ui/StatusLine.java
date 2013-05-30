@@ -29,6 +29,7 @@ public class StatusLine {
     public StatusLine(StyledText textWidget) {
         this.parent = textWidget;
         mStyledText = new StyledText(parent, SWT.NONE);
+        mStyledText.setFont(parent.getFont());
         mStyledText.setMargins(COMMAND_CHAR_INDENT, 3, 3, 3);
         mStyledText.setLeftMargin(COMMAND_CHAR_INDENT);
         mStyledText.setSize(5, 5);
@@ -36,6 +37,7 @@ public class StatusLine {
         mStyledText.setForeground(parent.getForeground());
         mStyledText.setWordWrap(true);
         mStyledText.setEnabled(false);
+        mStyledText.setCaretOffset(2);
         mStyledText.moveAbove(parent);
         mStyledText.setVisible(false);
         mStyledText.addPaintListener(new BorderPaintListener());
