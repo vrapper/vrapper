@@ -60,6 +60,7 @@ public interface EditorAdaptor {
     void useGlobalRegisters();
     void useLocalRegisters();
 	void rememberLastActiveSelection();
-	TextObject getLastActiveSelection();
+	TextObject getLastActiveSelectionArea();
+    Selection getLastActiveSelection();
 }
 

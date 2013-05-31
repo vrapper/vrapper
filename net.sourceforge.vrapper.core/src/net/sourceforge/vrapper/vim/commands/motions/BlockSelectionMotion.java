@@ -4,7 +4,7 @@ import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
-import net.sourceforge.vrapper.utils.PositionlessSelection;
+import net.sourceforge.vrapper.utils.SelectionArea;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.BlockWiseSelection;
 import net.sourceforge.vrapper.vim.commands.BlockWiseSelection.Rect;
@@ -45,7 +45,7 @@ public class BlockSelectionMotion implements Motion {
         if (selection == null)
             throw new CommandExecutionException("BlockSelectionMotion must have a selection!");
         
-        final PositionlessSelection lastSel = editorAdaptor.getRegisterManager().getLastActiveSelection();
+        final SelectionArea lastSel = editorAdaptor.getRegisterManager().getLastActiveSelectionArea();
         final CursorService cs = editorAdaptor.getCursorService();
         final TextContent mc = editorAdaptor.getModelContent();
         

@@ -7,11 +7,11 @@ import net.sourceforge.vrapper.vim.commands.BlockWiseSelection;
 import net.sourceforge.vrapper.vim.commands.BlockWiseSelection.Rect;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 
-public class BlockWisePositionlessSelection extends PositionlessSelection {
+public class BlockWiseSelectionArea extends SelectionArea {
 
     private final int colsSpanned;
 
-    public BlockWisePositionlessSelection(final EditorAdaptor editorAdaptor,
+    public BlockWiseSelectionArea(final EditorAdaptor editorAdaptor,
             final BlockWiseSelection selection) {
         final Rect rect = BlockWiseSelection.getRect(editorAdaptor.getModelContent(), selection);
         linesSpanned = rect.height();

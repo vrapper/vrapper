@@ -73,7 +73,7 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
 		    }
 		    
 		    if (legal) {
-                final TextObject blockSelection = editorAdaptor.getRegisterManager().getLastActiveSelection();
+                final TextObject blockSelection = editorAdaptor.getRegisterManager().getLastActiveSelectionArea();
     		    final Rect rect = BlockWiseSelection.getRect(editorAdaptor, blockSelection);
     		    
                 doIt(editorAdaptor, command, getCount(), rect);
@@ -194,7 +194,7 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
 		@Override
 		public void execute(final EditorAdaptor editorAdaptor, final int count)
 				throws CommandExecutionException {
-			repetition.execute(editorAdaptor, count, editorAdaptor.getLastActiveSelection());
+			repetition.execute(editorAdaptor, count, editorAdaptor.getLastActiveSelectionArea());
 			if (changeMode)
 				LeaveVisualModeCommand.doIt(editorAdaptor);
 		}

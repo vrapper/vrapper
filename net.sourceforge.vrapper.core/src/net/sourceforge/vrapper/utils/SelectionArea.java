@@ -7,18 +7,23 @@ import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 import net.sourceforge.vrapper.vim.commands.TextObject;
 
-public abstract class PositionlessSelection implements TextObject {
+/**
+ * Abstract class holding information about the area of the last selection.
+ * Implementations will calculate a new TextRange based on the current offset and the amount of
+ * lines or characters spanned in the last selection.
+ */
+public abstract class SelectionArea implements TextObject {
 
     protected int linesSpanned;
 
-    public static PositionlessSelection getInstance(final EditorAdaptor editorAdaptor) {
+    public static SelectionArea getInstance(final EditorAdaptor editorAdaptor) {
         final Selection selection = editorAdaptor.getSelection();
         if (selection instanceof LineWiseSelection)
-            return new LineWisePositionlessSelection(editorAdaptor, (LineWiseSelection)selection);
+            return new LineWiseSelectionArea(editorAdaptor, (LineWiseSelection)selection);
         else if (selection instanceof BlockWiseSelection)
-            return new BlockWisePositionlessSelection(editorAdaptor, (BlockWiseSelection) selection);
+            return new BlockWiseSelectionArea(editorAdaptor, (BlockWiseSelection) selection);
         else
-            return new SimplePositionlessSelection(editorAdaptor, (SimpleSelection)selection);
+            return new SimpleSelectionArea(editorAdaptor, (SimpleSelection)selection);
     }
 
     public int getLinesSpanned() {

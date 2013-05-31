@@ -34,10 +34,9 @@ import net.sourceforge.vrapper.platform.UserInterfaceService;
 import net.sourceforge.vrapper.platform.ViewportService;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
-import net.sourceforge.vrapper.utils.PositionlessSelection;
+import net.sourceforge.vrapper.utils.SelectionArea;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.Selection;
-import net.sourceforge.vrapper.vim.commands.TextObject;
 import net.sourceforge.vrapper.vim.modes.BlockwiseVisualMode;
 import net.sourceforge.vrapper.vim.modes.EditorMode;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
@@ -523,11 +522,17 @@ public class DefaultEditorAdaptor implements EditorAdaptor, ModeChangeHintReceiv
     
 	@Override
     public void rememberLastActiveSelection() {
-		registerManager.setLastActiveSelection(PositionlessSelection.getInstance(this));
+		registerManager.setLastActiveSelection(selectionService.getSelection(),
+		        SelectionArea.getInstance(this));
 	}
 
 	@Override
-    public TextObject getLastActiveSelection() {
+    public SelectionArea getLastActiveSelectionArea() {
+		return registerManager.getLastActiveSelectionArea();
+	}
+
+	@Override
+    public Selection getLastActiveSelection() {
 		return registerManager.getLastActiveSelection();
 	}
 
