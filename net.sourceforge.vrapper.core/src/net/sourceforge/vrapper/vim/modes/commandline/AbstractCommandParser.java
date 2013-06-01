@@ -38,6 +38,7 @@ public abstract class AbstractCommandParser {
     private final FilePathTabCompletion tabComplete;
     private boolean modified;
     private int position;
+    private boolean isFromVisual = false;
 
     public AbstractCommandParser(EditorAdaptor vim) {
         this.editor = vim;
@@ -194,6 +195,14 @@ public abstract class AbstractCommandParser {
         String command = getCommand();
         history.append(command);
         return parseAndExecute(first, command);
+    }
+
+    public boolean isFromVisual() {
+        return isFromVisual;
+    }
+
+    public void setFromVisual(boolean isFromVisual) {
+        this.isFromVisual = isFromVisual;
     }
 
 }

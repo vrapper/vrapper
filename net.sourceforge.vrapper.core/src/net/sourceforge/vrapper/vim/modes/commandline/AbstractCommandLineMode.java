@@ -31,6 +31,7 @@ public abstract class AbstractCommandLineMode extends AbstractMode {
         handleKey(ConstructorWrappers.key(activationChar()));
         for(ModeSwitchHint hint : args) {
         	if(hint == FROM_VISUAL) {
+        	    parser.setFromVisual(true);
         		//display '<,'> to represent visual selection
         		handleKey(new SimpleKeyStroke('\''));
         		handleKey(new SimpleKeyStroke('<'));

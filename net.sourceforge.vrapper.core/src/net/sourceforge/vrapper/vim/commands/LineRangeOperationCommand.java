@@ -1,7 +1,11 @@
 package net.sourceforge.vrapper.vim.commands;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import net.sourceforge.vrapper.utils.LineAddressParser;
 import net.sourceforge.vrapper.utils.Position;
+import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 
 /**
@@ -22,93 +26,90 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
  * I've broken the process into methods to make it easier to follow.
  **/
 public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand {
-
+	//                                               1                                      2       3                  4
+	private static final String START_SEL_RE = "^\\s*(%|\\$|[+-]?\\d+|\\.|\\^|'[<\\[a-zA-Z]|([?\\/])((?:\\\\2|.)+?)\\2)([+-]\\d+)?\\s*";
+	//                                                      5                                6       7                  8
+	private static final String END_SEL_RE =   "\\s*[,;]\\s*([+-]?\\d+|\\.|\\$|'[>\\]a-zA-Z]|([?\\/])((?:\\\\6|.)+?)\\6)([+-]\\d+)?\\s*";
+	private static final Pattern START_AND_STOP = Pattern.compile(START_SEL_RE + END_SEL_RE + "(\\D.*)");
+	private static final Pattern JUST_START = Pattern.compile(START_SEL_RE + "(\\D.*)");
+	private static final Pattern JUST_STOP = Pattern.compile("^" + END_SEL_RE + "(\\D.*)");
 	private String definition;
+    private String startStr = "";
+    private String stopStr = "";
+	private String operationStr = "";
 	
-	/**
+    /**
 	 * @param definition User-provided string to define the range operation.
 	 */
 	public LineRangeOperationCommand(String definition) {
 		this.definition = definition;
+		parseRangeDefinition();
 	}
 	
 	public static boolean isLineRangeOperation(String command) {
 		//list all possible starting characters for a line range
 		//<number> $ / ? . ' + - , 
-		return command.matches("^[\\d\\$\\/\\?\\.\\'\\+\\-\\,].*");
+	    return JUST_START.matcher(command).matches() || JUST_STOP.matcher(command).matches();
 	}
-
+	
+	public String getOperationStr() {
+        return operationStr;
+    }
+	
 	public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
-		TextOperationTextObjectCommand command = parseRangeDefinition(definition, editorAdaptor);
-		
-		if(command != null) {
-			command.execute(editorAdaptor);
-		}
+	    TextObject range = parseRangeDefinition(editorAdaptor, true);
+	    if (range != null)
+	    {
+	        TextOperation operation = parseRangeOperation(editorAdaptor);
+	        if (operation != null)
+	        {
+	            new TextOperationTextObjectCommand(operation, range).execute(editorAdaptor);
+	        }
+	    }
 	}
 
-    private TextOperationTextObjectCommand parseRangeDefinition(String command, EditorAdaptor editorAdaptor) {
-    	String startStr    = "";
-    	String stopStr     = "";
-    	char operationChar = 0;
-    	String remainingChars = "";
-    	boolean delimFound = false;
-    	boolean insideSearchDef = false;
+    private void parseRangeDefinition() {
+        Matcher matchingRe;
+        matchingRe = START_AND_STOP.matcher(definition);
+        if (matchingRe.matches())
+        {
+            // Both positions specified
+            startStr     = matchingRe.group(1) + (matchingRe.group(4) != null ? matchingRe.group(4) : "");
+            stopStr      = matchingRe.group(5) + (matchingRe.group(8) != null ? matchingRe.group(8) : "");
+            operationStr = matchingRe.group(9);
+        } else {
+            matchingRe = JUST_START.matcher(definition);
+            if (matchingRe.matches()) {
+                // Only start position specified
+                startStr = matchingRe.group(1) + (matchingRe.group(4) != null ? matchingRe.group(4) : "");
+            } else {
+                // Only stop position specified
+                matchingRe = JUST_STOP.matcher(definition);
+                if (matchingRe.matches())
+                {
+                    stopStr = matchingRe.group(1) + (matchingRe.group(4) != null ? matchingRe.group(4) : "");
+                }
+            }
+            operationStr = matchingRe.group(5);
+        }
+        //if range not defined, assume current position
+        if(startStr.length() == 0 || startStr.startsWith("+") || startStr.startsWith("-") ) {
+            startStr = "." + startStr;
+        }
+        if(stopStr.length() == 0 || stopStr.startsWith("+") || stopStr.startsWith("-") ) {
+            stopStr = "." + stopStr;
+        }
+    }
     	
-    	for(int i=0; i < command.length(); i++) {
-    		char next = command.charAt(i);
-    		//ignore all spaces (unless we're defining search criteria)
-    		if(next == ' ' && !insideSearchDef) {
-    			continue;
-    		}
-    		
-    		//if we're defining a search, don't flag any characters
-    		//as being special (no delimiters, no operations)
-    		if(next == '/' || next == '?') {
-    			//the '/' or '?' character has to start and end the search definition
-    			//so we can just toggle whatever the previous value was
-    			insideSearchDef = ! insideSearchDef;
-    		}
-    		
-    		if(! delimFound) { //still building first part of range
-    			if(!insideSearchDef && next == ',') { //is this the only range delimiter?
-    				delimFound = true;
-    			}
-    			else {
-    				startStr += next;
-    			}
-    		}
-    		else { //building second part of range
-    			if(!insideSearchDef && isOperationChar(next) && ! stopStr.endsWith("'")) {
-    				operationChar = next;
-    				//if 's', we're defining a substitution for the range
-    				remainingChars = command.substring(i);
-    				break; //we've found everything we need
-    			}
-    			else {
-    				stopStr += next;
-    			}
-    		}
-    	}
-    	
-    	//if range not defined, assume current position
-    	if(startStr.length() == 0 || startStr.startsWith("+") || startStr.startsWith("-") ) {
-    		startStr = "." + startStr;
-    	}
-    	if(stopStr.length() == 0 || stopStr.startsWith("+") || stopStr.startsWith("-") ) {
-    		stopStr = "." + stopStr;
-    	}
-    	if(operationChar == 0) {
-    		//didn't parse right for whatever reason
-    		return null;
-    	}
-    	
+    public Selection parseRangeDefinition(EditorAdaptor editorAdaptor, boolean linewise) {
     	Position startPos = LineAddressParser.parseAddressPosition(startStr, editorAdaptor);
     	Position stopPos = LineAddressParser.parseAddressPosition(stopStr, editorAdaptor);
-    	
-    	SimpleTextOperation operation = parseRangeOperation(operationChar, remainingChars, editorAdaptor);
-    	
-    	if(startPos != null && stopPos != null && operation != null) {
-    		return new TextOperationTextObjectCommand(operation, new LineWiseSelection(editorAdaptor, startPos, stopPos));
+    	if(startPos != null && stopPos != null) {
+    	    if (linewise) {
+    	        return new LineWiseSelection(editorAdaptor, startPos, stopPos);
+    	    } else {
+    	        return new SimpleSelection(new StartEndTextRange(startPos, stopPos));
+    	    }
     	}
     	else {
     		return null;
@@ -131,33 +132,38 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
      * @param remainingChars - any characters defined by the user after the operation char
      * @return the Operation corresponding to the operation char
      */
-    private SimpleTextOperation parseRangeOperation(char operation, String remainingChars, EditorAdaptor editorAdaptor) {
+    public SimpleTextOperation parseRangeOperation(EditorAdaptor editorAdaptor) {
+        if (operationStr.isEmpty()) {
+    		editorAdaptor.getUserInterfaceService().setErrorMessage("No operation specified.");
+    		return null;
+        }
+        char operation = operationStr.charAt(0);
     	if(operation == 'y') {
     		return YankOperation.INSTANCE;
     	}
     	else if(operation == 'd') {
     		return DeleteOperation.INSTANCE;
     	}
-    	else if(operation == 's' && remainingChars.startsWith("sort")) {
-    		return new SortOperation(remainingChars.substring(4));
+    	else if(operation == 's' && operationStr.startsWith("sort")) {
+    		return new SortOperation(operationStr.substring(4));
     	}
     	else if(operation == 's') {
-    		return new SubstitutionOperation(remainingChars);
+    		return new SubstitutionOperation(operationStr);
     	}
     	else if(operation == 'g' || operation == 'v') {
-    		return new ExCommandOperation(remainingChars);
+    		return new ExCommandOperation(operationStr);
     	}
-    	else if(operation == 'r' && (remainingChars.startsWith("ret"))) {
-    	    return new RetabOperation(remainingChars);
+    	else if(operation == 'r' && (operationStr.startsWith("ret"))) {
+    	    return new RetabOperation(operationStr);
     	}
     	else if(operation == 'c' || operation == 't') {
-    		return new CopyMoveLinesOperation(remainingChars, false);
+    		return new CopyMoveLinesOperation(operationStr, false);
     	}
     	else if(operation == 'm') {
-    		return new CopyMoveLinesOperation(remainingChars, true);
+    		return new CopyMoveLinesOperation(operationStr, true);
     	}
     	else {
-    		editorAdaptor.getUserInterfaceService().setErrorMessage("Unknown operation for range: " + operation);
+    		editorAdaptor.getUserInterfaceService().setErrorMessage("Unknown operation for range: " + operationStr);
     		return null;
     	}
     }
