@@ -9,7 +9,7 @@ $docs = array(
     "configuration",
     "commandline_commands",
     "macros",
-    "marks",
+    "marks_and_registers",
     "optional_plugins"
 );
 if (isset($_GET['page'])) {
