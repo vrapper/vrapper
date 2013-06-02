@@ -60,6 +60,7 @@ import net.sourceforge.vrapper.vim.commands.RecordMacroCommand;
 import net.sourceforge.vrapper.vim.commands.RedoCommand;
 import net.sourceforge.vrapper.vim.commands.RepeatLastSubstitutionCommand;
 import net.sourceforge.vrapper.vim.commands.ReplaceCommand;
+import net.sourceforge.vrapper.vim.commands.RestoreSelectionCommand;
 import net.sourceforge.vrapper.vim.commands.SaveCommand;
 import net.sourceforge.vrapper.vim.commands.SetMarkCommand;
 import net.sourceforge.vrapper.vim.commands.SimpleDelimitedText;
@@ -333,7 +334,8 @@ public class NormalMode extends CommandBasedMode {
                                 leafBind('&', repeatSubGlobal),
                                 leafBind('J', joinLinesDumbWay),
                                 leafBind('p', pasteAfterWithG),
-                                leafBind('P', pasteBeforeWithG)),
+                                leafBind('P', pasteBeforeWithG),
+                                leafBind('v', RestoreSelectionCommand.INSTANCE)),
                         transitionBind('q',
                                 convertKeyStroke(
                                         RecordMacroCommand.KEYSTROKE_CONVERTER,
