@@ -8,6 +8,8 @@ public interface CursorService {
     public static final String LAST_EDIT_MARK = ".";
     public static final String LAST_INSERT_MARK = "^";
     public static final String LAST_JUMP_MARK = "'";
+    public static final String LAST_SELECTION_START_MARK = "<";
+    public static final String LAST_SELECTION_END_MARK = ">";
 
     /**
      * Set the current position in the text, i.e. where the caret is displayed.

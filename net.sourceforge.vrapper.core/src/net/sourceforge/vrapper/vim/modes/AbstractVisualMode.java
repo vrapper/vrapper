@@ -27,7 +27,6 @@ import net.sourceforge.vrapper.vim.commands.JoinVisualLinesCommand;
 import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
 import net.sourceforge.vrapper.vim.commands.PasteOperation;
 import net.sourceforge.vrapper.vim.commands.ReplaceCommand;
-import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SelectionBasedTextOperationCommand;
 import net.sourceforge.vrapper.vim.commands.SetMarkCommand;
 import net.sourceforge.vrapper.vim.commands.SwapCaseCommand;
@@ -44,8 +43,6 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
     public static final ModeSwitchHint KEEP_SELECTION_HINT = new ModeSwitchHint() { };
     public static final ModeSwitchHint RECALL_SELECTION_HINT = new ModeSwitchHint() { };
     public static final ModeSwitchHint MOVE_CURSOR_HINT = new ModeSwitchHint() { };
-
-    private Selection lastSelection;
 
     public AbstractVisualMode(final EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
@@ -91,7 +88,7 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
             }
         }
         if (recallSelection) {
-        	editorAdaptor.setSelection(lastSelection);
+        	editorAdaptor.setSelection(editorAdaptor.getLastActiveSelection());
         } else if (!keepSelection) {
             editorAdaptor.setSelection(null);
         }
@@ -104,7 +101,6 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
     @Override
     public void leaveMode(final ModeSwitchHint... hints)
     		throws CommandExecutionException {
-    	lastSelection = editorAdaptor.getSelection();
     	super.leaveMode(hints);
     }
 

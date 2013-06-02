@@ -2,7 +2,7 @@ package net.sourceforge.vrapper.vim.commands;
 
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
 import net.sourceforge.vrapper.utils.ContentType;
-import net.sourceforge.vrapper.utils.PositionlessSelection;
+import net.sourceforge.vrapper.utils.SelectionArea;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.modes.ExecuteCommandHint;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
@@ -38,7 +38,7 @@ public class ChangeOperation implements TextOperation {
     @Override
     public void execute(final EditorAdaptor editorAdaptor, final int count, final TextObject textObject) throws CommandExecutionException {
         final Command beforeInsertCmd = getHintCommand(editorAdaptor, count, textObject);
-        final PositionlessSelection lastSel = editorAdaptor.getRegisterManager().getLastActiveSelection();
+        final SelectionArea lastSel = editorAdaptor.getRegisterManager().getLastActiveSelectionArea();
         if (textObject instanceof Selection && lastSel != null
                 && ContentType.TEXT_RECTANGLE.equals(lastSel.getContentType(editorAdaptor.getConfiguration()))) {
             // insert in block mode

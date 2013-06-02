@@ -180,8 +180,9 @@ public class InsertMode extends AbstractMode {
                 editorAdaptor.getHistory().endCompoundChange();
             }
         }
-        editorAdaptor.getCursorService().setMark(
-                CursorService.LAST_INSERT_MARK, editorAdaptor.getPosition());
+        // Mark is placed one to the right to resume editing where mode was exited.
+        editorAdaptor.getCursorService().setMark(CursorService.LAST_INSERT_MARK,
+                editorAdaptor.getPosition().addModelOffset(1));
     }
 
     private void repeatInsert() {

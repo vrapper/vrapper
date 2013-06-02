@@ -14,6 +14,9 @@ public class LeaveVisualModeCommand extends CountIgnoringNonRepeatableCommand {
 
     public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
         // FIXME: compatibility option: don't set caret offset
+        
+        // Only save selection when this command is executed - other commands call doIt() as well.
+        editorAdaptor.rememberLastActiveSelection();
         doIt(editorAdaptor);
     }
 

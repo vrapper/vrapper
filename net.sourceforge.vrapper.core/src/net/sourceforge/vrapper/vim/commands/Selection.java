@@ -7,4 +7,6 @@ public interface Selection extends TextObject, TextRange {
     public boolean isReversed();
     public Position getFrom();
     public Position getTo();
+    /** Returns the name of the mode in which this selection was made. */
+    public String getModeName();
 }

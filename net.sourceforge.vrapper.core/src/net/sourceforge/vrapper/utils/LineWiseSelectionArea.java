@@ -5,9 +5,9 @@ import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
 
-public class LineWisePositionlessSelection extends PositionlessSelection {
+public class LineWiseSelectionArea extends SelectionArea {
 
-    public LineWisePositionlessSelection(EditorAdaptor editorAdaptor, LineWiseSelection selection) {
+    public LineWiseSelectionArea(EditorAdaptor editorAdaptor, LineWiseSelection selection) {
         TextContent modelContent = editorAdaptor.getModelContent();
         int startLine = modelContent.getLineInformationOfOffset(selection.getLeftBound().getModelOffset()).getNumber();
         int endLine = modelContent.getLineInformationOfOffset(selection.getRightBound().getModelOffset()).getNumber();

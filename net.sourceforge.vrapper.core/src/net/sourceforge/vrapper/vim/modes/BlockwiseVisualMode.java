@@ -12,7 +12,7 @@ import net.sourceforge.vrapper.keymap.vim.VisualMotionState.Motion2VMC;
 import net.sourceforge.vrapper.platform.HistoryService;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.Position;
-import net.sourceforge.vrapper.utils.PositionlessSelection;
+import net.sourceforge.vrapper.utils.SelectionArea;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.VimConstants;
@@ -56,7 +56,7 @@ public class BlockwiseVisualMode extends AbstractVisualMode {
         public void execute(final EditorAdaptor editorAdaptor)
                 throws CommandExecutionException {
             
-            final PositionlessSelection sel = editorAdaptor.getRegisterManager().getLastActiveSelection();
+            final SelectionArea sel = editorAdaptor.getRegisterManager().getLastActiveSelectionArea();
 	        final Command insertion = editorAdaptor.getRegisterManager().getLastInsertion();
 	        final Register lastEdit = editorAdaptor.getRegisterManager().getLastEditRegister();
 	        final RegisterContent content = lastEdit.getContent();

@@ -5,11 +5,11 @@ import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 
-public class SimplePositionlessSelection extends PositionlessSelection {
+public class SimpleSelectionArea extends SelectionArea {
 
     private int trailingCharacters;
 
-    public SimplePositionlessSelection(EditorAdaptor editorAdaptor, SimpleSelection selection) {
+    public SimpleSelectionArea(EditorAdaptor editorAdaptor, SimpleSelection selection) {
         TextContent modelContent = editorAdaptor.getModelContent();
          LineInformation startLine = modelContent.getLineInformationOfOffset(selection.getLeftBound().getModelOffset());
         LineInformation endLine = modelContent.getLineInformationOfOffset(selection.getRightBound().getModelOffset());
