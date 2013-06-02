@@ -522,8 +522,10 @@ public class DefaultEditorAdaptor implements EditorAdaptor, ModeChangeHintReceiv
     
 	@Override
     public void rememberLastActiveSelection() {
-		registerManager.setLastActiveSelection(selectionService.getSelection(),
-		        SelectionArea.getInstance(this));
+		Selection selection = selectionService.getSelection();
+		registerManager.setLastActiveSelection(selection, SelectionArea.getInstance(this));
+		cursorService.setMark(CursorService.LAST_SELECTION_START_MARK, selection.getFrom());
+		cursorService.setMark(CursorService.LAST_SELECTION_END_MARK, selection.getTo());
 	}
 
 	@Override
