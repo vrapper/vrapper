@@ -3,19 +3,22 @@
    <description name="Vrapper" url="http://vrapper.sourceforge.net/update-site/stable">
       Stable releases of Vrapper.
    </description>
-   <feature url="features/net.sourceforge.vrapper_0.30.0.jar" id="net.sourceforge.vrapper" version="0.30.0">
+   <feature url="features/net.sourceforge.vrapper_0.32.0.jar" id="net.sourceforge.vrapper" version="0.32.0">
       <category name="Vrapper"/>
    </feature>
-   <feature url="features/net.sourceforge.vrapper.eclipse.cdt.feature_0.30.0.jar" id="net.sourceforge.vrapper.eclipse.cdt.feature" version="0.30.0">
+   <feature url="features/net.sourceforge.vrapper.eclipse.cdt.feature_0.32.0.jar" id="net.sourceforge.vrapper.eclipse.cdt.feature" version="0.32.0">
       <category name="Vrapper"/>
    </feature>
-   <feature url="features/net.sourceforge.vrapper.eclipse.jdt.feature_0.30.0.jar" id="net.sourceforge.vrapper.eclipse.jdt.feature" version="0.30.0">
+   <feature url="features/net.sourceforge.vrapper.eclipse.jdt.feature_0.32.0.jar" id="net.sourceforge.vrapper.eclipse.jdt.feature" version="0.32.0">
       <category name="Vrapper"/>
    </feature>
-   <feature url="features/net.sourceforge.vrapper.plugin.surround_0.30.0.jar" id="net.sourceforge.vrapper.plugin.surround" version="0.30.0">
+   <feature url="features/net.sourceforge.vrapper.plugin.surround_0.32.0.jar" id="net.sourceforge.vrapper.plugin.surround" version="0.32.0">
       <category name="Vrapper"/>
    </feature>
-   <feature url="features/net.sourceforge.vrapper.eclipse.pydev.feature_0.30.0.jar" id="net.sourceforge.vrapper.eclipse.pydev.feature" version="0.30.0">
+   <feature url="features/net.sourceforge.vrapper.eclipse.pydev.feature_0.32.0.jar" id="net.sourceforge.vrapper.eclipse.pydev.feature" version="0.32.0">
+      <category name="Vrapper"/>
+   </feature>
+   <feature url="features/net.sourceforge.vrapper.plugin.ipmotion_0.32.0.jar" id="net.sourceforge.vrapper.plugin.ipmotion" version="0.32.0">
       <category name="Vrapper"/>
    </feature>
    <category-def name="Vrapper" label="Vrapper"/>
