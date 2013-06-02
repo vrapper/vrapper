@@ -19,6 +19,7 @@ import net.sourceforge.vrapper.keymap.vim.DelimitedTextObjectState;
 import net.sourceforge.vrapper.keymap.vim.GoThereState;
 import net.sourceforge.vrapper.keymap.vim.RegisterState;
 import net.sourceforge.vrapper.keymap.vim.TextObjectState;
+import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
@@ -75,6 +76,7 @@ import net.sourceforge.vrapper.vim.commands.VimCommandSequence;
 import net.sourceforge.vrapper.vim.commands.VisualMotionCommand;
 import net.sourceforge.vrapper.vim.commands.XmlTagDelimitedText;
 import net.sourceforge.vrapper.vim.commands.YankOperation;
+import net.sourceforge.vrapper.vim.commands.motions.GoToMarkMotion;
 import net.sourceforge.vrapper.vim.commands.motions.LineEndMotion;
 import net.sourceforge.vrapper.vim.commands.motions.LineStartMotion;
 import net.sourceforge.vrapper.vim.commands.motions.Motion;
@@ -204,6 +206,9 @@ public class NormalMode extends CommandBasedMode {
     @Override
     @SuppressWarnings("unchecked")
     protected State<Command> buildInitialState() {
+        final Command resumeInsertMode = new ChangeToInsertModeCommand(
+                new MotionCommand(new GoToMarkMotion(false, CursorService.LAST_INSERT_MARK)));
+        
         final Command visualMode = new ChangeModeCommand(VisualMode.NAME);
         final Command linewiseVisualMode = new ChangeModeCommand(LinewiseVisualMode.NAME);
         final Command blockwiseVisualMode = new ChangeModeCommand(BlockwiseVisualMode.NAME);
@@ -332,6 +337,7 @@ public class NormalMode extends CommandBasedMode {
                         		leafBind('a', (Command)AsciiCommand.INSTANCE),
                                 leafBind('f', findFile),
                                 leafBind('&', repeatSubGlobal),
+                                leafBind('i', resumeInsertMode),
                                 leafBind('J', joinLinesDumbWay),
                                 leafBind('p', pasteAfterWithG),
                                 leafBind('P', pasteBeforeWithG),
