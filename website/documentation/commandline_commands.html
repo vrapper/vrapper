@@ -63,6 +63,10 @@
             If &lt;filename&gt; doesn't exist, create a new file in the current working directory.</td>
     </tr>
     <tr>
+        <td>:e!</td>
+        <td>Revert changes to current file</td>
+    </tr>
+    <tr>
         <td>:cd &lt;directory&gt;</td>
         <td>Changes current working directory (used by :e command).</td>
     </tr>
@@ -81,6 +85,14 @@
     <tr>
         <td>:tabprevious<br/>:bprevious<br/>:bp</td>
         <td>Move to previous Eclipse editor (tab)</td>
+    </tr>
+    <tr>
+        <td>:tabrewind</td>
+        <td>Move to first Eclipse editor (tab)</td>
+    </tr>
+    <tr>
+        <td>:tablast</td>
+        <td>Move to last Eclipse editor (tab)</td>
     </tr>
     <tr>
         <td>:bdelete<br/>:bd</td>
@@ -114,8 +126,8 @@
         </td>
     </tr>
     <tr>
-        <td>:&lt;range&gt;,&lt;range&gt;[y|d|s]</td>
-        <td>Perform either the yank (y), delete (d), or substitution (s) operation on a range of lines.
+        <td>:&lt;range&gt;,&lt;range&gt;[y|d|s|c|t|m]</td>
+        <td>Perform either the yank (y), delete (d), substitution (s), copy (c, t), or move (m) operation on a range of lines.
         <table>
         <tr>
         <td style="border:none">Supports:<br/>
@@ -140,6 +152,8 @@
             <li>:'a,'bd</li>
             <li>:?something?,+4y</li>
             <li>:?something?,/foo/y</li>
+            <li>:10,20 copy 140</li>
+            <li>:15,35 move 110</li>
             </ul>
         </td>
         </tr>
@@ -200,6 +214,18 @@
             </ul>
             </ul>
         </td>
+    </tr>
+    <tr>
+        <td>:vim</td>
+        <td>The current active file in Eclipse is opened in a new gvim window.  Cursor is on the exact same line
+        and column as it was in Eclipse.  This allows you to perform any operation in gvim which Vrapper doesn't support.
+        After you save the file and exit gvim (:wq) Eclipse will reload the file with your changes.
+        <br/><br/>
+        Path to gvim is determined by 'gvimpath' property (defaults to /usr/bin/gvim).</td>
+    </tr>
+    <tr>
+        <td>:maximize</td>
+        <td>Maximize this editor tab in Eclipse.  Run again to restore editor size.</td>
     </tr>
     <tr>
         <td>:eclipseaction&nbsp;&lt;name&gt;&nbsp;&lt;id&gt;</td>

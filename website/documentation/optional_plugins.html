@@ -57,3 +57,10 @@ one of the following characters:</p>
 <p>For the 'c' command you'll have to select the character that represents what the
 text is currently surrounded by then the character you want to replace it with. For
 example, cs"( would replace the surrounding double-quotes with parentheses.</p>
+
+<h3>Improve Paragraph Motion (ipmotion.vim) Plugin</h3>
+<p>Ipmotion.vim is a vim plugin defined here:<br>
+<a href="http://www.vim.org/scripts/script.php?script_id=3952">http://www.vim.org/scripts/script.php?script_id=3952</a><br/>
+This script modifies the behavior of '{' and '}' to be non-Vim compliant but more sensible.  Basically, a line with only whitespace
+is considered a paragraph boundary rather than requiring lines to be completely empty.  The script allows for any arbitrary
+regex to be used in determining paragraph boundaries; our port of this script does not currently include that behavior.</p>
