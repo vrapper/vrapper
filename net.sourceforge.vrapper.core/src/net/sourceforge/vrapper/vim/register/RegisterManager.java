@@ -1,8 +1,9 @@
 package net.sourceforge.vrapper.vim.register;
 
-import net.sourceforge.vrapper.utils.PositionlessSelection;
+import net.sourceforge.vrapper.utils.SelectionArea;
 import net.sourceforge.vrapper.utils.Search;
 import net.sourceforge.vrapper.vim.commands.Command;
+import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.TextOperation;
 import net.sourceforge.vrapper.vim.commands.motions.FindMotion;
 
@@ -46,8 +47,9 @@ public interface RegisterManager {
     Search getSearch();
     void setSearch(Search search);
     boolean isDefaultRegisterActive();
-	void setLastActiveSelection(PositionlessSelection instance);
-	PositionlessSelection getLastActiveSelection();
+	void setLastActiveSelection(Selection selection, SelectionArea selectionArea);
+	SelectionArea getLastActiveSelectionArea();
+	Selection getLastActiveSelection();
     public abstract void setDefaultRegister(Register register);
     public void setCurrentWorkingDirectory(String cwd);
     public String getCurrentWorkingDirectory();

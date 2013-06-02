@@ -6,6 +6,7 @@ import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.modes.LinewiseVisualMode;
 
 public class LineWiseSelection implements Selection {
 
@@ -18,6 +19,11 @@ public class LineWiseSelection implements Selection {
         this.from = from;
         this.to = to;
         this.range = StartEndTextRange.lines(editor, from, to);
+    }
+    
+    @Override
+    public String getModeName() {
+        return LinewiseVisualMode.NAME;
     }
 
     public TextRange getRegion(EditorAdaptor editorMode, int count)

@@ -9,6 +9,7 @@ import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.modes.BlockwiseVisualMode;
 
 public class BlockWiseSelection implements Selection {
     
@@ -50,6 +51,11 @@ public class BlockWiseSelection implements Selection {
         this.from = from;
         this.to = to;
         this.range = StartEndTextRange.exclusive(from, to);
+    }
+    
+    @Override
+    public String getModeName() {
+        return BlockwiseVisualMode.NAME;
     }
 
     @Override

@@ -5,11 +5,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.sourceforge.vrapper.utils.ContentType;
-import net.sourceforge.vrapper.utils.PositionlessSelection;
+import net.sourceforge.vrapper.utils.SelectionArea;
 import net.sourceforge.vrapper.utils.Search;
 import net.sourceforge.vrapper.utils.StringUtils;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.commands.Command;
+import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.TextOperation;
 import net.sourceforge.vrapper.vim.commands.motions.FindMotion;
 
@@ -31,7 +32,8 @@ public class DefaultRegisterManager implements RegisterManager {
     private Command lastEdit, lastInsertion;
     private TextOperation lastSubstitution;
     private FindMotion findMotion;
-	private PositionlessSelection lastActiveSelection;
+	private SelectionArea lastActiveSelectionArea;
+	private Selection lastActiveSelection;
 	private String cwd = "/";
 
     public DefaultRegisterManager() {
@@ -155,12 +157,17 @@ public class DefaultRegisterManager implements RegisterManager {
         return activeRegister == defaultRegister;
     }
 
-	public void setLastActiveSelection(PositionlessSelection selection) {
+	public void setLastActiveSelection(Selection selection, SelectionArea selectionArea) {
 		lastActiveSelection = selection;
+		lastActiveSelectionArea = selectionArea;
 	}
 
-	public PositionlessSelection getLastActiveSelection() {
-		return lastActiveSelection;
+	public SelectionArea getLastActiveSelectionArea() {
+		return lastActiveSelectionArea;
+	}
+	
+	public Selection getLastActiveSelection() {
+	    return lastActiveSelection;
 	}
 
     public void setLastInsertion(Command command) {
