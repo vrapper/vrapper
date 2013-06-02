@@ -1,4 +1,29 @@
 <div class="newsbox">
+    <div class="date">2013-06-02</div>
+    <h4>0.32.0 Released</h4>
+    <p>Keeping with my two-month release cycle, 0.32.0 is now out.  In the last month
+    I got a lot of help from contributors who actually know how to navigate the Eclipse API.
+    They were able to fix a bunch of defects which I had no hope of ever fixing myself.
+    I'm amazed at what they've been able to do already.</p>
+    <p>These are the changes since the last news update (included in 0.32.0):</p>
+    <ul>
+        <li>Added support for new ipmotion (improved paragraph) optional plugin</li>
+        <ul>
+           <li>Based on <a href="http://www.vim.org/scripts/script.php?script_id=3952">http://www.vim.org/scripts/script.php?script_id=3952</a></li>
+        </ul>
+        <li>Added support for XML tags in our Surround.vim optional plugin</li>
+        <li>Added support for :tabrewind and :tablast</li>
+        <li>Fixed issues with :only and :qall</li>
+        <li>Fixed &lt;number&gt;gt</li>
+        <li>Fixed issue where :q didn't work with some file types</li>
+        <li>Miscellaneous minor fixes to text object parsing and visual line selections</li>
+    </ul>
+    <p>Also... Don't tell anyone, but we've started implementing visual block mode.
+    The cursor doesn't always move correctly and it doesn't support 'y' or 'p'
+    yet but it is there.  It isn't stable so don't expect too much from it though.
+    We hope to have the feature ready in the next release.</p>
+</div>
+<div class="newsbox">
     <div class="date">2013-05-01</div>
     <h4>Updates to unstable update site</h4>
     <p>I've hit my stride with a two-month release cycle so I'm also trying to
