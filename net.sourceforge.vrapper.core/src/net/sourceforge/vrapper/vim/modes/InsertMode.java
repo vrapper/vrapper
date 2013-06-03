@@ -54,10 +54,12 @@ public class InsertMode extends AbstractMode {
     public static final ModeSwitchHint DONT_MOVE_CURSOR = new ModeSwitchHint() {};
     public static final ModeSwitchHint DONT_LOCK_HISTORY = new ModeSwitchHint() {};
     public static final ModeSwitchHint DONT_SAVE_STATE = new ModeSwitchHint() {};
+    public static final ModeSwitchHint RETURN_TO_INSERTMODE = new ModeSwitchHint() {};
     public static final KeyStroke ESC = key(SpecialKey.ESC);
     public static final KeyStroke BACKSPACE = key(SpecialKey.BACKSPACE);
     public static final KeyStroke CTRL_C = ctrlKey('c');
     public static final KeyStroke CTRL_R = ctrlKey('r');
+    public static final KeyStroke CTRL_O = ctrlKey('o');
     
     protected State<Command> currentState = buildState();
 
@@ -268,6 +270,9 @@ public class InsertMode extends AbstractMode {
 			//move to "paste register" mode, but don't actually perform the
 			//"leave insert mode" operations
 			editorAdaptor.changeModeSafely(PasteRegisterMode.NAME, DONT_SAVE_STATE);
+		} else if (stroke.equals(CTRL_O)) {
+		    //perform a single NormalMode command then return to InsertMode
+		    editorAdaptor.changeModeSafely(NormalMode.NAME, RETURN_TO_INSERTMODE);
         } else if (!allowed(stroke)) {
             startEditPosition = editorAdaptor.getCursorService().getPosition();
             count = 1;
