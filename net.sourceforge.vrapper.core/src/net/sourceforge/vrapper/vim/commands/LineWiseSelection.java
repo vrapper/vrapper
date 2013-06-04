@@ -1,7 +1,10 @@
 package net.sourceforge.vrapper.vim.commands;
 
 import net.sourceforge.vrapper.platform.Configuration;
+import net.sourceforge.vrapper.platform.CursorService;
+import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.ContentType;
+import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
@@ -75,6 +78,27 @@ public class LineWiseSelection implements Selection {
 
     public Position getTo() {
         return to;
+    }
+
+    @Override
+    public Position getStartMark(EditorAdaptor editorAdaptor) {
+        return range.getLeftBound();
+    }
+
+    @Override
+    public Position getEndMark(EditorAdaptor editorAdaptor) {
+        Position end = range.getRightBound();
+        TextContent content = editorAdaptor.getModelContent();
+        LineInformation endLine = content.getLineInformationOfOffset(end.getModelOffset());
+        int endLineNumber = endLine.getNumber();
+        //End position is beginning of next line, move one line back and to end of line unless we
+        //are on the last line or if the selection is empty.
+        if (range.getModelLength() > 0 && endLine.getBeginOffset() == end.getModelOffset()) {
+            CursorService cursorService = editorAdaptor.getCursorService();
+            LineInformation prevLine = content.getLineInformation(endLineNumber - 1);
+            end = cursorService.newPositionForModelOffset(prevLine.getEndOffset());
+        }
+        return end;
     }
 
 }

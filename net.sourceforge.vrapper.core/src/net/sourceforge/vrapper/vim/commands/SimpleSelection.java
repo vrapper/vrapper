@@ -74,4 +74,14 @@ public class SimpleSelection implements Selection {
         return range.getEnd();
     }
 
+    @Override
+    public Position getStartMark(EditorAdaptor defaultEditorAdaptor) {
+        return range.getLeftBound();
+    }
+
+    @Override
+    public Position getEndMark(EditorAdaptor defaultEditorAdaptor) {
+        return range.getRightBound().addModelOffset(-1);
+    }
+
 }

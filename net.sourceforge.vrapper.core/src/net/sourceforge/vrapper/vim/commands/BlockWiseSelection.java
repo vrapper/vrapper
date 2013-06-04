@@ -164,4 +164,14 @@ public class BlockWiseSelection implements Selection {
         return getRect(editorAdaptor.getModelContent(), range.getStart(), range.getEnd());
     }
 
+    @Override
+    public Position getStartMark(EditorAdaptor defaultEditorAdaptor) {
+        return getFrom();
+    }
+
+    @Override
+    public Position getEndMark(EditorAdaptor defaultEditorAdaptor) {
+        return getTo();
+    }
+
 }

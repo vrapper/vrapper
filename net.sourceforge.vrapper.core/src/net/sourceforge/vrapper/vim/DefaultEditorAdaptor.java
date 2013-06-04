@@ -519,13 +519,13 @@ public class DefaultEditorAdaptor implements EditorAdaptor, ModeChangeHintReceiv
             userInterfaceService.setEditorMode(UserInterfaceService.VRAPPER_DISABLED);
         }
     }
-    
+
 	@Override
     public void rememberLastActiveSelection() {
 		Selection selection = selectionService.getSelection();
 		registerManager.setLastActiveSelection(selection, SelectionArea.getInstance(this));
-		cursorService.setMark(CursorService.LAST_SELECTION_START_MARK, selection.getFrom());
-		cursorService.setMark(CursorService.LAST_SELECTION_END_MARK, selection.getTo());
+		cursorService.setMark(CursorService.LAST_SELECTION_START_MARK, selection.getStartMark(this));
+		cursorService.setMark(CursorService.LAST_SELECTION_END_MARK, selection.getEndMark(this));
 	}
 
 	@Override
