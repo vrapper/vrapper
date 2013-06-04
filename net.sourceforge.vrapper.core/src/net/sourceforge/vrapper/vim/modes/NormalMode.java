@@ -320,7 +320,7 @@ public class NormalMode extends CommandBasedMode {
                         leafBind('R', (Command) new ReplaceMode.ChangeToReplaceModeCommand()),
                         leafBind('o', (Command) new ChangeToInsertModeCommand(InsertLineCommand.POST_CURSOR)),
                         leafBind('O', (Command) new ChangeToInsertModeCommand(InsertLineCommand.PRE_CURSOR)),
-                        leafBind('v', seq(visualMode, afterEnteringVisual)),
+                        leafBind('v', dontRepeat(seq(visualMode, afterEnteringVisual))),
                         leafBind('V', dontRepeat(seq(linewiseVisualMode, selectLine))),
                         leafCtrlBind('v', dontRepeat(seq(blockwiseVisualMode, afterEnteringBlockVisual))),
                         leafBind('p', pasteAfter),
