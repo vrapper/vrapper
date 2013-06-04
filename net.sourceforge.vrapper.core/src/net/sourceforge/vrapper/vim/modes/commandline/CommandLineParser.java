@@ -23,6 +23,7 @@ import net.sourceforge.vrapper.vim.commands.LineRangeOperationCommand;
 import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.commands.OpenInGvimCommand;
+import net.sourceforge.vrapper.vim.commands.ReadExternalOperation;
 import net.sourceforge.vrapper.vim.commands.RedoCommand;
 import net.sourceforge.vrapper.vim.commands.RepeatLastSubstitutionCommand;
 import net.sourceforge.vrapper.vim.commands.RetabOperation;
@@ -413,6 +414,12 @@ public class CommandLineParser extends AbstractCommandParser {
     		return new TextOperationTextObjectCommand(
 				new ExCommandOperation(command), new SimpleSelection(null)
     		);
+        }
+        
+        // Read command output operation
+        if(ReadExternalOperation.isValid(editor, command)) {
+            // Execute on the current line.
+            return new LineRangeOperationCommand("." + command);
         }
         
         /** Now check against list of known commands (whitespace-delimited) **/

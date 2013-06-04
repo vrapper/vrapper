@@ -162,6 +162,12 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
     	else if(operation == 'm') {
     		return new CopyMoveLinesOperation(operationStr, true);
     	}
+    	else if(operation == '!') {
+    		return new PipeExternalOperation(operationStr);
+    	}
+    	else if(ReadExternalOperation.isValid(editorAdaptor, operationStr)) {
+    		return new ReadExternalOperation(operationStr);
+    	}
     	else {
     		editorAdaptor.getUserInterfaceService().setErrorMessage("Unknown operation for range: " + operationStr);
     		return null;
