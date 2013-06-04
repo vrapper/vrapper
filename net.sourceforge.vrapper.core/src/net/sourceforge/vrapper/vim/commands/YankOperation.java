@@ -12,12 +12,20 @@ import net.sourceforge.vrapper.vim.register.StringRegisterContent;
 
 public class YankOperation extends SimpleTextOperation {
 
-    public static final YankOperation INSTANCE = new YankOperation();
+    public static final YankOperation INSTANCE = new YankOperation(null);
+    
+    private final String register;
 
-    private YankOperation() { /* NOP */ }
+    YankOperation(String register) {
+        this.register = register;
+    }
 
     @Override
     public void execute(EditorAdaptor editorAdaptor, TextRange region, ContentType contentType) {
+        if (register != null) {
+            RegisterManager registerManager = editorAdaptor.getRegisterManager();
+            registerManager.setActiveRegister(register);
+        }
         doIt(editorAdaptor, region, contentType, true);
     }
 

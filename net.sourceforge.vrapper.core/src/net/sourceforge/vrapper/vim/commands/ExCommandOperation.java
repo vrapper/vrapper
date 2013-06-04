@@ -106,7 +106,11 @@ public class ExCommandOperation extends SimpleTextOperation {
 			return DeleteOperation.INSTANCE;
 		}
 		else if(command.startsWith("y")) {
-			return YankOperation.INSTANCE;
+    	    if (command.length() >= 3) {
+    	        return new YankOperation(command.substring(command.length() - 1));
+    	    } else {
+    	        return YankOperation.INSTANCE;
+    	    }
 		}
 		
 		return null;
