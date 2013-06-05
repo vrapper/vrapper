@@ -13,6 +13,7 @@ import net.sourceforge.vrapper.platform.Platform;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.Command;
+import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
 import net.sourceforge.vrapper.vim.modes.ExecuteCommandHint;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
@@ -173,7 +174,10 @@ public abstract class AbstractCommandParser {
         if (buffer.length() == 0 || e.equals(KEY_RETURN)
                || e.equals(KEY_ESCAPE) || e.equals(KEY_CTRL_C)) {
             if (c != null)
-	            editor.changeModeSafely(NormalMode.NAME, new ExecuteCommandHint.OnEnter(c));
+	            editor.changeModeSafely(editor.getLastModeName(), new ExecuteCommandHint.OnEnter(c),
+	                    // If entered from visual mode, don't remove selection in case the 
+	                    // command c expects it.
+                        AbstractVisualMode.KEEP_SELECTION_HINT);
             else
 	            editor.changeModeSafely(NormalMode.NAME);
         }
@@ -215,7 +219,7 @@ public abstract class AbstractCommandParser {
         buffer.append(cmd);
         position = buffer.length();
     }
-    
+
     private void deleteWordBack() {
     	int offset = buffer.length() -1;
     	char c1, c2;

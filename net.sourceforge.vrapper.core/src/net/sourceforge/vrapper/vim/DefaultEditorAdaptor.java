@@ -35,6 +35,7 @@ import net.sourceforge.vrapper.platform.ViewportService;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.SelectionArea;
+import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.modes.BlockwiseVisualMode;
@@ -84,6 +85,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor, ModeChangeHintReceiv
     private final SearchAndReplaceService searchAndReplaceService;
     private MacroRecorder macroRecorder;
     private MacroPlayer macroPlayer;
+    private String lastModeName;
     private String editorType;
 
     public DefaultEditorAdaptor(final Platform editor, final RegisterManager registerManager, final boolean isActive) {
@@ -131,6 +133,10 @@ public class DefaultEditorAdaptor implements EditorAdaptor, ModeChangeHintReceiv
         if (isActive) {
             changeModeSafely(NormalMode.NAME);
         }
+    }
+
+    public String getLastModeName() {
+        return lastModeName;
     }
 
     // this is public just for test purposes (Mockito spy as self)
@@ -241,13 +247,19 @@ public class DefaultEditorAdaptor implements EditorAdaptor, ModeChangeHintReceiv
         			    line = line.substring(line.indexOf(':') +1);
         			}
         			//attempt to parse this line
-        			parser.parseAndExecute(null, line.trim());
+        			Command c = parser.parseAndExecute(null, line.trim());
+        			if (c != null) {
+        			    c.execute(this);
+        			}
+        			
         		}
         	} catch (final FileNotFoundException e) {
         		// ignore
         	} catch (final IOException e) {
         		e.printStackTrace();
-        	} finally {
+        	} catch (CommandExecutionException e) {
+                e.printStackTrace();
+            } finally {
         		if(reader != null) {
         			try {
         				reader.close();
@@ -287,16 +299,18 @@ public class DefaultEditorAdaptor implements EditorAdaptor, ModeChangeHintReceiv
         	final EditorMode oldMode = currentMode;
             if (currentMode != null) {
                 currentMode.leaveMode(args);
+                lastModeName = currentMode.getName();
             }
             try {
             	currentMode = newMode;
-            	newMode.enterMode(args);
             	userInterfaceService.setEditorMode(newMode.getDisplayName());
+            	newMode.enterMode(args);
             }
             catch(final CommandExecutionException e) {
             	//failed to enter new mode, revert to previous mode
             	//then let Exception bubble up
             	currentMode = oldMode;
+            	userInterfaceService.setEditorMode(oldMode.getDisplayName());
             	oldMode.enterMode();
             	throw e;
             }

@@ -356,6 +356,33 @@ public class CommandLineParser extends AbstractCommandParser {
         }
 
     };
+    
+    class ExCommandEvaluator implements Command {
+        private Evaluator mappping = null;
+        private Queue<String> tokens = null;
+
+        public ExCommandEvaluator(Evaluator mappping, Queue<String> tokens) {
+            this.mappping = mappping;
+            this.tokens = tokens;
+        }
+
+        public Command repetition() {
+            return null;
+        }
+
+        public Command withCount(int count) {
+            return null;
+        }
+
+        public int getCount() {
+            return 0;
+        }
+
+        public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
+            mappping.evaluate(editorAdaptor, tokens);
+        }
+
+    };
 
     @Override
     public Command parseAndExecute(String first, String command) {
@@ -450,22 +477,22 @@ public class CommandLineParser extends AbstractCommandParser {
         
         //see if a command is defined for the first token
         if(platformCommands != null && platformCommands.contains(tokens.peek())) {
-            platformCommands.evaluate(editor, tokens);
+            return new ExCommandEvaluator(platformCommands, tokens);
         }
         else if(mapping != null && mapping.contains(tokens.peek())) {
-            mapping.evaluate(editor, tokens);
+            return new ExCommandEvaluator(mapping, tokens);
         }
         else { //see if there is a partial match
             String commandName = platformCommands.getNameFromPartial(tokens.peek());
             if(commandName != null) {
             	tokens.set(0, commandName);
-            	platformCommands.evaluate(editor, tokens);
+            	return new ExCommandEvaluator(platformCommands, tokens);
             }
             else {
             	commandName = mapping.getNameFromPartial(tokens.peek());
             	if(commandName != null) {
             		tokens.set(0, commandName);
-	            	mapping.evaluate(editor, tokens);
+            		return new ExCommandEvaluator(mapping, tokens);
             	}
             	else {
             		editor.getUserInterfaceService().setErrorMessage("Not an editor command: " + tokens.peek());

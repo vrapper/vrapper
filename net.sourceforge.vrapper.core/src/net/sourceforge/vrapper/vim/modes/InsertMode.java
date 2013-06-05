@@ -4,6 +4,7 @@ import static net.sourceforge.vrapper.keymap.StateUtils.union;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.ctrlKey;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.key;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafCtrlBind;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.dontRepeat;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
@@ -14,6 +15,7 @@ import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.Transition;
 import net.sourceforge.vrapper.keymap.vim.RegisterState;
+import net.sourceforge.vrapper.keymap.vim.SimpleKeyStroke;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.KeyMapProvider;
 import net.sourceforge.vrapper.platform.TextContent;
@@ -26,6 +28,7 @@ import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.VimConstants;
+import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.CountIgnoringNonRepeatableCommand;
@@ -43,6 +46,8 @@ import net.sourceforge.vrapper.vim.commands.motions.LineStartMotion;
 import net.sourceforge.vrapper.vim.commands.motions.Motion;
 import net.sourceforge.vrapper.vim.commands.motions.MoveLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordLeft;
+import net.sourceforge.vrapper.vim.modes.commandline.AbstractCommandLineMode;
+import net.sourceforge.vrapper.vim.modes.commandline.CommandLineMode;
 import net.sourceforge.vrapper.vim.modes.commandline.PasteRegisterMode;
 import net.sourceforge.vrapper.vim.register.Register;
 import net.sourceforge.vrapper.vim.register.RegisterContent;
@@ -55,7 +60,7 @@ public class InsertMode extends AbstractMode {
     public static final String KEYMAP_NAME = "Insert Mode Keymap";
     public static final ModeSwitchHint DONT_MOVE_CURSOR = new ModeSwitchHint() {};
     public static final ModeSwitchHint DONT_LOCK_HISTORY = new ModeSwitchHint() {};
-    public static final ModeSwitchHint DONT_SAVE_STATE = new ModeSwitchHint() {};
+    public static final ModeSwitchHint RESUME_ON_MODE_ENTER = new ModeSwitchHint() {};
     public static final ModeSwitchHint RETURN_TO_INSERTMODE = new ModeSwitchHint() {};
     public static final KeyStroke ESC = key(SpecialKey.ESC);
     public static final KeyStroke BACKSPACE = key(SpecialKey.BACKSPACE);
@@ -69,6 +74,7 @@ public class InsertMode extends AbstractMode {
 
     private Position startEditPosition;
     private boolean enteredWithO = false;
+    private boolean resumeOnEnter = false;
 
     /**
      * Command to be used before insertion
@@ -98,12 +104,9 @@ public class InsertMode extends AbstractMode {
      */
     @Override
     public void enterMode(final ModeSwitchHint... args) throws CommandExecutionException {
-    	boolean initMode = true;
+        boolean initMode = !resumeOnEnter;
     	boolean lockHistory = true;
         for (final ModeSwitchHint hint: args) {
-        	if(hint == DONT_SAVE_STATE) {
-        		initMode = false;
-        	}
         	if(hint == DONT_LOCK_HISTORY) {
         		lockHistory = false;
         	}
@@ -163,7 +166,8 @@ public class InsertMode extends AbstractMode {
             if (hint == InsertMode.DONT_MOVE_CURSOR) {
                 moveCursor = false;
             }
-            else if(hint == InsertMode.DONT_SAVE_STATE) {
+            if (hint == InsertMode.RESUME_ON_MODE_ENTER) {
+                resumeOnEnter = true;
             	//Leave insert mode without performing any of our "leave" operations.
             	//This is because we'll be returning to InsertMode soon and we want
             	//everything to be considered a single "insert" operation.
@@ -277,7 +281,7 @@ public class InsertMode extends AbstractMode {
 		} else if (stroke.equals(CTRL_R)) {
 			//move to "paste register" mode, but don't actually perform the
 			//"leave insert mode" operations
-			editorAdaptor.changeModeSafely(PasteRegisterMode.NAME, DONT_SAVE_STATE);
+			editorAdaptor.changeModeSafely(PasteRegisterMode.NAME, RESUME_ON_MODE_ENTER);
 		} else if (stroke.equals(CTRL_O)) {
 		    //perform a single NormalMode command then return to InsertMode
 		    editorAdaptor.changeModeSafely(NormalMode.NAME, RETURN_TO_INSERTMODE);
@@ -429,6 +433,9 @@ public class InsertMode extends AbstractMode {
         return RegisterState.wrap(union(
             platformSpecificState,
             state(
+                    // Alt+O - temporary go into command mode
+                    leafBind(new SimpleKeyStroke('o', false, true),
+                            (Command)new ChangeModeCommand(CommandLineMode.NAME, RESUME_ON_MODE_ENTER)),
             		leafCtrlBind('a', (Command)PasteRegisterCommand.PASTE_LAST_INSERT),
             		leafCtrlBind('e', (Command)InsertAdjacentCharacter.LINE_BELOW),
             		leafCtrlBind('y', (Command)InsertAdjacentCharacter.LINE_ABOVE)
