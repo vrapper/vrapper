@@ -90,6 +90,28 @@ public class VimUtils {
     public static boolean isNewLine(final String s) {
         return VimConstants.NEWLINE.contains(s);
     }
+    
+    public static int startsWithNewLine(String s) {
+        int nlLen = 0;
+        // Find the longest new line prefix.
+    	for(String newline : VimConstants.NEWLINE) {
+    		if(s.startsWith(newline)) {
+    			nlLen = Math.max(nlLen, newline.length());
+    		}
+    	}
+    	return nlLen;
+    }
+    
+    public static int endsWithNewLine(String s) {
+        int nlLen = 0;
+        // Find the longest new line suffix.
+    	for(String newline : VimConstants.NEWLINE) {
+    		if(s.endsWith(newline)) {
+    			nlLen = Math.max(nlLen, newline.length());
+    		}
+    	}
+    	return nlLen;
+    }
 
     public static boolean isWordCharacter(final String s) {
         return VimUtils.COMPILED_WORD_CHAR_PATTERN.matcher(s).find();
