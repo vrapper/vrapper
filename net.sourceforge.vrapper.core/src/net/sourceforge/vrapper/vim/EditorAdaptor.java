@@ -23,9 +23,11 @@ public interface EditorAdaptor {
     void changeMode(String modeName, ModeSwitchHint... args) throws CommandExecutionException;
     void changeModeSafely(String name, ModeSwitchHint... args);
     String getCurrentModeName();
+    String getLastModeName();
     void onChangeEnabled(boolean enabled);
     EditorMode getMode(String name);
     public boolean handleKey(KeyStroke key);
+    String getEditorType();
 
     /**
      * Handles a key without, but does not pass the key to the macro recorder.

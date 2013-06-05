@@ -99,7 +99,7 @@ public class ParenthesesMove extends AbstractModelSideMotion {
     
     private static int findMatch(int offset, ParenthesesPair pair, TextContent content, int count) {
     	int index = offset;
-        int depth = 1;
+        int depth = count;
         int leftModifier, rightModifier, limit, indexModifier;
         if (pair.backwards) {
             leftModifier = -1;
@@ -112,7 +112,7 @@ public class ParenthesesMove extends AbstractModelSideMotion {
             limit = content.getLineInformation(content.getNumberOfLines()-1).getEndOffset();
             indexModifier = 1;
         }
-        while (index != limit) {
+        while (index != limit && count > 0) {
             index += indexModifier;
             String c;
             try {
@@ -134,7 +134,7 @@ public class ParenthesesMove extends AbstractModelSideMotion {
     }
 
     public BorderPolicy borderPolicy() {
-        return BorderPolicy.INCLUSIVE;
+        return BorderPolicy.EXCLUSIVE;
     }
 
     @Override

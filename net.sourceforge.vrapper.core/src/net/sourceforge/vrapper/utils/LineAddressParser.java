@@ -7,6 +7,8 @@ import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
+import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
+import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.motions.RangeSearchMotion;
 
 /**
@@ -110,10 +112,14 @@ public class LineAddressParser {
     		}
     		else if(mark.equals(">")) { //selection end
     			try {
-    				//getRightBound is exclusive, meaning in linewise-mode it will
-    				//include the first character on the next line.  Back up one
-    				//character to make this inclusive.
-    				pos = editorAdaptor.getSelection().getRegion(editorAdaptor, 0).getRightBound().addModelOffset(-1);
+    			    Selection sel = editorAdaptor.getSelection();
+    			    pos = editorAdaptor.getSelection().getRegion(editorAdaptor, 0).getRightBound();
+    			    if (sel instanceof LineWiseSelection) {
+    			        //getRightBound is exclusive, meaning in linewise-mode it will
+    			        //include the first character on the next line.  Back up one
+    			        //character to make this inclusive.
+    			        pos = pos.addModelOffset(-1);
+    			    }
 				} catch (CommandExecutionException e) { }
     		}
     		else { //normal mark

@@ -98,6 +98,7 @@ public class DefaultRegisterManager implements RegisterManager {
 
     public void setDefaultRegister(Register register) {
         this.defaultRegister = register;
+        registers.put(RegisterManager.REGISTER_NAME_UNNAMED, register);
     }
 
     public Register getActiveRegister() {

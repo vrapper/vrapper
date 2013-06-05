@@ -3,6 +3,7 @@ package net.sourceforge.vrapper.vim.commands.motions;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import net.sourceforge.vrapper.platform.TextContent;
+import net.sourceforge.vrapper.utils.VimUtils;
 
 public abstract class MoveLeftWithBounds extends MoveWithBounds {
 
@@ -29,16 +30,26 @@ public abstract class MoveLeftWithBounds extends MoveWithBounds {
             --offset;
         }
 
+		boolean lookingAtNL = false;
 		notFound: while (offset >= 1) {
 			int i, len = min(BUFFER_LEN, offset + 1);
 			String buffer = content.getText(offset + 1 - len, len);
 			for (i = len-1; i > 0; i--, offset--) {
-				if (stopsAtNewlines() && buffer.charAt(i-1) == '\n' && buffer.charAt(i) == '\n') {
-                    return max(0, offset);
-                }
 				if (atBoundary(buffer.charAt(i-1), buffer.charAt(i))) {
                     break notFound;
                 }
+				if (stopsAtNewlines()) {
+				    int nlSkip = VimUtils.endsWithNewLine(buffer.substring(0, i + 1));
+				    if (nlSkip != 0) {
+				        if (lookingAtNL) {
+				            return max(0, offset + 1);
+				        } else {
+				            i -= nlSkip - 1;
+				            offset -= nlSkip - 1;
+				        }
+				    } 
+				    lookingAtNL = nlSkip != 0;
+				}
 			}
 		}
 

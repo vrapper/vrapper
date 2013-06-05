@@ -35,6 +35,7 @@ import net.sourceforge.vrapper.platform.ViewportService;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.SelectionArea;
+import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.modes.BlockwiseVisualMode;
@@ -52,6 +53,7 @@ import net.sourceforge.vrapper.vim.modes.commandline.SearchMode;
 import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
 import net.sourceforge.vrapper.vim.register.Register;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
+import net.sourceforge.vrapper.vim.register.SimpleRegister;
 
 public class DefaultEditorAdaptor implements EditorAdaptor, ModeChangeHintReceiver {
 
@@ -83,6 +85,8 @@ public class DefaultEditorAdaptor implements EditorAdaptor, ModeChangeHintReceiv
     private final SearchAndReplaceService searchAndReplaceService;
     private MacroRecorder macroRecorder;
     private MacroPlayer macroPlayer;
+    private String lastModeName;
+    private String editorType;
 
     public DefaultEditorAdaptor(final Platform editor, final RegisterManager registerManager, final boolean isActive) {
         this.modelContent = editor.getModelContent();
@@ -96,7 +100,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor, ModeChangeHintReceiv
         this.editorSettings = editor.getUnderlyingEditorSettings();
         this.configuration = new SimpleLocalConfiguration(editor.getConfiguration());
         final LocalConfigurationListener listener = new LocalConfigurationListener() {
-            
+
             @Override
             public <T> void optionChanged(final Option<T> option, final T oldValue, final T newValue) {
                 if("clipboard".equals(option.getId())) {
@@ -104,11 +108,10 @@ public class DefaultEditorAdaptor implements EditorAdaptor, ModeChangeHintReceiv
                         final Register clipboardRegister = DefaultEditorAdaptor.this.getRegisterManager().getRegister(RegisterManager.REGISTER_NAME_CLIPBOARD);
                         DefaultEditorAdaptor.this.getRegisterManager().setDefaultRegister(clipboardRegister);
                     } else {
-                        final Register unnamedRegister = DefaultEditorAdaptor.this.getRegisterManager().getRegister(RegisterManager.REGISTER_NAME_UNNAMED);
-                        DefaultEditorAdaptor.this.getRegisterManager().setDefaultRegister(unnamedRegister);
+                        DefaultEditorAdaptor.this.getRegisterManager().setDefaultRegister(new SimpleRegister());
                     }
                 }
-                
+
             }
         };
         this.configuration.addListener(listener);
@@ -121,6 +124,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor, ModeChangeHintReceiv
         keyStrokeTranslator = new KeyStrokeTranslator();
         macroRecorder = new MacroRecorder(registerManager, userInterfaceService);
         macroPlayer = null;
+        this.editorType = editor.getEditorType();
 
         fileService = editor.getFileService();
         __set_modes(this);
@@ -129,6 +133,10 @@ public class DefaultEditorAdaptor implements EditorAdaptor, ModeChangeHintReceiv
         if (isActive) {
             changeModeSafely(NormalMode.NAME);
         }
+    }
+
+    public String getLastModeName() {
+        return lastModeName;
     }
 
     // this is public just for test purposes (Mockito spy as self)
@@ -169,7 +177,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor, ModeChangeHintReceiv
             configuration.setNewLine(newLine);
         }
     }
-    
+
     private void readConfiguration() {
         if (!SHOULD_READ_RC_FILE) {
             return;
@@ -181,7 +189,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor, ModeChangeHintReceiv
         	filename = WINDOWS_CONFIG_FILE_NAME;
         	config =  new File(homeDir, filename);
         }
-        
+
         if(config.exists()) {
         	sourceConfigurationFile(filename);
         }
@@ -191,7 +199,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor, ModeChangeHintReceiv
     public boolean sourceConfigurationFile(final String filename) {
         final File homeDir = new File(System.getProperty("user.home"));
         final File config = new File(homeDir, filename);
-        
+
         if(config.exists()) {
         	BufferedReader reader = null;
         	try {
@@ -239,13 +247,19 @@ public class DefaultEditorAdaptor implements EditorAdaptor, ModeChangeHintReceiv
         			    line = line.substring(line.indexOf(':') +1);
         			}
         			//attempt to parse this line
-        			parser.parseAndExecute(null, line.trim());
+        			Command c = parser.parseAndExecute(null, line.trim());
+        			if (c != null) {
+        			    c.execute(this);
+        			}
+        			
         		}
         	} catch (final FileNotFoundException e) {
         		// ignore
         	} catch (final IOException e) {
         		e.printStackTrace();
-        	} finally {
+        	} catch (CommandExecutionException e) {
+                e.printStackTrace();
+            } finally {
         		if(reader != null) {
         			try {
         				reader.close();
@@ -285,16 +299,18 @@ public class DefaultEditorAdaptor implements EditorAdaptor, ModeChangeHintReceiv
         	final EditorMode oldMode = currentMode;
             if (currentMode != null) {
                 currentMode.leaveMode(args);
+                lastModeName = currentMode.getName();
             }
             try {
             	currentMode = newMode;
-            	newMode.enterMode(args);
             	userInterfaceService.setEditorMode(newMode.getDisplayName());
+            	newMode.enterMode(args);
             }
             catch(final CommandExecutionException e) {
             	//failed to enter new mode, revert to previous mode
             	//then let Exception bubble up
             	currentMode = oldMode;
+            	userInterfaceService.setEditorMode(oldMode.getDisplayName());
             	oldMode.enterMode();
             	throw e;
             }
@@ -542,5 +558,9 @@ public class DefaultEditorAdaptor implements EditorAdaptor, ModeChangeHintReceiv
     public String getCurrentModeName() {
 		return currentMode != null ? currentMode.getName() : null;
 	}
+
+    public String getEditorType() {
+        return editorType;
+    }
 
 }

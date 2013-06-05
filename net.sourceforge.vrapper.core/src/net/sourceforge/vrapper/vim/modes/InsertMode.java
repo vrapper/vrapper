@@ -4,6 +4,7 @@ import static net.sourceforge.vrapper.keymap.StateUtils.union;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.ctrlKey;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.key;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafCtrlBind;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.dontRepeat;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
@@ -14,6 +15,7 @@ import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.Transition;
 import net.sourceforge.vrapper.keymap.vim.RegisterState;
+import net.sourceforge.vrapper.keymap.vim.SimpleKeyStroke;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.KeyMapProvider;
 import net.sourceforge.vrapper.platform.TextContent;
@@ -26,6 +28,7 @@ import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.VimConstants;
+import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.CountIgnoringNonRepeatableCommand;
@@ -39,8 +42,12 @@ import net.sourceforge.vrapper.vim.commands.PasteRegisterCommand;
 import net.sourceforge.vrapper.vim.commands.SwitchRegisterCommand;
 import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
 import net.sourceforge.vrapper.vim.commands.VimCommandSequence;
+import net.sourceforge.vrapper.vim.commands.motions.LineStartMotion;
+import net.sourceforge.vrapper.vim.commands.motions.Motion;
 import net.sourceforge.vrapper.vim.commands.motions.MoveLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordLeft;
+import net.sourceforge.vrapper.vim.modes.commandline.AbstractCommandLineMode;
+import net.sourceforge.vrapper.vim.modes.commandline.CommandLineMode;
 import net.sourceforge.vrapper.vim.modes.commandline.PasteRegisterMode;
 import net.sourceforge.vrapper.vim.register.Register;
 import net.sourceforge.vrapper.vim.register.RegisterContent;
@@ -53,18 +60,21 @@ public class InsertMode extends AbstractMode {
     public static final String KEYMAP_NAME = "Insert Mode Keymap";
     public static final ModeSwitchHint DONT_MOVE_CURSOR = new ModeSwitchHint() {};
     public static final ModeSwitchHint DONT_LOCK_HISTORY = new ModeSwitchHint() {};
-    public static final ModeSwitchHint DONT_SAVE_STATE = new ModeSwitchHint() {};
+    public static final ModeSwitchHint RESUME_ON_MODE_ENTER = new ModeSwitchHint() {};
     public static final ModeSwitchHint RETURN_TO_INSERTMODE = new ModeSwitchHint() {};
     public static final KeyStroke ESC = key(SpecialKey.ESC);
     public static final KeyStroke BACKSPACE = key(SpecialKey.BACKSPACE);
     public static final KeyStroke CTRL_C = ctrlKey('c');
     public static final KeyStroke CTRL_R = ctrlKey('r');
     public static final KeyStroke CTRL_O = ctrlKey('o');
-    
+    public static final KeyStroke CTRL_U = ctrlKey('u');
+    public static final KeyStroke CTRL_W = ctrlKey('w');
+
     protected State<Command> currentState = buildState();
 
     private Position startEditPosition;
     private boolean enteredWithO = false;
+    private boolean resumeOnEnter = false;
 
     /**
      * Command to be used before insertion
@@ -81,7 +91,7 @@ public class InsertMode extends AbstractMode {
     public String getName() {
         return NAME;
     }
-    
+
     @Override
     public String getDisplayName() {
         return DISPLAY_NAME;
@@ -94,12 +104,9 @@ public class InsertMode extends AbstractMode {
      */
     @Override
     public void enterMode(final ModeSwitchHint... args) throws CommandExecutionException {
-    	boolean initMode = true;
+        boolean initMode = !resumeOnEnter;
     	boolean lockHistory = true;
         for (final ModeSwitchHint hint: args) {
-        	if(hint == DONT_SAVE_STATE) {
-        		initMode = false;
-        	}
         	if(hint == DONT_LOCK_HISTORY) {
         		lockHistory = false;
         	}
@@ -121,7 +128,7 @@ public class InsertMode extends AbstractMode {
                     final WithCountHint cast = (WithCountHint) hint;
                     count = cast.getCount();
                 }
-                
+
                 if (hint instanceof ExecuteCommandHint) {
                     if (hint instanceof ExecuteCommandHint.OnLeave) {
                         mOnLeaveHint = (ExecuteCommandHint) hint;
@@ -159,7 +166,8 @@ public class InsertMode extends AbstractMode {
             if (hint == InsertMode.DONT_MOVE_CURSOR) {
                 moveCursor = false;
             }
-            else if(hint == InsertMode.DONT_SAVE_STATE) {
+            if (hint == InsertMode.RESUME_ON_MODE_ENTER) {
+                resumeOnEnter = true;
             	//Leave insert mode without performing any of our "leave" operations.
             	//This is because we'll be returning to InsertMode soon and we want
             	//everything to be considered a single "insert" operation.
@@ -221,7 +229,11 @@ public class InsertMode extends AbstractMode {
         }
         //reset value in case we re-enter InsertMode
         enteredWithO = false;
-        
+
+        CursorService cur = editorAdaptor.getCursorService();
+        cur.setMark(CursorService.LAST_CHANGE_START, startEditPosition);
+        cur.setMark(CursorService.LAST_CHANGE_END, position);
+
         final String text = content.getText(new StartEndTextRange(startEditPosition, position));
         final RegisterContent registerContent = new StringRegisterContent(ContentType.TEXT, text);
         lastEditRegister.setContent(registerContent);
@@ -269,10 +281,44 @@ public class InsertMode extends AbstractMode {
 		} else if (stroke.equals(CTRL_R)) {
 			//move to "paste register" mode, but don't actually perform the
 			//"leave insert mode" operations
-			editorAdaptor.changeModeSafely(PasteRegisterMode.NAME, DONT_SAVE_STATE);
+			editorAdaptor.changeModeSafely(PasteRegisterMode.NAME, RESUME_ON_MODE_ENTER);
 		} else if (stroke.equals(CTRL_O)) {
 		    //perform a single NormalMode command then return to InsertMode
 		    editorAdaptor.changeModeSafely(NormalMode.NAME, RETURN_TO_INSERTMODE);
+        } else if (stroke.equals(CTRL_U) || stroke.equals(CTRL_W)) {
+            Motion motion;
+            Position pos;
+            try {
+                CursorService cur = editorAdaptor.getCursorService();
+                int cursorPos = cur.getPosition().getModelOffset();
+                TextContent txt = editorAdaptor.getModelContent();
+                int startEditPos = startEditPosition.getModelOffset();
+                LineInformation line = txt.getLineInformationOfOffset(cursorPos);
+                if (stroke.equals(CTRL_U)) {
+                    motion = LineStartMotion.NON_WHITESPACE;
+                } else {
+                    motion = MoveWordLeft.INSTANCE;
+                }
+                pos = motion.destination(editorAdaptor);
+                if (pos.getModelOffset() < line.getBeginOffset() || pos.getModelOffset() == cursorPos) {
+                    motion = LineStartMotion.COLUMN0;
+                    pos = motion.destination(editorAdaptor);
+                }
+                int position = pos.getModelOffset();
+                if (cursorPos == line.getBeginOffset()) {
+                    position = txt.getLineInformation(line.getNumber() - 1).getEndOffset();
+                } else {
+                    if (cursorPos > startEditPos && position < startEditPos) {
+                        position = startEditPos;
+                    }
+                }
+                int length =  cursorPos - position;
+                txt.replace(position, length, "");
+                if (position < startEditPos) {
+                    startEditPosition = startEditPosition.setModelOffset(position);
+                }
+            } catch (CommandExecutionException e) { }
+            return true;
         } else if (!allowed(stroke)) {
             startEditPosition = editorAdaptor.getCursorService().getPosition();
             count = 1;
@@ -282,7 +328,7 @@ public class InsertMode extends AbstractMode {
                 editorAdaptor.getHistory().beginCompoundChange();
                 editorAdaptor.getHistory().lock();
             }
-        } else if (stroke.equals(BACKSPACE) 
+        } else if (stroke.equals(BACKSPACE)
         		&& editorAdaptor.getConfiguration().get(Options.SOFT_TAB) > 1) {
         	//soft tab stop is enabled, check to see if there are spaces
         	return softTabDelete();
@@ -294,7 +340,7 @@ public class InsertMode extends AbstractMode {
         }
         return false;
     }
-    
+
     /**
      * If there are <softTabStop> number of spaces before the cursor
      * delete that many spaces as if it was a single tab character.
@@ -306,7 +352,7 @@ public class InsertMode extends AbstractMode {
     	final int start = model.getLineInformationOfOffset(pos).getBeginOffset();
     	//text before cursor
     	final String text = model.getText(start, pos - start);
-    	
+
     	//get number of consecutive spaces
     	int spaceCount = 0;
     	for(int i = text.length() -1; i >= 0; i--) {
@@ -315,12 +361,12 @@ public class InsertMode extends AbstractMode {
     		}
     		spaceCount++;
     	}
-    	
+
     	if(spaceCount < softTabStop) {
     		//backspace key behaves as normal
     		return false;
     	}
-    	
+
     	int toDelete = 0;
     	if(spaceCount % softTabStop == 0) {
     		//exactly <softTabStop> space characters
@@ -332,11 +378,11 @@ public class InsertMode extends AbstractMode {
     		//delete up to the closest soft tab stop
     		toDelete = spaceCount % softTabStop;
     	}
-    	
+
     	model.replace(pos - toDelete, toDelete, "");
     	editorAdaptor.setPosition(editorAdaptor.getCursorService()
     			.newPositionForModelOffset(pos - toDelete), false);
-    	
+
     	return true;
     }
 
@@ -377,7 +423,7 @@ public class InsertMode extends AbstractMode {
         }
         return true;
     }
-    
+
     @SuppressWarnings("unchecked")
     protected State<Command> buildState() {
         State<Command> platformSpecificState = editorAdaptor.getPlatformSpecificStateProvider().getState(NAME);
@@ -387,7 +433,9 @@ public class InsertMode extends AbstractMode {
         return RegisterState.wrap(union(
             platformSpecificState,
             state(
-            		leafCtrlBind('w', (Command)new TextOperationTextObjectCommand(DeleteOperation.INSTANCE, new MotionTextObject(MoveWordLeft.INSTANCE))),
+                    // Alt+O - temporary go into command mode
+                    leafBind(new SimpleKeyStroke('o', false, true),
+                            (Command)new ChangeModeCommand(CommandLineMode.NAME, RESUME_ON_MODE_ENTER)),
             		leafCtrlBind('a', (Command)PasteRegisterCommand.PASTE_LAST_INSERT),
             		leafCtrlBind('e', (Command)InsertAdjacentCharacter.LINE_BELOW),
             		leafCtrlBind('y', (Command)InsertAdjacentCharacter.LINE_ABOVE)

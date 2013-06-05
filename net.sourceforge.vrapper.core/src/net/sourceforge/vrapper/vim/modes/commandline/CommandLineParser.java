@@ -23,15 +23,18 @@ import net.sourceforge.vrapper.vim.commands.LineRangeOperationCommand;
 import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.commands.OpenInGvimCommand;
+import net.sourceforge.vrapper.vim.commands.ReadExternalOperation;
 import net.sourceforge.vrapper.vim.commands.RedoCommand;
 import net.sourceforge.vrapper.vim.commands.RepeatLastSubstitutionCommand;
 import net.sourceforge.vrapper.vim.commands.RetabOperation;
 import net.sourceforge.vrapper.vim.commands.SaveAllCommand;
 import net.sourceforge.vrapper.vim.commands.SaveCommand;
+import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SetOptionCommand;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 import net.sourceforge.vrapper.vim.commands.SortOperation;
 import net.sourceforge.vrapper.vim.commands.SubstitutionOperation;
+import net.sourceforge.vrapper.vim.commands.TextObject;
 import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
 import net.sourceforge.vrapper.vim.commands.UndoCommand;
 import net.sourceforge.vrapper.vim.commands.VimCommandSequence;
@@ -319,6 +322,68 @@ public class CommandLineParser extends AbstractCommandParser {
         super(vim);
     }
 
+    class LineRangeExCommandEvaluator implements Command {
+        private LineRangeOperationCommand range = null;
+        private Evaluator command = null;
+        private Queue<String> tokens = null;
+        private boolean isFromVisual;
+
+        public LineRangeExCommandEvaluator(LineRangeOperationCommand range, Evaluator command, Queue<String> tokens,
+                boolean isFromVisual) {
+            this.range = range;
+            this.command = command;
+            this.tokens = tokens;
+            this.isFromVisual = isFromVisual;
+        }
+
+        public Command repetition() {
+            return null;
+        }
+
+        public Command withCount(int count) {
+            return null;
+        }
+
+        public int getCount() {
+            return 0;
+        }
+
+        public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
+            Selection selection = range.parseRangeDefinition(editorAdaptor, !isFromVisual);
+            editorAdaptor.setSelection(selection);
+            command.evaluate(editorAdaptor, tokens);
+            editorAdaptor.setSelection(null);
+        }
+
+    };
+    
+    class ExCommandEvaluator implements Command {
+        private Evaluator mappping = null;
+        private Queue<String> tokens = null;
+
+        public ExCommandEvaluator(Evaluator mappping, Queue<String> tokens) {
+            this.mappping = mappping;
+            this.tokens = tokens;
+        }
+
+        public Command repetition() {
+            return null;
+        }
+
+        public Command withCount(int count) {
+            return null;
+        }
+
+        public int getCount() {
+            return 0;
+        }
+
+        public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
+            mappping.evaluate(editorAdaptor, tokens);
+        }
+
+    };
+
     @Override
     public Command parseAndExecute(String first, String command) {
         try {
@@ -328,13 +393,42 @@ public class CommandLineParser extends AbstractCommandParser {
         } catch (NumberFormatException e) {
             // do nothing
         }
+        // See if command is for a particular editor type only (when parsing .vrapperrc).
+        if (AutoCmdParser.INSTANCE.validate(editor, command)) {
+            AutoCmdParser.INSTANCE.parse(editor, command);
+            if (AutoCmdParser.INSTANCE.getCommand() != null) {
+                command = AutoCmdParser.INSTANCE.getCommand();
+            } else {
+                return AutoCmdParser.INSTANCE;
+            }
+        }
+        
+        EvaluatorMapping platformCommands = editor.getPlatformSpecificStateProvider().getCommands();
         
         /** First, check for all operations which are not whitespace-delimited **/
        
         //not a number but starts with a number, $, /, ?, +, -, ', . (dot), or , (comma)
         //might be a line range operation
         if(command.length() > 1 && LineRangeOperationCommand.isLineRangeOperation(command))
-        	return new LineRangeOperationCommand(command);
+        {
+        	final LineRangeOperationCommand rangeOp = new LineRangeOperationCommand(command);
+        	// Parse the remainder as a regular command.
+        	StringTokenizer nizer = new StringTokenizer(rangeOp.getOperationStr());
+        	LinkedList<String> tokens = new LinkedList<String>();
+        	while(nizer.hasMoreTokens())
+        	    tokens.add(nizer.nextToken().trim());
+        	// Check if there is a mapping for the operation.
+        	if (platformCommands != null && platformCommands.contains(tokens.peek())) {
+        	    return new LineRangeExCommandEvaluator(rangeOp, platformCommands, tokens, isFromVisual());
+        	} else {
+        	    if (mapping != null && mapping.contains(tokens.peek())) {
+        	        return new LineRangeExCommandEvaluator(rangeOp, mapping, tokens, isFromVisual());
+        	    } else {
+        	        // Handle predefined operations (y/d/c...).
+        	        return rangeOp;
+        	    }
+        	}
+        }
         
         //might be a substitution definition
         Command substitution = parseSubstitution(command);
@@ -347,6 +441,12 @@ public class CommandLineParser extends AbstractCommandParser {
     		return new TextOperationTextObjectCommand(
 				new ExCommandOperation(command), new SimpleSelection(null)
     		);
+        }
+        
+        // Read command output operation
+        if(ReadExternalOperation.isValid(editor, command)) {
+            // Execute on the current line.
+            return new LineRangeOperationCommand("." + command);
         }
         
         /** Now check against list of known commands (whitespace-delimited) **/
@@ -376,24 +476,23 @@ public class CommandLineParser extends AbstractCommandParser {
         }
         
         //see if a command is defined for the first token
-        EvaluatorMapping platformCommands = editor.getPlatformSpecificStateProvider().getCommands();
         if(platformCommands != null && platformCommands.contains(tokens.peek())) {
-            platformCommands.evaluate(editor, tokens);
+            return new ExCommandEvaluator(platformCommands, tokens);
         }
         else if(mapping != null && mapping.contains(tokens.peek())) {
-            mapping.evaluate(editor, tokens);
+            return new ExCommandEvaluator(mapping, tokens);
         }
         else { //see if there is a partial match
             String commandName = platformCommands.getNameFromPartial(tokens.peek());
             if(commandName != null) {
             	tokens.set(0, commandName);
-            	platformCommands.evaluate(editor, tokens);
+            	return new ExCommandEvaluator(platformCommands, tokens);
             }
             else {
             	commandName = mapping.getNameFromPartial(tokens.peek());
             	if(commandName != null) {
             		tokens.set(0, commandName);
-	            	mapping.evaluate(editor, tokens);
+            		return new ExCommandEvaluator(mapping, tokens);
             	}
             	else {
             		editor.getUserInterfaceService().setErrorMessage("Not an editor command: " + tokens.peek());
