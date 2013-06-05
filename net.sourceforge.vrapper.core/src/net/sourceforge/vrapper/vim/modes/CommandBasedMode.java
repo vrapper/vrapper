@@ -315,7 +315,11 @@ public abstract class CommandBasedMode extends AbstractMode {
     }
 
     public KeyMap resolveKeyMap(KeyMapProvider provider) {
-        return provider.getKeyMap(keyMapResolver.getKeyMapName());
+        if (currentState == initialState) {
+            return provider.getKeyMap(keyMapResolver.getKeyMapName());
+        } else {
+            return null;
+        }
     }
 
     public void leaveMode(ModeSwitchHint... hints) throws CommandExecutionException {
