@@ -226,6 +226,10 @@ public class InsertMode extends AbstractMode {
         //reset value in case we re-enter InsertMode
         enteredWithO = false;
 
+        CursorService cur = editorAdaptor.getCursorService();
+        cur.setMark(CursorService.LAST_CHANGE_START, startEditPosition);
+        cur.setMark(CursorService.LAST_CHANGE_END, position);
+
         final String text = content.getText(new StartEndTextRange(startEditPosition, position));
         final RegisterContent registerContent = new StringRegisterContent(ContentType.TEXT, text);
         lastEditRegister.setContent(registerContent);
