@@ -134,7 +134,7 @@ public class ParenthesesMove extends AbstractModelSideMotion {
     }
 
     public BorderPolicy borderPolicy() {
-        return BorderPolicy.INCLUSIVE;
+        return BorderPolicy.EXCLUSIVE;
     }
 
     @Override
