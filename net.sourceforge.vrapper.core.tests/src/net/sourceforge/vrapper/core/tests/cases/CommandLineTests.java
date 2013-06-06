@@ -51,10 +51,12 @@ public class CommandLineTests extends VimTestCase {
     	Command command;
     	
     	command = parser.parseAndExecute(":", "set nohlsearch");
-    	assertNull(command);
+    	assertNotNull(command);
+    	assertTrue(command instanceof CommandLineParser.ExCommandEvaluator);
     	
     	command = parser.parseAndExecute(":", "w");
-    	assertNull(command);
+    	assertNotNull(command);
+    	assertTrue(command instanceof CommandLineParser.ExCommandEvaluator);
     	
     	command = parser.parseAndExecute(":", "2");
     	assertNotNull(command);
@@ -70,7 +72,7 @@ public class CommandLineTests extends VimTestCase {
     	
     	command = parser.parseAndExecute(":", "%s/foo/bar/");
     	assertNotNull(command);
-    	assertTrue(command instanceof TextOperationTextObjectCommand);
+    	assertTrue(command instanceof LineRangeOperationCommand);
     	
     	command = parser.parseAndExecute(":", "2,3d");
     	assertNotNull(command);
