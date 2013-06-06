@@ -74,12 +74,18 @@ public class ParenthesesMove extends AbstractModelSideMotion {
     	protected int destination(int offset, TextContent content, int count) throws CommandExecutionException {
     		return findMatch(offset, PARENTHESES.get(")"), content, count);
     	}
+    	public BorderPolicy borderPolicy() {
+    	    return BorderPolicy.EXCLUSIVE;
+    	}
     };
     
     public static final ParenthesesMove MATCH_CLOSE_PAREN = new ParenthesesMove() {
     	@Override
     	protected int destination(int offset, TextContent content, int count) throws CommandExecutionException {
     		return findMatch(offset, PARENTHESES.get("("), content, count);
+    	}
+    	public BorderPolicy borderPolicy() {
+    	    return BorderPolicy.EXCLUSIVE;
     	}
     };
     
@@ -88,12 +94,18 @@ public class ParenthesesMove extends AbstractModelSideMotion {
     	protected int destination(int offset, TextContent content, int count) throws CommandExecutionException {
     		return findMatch(offset, PARENTHESES.get("}"), content, count);
     	}
+    	public BorderPolicy borderPolicy() {
+    	    return BorderPolicy.EXCLUSIVE;
+    	}
     };
     
     public static final ParenthesesMove MATCH_CLOSE_CURLY = new ParenthesesMove() {
     	@Override
     	protected int destination(int offset, TextContent content, int count) throws CommandExecutionException {
     		return findMatch(offset, PARENTHESES.get("{"), content, count);
+    	}
+    	public BorderPolicy borderPolicy() {
+    	    return BorderPolicy.EXCLUSIVE;
     	}
     };
     
@@ -134,7 +146,7 @@ public class ParenthesesMove extends AbstractModelSideMotion {
     }
 
     public BorderPolicy borderPolicy() {
-        return BorderPolicy.EXCLUSIVE;
+        return BorderPolicy.INCLUSIVE;
     }
 
     @Override
