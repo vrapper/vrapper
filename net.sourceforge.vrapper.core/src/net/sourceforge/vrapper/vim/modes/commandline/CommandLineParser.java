@@ -357,7 +357,7 @@ public class CommandLineParser extends AbstractCommandParser {
 
     };
     
-    class ExCommandEvaluator implements Command {
+    public class ExCommandEvaluator implements Command {
         private Evaluator mappping = null;
         private Queue<String> tokens = null;
 
