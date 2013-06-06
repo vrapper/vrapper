@@ -22,7 +22,7 @@ public class SnapshotTests extends VimTestCase {
         // we need no mock magic for register manager
         registerManager = new DefaultRegisterManager();
         when(platform.getUserInterfaceService()).thenReturn(new UserInterfaceService() {
-            public void setRecording(boolean recording) { }
+            public void setRecording(boolean recording, String macroName) { }
             public void setEditorMode(String modeName) { }
             public void setCommandLine(String content, int position) { }
             public void setInfoMessage(String content) { }
