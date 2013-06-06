@@ -9,7 +9,9 @@ import net.sourceforge.vrapper.vim.commands.MultipleExecutionCommand;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.NotEnabledException;
 import org.eclipse.core.commands.NotHandledException;
+import org.eclipse.core.commands.common.CommandException;
 import org.eclipse.core.commands.common.NotDefinedException;
+import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.handlers.IHandlerService;
 
 
@@ -36,8 +38,9 @@ public class EclipseCommand extends AbstractCommand {
     public static void doIt(int count, String action, EditorAdaptor editorAdaptor) {
         try {
             IHandlerService handlerService = editorAdaptor.getService(IHandlerService.class);
-            if (handlerService != null) {
-                handlerService.executeCommand(action, null);
+            ICommandService commandService = editorAdaptor.getService(ICommandService.class);
+            if (handlerService != null && commandService != null) {
+                handlerService.executeCommand(commandService.deserialize(action), null);
             } else {
                 VrapperLog.error("No handler service, cannot execute: " + action);
             }
@@ -49,7 +52,9 @@ public class EclipseCommand extends AbstractCommand {
             VrapperLog.error("Command not enabled: " + action, e);
         } catch (NotHandledException e) {
             VrapperLog.error("Command not handled: " + action, e);
-        }
+        } catch (CommandException e) {
+            VrapperLog.error("Command not handled: " + action, e);
+		}
     }
 
     public Command withCount(int count) {

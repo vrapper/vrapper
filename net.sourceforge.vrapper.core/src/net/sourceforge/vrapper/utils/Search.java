@@ -21,7 +21,7 @@ public class Search {
         this.wholeWord = wholeWord;
         this.caseSensitive = caseSensitive;
         this.afterSearch = afterSearch;
-        this.regexSearch = useRegExp;
+        this.regexSearch = useRegExp && !wholeWord;
     }
 
     public Search reverse() {

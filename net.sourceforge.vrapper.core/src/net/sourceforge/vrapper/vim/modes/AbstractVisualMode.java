@@ -75,6 +75,7 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
         boolean fixSelection = false;
         boolean keepSelection = false;
         boolean recallSelection = false;
+        ExecuteCommandHint onEnterCommand = null;
         for (final ModeSwitchHint hint: hints) {
             if (hint == FIX_SELECTION_HINT) {
             	keepSelection = true;
@@ -86,6 +87,9 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
             if (hint == RECALL_SELECTION_HINT) {
             	recallSelection = true;
             }
+            if (hint instanceof ExecuteCommandHint) {
+                onEnterCommand = (ExecuteCommandHint)hint;
+            }
         }
         if (recallSelection) {
         	editorAdaptor.setSelection(editorAdaptor.getLastActiveSelection());
@@ -96,8 +100,11 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
             fixSelection();
         }
         super.enterMode(hints);
+        if (onEnterCommand != null) {
+            editorAdaptor.changeModeSafely(NormalMode.NAME, onEnterCommand);
+        }
     }
-    
+
     @Override
     public void leaveMode(final ModeSwitchHint... hints)
     		throws CommandExecutionException {

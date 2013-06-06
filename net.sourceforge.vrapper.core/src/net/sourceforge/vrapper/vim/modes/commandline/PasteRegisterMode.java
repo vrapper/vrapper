@@ -75,7 +75,7 @@ public class PasteRegisterMode extends AbstractCommandLineMode {
 					editorAdaptor.getUserInterfaceService().setErrorMessage(err.getMessage());
 				}
             	//return to insert mode, continuing the previous insert operation
-            	editor.changeModeSafely(InsertMode.NAME, InsertMode.DONT_SAVE_STATE);
+            	editor.changeModeSafely(InsertMode.NAME, InsertMode.RESUME_ON_MODE_ENTER);
             }
 		}
 

@@ -7,14 +7,16 @@ import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 public class ModeContributionItem extends ContributionItem {
     
-    private static final String RECORDING_MESSAGE = "recording";
+    private static final String RECORDING_MESSAGE = "recording: ";
     private static final int MODEMESSAGE_WIDTH = 50;
     private String mode = "";
     private boolean isRecording;
+    private String recMacro;
     
     public ModeContributionItem(String id) {
         super(id);
@@ -22,25 +24,26 @@ public class ModeContributionItem extends ContributionItem {
 
     @Override
     public void fill(Composite parent) {
-        Composite reservedSpace = new Composite(parent, SWT.NONE);
+        Composite reservedSpace = new Composite(parent, SWT.NO_FOCUS);
         reservedSpace.setBackground(parent.getBackground());
         GridLayout layout = new GridLayout();
         layout.horizontalSpacing = 50;
         layout.numColumns = 2;
         reservedSpace.setLayout(layout);
         
-        Text recordingText = new Text(reservedSpace, SWT.BOLD);
-        recordingText.setText(RECORDING_MESSAGE);
+        Label recordingText = new Label(reservedSpace, SWT.CENTER);
+        recordingText.setText(RECORDING_MESSAGE + recMacro);
         recordingText.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
         recordingText.setBackground(parent.getBackground());
         recordingText.setVisible(isRecording);
         Font boldFont = recordingText.getFont();
-        for (FontData fontData : boldFont.getFontData()) {
-            fontData.setStyle(SWT.BOLD);
+        FontData fontData[] = boldFont.getFontData();
+        for (FontData fd : fontData) {
+            fd.setStyle(SWT.BOLD);
         }
-        recordingText.setFont(boldFont);
+        recordingText.setFont(new Font(boldFont.getDevice(), fontData));
         
-        Text modeText = new Text(reservedSpace, SWT.NONE);
+        Label modeText = new Label(reservedSpace, SWT.NONE);
         GridData modeLayoutData = new GridData(SWT.RIGHT, SWT.CENTER, true, false);
         modeLayoutData.minimumWidth = MODEMESSAGE_WIDTH;
         modeText.setLayoutData(modeLayoutData);
@@ -55,8 +58,9 @@ public class ModeContributionItem extends ContributionItem {
         super.getParent().update(true);
     }
 
-    public void setRecording(boolean b) {
-    	isRecording = b;
+    public void setRecording(boolean b, String m) {
+        isRecording = b;
+        recMacro = m;
         super.getParent().update(true);
     }
 }

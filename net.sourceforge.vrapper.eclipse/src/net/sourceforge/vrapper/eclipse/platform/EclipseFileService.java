@@ -9,6 +9,7 @@ import java.util.List;
 
 import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.FileService;
+import net.sourceforge.vrapper.utils.ProcessHelper;
 
 import org.eclipse.core.commands.common.CommandException;
 import org.eclipse.core.resources.IContainer;
@@ -39,18 +40,18 @@ public class EclipseFileService implements FileService {
     public EclipseFileService(AbstractTextEditor editor) {
         this.editor = editor;
     }
-    
+
     /**
      * Open the current file in gvim to perform any operations Vrapper doesn't
      * support. The cursor will be in the exact same position in gvim as it was
      * in Vrapper.  As soon as you save and close gvim, the file will be reloaded.
      */
-    public boolean openInGvim(String gvimpath, int row, int col) {
+    public boolean openInGvim(String gvimpath, int modelOffset) {
     	if(editor.isDirty()) {
     		editor.doSave(null);
     	}
     	String filePath = getCurrentFile().getRawLocation().toString();
-    	final String[] cmd = { gvimpath, "+" + row, "-c", "normal zv" + col + "|", "-c", "set nobackup", "-f", "-n", filePath };
+    	final String[] cmd = { gvimpath, "+goto " + modelOffset, "+normal zv", "+set nobackup", "-f", "-n", filePath };
     	new Thread() {
     		public void run() {
     			try {
@@ -69,7 +70,7 @@ public class EclipseFileService implements FileService {
     public boolean isEditable() {
         return editor.isEditable();
     }
-    
+
     private boolean runCommand(String commandId) {
     	IHandlerService handlerService = (IHandlerService) PlatformUI
                 .getWorkbench().getService(IHandlerService.class);
@@ -80,7 +81,7 @@ public class EclipseFileService implements FileService {
 		}
     	return true;
     }
-    
+
     public boolean revertFile() {
     	return runCommand(IWorkbenchCommandConstants.FILE_REVERT);
     }
@@ -94,7 +95,7 @@ public class EclipseFileService implements FileService {
         	// close operation to their parent editor.
         	// Get hold of the entire editor, and close that one instead.
             final IEditorPart topLevelEditor = workbenchPage.getActiveEditor();
-            
+
             // Run async to avoid a NullPointerException in Vrapper (it has likely something to do
             //  with a disposed component).
             //  Async code will only run when Vrapper has processed all of its input.
@@ -108,7 +109,7 @@ public class EclipseFileService implements FileService {
         }
         return false;
     }
-    
+
     public boolean closeAll(boolean force) {
         boolean success = false;
     	IWorkbenchPage page = editor.getSite().getPage();
@@ -120,13 +121,13 @@ public class EclipseFileService implements FileService {
         }
         return success;
     }
-    
+
     public boolean closeOthers(boolean force) {
         IWorkbenchPage page = editor.getSite().getPage();
         if(page.getEditorReferences().length < 2) {
             return true;
         }
-        
+
         boolean success = (force || page.getDirtyEditors().length == 0);
 
         // Vim behavior is to close all clean editors, yet keep the dirty ones if force is false.
@@ -153,11 +154,11 @@ public class EclipseFileService implements FileService {
         }
         return false;
     }
-    
+
     public boolean saveAll() {
     	return runCommand(IWorkbenchCommandConstants.FILE_SAVE_ALL);
     }
-    
+
     /**
      * Create a new (empty) file at the location specified.
      * @param filename - full path of file to be created
@@ -169,7 +170,7 @@ public class EclipseFileService implements FileService {
     	if(file.exists()) {
     		return false;
     	}
-    	
+
     	try {
     		//I have to create a dummy instance of InputStream to create an empty file.
     		//If I send in 'null' as the InputStream, Eclipse flags the file as 'not local'
@@ -185,7 +186,7 @@ public class EclipseFileService implements FileService {
 		}
     	return true;
     }
-    
+
     /**
      * @param filename name of file to find
      * @param previous the previous match found (if any)
@@ -196,11 +197,11 @@ public class EclipseFileService implements FileService {
     public String findFileInPath(String filename, String previous, boolean reverse, String[] paths) {
     	//expand all '**' wildcards (if any)
     	List<String> dirs = expandPathNames(paths);
-    	
+
     	if(reverse) {
     		Collections.reverse(dirs);
     	}
-    	
+
     	//if we had a previous match, reset our starting point
     	//(start in the directory of 'previous')
     	if(lastFindPath != null && lastFindPrevious.equals(previous)) {
@@ -214,7 +215,7 @@ public class EclipseFileService implements FileService {
     			dirs.add( dirs.remove(0) );
     		}
     	}
-    	
+
     	IContainer dir;
     	for(String path : dirs) {
     		dir = resolvePath(path);
@@ -228,7 +229,7 @@ public class EclipseFileService implements FileService {
     	}
     	return filename;
     }
-    
+
     /**
      * Similar to getFilePathMatch, except only return directories.
      */
@@ -245,11 +246,11 @@ public class EclipseFileService implements FileService {
 			previous = file;
 		}
 	}
-    
+
     /**
      * Perform tab-completion on a path.
      * Given a partial file path, return the next possible match.
-     * 
+     *
      * @param prefix A partial file path we need to match
      * @param previous The previous match we found, find the next one after it
      * @param reverse search forwards for next match or backwards
@@ -279,22 +280,22 @@ public class EclipseFileService implements FileService {
     	else {
     		start = project.getFolder(startDir);
     	}
-    	
+
     	String unresolvedPathToPrefix = "";
     	if(prefix.contains("../")) {
     		//unresolved path still needs to be displayed to user
     		//even though that isn't the path we use to search
     		//(e.g., '../foo/../foo/bar' not resolved 'foo/bar')
     		unresolvedPathToPrefix = prefix.substring(0, prefix.lastIndexOf('/') + 1);
-    		
+
     		//after last '/' is the actual prefix we want to match (it may be "")
     		prefix = prefix.substring(prefix.lastIndexOf('/') + 1);
-    		
+
     		//previous is probably in the same unresolved dir as prefix
     		if(previous != null && previous.startsWith(unresolvedPathToPrefix) ) {
     			previous = previous.substring(unresolvedPathToPrefix.length());
     		}
-    		
+
     		//resolvePath doesn't know current working directory
     		//must use absolute path
     		if(absolutePath) {
@@ -304,7 +305,7 @@ public class EclipseFileService implements FileService {
     			start = resolvePath(startDir + "/" + unresolvedPathToPrefix);
     		}
     	}
-    	
+
     	String nextMatch;
     	if("..".equals(prefix) || prefix.endsWith("/..")) {
     		if(previous != null) { //if hitting tab on '../', return '..'
@@ -321,7 +322,7 @@ public class EclipseFileService implements FileService {
     	else {
     		nextMatch = findNextMatchWithPrefix(prefix, previous, reverse, start);
     	}
-    	
+
     	//reapply mess of unresolved '../'
     	if(unresolvedPathToPrefix.length() > 0) {
     		nextMatch = unresolvedPathToPrefix + nextMatch;
@@ -332,7 +333,7 @@ public class EclipseFileService implements FileService {
     	}
     	return nextMatch;
     }
-    
+
     /**
      * Find the first file or directory whose path contains 'prefix' after
      * any previous value 'previous'.  Start in 'startDir' and recurse if
@@ -345,7 +346,7 @@ public class EclipseFileService implements FileService {
      */
     private String findNextMatchWithPrefix(String prefix, String previous, boolean reverse, IContainer startDir) {
     	boolean foundPrevious = previous == null;
-    	
+
     	try {
     		IResource[] toSearch = startDir.members();
     		if(reverse) {
@@ -356,7 +357,7 @@ public class EclipseFileService implements FileService {
 				if(resource.getType() == IResource.FOLDER) {
 					path += '/';
 				}
-				
+
 				//prefix is in this folder, go into it
 				if(resource.getType() == IResource.FOLDER && prefix.startsWith(path)) {
 					if(previous != null && previous.startsWith(path)) {
@@ -383,16 +384,16 @@ public class EclipseFileService implements FileService {
 		} catch (CoreException e) {
 			return prefix;
 		}
-    	
+
     	//couldn't find a more-specific path
     	//the user needs to provide more information
     	return prefix;
     }
-    
+
     /**
      * Open file with default Eclipse editor.  File may
      * be found under any of the directories within 'paths'.
-     * 
+     *
      * @param filename file to open
      * @param paths list of directories to search for filename
      * @return true if file opened successfully
@@ -410,10 +411,10 @@ public class EclipseFileService implements FileService {
     	}
     	return openFile(fullPath);
     }
-    
+
     /**
      * Open file with default Eclipse editor.
-     * 
+     *
      * @param filename project-local path to file
      * @return true if file opened successfully
      */
@@ -421,24 +422,24 @@ public class EclipseFileService implements FileService {
     	if(filename == null || filename.length() == 0) {
     		return false;
     	}
-    	
+
     	IProject project = getCurrentSelectedProject();
     	if(project == null) {
     		return false;
     	}
-    	
+
     	//need to resolve current file's directory
     	if(filename.startsWith("./")) {
     		String file = filename.substring(1);
     		String dir = resolvePath(".").getProjectRelativePath().toString();
     		filename = dir + file;
     	}
-    	
+
     	IFile fileToBeOpened = project.getFile(filename);
     	if( ! fileToBeOpened.exists()) {
     		return false;
     	}
-    	
+
     	IEditorInput editorInput = new FileEditorInput(fileToBeOpened);
     	IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 		IEditorDescriptor desc = PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor(fileToBeOpened.getName());
@@ -453,14 +454,14 @@ public class EclipseFileService implements FileService {
 		} catch (PartInitException e) {
 			return false;
 		}
-    	
+
     	return true;
     }
-    
+
     public String getCurrentFilePath() {
     	return "/" + getCurrentFileDir().getProjectRelativePath().toString();
     }
-    
+
     /**
      * Given a list of paths, replace any paths ending in '**' with
      * all subdirectories within that path.  Expanded directories are
@@ -481,7 +482,7 @@ public class EclipseFileService implements FileService {
     	}
     	return dirs;
     }
-    
+
     /**
      * The '**' wildcard should be expanded to represent all subdirectories
      * of its parent.  Take the 'path' variable (which should end in '**')
@@ -498,7 +499,7 @@ public class EclipseFileService implements FileService {
     		//everything up to the '**' (/foo/bar/**)
     		start = resolvePath( path.substring(0, path.indexOf('*')) );
     	}
-    	
+
     	ArrayList<IResource> folders = new ArrayList<IResource>();
     	try {
     		folders.add(start);
@@ -507,8 +508,8 @@ public class EclipseFileService implements FileService {
     	} catch (CoreException e) {
     		e.printStackTrace();
     		return null;
-    	} 
-    	
+    	}
+
     	ArrayList<String> dirs = new ArrayList<String>();
     	for(IResource folder : folders) {
     		//note that "root" will have a path of "" which is fixed below
@@ -516,7 +517,7 @@ public class EclipseFileService implements FileService {
     	}
     	//alphabetical order so we iterate correctly
     	Collections.sort(dirs);
-    	
+
     	if(path.equals("**") || path.equals("/**")) { //if 'root' is in this list
     		for(int i=0; i < dirs.size(); i++) {
     			if(dirs.get(i).equals("")) {
@@ -527,10 +528,10 @@ public class EclipseFileService implements FileService {
     			}
     		}
     	}
-    	
+
     	return dirs;
     }
-    
+
     private void getAllDirectories(List<IResource> folders, IResource[] members) throws CoreException {
     	for(IResource member : members) {
     		if(member.getType() == IResource.FOLDER) {
@@ -539,7 +540,7 @@ public class EclipseFileService implements FileService {
     		}
     	}
     }
-    
+
     private IContainer resolvePath(String path) {
     	IProject project = getCurrentSelectedProject();
     	IContainer dir;
@@ -559,14 +560,14 @@ public class EclipseFileService implements FileService {
     			//try current file dir instead
     			dir = getCurrentFileDir();
     		}
-    		
+
     		String[] pieces = path.split("/");
     		for(String piece : pieces) {
     			if("".equals(piece)) {
     				//go to next piece (leading '/' or intermediate '//')
     				continue;
     			}
-    			
+
     			if("..".equals(piece)) {
     				//if we're not at project root, move up to parent dir
     				if(! dir.getProjectRelativePath().toString().equals("")) {
@@ -584,7 +585,7 @@ public class EclipseFileService implements FileService {
     	}
     	return dir;
     }
-    
+
     private IProject getCurrentSelectedProject() {
     	IFile file = getCurrentFile();
     	if(file != null) {
@@ -592,7 +593,7 @@ public class EclipseFileService implements FileService {
     	}
     	return null;
     }
-    
+
     private IContainer getCurrentFileDir() {
     	IFile file = getCurrentFile();
     	if(file != null) {
@@ -602,11 +603,11 @@ public class EclipseFileService implements FileService {
     	}
     	return null;
     }
-    
+
     private IFile getCurrentFile() {
     	IEditorPart  editorPart =
     			PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
-    	
+
     	if(editorPart  != null) {
     		IFileEditorInput input = (IFileEditorInput)editorPart.getEditorInput() ;
     		IFile file = input.getFile();

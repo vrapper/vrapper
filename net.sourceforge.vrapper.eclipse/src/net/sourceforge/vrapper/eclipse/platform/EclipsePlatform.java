@@ -81,7 +81,7 @@ public class EclipsePlatform implements Platform {
             this.historyService = new DummyHistoryService();
         }
     }
-        
+
     @Override
     public CursorService getCursorService() {
         return cursorAndSelection;
@@ -204,6 +204,10 @@ public class EclipsePlatform implements Platform {
 
     public void setModeChangeHintReceiver(final ModeChangeHintReceiver receiver) {
         userInterfaceService.setModeChangeHintReceiver(receiver);
+    }
+
+    public String getEditorType() {
+        return underlyingEditor.getSite().getRegisteredName();
     }
 
 }

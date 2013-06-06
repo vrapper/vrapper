@@ -1,5 +1,6 @@
 package net.sourceforge.vrapper.vim.commands;
 
+import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.TextRange;
@@ -12,12 +13,20 @@ import net.sourceforge.vrapper.vim.register.StringRegisterContent;
 
 public class YankOperation extends SimpleTextOperation {
 
-    public static final YankOperation INSTANCE = new YankOperation();
+    public static final YankOperation INSTANCE = new YankOperation(null);
+    
+    private final String register;
 
-    private YankOperation() { /* NOP */ }
+    YankOperation(String register) {
+        this.register = register;
+    }
 
     @Override
     public void execute(EditorAdaptor editorAdaptor, TextRange region, ContentType contentType) {
+        if (register != null) {
+            RegisterManager registerManager = editorAdaptor.getRegisterManager();
+            registerManager.setActiveRegister(register);
+        }
         doIt(editorAdaptor, region, contentType, true);
     }
 
@@ -37,6 +46,14 @@ public class YankOperation extends SimpleTextOperation {
         if (contentType == ContentType.LINES && (text.length() == 0 || ! VimUtils.isNewLine(text.substring(text.length()-1)))) {
             text += editorAdaptor.getConfiguration().getNewLine();
         }
+        
+        CursorService cur = editorAdaptor.getCursorService();
+        cur.setMark(CursorService.LAST_CHANGE_START, range.getLeftBound());
+        int exclude = VimUtils.endsWithNewLine(text);
+        if (exclude == 0) {
+            exclude = 1;
+        }
+        cur.setMark(CursorService.LAST_CHANGE_END, range.getRightBound().addModelOffset(-exclude));
         
         RegisterContent content = new StringRegisterContent(contentType, text);
         RegisterManager registerManager = editorAdaptor.getRegisterManager();
@@ -58,7 +75,6 @@ public class YankOperation extends SimpleTextOperation {
         	//if cursor is at beginning of selection, leave it there
         	if(cursor.getModelOffset() != newPos.getModelOffset()) {
         		//move cursor to beginning of selection
-        		editorAdaptor.getCursorService().setPosition(newPos, true);
         		editorAdaptor.getCursorService().setPosition(newPos, true);
         	}
         }

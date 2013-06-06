@@ -2,7 +2,6 @@ package net.sourceforge.vrapper.vim.modes.commandline;
 
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.vim.ConstructorWrappers;
-import net.sourceforge.vrapper.keymap.vim.SimpleKeyStroke;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.modes.AbstractMode;
 import net.sourceforge.vrapper.vim.modes.ModeSwitchHint;
@@ -31,12 +30,11 @@ public abstract class AbstractCommandLineMode extends AbstractMode {
         handleKey(ConstructorWrappers.key(activationChar()));
         for(ModeSwitchHint hint : args) {
         	if(hint == FROM_VISUAL) {
+        	    parser.setFromVisual(true);
         		//display '<,'> to represent visual selection
-        		handleKey(new SimpleKeyStroke('\''));
-        		handleKey(new SimpleKeyStroke('<'));
-        		handleKey(new SimpleKeyStroke(','));
-        		handleKey(new SimpleKeyStroke('\''));
-        		handleKey(new SimpleKeyStroke('>'));
+        	    String buf = parser.getBuffer() + "'<,'>";
+        	    parser.setBuffer(buf);
+        	    editorAdaptor.getUserInterfaceService().setCommandLine(parser.getBuffer(), parser.getPosition());
         	}
         }
     }

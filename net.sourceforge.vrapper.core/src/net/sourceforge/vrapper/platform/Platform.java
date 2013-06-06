@@ -18,4 +18,5 @@ public interface Platform {
     PlatformSpecificStateProvider getPlatformSpecificStateProvider();
     PlatformSpecificModeProvider getPlatformSpecificModeProvider();
     SearchAndReplaceService getSearchAndReplaceService();
+    String getEditorType();
 }
