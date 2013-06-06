@@ -4,6 +4,9 @@ import static net.sourceforge.vrapper.keymap.StateUtils.union;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
+
+import java.util.Queue;
+
 import net.sourceforge.vrapper.eclipse.keymap.AbstractEclipseSpecificStateProvider;
 import net.sourceforge.vrapper.keymap.ConvertingState;
 import net.sourceforge.vrapper.keymap.State;
@@ -14,17 +17,41 @@ import net.sourceforge.vrapper.plugin.surround.commands.FullLineTextObject;
 import net.sourceforge.vrapper.plugin.surround.commands.SpacedDelimitedText;
 import net.sourceforge.vrapper.plugin.surround.state.AddDelimiterState;
 import net.sourceforge.vrapper.plugin.surround.state.ChangeDelimiterState;
+import net.sourceforge.vrapper.plugin.surround.state.DelimiterValues;
+import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.DelimitedText;
 import net.sourceforge.vrapper.vim.commands.SimpleDelimitedText;
 import net.sourceforge.vrapper.vim.commands.TextObject;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
+import net.sourceforge.vrapper.vim.modes.commandline.Evaluator;
 
 public class SurroundStateProvider extends AbstractEclipseSpecificStateProvider {
     public static final PlatformSpecificStateProvider INSTANCE = new SurroundStateProvider();
     
+    protected static class SurroundEvaluator implements Evaluator {
+
+        public Object evaluate(EditorAdaptor vim, Queue<String> command) {
+            try {
+                if (command.size() != 2 || command.peek().length() != 1) {
+                    throw new IllegalArgumentException(":surround expects a character key and a definition");
+                }
+                String key = command.poll();
+                String[] surroundDef = command.poll().replaceAll("(?i)<SPACE>", " ").split("\\\\r");
+                if (surroundDef.length != 2) {
+                    throw new IllegalArgumentException(":surround definition must contain '\\r'");
+                }
+                DelimiterValues.DELIMITER_HOLDERS.addDelimiterHolder(key.charAt(0), surroundDef[0], surroundDef[1]);
+            } catch (Exception e) {
+                vim.getUserInterfaceService().setErrorMessage(e.getMessage());
+            }
+            return null;
+        }
+
+    }
     public SurroundStateProvider() {
         name = "Surround State Provider";
+        commands.add("surround", new SurroundEvaluator());
     }
     
     @Override
