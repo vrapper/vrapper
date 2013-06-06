@@ -483,14 +483,15 @@ public class CommandLineParser extends AbstractCommandParser {
             return new ExCommandEvaluator(mapping, tokens);
         }
         else { //see if there is a partial match
-            String commandName = platformCommands.getNameFromPartial(tokens.peek());
-            if(commandName != null) {
+            String commandName;
+            if(platformCommands != null &&
+                    (commandName = platformCommands.getNameFromPartial(tokens.peek())) != null) {
             	tokens.set(0, commandName);
             	return new ExCommandEvaluator(platformCommands, tokens);
             }
             else {
-            	commandName = mapping.getNameFromPartial(tokens.peek());
-            	if(commandName != null) {
+            	if(mapping != null &&
+            	        (commandName = mapping.getNameFromPartial(tokens.peek())) != null) {
             		tokens.set(0, commandName);
             		return new ExCommandEvaluator(mapping, tokens);
             	}
