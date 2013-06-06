@@ -1,7 +1,7 @@
 package net.sourceforge.vrapper.eclipse.platform;
 
 import net.sourceforge.vrapper.eclipse.ui.ModeContributionItem;
-import net.sourceforge.vrapper.eclipse.ui.StatusLine;
+import net.sourceforge.vrapper.eclipse.ui.CommandLineUIFactory;
 import net.sourceforge.vrapper.platform.UserInterfaceService;
 import net.sourceforge.vrapper.vim.ModeChangeHintReceiver;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
@@ -16,7 +16,7 @@ public class EclipseUserInterfaceService implements UserInterfaceService {
 
     private static final String CONTRIBUTION_ITEM_NAME = "VimInputMode";
 
-    private final StatusLine statusLine;
+    private final CommandLineUIFactory statusLine;
     private final IEditorPart editor;
     private final ITextViewer textViewer;
     private final ModeContributionItem vimInputModeItem;
@@ -43,7 +43,7 @@ public class EclipseUserInterfaceService implements UserInterfaceService {
     public EclipseUserInterfaceService(final IEditorPart editor, final ITextViewer textViewer) {
         this.editor = editor;
         this.textViewer = textViewer;
-        statusLine = new StatusLine(textViewer.getTextWidget());
+        statusLine = new CommandLineUIFactory(textViewer.getTextWidget());
         vimInputModeItem = getContributionItem();
         setEditorMode(VRAPPER_DISABLED);
         editor.getSite().getWorkbenchWindow().getPartService().addPartListener(new PartChangeListener());

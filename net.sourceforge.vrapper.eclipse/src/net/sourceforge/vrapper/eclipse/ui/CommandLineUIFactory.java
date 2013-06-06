@@ -15,7 +15,7 @@ import org.eclipse.swt.widgets.Composite;
  *
  * @author Matthias Radig
  */
-public class StatusLine {
+public class CommandLineUIFactory {
 
     private final static int COMMAND_CHAR_INDENT = 5;
     private int horScroll = 0;
@@ -26,12 +26,11 @@ public class StatusLine {
     private int position = 0;
     private StyledText mStyledText;
 
-    public StatusLine(StyledText textWidget) {
+    public CommandLineUIFactory(StyledText textWidget) {
         this.parent = textWidget;
         mStyledText = new StyledText(parent, SWT.NONE);
         mStyledText.setFont(parent.getFont());
         mStyledText.setMargins(COMMAND_CHAR_INDENT, 3, 3, 3);
-        mStyledText.setLeftMargin(COMMAND_CHAR_INDENT);
         mStyledText.setSize(5, 5);
         mStyledText.setBackground(parent.getBackground());
         mStyledText.setForeground(parent.getForeground());
