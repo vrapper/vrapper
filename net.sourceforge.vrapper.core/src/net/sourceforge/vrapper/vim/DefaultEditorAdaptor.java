@@ -304,14 +304,16 @@ public class DefaultEditorAdaptor implements EditorAdaptor, ModeChangeHintReceiv
             try {
             	currentMode = newMode;
             	newMode.enterMode(args);
-            	userInterfaceService.setEditorMode(newMode.getDisplayName());
+            	//EditorMode might have called changeMode again, so update UI with actual mode.
+            	userInterfaceService.setEditorMode(currentMode.getDisplayName());
             }
             catch(final CommandExecutionException e) {
             	//failed to enter new mode, revert to previous mode
             	//then let Exception bubble up
             	currentMode = oldMode;
             	oldMode.enterMode();
-            	userInterfaceService.setEditorMode(oldMode.getDisplayName());
+            	//EditorMode might have called changeMode again, so update UI with actual mode.
+            	userInterfaceService.setEditorMode(currentMode.getDisplayName());
             	throw e;
             }
         }
