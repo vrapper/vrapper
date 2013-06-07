@@ -10,7 +10,7 @@ public abstract class AbstractCommandLineMode extends AbstractMode {
 
     protected AbstractCommandParser parser;
 
-    protected abstract char activationChar();
+    protected abstract String getPrompt();
 
     protected abstract AbstractCommandParser createParser();
     
@@ -27,16 +27,16 @@ public abstract class AbstractCommandLineMode extends AbstractMode {
     public void enterMode(ModeSwitchHint... args) {
         isEnabled = true;
         parser = createParser();
-        handleKey(ConstructorWrappers.key(activationChar()));
+        parser.setBuffer(getPrompt());
         for(ModeSwitchHint hint : args) {
         	if(hint == FROM_VISUAL) {
         	    parser.setFromVisual(true);
         		//display '<,'> to represent visual selection
         	    String buf = parser.getBuffer() + "'<,'>";
         	    parser.setBuffer(buf);
-        	    editorAdaptor.getUserInterfaceService().setCommandLine(parser.getBuffer(), parser.getPosition());
         	}
         }
+        editorAdaptor.getUserInterfaceService().setCommandLine(parser.getBuffer(), parser.getPosition());
     }
 
     public void leaveMode(ModeSwitchHint... hints) {

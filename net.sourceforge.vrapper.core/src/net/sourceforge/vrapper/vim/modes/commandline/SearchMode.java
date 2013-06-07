@@ -129,8 +129,8 @@ public class SearchMode extends AbstractCommandLineMode {
     }
 
         @Override
-    protected char activationChar() {
-        return forward ? '/' : '?';
+    protected String getPrompt() {
+        return forward ? "/" : "?";
     }
 
     public String getName() {

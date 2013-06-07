@@ -41,8 +41,8 @@ public class PasteRegisterMode extends AbstractCommandLineMode {
 	}
 
 	@Override
-	protected char activationChar() {
-		return '"';
+	protected String getPrompt() {
+		return "\"";
 	}
 
 	@Override

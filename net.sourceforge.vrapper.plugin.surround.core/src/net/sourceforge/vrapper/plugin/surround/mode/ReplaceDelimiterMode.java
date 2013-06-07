@@ -1,7 +1,6 @@
 package net.sourceforge.vrapper.plugin.surround.mode;
 
 import net.sourceforge.vrapper.keymap.KeyMap;
-import net.sourceforge.vrapper.keymap.vim.ConstructorWrappers;
 import net.sourceforge.vrapper.platform.KeyMapProvider;
 import net.sourceforge.vrapper.plugin.surround.state.AbstractDynamicDelimiterHolder;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
@@ -41,8 +40,8 @@ public class ReplaceDelimiterMode extends AbstractCommandLineMode {
     }
     
     @Override
-    protected char activationChar() {
-        return replacement.getTemplate(editorAdaptor, toWrap).charAt(0);
+    protected String getPrompt() {
+        return replacement.getTemplate(editorAdaptor, toWrap);
     }
 
     @Override
@@ -53,10 +52,6 @@ public class ReplaceDelimiterMode extends AbstractCommandLineMode {
             replacement = hint.replacement;
         }
         super.enterMode(args);
-        String replacementTemplate = replacement.getTemplate(editorAdaptor, toWrap);
-        for (int i = 1; i < replacementTemplate.length(); i++) {
-            handleKey(ConstructorWrappers.key(replacementTemplate.charAt(i)));
-        }
     }
 
     @Override

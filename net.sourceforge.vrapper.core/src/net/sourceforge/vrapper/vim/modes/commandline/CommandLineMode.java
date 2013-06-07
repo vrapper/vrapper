@@ -21,8 +21,8 @@ public class CommandLineMode extends AbstractCommandLineMode {
     }
 
     @Override
-    protected char activationChar() {
-        return ':';
+    protected String getPrompt() {
+        return ":";
     }
 
     public String getName() {
