@@ -1,12 +1,12 @@
 package net.sourceforge.vrapper.platform;
 
 /**
- * Implementations of this interface will draw the command line view.
+ * Implementations of this interface will draw the command line.
  * <p>
  * The command line can be user-editable (select, cut / copy / paste) if it was created that
  * way.
  */
-public interface CommandLineView {
+public interface CommandLineUI {
     public void setPrompt(String prompt);
 
     public void setContents(String contents);
