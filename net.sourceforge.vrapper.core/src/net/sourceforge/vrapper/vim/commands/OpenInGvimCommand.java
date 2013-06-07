@@ -13,8 +13,11 @@ public class OpenInGvimCommand extends CountIgnoringNonRepeatableCommand {
 
     public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
     	Position cursor = editorAdaptor.getPosition();
+    	LineInformation line = editorAdaptor.getModelContent().getLineInformationOfOffset(cursor.getModelOffset());
+    	int row = line.getNumber() + 1; //1-based, not 0-based
+    	int col = cursor.getModelOffset() - line.getBeginOffset() + 1; //1-based, not 0-based
     	String gvim = editorAdaptor.getConfiguration().get(Options.GVIM_PATH);
-        editorAdaptor.getFileService().openInGvim(gvim, cursor.getModelOffset() + 1);
+        editorAdaptor.getFileService().openInGvim(gvim, row, col);
     }
 
 }
