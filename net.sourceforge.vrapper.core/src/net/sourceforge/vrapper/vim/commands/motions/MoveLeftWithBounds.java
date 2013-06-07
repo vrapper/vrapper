@@ -39,10 +39,12 @@ public abstract class MoveLeftWithBounds extends MoveWithBounds {
                     break notFound;
                 }
 				if (stopsAtNewlines()) {
-				    int nlSkip = VimUtils.endsWithNewLine(buffer.substring(0, i + 1));
+				    String prefix = buffer.substring(0, i + (shouldStopAtLeftBoundingChar() ? 0 : 1));
+				    int nlSkip = VimUtils.endsWithNewLine(prefix);
 				    if (nlSkip != 0) {
 				        if (lookingAtNL) {
-				            return max(0, offset + 1);
+				            ++offset;
+				            break notFound;
 				        } else {
 				            i -= nlSkip - 1;
 				            offset -= nlSkip - 1;
