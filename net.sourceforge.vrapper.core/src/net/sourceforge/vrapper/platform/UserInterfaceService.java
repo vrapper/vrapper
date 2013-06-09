@@ -78,4 +78,42 @@ public interface UserInterfaceService {
      * Called in CommandBasedMode to determine whether or not to wipe out the Info line text.
      */
     boolean isInfoSet();
+    
+    /**
+     * Editor split direction.
+     */
+    enum SplitDirection
+    {
+        VERTICALLY,
+        HORIZONTALLY
+    }
+    enum SplitMode
+    {
+        CLONE,  // Make a clone of the current editor (vim behavior).
+        MOVE,   // Move current editor into the new split.
+    }
+    /**
+     * Split editor in the specified directions.
+     */
+    void splitEditor(SplitDirection dir, SplitMode mode);
+
+    /**
+     * Position relative to the current editor.
+     */
+    enum Where {
+        UP,
+        DOWN,
+        LEFT,
+        RIGHT,
+    }
+
+    /**
+     * Activate editor positioned relatively to the current editor.
+     */
+    void switchEditor(Where where);
+
+    /**
+     * Move the current editor into the specified adjacent split.
+     */
+    void moveEditor(Where where, SplitMode mode);
 }

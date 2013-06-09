@@ -6,6 +6,7 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.convertKeyS
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.key;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafCtrlBind;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.ctrlKey;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.operatorCmdsWithUpperCase;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.prefixedOperatorCmds;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
@@ -51,6 +52,7 @@ import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.commands.MotionPairTextObject;
 import net.sourceforge.vrapper.vim.commands.MotionTextObject;
+import net.sourceforge.vrapper.vim.commands.MoveEditorCommand;
 import net.sourceforge.vrapper.vim.commands.OptionDependentCommand;
 import net.sourceforge.vrapper.vim.commands.OptionDependentTextObject;
 import net.sourceforge.vrapper.vim.commands.PasteAfterCommand;
@@ -66,8 +68,10 @@ import net.sourceforge.vrapper.vim.commands.SaveCommand;
 import net.sourceforge.vrapper.vim.commands.SetMarkCommand;
 import net.sourceforge.vrapper.vim.commands.SimpleDelimitedText;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
+import net.sourceforge.vrapper.vim.commands.SplitEditorCommand;
 import net.sourceforge.vrapper.vim.commands.StickToEOLCommand;
 import net.sourceforge.vrapper.vim.commands.SwapCaseCommand;
+import net.sourceforge.vrapper.vim.commands.SwitchEditorCommand;
 import net.sourceforge.vrapper.vim.commands.TextObject;
 import net.sourceforge.vrapper.vim.commands.TextOperation;
 import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
@@ -267,6 +271,18 @@ public class NormalMode extends CommandBasedMode {
         final Command repeatSubLine = RepeatLastSubstitutionCommand.CURRENT_LINE_ONLY;
         final Command repeatSubGlobal = RepeatLastSubstitutionCommand.GLOBALLY;
         final Command saveAndClose = new VimCommandSequence(SaveCommand.INSTANCE, CloseCommand.CLOSE);
+        final Command switchEditorDown = SwitchEditorCommand.SWITCH_DOWN;
+        final Command switchEditorUp = SwitchEditorCommand.SWITCH_UP;
+        final Command switchEditorLeft = SwitchEditorCommand.SWITCH_LEFT;
+        final Command switchEditorRight = SwitchEditorCommand.SWITCH_RIGHT;
+        final Command moveEditorDown = MoveEditorCommand.MOVE_DOWN;
+        final Command moveEditorUp = MoveEditorCommand.MOVE_UP;
+        final Command moveEditorLeft = MoveEditorCommand.MOVE_LEFT;
+        final Command moveEditorRight = MoveEditorCommand.MOVE_RIGHT;
+        final Command cloneEditorDown = MoveEditorCommand.CLONE_DOWN;
+        final Command cloneEditorUp = MoveEditorCommand.CLONE_UP;
+        final Command cloneEditorLeft = MoveEditorCommand.CLONE_LEFT;
+        final Command cloneEditorRight = MoveEditorCommand.CLONE_RIGHT;
 
         final Command afterEnteringVisualInc = new OptionDependentCommand<String>(Options.SELECTION, "inclusive",
                 new VisualMotionCommand(moveRight));
@@ -363,6 +379,29 @@ public class NormalMode extends CommandBasedMode {
                         leafCtrlBind('r', redo),
                         leafCtrlBind('a', incrementNum),
                         leafCtrlBind('x', decrementNum),
+                        transitionBind(ctrlKey('w'), state(
+                                leafBind('h', switchEditorLeft),
+                                leafBind('l', switchEditorRight),
+                                leafBind('j', switchEditorDown),
+                                leafBind('k', switchEditorUp),
+                                leafBind(SpecialKey.ARROW_RIGHT, switchEditorRight),
+                                leafBind(SpecialKey.ARROW_LEFT, switchEditorLeft),
+                                leafBind(SpecialKey.ARROW_DOWN, switchEditorDown),
+                                leafBind(SpecialKey.ARROW_UP, switchEditorUp),
+                                leafBind('H', moveEditorLeft),
+                                leafBind('L', moveEditorRight),
+                                leafBind('J', moveEditorDown),
+                                leafBind('K', moveEditorUp),
+                                transitionBind('c',
+                                        leafBind('h', cloneEditorLeft),
+                                        leafBind('l', cloneEditorRight),
+                                        leafBind('j', cloneEditorDown),
+                                        leafBind('k', cloneEditorUp),
+                                        leafBind(SpecialKey.ARROW_RIGHT, cloneEditorRight),
+                                        leafBind(SpecialKey.ARROW_LEFT,  cloneEditorLeft),
+                                        leafBind(SpecialKey.ARROW_DOWN,  cloneEditorDown),
+                                        leafBind(SpecialKey.ARROW_UP,    cloneEditorUp)
+                                        ))),
                         transitionBind('Z',
                             leafBind('Z', saveAndClose),
                             leafBind('Q', (Command)CloseCommand.FORCED_CLOSE)),

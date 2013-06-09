@@ -38,6 +38,9 @@ public class SnapshotTests extends VimTestCase {
             public String getLastErrorValue() { return null; }
             public void setInfoSet(boolean infoSet) { }
             public boolean isInfoSet() { return false; }
+            public void splitEditor(SplitDirection dir, SplitMode mode) { }
+            public void switchEditor(Where where) { }
+            public void moveEditor(Where where, SplitMode mode) { }
         });
         reloadEditorAdaptor();
         adaptor.changeModeSafely(NormalMode.NAME);

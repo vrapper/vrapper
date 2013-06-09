@@ -10,7 +10,10 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.editors,
  org.eclipse.ui.ide,
  org.eclipse.core.resources,
- net.sourceforge.vrapper.core;bundle-version="0.33.20130606";visibility:=reexport
+ net.sourceforge.vrapper.core;bundle-version="0.33.20130606";visibility:=reexport,
+ org.eclipse.e4.ui.model.workbench;bundle-version="0.10.1",
+ org.eclipse.e4.ui.services;bundle-version="0.10.1",
+ org.eclipse.e4.ui.workbench;bundle-version="0.10.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: net.sourceforge.vrapper.eclipse.commands;
   uses:="net.sourceforge.vrapper.vim.commands.motions,
@@ -31,3 +34,7 @@ Export-Package: net.sourceforge.vrapper.eclipse.commands;
    net.sourceforge.vrapper.platform"
 Eclipse-BuddyPolicy: dependent
 Bundle-ActivationPolicy: lazy
+Import-Package: org.eclipse.e4.ui.model.application.ui,
+ org.eclipse.e4.ui.model.application.ui.basic,
+ org.eclipse.e4.ui.services,
+ org.eclipse.e4.ui.workbench.modeling
