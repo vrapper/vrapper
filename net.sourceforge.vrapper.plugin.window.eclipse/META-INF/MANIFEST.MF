@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Vrapper Window Commands for Eclipse
+Bundle-SymbolicName: net.sourceforge.vrapper.plugin.window.eclipse;singleton:=true
+Bundle-Version: 0.33.20130609
+Require-Bundle: net.sourceforge.vrapper.eclipse;bundle-version="0.33.20130609",
+ org.eclipse.e4.ui.model.workbench;bundle-version="0.10.1",
+ org.eclipse.e4.ui.services;bundle-version="0.10.1",
+ org.eclipse.e4.ui.workbench;bundle-version="0.10.1",
+ org.eclipse.ui;bundle-version="3.2.0"
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Import-Package: org.eclipse.e4.ui.model.application.ui,
+ org.eclipse.e4.ui.model.application.ui.basic,
+ org.eclipse.e4.ui.services,
+ org.eclipse.e4.ui.workbench.modeling,
+ org.eclipse.ui,
+ org.eclipse.core.runtime

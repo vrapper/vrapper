@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="net.sourceforge.vrapper.eclipse.pssp">
+      <keymap-provider
+            id="net.sourceforge.vrapper.plugin.window.eclipse.provider."
+            name="Window Commands Support"
+            priority="15"
+            provider-class="net.sourceforge.vrapper.plugin.window.provider.WindowCmdStateProvider">
+      </keymap-provider>
+   </extension>
+
+</plugin>
