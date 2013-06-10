@@ -5,7 +5,9 @@ import java.util.HashMap;
 
 import net.sourceforge.vrapper.core.tests.utils.SnapshotTestsExecutor;
 import net.sourceforge.vrapper.core.tests.utils.VimTestCase;
+import net.sourceforge.vrapper.platform.CommandLineUI;
 import net.sourceforge.vrapper.platform.UserInterfaceService;
+import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
 
@@ -38,6 +40,9 @@ public class SnapshotTests extends VimTestCase {
             public String getLastErrorValue() { return null; }
             public void setInfoSet(boolean infoSet) { }
             public boolean isInfoSet() { return false; }
+            public CommandLineUI createCommandLineUI(EditorAdaptor editorAdaptor) {
+                return null;
+            }
         });
         reloadEditorAdaptor();
         adaptor.changeModeSafely(NormalMode.NAME);

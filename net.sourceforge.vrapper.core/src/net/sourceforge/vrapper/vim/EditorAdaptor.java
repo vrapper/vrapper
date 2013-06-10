@@ -1,6 +1,7 @@
 package net.sourceforge.vrapper.vim;
 
 import net.sourceforge.vrapper.keymap.KeyStroke;
+import net.sourceforge.vrapper.platform.CommandLineUI;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.FileService;
 import net.sourceforge.vrapper.platform.HistoryService;
@@ -64,5 +65,7 @@ public interface EditorAdaptor {
 	void rememberLastActiveSelection();
 	TextObject getLastActiveSelectionArea();
     Selection getLastActiveSelection();
+
+    CommandLineUI getCommandLine();
 }
 

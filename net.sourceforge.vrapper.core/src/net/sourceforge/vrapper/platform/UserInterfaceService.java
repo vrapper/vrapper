@@ -1,5 +1,7 @@
 package net.sourceforge.vrapper.platform;
 
+import net.sourceforge.vrapper.vim.EditorAdaptor;
+
 /**
  * Provides access to vim-like mechanisms for showing information about the
  * editor state: command line, active mode, info and error message.<br>
@@ -78,4 +80,10 @@ public interface UserInterfaceService {
      * Called in CommandBasedMode to determine whether or not to wipe out the Info line text.
      */
     boolean isInfoSet();
+
+    /**
+     * Create a new command line ui.
+     * @param editorAdaptor
+     */
+    CommandLineUI createCommandLineUI(EditorAdaptor editorAdaptor);
 }

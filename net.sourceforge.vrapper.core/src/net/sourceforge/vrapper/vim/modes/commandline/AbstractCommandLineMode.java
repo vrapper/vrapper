@@ -2,12 +2,13 @@ package net.sourceforge.vrapper.vim.modes.commandline;
 
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.vim.ConstructorWrappers;
+import net.sourceforge.vrapper.platform.CommandLineUI;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.modes.AbstractMode;
 import net.sourceforge.vrapper.vim.modes.ModeSwitchHint;
 
 public abstract class AbstractCommandLineMode extends AbstractMode {
-
+    
     protected AbstractCommandParser parser;
 
     protected abstract String getPrompt();
@@ -15,6 +16,7 @@ public abstract class AbstractCommandLineMode extends AbstractMode {
     protected abstract AbstractCommandParser createParser();
     
     public static final ModeSwitchHint FROM_VISUAL = new ModeSwitchHint() { };
+    private CommandLineUI commandLine;
 
     public AbstractCommandLineMode(EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
@@ -26,6 +28,7 @@ public abstract class AbstractCommandLineMode extends AbstractMode {
      */
     public void enterMode(ModeSwitchHint... args) {
         isEnabled = true;
+        commandLine = editorAdaptor.getCommandLine();
         parser = createParser();
         parser.setBuffer(getPrompt());
         for(ModeSwitchHint hint : args) {
@@ -42,6 +45,8 @@ public abstract class AbstractCommandLineMode extends AbstractMode {
     public void leaveMode(ModeSwitchHint... hints) {
         isEnabled = false;
         parser = null;
+        commandLine.close();
+        commandLine = null;
     }
 
     public boolean handleKey(KeyStroke stroke) {

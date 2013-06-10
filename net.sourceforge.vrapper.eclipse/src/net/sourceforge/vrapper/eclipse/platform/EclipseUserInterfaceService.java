@@ -2,7 +2,9 @@ package net.sourceforge.vrapper.eclipse.platform;
 
 import net.sourceforge.vrapper.eclipse.ui.ModeContributionItem;
 import net.sourceforge.vrapper.eclipse.ui.CommandLineUIFactory;
+import net.sourceforge.vrapper.platform.CommandLineUI;
 import net.sourceforge.vrapper.platform.UserInterfaceService;
+import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.ModeChangeHintReceiver;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
 
@@ -16,7 +18,7 @@ public class EclipseUserInterfaceService implements UserInterfaceService {
 
     private static final String CONTRIBUTION_ITEM_NAME = "VimInputMode";
 
-    private final CommandLineUIFactory statusLine;
+    private final CommandLineUIFactory commandLineFactory;
     private final IEditorPart editor;
     private final ITextViewer textViewer;
     private final ModeContributionItem vimInputModeItem;
@@ -43,7 +45,7 @@ public class EclipseUserInterfaceService implements UserInterfaceService {
     public EclipseUserInterfaceService(final IEditorPart editor, final ITextViewer textViewer) {
         this.editor = editor;
         this.textViewer = textViewer;
-        statusLine = new CommandLineUIFactory(textViewer.getTextWidget());
+        commandLineFactory = new CommandLineUIFactory(textViewer.getTextWidget());
         vimInputModeItem = getContributionItem();
         setEditorMode(VRAPPER_DISABLED);
         editor.getSite().getWorkbenchWindow().getPartService().addPartListener(new PartChangeListener());
@@ -51,8 +53,8 @@ public class EclipseUserInterfaceService implements UserInterfaceService {
 
     @Override
     public void setCommandLine(final String content, final int position) {
-        statusLine.setContent(content);
-        statusLine.setCaretPosition(position);
+        commandLineFactory.setContent(content);
+        commandLineFactory.setCaretPosition(position);
     }
 
     @Override
@@ -180,5 +182,10 @@ public class EclipseUserInterfaceService implements UserInterfaceService {
         }
         linkedModeHandler = new LinkedModeHandler(editorAdaptor);
         linkedModeHandler.registerListener(textViewer.getDocument());
+    }
+
+    @Override
+    public CommandLineUI createCommandLineUI(EditorAdaptor editorAdaptor) {
+        return commandLineFactory.createCommandLineUI(editorAdaptor);
     }
 }

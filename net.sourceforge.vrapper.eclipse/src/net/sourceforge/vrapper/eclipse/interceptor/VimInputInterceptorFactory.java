@@ -91,6 +91,10 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
         if(editorAdaptor.getConfiguration().get(Options.EXIT_LINK_MODE)) {
         	platform.setModeChangeHintReceiver(editorAdaptor);
         }
+        return createInterceptor(editorAdaptor);
+    }
+
+    public InputInterceptor createInterceptor(EditorAdaptor editorAdaptor) {
         return new VimInputInterceptor(editorAdaptor);
     }
 

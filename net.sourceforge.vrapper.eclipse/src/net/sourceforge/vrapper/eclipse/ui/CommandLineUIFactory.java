@@ -1,19 +1,28 @@
 package net.sourceforge.vrapper.eclipse.ui;
 
+import net.sourceforge.vrapper.eclipse.interceptor.InputInterceptor;
+import net.sourceforge.vrapper.eclipse.interceptor.VimInputInterceptorFactory;
+import net.sourceforge.vrapper.platform.CommandLineUI;
+import net.sourceforge.vrapper.vim.EditorAdaptor;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.Composite;
 
 /**
- * A PaintListener which paints a line of text at the bottom of a component.
+ * Component responsible for the management of {@link CommandLineUI} instances.
  *
  * @author Matthias Radig
+ * @author Bert Jacobs
  */
 public class CommandLineUIFactory {
 
@@ -22,81 +31,66 @@ public class CommandLineUIFactory {
     private int verScroll = 0;
     private String content = "";
     private final StyledText parent;
-    private Rectangle currentRect;
-    private int position = 0;
-    private StyledText mStyledText;
+    private StyledText commandLineText;
+    private EclipseCommandLineUI commandLineUI;
 
-    public CommandLineUIFactory(StyledText textWidget) {
-        this.parent = textWidget;
-        mStyledText = new StyledText(parent, SWT.NONE);
-        mStyledText.setFont(parent.getFont());
-        mStyledText.setMargins(COMMAND_CHAR_INDENT, 3, 3, 3);
-        mStyledText.setSize(5, 5);
-        mStyledText.setBackground(parent.getBackground());
-        mStyledText.setForeground(parent.getForeground());
-        mStyledText.setWordWrap(true);
-        mStyledText.setEnabled(false);
-        mStyledText.setCaretOffset(2);
-        mStyledText.moveAbove(parent);
-        mStyledText.setVisible(false);
-        mStyledText.addPaintListener(new BorderPaintListener());
+    public CommandLineUIFactory(StyledText parentText) {
+        parent = parentText;
 
+        StyledText widget = new StyledText(parent, SWT.NONE);
+        widget.setFont(parent.getFont());
+        widget.setMargins(COMMAND_CHAR_INDENT, 3, 3, 3);
+        widget.setSize(5, 5);
+        widget.setBackground(parent.getBackground());
+        widget.setForeground(parent.getForeground());
+        widget.setWordWrap(true);
+        widget.setEnabled(true);
+//        widget.setCaretOffset(2);
+        widget.moveAbove(parent);
+        widget.setVisible(false);
+        widget.addPaintListener(new BorderPaintListener());
+        commandLineText = widget;
+        
         parent.addPaintListener(new TextEditorPaintListener());
+        parent.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (commandLineUI != null && commandLineUI.isOpen()) {
+                    commandLineText.forceFocus();
+                }
+            }
+        });
         parent.addDisposeListener(new DisposeListener() {
             @Override
             public void widgetDisposed(DisposeEvent e) {
-                mStyledText.dispose();
+                commandLineText.dispose();
             }
         });
     }
 
+    /**
+     * Listens to the paint events of the editor Vrapper has hooked into.
+     * This allows us to reposition our command line so that it matches the editor.
+     */
     class TextEditorPaintListener implements PaintListener {
         
         public void paintControl(PaintEvent e) {
             if ("".equals(content.trim())) {
-                mStyledText.setVisible(false);
+                commandLineText.setVisible(false);
                 return;
             }
             StyledText parent = (StyledText) e.widget;
-            Rectangle r = parent.getClientArea();
             e.gc.setForeground(parent.getForeground());
             e.gc.setBackground(parent.getBackground());
             int bottom = parent.getBounds().height - parent.getHorizontalBar().getSize().y;
             int right = parent.getBounds().width - parent.getVerticalBar().getSize().x;
-            int height = (int) (e.gc.getFontMetrics().getHeight() * 1.5);
-            int offset = (int) (height / 6.0);
-            Rectangle rect = new Rectangle(0, bottom - height, right-1, height-1);
             // if the scrollbar changed, the whole component must be repaint
             if (horScroll == parent.getHorizontalBar().getSelection()
                     && verScroll == parent.getVerticalBar().getSelection()) {
-                mStyledText.setText(content);
-                Point size = mStyledText.computeSize(right-1, SWT.DEFAULT, true);
-                mStyledText.setSize(right -1, size.y);
-                mStyledText.setLocation(0, bottom - size.y);
-                mStyledText.setVisible(true);
-//            mStyledText.setBounds(rect);
-//            mStyledText.print(e.gc);
-//            e.gc.setLineWidth(1);
-//            e.gc.fillRectangle(rect);
-//            e.gc.drawRectangle(rect);
-//            int x1 = COMMAND_CHAR_INDENT;
-//            e.gc.drawString(content, x1, bottom - height + offset);
-//            // draw the caret
-//            int y1 = bottom - height + offset;
-//            int y2 = y1 + e.gc.getFontMetrics().getHeight();
-//            for (int i = 0; i < position; i++) {
-//                x1 += e.gc.getAdvanceWidth(content.charAt(i));
-//            }
-//            
-//            if(position == content.length()) {
-//            	//if cursor is on last position, draw a rectangle
-//            	//(matches vim behavior)
-//            	e.gc.setBackground(parent.getForeground()); //black rectangle
-//            	e.gc.fillRectangle(x1, y1, e.gc.getFontMetrics().getAverageCharWidth(), e.gc.getFontMetrics().getHeight());
-//            }
-//            else { //draw a caret between characters
-//            	e.gc.drawLine(x1, y1, x1, y2);
-//            }
+                Point size = commandLineText.computeSize(right-1, SWT.DEFAULT, true);
+                commandLineText.setSize(right -1, size.y);
+                commandLineText.setLocation(0, bottom - size.y);
+//                commandLineText.setVisible(true);
             } else {
                 parent.redraw();
                 horScroll = parent.getHorizontalBar().getSelection();
@@ -105,6 +99,70 @@ public class CommandLineUIFactory {
         }
     }
     
+    protected static class EclipseCommandLineUI implements CommandLineUI {
+
+        private StyledText commandLineText;
+        private boolean opened;
+
+        public EclipseCommandLineUI(StyledText commandLineText, EditorAdaptor target) {
+            this.commandLineText = commandLineText;
+            InputInterceptor interceptor = VimInputInterceptorFactory.INSTANCE.createInterceptor(target);
+            commandLineText.addVerifyKeyListener(interceptor);
+            commandLineText.addKeyListener(new KeyAdapter() {
+                @Override
+                public void keyPressed(KeyEvent e) {
+                    super.keyPressed(e);
+                }
+            });
+        }
+
+        public boolean isOpen() {
+            return opened;
+        }
+
+        @Override
+        public void setPrompt(String prompt) {
+            
+        }
+
+        @Override
+        public void setContents(String contents) {
+            // TODO Auto-generated method stub
+            
+        }
+
+        @Override
+        public String getContents() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        public String getFullContents() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        public void append(String characters) {
+            // TODO Auto-generated method stub
+            
+        }
+
+        public void open() {
+            commandLineText.setVisible(true);
+            commandLineText.setFocus();
+            opened = true;
+        }
+
+        @Override
+        public void close() {
+            commandLineText.setVisible(false);
+            opened = false;
+        }
+
+    }
+
     /** Draws a rectangle inside the client area. This is used to draw in the same color as the text
      *  because SWT.BORDER style uses a system-defined color.
      */
@@ -134,12 +192,8 @@ public class CommandLineUIFactory {
      */
     public void setContent(String content) {
         this.content = content;
-        if (currentRect != null) {
-            parent.redraw(currentRect.x, currentRect.y, currentRect.width,
-                    currentRect.height, true);
-        } else {
-            parent.redraw();
-        }
+        commandLineText.setText(content);
+//        commandLineUI.setContents(content);
     }
 
     /** Set the position of the caret in characters.
@@ -147,6 +201,15 @@ public class CommandLineUIFactory {
      * @param position the position of the caret in characters.
      */
     public void setCaretPosition(int position) {
-        this.position = position;
+//        commandLineText.setCaretOffset(position);
+    }
+
+    public CommandLineUI createCommandLineUI(EditorAdaptor editorAdaptor) {
+        if (commandLineUI == null) {
+            commandLineUI = new EclipseCommandLineUI(commandLineText, editorAdaptor);
+        }
+        commandLineUI.open();
+        parent.redraw();
+        return commandLineUI;
     }
 }

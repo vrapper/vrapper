@@ -17,6 +17,7 @@ import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.vim.SimpleKeyStroke;
 import net.sourceforge.vrapper.log.VrapperLog;
+import net.sourceforge.vrapper.platform.CommandLineUI;
 import net.sourceforge.vrapper.platform.Configuration.Option;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.FileService;
@@ -565,6 +566,11 @@ public class DefaultEditorAdaptor implements EditorAdaptor, ModeChangeHintReceiv
 
     public String getEditorType() {
         return editorType;
+    }
+
+    @Override
+    public CommandLineUI getCommandLine() {
+        return userInterfaceService.createCommandLineUI(this);
     }
 
 }
