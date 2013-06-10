@@ -3,8 +3,8 @@ package net.sourceforge.vrapper.vim.modes;
 import static net.sourceforge.vrapper.keymap.StateUtils.union;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.ctrlKey;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.key;
-import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafCtrlBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafCtrlBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.dontRepeat;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
@@ -32,21 +32,17 @@ import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.CountIgnoringNonRepeatableCommand;
-import net.sourceforge.vrapper.vim.commands.DeleteOperation;
 import net.sourceforge.vrapper.vim.commands.InsertAdjacentCharacter;
 import net.sourceforge.vrapper.vim.commands.InsertLineCommand;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
-import net.sourceforge.vrapper.vim.commands.MotionTextObject;
 import net.sourceforge.vrapper.vim.commands.PasteBeforeCommand;
 import net.sourceforge.vrapper.vim.commands.PasteRegisterCommand;
 import net.sourceforge.vrapper.vim.commands.SwitchRegisterCommand;
-import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
 import net.sourceforge.vrapper.vim.commands.VimCommandSequence;
 import net.sourceforge.vrapper.vim.commands.motions.LineStartMotion;
 import net.sourceforge.vrapper.vim.commands.motions.Motion;
 import net.sourceforge.vrapper.vim.commands.motions.MoveLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordLeft;
-import net.sourceforge.vrapper.vim.modes.commandline.AbstractCommandLineMode;
 import net.sourceforge.vrapper.vim.modes.commandline.CommandLineMode;
 import net.sourceforge.vrapper.vim.modes.commandline.PasteRegisterMode;
 import net.sourceforge.vrapper.vim.register.Register;
@@ -69,6 +65,7 @@ public class InsertMode extends AbstractMode {
     public static final KeyStroke CTRL_O = ctrlKey('o');
     public static final KeyStroke CTRL_U = ctrlKey('u');
     public static final KeyStroke CTRL_W = ctrlKey('w');
+    public static final KeyStroke CTRL_X = ctrlKey('x');
 
     protected State<Command> currentState = buildState();
 
@@ -282,6 +279,8 @@ public class InsertMode extends AbstractMode {
 			//move to "paste register" mode, but don't actually perform the
 			//"leave insert mode" operations
 			editorAdaptor.changeModeSafely(PasteRegisterMode.NAME, RESUME_ON_MODE_ENTER);
+		} else if (stroke.equals(CTRL_X)) {
+			editorAdaptor.changeModeSafely(InsertExpandMode.NAME, RESUME_ON_MODE_ENTER);
 		} else if (stroke.equals(CTRL_O)) {
 		    //perform a single NormalMode command then return to InsertMode
 		    editorAdaptor.changeModeSafely(NormalMode.NAME, RETURN_TO_INSERTMODE);

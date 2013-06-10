@@ -40,6 +40,7 @@ import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.modes.BlockwiseVisualMode;
 import net.sourceforge.vrapper.vim.modes.EditorMode;
+import net.sourceforge.vrapper.vim.modes.InsertExpandMode;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
 import net.sourceforge.vrapper.vim.modes.LinewiseVisualMode;
 import net.sourceforge.vrapper.vim.modes.ModeSwitchHint;
@@ -148,6 +149,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor, ModeChangeHintReceiv
                 new LinewiseVisualMode(self),
                 new BlockwiseVisualMode(self),
                 new InsertMode(self),
+                new InsertExpandMode(self),
                 new ReplaceMode(self),
                 new CommandLineMode(self),
                 new SearchMode(self),
