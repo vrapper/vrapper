@@ -120,7 +120,7 @@ public class AbstractEclipseSpecificStateProvider implements
         return keyMaps.get(name);
     }
 
-    public EvaluatorMapping getCommands() {
+    public final EvaluatorMapping getCommands() {
         return commands;
     }
 
