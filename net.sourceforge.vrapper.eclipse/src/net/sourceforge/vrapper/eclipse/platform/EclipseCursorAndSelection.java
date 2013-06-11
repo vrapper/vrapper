@@ -182,7 +182,6 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
             textViewer.setSelectedRange(point.x, 0);
             selection = null;
         } else {
-            textViewer.getTextWidget().setCaretOffset(newSelection.getStart().getViewOffset());
             final int from = newSelection.getStart().getModelOffset();
             int length = !newSelection.isReversed() ? newSelection.getModelLength() : -newSelection.getModelLength();
             // linewise selection includes final newline, this means the cursor
