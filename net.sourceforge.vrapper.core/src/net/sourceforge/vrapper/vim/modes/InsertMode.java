@@ -102,6 +102,7 @@ public class InsertMode extends AbstractMode {
     @Override
     public void enterMode(final ModeSwitchHint... args) throws CommandExecutionException {
         boolean initMode = !resumeOnEnter;
+        resumeOnEnter = false;
     	boolean lockHistory = true;
         for (final ModeSwitchHint hint: args) {
         	if(hint == DONT_LOCK_HISTORY) {
