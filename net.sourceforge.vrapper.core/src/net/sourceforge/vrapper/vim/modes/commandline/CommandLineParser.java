@@ -407,7 +407,7 @@ public class CommandLineParser extends AbstractCommandParser {
         
         /** First, check for all operations which are not whitespace-delimited **/
        
-        //not a number but starts with a number, $, /, ?, +, -, ', . (dot), or , (comma)
+        //not a number but starts with a number, %, $, /, ?, +, -, ', . (dot), or , (comma)
         //might be a line range operation
         if(command.length() > 1 && LineRangeOperationCommand.isLineRangeOperation(command))
         {
@@ -521,14 +521,6 @@ public class CommandLineParser extends AbstractCommandParser {
 				new SubstitutionOperation(command), new SimpleSelection(null)
     		);
     	}
-    	else if(command.startsWith("%s")) { //global substitution
-    		Position start = editor.getCursorService().newPositionForModelOffset( 0 );
-    		Position end = editor.getCursorService().newPositionForModelOffset( editor.getModelContent().getTextLength() );
-    		return new TextOperationTextObjectCommand(
-				new SubstitutionOperation(command), new LineWiseSelection(editor, start, end)
-    		);
-    	}
-    	
     	//not a substitution
     	return null;
     }

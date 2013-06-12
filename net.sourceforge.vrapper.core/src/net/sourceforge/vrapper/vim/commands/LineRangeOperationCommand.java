@@ -92,12 +92,18 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
             }
             operationStr = matchingRe.group(5);
         }
-        //if range not defined, assume current position
-        if(startStr.length() == 0 || startStr.startsWith("+") || startStr.startsWith("-") ) {
-            startStr = "." + startStr;
-        }
-        if(stopStr.length() == 0 || stopStr.startsWith("+") || stopStr.startsWith("-") ) {
-            stopStr = "." + stopStr;
+        // % is a shortcut for 0,$
+        if (startStr.equals("%")) {
+            startStr = "0";
+            stopStr  = "$";
+        } else {
+            //if range not defined, assume current position
+            if(startStr.length() == 0 || startStr.startsWith("+") || startStr.startsWith("-") ) {
+                startStr = "." + startStr;
+            }
+            if(stopStr.length() == 0 || stopStr.startsWith("+") || stopStr.startsWith("-") ) {
+                stopStr = "." + stopStr;
+            }
         }
     }
     	
