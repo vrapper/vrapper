@@ -291,10 +291,10 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
 				final int offset = e.caretOffset;
 	            StyledText textWidget = textViewer.getTextWidget();
                 stickyColumn = textWidget.getLocationAtOffset(offset).x + textWidget.getHorizontalPixel();
-				// if the user clicks to the right of the line end
-				// (i.e. the newline is selected) stick to EOL
 				final LineInformation line = textContent.getViewContent().getLineInformationOfOffset(offset);
-	            stickToEOL = offset >= line.getEndOffset();
+				if (stickToEOL && offset < line.getEndOffset()) {
+				    stickToEOL = false;
+				}
 			}
 		}
 
