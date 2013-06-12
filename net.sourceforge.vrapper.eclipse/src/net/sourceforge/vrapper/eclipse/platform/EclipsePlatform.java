@@ -69,7 +69,7 @@ public class EclipsePlatform implements Platform {
         keyMapProvider = new DefaultKeyMapProvider();
         underlyingEditorSettings = new AbstractTextEditorSettings(
                 abstractTextEditor);
-        searchAndReplaceService = new EclipseSearchAndReplaceService(abstractTextEditor, textViewer);
+        searchAndReplaceService = new EclipseSearchAndReplaceService(abstractTextEditor, textViewer, sharedConfiguration);
         if (textViewer instanceof ITextViewerExtension6) {
             final IUndoManager delegate = ((ITextViewerExtension6) textViewer)
                     .getUndoManager();

@@ -5,11 +5,14 @@ import java.util.Collections;
 import java.util.List;
 
 import net.sourceforge.vrapper.log.VrapperLog;
+import net.sourceforge.vrapper.platform.Configuration;
 import net.sourceforge.vrapper.platform.SearchAndReplaceService;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Search;
 import net.sourceforge.vrapper.utils.SearchResult;
+import net.sourceforge.vrapper.utils.StringUtils;
+import net.sourceforge.vrapper.vim.Options;
 
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.FindReplaceDocumentAdapter;
@@ -26,13 +29,15 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
     private static final String ANNOTATION_TYPE = "net.sourceforge.vrapper.eclipse.searchhighlight";
     private final AbstractTextEditor editor;
     private final FindReplaceDocumentAdapter adapter;
+    final Configuration sharedConfiguration;
     private Search lastHighlightedSearch;
     private List<Annotation> annotations;
     private Annotation incSearchAnnotation;
 
-    public EclipseSearchAndReplaceService(AbstractTextEditor editor, ITextViewer textViewer) {
+    public EclipseSearchAndReplaceService(AbstractTextEditor editor, ITextViewer textViewer, final Configuration sharedConfiguration) {
         this.editor = editor;
         this.adapter = new FindReplaceDocumentAdapter(textViewer.getDocument());
+        this.sharedConfiguration = sharedConfiguration;
         this.annotations = Collections.emptyList();
     }
 
@@ -50,8 +55,15 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
     public int replace(LineInformation line, String toFind, String replace, String flags) {
     	int start = line.getBeginOffset();
     	int end = line.getEndOffset();
-    	boolean replaceAll = flags.contains("g");
-    	boolean caseSensitive = !flags.contains("i");
+    	final boolean replaceAll = flags.contains("g");
+        boolean caseSensitive = !sharedConfiguration.get(Options.IGNORE_CASE)
+            || (sharedConfiguration.get(Options.SMART_CASE)
+                && StringUtils.containsUppercase(toFind));
+        if (flags.contains("i"))
+            caseSensitive = false;
+        if (flags.contains("I"))
+            caseSensitive = true;
+
     	//each time we perform a replace,
     	//how many characters will be added/removed?
     	int lengthDiff = replace.length() - toFind.length();
