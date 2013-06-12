@@ -1,4 +1,4 @@
-package net.sourceforge.vrapper.plugin.window.provider;
+package net.sourceforge.vrapper.plugin.splitEditor.provider;
 
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.ctrlKey;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
@@ -7,9 +7,9 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionB
 import net.sourceforge.vrapper.eclipse.keymap.AbstractEclipseSpecificStateProvider;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.State;
-import net.sourceforge.vrapper.plugin.window.commands.MoveEditorCommand;
-import net.sourceforge.vrapper.plugin.window.commands.SplitEditorCommand;
-import net.sourceforge.vrapper.plugin.window.commands.SwitchEditorCommand;
+import net.sourceforge.vrapper.plugin.splitEditor.commands.MoveEditorCommand;
+import net.sourceforge.vrapper.plugin.splitEditor.commands.SplitEditorCommand;
+import net.sourceforge.vrapper.plugin.splitEditor.commands.SwitchEditorCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
 
 public class WindowCmdStateProvider extends AbstractEclipseSpecificStateProvider {

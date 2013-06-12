@@ -4,10 +4,10 @@
    <extension
          point="net.sourceforge.vrapper.eclipse.pssp">
       <keymap-provider
-            id="net.sourceforge.vrapper.plugin.window.eclipse.provider."
-            name="Window Commands Support"
+            id="net.sourceforge.vrapper.plugin.splitEditor.eclipse.provider."
+            name="Split Editor Commands Support"
             priority="15"
-            provider-class="net.sourceforge.vrapper.plugin.window.provider.WindowCmdStateProvider">
+            provider-class="net.sourceforge.vrapper.plugin.splitEditor.provider.WindowCmdStateProvider">
       </keymap-provider>
    </extension>
 

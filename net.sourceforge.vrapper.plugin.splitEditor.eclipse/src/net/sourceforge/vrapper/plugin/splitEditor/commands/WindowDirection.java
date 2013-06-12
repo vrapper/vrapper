@@ -1,4 +1,4 @@
-package net.sourceforge.vrapper.plugin.window.commands;
+package net.sourceforge.vrapper.plugin.splitEditor.commands;
 
 /**
  * Position relative to the current editor.

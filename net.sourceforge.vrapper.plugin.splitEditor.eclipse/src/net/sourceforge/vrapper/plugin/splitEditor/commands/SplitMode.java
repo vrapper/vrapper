@@ -1,4 +1,4 @@
-package net.sourceforge.vrapper.plugin.window.commands;
+package net.sourceforge.vrapper.plugin.splitEditor.commands;
 
 public enum SplitMode {
     /** Make a clone of the current editor (vim behavior). */

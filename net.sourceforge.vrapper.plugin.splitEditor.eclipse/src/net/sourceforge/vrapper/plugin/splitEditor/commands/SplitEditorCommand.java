@@ -1,4 +1,4 @@
-package net.sourceforge.vrapper.plugin.window.commands;
+package net.sourceforge.vrapper.plugin.splitEditor.commands;
 
 import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.UserInterfaceService;
