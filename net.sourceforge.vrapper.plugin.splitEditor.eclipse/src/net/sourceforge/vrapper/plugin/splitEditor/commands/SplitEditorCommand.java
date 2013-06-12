@@ -23,17 +23,17 @@ import org.eclipse.ui.PartInitException;
 // Eclipse 4 API version 0.10.1 bundled with Eclipse 4.2.1 is considered provisional.
 @SuppressWarnings("restriction")
 public class SplitEditorCommand extends AbstractWindowCommand {
-    public static final AbstractWindowCommand VSPLIT = new SplitEditorCommand(SplitDirection.VERTICALLY, SplitMode.CLONE);
-    public static final AbstractWindowCommand HSPLIT = new SplitEditorCommand(SplitDirection.HORIZONTALLY, SplitMode.CLONE);
-    public static final AbstractWindowCommand VSPLIT_MOVE = new SplitEditorCommand(SplitDirection.VERTICALLY, SplitMode.MOVE);
-    public static final AbstractWindowCommand HSPLIT_MOVE = new SplitEditorCommand(SplitDirection.HORIZONTALLY, SplitMode.MOVE);
+    public static final AbstractWindowCommand VSPLIT = new SplitEditorCommand(SplitDirection.VERTICALLY, SplitMode.CLONE, SplitContainer.SHARED_AREA);
+    public static final AbstractWindowCommand HSPLIT = new SplitEditorCommand(SplitDirection.HORIZONTALLY, SplitMode.CLONE, SplitContainer.SHARED_AREA);
 
     private final SplitDirection direction;
     private final SplitMode mode;
+    private final SplitContainer containerMode;
 
-    private SplitEditorCommand(SplitDirection dir, SplitMode mode) {
+    public SplitEditorCommand(SplitDirection dir, SplitMode mode, SplitContainer containerMode) {
         this.direction = dir;
         this.mode = mode;
+        this.containerMode = containerMode;
     }
 
     public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
@@ -58,7 +58,8 @@ public class SplitEditorCommand extends AbstractWindowCommand {
         MUIElement parent = neighbour.getParent();
         while (parent != null
                 && (  !(parent instanceof MPartSashContainer)
-                    || (parent instanceof MArea))) {
+                        // NOTE: MArea is an instance of MPartSashContainer
+                    || (parent instanceof MArea && containerMode == SplitContainer.TOP_LEVEL))) {
             neighbour = parent;
             parent = neighbour.getParent();
             if (parent == null) {
@@ -78,6 +79,9 @@ public class SplitEditorCommand extends AbstractWindowCommand {
         // Move or clone the editor into a new Stack.
         //
         MPartStack newStack = MBasicFactory.INSTANCE.createPartStack();
+        // Copy tags from the original stack to make it more like the one
+        // create by Eclipse.
+        newStack.getTags().addAll(editorStack.getTags());
         MPart newPart = null;
         if (mode == SplitMode.CLONE) {
             try {
@@ -100,9 +104,10 @@ public class SplitEditorCommand extends AbstractWindowCommand {
 
         //
         // Do we need a new sash or can we extend the existing one?
+        // NOTE: MArea always needs a sash.
         //
         boolean isHorizontal = direction != SplitDirection.HORIZONTALLY;
-        if (isHorizontal == editorSash.isHorizontal()) {
+        if (isHorizontal == editorSash.isHorizontal() && !(editorSash instanceof MArea)) {
             //
             // We just need to add to the existing sash.
             //
