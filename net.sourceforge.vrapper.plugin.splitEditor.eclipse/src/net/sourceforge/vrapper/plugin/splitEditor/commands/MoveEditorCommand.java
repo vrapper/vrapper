@@ -41,7 +41,6 @@ public class MoveEditorCommand extends AbstractWindowCommand {
         IWorkbenchPartSite site = getEditorSite();
         EPartService psvc = (EPartService) site.getService(EPartService.class);
         MPartStack stack = findAdjacentStack(site, direction);
-        EModelService svc = (EModelService) site.getService(EModelService.class);
         MPart p = (MPart) site.getService(MPart.class);
         MElementContainer<MUIElement> editorStack = p.getParent();
 
