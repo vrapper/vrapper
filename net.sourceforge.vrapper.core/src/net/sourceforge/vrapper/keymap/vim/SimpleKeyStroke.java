@@ -18,7 +18,7 @@ public class SimpleKeyStroke implements KeyStroke {
     }
 
     public SimpleKeyStroke(SpecialKey key, boolean shiftKey, boolean altKey) {
-        this.character = '\0';
+        this.character = SPECIAL_KEY;
         this.specialKey = key;
         this.shiftKey = shiftKey;
         this.altKey = altKey;

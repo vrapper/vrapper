@@ -570,7 +570,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor, ModeChangeHintReceiv
 
     @Override
     public CommandLineUI getCommandLine() {
-        return userInterfaceService.createCommandLineUI(this);
+        return userInterfaceService.getCommandLineUI(this);
     }
 
 }

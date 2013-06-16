@@ -4,9 +4,9 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.StringTokenizer;
 
+import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.platform.Configuration.Option;
 import net.sourceforge.vrapper.utils.ContentType;
-import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Search;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
@@ -20,7 +20,6 @@ import net.sourceforge.vrapper.vim.commands.EditFileCommand;
 import net.sourceforge.vrapper.vim.commands.ExCommandOperation;
 import net.sourceforge.vrapper.vim.commands.FindFileCommand;
 import net.sourceforge.vrapper.vim.commands.LineRangeOperationCommand;
-import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.commands.OpenInGvimCommand;
 import net.sourceforge.vrapper.vim.commands.ReadExternalOperation;
@@ -34,7 +33,6 @@ import net.sourceforge.vrapper.vim.commands.SetOptionCommand;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 import net.sourceforge.vrapper.vim.commands.SortOperation;
 import net.sourceforge.vrapper.vim.commands.SubstitutionOperation;
-import net.sourceforge.vrapper.vim.commands.TextObject;
 import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
 import net.sourceforge.vrapper.vim.commands.UndoCommand;
 import net.sourceforge.vrapper.vim.commands.VimCommandSequence;
@@ -52,6 +50,8 @@ import net.sourceforge.vrapper.vim.modes.VisualMode;
 public class CommandLineParser extends AbstractCommandParser {
 
     private static final EvaluatorMapping mapping;
+    private final FilePathTabCompletion tabComplete;
+
     static {
         Evaluator noremap = new KeyMapper.Map(false,
                 AbstractVisualMode.KEYMAP_NAME, NormalMode.KEYMAP_NAME);
@@ -320,6 +320,7 @@ public class CommandLineParser extends AbstractCommandParser {
 
     public CommandLineParser(EditorAdaptor vim) {
         super(vim);
+        this.tabComplete = new FilePathTabCompletion(vim);
     }
 
     class LineRangeExCommandEvaluator implements Command {
@@ -384,6 +385,35 @@ public class CommandLineParser extends AbstractCommandParser {
 
     };
 
+    @Override
+    protected String completeArgument(String commandLineContents, KeyStroke e) {
+        int cmdLen = 0;
+        boolean paths = false;
+        boolean dirsOnly = false;
+        if (commandLineContents.toString().startsWith("e ")) {
+            cmdLen = 3;
+        } else {
+            if(commandLineContents.toString().startsWith("find ") ||
+                    commandLineContents.toString().startsWith("tabf ") ) {
+                cmdLen = 6;
+                paths = true;
+            } else {
+                if(commandLineContents.toString().startsWith("cd ")) {
+                    cmdLen = 4;
+                    dirsOnly = true;
+                }
+            }
+        }
+        if (cmdLen > 0) {
+            String cmd = commandLineContents.substring(0, cmdLen);
+            String prefix = commandLineContents.substring(cmdLen);
+            prefix = tabComplete.getNextMatch(prefix, paths, dirsOnly, e.withShiftKey());
+            return cmd + prefix;
+        } else {
+            // user hit TAB for no reason
+        }
+        return null;
+    }
     @Override
     public Command parseAndExecute(String first, String command) {
         try {

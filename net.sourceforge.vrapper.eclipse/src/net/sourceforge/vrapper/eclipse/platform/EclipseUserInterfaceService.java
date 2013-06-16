@@ -52,12 +52,6 @@ public class EclipseUserInterfaceService implements UserInterfaceService {
     }
 
     @Override
-    public void setCommandLine(final String content, final int position) {
-        commandLineFactory.setContent(content);
-        commandLineFactory.setCaretPosition(position);
-    }
-
-    @Override
     public void setEditorMode(final String modeName) {
         currentModeName = modeName.toUpperCase();
         currentMode = "-- " + modeName + " --";
@@ -185,7 +179,7 @@ public class EclipseUserInterfaceService implements UserInterfaceService {
     }
 
     @Override
-    public CommandLineUI createCommandLineUI(EditorAdaptor editorAdaptor) {
+    public CommandLineUI getCommandLineUI(EditorAdaptor editorAdaptor) {
         return commandLineFactory.createCommandLineUI(editorAdaptor);
     }
 }

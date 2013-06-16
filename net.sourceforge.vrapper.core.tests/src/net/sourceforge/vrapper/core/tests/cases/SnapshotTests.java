@@ -40,7 +40,7 @@ public class SnapshotTests extends VimTestCase {
             public String getLastErrorValue() { return null; }
             public void setInfoSet(boolean infoSet) { }
             public boolean isInfoSet() { return false; }
-            public CommandLineUI createCommandLineUI(EditorAdaptor editorAdaptor) {
+            public CommandLineUI getCommandLineUI(EditorAdaptor editorAdaptor) {
                 return null;
             }
         });

@@ -15,11 +15,6 @@ public interface UserInterfaceService {
     static final String VRAPPER_DISABLED = "vrapper disabled";
 
     /**
-     * The command line is used for showing the currently typed command or search.
-     */
-    void setCommandLine(String content, int position);
-
-    /**
      * Indicates the current mode of the editor.
      */
     void setEditorMode(String modeName);
@@ -85,5 +80,5 @@ public interface UserInterfaceService {
      * Create a new command line ui.
      * @param editorAdaptor
      */
-    CommandLineUI createCommandLineUI(EditorAdaptor editorAdaptor);
+    CommandLineUI getCommandLineUI(EditorAdaptor editorAdaptor);
 }

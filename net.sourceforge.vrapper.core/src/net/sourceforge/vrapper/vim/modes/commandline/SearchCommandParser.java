@@ -95,8 +95,8 @@ public class SearchCommandParser extends AbstractCommandParser {
 
 	/** Parses the (partial) buffer and returns only the keyword part. */
 	public String getKeyWord() {
-        String first = buffer.substring(0,1);
-        String command = buffer.substring(1, buffer.length());
+        String first = commandLine.getPrompt();
+        String command = commandLine.getContents();
 	    return parseKeyWord(first, command, new StringTokenizer(command, first));
 	}
 

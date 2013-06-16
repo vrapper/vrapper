@@ -9,6 +9,8 @@ import java.util.HashMap;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.vim.SimpleKeyStroke;
+import net.sourceforge.vrapper.platform.CommandLineUI;
+import net.sourceforge.vrapper.platform.CommandLineUI.CommandLineMode;
 import net.sourceforge.vrapper.platform.Platform;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
@@ -17,7 +19,6 @@ import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
 import net.sourceforge.vrapper.vim.modes.ExecuteCommandHint;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
-import net.sourceforge.vrapper.vim.register.RegisterManager;
 
 /**
  * Base class for modes which parse strings given by the user.<br>
@@ -44,16 +45,16 @@ public abstract class AbstractCommandParser {
     protected static final KeyStroke KEY_END     = key(SpecialKey.END);
     protected static final SpecialKey KEY_TAB    = SpecialKey.TAB;
     protected static final SpecialKey KEY_INSERT = SpecialKey.INSERT;
-    protected final StringBuffer buffer;
+
     protected final EditorAdaptor editor;
+    private boolean pasteRegister = false;
+    protected CommandLineUI commandLine;
     private final CommandLineHistory history = CommandLineHistory.INSTANCE;
-    private final FilePathTabCompletion tabComplete;
+
     private boolean modified;
-    private int position;
     private boolean isFromVisual = false;
-    protected boolean pasteRegister = false;
     private boolean isCommandLineHistoryEnabled = true;
-    
+
     private interface KeyHandler {
         public void handleKey();
     }
@@ -61,60 +62,58 @@ public abstract class AbstractCommandParser {
     {
         editMap.put(KEY_UP, new KeyHandler() { public void handleKey() {
             if (modified)
-                history.setTemp(getCommand());
+                history.setTemp(commandLine.getContents());
             String previous = history.getPrevious();
             setCommandFromHistory(previous);
         }});
         editMap.put(KEY_DOWN, new KeyHandler() { public void handleKey() {
             if (modified)
-                history.setTemp(getCommand());
+                history.setTemp(commandLine.getContents());
             String next = history.getNext();
             setCommandFromHistory(next);
         }});
         editMap.put(KEY_BACKSP, new KeyHandler() { public void handleKey() {
-            if (position > 1) {
-                buffer.replace(position - 1, position, "");
-                modified = true;
-                position--;
+            if (commandLine.getContents().length() == 0) {
+                editor.changeModeSafely(NormalMode.NAME);
+            } else {
+                commandLine.erase();
             }
+            modified = true;
         }});
         editMap.put(KEY_LEFT, new KeyHandler() { public void handleKey() {
-            position = position > 1 ? position - 1 : position;
+            commandLine.addOffsetToPosition(-1);
         }});
         editMap.put(KEY_RIGHT, new KeyHandler() { public void handleKey() {
-            position = position != buffer.length() ? position + 1 : buffer.length();
+            commandLine.addOffsetToPosition(1);
         }});
         editMap.put(KEY_DELETE, new KeyHandler() { public void handleKey() {
-            buffer.replace(position, position + 1, "");
+            commandLine.delete();
             modified = true;
         }});
         editMap.put(KEY_CTRL_R, new KeyHandler() { public void handleKey() {
+            commandLine.setMode(CommandLineMode.REGISTER);
             pasteRegister = true;
-            buffer.insert(position, '"');
             modified = true;
         }});
         editMap.put(KEY_HOME, new KeyHandler() { public void handleKey() {
-            position = 1;
+            commandLine.setPosition(0);
         }});
         editMap.put(KEY_END, new KeyHandler() { public void handleKey() {
-            position = buffer.length();
+            commandLine.setPosition(commandLine.getEndPosition());
         }});
         editMap.put(KEY_CTRL_W, new KeyHandler() { public void handleKey() {
             deleteWordBack();
         }});
         editMap.put(KEY_CTRL_U, new KeyHandler() { public void handleKey() {
-            buffer.replace(1, position, "");
+            commandLine.replace(0, commandLine.getPosition(), "");
+            commandLine.setPosition(0);
             modified = true;
-            position = 1;
         }});
     }
 
 
     public AbstractCommandParser(EditorAdaptor vim) {
         this.editor = vim;
-        this.tabComplete = new FilePathTabCompletion(this.editor);
-        buffer = new StringBuffer();
-        position = 0;
         modified = false;
         history.setMode(editor.getCurrentModeName());
     }
@@ -127,11 +126,6 @@ public abstract class AbstractCommandParser {
      */
     public void type(KeyStroke e) {
         Command c = null;
-        if (pasteRegister) {
-            // remove " placed by C-R
-            buffer.replace(position, position + 1, "");
-            modified = true;
-        }
         KeyHandler mappedHandler = editMap.get(e);
         if (mappedHandler != null) {
             mappedHandler.handleKey();
@@ -148,115 +142,85 @@ public abstract class AbstractCommandParser {
                     e = new SimpleKeyStroke(DefaultRegisterManager.REGISTER_NAME_CLIPBOARD.charAt(0));
                 } else {
                     if (e.getSpecialKey() == KEY_TAB) { //tab-completion for filenames
-                        completeArgument(e);
+                        String completed = completeArgument(commandLine.getContents(), e);
+                        if (completed != null) {
+                            commandLine.resetContents(completed);
+                        }
                         pasteRegister = false;
                         return;
                     }
                 }
+                if (e.getCharacter() != KeyStroke.SPECIAL_KEY && pasteRegister) {
+                    String text = editor.getRegisterManager().getRegister(Character.toString(e.getCharacter())).getContent().getText();
+                    text = VimUtils.stripLastNewline(text);
+                    text = text.replace("\r\n", " ").replace('\n', ' ').replace('\r', ' ');
+                    commandLine.setMode(CommandLineMode.DEFAULT);
+                    commandLine.type(text);
+                    pasteRegister = false;
+                    modified = true;
+                } else if (e.getCharacter() != KeyStroke.SPECIAL_KEY) {
+                    commandLine.type(Character.toString(e.getCharacter()));
+                    modified = true;
+                }
             }
-            if (pasteRegister) {
-                String text = editor.getRegisterManager().getRegister(Character.toString(e.getCharacter())).getContent().getText();
-                text = VimUtils.stripLastNewline(text);
-                text = text.replace("\r\n", " ").replace('\n', ' ').replace('\r', ' ');
-                buffer.insert(position, text);
-                position += text.length();
-                pasteRegister = false;
-                modified = true;
+        }
+        //Exit register mode but not command line mode.
+        if (pasteRegister && e.equals(KEY_ESCAPE)) {
+            pasteRegister = false;
+            commandLine.setMode(CommandLineMode.DEFAULT);
+        } else if (e.equals(KEY_RETURN) || e.equals(KEY_ESCAPE) || e.equals(KEY_CTRL_C)) {
+            //Pressing return on an empty command line quits this mode rather than execute a command
+            if (c == null) {
+                editor.changeModeSafely(NormalMode.NAME);
             } else {
-                buffer.insert(position++, e.getCharacter());
-                modified = true;
+                editor.changeModeSafely(editor.getLastModeName(), new ExecuteCommandHint.OnEnter(c),
+                        // If entered from visual mode, don't remove selection in case the 
+                        // command c expects it.
+                        AbstractVisualMode.KEEP_SELECTION_HINT);
             }
         }
         if (!e.equals(KEY_CTRL_R) && pasteRegister) {
             pasteRegister = false;
         }
-
-        if (buffer.length() == 0 || e.equals(KEY_RETURN)
-               || e.equals(KEY_ESCAPE) || e.equals(KEY_CTRL_C)) {
-            if (c != null)
-	            editor.changeModeSafely(editor.getLastModeName(), new ExecuteCommandHint.OnEnter(c),
-	                    // If entered from visual mode, don't remove selection in case the 
-	                    // command c expects it.
-                        AbstractVisualMode.KEEP_SELECTION_HINT);
-            else
-	            editor.changeModeSafely(NormalMode.NAME);
-        }
     }
-    
-    private void completeArgument(KeyStroke e) {
-        int cmdLen = 0;
-        boolean paths = false;
-        boolean dirsOnly = false;
-        if (buffer.toString().startsWith(":e ")) {
-            cmdLen = 3;
-        } else {
-            if(buffer.toString().startsWith(":find ") ||
-                    buffer.toString().startsWith(":tabf ") ) {
-                cmdLen = 6;
-                paths = true;
-            } else {
-                if(buffer.toString().startsWith(":cd ")) {
-                    cmdLen = 4;
-                    dirsOnly = true;
-                }
-            }
-        }
-        if (cmdLen > 0) {
-            String cmd = buffer.substring(0, cmdLen);
-            String prefix = buffer.substring(cmdLen);
-            prefix = tabComplete.getNextMatch(prefix, paths, dirsOnly, e.withShiftKey());
-            setBuffer(cmd + prefix);
-        } else {
-            // user hit TAB for no reason
-        }
+
+    protected String completeArgument(String commandLineContents, KeyStroke e) {
+        return null;
     }
 
     private void setCommandFromHistory(String cmd) {
         if (cmd == null)
             return;
         modified = false;
-        buffer.setLength(1);
-        buffer.append(cmd);
-        position = buffer.length();
+        commandLine.resetContents(cmd);
     }
 
     private void deleteWordBack() {
-    	int offset = buffer.length() -1;
-    	char c1, c2;
-    	while(offset > 0) {
-    		c1 = buffer.charAt(offset -1);
-    		c2 = buffer.charAt(offset);
-    		//this line was stolen from MoveWordLeft because
-    		//I can't call that class with arbitrary text
-    		if(!Character.isWhitespace(c2) && characterType(c1) != characterType(c2)) {
-    			position = offset;
-    			clearBufferFromPosition();
-    			return;
-    		}
-    		offset--;
+        int offset = commandLine.getPosition();
+    	//Simply backspace if we are at the start or first character
+    	if (offset <= 1) {
+    	    commandLine.erase();
+    	} else {
+    	    String contents = commandLine.getContents();
+    	    if (offset >= contents.length()) {
+    	        offset = contents.length() - 1;
+    	    }
+    	    char c1, c2;
+	        c1 = contents.charAt(offset);
+	        c2 = contents.charAt(offset - 1);
+	        offset--;
+	        //this line was stolen from MoveWordLeft because
+	        //I can't call that class with arbitrary text
+    	    while(offset > 1
+    	            && Character.isWhitespace(c2) || characterType(c1) == characterType(c2)) {
+    	        c1 = contents.charAt(offset);
+    	        c2 = contents.charAt(offset - 1);
+    	        offset--;
+    	    }
+    	    commandLine.replace(offset, commandLine.getPosition(), "");
     	}
-    	//if no word boundary found, leave initial character (e.g., ':') alone
     }
 
-    public int getPosition() {
-        return position;
-    }
-
-    public String getBuffer() {
-        return buffer.toString();
-    }
-    
-    public void setBuffer(String s) {
-        buffer.replace(0, buffer.length(), s);
-        position = buffer.length();
-        modified = true;
-    }
-
-    public void clearBufferFromPosition() {
-        buffer.replace(position, buffer.length(), "");
-        modified = true;
-    }
-    
     public boolean isHistoryEnabled() {
         return isCommandLineHistoryEnabled;
     }
@@ -276,13 +240,9 @@ public abstract class AbstractCommandParser {
 	 */
     public abstract Command parseAndExecute(String first, String command);
 
-    private String getCommand() {
-        return buffer.substring(1, buffer.length());
-    }
-
     private Command parseAndExecute() {
-        String first = buffer.substring(0,1);
-        String c = getCommand();
+        String first = commandLine.getPrompt();
+        String c = commandLine.getContents();
         if (isHistoryEnabled()) {
             history.append(c);
             setHistoryEnabled(false);
@@ -296,6 +256,10 @@ public abstract class AbstractCommandParser {
 
     public void setFromVisual(boolean isFromVisual) {
         this.isFromVisual = isFromVisual;
+    }
+
+    public void setCommandLine(CommandLineUI commandLine) {
+        this.commandLine = commandLine;
     }
 
 }
