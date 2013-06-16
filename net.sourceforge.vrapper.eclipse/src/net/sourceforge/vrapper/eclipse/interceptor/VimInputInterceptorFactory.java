@@ -88,7 +88,9 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
         DefaultEditorAdaptor editorAdaptor = new DefaultEditorAdaptor(
                 platform,
                 globalRegisterManager, VrapperPlugin.isVrapperEnabled());
-        platform.setModeChangeHintReceiver(editorAdaptor);
+        if(editorAdaptor.getConfiguration().get(Options.EXIT_LINK_MODE)) {
+        	platform.setModeChangeHintReceiver(editorAdaptor);
+        }
         return new VimInputInterceptor(editorAdaptor);
     }
 
