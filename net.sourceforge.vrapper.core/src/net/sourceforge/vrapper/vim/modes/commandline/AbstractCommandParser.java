@@ -260,6 +260,7 @@ public abstract class AbstractCommandParser {
 
     public void setCommandLine(CommandLineUI commandLine) {
         this.commandLine = commandLine;
+        history.setTemp(commandLine.getContents());
     }
 
 }
