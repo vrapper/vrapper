@@ -1025,6 +1025,15 @@ public class NormalModeTests extends CommandTestCase {
         checkCommand(forKeySeq("da{"),
                 "function {\n",'f',"oo\n     }",
                 "function",' ',"");
+
+        //skip escaped delimiters
+        checkCommand(forKeySeq("da{"),
+                "before {m\\{i",'d',"d\\}le} after",
+                "before ",' ',"after");
+
+        checkCommand(forKeySeq("da'"),
+                "before 'mi",'d',"d\\'le' after",
+                "before ",' ',"after");
 	}
 	
 	@Test

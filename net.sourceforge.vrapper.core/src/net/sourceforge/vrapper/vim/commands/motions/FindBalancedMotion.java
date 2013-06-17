@@ -33,9 +33,9 @@ public class FindBalancedMotion extends AbstractModelSideMotion {
         while (backwards ? offset > end : offset < end) {
             offset += step;
             current = content.getText(offset, 1).charAt(0);
-            if(current == target)
+            if(current == target && !isEscaped(content, offset))
                 --depth;
-            else if (current == pair)
+            else if (current == pair && !isEscaped(content, offset))
                 ++depth;
             if (depth == 0)
                 break;
@@ -47,6 +47,14 @@ public class FindBalancedMotion extends AbstractModelSideMotion {
             offset -= step;
         }
         return offset;
+    }
+    
+    //skip over escaped delimiters
+    protected boolean isEscaped(TextContent content, int offset) {
+        if(offset == 0) {
+            return false;
+        }
+        return content.getText(offset - 1, 1).charAt(0) == '\\';
     }
 
     protected int getEndSearchOffset(TextContent content, int offset) {

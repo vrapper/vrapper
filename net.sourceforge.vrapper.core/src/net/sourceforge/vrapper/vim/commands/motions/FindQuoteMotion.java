@@ -66,7 +66,7 @@ public class FindQuoteMotion extends AbstractModelSideMotion {
 		
 		//if the cursor is *on* a quote, the number of quotes before the cursor
         //determines the behavior
-		if(findLeft && content.getText(offset, 1).charAt(0) == quote) {
+		if(findLeft && isQuote(content, index)) {
 			if(getNumQuotesBeforeOffset(limit, offset, content) % 2 == 0) {
 				//there are an even number of quotes before the cursor
 				//that means this quote starts a new balanced set
@@ -80,7 +80,7 @@ public class FindQuoteMotion extends AbstractModelSideMotion {
 		}
 		
 		while( findLeft ? index >= limit : index < limit) {
-			if(content.getText(index, 1).charAt(0) == quote) {
+			if(isQuote(content, index)) {
 				return index;
 			}
 			index += step;
@@ -92,12 +92,25 @@ public class FindQuoteMotion extends AbstractModelSideMotion {
 		int index = bol;
 		int numQuotes = 0;
 		while(index < limit) {
-			if(content.getText(index, 1).charAt(0) == quote) {
+			if(isQuote(content, index)) {
 				numQuotes++;
 			}
 			index++;
 		}
 		return numQuotes;
+	}
+	
+	private boolean isQuote(TextContent content, int offset) {
+	    if(content.getText(offset, 1).charAt(0) == quote) {
+	        if(offset == 0) {
+	            return true;
+	        }
+	        else {
+	            //skip escaped quotes
+	            return content.getText(offset - 1, 1).charAt(0) != '\\';
+	        }
+	    }
+	    return false;
 	}
 
 	public BorderPolicy borderPolicy() {
