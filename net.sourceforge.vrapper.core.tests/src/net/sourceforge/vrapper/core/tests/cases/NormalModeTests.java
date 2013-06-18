@@ -1030,10 +1030,15 @@ public class NormalModeTests extends CommandTestCase {
         checkCommand(forKeySeq("da{"),
                 "before {m\\{i",'d',"d\\}le} after",
                 "before ",' ',"after");
-
         checkCommand(forKeySeq("da'"),
                 "before 'mi",'d',"d\\'le' after",
                 "before ",' ',"after");
+        checkCommand(forKeySeq("di'"),
+                "'before mi",'d',"dle after'",
+                "'",'\'',"");
+        checkCommand(forKeySeq("di'"),
+                "\\'before mi",'d',"dle after\\'",
+                "\\'before mi",'d',"dle after\\'");
 	}
 	
 	@Test
