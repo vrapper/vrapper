@@ -206,15 +206,15 @@ public abstract class AbstractCommandParser {
     	        offset = contents.length() - 1;
     	    }
     	    char c1, c2;
-	        c1 = contents.charAt(offset);
-	        c2 = contents.charAt(offset - 1);
+	        c1 = contents.charAt(offset - 1);
+	        c2 = contents.charAt(offset);
 	        offset--;
 	        //this line was stolen from MoveWordLeft because
 	        //I can't call that class with arbitrary text
     	    while(offset > 1
     	            && Character.isWhitespace(c2) || characterType(c1) == characterType(c2)) {
-    	        c1 = contents.charAt(offset);
-    	        c2 = contents.charAt(offset - 1);
+    	        c1 = contents.charAt(offset -1);
+    	        c2 = contents.charAt(offset);
     	        offset--;
     	    }
     	    commandLine.replace(offset, commandLine.getPosition(), "");

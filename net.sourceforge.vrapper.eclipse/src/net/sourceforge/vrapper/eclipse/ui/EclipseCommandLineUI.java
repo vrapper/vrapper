@@ -161,8 +161,9 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener 
         } else {
             int startOffset = commandLineText.getCaretOffset();
             if (startOffset > contentsOffset) {
-                commandLineText.setCaretOffset(startOffset - 1);
                 commandLineText.replaceTextRange(startOffset - 1, 1, "");
+                //Caret listener is called before content is updated, update manually
+                updateCaret();
             }
         }
     }
