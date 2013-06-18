@@ -199,26 +199,26 @@ public abstract class AbstractCommandParser {
         int offset = commandLine.getPosition();
     	//Simply backspace if we are at the start or first character
     	if (offset <= 1) {
-    	    commandLine.erase();
+    	    offset = 0;
     	} else {
     	    String contents = commandLine.getContents();
-    	    if (offset >= contents.length()) {
-    	        offset = contents.length() - 1;
+    	    if (offset > contents.length()) {
+    	        offset = contents.length();
     	    }
     	    char c1, c2;
-	        c1 = contents.charAt(offset - 1);
-	        c2 = contents.charAt(offset);
-	        offset--;
-	        //this line was stolen from MoveWordLeft because
-	        //I can't call that class with arbitrary text
-    	    while(offset > 1
-    	            && Character.isWhitespace(c2) || characterType(c1) == characterType(c2)) {
-    	        c1 = contents.charAt(offset -1);
-    	        c2 = contents.charAt(offset);
+    	    do {
     	        offset--;
-    	    }
-    	    commandLine.replace(offset, commandLine.getPosition(), "");
+    	        if (offset > 0) {
+    	            c1 = contents.charAt(offset - 1);
+    	        } else {
+    	            break;
+    	        }
+    	        c2 = contents.charAt(offset);
+    	        //this line was stolen from MoveWordLeft because
+    	        //I can't call that class with arbitrary text
+    	    } while (Character.isWhitespace(c2) || characterType(c1) == characterType(c2));
     	}
+    	commandLine.replace(offset, commandLine.getPosition(), "");
     }
 
     public boolean isHistoryEnabled() {
