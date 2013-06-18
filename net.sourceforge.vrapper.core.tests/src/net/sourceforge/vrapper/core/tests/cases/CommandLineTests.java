@@ -4,7 +4,6 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.parseKeyStr
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
@@ -306,15 +305,36 @@ public class CommandLineTests extends VimTestCase {
     	new SortOperation("n").execute(adaptor, range, ContentType.LINES);
     	assertEquals("a\nb\nc\n3\n1\n2\n10", content.getText());
     }
-	
-	@Test
-	public void test_CtrlC_exits() {
-		adaptor.changeModeSafely(CommandLineMode.NAME);
-		adaptor.getConfiguration().set(Options.IGNORE_CASE, false);
-		type(parseKeyStrokes("set ic<C-c>"));
-		assertFalse(adaptor.getConfiguration().get(Options.IGNORE_CASE));
-		assertEquals(NormalMode.NAME, adaptor.getCurrentModeName());
-	}
+
+    @Test
+    public void test_CtrlC_exits() {
+    	adaptor.changeModeSafely(CommandLineMode.NAME);
+    	adaptor.getConfiguration().set(Options.IGNORE_CASE, false);
+    	type(parseKeyStrokes("set ic<C-c>"));
+    	assertFalse(adaptor.getConfiguration().get(Options.IGNORE_CASE));
+    	assertEquals(NormalMode.NAME, adaptor.getCurrentModeName());
+    }
+
+    /**
+     * Checks that return on an empty command line exits.
+     */
+    @Test
+    public void test_Return_exits() {
+    	adaptor.changeModeSafely(CommandLineMode.NAME);
+    	adaptor.getConfiguration().set(Options.IGNORE_CASE, false);
+    	type(parseKeyStrokes("<RETURN>"));
+    	assertEquals(NormalMode.NAME, adaptor.getCurrentModeName());
+    }
+
+    @Test
+    public void test_Backspace_exits() {
+        adaptor.changeModeSafely(CommandLineMode.NAME);
+        adaptor.getConfiguration().set(Options.IGNORE_CASE, false);
+        type(parseKeyStrokes("set<BS><BS><BS>"));
+        assertEquals(CommandLineMode.NAME, adaptor.getCurrentModeName());
+        type(parseKeyStrokes("<BS>"));
+        assertEquals(NormalMode.NAME, adaptor.getCurrentModeName());
+    }
 
     private <T> void assertSetOption(Option<T> o, String invalid, T... values) {
 
