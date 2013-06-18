@@ -102,6 +102,8 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener 
             offset += contentsOffset;
         }
         commandLineText.setCaretOffset(offset);
+        //If the caret didn't move, no CaretEvent gets sent. Update manually.
+        updateCaret();
     }
 
     @Override

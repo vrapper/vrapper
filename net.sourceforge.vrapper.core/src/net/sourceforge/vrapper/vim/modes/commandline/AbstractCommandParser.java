@@ -219,6 +219,7 @@ public abstract class AbstractCommandParser {
     	    } while (Character.isWhitespace(c2) || characterType(c1) == characterType(c2));
     	}
     	commandLine.replace(offset, commandLine.getPosition(), "");
+    	commandLine.setPosition(offset);
     }
 
     public boolean isHistoryEnabled() {
