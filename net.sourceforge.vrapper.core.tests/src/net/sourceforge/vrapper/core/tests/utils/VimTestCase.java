@@ -24,6 +24,7 @@ import net.sourceforge.vrapper.vim.register.SimpleRegister;
 
 import org.junit.Before;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 public class VimTestCase {
@@ -70,6 +71,7 @@ public class VimTestCase {
     	when(platform.getServiceProvider()).thenReturn(serviceProvider);
     	when(platform.getConfiguration()).thenReturn(configuration);
     	when(platform.getPlatformSpecificStateProvider()).thenReturn(platformSpecificStateProvider);
+    	when(userInterfaceService.getCommandLineUI(Mockito.any(EditorAdaptor.class))).thenReturn(new CommandLineUIStub());
     	reloadEditorAdaptor();
     	defaultRegister = spy(new SimpleRegister());
     	lastEditRegister = spy(new SimpleRegister());
