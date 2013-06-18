@@ -1,5 +1,7 @@
 package net.sourceforge.vrapper.core.tests.cases;
 
+import static org.mockito.Mockito.when;
+
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -13,8 +15,6 @@ import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
 
 import org.junit.Test;
 
-import static org.mockito.Mockito.when;
-
 public class SnapshotTests extends VimTestCase {
 
 
@@ -26,7 +26,6 @@ public class SnapshotTests extends VimTestCase {
         when(platform.getUserInterfaceService()).thenReturn(new UserInterfaceService() {
             public void setRecording(boolean recording, String macroName) { }
             public void setEditorMode(String modeName) { }
-            public void setCommandLine(String content, int position) { }
             public void setInfoMessage(String content) { }
 
             public void setErrorMessage(String content) {
