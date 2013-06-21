@@ -27,7 +27,7 @@ public class SwitchEditorCommand extends AbstractWindowCommand {
         IWorkbenchPartSite editorSite = getEditorSite();
         EPartService psvc = (EPartService) editorSite.getService(EPartService.class);
         MPartStack stack = findAdjacentStack(editorSite, direction);
-        if (stack != null) {
+        if (stack != null && stack.getSelectedElement() instanceof MPart) {
             psvc.activate((MPart) stack.getSelectedElement(), true);
         }
     }

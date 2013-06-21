@@ -12,11 +12,13 @@ import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.plugin.splitEditor.commands.MoveEditorCommand;
+import net.sourceforge.vrapper.plugin.splitEditor.commands.RemoveOtherWindowsCommand;
 import net.sourceforge.vrapper.plugin.splitEditor.commands.SplitContainer;
 import net.sourceforge.vrapper.plugin.splitEditor.commands.SplitDirection;
 import net.sourceforge.vrapper.plugin.splitEditor.commands.SplitEditorCommand;
 import net.sourceforge.vrapper.plugin.splitEditor.commands.SplitMode;
 import net.sourceforge.vrapper.plugin.splitEditor.commands.SwitchEditorCommand;
+import net.sourceforge.vrapper.plugin.splitEditor.commands.SwitchOtherEditorCommand;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
@@ -48,6 +50,8 @@ public class WindowCmdStateProvider extends AbstractEclipseSpecificStateProvider
             case 'L': cmd = bang ? MoveEditorCommand.CLONE_RIGHT : MoveEditorCommand.MOVE_RIGHT; break;
             case 'K': cmd = bang ? MoveEditorCommand.CLONE_UP    : MoveEditorCommand.MOVE_UP; break;
             case 'J': cmd = bang ? MoveEditorCommand.CLONE_DOWN  : MoveEditorCommand.MOVE_DOWN; break;
+            case 'o': cmd = bang ? RemoveOtherWindowsCommand.REMOVE_CLOSE  : RemoveOtherWindowsCommand.REMOVE_JOIN; break;
+            case 'w': cmd = SwitchOtherEditorCommand.INSTANCE; break;
             }
             if (cmd != null) {
                 try {
@@ -109,6 +113,9 @@ public class WindowCmdStateProvider extends AbstractEclipseSpecificStateProvider
     protected State<Command> normalModeBindings() {
         final Command vsplit = SplitEditorCommand.VSPLIT;
         final Command split = SplitEditorCommand.HSPLIT;
+        final Command removeOther = RemoveOtherWindowsCommand.REMOVE_JOIN;
+        final Command switchOther = SwitchOtherEditorCommand.INSTANCE;
+
         final Command switchEditorLeft = SwitchEditorCommand.SWITCH_LEFT;
         final Command switchEditorRight = SwitchEditorCommand.SWITCH_RIGHT;
         final Command switchEditorDown = SwitchEditorCommand.SWITCH_DOWN;
@@ -118,6 +125,7 @@ public class WindowCmdStateProvider extends AbstractEclipseSpecificStateProvider
         final Command cloneEditorRight = MoveEditorCommand.CLONE_RIGHT;
         final Command cloneEditorDown = MoveEditorCommand.CLONE_DOWN;
         final Command cloneEditorUp = MoveEditorCommand.CLONE_UP;
+
         return state(transitionBind(
                 ctrlKey('w'),
                   state(
@@ -142,6 +150,10 @@ public class WindowCmdStateProvider extends AbstractEclipseSpecificStateProvider
                         leafBind('L', MoveEditorCommand.MOVE_RIGHT),
                         leafBind('J', MoveEditorCommand.MOVE_DOWN),
                         leafBind('K', MoveEditorCommand.MOVE_UP),
+                        leafBind('w', switchOther),
+                        leafBind(ctrlKey('w'), switchOther),
+                        leafBind('o', removeOther),
+                        leafBind(ctrlKey('o'), removeOther),
                         transitionBind(
                                 'c',
                                 leafBind('h', cloneEditorLeft),
