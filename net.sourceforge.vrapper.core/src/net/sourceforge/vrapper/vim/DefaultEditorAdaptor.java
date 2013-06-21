@@ -57,7 +57,7 @@ import net.sourceforge.vrapper.vim.register.Register;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
 import net.sourceforge.vrapper.vim.register.SimpleRegister;
 
-public class DefaultEditorAdaptor implements EditorAdaptor, ModeChangeHintReceiver {
+public class DefaultEditorAdaptor implements EditorAdaptor {
 
     // ugly global option, so unit tests can disable it
     // in order to be .vrapperrc-agnostic

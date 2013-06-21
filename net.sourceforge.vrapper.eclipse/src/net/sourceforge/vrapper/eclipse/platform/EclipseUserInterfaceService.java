@@ -1,11 +1,11 @@
 package net.sourceforge.vrapper.eclipse.platform;
 
+import net.sourceforge.vrapper.eclipse.interceptor.LinkedModeHandler;
 import net.sourceforge.vrapper.eclipse.ui.CommandLineUIFactory;
 import net.sourceforge.vrapper.eclipse.ui.ModeContributionItem;
 import net.sourceforge.vrapper.platform.CommandLineUI;
 import net.sourceforge.vrapper.platform.UserInterfaceService;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
-import net.sourceforge.vrapper.vim.ModeChangeHintReceiver;
 
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.text.ITextViewer;
@@ -158,9 +158,6 @@ public class EclipseUserInterfaceService implements UserInterfaceService {
     @Override
     public void setInfoSet(final boolean infoSet) {
         this.infoSet = infoSet;
-    }
-
-    public void setModeChangeHintReceiver(final ModeChangeHintReceiver editorAdaptor) {
     }
 
     @Override

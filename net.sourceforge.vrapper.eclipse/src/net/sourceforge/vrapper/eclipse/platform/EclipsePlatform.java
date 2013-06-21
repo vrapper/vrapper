@@ -28,7 +28,6 @@ import net.sourceforge.vrapper.platform.UnderlyingEditorSettings;
 import net.sourceforge.vrapper.platform.UserInterfaceService;
 import net.sourceforge.vrapper.platform.ViewportService;
 import net.sourceforge.vrapper.utils.DefaultKeyMapProvider;
-import net.sourceforge.vrapper.vim.ModeChangeHintReceiver;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
@@ -200,10 +199,6 @@ public class EclipsePlatform implements Platform {
             }
         }
         return new UnionModeProvider("Extension modes", matched);
-    }
-
-    public void setModeChangeHintReceiver(final ModeChangeHintReceiver receiver) {
-        userInterfaceService.setModeChangeHintReceiver(receiver);
     }
 
     public String getEditorType() {
