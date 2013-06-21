@@ -1,12 +1,11 @@
 package net.sourceforge.vrapper.eclipse.platform;
 
-import net.sourceforge.vrapper.eclipse.ui.ModeContributionItem;
 import net.sourceforge.vrapper.eclipse.ui.CommandLineUIFactory;
+import net.sourceforge.vrapper.eclipse.ui.ModeContributionItem;
 import net.sourceforge.vrapper.platform.CommandLineUI;
 import net.sourceforge.vrapper.platform.UserInterfaceService;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.ModeChangeHintReceiver;
-import net.sourceforge.vrapper.vim.modes.InsertMode;
 
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.text.ITextViewer;
@@ -20,10 +19,7 @@ public class EclipseUserInterfaceService implements UserInterfaceService {
 
     private final CommandLineUIFactory commandLineFactory;
     private final IEditorPart editor;
-    private final ITextViewer textViewer;
     private final ModeContributionItem vimInputModeItem;
-
-    private LinkedModeHandler linkedModeHandler;
 
     private String lastInfoValue = "";
     private String lastErrorValue = "";
@@ -44,7 +40,6 @@ public class EclipseUserInterfaceService implements UserInterfaceService {
 
     public EclipseUserInterfaceService(final IEditorPart editor, final ITextViewer textViewer) {
         this.editor = editor;
-        this.textViewer = textViewer;
         commandLineFactory = new CommandLineUIFactory(textViewer.getTextWidget());
         vimInputModeItem = getContributionItem();
         setEditorMode(VRAPPER_DISABLED);
@@ -56,11 +51,6 @@ public class EclipseUserInterfaceService implements UserInterfaceService {
         currentModeName = modeName.toUpperCase();
         currentMode = "-- " + modeName + " --";
         vimInputModeItem.setText(currentMode);
-
-        if (InsertMode.DISPLAY_NAME.equals(modeName) && linkedModeHandler != null) {
-            // if there's a linked mode, we want to be notified about it
-            linkedModeHandler.onCheckForLinkedMode(textViewer.getDocument());
-        }
     }
 
     @Override
@@ -171,11 +161,6 @@ public class EclipseUserInterfaceService implements UserInterfaceService {
     }
 
     public void setModeChangeHintReceiver(final ModeChangeHintReceiver editorAdaptor) {
-        if (linkedModeHandler != null) {
-            linkedModeHandler.unregisterListener(textViewer.getDocument());
-        }
-        linkedModeHandler = new LinkedModeHandler(editorAdaptor);
-        linkedModeHandler.registerListener(textViewer.getDocument());
     }
 
     @Override

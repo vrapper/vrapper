@@ -1,6 +1,7 @@
-package net.sourceforge.vrapper.eclipse.platform;
+package net.sourceforge.vrapper.eclipse.interceptor;
 
-import net.sourceforge.vrapper.vim.ModeChangeHintReceiver;
+import net.sourceforge.vrapper.eclipse.activator.VrapperPlugin;
+import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 
@@ -13,15 +14,14 @@ import org.eclipse.swt.widgets.Display;
 
 public class LinkedModeHandler implements IDocumentListener, ILinkedModeListener {
 
-    private final ModeChangeHintReceiver hintReceiver;
+    private final EditorAdaptor hintReceiver;
 
-    public LinkedModeHandler(final ModeChangeHintReceiver hintReceiver) {
-        this.hintReceiver = hintReceiver;
+    public LinkedModeHandler(final EditorAdaptor editorAdaptor) {
+        this.hintReceiver = editorAdaptor;
     }
 
     public void onCheckForLinkedMode(final IDocument document) {
-        // make sure to check AFTER the
-        //  current UI stuff is done
+        // make sure to check AFTER the current UI stuff is done
         //  (sometimes eclipse is weird)
         Display.getCurrent().asyncExec(new Runnable() {
             @Override
@@ -36,12 +36,15 @@ public class LinkedModeHandler implements IDocumentListener, ILinkedModeListener
         
         final LinkedModeModel model = LinkedModeModel.getModel(document, 0);
         if (model != null) {
-            model.removeLinkingListener(LinkedModeHandler.this); // just in case, don't be a dup
-            model.addLinkingListener(LinkedModeHandler.this);
+            model.removeLinkingListener(this); // just in case, don't be a dup
+            model.addLinkingListener(this);
             
-            // if in insert, stay; otherwise, make sure
-            //  we're in normal mode
-            if (!InsertMode.NAME.equals(hintReceiver.getCurrentModeName())) {
+            //Insert or normal mode is fine, but we don't want to get stuck in
+            //visual or command line mode. In those other cases, switch to normal mode.
+            String mode = hintReceiver.getCurrentModeName();
+            if (VrapperPlugin.isVrapperEnabled()
+                    && ! InsertMode.NAME.equals(mode)
+                    && ! NormalMode.NAME.equals(mode)) {
                 hintReceiver.changeModeSafely(NormalMode.NAME);
             }
         }
@@ -51,7 +54,8 @@ public class LinkedModeHandler implements IDocumentListener, ILinkedModeListener
     public void left(final LinkedModeModel model, final int flags) {
         // left linked mode! We should now be in Normal mode,
         //  depending on the exit flag
-        if ((flags & ILinkedModeListener.EXIT_ALL) != 0) {
+        if (VrapperPlugin.isVrapperEnabled()
+                && (flags & ILinkedModeListener.EXIT_ALL) != 0) {
             hintReceiver.changeModeSafely(NormalMode.NAME);
         }
     }
@@ -73,12 +77,12 @@ public class LinkedModeHandler implements IDocumentListener, ILinkedModeListener
         onCheckForLinkedMode(event.fDocument);
     }
     
-    public void registerListener(final IDocument document) {
-        document.addDocumentListener(this);
+    public static void registerListener(final IDocument document, final LinkedModeHandler handler) {
+        document.addDocumentListener(handler);
     }
 
-    public void unregisterListener(final IDocument document) {
-        document.removeDocumentListener(this);
+    public static void unregisterListener(final IDocument document, final LinkedModeHandler handler) {
+        document.removeDocumentListener(handler);
     }
 
 }

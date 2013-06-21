@@ -13,4 +13,6 @@ import org.eclipse.swt.custom.VerifyKeyListener;
 public interface InputInterceptor extends VerifyKeyListener, ISelectionChangedListener {
     public EditorAdaptor getEditorAdaptor();
 
+    public LinkedModeHandler getLinkedModeHandler();
+    public void setLinkedModeHandler(LinkedModeHandler handler);
 }

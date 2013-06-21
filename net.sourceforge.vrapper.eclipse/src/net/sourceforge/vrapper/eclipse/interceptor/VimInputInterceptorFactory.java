@@ -88,10 +88,13 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
         DefaultEditorAdaptor editorAdaptor = new DefaultEditorAdaptor(
                 platform,
                 globalRegisterManager, VrapperPlugin.isVrapperEnabled());
-        if(editorAdaptor.getConfiguration().get(Options.EXIT_LINK_MODE)) {
-        	platform.setModeChangeHintReceiver(editorAdaptor);
+        InputInterceptor interceptor = createInterceptor(editorAdaptor);
+        if (editorAdaptor.getConfiguration().get(Options.EXIT_LINK_MODE)) {
+            LinkedModeHandler linkedModeHandler = new LinkedModeHandler(editorAdaptor);
+            LinkedModeHandler.registerListener(textViewer.getDocument(), linkedModeHandler);
+            interceptor.setLinkedModeHandler(linkedModeHandler);
         }
-        return createInterceptor(editorAdaptor);
+        return interceptor;
     }
 
     public InputInterceptor createInterceptor(EditorAdaptor editorAdaptor) {
@@ -101,6 +104,7 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
     private static final class VimInputInterceptor implements InputInterceptor {
 
         private final EditorAdaptor editorAdaptor;
+        private LinkedModeHandler linkedModeHandler;
 
         private VimInputInterceptor(EditorAdaptor editorAdaptor) {
 			this.editorAdaptor = editorAdaptor;
@@ -151,6 +155,15 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
 				}
 	        }
 		}
-		
+
+        @Override
+        public LinkedModeHandler getLinkedModeHandler() {
+            return linkedModeHandler;
+        }
+
+        @Override
+        public void setLinkedModeHandler(LinkedModeHandler handler) {
+            this.linkedModeHandler = handler;
+        }
     }
 }
