@@ -120,4 +120,9 @@ public class CommandLineUIStub implements CommandLineUI {
         contents.replace(start, end, string);
     }
 
+    @Override
+    public void copySelectionToClipboard() {
+        // Nothing to do here, stub doesn't know about selections.
+    }
+
 }

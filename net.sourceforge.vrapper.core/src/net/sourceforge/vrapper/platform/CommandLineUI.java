@@ -50,6 +50,8 @@ public interface CommandLineUI {
     /** Inserts characters or replaces the current selection with new characters. */
     public void type(String characters);
 
+    public void copySelectionToClipboard();
+
     public void open();
 
     public void close();

@@ -35,6 +35,7 @@ public abstract class AbstractCommandParser {
     protected static final KeyStroke KEY_CTRL_R  = ctrlKey('r');
     protected static final KeyStroke KEY_CTRL_U  = ctrlKey('u');
     protected static final KeyStroke KEY_CTRL_V  = ctrlKey('v');
+    protected static final KeyStroke KEY_CTRL_Y  = ctrlKey('y');
     protected static final KeyStroke KEY_BACKSP  = key(SpecialKey.BACKSPACE);
     protected static final KeyStroke KEY_DELETE  = key(SpecialKey.DELETE);
     protected static final KeyStroke KEY_UP      = key(SpecialKey.ARROW_UP);
@@ -108,6 +109,9 @@ public abstract class AbstractCommandParser {
             commandLine.replace(0, commandLine.getPosition(), "");
             commandLine.setPosition(0);
             modified = true;
+        }});
+        editMap.put(KEY_CTRL_Y, new KeyHandler() { public void handleKey() {
+            commandLine.copySelectionToClipboard();
         }});
     }
 
