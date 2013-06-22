@@ -2,33 +2,100 @@ package net.sourceforge.vrapper.eclipse.ui;
 
 import net.sourceforge.vrapper.platform.CommandLineUI;
 import net.sourceforge.vrapper.utils.CaretType;
+import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.register.Register;
+import net.sourceforge.vrapper.vim.register.RegisterContent;
+import net.sourceforge.vrapper.vim.register.RegisterManager;
+import net.sourceforge.vrapper.vim.register.StringRegisterContent;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CaretEvent;
 import org.eclipse.swt.custom.CaretListener;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Caret;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.services.IDisposable;
 
-class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener {
+class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener, SelectionListener {
 
     private StyledText commandLineText;
+    private Register clipboard;
     private String prompt;
     private int contentsOffset;
     private Caret defaultCaret;
     private Caret endCharCaret;
+    private Menu contextMenu;
+    private MenuItem cutItem;
+    private MenuItem copyItem;
+    private MenuItem pasteItem;
+    private MenuItem selectAllItem;
+    
     /**
      * Signals that a "register mode marker" was inserted at the start of the selection if set.
      */
     private Point registerModeSelection;
+    /** Read-only mode active. This disables destructive context menu actions. */
+    private boolean readOnly;
 
-    public EclipseCommandLineUI(StyledText commandLineText, EditorAdaptor editorAdaptor) {
+    public EclipseCommandLineUI(final StyledText commandLineText, final EditorAdaptor editorAdaptor) {
+        clipboard = editorAdaptor.getRegisterManager()
+                .getRegister(RegisterManager.REGISTER_NAME_CLIPBOARD);
         this.commandLineText = commandLineText;
         commandLineText.addCaretListener(this);
+        commandLineText.addSelectionListener(this);
+        
         this.defaultCaret = commandLineText.getCaret();
         this.endCharCaret = CaretUtils.createCaret(CaretType.RECTANGULAR, commandLineText);
         commandLineText.setCaret(endCharCaret);
+        
+        contextMenu = new Menu(commandLineText);
+        cutItem = new MenuItem(contextMenu, SWT.DEFAULT);
+        cutItem.setText("Cut");
+        cutItem.setEnabled(false);
+        copyItem = new MenuItem(contextMenu, SWT.DEFAULT);
+        copyItem.setText("Copy\tCtrl-Y  ");
+        copyItem.setEnabled(false);
+        pasteItem = new MenuItem(contextMenu, SWT.DEFAULT);
+        pasteItem.setText("Paste\tCtrl-R +");
+        selectAllItem = new MenuItem(contextMenu, SWT.DEFAULT);
+        selectAllItem.setText("Select All");
+        
+        commandLineText.setMenu(contextMenu);
+        
+        cutItem.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                copySelectionToClipboard();
+                erase();
+            }
+        });
+        copyItem.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                copySelectionToClipboard();
+            }
+        });
+        pasteItem.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                RegisterContent content = clipboard.getContent();
+                if (content.getPayloadType() == ContentType.TEXT) {
+                    type(content.getText());
+                }
+            }
+        });
+        selectAllItem.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                commandLineText.setSelection(contentsOffset, commandLineText.getCharCount());
+            }
+        });
     }
 
     public boolean isOpen() {
@@ -82,6 +149,12 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener 
         //Mouse selection might cause caret to be at the same position as before, update manually
         updateCaret();
     }
+    
+    public void copySelectionToClipboard() {
+        clipSelection();
+        String selection = commandLineText.getSelectionText();
+        clipboard.setContent(new StringRegisterContent(ContentType.TEXT, selection));
+    }
 
     public void open() {
         commandLineText.setVisible(true);
@@ -114,6 +187,12 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener 
         prompt = "";
         contentsOffset = 0;
         resetContents("");
+        
+        readOnly = false;
+        
+        copyItem.setEnabled(false);
+        cutItem.setEnabled(false);
+        pasteItem.setEnabled(true);
     }
 
     @Override
@@ -124,14 +203,21 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener 
                 commandLineText.replaceTextRange(registerModeSelection.x, 1, "");
                 commandLineText.setSelection(registerModeSelection);
                 registerModeSelection = null;
+            } else {
+                //Reset any selection made in a readonly mode, otherwise we need to check if
+                // cut/copy needs to be enabled.
+                commandLineText.setSelection(commandLineText.getCaretOffset());
             }
+            readOnly = false;
         } else if (mode == CommandLineMode.REGISTER) {
             Point sel = commandLineText.getSelection();
             int leftOffset = Math.min(sel.x, sel.y);
             commandLineText.replaceTextRange(leftOffset, 0, "\"");
             registerModeSelection = sel;
+            readOnly = true;
         } else if (mode == CommandLineMode.MORE) {
             commandLineText.setEditable(false);
+            readOnly = true;
         }
     }
 
@@ -201,6 +287,11 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener 
     @Override
     public void dispose() {
         endCharCaret.dispose();
+        cutItem.dispose();
+        copyItem.dispose();
+        pasteItem.dispose();
+        selectAllItem.dispose();
+        contextMenu.dispose();
     }
 
     @Override
@@ -230,5 +321,18 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener 
             }
             commandLineText.setSelection(new Point(leftOffset, rightOffset));
         }
+    }
+
+    @Override
+    public void widgetSelected(SelectionEvent e) {
+        clipSelection();
+        int selectionLen = Math.abs(e.y - e.x);
+        cutItem.setEnabled( ! readOnly && selectionLen > 0);
+        copyItem.setEnabled(selectionLen > 0);
+        pasteItem.setEnabled( ! readOnly);
+    }
+
+    @Override
+    public void widgetDefaultSelected(SelectionEvent e) {
     }
 }
