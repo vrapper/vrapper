@@ -153,6 +153,9 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener,
     public void copySelectionToClipboard() {
         clipSelection();
         String selection = commandLineText.getSelectionText();
+        if (selection.isEmpty()) {
+            selection = getContents();
+        }
         clipboard.setContent(new StringRegisterContent(ContentType.TEXT, selection));
     }
 
