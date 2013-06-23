@@ -361,7 +361,10 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         marks.put(id, p);
     }
 
-    private boolean isGlobalMark(final String id) {
+    /**
+     * Returns true if mark id is a global mark name
+     */
+    static public boolean isGlobalMark(final String id) {
         return id.length() == 1
                 && ((   id.charAt(0) >= 'A' && id.charAt(0) <= 'Z')
                     || (id.charAt(0) >= '0' && id.charAt(0) <= '9'));
