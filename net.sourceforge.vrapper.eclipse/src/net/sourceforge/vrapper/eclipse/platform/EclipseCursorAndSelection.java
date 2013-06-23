@@ -19,10 +19,17 @@ import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.ITextViewerExtension5;
+import org.eclipse.jface.text.source.IAnnotationModel;
 import org.eclipse.swt.custom.CaretEvent;
 import org.eclipse.swt.custom.CaretListener;
 import org.eclipse.swt.custom.StyledText;
@@ -31,10 +38,22 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Caret;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IEditorReference;
+import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.internal.WorkbenchPage;
+import org.eclipse.ui.texteditor.AbstractMarkerAnnotationModel;
+import org.eclipse.ui.texteditor.AbstractTextEditor;
+import org.eclipse.ui.texteditor.MarkerUtilities;
 
+@SuppressWarnings("restriction")
 public class EclipseCursorAndSelection implements CursorService, SelectionService {
 
     public static final String POSITION_CATEGORY_NAME = "net.sourceforge.vrapper.position";
+    /// Marker type for global (A-Z0-9) marks. Use IMarker.MARKER to make them invisible.
+    public static final String GLOBAL_MARK_TYPE = IMarker.BOOKMARK;
     private final ITextViewer textViewer;
     private int stickyColumn;
     private boolean stickToEOL = false;
@@ -291,6 +310,10 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
 
     @Override
     public void setMark(final String id, final Position position) {
+        if (isGlobalMark(id)) {
+            setGlobalMark(id, position);
+            return;
+        }
         final org.eclipse.jface.text.Position p = new org.eclipse.jface.text.Position(position.getModelOffset());
         try {
         	//add listener so Position automatically updates as the document changes
@@ -319,8 +342,22 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         marks.put(id, p);
     }
 
+    private boolean isGlobalMark(final String id) {
+        return id.length() == 1
+                && ((   id.charAt(0) >= 'A' && id.charAt(0) <= 'Z')
+                    || (id.charAt(0) >= '0' && id.charAt(0) <= '9'));
+    }
+
     @Override
     public Position getMark(String id) {
+        if (isGlobalMark(id)) {
+            IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+            IMarker marker = getGlobalMarker(id, root);
+            // Check if marker is in the current file.
+            if (marker != null) {
+                return getGlobalMarkerPosition(marker);
+            }
+        }
     	//`` and '' are the same position, so we need to return that position
     	//regardless of which way the user accessed it
     	if(id.equals("`")) {
@@ -335,6 +372,105 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         }
         final int offset = p.getOffset();
         return newPositionForModelOffset(offset);
+    }
+
+    /**
+     * Lookup the specified marker recursively starting at @a resource.
+     * Use @a ResourcesPlugin.getWorkspace().getRoot() to find the marker globally.
+     * @param id marker name
+     * @param resource resource node.
+     * @return marker or @a null if not found.
+     */
+    static public IMarker getGlobalMarker(String id, IResource resource) {
+        try {
+            final IMarker[] markers = resource.findMarkers(GLOBAL_MARK_TYPE, true, IResource.DEPTH_INFINITE);
+            for (final IMarker m: markers) {
+                if (m.getAttribute(IMarker.MESSAGE, "--").equals(id)) {
+                    return m;
+                }
+            }
+        } catch (CoreException e) {
+            // Ignore.
+        }
+        return null;
+    }
+
+    /**
+     * Creates a global bookmark for the specified position.
+     * @param name bookmark name
+     * @param position editor position for the bookmark.
+     */
+    public void setGlobalMark(String name, Position position) {
+        final IEditorPart editorPart =
+                PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+        if (editorPart != null) {
+            final IFileEditorInput input = (IFileEditorInput)editorPart.getEditorInput();
+            final IFile file = input.getFile();
+            final IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+            try {
+                final IMarker marker = getGlobalMarker(name, root);
+                if (marker != null) {
+                    marker.delete();
+                }
+                final HashMap<String, Object> map = new HashMap<String, Object>();
+                MarkerUtilities.setMessage(map, name);
+                final int line = textViewer.getDocument().getLineOfOffset(position.getModelOffset());
+                MarkerUtilities.setLineNumber(map, line);
+                MarkerUtilities.setCharStart(map, position.getModelOffset());
+                MarkerUtilities.setCharEnd(map, position.getModelOffset() + 1);
+                MarkerUtilities.createMarker(file, map, GLOBAL_MARK_TYPE);
+            } catch (Exception e) {
+                VrapperLog.error("could not set global mark", e);
+            }
+        }
+    }
+
+    /**
+     * Finds an editor associated with the specified mark.
+     * @param name mark name
+     * @return IEditorPart or null if not found.
+     */
+    static public IEditorPart getGlobalMarkEditor(String name) {
+        final WorkbenchPage page = (WorkbenchPage) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+        final IEditorReference[] editorReferences = page.getSortedEditors();
+        for (final IEditorReference e : editorReferences) {
+            try {
+                final IFileEditorInput input = (IFileEditorInput)e.getEditorInput();
+                if (getGlobalMarker(name, input.getFile()) != null) {
+                    return (IEditorPart) e.getPart(true);
+                }
+            } catch (PartInitException e1) {
+            }
+        }
+        return null;
+    }
+
+    private Position getGlobalMarkerPosition(IMarker marker) {
+        int start = MarkerUtilities.getCharStart(marker);
+        final IEditorPart editorPart =
+                PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+
+        if (editorPart != null) {
+            final IFileEditorInput input = (IFileEditorInput)editorPart.getEditorInput();
+            if (editorPart instanceof AbstractTextEditor) {
+                final AbstractTextEditor editor = (AbstractTextEditor) editorPart;
+                final IAnnotationModel annotationModel = editor.getDocumentProvider().getAnnotationModel(input);
+                if (annotationModel instanceof AbstractMarkerAnnotationModel) {
+                    final AbstractMarkerAnnotationModel markerModel= (AbstractMarkerAnnotationModel) annotationModel;
+                    final org.eclipse.jface.text.Position pos = markerModel.getMarkerPosition(marker);
+                    if (pos != null && !pos.isDeleted()) {
+                        // Use the position instead of marker offset.
+                        start = pos.getOffset();
+                    } else {
+                        // Do nothing if the position has been deleted or the
+                        // marker is not in the current file.
+                        return null;
+                    }
+                }
+
+            }
+        }
+        return newPositionForModelOffset(start);
     }
 
     @Override
