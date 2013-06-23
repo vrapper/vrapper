@@ -56,42 +56,49 @@ public class GoToMarkCommand extends CountIgnoringNonRepeatableCommand {
 	    this.mode =  mode;
 	}
 
-	public void execute(EditorAdaptor editorAdaptor)
-			throws CommandExecutionException {
+	private EditorAdaptor activateMarkEditor(EditorAdaptor editorAdaptor) {
 	    //
 	    // Check if there is an open editor associated with the mark.
 	    //
-        IEditorPart editor = EclipseCursorAndSelection.getGlobalMarkEditor(id);
-        if (editor == null) {
-            //
-            // Try to open the file from the mark resource.
-            //
-            IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-            IMarker marker = EclipseCursorAndSelection.getGlobalMarker(id, root);
-            if (marker != null) {
+	    IEditorPart editor = EclipseCursorAndSelection.getGlobalMarkEditor(id);
+	    if (editor == null) {
+	        //
+	        // Try to open the file from the mark resource.
+	        //
+	        IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+	        IMarker marker = EclipseCursorAndSelection.getGlobalMarker(id, root);
+	        if (marker != null) {
 
-                final String resourePath = marker.getResource().getProjectRelativePath().toString();
-                editorAdaptor.getFileService().openFile(resourePath);
-                //
-                // See if the mark is still in the editor after opening it.
-                //
-                editor = EclipseCursorAndSelection.getGlobalMarkEditor(id);
-                if (editor == null) {
-                    return;
-                }
-            } else {
-                return;
-            }
-        }
-        //
-        // Activate the editor associated with the global mark.
-        //
-        final IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-        page.activate(editor);
-        //
-        // Lookup Vrapper's EditorAdapter associated with the Eclipse editor.
-        //
-        final EditorAdaptor markEditor = VrapperPlugin.getDefault().findEditor(editor);
+	            final String resourePath = marker.getResource().getProjectRelativePath().toString();
+	            editorAdaptor.getFileService().openFile(resourePath);
+	            //
+	            // See if the mark is still in the editor after opening it.
+	            //
+	            editor = EclipseCursorAndSelection.getGlobalMarkEditor(id);
+	            if (editor == null) {
+	                return null;
+	            }
+	        } else {
+	            return null;
+	        }
+	    }
+	    //
+	    // Activate the editor associated with the global mark.
+	    //
+	    final IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+	    page.activate(editor);
+	    //
+	    // Lookup Vrapper's EditorAdapter associated with the Eclipse editor.
+	    //
+	    return VrapperPlugin.getDefault().findEditor(editor);
+	}
+
+	public void execute(EditorAdaptor editorAdaptor)
+			throws CommandExecutionException {
+	    EditorAdaptor markEditor = editorAdaptor;
+	    if (EclipseCursorAndSelection.isGlobalMark(id)) {
+	        markEditor = activateMarkEditor(editorAdaptor);
+	    }
         if (markEditor == null) {
             return;
         }
