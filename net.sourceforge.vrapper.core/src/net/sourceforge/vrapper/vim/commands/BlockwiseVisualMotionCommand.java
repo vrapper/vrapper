@@ -22,40 +22,11 @@ public class BlockwiseVisualMotionCommand extends AbstractVisualMotionCommand {
     protected void extendSelection(final EditorAdaptor editorAdaptor,
             final Selection oldSelection) {
         final Position from = oldSelection.getFrom(); // always constant
-        final Position oldTo = oldSelection.getTo(); // always constant
-        Position to = editorAdaptor.getPosition();
+        final Position to = editorAdaptor.getPosition();
 //        System.out.println("extendSelection ? " + to.getModelOffset() 
 //                + " <= " + from.getModelOffset());
         
-        final TextContent text = editorAdaptor.getModelContent();
-        final int fromCol = VimUtils.calculateColForPosition(text, from);
-        final int toCol = VimUtils.calculateColForPosition(text, to);
-        final boolean sameRow = VimUtils.calculateLine(text, oldTo) == VimUtils.calculateLine(text, to);
-        
-        if (to.getModelOffset() <= from.getModelOffset()) {
-            // cross back
-                    
-            // if they're the same column, we should decrement one more
-            // so there's no bizarre empty column
-            if (fromCol < toCol && !sameRow) {
-                final CursorService cs = editorAdaptor.getCursorService();
-                to = cs.newPositionForModelOffset(to.getModelOffset()-1); // decrement normal
-            }
-            
-//            System.out.println("extendSelection left " + from.getModelOffset() 
-//                    + " -> " + to.getModelOffset());
-    		editorAdaptor.setSelection(new BlockWiseSelection(editorAdaptor, 
-    		        from, to));
-        } else {
-            if (!sameRow) {
-                final CursorService cs = editorAdaptor.getCursorService();
-                to = cs.newPositionForModelOffset(to.getModelOffset()-1); // decrement normal
-            }
-            
-//            System.out.println("extendSelection (" + sameColumn + "/" + sameRow +"): " + oldSelection);
-//            System.out.println("extendSelection right " + from.getModelOffset() + " -> " + to.getModelOffset());
-    		editorAdaptor.setSelection(new BlockWiseSelection(editorAdaptor, from, to));
-        }
+        editorAdaptor.setSelection(new BlockWiseSelection(editorAdaptor, from, to));
         
 //        System.out.println("New selection: " + BlockWiseSelection.getRect(text, editorAdaptor.getSelection()));
     }
