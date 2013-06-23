@@ -1,5 +1,6 @@
 package net.sourceforge.vrapper.eclipse.keymap;
 
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.convertKeyStroke;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafCtrlBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.operatorCmds;
@@ -10,11 +11,12 @@ import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.dontRepea
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
 import net.sourceforge.vrapper.eclipse.commands.ChangeTabCommand;
 import net.sourceforge.vrapper.eclipse.commands.EclipseShiftOperation;
-import net.sourceforge.vrapper.eclipse.commands.EclipseVisualMotionCommand;
+import net.sourceforge.vrapper.eclipse.commands.GoToMarkCommand;
 import net.sourceforge.vrapper.eclipse.commands.TabNewCommand;
 import net.sourceforge.vrapper.eclipse.commands.ToggleFoldingCommand;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.StateUtils;
+import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.DeselectAllCommand;
 import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
@@ -98,7 +100,16 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
                 leafCtrlBind('y', dontRepeat(editText("scroll.lineUp"))),
                 leafCtrlBind('e', dontRepeat(editText("scroll.lineDown"))),
                 leafCtrlBind('i', dontRepeat(cmd("org.eclipse.ui.navigate.forwardHistory"))),
-                leafCtrlBind('o', dontRepeat(cmd("org.eclipse.ui.navigate.backwardHistory")))),
+                leafCtrlBind('o', dontRepeat(cmd("org.eclipse.ui.navigate.backwardHistory"))),
+                transitionBind('\\', convertKeyStroke(
+                        GoToMarkCommand.EDITOR_CONVERTER,
+                        VimConstants.PRINTABLE_KEYSTROKES)),
+                transitionBind('\'', convertKeyStroke(
+                        GoToMarkCommand.LINEWISE_CONVERTER,
+                        VimConstants.PRINTABLE_KEYSTROKES)),
+                transitionBind('`', convertKeyStroke(
+                        GoToMarkCommand.CHARWISE_CONVERTER,
+                        VimConstants.PRINTABLE_KEYSTROKES))),
             prefixedOperatorCmds('g', 'u', seq(editText("lowerCase"), DeselectAllCommand.INSTANCE), textObjects),
             prefixedOperatorCmds('g', 'U', seq(editText("upperCase"), DeselectAllCommand.INSTANCE), textObjects),
             operatorCmds('>', EclipseShiftOperation.Normal.RIGHT, textObjects),
