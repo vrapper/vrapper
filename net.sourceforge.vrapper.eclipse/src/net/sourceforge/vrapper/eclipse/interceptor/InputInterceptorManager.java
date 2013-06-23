@@ -104,7 +104,7 @@ public class InputInterceptorManager implements IPartListener {
 				((ITextViewer) textViewer).getSelectionProvider()
 						.addSelectionChangedListener(interceptor);
                 interceptors.put(editor, interceptor);
-                VrapperPlugin.getDefault().registerEditor(editor);
+                VrapperPlugin.getDefault().registerEditor(editor, interceptor.getEditorAdaptor());
             }
         } catch (Exception exception) {
             VrapperLog.error("Exception when intercepting AbstractTextEditor",
