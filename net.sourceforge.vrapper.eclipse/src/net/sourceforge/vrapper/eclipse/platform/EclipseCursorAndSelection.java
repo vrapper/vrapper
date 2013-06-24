@@ -215,7 +215,6 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
             if (ContentType.TEXT_RECTANGLE.equals(newSelection.getContentType(configuration))) {
                 // block selection
                 final StyledText styled = textViewer.getTextWidget();
-                final StyledText textWidget = textViewer.getTextWidget();
                 styled.setBlockSelection(true);
                 final int starOfs = selection.getFrom().getViewOffset();
                 final int endOfs = selection.getTo().getViewOffset();
@@ -226,8 +225,8 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
                 // getTextBounds returns values relative to the top-left visible
                 // pixel, adjusting the block rectangle accordingly.
                 //
-                blockRect.x += textWidget.getHorizontalPixel();
-                blockRect.y += textWidget.getTopPixel();
+                blockRect.x += styled.getHorizontalPixel();
+                blockRect.y += styled.getTopPixel();
                 // NOTE: setBlockSelectionBound temporary changes caret offset and
                 //       triggers incorrect sticky column recalculation.
                 caretListener.disable();
