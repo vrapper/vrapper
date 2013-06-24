@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import net.sourceforge.vrapper.eclipse.ui.CaretUtils;
-import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.Configuration;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.SelectionService;
@@ -41,6 +40,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Caret;
+import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IFileEditorInput;
@@ -422,12 +422,17 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
      * @param name bookmark name
      * @param position editor position for the bookmark.
      */
-    public void setGlobalMark(String name, Position position) {
+    private void setGlobalMark(String name, Position position) {
         final IEditorPart editorPart =
                 PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
         if (editorPart != null) {
-            final IFileEditorInput input = (IFileEditorInput)editorPart.getEditorInput();
-            final IFile file = input.getFile();
+            final IEditorInput editorInput = editorPart.getEditorInput();
+            if (!(editorInput instanceof IFileEditorInput)) {
+                // Ignore editors without files.
+                return;
+            }
+            final IFileEditorInput fileInput = (IFileEditorInput)editorInput;
+            final IFile file = fileInput.getFile();
             final IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
             try {
                 final IMarker marker = getGlobalMarker(name, root);
@@ -442,7 +447,6 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
                 MarkerUtilities.setCharEnd(map, position.getModelOffset() + 1);
                 MarkerUtilities.createMarker(file, map, GLOBAL_MARK_TYPE);
             } catch (Exception e) {
-                VrapperLog.error("could not set global mark", e);
             }
         }
     }
@@ -457,9 +461,12 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         final IEditorReference[] editorReferences = page.getSortedEditors();
         for (final IEditorReference e : editorReferences) {
             try {
-                final IFileEditorInput input = (IFileEditorInput)e.getEditorInput();
-                if (getGlobalMarker(name, input.getFile()) != null) {
-                    return (IEditorPart) e.getPart(true);
+                IEditorInput editorInput = e.getEditorInput();
+                if (editorInput instanceof IFileEditorInput) {
+                    final IFileEditorInput fileInput = (IFileEditorInput)editorInput;
+                    if (getGlobalMarker(name, fileInput.getFile()) != null) {
+                        return (IEditorPart) e.getPart(true);
+                    }
                 }
             } catch (PartInitException e1) {
             }
@@ -473,10 +480,10 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
                 PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
 
         if (editorPart != null) {
-            final IFileEditorInput input = (IFileEditorInput)editorPart.getEditorInput();
             if (editorPart instanceof AbstractTextEditor) {
                 final AbstractTextEditor editor = (AbstractTextEditor) editorPart;
-                final IAnnotationModel annotationModel = editor.getDocumentProvider().getAnnotationModel(input);
+                final IAnnotationModel annotationModel =
+                        editor.getDocumentProvider().getAnnotationModel(editorPart.getEditorInput());
                 if (annotationModel instanceof AbstractMarkerAnnotationModel) {
                     final AbstractMarkerAnnotationModel markerModel= (AbstractMarkerAnnotationModel) annotationModel;
                     final org.eclipse.jface.text.Position pos = markerModel.getMarkerPosition(marker);

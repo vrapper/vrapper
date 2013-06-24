@@ -56,7 +56,7 @@ public class GoToMarkCommand extends CountIgnoringNonRepeatableCommand {
 	    this.mode =  mode;
 	}
 
-	private EditorAdaptor activateMarkEditor(EditorAdaptor editorAdaptor) {
+	private EditorAdaptor activateMarkEditor(EditorAdaptor editorAdaptor) throws CommandExecutionException {
 	    //
 	    // Check if there is an open editor associated with the mark.
 	    //
@@ -79,7 +79,7 @@ public class GoToMarkCommand extends CountIgnoringNonRepeatableCommand {
 	                return null;
 	            }
 	        } else {
-	            return null;
+	            throw new CommandExecutionException("Global mark not set");
 	        }
 	    }
 	    //
