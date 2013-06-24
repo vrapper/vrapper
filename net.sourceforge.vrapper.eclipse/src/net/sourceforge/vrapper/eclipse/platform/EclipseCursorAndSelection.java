@@ -16,8 +16,6 @@ import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Space;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
-import net.sourceforge.vrapper.vim.commands.BlockWiseSelection;
-import net.sourceforge.vrapper.vim.commands.BlockWiseSelection.Rect;
 import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 
@@ -216,33 +214,24 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
             if (ContentType.TEXT_RECTANGLE.equals(newSelection.getContentType(configuration))) {
                 // block selection
                 final StyledText styled = textViewer.getTextWidget();
+                final StyledText textWidget = textViewer.getTextWidget();
                 styled.setBlockSelection(true);
-
-                final Rect rect = BlockWiseSelection.getViewRect(textContent.getViewContent(), newSelection);
-
-                // convert to units Eclipse wants
-//                final int charWidth = JFaceTextUtil.getAverageCharWidth(styled);
-                final int yPixel = styled.getLinePixel(rect.top);
-                final int hPixel = styled.getLinePixel(rect.bottom + 1) - yPixel;
-
-                final int start = rect.getULOffset(textContent.getViewContent());
-                final Rectangle row = styled.getTextBounds(start, start + rect.width());
-                final int xPixel = row.x;
-                final int wPixel = row.width;
-
-                // getLinePixel is relative to the top of the viewport,
-                //  not the top of the document; however, setBlockSelectionBounds
-                //  wants pixels relative to the document. awesome
-                final int scrollOffsetY = styled.getTopPixel() + yPixel;
-
-                // getTextBounds is apparently also relative to the viewport
-                final int scrollOffsetX = styled.getHorizontalPixel() + xPixel;
-
-                styled.setBlockSelectionBounds(
-                        scrollOffsetX,
-                        scrollOffsetY,
-                        wPixel,
-                        hPixel);
+                final int starOfs = selection.getFrom().getViewOffset();
+                final int endOfs = selection.getTo().getViewOffset();
+                final Rectangle fromRect = styled.getTextBounds(starOfs, starOfs);
+                final Rectangle toRect = styled.getTextBounds(endOfs, endOfs);
+                final Rectangle blockRect = fromRect.union(toRect);
+                //
+                // getTextBounds returns values relative to the top-left visible
+                // pixel, adjusting the block rectangle accordingly.
+                //
+                blockRect.x += textWidget.getHorizontalPixel();
+                blockRect.y += textWidget.getTopPixel();
+                // NOTE: setBlockSelectionBound temporary changes caret offset and
+                //       triggers incorrect sticky column recalculation.
+                caretListener.disable();
+                styled.setBlockSelectionBounds(blockRect);
+                caretListener.enable();
             } else {
                 textViewer.getTextWidget().setBlockSelection(false);
                 textViewer.setSelectedRange(from, length);
