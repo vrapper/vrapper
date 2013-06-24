@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.sourceforge.vrapper.eclipse.ui.CaretUtils;
+import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.Configuration;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.SelectionService;
@@ -213,12 +214,19 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
             if (ContentType.TEXT_RECTANGLE.equals(newSelection.getContentType(configuration))) {
                 // block selection
                 final StyledText styled = textViewer.getTextWidget();
+                final StyledText textWidget = textViewer.getTextWidget();
                 styled.setBlockSelection(true);
-                final int starOfs = selection.getFrom().getModelOffset();
-                final int endOfs = selection.getTo().getModelOffset();
+                final int starOfs = selection.getFrom().getViewOffset();
+                final int endOfs = selection.getTo().getViewOffset();
                 final Rectangle fromRect = styled.getTextBounds(starOfs, starOfs);
                 final Rectangle toRect = styled.getTextBounds(endOfs, endOfs);
                 final Rectangle blockRect = fromRect.union(toRect);
+                //
+                // getTextBounds returns values relative to the top-left visible
+                // pixel, adjusting the block rectangle accordingly.
+                //
+                blockRect.x += textWidget.getHorizontalPixel();
+                blockRect.y += textWidget.getTopPixel();
                 // NOTE: setBlockSelectionBound temporary changes caret offset and
                 //       triggers incorrect sticky column recalculation.
                 caretListener.disable();
