@@ -48,7 +48,7 @@ public class ArgumentTextObject extends AbstractTextObject {
          * fix the boundaries based on the type of text object.
          * @param position starting position.
          */
-        public void findBoundsAt(int position)
+        public void findBoundsAt(int position) throws CommandExecutionException
         {
             leftBound = position;
             rightBound = position;
@@ -72,6 +72,12 @@ public class ArgumentTextObject extends AbstractTextObject {
                 rightBound = nextRight;
                 findRightBound();
                 nextRight = rightBound + 1;
+                //
+                // If reached text boundaries or there is nothing between delimiters.
+                //
+                if (nextLeft < 0 || nextRight >= text.getTextLength() || (rightBound - leftBound) == 1) {
+                    throw new CommandExecutionException("not an argument");
+                }
                 parenthesis = getCharAt(leftBound) != ',' && getCharAt(rightBound) != ',';
                 if (parenthesis && isIdentBackward()) {
                     // Looking at a pair of parenthesis preceded by an
