@@ -59,6 +59,7 @@ public class ArgumentTextObject extends AbstractTextObject {
             // Try to extend bound until one of the bounds is a comma.
             // This handles cases like: fun(a, (30 + <cursor>x) * 20, c)
             //
+            boolean parenthesis;
             do {
                 leftBound = nextLeft;
                 findLeftBound();
@@ -66,8 +67,13 @@ public class ArgumentTextObject extends AbstractTextObject {
                 rightBound = nextRight;
                 findRightBound();
                 nextRight = rightBound + 1;
-            } while (leftBound > 0 && rightBound < text.getTextLength()
-                    && getCharAt(leftBound) != ',' && getCharAt(rightBound) != ',');
+                parenthesis = getCharAt(leftBound) != ',' && getCharAt(rightBound) != ',';
+                if (parenthesis && isIdentBackward()) {
+                    // Looking at a pair of parenthesis preceded by an
+                    // identifier -- single argument function call.
+                    break;
+                }
+            } while (leftBound > 0 && rightBound < text.getTextLength() && parenthesis);
         }
 
         /**
@@ -88,7 +94,7 @@ public class ArgumentTextObject extends AbstractTextObject {
         public void AdjustForOuter() {
             if (getCharAt(leftBound) != ',') {
                 ++leftBound;
-                if (rightBound + 1 < text.getTextLength()) {
+                if (rightBound + 1 < text.getTextLength() && getCharAt(rightBound) == ',') {
                     ++rightBound;
                     while (rightBound + 1 < text.getTextLength()
                             && VimUtils.isWhiteSpace(Character.toString(getCharAt(rightBound)))) {
@@ -105,6 +111,20 @@ public class ArgumentTextObject extends AbstractTextObject {
         public int getRightBound() {
             return rightBound;
         }
+
+        public boolean isIdentBackward() {
+            int i = leftBound - 1;
+            // Skip whitespace first.
+            while (i > 0 && VimUtils.isWhiteSpace(Character.toString(getCharAt(i)))) {
+                --i;
+            }
+            final int idEnd = i;
+            while (i > 0 && Character.isJavaIdentifierPart(getCharAt(i))) {
+                --i;
+            }
+            return (idEnd - i) > 0 && Character.isJavaIdentifierStart(getCharAt(i + 1));
+        }
+
 
         /**
          * Detects if current position is inside a quoted string and adjusts
