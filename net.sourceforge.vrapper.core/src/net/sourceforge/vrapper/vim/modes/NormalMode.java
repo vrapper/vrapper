@@ -323,6 +323,7 @@ public class NormalMode extends CommandBasedMode {
                         leafBind('v', dontRepeat(seq(visualMode, afterEnteringVisual))),
                         leafBind('V', dontRepeat(seq(linewiseVisualMode, selectLine))),
                         leafCtrlBind('v', dontRepeat(seq(blockwiseVisualMode, afterEnteringBlockVisual))),
+                        leafCtrlBind('q', dontRepeat(seq(blockwiseVisualMode, afterEnteringBlockVisual))),
                         leafBind('p', pasteAfter),
                         leafBind('.', repeatLastOne),
                         leafBind('P', pasteBefore),
