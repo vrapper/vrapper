@@ -5,13 +5,13 @@ import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.LineInformation;
-import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.AbstractTextObject;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
+import net.sourceforge.vrapper.vim.commands.motions.CountAwareMotion;
 
 public class ArgumentTextObject extends AbstractTextObject {
 
@@ -50,9 +50,14 @@ public class ArgumentTextObject extends AbstractTextObject {
          */
         public void findBoundsAt(int position)
         {
-            this.leftBound = position;
-            this.rightBound = position + 1;
+            leftBound = position;
+            rightBound = position;
             getOutOfQuotedText();
+            if (isCloseParen(getCharAt(rightBound))) {
+                --leftBound;
+            } else {
+                ++rightBound;
+            }
             int nextLeft = leftBound;
             int nextRight = rightBound;
             //
@@ -273,15 +278,25 @@ public class ArgumentTextObject extends AbstractTextObject {
             throws CommandExecutionException {
         final ArgBoundsFinder finder = new ArgBoundsFinder(editorAdaptor.getModelContent());
         final CursorService cursorService = editorAdaptor.getCursorService();
-        final Position start = cursorService.getPosition();
-        finder.findBoundsAt(start.getModelOffset());
-        if (inner) {
-            finder.AdjustForInner();
-        } else {
-            finder.AdjustForOuter();
+        if (count == CountAwareMotion.NO_COUNT_GIVEN) {
+            count = 1;
+        }
+        int start = cursorService.getPosition().getModelOffset();
+        int left = 0;
+        for (int i = 0; i < count; ++i) {
+            finder.findBoundsAt(start);
+            if (inner && (i == 0 || i == count - 1)) {
+                finder.AdjustForInner();
+            } else {
+                finder.AdjustForOuter();
+            }
+            if (i == 0) {
+                left = finder.getLeftBound();
+            }
+            start = finder.getRightBound();
         }
         return new StartEndTextRange(
-                cursorService.newPositionForModelOffset(finder.getLeftBound()),
+                cursorService.newPositionForModelOffset(left),
                 cursorService.newPositionForModelOffset(finder.getRightBound()));
     }
 
