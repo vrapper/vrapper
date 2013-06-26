@@ -53,10 +53,12 @@ public class ArgumentTextObject extends AbstractTextObject {
             leftBound = position;
             rightBound = position;
             getOutOfQuotedText();
-            if (isCloseParen(getCharAt(rightBound))) {
-                --leftBound;
-            } else {
-                ++rightBound;
+            if (rightBound == leftBound) {
+                if (isCloseParen(getCharAt(rightBound))) {
+                    --leftBound;
+                } else {
+                    ++rightBound;
+                }
             }
             int nextLeft = leftBound;
             int nextRight = rightBound;
@@ -145,10 +147,10 @@ public class ArgumentTextObject extends AbstractTextObject {
         private void getOutOfQuotedText() {
             final LineInformation line = text.getLineInformationOfOffset(leftBound);
             int i = line.getBeginOffset();
-            while (i < rightBound) {
+            while (i <= rightBound) {
                 if (isQuote(i)) {
                    final int endOfQuotedText = SkipQuotedTextForward(i, line.getEndOffset());
-                   if (endOfQuotedText > leftBound) {
+                   if (endOfQuotedText >= leftBound) {
                        leftBound = i - 1;
                        rightBound = endOfQuotedText + 1;
                        break;
@@ -262,18 +264,16 @@ public class ArgumentTextObject extends AbstractTextObject {
             assert start > end;
             final char quoteChar = getCharAt(start);
             int i = start - 1;
-            char lastChar = getCharAt(i);
 
             while (i > end) {
                 final char ch = getCharAt(i);
+                final char prevChar = getCharAt(i - 1);
                 // NOTE: doesn't handle cases like \\"str", but they make no
                 //       sense anyway.
-                if (lastChar == quoteChar && ch != '\\') {
+                if (ch == quoteChar && prevChar != '\\') {
                     // Found matching quote and it's not escaped.
-                    ++i;
                     break;
                 }
-                lastChar = ch;
                 --i;
             }
             return i;
