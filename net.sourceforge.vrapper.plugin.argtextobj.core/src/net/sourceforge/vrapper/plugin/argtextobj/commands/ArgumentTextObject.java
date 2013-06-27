@@ -1,5 +1,7 @@
 package net.sourceforge.vrapper.plugin.argtextobj.commands;
 
+import java.util.Stack;
+
 import net.sourceforge.vrapper.platform.Configuration;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.TextContent;
@@ -28,13 +30,16 @@ public class ArgumentTextObject extends AbstractTextObject {
      * Helper class to find argument boundaries starting at the specified
      * position
      */
-    private class ArgBoundsFinder {
+    private static class ArgBoundsFinder {
         final private TextContent text;
         private int leftBound;
         private int rightBound;
+        private int leftBracket;
+        private int rightBracket;
         final private static String QUOTES = "\"\'";
-        final private static String OPEN_PARENS = "[{(";
-        final private static String CLOSE_PARENS = ")}]";
+        // NOTE: brackets must match by index and ordered by rank.
+        final private static String OPEN_BRACKETS  = "[{(<";
+        final private static String CLOSE_BRACKETS = "]})>";
 
         public ArgBoundsFinder(TextContent text) {
             this.text = text;
@@ -54,7 +59,7 @@ public class ArgumentTextObject extends AbstractTextObject {
             rightBound = position;
             getOutOfQuotedText();
             if (rightBound == leftBound) {
-                if (isCloseParen(getCharAt(rightBound))) {
+                if (isCloseBracket(getCharAt(rightBound))) {
                     --leftBound;
                 } else {
                     ++rightBound;
@@ -66,8 +71,13 @@ public class ArgumentTextObject extends AbstractTextObject {
             // Try to extend bound until one of the bounds is a comma.
             // This handles cases like: fun(a, (30 + <cursor>x) * 20, c)
             //
-            boolean parenthesis;
+            boolean bothBrackets;
             do {
+                leftBracket = nextLeft;
+                rightBracket = nextRight;
+                if (!findOuterBrackets(0, text.getTextLength() - 1)) {
+                    throw new CommandExecutionException("not inside argument list");
+                }
                 leftBound = nextLeft;
                 findLeftBound();
                 nextLeft = leftBound - 1;
@@ -80,13 +90,13 @@ public class ArgumentTextObject extends AbstractTextObject {
                 if (nextLeft < 0 || nextRight >= text.getTextLength() || (rightBound - leftBound) == 1) {
                     throw new CommandExecutionException("not an argument");
                 }
-                parenthesis = getCharAt(leftBound) != ',' && getCharAt(rightBound) != ',';
-                if (parenthesis && isIdentBackward()) {
-                    // Looking at a pair of parenthesis preceded by an
+                bothBrackets = getCharAt(leftBound) != ',' && getCharAt(rightBound) != ',';
+                if (bothBrackets && isIdentBackward()) {
+                    // Looking at a pair of brackets preceded by an
                     // identifier -- single argument function call.
                     break;
                 }
-            } while (leftBound > 0 && rightBound < text.getTextLength() && parenthesis);
+            } while (leftBound > 0 && rightBound < text.getTextLength() && bothBrackets);
         }
 
         /**
@@ -107,9 +117,9 @@ public class ArgumentTextObject extends AbstractTextObject {
         public void AdjustForOuter() {
             if (getCharAt(leftBound) != ',') {
                 ++leftBound;
-                if (rightBound + 1 < text.getTextLength() && getCharAt(rightBound) == ',') {
+                if (rightBound + 1 < rightBracket && getCharAt(rightBound) == ',') {
                     ++rightBound;
-                    while (rightBound + 1 < text.getTextLength()
+                    while (rightBound + 1 < rightBracket
                             && VimUtils.isWhiteSpace(Character.toString(getCharAt(rightBound)))) {
                         ++rightBound;
                     }
@@ -149,7 +159,7 @@ public class ArgumentTextObject extends AbstractTextObject {
             int i = line.getBeginOffset();
             while (i <= rightBound) {
                 if (isQuote(i)) {
-                   final int endOfQuotedText = SkipQuotedTextForward(i, line.getEndOffset());
+                   final int endOfQuotedText = skipQuotedTextForward(i, line.getEndOffset());
                    if (endOfQuotedText >= leftBound) {
                        leftBound = i - 1;
                        rightBound = endOfQuotedText + 1;
@@ -163,64 +173,55 @@ public class ArgumentTextObject extends AbstractTextObject {
         }
 
         private void findRightBound() {
-            int insideParens = 0;
-            while (rightBound + 1 < text.getTextLength()) {
-                final int ch = getCharAt(rightBound);
-                if (ch == ',' && insideParens == 0) {
+            while (rightBound < rightBracket) {
+                final char ch = getCharAt(rightBound);
+                if (ch == ',') {
                     break;
                 }
-                if (isOpenParen(ch)) {
-                    ++insideParens;
+                if (isOpenBracket(ch)) {
+                    rightBound = skipSexp(rightBound, rightBracket, SexpDirection.FORWARD);
                 } else {
-                    if (isCloseParen(ch)) {
-                        if (insideParens == 0) {
-                            break;
-                        } else {
-                            --insideParens;
-                        }
-                    } else {
-                        if (isQuoteChar(ch)) {
-                            rightBound = SkipQuotedTextForward(rightBound, text.getTextLength());
-                        }
+                    if (isQuoteChar(ch)) {
+                        rightBound = skipQuotedTextForward(rightBound, rightBracket);
                     }
-
+                    ++rightBound;
                 }
-                ++rightBound;
             }
         }
 
-        private boolean isCloseParen(final int ch) {
-            return CLOSE_PARENS.indexOf(ch) != -1;
+        static private char matchingBracket(char ch) {
+            int idx = CLOSE_BRACKETS.indexOf(ch);
+            if (idx != -1) {
+                return OPEN_BRACKETS.charAt(idx);
+            } else {
+                assert isOpenBracket(ch);
+                idx = OPEN_BRACKETS.indexOf(ch);
+                return CLOSE_BRACKETS.charAt(idx);
+            }
         }
 
-        private boolean isOpenParen(final int ch) {
-            return OPEN_PARENS.indexOf(ch) != -1;
+        static private boolean isCloseBracket(final int ch) {
+            return CLOSE_BRACKETS.indexOf(ch) != -1;
+        }
+
+        static private boolean isOpenBracket(final int ch) {
+            return OPEN_BRACKETS.indexOf(ch) != -1;
         }
 
         private void findLeftBound() {
-            int insideParens = 0;
-            while (leftBound > 0) {
-                final int ch = getCharAt(leftBound);
-                if (ch == ',' && insideParens == 0) {
+            while (leftBound > leftBracket) {
+                final char ch = getCharAt(leftBound);
+                if (ch == ',') {
                     break;
                 }
-                if (isCloseParen(ch)) {
-                    ++insideParens;
+                if (isCloseBracket(ch)) {
+                    leftBound = skipSexp(leftBound, leftBracket, SexpDirection.BACKWARD);
                 } else {
-                    if (isOpenParen(ch)) {
-                        if (insideParens == 0) {
-                            break;
-                        } else {
-                            --insideParens;
-                        }
-                    } else {
-                        if (isQuoteChar(ch)) {
-                            leftBound = SkipQuotedTextBackward(leftBound, 0);
-                        }
+                    if (isQuoteChar(ch)) {
+                        leftBound = skipQuotedTextBackward(leftBound, leftBracket);
                     }
-
+                    --leftBound;
                 }
-                --leftBound;
             }
         }
 
@@ -228,7 +229,7 @@ public class ArgumentTextObject extends AbstractTextObject {
             return QUOTES.indexOf(getCharAt(i)) != -1;
         }
 
-        private boolean isQuoteChar(final int ch) {
+        static private boolean isQuoteChar(final int ch) {
             return QUOTES.indexOf(ch) != -1;
         }
 
@@ -237,7 +238,7 @@ public class ArgumentTextObject extends AbstractTextObject {
             return text.getText(modelOffset, 1).charAt(0);
         }
 
-        private int SkipQuotedTextForward(final int start, final int end) {
+        private int skipQuotedTextForward(final int start, final int end) {
             assert start < end;
             final char quoteChar = getCharAt(start);
             boolean backSlash = false;
@@ -260,7 +261,7 @@ public class ArgumentTextObject extends AbstractTextObject {
             return i;
         }
 
-        private int SkipQuotedTextBackward(final int start, final int end) {
+        private int skipQuotedTextBackward(final int start, final int end) {
             assert start > end;
             final char quoteChar = getCharAt(start);
             int i = start - 1;
@@ -277,6 +278,172 @@ public class ArgumentTextObject extends AbstractTextObject {
                 --i;
             }
             return i;
+        }
+
+        /**
+         * Interface to parametrise S-expression traversal direction.
+         */
+        abstract static class SexpDirection {
+            abstract int delta();
+            abstract boolean isOpenBracket(char ch);
+            abstract boolean isCloseBracket(char ch);
+            abstract int skipQuotedText(int pos, int start, int end, ArgBoundsFinder self);
+            static final SexpDirection FORWARD = new SexpDirection() {
+                @Override int delta() { return 1; }
+                @Override boolean isOpenBracket(char ch) { return ArgBoundsFinder.isOpenBracket(ch); }
+                @Override boolean isCloseBracket(char ch) { return ArgBoundsFinder.isCloseBracket(ch); }
+                @Override  int skipQuotedText(int pos, int start, int end, ArgBoundsFinder self) {
+                    return self.skipQuotedTextForward(pos, end);
+                }
+            };
+            static final SexpDirection BACKWARD = new SexpDirection() {
+                @Override int delta() { return -1; }
+                @Override boolean isOpenBracket(char ch) { return ArgBoundsFinder.isCloseBracket(ch); }
+                @Override boolean isCloseBracket(char ch) { return ArgBoundsFinder.isOpenBracket(ch); }
+                @Override  int skipQuotedText(int pos, int start, int end, ArgBoundsFinder self) {
+                    return self.skipQuotedTextBackward(pos, start);
+                }
+            };
+        }
+
+        /**
+         * Skip over S-expression considering priorities when unbalanced.
+         * @param start position of the starting bracket.
+         * @param end maximum position
+         * @param dir direction instance
+         * @return position after S-expression or next to the start position if 
+         *         unbalanced.
+         */
+        private int skipSexp(final int start, final int end, SexpDirection dir) {
+            char lastChar = getCharAt(start);
+            assert dir.isOpenBracket(lastChar);
+            Stack<Character> bracketStack = new Stack<Character>();
+            bracketStack.push(lastChar);
+            int i = start + dir.delta();
+            while (!bracketStack.empty() && i != end) {
+                final char ch = getCharAt(i);
+                if (dir.isOpenBracket(ch)) {
+                    bracketStack.push(ch);
+                } else {
+                    if (dir.isCloseBracket(ch)) {
+                        if (bracketStack.lastElement() == matchingBracket(ch)) {
+                            bracketStack.pop();
+                        } else {
+                            // Unbalanced brackets -- check ranking.
+                            if (getBracketPrio(ch) < getBracketPrio(bracketStack.lastElement())) {
+                                // (<...) ->  (...)
+                                bracketStack.pop();
+                                // Retry the same character again for cases like (...<<...).
+                                continue;
+                            } else {
+                                // Ignore lower-priority closing brackets.
+                                // (...> ->  (....
+                            }
+                        }
+                    } else {
+                        if (isQuoteChar(ch)) {
+                            i = dir.skipQuotedText(i, start, end, this);
+                        }
+                    }
+                }
+                lastChar = ch;
+                i += dir.delta();
+            }
+            if (bracketStack.empty()) {
+                return i;
+            } else {
+                return start + dir.delta();
+            }
+        }
+
+        /**
+         * @return rank of a bracket.
+         */
+        static int getBracketPrio(char ch) {
+            return Math.max(OPEN_BRACKETS.indexOf(ch), CLOSE_BRACKETS.indexOf(ch));
+        }
+
+        /**
+         * Find a pair of brackets surrounding (leftBracket..rightBracket) block.
+         * @param start minimum position to look for
+         * @param end maximum position
+         * @return true if found
+         */
+        public boolean findOuterBrackets(final int start, final int end) {
+            boolean hasNewBracket = findPrevOpenBracket(start) && findNextCloseBracket(end);
+            while (hasNewBracket) {
+                final int leftPrio = getBracketPrio(getCharAt(leftBracket));
+                final int rightPrio = getBracketPrio(getCharAt(rightBracket));
+                if (leftPrio == rightPrio) {
+                    // matching brackets
+                    return true;
+                } else {
+                    if (leftPrio < rightPrio) {
+                        if (rightBracket + 1 < end) {
+                            ++rightBracket;
+                            hasNewBracket = findNextCloseBracket(end);
+                        } else {
+                            hasNewBracket = false;
+                        }
+                    } else {
+                        if (leftBracket > 1) {
+                            --leftBracket;
+                            hasNewBracket = findPrevOpenBracket(start);
+                        } else {
+                            hasNewBracket = false;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        /**
+         * Finds unmatched open bracket starting at @a leftBracket.
+         * @param start minimum position.
+         * @return true if found
+         */
+        private boolean findPrevOpenBracket(final int start) {
+            char ch;
+            while (!isOpenBracket(ch = getCharAt(leftBracket))) {
+                if (isCloseBracket(ch)) {
+                    leftBracket = skipSexp(leftBracket, start, SexpDirection.BACKWARD);
+                } else {
+                    if (isQuoteChar(ch)) {
+                        leftBracket = skipQuotedTextBackward(leftBracket, start);
+                    } else {
+                        if (leftBracket == start) {
+                            return false;
+                        }
+                    }
+                    --leftBracket;
+                }
+            }
+            return true;
+        }
+
+        /**
+         * Finds unmatched close bracket starting at @a rightBracket.
+         * @param end maximum position.
+         * @return true if found
+         */
+        private boolean findNextCloseBracket(final int end) {
+            char ch;
+            while (!isCloseBracket(ch = getCharAt(rightBracket))) {
+                if (isOpenBracket(ch)) {
+                    rightBracket = skipSexp(rightBracket, end, SexpDirection.FORWARD);
+                } else {
+                    if (isQuoteChar(ch)) {
+                        rightBracket = skipQuotedTextForward(rightBracket, end);
+                    } else {
+                        if (rightBracket + 1 == end) {
+                            return false;
+                        }
+                    }
+                    ++rightBracket;
+                }
+            }
+            return true;
         }
     };
 
