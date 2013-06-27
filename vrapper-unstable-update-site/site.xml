@@ -24,6 +24,9 @@
    <feature url="features/net.sourceforge.vrapper.plugin.splitEditor_0.33.20130625.jar" id="net.sourceforge.vrapper.plugin.splitEditor" version="0.33.20130625">
       <category name="Vrapper Unstable"/>
    </feature>
+   <feature url="features/net.sourceforge.vrapper.plugin.argtextobj_0.33.20130625.jar" id="net.sourceforge.vrapper.plugin.argtextobj" version="0.33.20130625">
+      <category name="Vrapper Unstable"/>
+   </feature>
    <category-def name="Vrapper Unstable" label="Vrapper Unstable">
       <description>
          Unstable releases of Vrapper.
