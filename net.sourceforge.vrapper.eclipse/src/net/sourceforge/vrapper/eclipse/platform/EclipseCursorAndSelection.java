@@ -88,7 +88,13 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
 
     @Override
     public Position getPosition() {
-        return new TextViewerPosition(textViewer, Space.VIEW, textViewer.getTextWidget().getCaretOffset());
+    	Point sel = textViewer.getSelectedRange();
+    	int carretOffset = textViewer.getTextWidget().getCaretOffset();
+    	int cursorPos = converter.widgetOffset2ModelOffset(carretOffset);
+    	if (sel.y > 0 && cursorPos == sel.x + sel.y) {
+    		--cursorPos;
+    	}
+    	return new TextViewerPosition(textViewer, Space.MODEL, cursorPos);
     }
 
     @Override
