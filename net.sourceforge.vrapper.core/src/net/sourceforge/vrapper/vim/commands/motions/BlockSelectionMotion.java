@@ -5,9 +5,10 @@ import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.SelectionArea;
+import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.BlockWiseSelection;
-import net.sourceforge.vrapper.vim.commands.BlockWiseSelection.Rect;
+import net.sourceforge.vrapper.vim.commands.BlockWiseSelection.TextBlock;
 import net.sourceforge.vrapper.vim.commands.BorderPolicy;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.Selection;
@@ -48,13 +49,18 @@ public class BlockSelectionMotion implements Motion {
         final SelectionArea lastSel = editorAdaptor.getRegisterManager().getLastActiveSelectionArea();
         final CursorService cs = editorAdaptor.getCursorService();
         final TextContent mc = editorAdaptor.getModelContent();
-        
-        final Rect rect = BlockWiseSelection.getRect(editorAdaptor, lastSel);
-        final LineInformation line = mc.getLineInformation(rect.top);
+        final TextRange tr = lastSel.getRegion(editorAdaptor, NO_COUNT_GIVEN);
+        final TextBlock tb = BlockWiseSelection.getTextBlock(tr.getStart(), tr.getEnd(), mc, cs);
         if (gotoStart) {
-            return cs.newPositionForModelOffset(line.getBeginOffset() + rect.left);
+            return cs.getPositionByVisualOffset(tb.startLine, tb.startVisualOffset);
         } else {
-            return cs.newPositionForModelOffset(line.getBeginOffset() + rect.right + 1);
+            final Position pos = cs.getPositionByVisualOffset(tb.startLine, tb.endVisualOffset);
+            if (pos != null) {
+                return pos.addModelOffset(1);
+            } else {
+                LineInformation line = mc.getLineInformation(tb.startLine);
+                return cs.newPositionForModelOffset(line.getEndOffset());
+            }
         }
     }
 

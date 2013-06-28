@@ -3,6 +3,7 @@ package net.sourceforge.vrapper.vim.commands;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.platform.Configuration;
+import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.HistoryService;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.Function;
@@ -13,7 +14,7 @@ import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
-import net.sourceforge.vrapper.vim.commands.BlockWiseSelection.Rect;
+import net.sourceforge.vrapper.vim.commands.BlockWiseSelection.TextBlock;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 
 /**
@@ -100,17 +101,30 @@ public abstract class ReplaceCommand extends AbstractModelSideCommand {
             history.lock("block-action");
             
             final TextContent textContent = editorAdaptor.getModelContent();
-            final Rect rect = BlockWiseSelection.getRect(textContent, editorAdaptor.getSelection());
-            final int selectionStart = rect.getULPosition(editorAdaptor).getModelOffset();
+            final Selection selection = editorAdaptor.getSelection();
+            final Position selectionStart = selection.getFrom();
+            final Position selectionEnd = selection.getTo();
+            final CursorService cursorService = editorAdaptor.getCursorService();
             
-            final int height = rect.height();
-            final int width = rect.width();
-            for (int i=0; i < height; i++) {
-                final Position ul = rect.getULPosition(editorAdaptor);
-                selectionText = textContent.getText(SelectionBasedTextOperationCommand.newRange(ul, width));
-                selectionOffset = ul.getModelOffset();
-            	replace(textContent, ul.getModelOffset(), 1, selectionStart);
-                rect.top++;
+            TextBlock textBlock = BlockWiseSelection.getTextBlock(selectionStart, selectionEnd, textContent, cursorService);
+            for (int line = textBlock.startLine; line <= textBlock.endLine; ++line) {
+                final Position start = cursorService.getPositionByVisualOffset(line, textBlock.startVisualOffset);
+                if (start == null) {
+                    // no characters at the visual offset, skip this line
+                    continue;
+                }
+                final int startOfs = start.getModelOffset();
+                final Position end = cursorService.getPositionByVisualOffset(line, textBlock.endVisualOffset);
+                int endOfs;
+                if (end == null) {
+                    // the line is shorter that the end offset
+                    endOfs = textContent.getLineInformation(line).getEndOffset();
+                } else {
+                    endOfs = end.addModelOffset(1).getModelOffset();
+                }
+                selectionText = textContent.getText(startOfs, endOfs - startOfs);
+                selectionOffset = startOfs;
+            	replace(textContent, startOfs, 1, endOfs);
             }
             
             history.unlock("block-action");
