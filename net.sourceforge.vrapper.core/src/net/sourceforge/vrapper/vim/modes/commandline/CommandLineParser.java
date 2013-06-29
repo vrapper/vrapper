@@ -391,15 +391,15 @@ public class CommandLineParser extends AbstractCommandParser {
         boolean paths = false;
         boolean dirsOnly = false;
         if (commandLineContents.toString().startsWith("e ")) {
-            cmdLen = 3;
+            cmdLen = 2;
         } else {
             if(commandLineContents.toString().startsWith("find ") ||
                     commandLineContents.toString().startsWith("tabf ") ) {
-                cmdLen = 6;
+                cmdLen = 5;
                 paths = true;
             } else {
                 if(commandLineContents.toString().startsWith("cd ")) {
-                    cmdLen = 4;
+                    cmdLen = 3;
                     dirsOnly = true;
                 }
             }

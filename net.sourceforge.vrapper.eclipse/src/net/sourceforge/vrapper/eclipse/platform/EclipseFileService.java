@@ -505,8 +505,8 @@ public class EclipseFileService implements FileService {
     		IResource[] members = start.members();
     		getAllDirectories(folders, members);
     	} catch (CoreException e) {
-    		e.printStackTrace();
-    		return null;
+    		//folder defined in path doesn't exist
+    		return new ArrayList<String>();
     	} 
     	
     	ArrayList<String> dirs = new ArrayList<String>();
