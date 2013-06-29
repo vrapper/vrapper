@@ -1,4 +1,63 @@
 <div class="newsbox">
+    <div class="date">2013-06-29</div>
+    <h4>Updates to unstable update site</h4>
+    <p>It's time for your monthly status update on Vrapper.  When I released
+    0.32.0 last month I mentioned that I received a lot of help from
+    contributors who really knew what they were doing (way more than I do). 
+    Those same contributors have been extremely productive this month to the
+    point that I feel like I've been relegated to a Project Manager position.
+    Just look at what they've accomplished in this last month:</p>
+    
+	<ul>
+		<li>Add support for 'gv' and 'gi' commands</li>
+		<li>Add support for marks: '< '> '[ '] '^</li>
+		<li>Add support for global marks (A-Z and 0-9)</li>
+		<li>Add support for Ctrl+O while in InsertMode</li>
+		<ul>
+			<li> Perform a single NormalMode command then return to InsertMode</li>
+		</ul>
+		<li>Add support for Ctrl+U in InsertMode</li>
+		<li>Add support for Ctrl+X-Ctrl+L sentence completion in InsertMode</li>
+		<li>Add support for Ctrl+U in CommandLineMode</li>
+		<li>Add support for Ctrl+Y in CommandLineMode</li>
+		<li>Add support for :! and :r! to execute a shell command</li>
+		<li>Add support for line ranges when using eclipseaction commands</li>
+		<li>Add support for parameters with eclipseaction commands</li>
+		<ul>
+			<li>eclipseaction sc org.eclipse.ui.views.showView(org.eclipse.ui.views.showView.viewId<br/>=org.eclipse.ui.console.ConsoleView)</li>
+		</ul>
+		<li>Add support for 'autocmd' in .vrapperrc for editor-specific bindings</li>
+		<ul>
+			<li>autocmd "C/C++ Editor" eclipseaction gv org.eclipse.cdt.ui.edit.text.c.select.last</li>
+			<li>au "CMake Editor" nnoremap &lt;CR&gt; gf</li>
+		</ul>
+		<li>Add support for pasting to CommandLineMode with Ctrl+V
+		<ul>
+			<li>(*without* unbinding Paste from Eclipse!)</li>
+		</ul>
+		<li>Add configurable option 'exitlinkmode' to disable Vrapper's attempt to exit to NormalMode after Eclipse performs certain text operations</li>
+		<li>Add support for custom surround definitions in our Surround Plugin</li>
+		<li>Introduce new Split Editor Plugin</li>
+		<ul>
+			<li>:split, :vsplit, :wincmd, Ctrl+w commands, etc.</li>
+			<li>Requires Eclipse 4 (sorry Eclipse 3.x users)</li>
+		</ul>
+		<li>Introduce new Plugin for port of argtextobj.vim</li>
+		<ul>
+			<li>Treats method arguments as text objects</li>
+			<li><a href="http://www.vim.org/scripts/script.php?script_id=2699">http://www.vim.org/scripts/script.php?script_id=2699</a></li>
+		</ul>
+		<li>Incremental improvements on cursor motion within our still-unstable VisualBlockMode</li>
+		<li>Whole mess of miscellaneous defect fixes</li>
+	</ul>
+    
+    <p>That's a lot of changes in a single month and I haven't been able to
+    spend time with each new feature. It may take some extra testing to make
+    sure nothing fell through the cracks. Anyway, if this next month is anything
+    like the last month then 0.34.0 is looking to be a HUGE release for us.</p>
+    
+</div>
+<div class="newsbox">
     <div class="date">2013-06-02</div>
     <h4>0.32.0 Released</h4>
     <p>Keeping with my two-month release cycle, 0.32.0 is now out.  In the last month
