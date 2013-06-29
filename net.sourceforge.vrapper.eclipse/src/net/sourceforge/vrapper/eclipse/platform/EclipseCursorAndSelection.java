@@ -539,7 +539,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
 
     @Override
     public int getVisualOffset(Position position) {
-        final int offset = position.getModelOffset();
+        final int offset = position.getViewOffset();
         StyledText textWidget = textViewer.getTextWidget();
         int visualOffset = textWidget.getLocationAtOffset(offset).x + textWidget.getHorizontalPixel();
         return visualOffset;
