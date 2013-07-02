@@ -25,8 +25,6 @@ import org.eclipse.swt.graphics.Rectangle;
 public class CommandLineUIFactory {
 
     private final static int COMMAND_CHAR_INDENT = 5;
-    private int horScroll = 0;
-    private int verScroll = 0;
     private final StyledText parent;
     private StyledText commandLineText;
     private EclipseCommandLineUI commandLineUI;
@@ -35,7 +33,7 @@ public class CommandLineUIFactory {
     public CommandLineUIFactory(StyledText parentText) {
         parent = parentText;
 
-        StyledText widget = new StyledText(parent, SWT.NONE);
+        StyledText widget = new StyledText(parent, SWT.ON_TOP);
         widget.setFont(parent.getFont());
         widget.setMargins(COMMAND_CHAR_INDENT, 3, 3, 3);
         widget.setSize(5, 5);
@@ -74,9 +72,11 @@ public class CommandLineUIFactory {
      * This allows us to reposition our command line so that it matches the editor.
      */
     class TextEditorPaintListener implements PaintListener {
+        private int horScroll = 0;
+        private int verScroll = 0;
         
         public void paintControl(PaintEvent e) {
-            if (commandLineUI != null && ! commandLineUI.isOpen()) {
+            if (commandLineUI == null || ! commandLineUI.isOpen()) {
                 return;
             }
             StyledText parent = (StyledText) e.widget;
@@ -84,12 +84,15 @@ public class CommandLineUIFactory {
             e.gc.setBackground(parent.getBackground());
             int bottom = parent.getBounds().height - parent.getHorizontalBar().getSize().y;
             int right = parent.getBounds().width - parent.getVerticalBar().getSize().x;
-            // if the scrollbar changed, the whole component must be repaint
+            commandLineUI.setMaxHeight(parent.getBounds().height / 2);
+            commandLineUI.setWidth(right - 1);
+            commandLineUI.setBottom(bottom);
+            Point size = commandLineText.getSize();
+            // if the scrollbar changed, the whole component must be repainted
             if (horScroll == parent.getHorizontalBar().getSelection()
                     && verScroll == parent.getVerticalBar().getSelection()) {
-                Point size = commandLineText.computeSize(right-1, SWT.DEFAULT, true);
-                commandLineText.setSize(right -1, size.y);
                 commandLineText.setLocation(0, bottom - size.y);
+                commandLineText.redraw();
             } else {
                 parent.redraw();
                 horScroll = parent.getHorizontalBar().getSelection();

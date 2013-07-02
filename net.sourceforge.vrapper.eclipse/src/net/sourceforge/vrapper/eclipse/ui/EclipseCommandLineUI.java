@@ -18,6 +18,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Caret;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.services.IDisposable;
@@ -42,6 +43,9 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener,
     private Point registerModeSelection;
     /** Read-only mode active. This disables destructive context menu actions. */
     private boolean readOnly;
+    private int maxHeight;
+    private int width;
+    private int bottom;
 
     public EclipseCommandLineUI(final StyledText commandLineText, final EditorAdaptor editorAdaptor) {
         clipboard = editorAdaptor.getRegisterManager()
@@ -108,6 +112,7 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener,
         commandLineText.replaceTextRange(0, contentsOffset, newPrompt);
         contentsOffset = newPrompt.length();
         commandLineText.setCaretOffset(commandLineText.getCharCount());
+        updateUISize();
     }
 
     @Override
@@ -148,6 +153,7 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener,
         commandLineText.setCaretOffset(start + characters.length());
         //Mouse selection might cause caret to be at the same position as before, update manually
         updateCaret();
+        updateUISize();
     }
     
     public void copySelectionToClipboard() {
@@ -160,9 +166,15 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener,
     }
 
     public void open() {
-        commandLineText.setVisible(true);
         commandLineText.setFocus();
+        commandLineText.setVisible(true);
         commandLineText.getParent().redraw();
+        Display.getCurrent().asyncExec(new Runnable() {
+            @Override
+            public void run() {
+                updateUISize();
+            }
+        });
     }
 
     public int getPosition() {
@@ -257,6 +269,7 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener,
                 updateCaret();
             }
         }
+        updateUISize();
     }
 
     @Override
@@ -285,6 +298,7 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener,
         int startOffset = start + contentsOffset;
         int endOffset = end + contentsOffset;
         commandLineText.replaceTextRange(startOffset, endOffset - startOffset, text);
+        updateUISize();
     }
 
     @Override
@@ -337,5 +351,31 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener,
 
     @Override
     public void widgetDefaultSelected(SelectionEvent e) {
+    }
+
+    public void setMaxHeight(int height) {
+        this.maxHeight = height;
+    }
+    
+    public void setWidth(int width) {
+        Point size = commandLineText.getSize();
+        commandLineText.setSize(width, size.y);
+        this.width = width;
+    }
+    
+    public void setBottom(int bottom) {
+        this.bottom = bottom;
+    }
+
+    protected void updateUISize() {
+        Point preferredSize = commandLineText.computeSize(width, SWT.DEFAULT, true);
+        int selHeight = Math.min(preferredSize.y, maxHeight);
+        commandLineText.setSize(width, selHeight);
+        if (bottom > 0) {
+            // Move the command line higher up to show all of it.
+            commandLineText.setLocation(0, bottom - selHeight);
+        }
+        commandLineText.getParent().redraw();
+        commandLineText.redraw();
     }
 }
