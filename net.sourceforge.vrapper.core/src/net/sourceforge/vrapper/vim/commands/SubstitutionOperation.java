@@ -57,6 +57,9 @@ public class SubstitutionOperation extends SimpleTextOperation {
 		}
 		if(fields.length > 2) {
 			replace = fields[2];
+			//Vim uses \r to represent a newline but Eclipse interprets that as carriage-return
+			//Eclipse uses \R as a platform-independent newline
+			replace = replace.replaceAll("\\\\r", "\\\\R");
 		}
 		if(fields.length > 3) {
 			flags = fields[3];
