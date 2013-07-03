@@ -377,5 +377,6 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener,
         }
         commandLineText.getParent().redraw();
         commandLineText.redraw();
+        commandLineText.setFocus();
     }
 }
