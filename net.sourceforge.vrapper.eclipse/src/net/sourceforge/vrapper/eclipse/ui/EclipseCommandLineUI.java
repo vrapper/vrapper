@@ -166,13 +166,13 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener,
     }
 
     public void open() {
-        commandLineText.setFocus();
         commandLineText.setVisible(true);
         commandLineText.getParent().redraw();
         Display.getCurrent().asyncExec(new Runnable() {
             @Override
             public void run() {
                 updateUISize();
+                commandLineText.setFocus();
             }
         });
     }
@@ -375,8 +375,6 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener,
             // Move the command line higher up to show all of it.
             commandLineText.setLocation(0, bottom - selHeight);
         }
-        commandLineText.getParent().redraw();
         commandLineText.redraw();
-        commandLineText.setFocus();
     }
 }
