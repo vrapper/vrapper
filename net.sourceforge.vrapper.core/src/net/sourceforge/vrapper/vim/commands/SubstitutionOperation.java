@@ -4,6 +4,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import net.sourceforge.vrapper.platform.SearchAndReplaceService;
+import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.TextRange;
@@ -24,20 +25,19 @@ public class SubstitutionOperation extends SimpleTextOperation {
 
     @Override
     public void execute(EditorAdaptor editorAdaptor, TextRange region, ContentType contentType) {
+        TextContent model = editorAdaptor.getModelContent();
     	int startLine;
     	int endLine;
     	if(region == null) {
     		//special case, recalculate 'current line' every time
     		//(this is to ensure '.' always works on current line)
     		int offset = editorAdaptor.getPosition().getModelOffset();
-			startLine = editorAdaptor.getModelContent().getLineInformationOfOffset(offset).getNumber();
+			startLine = model.getLineInformationOfOffset(offset).getNumber();
 			endLine = startLine;
     	}
     	else {
-	    	startLine = editorAdaptor.getModelContent()
-	    			.getLineInformationOfOffset( region.getLeftBound().getModelOffset() ).getNumber();
-	    	endLine = editorAdaptor.getModelContent()
-	    			.getLineInformationOfOffset( region.getRightBound().getModelOffset() ).getNumber();
+	    	startLine = model.getLineInformationOfOffset( region.getLeftBound().getModelOffset() ).getNumber();
+	    	endLine = model.getLineInformationOfOffset( region.getRightBound().getModelOffset() ).getNumber();
     	}
     	
 		//whatever character is after 's' is our delimiter
@@ -76,7 +76,7 @@ public class SubstitutionOperation extends SimpleTextOperation {
 		int numReplaces = 0;
 		int lineReplaceCount = 0;
 		if(startLine == endLine) {
-			LineInformation currentLine = editorAdaptor.getModelContent().getLineInformation(startLine);
+			LineInformation currentLine = model.getLineInformation(startLine);
 			//begin and end compound change so a single 'u' undoes all replaces
 			editorAdaptor.getHistory().beginCompoundChange();
 			numReplaces = performReplace(currentLine, find, replace, flags, editorAdaptor);
@@ -86,16 +86,27 @@ public class SubstitutionOperation extends SimpleTextOperation {
 			LineInformation line;
 			int lineChanges = 0;
 			
+			int totalLines = model.getNumberOfLines();
+			int lineDiff;
 			//perform search individually on each line in the range
 			//(so :%s without 'g' flag runs once on each line)
 			editorAdaptor.getHistory().beginCompoundChange();
 			for(int i=startLine; i < endLine; i++) {
-				line = editorAdaptor.getModelContent().getLineInformation(i);
+				line = model.getLineInformation(i);
 				lineChanges = performReplace(line, find, replace, flags, editorAdaptor);
 				if(lineChanges > 0) {
 					lineReplaceCount++;
 				}
 				numReplaces += lineChanges;
+
+				lineDiff = model.getNumberOfLines() - totalLines;
+				if(lineDiff > 0) {
+				    //lines were introduced as a result of this replacement
+				    //skip over those introduced lines and move on to the next intended line
+				    i += lineDiff;
+				    endLine += lineDiff;
+				    totalLines += lineDiff;
+				}
 			}
 			editorAdaptor.getHistory().endCompoundChange();
 		}
