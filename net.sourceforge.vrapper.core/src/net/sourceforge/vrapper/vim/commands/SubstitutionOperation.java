@@ -38,6 +38,11 @@ public class SubstitutionOperation extends SimpleTextOperation {
     	else {
 	    	startLine = model.getLineInformationOfOffset( region.getLeftBound().getModelOffset() ).getNumber();
 	    	endLine = model.getLineInformationOfOffset( region.getRightBound().getModelOffset() ).getNumber();
+	    	if(model.getTextLength() == region.getRightBound().getModelOffset()) {
+	    	    //the endLine calculation is off-by-one for the last line in the file
+	    	    //force it to actually use the last line
+	    	    endLine = model.getNumberOfLines();
+	    	}
     	}
     	
 		//whatever character is after 's' is our delimiter
