@@ -41,8 +41,27 @@ public interface CursorService {
 
 	Position newPositionForViewOffset(int offset);
 	Position newPositionForModelOffset(int offset);
+	
+    /**
+     * Returns "visual" horizontal offset of the specified position. Visual
+     * offset is constant regardless of character widths (think "tab"
+     * characters) preceding the position.
+     * @param position position to calculate the offset for
+     * @return "visual" offset in implementation units.
+     */
+    int getVisualOffset(Position position);
 
-	// XXX: this feels a little bad;
+    /**
+     * Calculates position on the specified line at the provided horizontal
+     * "visual" offset.
+     * @param lineNo line number
+     * @param visualOffset horizontal "visual" offset obtained from @ref getVisualOffset.
+     * @return target position or @a null if there are no characters at the
+     *         provided offset.
+     */
+    Position getPositionByVisualOffset(int lineNo, int visualOffset);
+
+	//XXX: this feels a little bad;
 	// other methods are position-related,
 	// this one is presentation - related
 	// split this interface or move this method

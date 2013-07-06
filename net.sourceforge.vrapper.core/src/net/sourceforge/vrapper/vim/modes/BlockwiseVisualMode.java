@@ -9,15 +9,17 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionB
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.vim.VisualMotionState;
 import net.sourceforge.vrapper.keymap.vim.VisualMotionState.Motion2VMC;
+import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.HistoryService;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.SelectionArea;
+import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.BlockWiseSelection;
-import net.sourceforge.vrapper.vim.commands.BlockWiseSelection.Rect;
+import net.sourceforge.vrapper.vim.commands.BlockWiseSelection.TextBlock;
 import net.sourceforge.vrapper.vim.commands.ChangeToInsertModeCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
@@ -73,19 +75,22 @@ public class BlockwiseVisualMode extends AbstractVisualMode {
 	        }
 	        
 	        // re-position to beginning of insert
-	        final Position newStart = editorAdaptor.getPosition().addModelOffset(-string.length() + 1);
+            final CursorService cursorService = editorAdaptor.getCursorService();
+            //final Position newStart = editorAdaptor.getPosition().addModelOffset(-string.length() + 1);
+            final Position newStart = cursorService.getMark(CursorService.LAST_CHANGE_START);
 	        editorAdaptor.setPosition(newStart, false);
-            final Rect rect = BlockWiseSelection.getRect(editorAdaptor, sel);
-            
-	        if (insertion != null) {
-    		    final int height = rect.height();
-    		    for (int i=1; i < height; i++) {
-    		        rect.top++;
-    		        final Position newUl = rect.getULPosition(editorAdaptor);
-    		        editorAdaptor.setPosition(newUl, false);
-    		        insertion.execute(editorAdaptor);
-    		    }
-	        }
+	        final TextRange region = sel.getRegion(editorAdaptor, NO_COUNT_GIVEN);
+            final TextBlock block = BlockWiseSelection.getTextBlock(region.getStart(), region.getEnd(),
+                    editorAdaptor.getModelContent(), cursorService);
+            if (insertion != null) {
+                for (int line = block.startLine + 1; line <= block.endLine; ++line) {
+                    final Position newUl = cursorService.getPositionByVisualOffset(line, block.startVisualOffset);
+                    if (newUl != null) {
+                        editorAdaptor.setPosition(newUl, false);
+                        insertion.execute(editorAdaptor);
+                    }
+                }
+            }
             
             finish(editorAdaptor);
         }

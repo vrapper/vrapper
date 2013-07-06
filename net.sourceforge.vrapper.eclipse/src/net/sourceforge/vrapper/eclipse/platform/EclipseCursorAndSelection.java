@@ -46,6 +46,7 @@ import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.internal.WorkbenchPage;
+import org.eclipse.ui.internal.views.markers.TodoFiltersContributionParameters;
 import org.eclipse.ui.texteditor.AbstractMarkerAnnotationModel;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 import org.eclipse.ui.texteditor.MarkerUtilities;
@@ -534,6 +535,28 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     		changeListIndex = index; //prepare for next invocation
     		return newPositionForModelOffset(p.getOffset());
     	}
+    }
+
+    @Override
+    public int getVisualOffset(Position position) {
+        final int offset = position.getViewOffset();
+        StyledText textWidget = textViewer.getTextWidget();
+        int visualOffset = textWidget.getLocationAtOffset(offset).x + textWidget.getHorizontalPixel();
+        return visualOffset;
+    }
+
+    @Override
+    public Position getPositionByVisualOffset(int lineNo, int visualOffset) {
+        final StyledText tw = textViewer.getTextWidget();
+        final int viewLine = converter.modelLine2WidgetLine(lineNo);
+        final int y = tw.getLocationAtOffset(tw.getOffsetAtLine(viewLine)).y;
+        try {
+            final int offset = tw.getOffsetAtLocation(new Point(visualOffset - tw.getHorizontalPixel(), y));
+            return new TextViewerPosition(textViewer, Space.VIEW, offset);
+        } catch (final IllegalArgumentException e) {
+            // No character at the specified visual offset.
+            return null;
+        }
     }
 
 }

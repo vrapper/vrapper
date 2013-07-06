@@ -4,6 +4,7 @@ import net.sourceforge.vrapper.platform.Configuration;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.ContentType;
+import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
@@ -13,35 +14,6 @@ import net.sourceforge.vrapper.vim.modes.BlockwiseVisualMode;
 
 public class BlockWiseSelection implements Selection {
     
-    public static class Rect {
-        public int left, top, right, bottom;
-        
-        public int width() {
-            return right - left;
-        }
-        
-        public int height() {
-            return bottom - top + 1; // same row should be "1" height
-        }
-        
-        @Override
-        public String toString() {
-            return String.format("%d %d - %d %d", left, top, right, bottom);
-        }
-        
-        public int getULOffset(final TextContent textContent) {
-            return textContent.getLineInformation(top).getBeginOffset() + left;
-        }
-
-        public Position getULPosition(final EditorAdaptor editorAdaptor) {
-            final CursorService cs = editorAdaptor.getCursorService();
-            final TextContent textContent = editorAdaptor.getModelContent();
-            final int ulOffset = getULOffset(textContent);
-            return cs.newPositionForModelOffset(ulOffset);
-        }
-
-    }
-
     private final Position from;
     private final Position to;
     private final TextRange range;
@@ -121,47 +93,46 @@ public class BlockWiseSelection implements Selection {
     public Position getTo() {
         return to;
     }
-    
-    private static Rect getRect(final TextContent textContent, final Position from, final Position to) {
-        
-        final Rect ret = new Rect();
-        final int fromX = VimUtils.calculateColForPosition(textContent, from);
-        final int fromY = VimUtils.calculateLine(textContent, from);
-        final int toX = VimUtils.calculateColForPosition(textContent, to);
-        final int toY = VimUtils.calculateLine(textContent, to);
-        
-        ret.left  = Math.min(toX, fromX);
-        ret.top   = Math.min(toY, fromY);
-        ret.right = Math.max(toX, fromX);
-        ret.bottom= Math.max(toY, fromY);
-        
-        return ret;
-    }
-    
-    public static Rect getRect(final TextContent textContent, final Selection selection) {
-        return getRect(textContent, selection.getFrom(), selection.getTo());
-    }
-    
-    public static Rect getViewRect(final TextContent viewContent, final Selection selection) {
 
-        final Rect ret = new Rect();
-        final int fromX = VimUtils.calculateColForOffset(viewContent, selection.getFrom().getViewOffset());
-        final int fromY = VimUtils.calculateLine(viewContent, selection.getFrom().getViewOffset());
-        final int toX = VimUtils.calculateColForOffset(viewContent, selection.getTo().getViewOffset());
-        final int toY = VimUtils.calculateLine(viewContent, selection.getTo().getViewOffset());
-        
-        ret.left  = Math.min(toX, fromX);
-        ret.top   = Math.min(toY, fromY);
-        ret.right = Math.max(toX, fromX);
-        ret.bottom= Math.max(toY, fromY);
-        
-        return ret;
+    /**
+     * Text block representation by a line range and a visual (think pixel)
+     * range.
+     */
+    public static final class TextBlock {
+        public int startLine;
+        public int endLine;
+        public int startVisualOffset;
+        public int endVisualOffset;
     }
 
-    public static Rect getRect(final EditorAdaptor editorAdaptor, final TextObject lastSel) 
-            throws CommandExecutionException {
-        final TextRange range = lastSel.getRegion(editorAdaptor, 1);
-        return getRect(editorAdaptor.getModelContent(), range.getStart(), range.getEnd());
+    /**
+     * Calculates text block from too positions in text.
+     */
+    public static TextBlock getTextBlock(final Position from,
+            final Position to, final TextContent textContent,
+            final CursorService cursorService) {
+        final LineInformation fromLine = textContent.getLineInformationOfOffset(from.getModelOffset());
+        final LineInformation toLine   = textContent.getLineInformationOfOffset(to.getModelOffset());
+        final int fromLineNo = fromLine.getNumber();
+        final int toLineNo = toLine.getNumber();
+        final TextBlock result = new TextBlock();
+        if (fromLineNo < toLineNo) {
+            result.startLine = fromLineNo;
+            result.endLine = toLineNo;
+        } else {
+            result.startLine = toLineNo;
+            result.endLine = fromLineNo;
+        }
+        final int fromVOffset = cursorService.getVisualOffset(from);
+        final int toVOffset = cursorService.getVisualOffset(to);
+        if (fromVOffset < toVOffset) {
+            result.startVisualOffset = fromVOffset;
+            result.endVisualOffset = toVOffset;
+        } else {
+            result.startVisualOffset = toVOffset;
+            result.endVisualOffset = fromVOffset;
+        }
+        return result;
     }
 
     @Override
