@@ -1,14 +1,16 @@
 package net.sourceforge.vrapper.vim.commands;
 
+import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.HistoryService;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.ContentType;
+import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
-import net.sourceforge.vrapper.vim.commands.BlockWiseSelection.Rect;
+import net.sourceforge.vrapper.vim.commands.BlockWiseSelection.TextBlock;
 import net.sourceforge.vrapper.vim.register.Register;
 import net.sourceforge.vrapper.vim.register.RegisterContent;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
@@ -74,9 +76,11 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
 		    
 		    if (legal) {
                 final TextObject blockSelection = editorAdaptor.getRegisterManager().getLastActiveSelectionArea();
-    		    final Rect rect = BlockWiseSelection.getRect(editorAdaptor, blockSelection);
+                final TextRange blockRange = blockSelection.getRegion(editorAdaptor, NO_COUNT_GIVEN);
+                final TextBlock textBlock = BlockWiseSelection.getTextBlock( blockRange.getStart(), blockRange.getEnd(),
+                        editorAdaptor.getModelContent(), editorAdaptor.getCursorService());
     		    
-                doIt(editorAdaptor, command, getCount(), rect);
+                doIt(editorAdaptor, command, getCount(), textBlock);
 		    }
             
             if (commitHistory) {
@@ -86,29 +90,37 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
             }
         }
         
-        public static void doIt(final EditorAdaptor editorAdaptor, final TextOperation command, final int count, final Rect rect) 
+        public static void doIt(final EditorAdaptor editorAdaptor, final TextOperation command, final int count, final TextBlock block) 
                 throws CommandExecutionException {
             
             final RegisterManager registers = editorAdaptor.getRegisterManager();
             final Register defaultRegister = registers.getDefaultRegister();
             final Register lastEditRegister = registers.getLastEditRegister();
+            final CursorService cursorService = editorAdaptor.getCursorService();
+            final TextContent textContent = editorAdaptor.getModelContent();
             
-		    final int height = rect.height();
-		    final int width = rect.width();
-    		TextOperation repetition = command.repetition();
-		    for (int i=1; i < height; i++) {
-		        rect.top++;
-		        final Position newUl = rect.getULPosition(editorAdaptor);
-		        editorAdaptor.setPosition(newUl, false);
-		        final TextObject nextLine = newSelection(newUl, width);
-		        
-		        final RegisterContent content = lastEditRegister.getContent();
-		        repetition.execute(editorAdaptor, count, nextLine);
-		        
-		        lastEditRegister.setContent(content);
-		        registers.setActiveRegister(defaultRegister); // return to default reg
-		        
-		        repetition = repetition.repetition();
+            TextOperation repetition = command.repetition();
+            for (int line = block.startLine + 1; line <= block.endLine; ++line) {
+                final Position runStart = cursorService.getPositionByVisualOffset(line, block.startVisualOffset);
+                Position runEnd = cursorService.getPositionByVisualOffset(line, block.endVisualOffset);
+                if (runEnd == null) {
+                    final LineInformation lineInfo = textContent.getLineInformation(line);
+                    runEnd = cursorService.newPositionForModelOffset(lineInfo.getEndOffset());
+                } else {
+                    runEnd = runEnd.addModelOffset(1);
+                }
+                if (runStart != null) {
+                    editorAdaptor.setPosition(runStart, false);
+                    final TextObject nextLine = new SimpleSelection(new StartEndTextRange(runStart, runEnd));
+
+                    final RegisterContent content = lastEditRegister.getContent();
+                    repetition.execute(editorAdaptor, count, nextLine);
+
+                    lastEditRegister.setContent(content);
+                    registers.setActiveRegister(defaultRegister); // return to default reg
+
+                    repetition = repetition.repetition();
+                }
 		    }
         }
 
@@ -133,10 +145,19 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
 		final TextContent textContent = editorAdaptor.getModelContent();
 		final TextObject selection = editorAdaptor.getSelection();
 		if (selection.getContentType(editorAdaptor.getConfiguration()) == ContentType.TEXT_RECTANGLE) {
-		    final Rect rect = BlockWiseSelection.getRect(textContent, (Selection) selection);
-		    final int width = rect.width();
-		    final Position ul = rect.getULPosition(editorAdaptor);
-		    final TextObject firstLine = newSelection(ul, width);
+		    final TextRange blockRange = selection.getRegion(editorAdaptor, NO_COUNT_GIVEN);
+		    final CursorService cursorService = editorAdaptor.getCursorService();
+            final TextBlock textBlock = BlockWiseSelection.getTextBlock(blockRange.getStart(), blockRange.getEnd(),
+                        editorAdaptor.getModelContent(), cursorService);
+		    final Position runStart = cursorService.getPositionByVisualOffset(textBlock.startLine, textBlock.startVisualOffset);
+		    Position runEnd = cursorService.getPositionByVisualOffset(textBlock.startLine, textBlock.endVisualOffset);
+		    if (runEnd == null) {
+		        final LineInformation lineInfo = textContent.getLineInformation(textBlock.startLine);
+		        runEnd = cursorService.newPositionForModelOffset(lineInfo.getEndOffset());
+		    } else {
+		        runEnd = runEnd.addModelOffset(1);
+		    }
+		    final TextObject firstLine = new SimpleSelection(new StartEndTextRange(runStart, runEnd));
 		    
 		    final HistoryService history = editorAdaptor.getHistory();
 		    history.beginCompoundChange();
@@ -145,7 +166,8 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
     		command.execute(editorAdaptor, count, firstLine);
     		
     		if (changeMode) {
-    		    BlockwiseRepeatCommand.doIt(editorAdaptor, command, count, rect);
+    		    BlockwiseRepeatCommand.doIt(editorAdaptor, command, count, textBlock);
+    		    editorAdaptor.setPosition(runStart, true);
     		
     		    history.unlock("block-action");
         		history.endCompoundChange();

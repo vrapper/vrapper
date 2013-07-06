@@ -42,7 +42,12 @@ public class BlockwiseVisualModeTests extends CommandTestCase {
 //            selectFrom += selected.length();
 //        }
     	selectFrom = block[0].length();
-    	selectTo = initialContent.length() - block[block.length-1].length();
+    	selectTo = initialContent.length() - block[block.length-1].length() - 1;
+    	if (inverted) {
+    	    final int temp = selectTo;
+    	    selectTo = selectFrom;
+    	    selectFrom = temp;
+    	}
 
         adaptor.changeModeSafely(BlockwiseVisualMode.NAME);
 
@@ -153,9 +158,9 @@ public class BlockwiseVisualModeTests extends CommandTestCase {
 				        "T","es","t text"
 				        ),
 				false, block(
-				        "A",""," ma kota",
-				        "T","","t text",
-				        "T","","t text"
+				        "A",""," ma kota\n" +
+				        "Tt text\n" +
+				        "Tt text"
 				        ));
 		verify(adaptor).changeMode(NormalMode.NAME);
 
@@ -166,9 +171,9 @@ public class BlockwiseVisualModeTests extends CommandTestCase {
 				        "T","es","t text"
 				        ),
 				false, block(
-				        "A",""," ma kota",
-				        "T","","t text",
-				        "T","","t text"
+				        "A",""," ma kota\n" +
+				        "Tt text\n" +
+				        "Tt text"
 				        ));
 		verify(adaptor, times(2)).changeMode(NormalMode.NAME);
 
@@ -260,7 +265,7 @@ public class BlockwiseVisualModeTests extends CommandTestCase {
 		
 		checkLeavingCommand(forKeySeq("~"),
 				false,  "with ","some\nCAPITAL"," letters",
-				"with ",'S',"OME\ncapital letters");
+				"with ",'S',"Ome\nCAPITal letters");
 		
 		checkLeavingCommand(forKeySeq("~"),
 				true,  "with ","some CAPITAL"," letters",
@@ -268,7 +273,7 @@ public class BlockwiseVisualModeTests extends CommandTestCase {
 		
 		checkLeavingCommand(forKeySeq("~"),
 				true,  "with ","some\nCAPITAL"," letters",
-				"with ",'S',"OME\ncapital letters");
+				"with ",'S',"Ome\nCAPITal letters");
 	}
 	
 	@Test

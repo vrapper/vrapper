@@ -1,21 +1,22 @@
 package net.sourceforge.vrapper.utils;
 
 import net.sourceforge.vrapper.platform.Configuration;
+import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.BlockWiseSelection;
-import net.sourceforge.vrapper.vim.commands.BlockWiseSelection.Rect;
+import net.sourceforge.vrapper.vim.commands.BlockWiseSelection.TextBlock;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 
 public class BlockWiseSelectionArea extends SelectionArea {
 
-    private final int colsSpanned;
+    private final int visualWidth;
 
     public BlockWiseSelectionArea(final EditorAdaptor editorAdaptor,
             final BlockWiseSelection selection) {
-        final Rect rect = BlockWiseSelection.getRect(editorAdaptor.getModelContent(), selection);
-        linesSpanned = rect.height();
-        colsSpanned = rect.width();
+        final TextBlock rect = BlockWiseSelection.getTextBlock(selection.getFrom(), selection.getTo(), editorAdaptor.getModelContent(), editorAdaptor.getCursorService());
+        visualWidth = rect.endVisualOffset - rect.startVisualOffset;
+        linesSpanned = rect.endLine - rect.startLine + 1;
     }
 
     @Override
@@ -24,15 +25,14 @@ public class BlockWiseSelectionArea extends SelectionArea {
 
         final TextContent modelContent = editorAdaptor.getModelContent();
         final Position start = editorAdaptor.getPosition();
-        Position end;
-        if (linesSpanned == 1) {
-            end = start.addModelOffset(colsSpanned);
-        } else {
-            final LineInformation firstLine = modelContent.getLineInformationOfOffset(start.getModelOffset());
-            final LineInformation lastLine = modelContent.getLineInformation(firstLine.getNumber() + linesSpanned - 1);
-            end = editorAdaptor.getCursorService().newPositionForModelOffset(lastLine.getBeginOffset())
-                    .addModelOffset(VimUtils.calculateColForPosition(modelContent, start))
-                    .addModelOffset(colsSpanned);
+        final LineInformation firstLine = modelContent.getLineInformationOfOffset(start.getModelOffset());
+        final LineInformation lastLine = modelContent.getLineInformation(firstLine.getNumber() + linesSpanned - 1);
+        final CursorService cursorService = editorAdaptor.getCursorService();
+        final int startVOffset = cursorService.getVisualOffset(start);
+        Position end = cursorService.getPositionByVisualOffset(lastLine.getNumber(), startVOffset + visualWidth);
+        if (end == null) {
+            // TODO : applying a visual block to a line with no content at the block rect.
+            end = cursorService.newPositionForModelOffset(lastLine.getEndOffset());
         }
         return new StartEndTextRange(start, end);
     

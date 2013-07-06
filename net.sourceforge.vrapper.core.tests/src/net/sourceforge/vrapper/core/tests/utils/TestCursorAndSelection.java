@@ -101,4 +101,16 @@ public class TestCursorAndSelection implements CursorService, SelectionService {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+    @Override
+    public int getVisualOffset(Position position) {
+	    LineInformation lineInformation = content.getLineInformationOfOffset(position.getModelOffset());
+        return position.getModelOffset() - lineInformation.getBeginOffset();
+    }
+
+    @Override
+    public Position getPositionByVisualOffset(int lineNo, int visualOffset) {
+	    LineInformation lineInformation = content.getLineInformation(lineNo);
+        return new DumbPosition(lineInformation.getBeginOffset() + visualOffset);
+    }
 }
