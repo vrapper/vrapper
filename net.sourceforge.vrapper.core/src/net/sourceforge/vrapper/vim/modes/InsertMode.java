@@ -70,7 +70,7 @@ public class InsertMode extends AbstractMode {
     protected State<Command> currentState = buildState();
 
     private Position startEditPosition;
-    private boolean enteredWithO = false;
+    private boolean cleanupIndent = false;
     private boolean resumeOnEnter = false;
 
     /**
@@ -134,9 +134,10 @@ public class InsertMode extends AbstractMode {
                     else { //onEnter, execute command now
                         Command command = ((ExecuteCommandHint) hint).getCommand();
                         command.execute(editorAdaptor);
-                        if(command instanceof InsertLineCommand) {
+                        if(command instanceof InsertLineCommand && editorAdaptor.getConfiguration().get(Options.CLEAN_INDENT)) {
                             //entered insert mode via 'o' or 'O'
-                            enteredWithO = true;
+                            //cleanup auto-indent if nothing is entered
+                            cleanupIndent = true;
                         }
                     }
                 }
@@ -216,7 +217,7 @@ public class InsertMode extends AbstractMode {
 				        			editorAdaptor.getModelContent().getTextLength()
 			        			);
         }
-        else if(enteredWithO && position.getModelOffset() == startEditPosition.getModelOffset()) {
+        else if(cleanupIndent && position.getModelOffset() == startEditPosition.getModelOffset()) {
             //if we entered InsertMode via 'o' or 'O' but didn't enter any text,
             //remove any auto-inserted indentation
             final int startOfLine = content.getLineInformationOfOffset(position.getModelOffset()).getBeginOffset();
@@ -226,7 +227,7 @@ public class InsertMode extends AbstractMode {
             }
         }
         //reset value in case we re-enter InsertMode
-        enteredWithO = false;
+        cleanupIndent = false;
 
         CursorService cur = editorAdaptor.getCursorService();
         cur.setMark(CursorService.LAST_CHANGE_START, startEditPosition);

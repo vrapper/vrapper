@@ -27,6 +27,7 @@ public interface Options {
     public static final Option<Boolean> IM_DISABLE            = bool("imdisable",    false, "imd");
     public static final Option<Boolean> VISUAL_MOUSE          = bool("visualmouse",  true,  "vm");
     public static final Option<Boolean> EXIT_LINK_MODE        = bool("exitlinkmode", true,  "elm");
+    public static final Option<Boolean> CLEAN_INDENT          = bool("cleanindent",  true);
     public static final Option<Boolean> AUTO_CHDIR            = bool("autochdir",    false, "acd");
     public static final Option<Boolean> HIGHLIGHT_CURSOR_LINE = bool("cursorline",   false, "cul");
     // TODO: This is an Eclipse setting under Window->Preferences->Editors->Text Editors->"Insert spaces for tabs"
@@ -38,7 +39,7 @@ public interface Options {
             EXPAND_TAB, SMART_INDENT, AUTO_INDENT, ATOMIC_INSERT, IGNORE_CASE,
             SMART_CASE, SANE_CW, SANE_Y, SEARCH_HIGHLIGHT, SEARCH_REGEX,
             INCREMENTAL_SEARCH, LINE_NUMBERS, SHOW_WHITESPACE, IM_DISABLE,
-            VISUAL_MOUSE, EXIT_LINK_MODE, AUTO_CHDIR, HIGHLIGHT_CURSOR_LINE);
+            VISUAL_MOUSE, EXIT_LINK_MODE, CLEAN_INDENT, AUTO_CHDIR, HIGHLIGHT_CURSOR_LINE);
 
     // String options:
     public static final Option<String> CLIPBOARD = string("clipboard", "autoselect", "unnamed, autoselect", "cb");
