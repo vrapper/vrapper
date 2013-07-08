@@ -34,8 +34,9 @@ public interface SearchAndReplaceService {
      * @param toFind - String to search for
      * @param flags - Regex flags like 'i' for insensitive case
      * @param toReplace - String to replace 'toFind' with
+     * @return true if successful, false if no substitution performed
      */
-    void substitute(int start, String toFind, String flags, String toReplace);
+    boolean substitute(int start, String toFind, String flags, String toReplace);
 
 	/**
 	 * Highlights all matches of the given search.

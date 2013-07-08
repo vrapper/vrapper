@@ -106,12 +106,17 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
 		return caseSensitive;
 	}
     
-    public void substitute(int start, String toFind, String flags, String toReplace) {
+    public boolean substitute(int start, String toFind, String flags, String toReplace) {
+    	boolean success = false;
     	try {
-			adapter.find(start, toFind, true, isCaseSensitive(toFind, flags), false, true);
-			adapter.replace(toReplace, true);
+			IRegion result = adapter.find(start, toFind, true, isCaseSensitive(toFind, flags), false, true);
+			if(result != null) {
+				adapter.replace(toReplace, true);
+				success = true;
+			}
 		} catch (BadLocationException e) {
 		}
+    	return success;
     }
 
     private IRegion find(Search search, int begin) throws BadLocationException {
