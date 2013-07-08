@@ -40,6 +40,7 @@ import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.modes.BlockwiseVisualMode;
+import net.sourceforge.vrapper.vim.modes.ConfirmSubstitutionMode;
 import net.sourceforge.vrapper.vim.modes.EditorMode;
 import net.sourceforge.vrapper.vim.modes.InsertExpandMode;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
@@ -154,6 +155,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
                 new ReplaceMode(self),
                 new CommandLineMode(self),
                 new SearchMode(self),
+                new ConfirmSubstitutionMode(self),
                 new PasteRegisterMode(self)};
         for (final EditorMode mode: modes) {
             modeMap.put(mode.getName(), mode);

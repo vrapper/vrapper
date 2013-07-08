@@ -1,14 +1,15 @@
 package net.sourceforge.vrapper.vim.commands;
 
-import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import net.sourceforge.vrapper.platform.SearchAndReplaceService;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.LineInformation;
+import net.sourceforge.vrapper.utils.SubstitutionDefinition;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.modes.ConfirmSubstitutionMode;
 
 /**
  * Perform a substitution on a range of lines.  Can be current line,
@@ -45,38 +46,21 @@ public class SubstitutionOperation extends SimpleTextOperation {
 	    	}
     	}
     	
-		//whatever character is after 's' is our delimiter
-		String delim = "" + substitution.charAt( substitution.indexOf('s') + 1);
-		//split on the delimiter, unless that delimiter is escaped with a backslash (:s/\/\///)
-		String[] fields = substitution.split("(?<!\\\\)"+delim);
-		String find = "";
-		String replace = "";
-		String flags = "";
-		//'s' or '%s' = fields[0]
-		if(fields.length > 1) {
-			find = fields[1];
-			if(find.length() == 0) {
-				//if no pattern defined, use last search
-				find = editorAdaptor.getRegisterManager().getRegister("/").getContent().getText();
-			}
-		}
-		if(fields.length > 2) {
-			replace = fields[2];
-			//Vim uses \r to represent a newline but Eclipse interprets that as carriage-return
-			//Eclipse uses \R as a platform-independent newline
-			replace = replace.replaceAll("\\\\r", "\\\\R");
-		}
-		if(fields.length > 3) {
-			flags = fields[3];
-		}
-		
-		//before attempting substitution, is this regex even valid?
-		try {
-	        Pattern.compile(find);
-	    } catch (PatternSyntaxException e) {
+    	SubstitutionDefinition subDef;
+    	try {
+    	    subDef = new SubstitutionDefinition(substitution,
+    	            editorAdaptor.getRegisterManager().getRegister("/").getContent().getText());
+    	}
+    	catch(PatternSyntaxException e) {
 			editorAdaptor.getUserInterfaceService().setErrorMessage(e.getDescription());
 			return;
-	    }
+    	}
+    	
+    	if(subDef.flags.indexOf('c') > -1) {
+    	    //move into "confirm" mode
+    	    editorAdaptor.changeModeSafely(ConfirmSubstitutionMode.NAME, new ConfirmSubstitutionMode.SubstitutionConfirm(subDef, region));
+    	    return;
+    	}
 		
 		int numReplaces = 0;
 		int lineReplaceCount = 0;
@@ -84,7 +68,7 @@ public class SubstitutionOperation extends SimpleTextOperation {
 			LineInformation currentLine = model.getLineInformation(startLine);
 			//begin and end compound change so a single 'u' undoes all replaces
 			editorAdaptor.getHistory().beginCompoundChange();
-			numReplaces = performReplace(currentLine, find, replace, flags, editorAdaptor);
+			numReplaces = performReplace(currentLine, subDef.find, subDef.replace, subDef.flags, editorAdaptor);
 			editorAdaptor.getHistory().endCompoundChange();
 		}
 		else {
@@ -98,7 +82,7 @@ public class SubstitutionOperation extends SimpleTextOperation {
 			editorAdaptor.getHistory().beginCompoundChange();
 			for(int i=startLine; i < endLine; i++) {
 				line = model.getLineInformation(i);
-				lineChanges = performReplace(line, find, replace, flags, editorAdaptor);
+				lineChanges = performReplace(line, subDef.find, subDef.replace, subDef.flags, editorAdaptor);
 				if(lineChanges > 0) {
 					lineReplaceCount++;
 				}
@@ -117,7 +101,7 @@ public class SubstitutionOperation extends SimpleTextOperation {
 		}
 		
 		if(numReplaces == 0) {
-			editorAdaptor.getUserInterfaceService().setErrorMessage("'"+find+"' not found");
+			editorAdaptor.getUserInterfaceService().setErrorMessage("'"+subDef.find+"' not found");
 		}
 		else if(lineReplaceCount > 0) {
 			editorAdaptor.getUserInterfaceService().setInfoMessage(
