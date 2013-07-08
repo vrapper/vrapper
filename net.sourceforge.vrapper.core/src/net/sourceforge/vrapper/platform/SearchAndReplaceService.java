@@ -28,6 +28,15 @@ public interface SearchAndReplaceService {
 	 */
     int replace(LineInformation line, String toFind, String replace, String flags);
 
+    /**
+     * Perform a single text substitution (with regex support)
+     * @param start - model index to start looking
+     * @param toFind - String to search for
+     * @param flags - Regex flags like 'i' for insensitive case
+     * @param toReplace - String to replace 'toFind' with
+     */
+    void substitute(int start, String toFind, String flags, String toReplace);
+
 	/**
 	 * Highlights all matches of the given search.
 	 */

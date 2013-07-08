@@ -66,6 +66,9 @@ public class ConfirmSubstitutionMode extends AbstractMode {
         if (hints.length > 0 && hints[0] instanceof SubstitutionConfirm) {
             SubstitutionConfirm hint = (SubstitutionConfirm) hints[0];
             subDef = hint.subDef;
+            //do *not* allow global 'g' flag for confirm!
+            subDef.flags = subDef.flags.replaceAll("g", "");
+
             region = hint.region;
             if(region == null) {
                 //if no region, start at cursor and go to end of current line
@@ -156,15 +159,11 @@ public class ConfirmSubstitutionMode extends AbstractMode {
             findNextMatch(nextMatch.getRightBound(), false);
         }
     }
-    
-    /**
-     * XXX: This text replacement does *not* support regex!
-     */
+
     private void performSubstitution() {
-        editorAdaptor.getModelContent().replace(
+        editorAdaptor.getSearchAndReplaceService().substitute(
                 nextMatch.getLeftBound().getModelOffset(),
-                nextMatch.getModelLength(),
-                subDef.replace);
+                subDef.find, subDef.flags, subDef.replace);
     }
 
     @Override

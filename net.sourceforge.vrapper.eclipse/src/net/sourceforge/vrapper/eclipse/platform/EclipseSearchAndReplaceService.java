@@ -56,13 +56,7 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
     	int start = line.getBeginOffset();
     	int end = line.getEndOffset();
     	final boolean replaceAll = flags.contains("g");
-        boolean caseSensitive = !sharedConfiguration.get(Options.IGNORE_CASE)
-            || (sharedConfiguration.get(Options.SMART_CASE)
-                && StringUtils.containsUppercase(toFind));
-        if (flags.contains("i"))
-            caseSensitive = false;
-        if (flags.contains("I"))
-            caseSensitive = true;
+        boolean caseSensitive = isCaseSensitive(toFind, flags);
 
     	//each time we perform a replace,
     	//how many characters will be added/removed?
@@ -99,6 +93,25 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
         }
     	
     	return numReplaces;
+    }
+
+	private boolean isCaseSensitive(String toFind, String flags) {
+		boolean caseSensitive = !sharedConfiguration.get(Options.IGNORE_CASE)
+            || (sharedConfiguration.get(Options.SMART_CASE)
+                && StringUtils.containsUppercase(toFind));
+        if (flags.contains("i"))
+            caseSensitive = false;
+        if (flags.contains("I"))
+            caseSensitive = true;
+		return caseSensitive;
+	}
+    
+    public void substitute(int start, String toFind, String flags, String toReplace) {
+    	try {
+			adapter.find(start, toFind, true, isCaseSensitive(toFind, flags), false, true);
+			adapter.replace(toReplace, true);
+		} catch (BadLocationException e) {
+		}
     }
 
     private IRegion find(Search search, int begin) throws BadLocationException {
