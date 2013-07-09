@@ -29,7 +29,25 @@ public class ContinueFindingMotion extends CountAwareMotion {
             findMotion = findMotion.reversed();
         }
         borderPolicy = findMotion.borderPolicy();
-        return findMotion.destination(editorAdaptor, count);
+        Position dest = findMotion.destination(editorAdaptor, count);
+        //If using 't' and the cursor is before the last match, destination()
+        //will think this position is the next match and not move the cursor.
+        //If this happens, move the cursor forward one (so it's on top of the
+        //last match) and run destination() again.
+        if(!findMotion.upToTarget && editorAdaptor.getPosition().getModelOffset() == dest.getModelOffset()) {
+            int tweakOffset = reverse ? -1 : 1;
+            try {
+                //move cursor to be on top of the last match
+                editorAdaptor.setPosition(dest.addModelOffset(tweakOffset), false);
+                //try again
+                dest = findMotion.destination(editorAdaptor, count);
+            }
+            catch(CommandExecutionException e) {
+                //no match, un-tweak the cursor position
+                editorAdaptor.setPosition(dest.addModelOffset(tweakOffset * -1), false);
+            }
+        }
+        return dest;
     }
 
     public BorderPolicy borderPolicy() {

@@ -735,6 +735,12 @@ public class MotionTests extends CommandTestCase {
         checkCommand(forKeySeq("3fa,"),
                 "",'A',"la ma kota",
                 "Ala m",'a'," kota");
+        checkCommand(forKeySeq("2ta;"),
+                "",'A',"la ma kota",
+                "Ala ma ko",'t',"a");
+        checkCommand(forKeySeq("3ta,"),
+                "",'A',"la ma kota",
+                "Ala ma",' ',"kota");
     }
 
 	@Test
