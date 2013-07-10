@@ -168,6 +168,7 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener,
     public void open() {
         commandLineText.setVisible(true);
         commandLineText.getParent().redraw();
+        //The expected size of the command line is only known when the parent is drawn, paint async
         Display.getCurrent().asyncExec(new Runnable() {
             @Override
             public void run() {
