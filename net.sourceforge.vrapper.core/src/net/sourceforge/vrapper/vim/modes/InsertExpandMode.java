@@ -4,6 +4,8 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.ctrlKey;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.platform.TextContent;
@@ -20,6 +22,8 @@ public class InsertExpandMode extends InsertMode {
 
     public static final String NAME = "insert expand mode";
     public static final String DISPLAY_NAME = "^X mode (^L)";
+    private static final Pattern indentPattern = Pattern.compile("(^\\s*)\\S*");
+    private String lastIndent = "";
     private String lastPrefix = "";
     private String lastSuffix = "";
     private List<String> lastMatches = new ArrayList<String>();
@@ -60,7 +64,7 @@ public class InsertExpandMode extends InsertMode {
         int cursorOffset = cursorPos.getModelOffset();
         LineInformation lineInfo = model.getLineInformationOfOffset(cursorOffset);
         String line = model.getText(lineInfo.getBeginOffset(), lineInfo.getLength());
-        if(lastLineNo != lineInfo.getNumber() || ! line.startsWith(lastPrefix)) {
+        if(lastLineNo != lineInfo.getNumber() || ! line.startsWith(lastIndent + lastPrefix)) {
             rebuildLineMatches(cursorOffset - lineInfo.getBeginOffset(), line, lineInfo.getNumber(), model);
         }
 
@@ -69,9 +73,9 @@ public class InsertExpandMode extends InsertMode {
         }
         else {
             lastIndex = (lastIndex + 1) % lastMatches.size();
-            String newString = lastMatches.get(lastIndex) + lastSuffix;
+            String newString = lastIndent + lastMatches.get(lastIndex) + lastSuffix;
             model.replace(lineInfo.getBeginOffset(), lineInfo.getLength(), newString);
-            int newCursor = lineInfo.getBeginOffset() + lastMatches.get(lastIndex).length();
+            int newCursor = lineInfo.getBeginOffset() + lastIndent.length() + lastMatches.get(lastIndex).length();
             editorAdaptor.getCursorService().setPosition(cursorPos.setModelOffset(newCursor), true);
             if(lastIndex == 0) {
                 editorAdaptor.getUserInterfaceService().setInfoMessage("Back at original");
@@ -92,7 +96,15 @@ public class InsertExpandMode extends InsertMode {
      * @param model - model content
      */
     private void rebuildLineMatches(int cursorPos, String line, int lineNo, TextContent model) {
-        lastPrefix = line.substring(0, cursorPos);
+    	Matcher matcher = indentPattern.matcher(line);
+    	if(matcher.find()) {
+    	    lastIndent = matcher.group(1);
+    	}
+    	else {
+    	    lastIndent = "";
+    	}
+
+        lastPrefix = line.substring(lastIndent.length(), cursorPos);
         lastSuffix = line.substring(cursorPos);
         lastLineNo = lineNo;
         //will be incremented to 1 on first iteration
@@ -111,6 +123,7 @@ public class InsertExpandMode extends InsertMode {
             }
             matchLine = model.getLineInformation(i);
             matchText = model.getText(matchLine.getBeginOffset(), matchLine.getLength());
+            matchText = matchText.replaceFirst("^\\s+", "");
             if(matchText.startsWith(lastPrefix)) {
                 lastMatches.add(matchText);
             }
