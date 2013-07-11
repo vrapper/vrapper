@@ -47,12 +47,14 @@ abstract public class BlockPasteHelper {
                     final String blockLine = rect.getLine(i);
                     content.replace(pastePos.addModelOffset(startOfs).getModelOffset(), 0, blockLine);
                     //
-                    // Right-pad with spaces if block-line is shorter.
+                    // Right-pad with spaces if block-line is shorter and not at EOL.
                     //
                     pastePos = pastePos.addModelOffset(blockLine.length());
-                    while (cursorService.getVisualOffset(pastePos) <= vOffset + vWidth) {
-                        content.replace(pastePos.addModelOffset(startOfs).getModelOffset(), 0, " ");
-                        pastePos = pastePos.addModelOffset(1);
+                    if (pastePos.getModelOffset() != pasteLine.getEndOffset() || c != count - 1) {
+                        while (cursorService.getVisualOffset(pastePos) <= vOffset + vWidth) {
+                            content.replace(pastePos.addModelOffset(startOfs).getModelOffset(), 0, " ");
+                            pastePos = pastePos.addModelOffset(1);
+                        }
                     }
                     // Set vOffset for the next block line for count > 1.
                     vOffset = cursorService.getVisualOffset(pastePos);
