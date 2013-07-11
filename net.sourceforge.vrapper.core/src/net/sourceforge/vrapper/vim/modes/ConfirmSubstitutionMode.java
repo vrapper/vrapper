@@ -6,13 +6,11 @@ import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.platform.CommandLineUI;
 import net.sourceforge.vrapper.platform.KeyMapProvider;
-import net.sourceforge.vrapper.utils.Position;
+import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.Search;
 import net.sourceforge.vrapper.utils.SearchOffset;
 import net.sourceforge.vrapper.utils.SearchResult;
-import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.SubstitutionDefinition;
-import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
@@ -28,9 +26,11 @@ public class ConfirmSubstitutionMode extends AbstractMode {
     private static final KeyStroke KEY_ESCAPE = key(SpecialKey.ESC);
     
     private SubstitutionDefinition subDef;
-    private TextRange region;
+    private int endOffset;
+    private int nextLine;
+    private boolean globalFlag = false;
     private CommandLineUI commandLine;
-    private SearchResult nextMatch;
+    private SearchResult lastMatch;
 
     public ConfirmSubstitutionMode(EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
@@ -52,11 +52,13 @@ public class ConfirmSubstitutionMode extends AbstractMode {
      */
     public static class SubstitutionConfirm implements ModeSwitchHint {
         protected SubstitutionDefinition subDef;
-        protected TextRange region;
+        protected int startLine;
+        protected int endLine;
 
-        public SubstitutionConfirm(SubstitutionDefinition subDef, TextRange region) {
+        public SubstitutionConfirm(SubstitutionDefinition subDef, int startLine, int endLine) {
             this.subDef = subDef;
-            this.region = region;
+            this.startLine = startLine;
+            this.endLine = endLine;
         }
     }
 
@@ -66,16 +68,15 @@ public class ConfirmSubstitutionMode extends AbstractMode {
         if (hints.length > 0 && hints[0] instanceof SubstitutionConfirm) {
             SubstitutionConfirm hint = (SubstitutionConfirm) hints[0];
             subDef = hint.subDef;
-            //do *not* allow global 'g' flag for confirm!
-            subDef.flags = subDef.flags.replaceAll("g", "");
+            globalFlag = subDef.flags.contains("g");
+            nextLine = hint.startLine;
 
-            region = hint.region;
-            if(region == null) {
-                //if no region, start at cursor and go to end of current line
-                Position start = editorAdaptor.getPosition();
-                int endOffset = editorAdaptor.getModelContent().getLineInformationOfOffset(start.getModelOffset()).getEndOffset();
-                Position end = editorAdaptor.getPosition().setModelOffset(endOffset);
-                new StartEndTextRange(start, end);
+            TextContent model = editorAdaptor.getModelContent();
+            if(hint.endLine == model.getNumberOfLines()) {
+                endOffset = model.getTextLength();
+            }
+            else {
+                endOffset = model.getLineInformation(hint.endLine).getEndOffset();
             }
         }
         else {
@@ -88,8 +89,8 @@ public class ConfirmSubstitutionMode extends AbstractMode {
         commandLine.setPrompt("replace with " + subDef.replace + " (y/n/a/q/l)?");
         commandLine.open();
         
-        //XXX: The initial selection isn't displayed... why?
-        findNextMatch(region.getLeftBound(), true);
+        //XXX: I can't set a selection from within enterMode... why?
+        findNextMatch(true);
     }
     
     @Override
@@ -98,13 +99,24 @@ public class ConfirmSubstitutionMode extends AbstractMode {
         commandLine.close();
     }
     
-    private void findNextMatch(Position start, boolean doHighlight) {
-        SearchOffset afterSearch = new SearchOffset.Begin(start.getModelOffset());
+    private void findNextMatch(boolean doHighlight) {
+        int startOffset;
+        if(lastMatch != null && globalFlag) {
+            //next match might be on the same line
+            startOffset = lastMatch.getRightBound().getModelOffset();
+        }
+        else {
+            //start on next line
+            startOffset = editorAdaptor.getModelContent().getLineInformation(nextLine).getBeginOffset();   
+        }
+    
+        SearchOffset afterSearch = new SearchOffset.Begin(startOffset);
         Search search = new Search(subDef.find, false, false, false, afterSearch, true);
-        SearchResult result = editorAdaptor.getSearchAndReplaceService().find(search, start);
+        SearchResult result = editorAdaptor.getSearchAndReplaceService().find(
+                search,
+                editorAdaptor.getPosition().setModelOffset(startOffset));
         //if no match found or match is outside our range
-        if(result.getStart() == null ||
-                result.getRightBound().getModelOffset() > region.getRightBound().getModelOffset()) {
+        if(result.getStart() == null || result.getRightBound().getModelOffset() > endOffset) {
             exit();
             return;
         }
@@ -112,7 +124,12 @@ public class ConfirmSubstitutionMode extends AbstractMode {
         if(doHighlight) {
             editorAdaptor.setSelection( new SimpleSelection(result) );
         }
-        nextMatch = result;
+
+        //prepare for next iteration
+        lastMatch = result;
+        nextLine = editorAdaptor.getModelContent().getLineInformationOfOffset(
+                lastMatch.getRightBound().getModelOffset()
+                ).getNumber() + 1; //next line after match
     }
 
     @Override
@@ -125,10 +142,10 @@ public class ConfirmSubstitutionMode extends AbstractMode {
         switch(stroke.getCharacter()) {
         case 'y':
             performSubstitution();
-            findNextMatch(nextMatch.getRightBound(), true);
+            findNextMatch(true);
             break;
         case 'n':
-            findNextMatch(nextMatch.getRightBound(), true);
+            findNextMatch(true);
             break;
         case 'a':
             replaceAll();
@@ -149,20 +166,20 @@ public class ConfirmSubstitutionMode extends AbstractMode {
     }
     
     private void exit() {
-        nextMatch = null;
+        lastMatch = null;
         editorAdaptor.changeModeSafely(NormalMode.NAME);
     }
     
     private void replaceAll() {
-        while(nextMatch != null) {
+        while(lastMatch != null) {
             performSubstitution();
-            findNextMatch(nextMatch.getRightBound(), false);
+            findNextMatch(false);
         }
     }
 
     private void performSubstitution() {
         editorAdaptor.getSearchAndReplaceService().substitute(
-                nextMatch.getLeftBound().getModelOffset(),
+                lastMatch.getLeftBound().getModelOffset(),
                 subDef.find, subDef.flags, subDef.replace);
     }
 

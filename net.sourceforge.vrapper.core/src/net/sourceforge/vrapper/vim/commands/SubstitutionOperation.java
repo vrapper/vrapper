@@ -58,7 +58,7 @@ public class SubstitutionOperation extends SimpleTextOperation {
     	
     	if(subDef.flags.indexOf('c') > -1) {
     	    //move into "confirm" mode
-    	    editorAdaptor.changeModeSafely(ConfirmSubstitutionMode.NAME, new ConfirmSubstitutionMode.SubstitutionConfirm(subDef, region));
+    	    editorAdaptor.changeModeSafely(ConfirmSubstitutionMode.NAME, new ConfirmSubstitutionMode.SubstitutionConfirm(subDef, startLine, endLine));
     	    return;
     	}
 		
