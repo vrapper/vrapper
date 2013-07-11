@@ -12,6 +12,7 @@ import net.sourceforge.vrapper.utils.SearchOffset;
 import net.sourceforge.vrapper.utils.SearchResult;
 import net.sourceforge.vrapper.utils.SubstitutionDefinition;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.CenterLineCommand;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 
@@ -125,7 +126,12 @@ public class ConfirmSubstitutionMode extends AbstractMode {
             return;
         }
 
+        editorAdaptor.setPosition(result.getLeftBound(), false);
         if(doHighlight) {
+            //force match to be visible (move scrollbars)
+            //is there a better way to do this?
+            CenterLineCommand.CENTER.execute(editorAdaptor);
+            //highlight match
             editorAdaptor.setSelection( new SimpleSelection(result) );
         }
 
