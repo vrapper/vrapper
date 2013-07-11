@@ -182,10 +182,12 @@ public class ConfirmSubstitutionMode extends AbstractMode {
     }
     
     private void replaceAll() {
+        editorAdaptor.getHistory().beginCompoundChange();
         while(lastMatch != null) {
             performSubstitution();
             findNextMatch(false);
         }
+        editorAdaptor.getHistory().endCompoundChange();
     }
 
     private void performSubstitution() {
