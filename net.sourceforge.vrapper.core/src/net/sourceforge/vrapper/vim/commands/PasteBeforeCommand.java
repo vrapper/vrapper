@@ -28,10 +28,14 @@ public class PasteBeforeCommand extends CountAwareCommand {
             count = 1;
         }
 		RegisterContent registerContent = editorAdaptor.getRegisterManager().getActiveRegister().getContent();
+		if (registerContent.getPayloadType() == ContentType.TEXT_RECTANGLE) {
+		    BlockPasteHelper.execute(editorAdaptor, count, 0, placeCursorAfter);
+		    return;
+		}
 		String text = registerContent.getText();
 		TextContent content = editorAdaptor.getModelContent();
-		int offset = editorAdaptor.getPosition().getModelOffset();
 		boolean linewise = registerContent.getPayloadType() == ContentType.LINES;
+		int offset = editorAdaptor.getPosition().getModelOffset();
         LineInformation line = content.getLineInformationOfOffset(offset);
 		if (linewise) {
 			offset = line.getBeginOffset();

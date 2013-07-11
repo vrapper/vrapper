@@ -15,6 +15,7 @@ import net.sourceforge.vrapper.vim.register.Register;
 import net.sourceforge.vrapper.vim.register.RegisterContent;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
 import net.sourceforge.vrapper.vim.register.StringRegisterContent;
+import net.sourceforge.vrapper.vim.register.TexctBlockContentBuilderRegister;
 
 public class SelectionBasedTextOperationCommand extends CountAwareCommand {
 
@@ -94,12 +95,15 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
                 throws CommandExecutionException {
             
             final RegisterManager registers = editorAdaptor.getRegisterManager();
-            final Register defaultRegister = registers.getDefaultRegister();
+            final Register lastActiveRegister = registers.getActiveRegister();
             final Register lastEditRegister = registers.getLastEditRegister();
             final CursorService cursorService = editorAdaptor.getCursorService();
             final TextContent textContent = editorAdaptor.getModelContent();
             
             TextOperation repetition = command.repetition();
+            if (repetition == null) {
+                repetition = command;
+            }
             for (int line = block.startLine + 1; line <= block.endLine; ++line) {
                 final Position runStart = cursorService.getPositionByVisualOffset(line, block.startVisualOffset);
                 Position runEnd = cursorService.getPositionByVisualOffset(line, block.endVisualOffset);
@@ -117,9 +121,11 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
                     repetition.execute(editorAdaptor, count, nextLine);
 
                     lastEditRegister.setContent(content);
-                    registers.setActiveRegister(defaultRegister); // return to default reg
+                    registers.setActiveRegister(lastActiveRegister); // return to default reg
 
-                    repetition = repetition.repetition();
+                    if (repetition.repetition() != null) {
+                        repetition = repetition.repetition();
+                    }
                 }
 		    }
         }
@@ -160,6 +166,9 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
 		    final TextObject firstLine = new SimpleSelection(new StartEndTextRange(runStart, runEnd));
 		    
 		    final HistoryService history = editorAdaptor.getHistory();
+		    final RegisterManager registerManager = editorAdaptor.getRegisterManager();
+            Register activeRegister = registerManager.getActiveRegister();
+            registerManager.setActiveRegister(new TexctBlockContentBuilderRegister(activeRegister, textBlock.endVisualOffset - textBlock.startVisualOffset));
 		    history.beginCompoundChange();
 		    history.lock("block-action");
 		    
