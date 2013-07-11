@@ -50,7 +50,7 @@ abstract public class BlockPasteHelper {
                     // Right-pad with spaces if block-line is shorter and not at EOL.
                     //
                     pastePos = pastePos.addModelOffset(blockLine.length());
-                    if (pastePos.getModelOffset() != pasteLine.getEndOffset() || c != count - 1) {
+                    if (pastePos.getModelOffset() < pasteLine.getEndOffset() || c != count - 1) {
                         while (cursorService.getVisualOffset(pastePos) <= vOffset + vWidth) {
                             content.replace(pastePos.addModelOffset(startOfs).getModelOffset(), 0, " ");
                             pastePos = pastePos.addModelOffset(1);
