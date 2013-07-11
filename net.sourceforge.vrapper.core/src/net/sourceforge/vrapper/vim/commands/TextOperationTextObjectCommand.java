@@ -2,6 +2,7 @@ package net.sourceforge.vrapper.vim.commands;
 
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.modes.ConfirmSubstitutionMode;
 
 public class TextOperationTextObjectCommand extends CountAwareCommand {
 
@@ -26,8 +27,13 @@ public class TextOperationTextObjectCommand extends CountAwareCommand {
     public void execute(EditorAdaptor editorAdaptor, int count)
             throws CommandExecutionException {
         command.execute(editorAdaptor, count, textObject);
-        CursorService cursorService = editorAdaptor.getCursorService();
-        cursorService.setPosition(cursorService.getPosition(), true);
+
+        //XXX: This is a horrible hack to allow for the initial match to be
+        //highlighted when in ConfirmSubstitutionMode.
+        if(editorAdaptor.getCurrentModeName() != ConfirmSubstitutionMode.NAME) {
+            CursorService cursorService = editorAdaptor.getCursorService();
+            cursorService.setPosition(cursorService.getPosition(), true);
+        }
     }
 
     @Override

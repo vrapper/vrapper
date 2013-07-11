@@ -89,7 +89,11 @@ public class ConfirmSubstitutionMode extends AbstractMode {
         commandLine.setPrompt("replace with " + subDef.replace + " (y/n/a/q/l)?");
         commandLine.open();
         
-        //XXX: I can't set a selection from within enterMode... why?
+        //XXX: Ugly hack.  This call will highlight the initial match to get
+        //things started. But, I can't set a selection from within this method
+        //because TextOperationTextObjectCommand will clear all selections after
+        //this method returns.  So I added a horrible horrible check in that
+        //class to *not* clear the selection if I've entered this mode.
         findNextMatch(true);
     }
     
@@ -167,6 +171,7 @@ public class ConfirmSubstitutionMode extends AbstractMode {
     
     private void exit() {
         lastMatch = null;
+        editorAdaptor.setSelection(null);
         editorAdaptor.changeModeSafely(NormalMode.NAME);
     }
     
