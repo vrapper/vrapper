@@ -1,6 +1,7 @@
 package net.sourceforge.vrapper.vim.modes;
 
 import static net.sourceforge.vrapper.keymap.StateUtils.union;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.altKey;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.changeCaret;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.convertKeyStroke;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.key;
@@ -349,6 +350,11 @@ public class NormalMode extends CommandBasedMode {
                                         RecordMacroCommand.KEYSTROKE_CONVERTER,
                                         VimConstants.PRINTABLE_KEYSTROKES)),
                         transitionBind('@',
+                                convertKeyStroke(
+                                        PlaybackMacroCommand.KEYSTROKE_CONVERTER,
+                                        VimConstants.PRINTABLE_KEYSTROKES)),
+                        //German keyboard has @ on AltGr + Q
+                        transitionBind(altKey('@'),
                                 convertKeyStroke(
                                         PlaybackMacroCommand.KEYSTROKE_CONVERTER,
                                         VimConstants.PRINTABLE_KEYSTROKES)),

@@ -164,6 +164,10 @@ public class ConstructorWrappers {
         return keyNames.get("C-"+String.valueOf(key).toUpperCase());
     }
 
+    public static KeyStroke altKey(char key) {
+        return new SimpleKeyStroke(key, false, true);
+    }
+
     public static KeyStroke key(SpecialKey key) {
         return new SimpleKeyStroke(key);
     }
