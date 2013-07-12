@@ -4,7 +4,8 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.motions.Motion;
 
 /**
- * Placeholder for Java-ugliness-hiding static methods intended to be statically imported
+ * Static utility methods to wrap commands or motions.
+ * These Java-ugliness-hiding static methods are intended to be statically imported.
  * @author Krzysiek Goj
  */
 public class ConstructorWrappers {
