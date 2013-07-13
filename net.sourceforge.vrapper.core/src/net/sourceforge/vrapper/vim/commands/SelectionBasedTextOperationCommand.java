@@ -15,7 +15,7 @@ import net.sourceforge.vrapper.vim.register.Register;
 import net.sourceforge.vrapper.vim.register.RegisterContent;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
 import net.sourceforge.vrapper.vim.register.StringRegisterContent;
-import net.sourceforge.vrapper.vim.register.TexctBlockContentBuilderRegister;
+import net.sourceforge.vrapper.vim.register.TextBlockContentBuilderRegister;
 
 public class SelectionBasedTextOperationCommand extends CountAwareCommand {
 
@@ -168,7 +168,7 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
 		    final HistoryService history = editorAdaptor.getHistory();
 		    final RegisterManager registerManager = editorAdaptor.getRegisterManager();
             Register activeRegister = registerManager.getActiveRegister();
-            registerManager.setActiveRegister(new TexctBlockContentBuilderRegister(activeRegister, textBlock.endVisualOffset - textBlock.startVisualOffset));
+            registerManager.setActiveRegister(new TextBlockContentBuilderRegister(activeRegister, textBlock.endVisualOffset - textBlock.startVisualOffset));
 		    history.beginCompoundChange();
 		    history.lock("block-action");
 		    
