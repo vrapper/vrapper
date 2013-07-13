@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import net.sourceforge.vrapper.eclipse.ui.CaretUtils;
-import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.Configuration;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.SelectionService;
@@ -46,7 +45,6 @@ import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.internal.WorkbenchPage;
-import org.eclipse.ui.internal.views.markers.TodoFiltersContributionParameters;
 import org.eclipse.ui.texteditor.AbstractMarkerAnnotationModel;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 import org.eclipse.ui.texteditor.MarkerUtilities;
@@ -548,12 +546,31 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     @Override
     public Position getPositionByVisualOffset(int lineNo, int visualOffset) {
         final StyledText tw = textViewer.getTextWidget();
-        final int viewLine = converter.modelLine2WidgetLine(lineNo);
-        final int y = tw.getLocationAtOffset(tw.getOffsetAtLine(viewLine)).y;
         try {
-            final int offset = tw.getOffsetAtLocation(new Point(visualOffset - tw.getHorizontalPixel(), y));
+            final IRegion region = textViewer.getDocument().getLineInformation(lineNo);
+            final int lineOffset = converter.modelOffset2WidgetOffset(region.getOffset());
+            final Rectangle lineBounds = tw.getTextBounds(lineOffset, lineOffset + region.getLength());
+            if (!lineBounds.contains(visualOffset, lineBounds.y)) {
+                return null;
+            }
+            //
+            // Guess the offset by text width. The calculation is accurate if
+            // there are no <TAB> characters on the line.
+            //
+            int offset = lineOffset + (region.getLength() * visualOffset) / lineBounds.width;
+            //
+            // Check the guess and adjust is offset if missed.
+            //
+            Rectangle rect;
+            while (!(rect = tw.getTextBounds(offset, offset)).contains(visualOffset, rect.y)) {
+                if (rect.x > visualOffset) {
+                    --offset;
+                } else {
+                    ++offset;
+                }
+            }
             return new TextViewerPosition(textViewer, Space.VIEW, offset);
-        } catch (final IllegalArgumentException e) {
+        } catch (BadLocationException e1) {
             // No character at the specified visual offset.
             return null;
         }
