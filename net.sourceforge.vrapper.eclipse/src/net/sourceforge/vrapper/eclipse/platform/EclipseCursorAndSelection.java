@@ -35,6 +35,7 @@ import org.eclipse.swt.custom.CaretListener;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Caret;
@@ -67,6 +68,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     private int changeListIndex;
     private final Configuration configuration;
     private final EclipseTextContent textContent;
+    private int averageCharWidth;
 
 	public EclipseCursorAndSelection(final Configuration configuration,
 			final ITextViewer textViewer, final EclipseTextContent textContent) {
@@ -75,6 +77,8 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         this.textContent = textContent;
         StyledText tw = textViewer.getTextWidget();
         this.stickyColumn = tw.getLeftMargin();
+        final GC gc = new GC(tw);
+        averageCharWidth = gc.getFontMetrics().getAverageCharWidth();
         converter = OffsetConverter.create(textViewer);
         selectionChangeListener = new SelectionChangeListener();
         caretListener = new StickyColumnUpdater();
@@ -540,6 +544,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         final int offset = position.getViewOffset();
         StyledText textWidget = textViewer.getTextWidget();
         int visualOffset = textWidget.getLocationAtOffset(offset).x + textWidget.getHorizontalPixel();
+
         return visualOffset;
     }
 
@@ -575,5 +580,11 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
             return null;
         }
     }
+
+    @Override
+    public int visualWidthToChars(int visualWidth) {
+        return visualWidth / averageCharWidth;
+    }
+
 
 }

@@ -113,4 +113,9 @@ public class TestCursorAndSelection implements CursorService, SelectionService {
 	    LineInformation lineInformation = content.getLineInformation(lineNo);
         return new DumbPosition(lineInformation.getBeginOffset() + visualOffset);
     }
+
+    @Override
+    public int visualWidthToChars(int visualWidth) {
+        return visualWidth;
+    }
 }
