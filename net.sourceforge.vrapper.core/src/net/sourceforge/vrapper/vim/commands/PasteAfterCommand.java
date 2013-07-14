@@ -1,5 +1,6 @@
 package net.sourceforge.vrapper.vim.commands;
 
+import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.LineInformation;
@@ -8,6 +9,7 @@ import net.sourceforge.vrapper.utils.StringUtils;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.register.RegisterContent;
+import net.sourceforge.vrapper.vim.register.TextBlockRegisterContent;
 
 public class PasteAfterCommand extends CountAwareCommand {
 
@@ -28,6 +30,7 @@ public class PasteAfterCommand extends CountAwareCommand {
         if (count == NO_COUNT_GIVEN) {
             count = 1;
         }
+        final CursorService cursorService = editorAdaptor.getCursorService();
         RegisterContent registerContent = editorAdaptor.getRegisterManager().getActiveRegister().getContent();
         String text = registerContent.getText();
         TextContent content = editorAdaptor.getModelContent();
@@ -35,8 +38,8 @@ public class PasteAfterCommand extends CountAwareCommand {
         LineInformation line = content.getLineInformationOfOffset(offset);
         int lineNo = line.getNumber() + 1;
         int position;
-        boolean linewise = registerContent.getPayloadType() == ContentType.LINES;
-		if (linewise) {
+        switch (registerContent.getPayloadType()) {
+        case LINES:
             // FIXME: position calculation for count > 1
             if (lineNo < content.getNumberOfLines()) {
                 offset = content.getLineInformation(lineNo).getBeginOffset();
@@ -47,21 +50,28 @@ public class PasteAfterCommand extends CountAwareCommand {
                 text = newLine + VimUtils.stripLastNewline(text);
                 position = offset + newLine.length();
             }
-        } else {
+            break;
+        case TEXT:
             offset = Math.min(line.getEndOffset(), offset + 1);
             position = offset + text.length() * count;
             if (!placeCursorAfter || text.length() == 0)
             	position -= 1;
+            break;
+        case TEXT_RECTANGLE:
+            BlockPasteHelper.execute(editorAdaptor, count, 1, placeCursorAfter);
+            return;
+        default:
+            return;
         }
         try {
             editorAdaptor.getHistory().beginCompoundChange();
             content.replace(offset, 0, StringUtils.multiply(text, count));
             int followingLine = lineNo + count;
-            if (linewise && placeCursorAfter
+            if (registerContent.getPayloadType() == ContentType.LINES && placeCursorAfter
 				&& followingLine < content.getNumberOfLines()) {
 	                position = content.getLineInformation(followingLine).getBeginOffset();
             }
-            Position destination = editorAdaptor.getCursorService().newPositionForModelOffset(position);
+            Position destination = cursorService.newPositionForModelOffset(position);
             editorAdaptor.setPosition(destination, true);
         } finally {
             editorAdaptor.getHistory().endCompoundChange();
