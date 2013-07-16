@@ -7,6 +7,7 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionB
 
 import java.util.Queue;
 
+import net.sourceforge.vrapper.eclipse.commands.EclipseShiftOperation;
 import net.sourceforge.vrapper.eclipse.keymap.AbstractEclipseSpecificStateProvider;
 import net.sourceforge.vrapper.keymap.ConvertingState;
 import net.sourceforge.vrapper.keymap.State;
@@ -16,6 +17,7 @@ import net.sourceforge.vrapper.plugin.surround.commands.DeleteDelimitersCommand;
 import net.sourceforge.vrapper.plugin.surround.commands.FullLineTextObject;
 import net.sourceforge.vrapper.plugin.surround.commands.SpacedDelimitedText;
 import net.sourceforge.vrapper.plugin.surround.state.AddDelimiterState;
+import net.sourceforge.vrapper.plugin.surround.state.AddVisualDelimiterState;
 import net.sourceforge.vrapper.plugin.surround.state.ChangeDelimiterState;
 import net.sourceforge.vrapper.plugin.surround.state.DelimiterValues;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
@@ -77,5 +79,14 @@ public class SurroundStateProvider extends AbstractEclipseSpecificStateProvider 
                 transitionBind('d', transitionBind('s', deleteDelimiterState)),
                 transitionBind('c', transitionBind('s', changeDelimiterState)),
                 transitionBind('y', transitionBind('s', addDelimiterState)));
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    protected State<Command> visualModeBindings() {
+        return state(
+                transitionBind('S', new AddVisualDelimiterState(EclipseShiftOperation.Visual.RIGHT)),
+                transitionBind('g', transitionBind('S',  new AddVisualDelimiterState(null)))
+               );
     }
 }
