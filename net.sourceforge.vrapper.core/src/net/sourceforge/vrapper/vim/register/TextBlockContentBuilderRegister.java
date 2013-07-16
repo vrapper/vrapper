@@ -16,6 +16,10 @@ public class TextBlockContentBuilderRegister implements Register {
         this.textBlock = new TextBlockRegisterContent(visualWidth);
     }
 
+    public Register getDelegate() {
+        return delegate;
+    }
+
     public RegisterContent getContent() {
         return delegate.getContent();
     }
