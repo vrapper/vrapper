@@ -21,6 +21,7 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.BlockWiseSelection;
 import net.sourceforge.vrapper.vim.commands.BlockWiseSelection.TextBlock;
+import net.sourceforge.vrapper.vim.commands.BlockwiseYankCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeToInsertModeCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
@@ -38,27 +39,27 @@ import net.sourceforge.vrapper.vim.register.StringRegisterContent;
 
 public class BlockwiseVisualMode extends AbstractVisualMode {
 
-    enum InserMode {
+    enum InsertModeType {
         INSERT,
         APPEND
     }
 
     private static class BlockwiseRepeatInsertCommand implements Command {
 
-        final private InserMode mode;
+        final private InsertModeType mode;
 
-        public static final Command INSERT_INSTANCE = new BlockwiseRepeatInsertCommand(InserMode.INSERT);
-        public static final Command APPEND_INSTANCE = new BlockwiseRepeatInsertCommand(InserMode.APPEND);
-        public static final Command REPEAT_INSERT_INSTANCE = new Repetition(InserMode.INSERT);
-        public static final Command REPEAT_APPEND_INSTANCE = new Repetition(InserMode.APPEND);
+        public static final Command INSERT_INSTANCE = new BlockwiseRepeatInsertCommand(InsertModeType.INSERT);
+        public static final Command APPEND_INSTANCE = new BlockwiseRepeatInsertCommand(InsertModeType.APPEND);
+        public static final Command REPEAT_INSERT_INSTANCE = new Repetition(InsertModeType.INSERT);
+        public static final Command REPEAT_APPEND_INSTANCE = new Repetition(InsertModeType.APPEND);
 
-        BlockwiseRepeatInsertCommand(InserMode mode) {
+        BlockwiseRepeatInsertCommand(InsertModeType mode) {
             this.mode = mode;
         }
 
         @Override
         public Command repetition() {
-            return mode == InserMode.INSERT ? REPEAT_INSERT_INSTANCE : REPEAT_APPEND_INSTANCE;
+            return mode == InsertModeType.INSERT ? REPEAT_INSERT_INSTANCE : REPEAT_APPEND_INSTANCE;
         }
 
         @Override
@@ -124,9 +125,9 @@ public class BlockwiseVisualMode extends AbstractVisualMode {
 
     static public class Repetition extends CountAwareCommand {
 
-        final private InserMode mode;
+        final private InsertModeType mode;
 
-        public Repetition(InserMode mode) {
+        public Repetition(InsertModeType mode) {
             this.mode = mode;
         }
 
@@ -148,7 +149,7 @@ public class BlockwiseVisualMode extends AbstractVisualMode {
             for (int line = block.startLine; line <= block.endLine; ++line) {
                 Position newUl = cursorService.getPositionByVisualOffset(line, block.startVisualOffset);
                 if (newUl != null) {
-                    if (mode == InserMode.APPEND) {
+                    if (mode == InsertModeType.APPEND) {
                         newUl = newUl.addModelOffset(1);
                     }
                     editorAdaptor.setPosition(newUl, false);
@@ -157,7 +158,7 @@ public class BlockwiseVisualMode extends AbstractVisualMode {
             }
             editorAdaptor.setPosition(
                     region.getStart().addModelOffset(
-                            mode == InserMode.APPEND ? 1 : 0), true);
+                            mode == InsertModeType.APPEND ? 1 : 0), true);
             history.unlock("block-action");
             history.endCompoundChange();
         }
@@ -172,8 +173,8 @@ public class BlockwiseVisualMode extends AbstractVisualMode {
     private static class BlockwiseChangeToInsertModeCommand extends
             ChangeToInsertModeCommand implements Command {
 
-        final private InserMode mode;
-        public BlockwiseChangeToInsertModeCommand(final Command command, InserMode mode) {
+        final private InsertModeType mode;
+        public BlockwiseChangeToInsertModeCommand(final Command command, InsertModeType mode) {
             super(command);
             this.mode = mode;
         }
@@ -192,7 +193,7 @@ public class BlockwiseVisualMode extends AbstractVisualMode {
 		    history.lock("block-action");
       		editorAdaptor.changeMode(InsertMode.NAME, new ExecuteCommandHint.OnEnter(command),
                               new ExecuteCommandHint.OnLeave(
-                                      mode == InserMode.INSERT ?
+                                      mode == InsertModeType.INSERT ?
                                         BlockwiseRepeatInsertCommand.INSERT_INSTANCE
                                       : BlockwiseRepeatInsertCommand.APPEND_INSTANCE),
                               new WithCountHint(count));
@@ -226,9 +227,10 @@ public class BlockwiseVisualMode extends AbstractVisualMode {
         
         final State<Command> parentState = super.buildInitialState();
         return union(state(
-                leafBind('I', (Command) new BlockwiseChangeToInsertModeCommand(new MotionCommand(bol), InserMode.INSERT)),
-                leafBind('A', (Command) new BlockwiseChangeToInsertModeCommand(new MotionCommand(eol), InserMode.APPEND)),
+                leafBind('I', (Command) new BlockwiseChangeToInsertModeCommand(new MotionCommand(bol), InsertModeType.INSERT)),
+                leafBind('A', (Command) new BlockwiseChangeToInsertModeCommand(new MotionCommand(eol), InsertModeType.APPEND)),
                 leafBind('~', swapCase),
+                leafBind('y', (Command) BlockwiseYankCommand.INSTANCE),
                 transitionBind('r', changeCaret(CaretType.UNDERLINE),
                         convertKeyStroke(
                                 ReplaceCommand.VisualBlock.VISUALBLOCK_KEYSTROKE,

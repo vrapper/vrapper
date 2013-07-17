@@ -14,8 +14,8 @@ import net.sourceforge.vrapper.vim.commands.BlockWiseSelection.TextBlock;
 import net.sourceforge.vrapper.vim.register.Register;
 import net.sourceforge.vrapper.vim.register.RegisterContent;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
+import net.sourceforge.vrapper.vim.register.SimpleRegister;
 import net.sourceforge.vrapper.vim.register.StringRegisterContent;
-import net.sourceforge.vrapper.vim.register.TextBlockContentBuilderRegister;
 
 public class SelectionBasedTextOperationCommand extends CountAwareCommand {
 
@@ -87,13 +87,6 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
             
             if (commitHistory) {
                 final HistoryService history = editorAdaptor.getHistory();
-                //
-                // Collected all text block runs - restore original register.
-                //
-                final Register active = registerManager.getActiveRegister();
-                if (active instanceof TextBlockContentBuilderRegister) {
-                    registerManager.setActiveRegister(((TextBlockContentBuilderRegister)active).getDelegate());
-                }
                 history.unlock("block-action");
                 history.endCompoundChange();
             }
@@ -187,13 +180,14 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
 
         final HistoryService history = editorAdaptor.getHistory();
         final RegisterManager registerManager = editorAdaptor.getRegisterManager();
-        Register activeRegister = registerManager.getActiveRegister();
-        if (activeRegister instanceof TextBlockContentBuilderRegister) {
-            activeRegister = ((TextBlockContentBuilderRegister)activeRegister).getDelegate();
-        }
-        TextBlockContentBuilderRegister builderRegister =
-                new TextBlockContentBuilderRegister(activeRegister, textBlock.endVisualOffset - textBlock.startVisualOffset);
-        registerManager.setActiveRegister(builderRegister);
+        final Register activeRegister = registerManager.getActiveRegister();
+        final Register yankRegister = new SimpleRegister();
+        //
+        // Temporary activate the yank register to capture text block
+        //
+        registerManager.setActiveRegister(yankRegister);
+        YankOperation.doIt(editorAdaptor, blockRange, ContentType.TEXT_RECTANGLE, false);
+        registerManager.setActiveRegister(activeRegister);
         // Block operation shouldn't be a part of any compound change.
         history.unlock();
         history.beginCompoundChange();
@@ -202,11 +196,11 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
         command.execute(editorAdaptor, count, firstLine);
 
         if (changeMode) {
-            registerManager.setActiveRegister(builderRegister);
+            registerManager.setActiveRegister(activeRegister);
             BlockwiseRepeatCommand.doIt(editorAdaptor, command, count, textBlock);
             editorAdaptor.setPosition(runStart, true);
 
-            registerManager.setActiveRegister(activeRegister);
+            activeRegister.setContent(yankRegister.getContent());
             history.unlock("block-action");
         	history.endCompoundChange();
         }
