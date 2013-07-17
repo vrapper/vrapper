@@ -23,6 +23,12 @@ public class PasteRegisterCommand extends CountIgnoringNonRepeatableCommand {
 
 		if(text.length() > 0) {
 			TextContent content = editorAdaptor.getModelContent();
+			//Delete Eclipse selection contents, for example when completing a function's arguments.
+			Selection currentSelection = editorAdaptor.getSelection();
+			if (currentSelection.getModelLength() > 0) {
+				content.replace(currentSelection.getStart().getModelOffset(),
+						currentSelection.getModelLength(), "");
+			}
 			int offset = editorAdaptor.getCursorService().getPosition().getModelOffset();
 			//different from PasteOperation! it does length() - 1
 			int position = offset + text.length();
