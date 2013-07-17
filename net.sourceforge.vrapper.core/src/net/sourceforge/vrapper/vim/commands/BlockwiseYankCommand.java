@@ -11,6 +11,7 @@ public class BlockwiseYankCommand extends AbstractCommand {
     @Override
     public void execute(EditorAdaptor editorAdaptor)
             throws CommandExecutionException {
+        editorAdaptor.rememberLastActiveSelection();
         final TextObject selection = editorAdaptor.getSelection();
         final TextRange blockRange = selection.getRegion(editorAdaptor, NO_COUNT_GIVEN);
         YankOperation.doIt(editorAdaptor, blockRange, ContentType.TEXT_RECTANGLE, true);
