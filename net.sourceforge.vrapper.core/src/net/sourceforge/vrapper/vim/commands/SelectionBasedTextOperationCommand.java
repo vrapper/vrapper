@@ -105,7 +105,8 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
             if (repetition == null) {
                 repetition = command;
             }
-            for (int line = block.startLine + 1; line <= block.endLine; ++line) {
+            final int endLine = Math.min(block.endLine, textContent.getNumberOfLines() - 1);
+            for (int line = block.startLine + 1; line <= endLine; ++line) {
                 final Position runStart = cursorService.getPositionByVisualOffset(line, block.startVisualOffset);
                 Position runEnd = cursorService.getPositionByVisualOffset(line, block.endVisualOffset);
                 if (runEnd == null) {
