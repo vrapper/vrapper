@@ -553,6 +553,9 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         final StyledText tw = textViewer.getTextWidget();
         try {
             final IRegion region = textViewer.getDocument().getLineInformation(lineNo);
+            if (region.getLength() == 0) {
+                return null;
+            }
             final int lineOffset = converter.modelOffset2WidgetOffset(region.getOffset());
             final Rectangle lineBounds = tw.getTextBounds(lineOffset, lineOffset + region.getLength());
             if (!lineBounds.contains(visualOffset, lineBounds.y)) {

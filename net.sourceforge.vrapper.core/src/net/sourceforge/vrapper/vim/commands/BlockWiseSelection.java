@@ -123,6 +123,7 @@ public class BlockWiseSelection implements Selection {
             result.startLine = toLineNo;
             result.endLine = fromLineNo;
         }
+        result.endLine = Math.min(result.endLine, textContent.getNumberOfLines() - 1);
         final int fromVOffset = cursorService.getVisualOffset(from);
         final int toVOffset = cursorService.getVisualOffset(to);
         if (fromVOffset < toVOffset) {
