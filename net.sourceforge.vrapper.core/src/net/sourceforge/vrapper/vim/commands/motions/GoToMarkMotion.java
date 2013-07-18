@@ -1,6 +1,7 @@
 package net.sourceforge.vrapper.vim.commands.motions;
 
 import net.sourceforge.vrapper.keymap.KeyStroke;
+import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.Function;
 import net.sourceforge.vrapper.utils.LineInformation;
@@ -42,6 +43,7 @@ public class GoToMarkMotion implements Motion {
             TextContent tc = editorAdaptor.getModelContent();
             LineInformation line = tc.getLineInformationOfOffset(markPos.getModelOffset());
             int offset = VimUtils.getFirstNonWhiteSpaceOffset(tc, line);
+            editorAdaptor.getCursorService().setMark(CursorService.LAST_JUMP_MARK, editorAdaptor.getPosition());
             return editorAdaptor.getCursorService().newPositionForModelOffset(offset);
         }
         return markPos;
