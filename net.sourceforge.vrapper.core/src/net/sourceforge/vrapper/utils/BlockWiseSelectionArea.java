@@ -26,13 +26,15 @@ public class BlockWiseSelectionArea extends SelectionArea {
         final TextContent modelContent = editorAdaptor.getModelContent();
         final Position start = editorAdaptor.getPosition();
         final LineInformation firstLine = modelContent.getLineInformationOfOffset(start.getModelOffset());
-        final LineInformation lastLine = modelContent.getLineInformation(firstLine.getNumber() + linesSpanned - 1);
+        int lastLineNo = Math.min(firstLine.getNumber() + linesSpanned - 1, modelContent.getNumberOfLines() - 1);
         final CursorService cursorService = editorAdaptor.getCursorService();
         final int startVOffset = cursorService.getVisualOffset(start);
-        Position end = cursorService.getPositionByVisualOffset(lastLine.getNumber(), startVOffset + visualWidth);
-        if (end == null) {
-            // TODO : applying a visual block to a line with no content at the block rect.
-            end = cursorService.newPositionForModelOffset(lastLine.getEndOffset());
+        Position end = null;
+        // Find a line with a character at the specified visual offset.
+        while (end == null && lastLineNo >= firstLine.getNumber()) {
+            final LineInformation lastLine = modelContent.getLineInformation(lastLineNo);
+            end = cursorService.getPositionByVisualOffset(lastLine.getNumber(), startVOffset + visualWidth);
+            --lastLineNo;
         }
         return new StartEndTextRange(start, end);
     
