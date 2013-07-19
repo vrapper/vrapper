@@ -26,21 +26,11 @@ public class AddDelimiterToSelectionOperation implements TextOperation {
             throws CommandExecutionException {
         if (selection.getContentType(editorAdaptor.getConfiguration())
                 .equals(ContentType.LINES)) {
-            if (indentOperation != null) {
-                indentOperation.execute(editorAdaptor, Command.NO_COUNT_GIVEN, selection);
-            }
-            // TODO: Put delimiters on line before and after line-wise selection
-            new ChangeDelimiterCommand(new NotYetDelimitedTextObject(selection), delimiters)
-                    .execute(editorAdaptor);
+            surroundLines(editorAdaptor, selection);
 
         } else if (selection.getContentType(editorAdaptor.getConfiguration())
                 .equals(ContentType.TEXT_RECTANGLE)) {
-            TextRange range = selection.getRegion(editorAdaptor, Command.NO_COUNT_GIVEN);
-            TextBlock textBlock = BlockWiseSelection.getTextBlock(range.getStart(), range.getEnd(),
-                    editorAdaptor.getModelContent(), editorAdaptor.getCursorService());
-            // TODO: Surround each block item
-            new ChangeDelimiterCommand(new NotYetDelimitedTextObject(selection), delimiters)
-                    .execute(editorAdaptor);
+            surroundLinesInBlock(editorAdaptor, selection);
 
         } else {
             new ChangeDelimiterCommand(new NotYetDelimitedTextObject(selection), delimiters)
@@ -48,8 +38,31 @@ public class AddDelimiterToSelectionOperation implements TextOperation {
         }
     }
 
+    private void surroundLines(EditorAdaptor editorAdaptor, TextObject selection)
+            throws CommandExecutionException {
+        if (indentOperation != null) {
+            indentOperation.execute(editorAdaptor, Command.NO_COUNT_GIVEN, selection);
+        }
+        // TODO: Put delimiters on line before and after line-wise selection
+        new ChangeDelimiterCommand(new NotYetDelimitedTextObject(selection), delimiters)
+                .execute(editorAdaptor);
+    }
+
+    private void surroundLinesInBlock(EditorAdaptor editorAdaptor,
+            TextObject selection) throws CommandExecutionException {
+        TextRange range = selection.getRegion(editorAdaptor, Command.NO_COUNT_GIVEN);
+        TextBlock textBlock = BlockWiseSelection.getTextBlock(range.getStart(), range.getEnd(),
+                editorAdaptor.getModelContent(), editorAdaptor.getCursorService());
+        // TODO: Surround each block item
+        new ChangeDelimiterCommand(new NotYetDelimitedTextObject(selection), delimiters)
+                .execute(editorAdaptor);
+    }
+
+    /**
+     * Not supported (for now), use <tt>gv</tt> to restore the selection and re-enter this command.
+     */
     @Override
     public TextOperation repetition() {
-        return this;
+        return null;
     }
 }
