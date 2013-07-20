@@ -26,12 +26,16 @@ public final class InsertLineCommand implements Command {
     public final void execute(EditorAdaptor vim) {
         TextContent p = vim.getModelContent();
         LineInformation line = p.getLineInformationOfOffset(vim.getCursorService().getPosition().getModelOffset());
+        doIt(vim, this.type, line);
+    }
+    
+    public static final void doIt(EditorAdaptor vim, Type type, LineInformation line) {
         if (vim.getConfiguration().get(Options.SMART_INDENT)) {
-            this.type.smart(vim, line);
+            type.smart(vim, line);
         } else {
             boolean autoindent = vim.getConfiguration().get(Options.AUTO_INDENT);
             String indent = autoindent ? VimUtils.getIndent(vim.getModelContent(), line) : "";
-            this.type.dumb(vim, line, indent);
+            type.dumb(vim, line, indent);
         }
     }
 
