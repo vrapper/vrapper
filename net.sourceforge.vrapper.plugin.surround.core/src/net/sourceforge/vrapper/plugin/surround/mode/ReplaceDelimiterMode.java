@@ -28,24 +28,13 @@ public class ReplaceDelimiterMode extends AbstractCommandLineMode {
     public ReplaceDelimiterMode(EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
     }
-    
-    public static Command wrap(Command target, DelimiterChangedListener listener,
-            DelimitedText toWrap, DelimiterHolder replacement) {
-        if (replacement instanceof AbstractDynamicDelimiterHolder) {
-            DelimiterHint delimiterHint = new DelimiterHint(target, listener,
-                    toWrap, (AbstractDynamicDelimiterHolder) replacement);
-            return new ChangeModeCommand(ReplaceDelimiterMode.class.getName(), delimiterHint);
-        } else {
-            return target;
-        }
-    }
 
     public static void switchMode(EditorAdaptor vim, Command leaveCommand,
             DelimiterChangedListener listener, DelimitedText toWrap,
-            DelimiterHolder dynamicDelimiter) throws CommandExecutionException {
+            AbstractDynamicDelimiterHolder dynamicDelimiter) throws CommandExecutionException {
 
         DelimiterHint delimiterHint = new DelimiterHint(leaveCommand, listener, toWrap,
-                (AbstractDynamicDelimiterHolder) dynamicDelimiter);
+                 dynamicDelimiter);
         vim.changeMode(ReplaceDelimiterMode.class.getName(), delimiterHint);
     }
 

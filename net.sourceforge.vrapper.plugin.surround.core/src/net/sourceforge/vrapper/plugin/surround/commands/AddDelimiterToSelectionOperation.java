@@ -2,6 +2,7 @@ package net.sourceforge.vrapper.plugin.surround.commands;
 
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.TextContent;
+import net.sourceforge.vrapper.plugin.surround.mode.ReplaceDelimiterMode;
 import net.sourceforge.vrapper.plugin.surround.state.AbstractDynamicDelimiterHolder;
 import net.sourceforge.vrapper.plugin.surround.state.DelimiterHolder;
 import net.sourceforge.vrapper.utils.ContentType;
@@ -20,9 +21,11 @@ import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 import net.sourceforge.vrapper.vim.commands.TextObject;
 import net.sourceforge.vrapper.vim.commands.TextOperation;
+import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
 
 public class AddDelimiterToSelectionOperation implements TextOperation, DelimiterChangedListener {
 
+    private AbstractDynamicDelimiterHolder dynamicDelimiter;
     private DelimiterHolder replacement;
     private TextOperation indentOperation;
 
@@ -30,7 +33,9 @@ public class AddDelimiterToSelectionOperation implements TextOperation, Delimite
         this.indentOperation = indentOperation;
 
         //If the delimiter is dynamic, it must be updated through delimiterChanged(..)
-        if ( ! (delimiters instanceof AbstractDynamicDelimiterHolder)) {
+        if (delimiters instanceof AbstractDynamicDelimiterHolder) {
+            this.dynamicDelimiter = (AbstractDynamicDelimiterHolder) delimiters;
+        } else {
             this.replacement = delimiters;
         }
     }
@@ -38,30 +43,33 @@ public class AddDelimiterToSelectionOperation implements TextOperation, Delimite
     @Override
     public void execute(EditorAdaptor editorAdaptor, int count, TextObject selection)
             throws CommandExecutionException {
-        try {
-            editorAdaptor.getHistory().beginCompoundChange();
-            editorAdaptor.getHistory().lock("surroundvisual");
-            
-            if (replacement == null) {
-                throw new CommandExecutionException("Dynamic delimiter was never updated!");
+        if (dynamicDelimiter != null && replacement == null) {
+            ReplaceDelimiterMode.switchMode(editorAdaptor,
+                    new TextOperationTextObjectCommand(this, selection),
+                    this, new NotYetDelimitedTextObject(selection), dynamicDelimiter);
+        } else {
+            try {
+                editorAdaptor.getHistory().beginCompoundChange();
+                editorAdaptor.getHistory().lock("surroundvisual");
+
+                if (selection.getContentType(editorAdaptor.getConfiguration())
+                        .equals(ContentType.LINES)) {
+
+                    surroundLines(editorAdaptor, selection);
+
+                } else if (selection.getContentType(editorAdaptor.getConfiguration())
+                        .equals(ContentType.TEXT_RECTANGLE)) {
+
+                    surroundLinesInBlock(editorAdaptor, selection);
+
+                } else {
+                    ChangeDelimiterCommand.doIt(editorAdaptor, 0,
+                            new NotYetDelimitedTextObject(selection), replacement);
+                }
+            } finally {
+                editorAdaptor.getHistory().unlock("surroundvisual");
+                editorAdaptor.getHistory().endCompoundChange();
             }
-            if (selection.getContentType(editorAdaptor.getConfiguration())
-                    .equals(ContentType.LINES)) {
-
-                surroundLines(editorAdaptor, selection);
-
-            } else if (selection.getContentType(editorAdaptor.getConfiguration())
-                    .equals(ContentType.TEXT_RECTANGLE)) {
-
-                surroundLinesInBlock(editorAdaptor, selection);
-
-            } else {
-                ChangeDelimiterCommand.doIt(editorAdaptor, 0, new NotYetDelimitedTextObject(selection),
-                        replacement);
-            }
-        } finally {
-            editorAdaptor.getHistory().unlock("surroundvisual");
-            editorAdaptor.getHistory().endCompoundChange();
         }
     }
 
