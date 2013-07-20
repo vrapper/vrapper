@@ -27,6 +27,6 @@ public interface TextRange {
 
 	/** @return left bound of this text range. inclusive */
 	Position getLeftBound();
-	/** @return left bound of this text range. exclusive */
+	/** @return right bound of this text range. exclusive */
 	Position getRightBound();
 }
