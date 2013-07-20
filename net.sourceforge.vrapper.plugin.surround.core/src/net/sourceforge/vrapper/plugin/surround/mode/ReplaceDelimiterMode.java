@@ -2,8 +2,12 @@ package net.sourceforge.vrapper.plugin.surround.mode;
 
 import net.sourceforge.vrapper.keymap.KeyMap;
 import net.sourceforge.vrapper.platform.KeyMapProvider;
+import net.sourceforge.vrapper.plugin.surround.commands.DelimiterChangedListener;
 import net.sourceforge.vrapper.plugin.surround.state.AbstractDynamicDelimiterHolder;
+import net.sourceforge.vrapper.plugin.surround.state.DelimiterHolder;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
+import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.DelimitedText;
 import net.sourceforge.vrapper.vim.modes.ModeSwitchHint;
@@ -18,22 +22,43 @@ public class ReplaceDelimiterMode extends AbstractCommandLineMode {
 
     private DelimitedText toWrap;
     private AbstractDynamicDelimiterHolder replacement;
+    private Command leaveCommand;
+    private DelimiterChangedListener listener;
     
     public ReplaceDelimiterMode(EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
     }
     
-    public static void switchMode(EditorAdaptor vim, DelimitedText toWrap,
-            AbstractDynamicDelimiterHolder dynamicDelimiter) throws CommandExecutionException {
-        DelimiterHint delimiterHint = new DelimiterHint(toWrap, dynamicDelimiter);
+    public static Command wrap(Command target, DelimiterChangedListener listener,
+            DelimitedText toWrap, DelimiterHolder replacement) {
+        if (replacement instanceof AbstractDynamicDelimiterHolder) {
+            DelimiterHint delimiterHint = new DelimiterHint(target, listener,
+                    toWrap, (AbstractDynamicDelimiterHolder) replacement);
+            return new ChangeModeCommand(ReplaceDelimiterMode.class.getName(), delimiterHint);
+        } else {
+            return target;
+        }
+    }
+
+    public static void switchMode(EditorAdaptor vim, Command leaveCommand,
+            DelimiterChangedListener listener, DelimitedText toWrap,
+            DelimiterHolder dynamicDelimiter) throws CommandExecutionException {
+
+        DelimiterHint delimiterHint = new DelimiterHint(leaveCommand, listener, toWrap,
+                (AbstractDynamicDelimiterHolder) dynamicDelimiter);
         vim.changeMode(ReplaceDelimiterMode.class.getName(), delimiterHint);
     }
-    
+
     static class DelimiterHint implements ModeSwitchHint {
+        protected Command command;
+        protected DelimiterChangedListener listener;
         protected DelimitedText toWrap;
         protected AbstractDynamicDelimiterHolder replacement;
 
-        public DelimiterHint(DelimitedText toWrap, AbstractDynamicDelimiterHolder replacement) {
+        public DelimiterHint(Command command, DelimiterChangedListener listener,
+                DelimitedText toWrap, AbstractDynamicDelimiterHolder replacement) {
+            this.command = command;
+            this.listener = listener;
             this.toWrap = toWrap;
             this.replacement = replacement;
         }
@@ -50,6 +75,10 @@ public class ReplaceDelimiterMode extends AbstractCommandLineMode {
             DelimiterHint hint = (DelimiterHint) args[0];
             toWrap = hint.toWrap;
             replacement = hint.replacement;
+            leaveCommand = hint.command;
+            listener = hint.listener;
+        } else {
+            throw new IllegalStateException("No DelimiterHint passed!");
         }
         super.enterMode(args);
     }
@@ -71,6 +100,6 @@ public class ReplaceDelimiterMode extends AbstractCommandLineMode {
 
     @Override
     protected AbstractCommandParser createParser() {
-        return new DelimiterParser(editorAdaptor, toWrap, replacement);
+        return new DelimiterParser(editorAdaptor, leaveCommand, listener, toWrap, replacement);
     }
 }

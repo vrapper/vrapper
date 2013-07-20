@@ -1,7 +1,7 @@
 package net.sourceforge.vrapper.plugin.surround.mode;
 
 import net.sourceforge.vrapper.log.VrapperLog;
-import net.sourceforge.vrapper.plugin.surround.commands.ChangeDelimiterCommand;
+import net.sourceforge.vrapper.plugin.surround.commands.DelimiterChangedListener;
 import net.sourceforge.vrapper.plugin.surround.state.AbstractDynamicDelimiterHolder;
 import net.sourceforge.vrapper.plugin.surround.state.DelimiterHolder;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
@@ -14,22 +14,27 @@ import net.sourceforge.vrapper.vim.modes.commandline.AbstractCommandParser;
 
 public class DelimiterParser extends AbstractCommandParser {
 
+    private Command leaveCommand;
+    private DelimiterChangedListener listener;
     private DelimitedText toWrap;
     private AbstractDynamicDelimiterHolder replacement;
 
-    public DelimiterParser(EditorAdaptor vim, DelimitedText toWrap,
+    public DelimiterParser(EditorAdaptor vim, Command leaveCommand,
+            DelimiterChangedListener listener, DelimitedText toWrap,
             AbstractDynamicDelimiterHolder replacement) {
         super(vim);
         this.toWrap = toWrap;
         this.replacement = replacement;
+        this.leaveCommand = leaveCommand;
+        this.listener = listener;
     }
 
     @Override
     public Command parseAndExecute(String first, String command) {
-        DelimiterHolder newDelimiters;
         try {
-            newDelimiters = replacement.update(editor, toWrap, first + command);
-            return new ChangeDelimiterCommand(toWrap, newDelimiters);
+            DelimiterHolder updatedDelim = replacement.update(editor, toWrap, first + command);
+            listener.delimiterChanged(replacement, updatedDelim);
+            return leaveCommand;
         } catch (CommandExecutionException e) {
             VrapperLog.error("Failed to update dynamic delimiters!", e);
             return new ChangeModeCommand(NormalMode.NAME);
