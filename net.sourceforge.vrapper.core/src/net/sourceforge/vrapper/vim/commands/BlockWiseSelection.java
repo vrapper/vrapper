@@ -11,6 +11,8 @@ import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.modes.BlockwiseVisualMode;
+import net.sourceforge.vrapper.vim.register.RegisterContent;
+import net.sourceforge.vrapper.vim.register.TextBlockRegisterContent;
 
 public class BlockWiseSelection implements Selection {
     
@@ -135,6 +137,37 @@ public class BlockWiseSelection implements Selection {
         }
         return result;
     }
+
+    /**
+     * Returns text block content for the block specified by range.
+     */
+    public static TextBlockRegisterContent getTextBlockContent(EditorAdaptor editorAdaptor, TextRange range) {
+        final TextContent textContent = editorAdaptor.getModelContent();
+        final CursorService cursorService = editorAdaptor.getCursorService();
+        final TextBlock textBlock = BlockWiseSelection.getTextBlock(range.getStart(), range.getEnd(),
+                editorAdaptor.getModelContent(), cursorService);
+        TextBlockRegisterContent blockContent = new TextBlockRegisterContent(textBlock.endVisualOffset - textBlock.startVisualOffset);
+        for (int line = textBlock.startLine; line <= textBlock.endLine; ++line) {
+            final Position start = cursorService.getPositionByVisualOffset(line, textBlock.startVisualOffset);
+            if (start == null) {
+                // no characters at the visual offset, yank empty line
+                blockContent.appendLine("");
+                continue;
+            }
+            final int startOfs = start.getModelOffset();
+            final Position end = cursorService.getPositionByVisualOffset(line, textBlock.endVisualOffset);
+            int endOfs;
+            if (end == null) {
+                // the line is shorter that the end offset
+                endOfs = textContent.getLineInformation(line).getEndOffset();
+            } else {
+                endOfs = end.addModelOffset(1).getModelOffset();
+            }
+            blockContent.appendLine(textContent.getText(startOfs, endOfs - startOfs));
+        }
+        return blockContent;
+    }
+
 
     @Override
     public Position getStartMark(EditorAdaptor defaultEditorAdaptor) {

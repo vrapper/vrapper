@@ -69,31 +69,8 @@ public class YankOperation extends SimpleTextOperation {
         }
         else {
             if (contentType == ContentType.TEXT_RECTANGLE) {
-                final TextContent textContent = editorAdaptor.getModelContent();
-                final CursorService cursorService = editorAdaptor.getCursorService();
-                final TextBlock textBlock = BlockWiseSelection.getTextBlock(range.getStart(), range.getEnd(),
-                        editorAdaptor.getModelContent(), cursorService);
-                TextBlockRegisterContent blockContent = new TextBlockRegisterContent(textBlock.endVisualOffset - textBlock.startVisualOffset);
-                for (int line = textBlock.startLine; line <= textBlock.endLine; ++line) {
-                    final Position start = cursorService.getPositionByVisualOffset(line, textBlock.startVisualOffset);
-                    if (start == null) {
-                        // no characters at the visual offset, yank empty line
-                        blockContent.appendLine("");
-                        continue;
-                    }
-                    final int startOfs = start.getModelOffset();
-                    final Position end = cursorService.getPositionByVisualOffset(line, textBlock.endVisualOffset);
-                    int endOfs;
-                    if (end == null) {
-                        // the line is shorter that the end offset
-                        endOfs = textContent.getLineInformation(line).getEndOffset();
-                    } else {
-                        endOfs = end.addModelOffset(1).getModelOffset();
-                    }
-                    blockContent.appendLine(textContent.getText(startOfs, endOfs - startOfs));
-                }
-                cursorService.setPosition(cursorService.getPositionByVisualOffset(textBlock.startLine, textBlock.startVisualOffset), true);
-                content = blockContent;
+                content = BlockWiseSelection.getTextBlockContent(editorAdaptor, range);
+                editorAdaptor.setPosition(range.getLeftBound(), true);
             } else {
                 Position cursor = editorAdaptor.getCursorService().getPosition();
                 Position newPos = range.getLeftBound();

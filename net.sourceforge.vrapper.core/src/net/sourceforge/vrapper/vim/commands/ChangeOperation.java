@@ -3,9 +3,11 @@ package net.sourceforge.vrapper.vim.commands;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.SelectionArea;
+import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.modes.ExecuteCommandHint;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
+import net.sourceforge.vrapper.vim.register.RegisterContent;
 
 class ChangeOperationRepetition implements TextOperation {
 
@@ -61,8 +63,11 @@ public class ChangeOperation implements TextOperation {
         return result;
     }
     
-    Command getLeaveHintCommand(final EditorAdaptor editorAdaptor, final int count, final TextObject textObject) {
-        return new SelectionBasedTextOperationCommand.BlockwiseRepeatCommand(this, count, true, true);
+    Command getLeaveHintCommand(final EditorAdaptor editorAdaptor, final int count, final TextObject textObject) throws CommandExecutionException {
+        final TextObject selection = editorAdaptor.getSelection();
+        final TextRange region = selection.getRegion(editorAdaptor, count);
+        final RegisterContent yankContent = BlockWiseSelection.getTextBlockContent(editorAdaptor, region);
+        return new SelectionBasedTextOperationCommand.BlockwiseRepeatCommand(this, count, true, true, yankContent);
     }
     
 }
