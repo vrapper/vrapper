@@ -259,7 +259,7 @@ public class CommandLineParser extends AbstractCommandParser {
         mapping.add("hlsearch", hlsearch);
         mapping.add("hls", hlsearch);
         mapping.add("pwd", printWorkingDir);
-        mapping.add("e", editFile);
+        mapping.add("edit", editFile);
         mapping.add("vim", OpenInGvimCommand.INSTANCE);
         mapping.add("find", findFile);
         mapping.add("tabfind", findFile);
