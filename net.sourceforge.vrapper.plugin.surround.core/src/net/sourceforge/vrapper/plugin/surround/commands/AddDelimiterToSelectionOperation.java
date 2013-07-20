@@ -8,6 +8,7 @@ import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
+import net.sourceforge.vrapper.utils.StringUtils;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.BlockWiseSelection;
@@ -108,14 +109,41 @@ public class AddDelimiterToSelectionOperation implements TextOperation, Delimite
                 replacement);
     }
 
-    private void surroundLinesInBlock(EditorAdaptor editorAdaptor,
-            TextObject selection) throws CommandExecutionException {
+    private void surroundLinesInBlock(EditorAdaptor editorAdaptor, TextObject selection)
+            throws CommandExecutionException {
+        CursorService cursor = editorAdaptor.getCursorService();
+        TextContent content = editorAdaptor.getModelContent();
         TextRange range = selection.getRegion(editorAdaptor, Command.NO_COUNT_GIVEN);
         TextBlock textBlock = BlockWiseSelection.getTextBlock(range.getStart(), range.getEnd(),
-                editorAdaptor.getModelContent(), editorAdaptor.getCursorService());
-        // TODO: Surround each block item
-        new ChangeDelimiterCommand(new NotYetDelimitedTextObject(selection), replacement)
-                .execute(editorAdaptor);
+                content, cursor);
+
+        for (int line = textBlock.startLine; line <= textBlock.endLine; ++line) {
+            Position start = cursor.getPositionByVisualOffset(line, textBlock.startVisualOffset);
+            if (start == null) {
+                //No characters at the start visual offset, fill with spaces
+                start = fillWithSpacesUntil(line, textBlock.startVisualOffset, cursor, content);
+            }
+            Position end = cursor.getPositionByVisualOffset(line, textBlock.endVisualOffset);
+            if (end == null) {
+                //No characters at the end visual offset, fill with spaces
+                end = fillWithSpacesUntil(line, textBlock.endVisualOffset, cursor, content);
+            }
+            content.replace(start.getModelOffset(), 0, replacement.getLeft());
+            content.replace(end.addModelOffset(1).getModelOffset(), 0, replacement.getRight());
+        }
+        cursor.setPosition(
+                cursor.getPositionByVisualOffset(textBlock.startLine, textBlock.startVisualOffset),
+                true);
+    }
+    
+    private Position fillWithSpacesUntil(int line, int visualOffset,
+            final CursorService cursorService, final TextContent content) {
+        LineInformation lineInfo = content.getLineInformation(line);
+        Position lineEnd = cursorService.newPositionForModelOffset(lineInfo.getEndOffset());
+        final int lineEndVOfs = cursorService.getVisualOffset(lineEnd);
+        final int padding = cursorService.visualWidthToChars(visualOffset - lineEndVOfs);
+        content.replace(lineInfo.getEndOffset(), 0, StringUtils.multiply(" ", padding));
+        return lineEnd.addModelOffset(padding);
     }
 
     /**
