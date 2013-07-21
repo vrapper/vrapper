@@ -17,17 +17,18 @@ import net.sourceforge.vrapper.vim.commands.BlockWiseSelection.TextBlock;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.InsertLineCommand;
+import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
 import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 import net.sourceforge.vrapper.vim.commands.TextObject;
 import net.sourceforge.vrapper.vim.commands.TextOperation;
-import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
 
-public class AddDelimiterToSelectionOperation implements TextOperation, DelimiterChangedListener {
+public class AddDelimiterToSelectionOperation implements Command, DelimiterChangedListener {
 
     private AbstractDynamicDelimiterHolder dynamicDelimiter;
     private DelimiterHolder replacement;
     private TextOperation indentOperation;
+    private boolean isRepetition;
 
     public AddDelimiterToSelectionOperation(DelimiterHolder delimiters, TextOperation indentOperation) {
         this.indentOperation = indentOperation;
@@ -40,13 +41,32 @@ public class AddDelimiterToSelectionOperation implements TextOperation, Delimite
         }
     }
 
+    protected AddDelimiterToSelectionOperation(AddDelimiterToSelectionOperation original) {
+        this.dynamicDelimiter = original.dynamicDelimiter;
+        this.indentOperation = original.indentOperation;
+        this.isRepetition = true;
+    }
+
     @Override
-    public void execute(EditorAdaptor editorAdaptor, int count, TextObject selection)
+    public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
+        TextObject selection;
+        if (isRepetition) {
+            selection = editorAdaptor.getLastActiveSelectionArea();
+        } else {
+            editorAdaptor.rememberLastActiveSelection();
+            selection = editorAdaptor.getSelection();
+        }
+        addDelimiters(editorAdaptor, selection);
+        if (dynamicDelimiter == null) {
+            LeaveVisualModeCommand.doIt(editorAdaptor);
+        }
+    }
+
+    protected void addDelimiters(EditorAdaptor editorAdaptor, TextObject selection)
             throws CommandExecutionException {
         if (dynamicDelimiter != null && replacement == null) {
-            ReplaceDelimiterMode.switchMode(editorAdaptor,
-                    new TextOperationTextObjectCommand(this, selection),
-                    this, new NotYetDelimitedTextObject(selection), dynamicDelimiter);
+            ReplaceDelimiterMode.switchMode(editorAdaptor, this, this,
+                    new NotYetDelimitedTextObject(selection), dynamicDelimiter);
         } else {
             try {
                 editorAdaptor.getHistory().beginCompoundChange();
@@ -73,7 +93,7 @@ public class AddDelimiterToSelectionOperation implements TextOperation, Delimite
         }
     }
 
-    private void surroundLines(EditorAdaptor editorAdaptor, TextObject selection)
+    protected void surroundLines(EditorAdaptor editorAdaptor, TextObject selection)
             throws CommandExecutionException {
         TextContent content = editorAdaptor.getModelContent();
         TextRange range = selection.getRegion(editorAdaptor, 0);
@@ -117,7 +137,7 @@ public class AddDelimiterToSelectionOperation implements TextOperation, Delimite
                 replacement);
     }
 
-    private void surroundLinesInBlock(EditorAdaptor editorAdaptor, TextObject selection)
+    protected void surroundLinesInBlock(EditorAdaptor editorAdaptor, TextObject selection)
             throws CommandExecutionException {
         CursorService cursor = editorAdaptor.getCursorService();
         TextContent content = editorAdaptor.getModelContent();
@@ -146,8 +166,8 @@ public class AddDelimiterToSelectionOperation implements TextOperation, Delimite
                 cursor.getPositionByVisualOffset(textBlock.startLine, textBlock.startVisualOffset),
                 true);
     }
-    
-    private Position fillWithSpacesUntil(int line, int visualOffset,
+
+    protected Position fillWithSpacesUntil(int line, int visualOffset,
             final CursorService cursorService, final TextContent content) {
         LineInformation lineInfo = content.getLineInformation(line);
         Position lineEnd = cursorService.newPositionForModelOffset(lineInfo.getEndOffset());
@@ -157,12 +177,19 @@ public class AddDelimiterToSelectionOperation implements TextOperation, Delimite
         return lineEnd.addModelOffset(padding);
     }
 
-    /**
-     * Not supported (for now).
-     */
     @Override
-    public TextOperation repetition() {
-        return null;
+    public Command repetition() {
+        return new AddDelimiterToSelectionOperation(this);
+    }
+
+    @Override
+    public Command withCount(int count) {
+        return this;
+    }
+
+    @Override
+    public int getCount() {
+        return NO_COUNT_GIVEN;
     }
 
     @Override
