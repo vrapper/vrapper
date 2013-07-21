@@ -43,6 +43,7 @@ public class AddDelimiterToSelectionCommand implements Command, DelimiterChanged
 
     protected AddDelimiterToSelectionCommand(AddDelimiterToSelectionCommand original) {
         this.dynamicDelimiter = original.dynamicDelimiter;
+        this.replacement = original.replacement;
         this.indentOperation = original.indentOperation;
         this.isRepetition = true;
     }

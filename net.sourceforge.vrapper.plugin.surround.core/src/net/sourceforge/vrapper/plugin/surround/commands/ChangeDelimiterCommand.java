@@ -63,11 +63,7 @@ public class ChangeDelimiterCommand extends CountAwareCommand implements Delimit
 
     @Override
     public CountAwareCommand repetition() {
-        if (dynamicDelimiter != null) {
-            return new ChangeDelimiterCommand(delimitedText, dynamicDelimiter);
-        } else {
-            return this;
-        }
+        return this;
     }
 
 }
