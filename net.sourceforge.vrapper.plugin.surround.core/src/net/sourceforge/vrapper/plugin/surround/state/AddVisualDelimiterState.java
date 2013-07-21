@@ -1,7 +1,7 @@
 package net.sourceforge.vrapper.plugin.surround.state;
 
 import net.sourceforge.vrapper.keymap.ConvertingState;
-import net.sourceforge.vrapper.plugin.surround.commands.AddDelimiterToSelectionOperation;
+import net.sourceforge.vrapper.plugin.surround.commands.AddDelimiterToSelectionCommand;
 import net.sourceforge.vrapper.utils.Function;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.TextOperation;
@@ -27,7 +27,7 @@ public class AddVisualDelimiterState extends ConvertingState<Command, DelimiterH
 
         @Override
         public Command call(DelimiterHolder delimiters) {
-            return new AddDelimiterToSelectionOperation(delimiters, indentOperation);
+            return new AddDelimiterToSelectionCommand(delimiters, indentOperation);
         }
         
     }

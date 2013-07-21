@@ -23,14 +23,14 @@ import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 import net.sourceforge.vrapper.vim.commands.TextObject;
 import net.sourceforge.vrapper.vim.commands.TextOperation;
 
-public class AddDelimiterToSelectionOperation implements Command, DelimiterChangedListener {
+public class AddDelimiterToSelectionCommand implements Command, DelimiterChangedListener {
 
     private AbstractDynamicDelimiterHolder dynamicDelimiter;
     private DelimiterHolder replacement;
     private TextOperation indentOperation;
     private boolean isRepetition;
 
-    public AddDelimiterToSelectionOperation(DelimiterHolder delimiters, TextOperation indentOperation) {
+    public AddDelimiterToSelectionCommand(DelimiterHolder delimiters, TextOperation indentOperation) {
         this.indentOperation = indentOperation;
 
         //If the delimiter is dynamic, it must be updated through delimiterChanged(..)
@@ -41,7 +41,7 @@ public class AddDelimiterToSelectionOperation implements Command, DelimiterChang
         }
     }
 
-    protected AddDelimiterToSelectionOperation(AddDelimiterToSelectionOperation original) {
+    protected AddDelimiterToSelectionCommand(AddDelimiterToSelectionCommand original) {
         this.dynamicDelimiter = original.dynamicDelimiter;
         this.indentOperation = original.indentOperation;
         this.isRepetition = true;
@@ -179,7 +179,7 @@ public class AddDelimiterToSelectionOperation implements Command, DelimiterChang
 
     @Override
     public Command repetition() {
-        return new AddDelimiterToSelectionOperation(this);
+        return new AddDelimiterToSelectionCommand(this);
     }
 
     @Override
