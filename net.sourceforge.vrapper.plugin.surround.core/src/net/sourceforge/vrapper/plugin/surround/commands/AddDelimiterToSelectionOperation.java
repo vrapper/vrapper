@@ -135,9 +135,12 @@ public class AddDelimiterToSelectionOperation implements TextOperation, Delimite
             if (end == null) {
                 //No characters at the end visual offset, fill with spaces
                 end = fillWithSpacesUntil(line, textBlock.endVisualOffset, cursor, content);
+                //Insert space so the delimiter is inserted _after_ the block.
+                content.replace(end.getModelOffset(), 0, " ");
             }
             content.replace(start.getModelOffset(), 0, replacement.getLeft());
-            content.replace(end.addModelOffset(1).getModelOffset(), 0, replacement.getRight());
+            content.replace(end.addModelOffset(1 + replacement.getLeft().length()).getModelOffset(),
+                    0, replacement.getRight());
         }
         cursor.setPosition(
                 cursor.getPositionByVisualOffset(textBlock.startLine, textBlock.startVisualOffset),
