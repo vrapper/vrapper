@@ -145,8 +145,10 @@ public class AddDelimiterToSelectionCommand implements Command, DelimiterChanged
         TextRange range = selection.getRegion(editorAdaptor, Command.NO_COUNT_GIVEN);
         TextBlock textBlock = BlockWiseSelection.getTextBlock(range.getStart(), range.getEnd(),
                 content, cursor);
+        final boolean isGMode = indentOperation == null;
 
         for (int line = textBlock.startLine; line <= textBlock.endLine; ++line) {
+            final LineInformation lineInfo = content.getLineInformation(line);
             Position start = cursor.getPositionByVisualOffset(line, textBlock.startVisualOffset);
             if (start == null) {
                 //No characters at the start visual offset, fill with spaces
@@ -154,10 +156,15 @@ public class AddDelimiterToSelectionCommand implements Command, DelimiterChanged
             }
             Position end = cursor.getPositionByVisualOffset(line, textBlock.endVisualOffset);
             if (end == null) {
+                final boolean pastEOL = start.getModelOffset() > lineInfo.getEndOffset();
                 //No characters at the end visual offset, fill with spaces
-                end = fillWithSpacesUntil(line, textBlock.endVisualOffset, cursor, content);
-                //Insert space so the delimiter is inserted _after_ the block.
-                content.replace(end.getModelOffset(), 0, " ");
+                if (isGMode || pastEOL) {
+                    end = fillWithSpacesUntil(line, textBlock.endVisualOffset, cursor, content);
+                    //Insert space so the delimiter is inserted _after_ the block.
+                    content.replace(end.getModelOffset(), 0, " ");
+                } else {
+                    end = cursor.newPositionForModelOffset(lineInfo.getEndOffset() - 1);
+                }
             }
             content.replace(start.getModelOffset(), 0, replacement.getLeft());
             content.replace(end.addModelOffset(1 + replacement.getLeft().length()).getModelOffset(),
