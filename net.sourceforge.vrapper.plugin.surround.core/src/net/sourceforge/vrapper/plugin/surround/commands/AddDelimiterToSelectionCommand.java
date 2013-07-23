@@ -27,11 +27,23 @@ public class AddDelimiterToSelectionCommand implements Command, DelimiterChanged
 
     private AbstractDynamicDelimiterHolder dynamicDelimiter;
     private DelimiterHolder replacement;
+    /**
+     * Indent operation to be applied on the selection. Vrapper core has no such implementation,
+     * pass it in from a higher level.
+     */
     private TextOperation indentOperation;
     private boolean isRepetition;
+    /**
+     * Whether this command was invoked as 'vS' or as 'vgS'. The latter does no indentation in
+     * linewise mode, and it surrounds blocks with extra padding if the block width
+     * is not consistent.
+     */
+    private boolean isGMode;
 
-    public AddDelimiterToSelectionCommand(DelimiterHolder delimiters, TextOperation indentOperation) {
+    public AddDelimiterToSelectionCommand(DelimiterHolder delimiters, boolean isGMode,
+            TextOperation indentOperation) {
         this.indentOperation = indentOperation;
+        this.isGMode = isGMode;
 
         //If the delimiter is dynamic, it must be updated through delimiterChanged(..)
         if (delimiters instanceof AbstractDynamicDelimiterHolder) {
@@ -44,6 +56,7 @@ public class AddDelimiterToSelectionCommand implements Command, DelimiterChanged
     protected AddDelimiterToSelectionCommand(AddDelimiterToSelectionCommand original) {
         this.dynamicDelimiter = original.dynamicDelimiter;
         this.replacement = original.replacement;
+        this.isGMode = original.isGMode;
         this.indentOperation = original.indentOperation;
         this.isRepetition = true;
     }
@@ -126,7 +139,7 @@ public class AddDelimiterToSelectionCommand implements Command, DelimiterChanged
         cursor.setMark(CursorService.LAST_CHANGE_START, startSurround);
         cursor.setMark(CursorService.LAST_CHANGE_END, endSurround);
         
-        if (indentOperation != null) {
+        if ( ! isGMode && indentOperation != null) {
             indentOperation.execute(editorAdaptor, Command.NO_COUNT_GIVEN, selection);
         }
 
@@ -145,7 +158,6 @@ public class AddDelimiterToSelectionCommand implements Command, DelimiterChanged
         TextRange range = selection.getRegion(editorAdaptor, Command.NO_COUNT_GIVEN);
         TextBlock textBlock = BlockWiseSelection.getTextBlock(range.getStart(), range.getEnd(),
                 content, cursor);
-        final boolean isGMode = indentOperation == null;
 
         for (int line = textBlock.startLine; line <= textBlock.endLine; ++line) {
             final LineInformation lineInfo = content.getLineInformation(line);

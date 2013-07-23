@@ -84,9 +84,10 @@ public class SurroundStateProvider extends AbstractEclipseSpecificStateProvider 
     @Override
     @SuppressWarnings("unchecked")
     protected State<Command> visualModeBindings() {
+        EclipseShiftOperation shift = EclipseShiftOperation.Visual.RIGHT;
         return state(
-                transitionBind('S', new AddVisualDelimiterState(EclipseShiftOperation.Visual.RIGHT)),
-                transitionBind('g', transitionBind('S',  new AddVisualDelimiterState(null)))
+                transitionBind('S', new AddVisualDelimiterState(false, shift)),
+                transitionBind('g', transitionBind('S',  new AddVisualDelimiterState(true, shift)))
                );
     }
 }
