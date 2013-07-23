@@ -185,16 +185,18 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         if (selection != null) {
             return selection;
         }
-        int start, end, pos, len;
-        start = end = textViewer.getSelectedRange().x;
-        len = textViewer.getSelectedRange().y;
-        pos = converter.widgetOffset2ModelOffset(textViewer.getTextWidget().getCaretOffset());
+        final Point sel = textViewer.getSelectedRange();
+        int start, end;
+        start = end = sel.x;
+        final int len = sel.y;
+        if (len > 0) {
+            final int pos = converter.widgetOffset2ModelOffset(textViewer.getTextWidget().getCaretOffset());
             if (start == pos) {
                 start += len+1;
             } else {
                 end += len;
             }
-
+        }
 
         final Position from = new TextViewerPosition(textViewer, Space.MODEL, start);
         final Position to =   new TextViewerPosition(textViewer, Space.MODEL, end);
