@@ -26,7 +26,7 @@ public class PasteRegisterCommand extends CountIgnoringNonRepeatableCommand {
 			//Delete Eclipse selection contents, for example when completing a function's arguments.
 			Selection currentSelection = editorAdaptor.getSelection();
 			if (currentSelection.getModelLength() > 0) {
-				content.replace(currentSelection.getStart().getModelOffset(),
+				content.replace(currentSelection.getLeftBound().getModelOffset(),
 						currentSelection.getModelLength(), "");
 			}
 			int offset = editorAdaptor.getCursorService().getPosition().getModelOffset();
