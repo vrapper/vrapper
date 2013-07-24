@@ -52,6 +52,10 @@ public abstract class AbstractCommandParser {
     protected CommandLineUI commandLine;
     private final CommandLineHistory history = CommandLineHistory.INSTANCE;
 
+    /**
+     * Whether the current command is modified and needs to be stored in the command history.
+     * Commands restored from history will not be saved again unless edited.
+     */
     private boolean modified;
     private boolean isFromVisual = false;
     private boolean isCommandLineHistoryEnabled = true;
@@ -158,7 +162,6 @@ public abstract class AbstractCommandParser {
                     String text = editor.getRegisterManager().getRegister(Character.toString(e.getCharacter())).getContent().getText();
                     text = VimUtils.stripLastNewline(text);
                     text = text.replace("\r\n", " ").replace('\n', ' ').replace('\r', ' ');
-                    commandLine.setMode(CommandLineMode.DEFAULT);
                     commandLine.type(text);
                     pasteRegister = false;
                     modified = true;
@@ -171,7 +174,6 @@ public abstract class AbstractCommandParser {
         //Exit register mode but not command line mode.
         if (pasteRegister && e.equals(KEY_ESCAPE)) {
             pasteRegister = false;
-            commandLine.setMode(CommandLineMode.DEFAULT);
         } else if (e.equals(KEY_RETURN) || e.equals(KEY_ESCAPE) || e.equals(KEY_CTRL_C)) {
             //Pressing return on an empty command line quits this mode rather than execute a command
             if (c == null) {
@@ -185,6 +187,9 @@ public abstract class AbstractCommandParser {
         }
         if (!e.equals(KEY_CTRL_R) && pasteRegister) {
             pasteRegister = false;
+        }
+        if ( ! pasteRegister) {
+            commandLine.setMode(CommandLineMode.DEFAULT);
         }
     }
 
