@@ -100,10 +100,10 @@ public class ConstructorWrappers {
     		KeyStroke k = keyNames.get( key.substring(2) );
     		if(k != null) {
     			if(k.getSpecialKey() != null) {
-    				stroke = new SimpleKeyStroke(k.getSpecialKey(), true, false);
+    				stroke = new SimpleKeyStroke(k.getSpecialKey(), true, false, k.withCtrlKey());
     			}
     			else {
-    				stroke = new SimpleKeyStroke(k.getCharacter(), true, false);
+    				stroke = new SimpleKeyStroke(k.getCharacter(), true, false, k.withCtrlKey());
     			}
     		}
     	}
@@ -111,15 +111,15 @@ public class ConstructorWrappers {
     		if(keyNames.containsKey( key.substring(2) )) {
     			KeyStroke k = keyNames.get( key.substring(2) );
     			if(k.getSpecialKey() != null) {
-    				stroke = new SimpleKeyStroke(k.getSpecialKey(), false, true);
+    				stroke = new SimpleKeyStroke(k.getSpecialKey(), false, true, k.withCtrlKey());
     			}
     			else {
-    				stroke = new SimpleKeyStroke(k.getCharacter(), false, true);
+    				stroke = new SimpleKeyStroke(k.getCharacter(), false, true, k.withCtrlKey());
     			}
     		}
     		else if(key.length() == 3) { //normal character, not special key (e.g., <A-x>)
     			//force lower-case! (don't allow Shift+Alt+<char>)
-    			stroke = new SimpleKeyStroke(key.toLowerCase().charAt(2), false, true);
+    			stroke = new SimpleKeyStroke(key.toLowerCase().charAt(2), false, true, false);
     		}
     		//else, ignore (if it isn't a keyName, and not a char, what is it?)
     	}
@@ -357,38 +357,38 @@ public class ConstructorWrappers {
         	map.put("F" + i+1, key(values[start+i]));
         
         // ctrl keys
-        map.put("C-@", key('\u0000'));
-        map.put("C-A", key('\u0001'));
-        map.put("C-B", key('\u0002'));
-        map.put("C-C", key('\u0003'));
-        map.put("C-D", key('\u0004'));
-        map.put("C-E", key('\u0005'));
-        map.put("C-F", key('\u0006'));
-        map.put("C-G", key('\u0007'));
-        map.put("C-H", key('\u0008'));
-        map.put("C-I", key('\t'));
+        map.put("C-@", new SimpleKeyStroke('\u0000', false, false, true));
+        map.put("C-A", new SimpleKeyStroke('\u0001', false, false, true));
+        map.put("C-B", new SimpleKeyStroke('\u0002', false, false, true));
+        map.put("C-C", new SimpleKeyStroke('\u0003', false, false, true));
+        map.put("C-D", new SimpleKeyStroke('\u0004', false, false, true));
+        map.put("C-E", new SimpleKeyStroke('\u0005', false, false, true));
+        map.put("C-F", new SimpleKeyStroke('\u0006', false, false, true));
+        map.put("C-G", new SimpleKeyStroke('\u0007', false, false, true));
+        map.put("C-H", new SimpleKeyStroke('\u0008', false, false, true));
+        map.put("C-I", new SimpleKeyStroke('\t', false, false, true));
         map.put("C-J", map.get("RETURN"));
-        map.put("C-K", key('\u000B'));
-        map.put("C-L", key('\u000C'));
+        map.put("C-K", new SimpleKeyStroke('\u000B', false, false, true));
+        map.put("C-L", new SimpleKeyStroke('\u000C', false, false, true));
         map.put("C-M", map.get("RETURN"));
-        map.put("C-N", key('\u000E'));
-        map.put("C-O", key('\u000F'));
-        map.put("C-P", key('\u0010'));
-        map.put("C-Q", key('\u0011'));
-        map.put("C-R", key('\u0012'));
-        map.put("C-S", key('\u0013'));
-        map.put("C-T", key('\u0014'));
-        map.put("C-U", key('\u0015'));
-        map.put("C-V", key('\u0016'));
-        map.put("C-W", key('\u0017'));
-        map.put("C-X", key('\u0018'));
-        map.put("C-Y", key('\u0019'));
-        map.put("C-Z", key('\u001A'));
+        map.put("C-N", new SimpleKeyStroke('\u000E', false, false, true));
+        map.put("C-O", new SimpleKeyStroke('\u000F', false, false, true));
+        map.put("C-P", new SimpleKeyStroke('\u0010', false, false, true));
+        map.put("C-Q", new SimpleKeyStroke('\u0011', false, false, true));
+        map.put("C-R", new SimpleKeyStroke('\u0012', false, false, true));
+        map.put("C-S", new SimpleKeyStroke('\u0013', false, false, true));
+        map.put("C-T", new SimpleKeyStroke('\u0014', false, false, true));
+        map.put("C-U", new SimpleKeyStroke('\u0015', false, false, true));
+        map.put("C-V", new SimpleKeyStroke('\u0016', false, false, true));
+        map.put("C-W", new SimpleKeyStroke('\u0017', false, false, true));
+        map.put("C-X", new SimpleKeyStroke('\u0018', false, false, true));
+        map.put("C-Y", new SimpleKeyStroke('\u0019', false, false, true));
+        map.put("C-Z", new SimpleKeyStroke('\u001A', false, false, true));
         map.put("C-[", map.get("ESC"));
-        map.put("C-\\",key('\u001C'));
-        map.put("C-]", key('\u001D'));
-        map.put("C-^", key('\u001E'));
-        map.put("C-_", key('\u001F'));
+        map.put("C-\\",new SimpleKeyStroke('\u001C', false, false, true));
+        map.put("C-]", new SimpleKeyStroke('\u001D', false, false, true));
+        map.put("C-^", new SimpleKeyStroke('\u001E', false, false, true));
+        map.put("C-_", new SimpleKeyStroke('\u001F', false, false, true));
         return map;
     }
 }
