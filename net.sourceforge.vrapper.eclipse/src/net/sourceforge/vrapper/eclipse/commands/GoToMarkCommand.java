@@ -18,6 +18,10 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 
+/**
+ * Go to marks in the visible or background editor(s). Hard to implement in vrapper core due to the
+ * cross-editor aspect.
+ */
 public class GoToMarkCommand extends CountIgnoringNonRepeatableCommand {
 
     public enum Mode {
