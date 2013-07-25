@@ -48,8 +48,7 @@ public class SubstitutionOperation extends SimpleTextOperation {
     	
     	SubstitutionDefinition subDef;
     	try {
-    	    subDef = new SubstitutionDefinition(substitution,
-    	            editorAdaptor.getRegisterManager().getRegister("/").getContent().getText());
+    	    subDef = new SubstitutionDefinition(substitution, editorAdaptor.getRegisterManager());
     	}
     	catch(PatternSyntaxException e) {
 			editorAdaptor.getUserInterfaceService().setErrorMessage(e.getDescription());
