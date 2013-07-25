@@ -14,7 +14,7 @@ public class MoveRightAcrossLines extends LeftRightMotion {
 		int len = content.getTextLength();
 		int result = Math.min(len, offset+count);
 		LineInformation lineInformation = content.getLineInformationOfOffset(result);
-		if (result < len && result == lineInformation.getEndOffset())
+		if (result < len && result >= lineInformation.getEndOffset())
 			result = content.getLineInformation(lineInformation.getNumber() + 1).getBeginOffset();
 		return result;
 	}
