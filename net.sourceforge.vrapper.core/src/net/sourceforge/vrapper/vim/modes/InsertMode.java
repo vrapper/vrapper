@@ -16,6 +16,7 @@ import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.Transition;
 import net.sourceforge.vrapper.keymap.vim.RegisterState;
 import net.sourceforge.vrapper.keymap.vim.SimpleKeyStroke;
+import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.KeyMapProvider;
 import net.sourceforge.vrapper.platform.TextContent;
@@ -41,7 +42,11 @@ import net.sourceforge.vrapper.vim.commands.SwitchRegisterCommand;
 import net.sourceforge.vrapper.vim.commands.VimCommandSequence;
 import net.sourceforge.vrapper.vim.commands.motions.LineStartMotion;
 import net.sourceforge.vrapper.vim.commands.motions.Motion;
+import net.sourceforge.vrapper.vim.commands.motions.MoveDown;
 import net.sourceforge.vrapper.vim.commands.motions.MoveLeft;
+import net.sourceforge.vrapper.vim.commands.motions.MoveLeftAcrossLines;
+import net.sourceforge.vrapper.vim.commands.motions.MoveRightAcrossLines;
+import net.sourceforge.vrapper.vim.commands.motions.MoveUp;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordLeft;
 import net.sourceforge.vrapper.vim.modes.commandline.CommandLineMode;
 import net.sourceforge.vrapper.vim.modes.commandline.PasteRegisterMode;
@@ -404,6 +409,29 @@ public class InsertMode extends AbstractMode {
                 editorAdaptor.setPosition(editorAdaptor.getCursorService()
                         .newPositionForModelOffset(pos2), false);
             }
+        } else if (SpecialKey.ARROW_LEFT.equals(stroke.getSpecialKey())
+                || SpecialKey.ARROW_RIGHT.equals(stroke.getSpecialKey())
+                || SpecialKey.ARROW_UP.equals(stroke.getSpecialKey())
+                || SpecialKey.ARROW_DOWN.equals(stroke.getSpecialKey())) {
+            Motion direction;
+            switch (stroke.getSpecialKey()) {
+            case ARROW_LEFT:
+                direction = MoveLeftAcrossLines.INSTANCE; break;
+            case ARROW_RIGHT:
+               direction = MoveRightAcrossLines.INSTANCE; break;
+            case ARROW_UP:
+                direction = MoveUp.INSTANCE; break;
+            case ARROW_DOWN:
+                direction = MoveDown.INSTANCE; break;
+            default:
+                throw new RuntimeException("No matching direction!");
+            }
+            try {
+                Position destination = direction.destination(editorAdaptor);
+                editorAdaptor.setPosition(destination, true);
+            } catch (CommandExecutionException e) {
+                VrapperLog.error("Failed to navigate in editor", e);
+            }
         } else {
             String s;
             if (SpecialKey.RETURN.equals(stroke.getSpecialKey())) {
@@ -416,11 +444,9 @@ public class InsertMode extends AbstractMode {
     }
 
     private boolean allowed(final KeyStroke stroke) {
-        // TODO: option to allow arrows
         final SpecialKey specialKey = stroke.getSpecialKey();
         if (specialKey != null) {
-            return VimConstants.SPECIAL_KEYS_ALLOWED_FOR_INSERT
-                    .contains(specialKey);
+            return VimConstants.SPECIAL_KEYS_ALLOWED_FOR_INSERT.contains(specialKey);
         }
         return true;
     }
