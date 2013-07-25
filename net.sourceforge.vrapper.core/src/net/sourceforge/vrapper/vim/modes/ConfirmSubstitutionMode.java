@@ -29,6 +29,7 @@ public class ConfirmSubstitutionMode extends AbstractMode {
     private SubstitutionDefinition subDef;
     private int endOffset;
     private int nextLine;
+    private int totalLength;
     private boolean globalFlag = false;
     private CommandLineUI commandLine;
     private SearchResult lastMatch;
@@ -73,8 +74,9 @@ public class ConfirmSubstitutionMode extends AbstractMode {
             nextLine = hint.startLine;
 
             TextContent model = editorAdaptor.getModelContent();
+            totalLength = model.getTextLength();
             if(hint.endLine == model.getNumberOfLines()) {
-                endOffset = model.getTextLength();
+                endOffset = totalLength;
             }
             else {
                 endOffset = model.getLineInformation(hint.endLine).getEndOffset();
@@ -194,6 +196,11 @@ public class ConfirmSubstitutionMode extends AbstractMode {
         editorAdaptor.getSearchAndReplaceService().substitute(
                 lastMatch.getLeftBound().getModelOffset(),
                 subDef.find, subDef.flags, subDef.replace);
+        
+        int newTotal = editorAdaptor.getModelContent().getTextLength();
+        //keep endOffset in sync when find and replace are different lengths
+        endOffset += newTotal - totalLength;
+        totalLength = newTotal;
     }
 
     @Override
