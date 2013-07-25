@@ -9,7 +9,9 @@ import net.sourceforge.vrapper.vim.commands.motions.MoveBigWORDEndRight;
 import net.sourceforge.vrapper.vim.commands.motions.MoveBigWORDLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveBigWORDRight;
 import net.sourceforge.vrapper.vim.commands.motions.MoveLeft;
+import net.sourceforge.vrapper.vim.commands.motions.MoveLeftAcrossLines;
 import net.sourceforge.vrapper.vim.commands.motions.MoveRight;
+import net.sourceforge.vrapper.vim.commands.motions.MoveRightAcrossLines;
 import net.sourceforge.vrapper.vim.commands.motions.MoveUpDownNonWhitespace;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordEndLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordEndRight;
@@ -74,6 +76,49 @@ public class MotionTests extends CommandTestCase {
 		checkMotion(moveLeft,
 				"Ala ma kota\n",'L',"ata osa koło nosa.",
 				"Ala ma kota\n",'L',"ata osa koło nosa.");
+	}
+	
+	@Test
+	public void testMoveLeftAcrossLines() {
+		Motion moveLeft = MoveLeftAcrossLines.INSTANCE;
+		checkMotion(moveLeft,
+				"",'A',"la ma kota",
+				"",'A',"la ma kota");
+		checkMotion(moveLeft,
+				"Al",'a'," ma kota",
+				"A",'l',"a ma kota");
+		checkMotion(moveLeft,
+				"Ala ma kota",EOF,"",
+				"Ala ma kot",'a', "");
+		checkMotion(moveLeft,
+				"Ala ma kota\n",'L',"ata osa koło nosa.",
+				"Ala ma kota",'\n',"Lata osa koło nosa.");
+		checkMotion(moveLeft,
+				"Ala ma kota\n\r",'L',"ata osa koło nosa.",
+				"Ala ma kota\n",'\r',"Lata osa koło nosa.");
+	}
+
+	@Test
+	public void testMoveRightAcrossLines() {
+		Motion moveRight = MoveRightAcrossLines.INSTANCE;
+		checkMotion(moveRight,
+				"",'A',"la ma kota",
+				"A",'l',"a ma kota");
+		checkMotion(moveRight,
+				"A",'l',"a ma kota",
+				"Al",'a'," ma kota");
+		checkMotion(moveRight,
+				"Ala ma kot",'a', "",
+				"Ala ma kota",EOF,"");
+		checkMotion(moveRight,
+				"Ala ma kota",EOF,"",
+				"Ala ma kota",EOF,"");
+		checkMotion(moveRight,
+				"Ala ma kota",'\n',"Lata osa koło nosa.",
+				"Ala ma kota\n",'L',"ata osa koło nosa.");
+		checkMotion(moveRight,
+				"Ala ma kota",'\n',"\rLata osa koło nosa.",
+				"Ala ma kota\n\r",'L',"ata osa koło nosa.");
 	}
 	
 	@Test
