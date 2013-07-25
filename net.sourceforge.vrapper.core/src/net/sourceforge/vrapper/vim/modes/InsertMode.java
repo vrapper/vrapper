@@ -410,37 +410,25 @@ public class InsertMode extends AbstractMode {
                         .newPositionForModelOffset(pos2), false);
             }
         } else if (SpecialKey.ARROW_LEFT.equals(stroke.getSpecialKey())
-                || SpecialKey.ARROW_RIGHT.equals(stroke.getSpecialKey())) {
+                || SpecialKey.ARROW_RIGHT.equals(stroke.getSpecialKey())
+                || SpecialKey.ARROW_UP.equals(stroke.getSpecialKey())
+                || SpecialKey.ARROW_DOWN.equals(stroke.getSpecialKey())) {
             Motion direction;
             switch (stroke.getSpecialKey()) {
             case ARROW_LEFT:
                 direction = MoveLeftAcrossLines.INSTANCE; break;
             case ARROW_RIGHT:
-               direction = MoveRightAcrossLines.INSTANCE; break;
-            default:
-                throw new RuntimeException("No matching left-right direction!");
-            }
-            try {
-                Position destination = direction.destination(editorAdaptor);
-                editorAdaptor.setPosition(destination, true);
-            } catch (CommandExecutionException e) {
-                VrapperLog.error("Failed to navigate in editor", e);
-            }
-        } else if (SpecialKey.ARROW_UP.equals(stroke.getSpecialKey())
-                || SpecialKey.ARROW_DOWN.equals(stroke.getSpecialKey())) {
-            Motion direction;
-            switch (stroke.getSpecialKey()) {
+               direction = MoveRightAcrossLines.INSTANCE_INSERT; break;
             case ARROW_UP:
                 direction = MoveUp.INSTANCE; break;
             case ARROW_DOWN:
                 direction = MoveDown.INSTANCE; break;
             default:
-                throw new RuntimeException("No matching up-down direction!");
+                throw new RuntimeException("No matching direction!");
             }
             try {
                 Position destination = direction.destination(editorAdaptor);
-                // Leave sticky column alone.
-                editorAdaptor.setPosition(destination, false);
+                editorAdaptor.setPosition(destination, direction.updateStickyColumn());
             } catch (CommandExecutionException e) {
                 VrapperLog.error("Failed to navigate in editor", e);
             }

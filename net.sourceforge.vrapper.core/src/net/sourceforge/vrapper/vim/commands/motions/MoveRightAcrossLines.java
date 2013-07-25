@@ -5,17 +5,25 @@ import net.sourceforge.vrapper.utils.LineInformation;
 
 public class MoveRightAcrossLines extends LeftRightMotion {
 
-    public static final MoveRightAcrossLines INSTANCE = new MoveRightAcrossLines();
+    public static final MoveRightAcrossLines INSTANCE = new MoveRightAcrossLines(true);
+    public static final MoveRightAcrossLines INSTANCE_INSERT = new MoveRightAcrossLines(false);
 
-    private MoveRightAcrossLines() { /* NOP */ }
+    private boolean skipLastChar;
+
+    private MoveRightAcrossLines(boolean skipLastChar) {
+        this.skipLastChar = skipLastChar;
+    }
 
 	@Override
 	protected int destination(int offset, TextContent content, int count) {
 		int len = content.getTextLength();
 		int result = Math.min(len, offset+count);
 		LineInformation lineInformation = content.getLineInformationOfOffset(result);
-		if (result < len && result >= lineInformation.getEndOffset())
+		if (result < len
+		        && (result > lineInformation.getEndOffset()
+		                || (skipLastChar && result == lineInformation.getEndOffset()))) {
 			result = content.getLineInformation(lineInformation.getNumber() + 1).getBeginOffset();
+		}
 		return result;
 	}
 

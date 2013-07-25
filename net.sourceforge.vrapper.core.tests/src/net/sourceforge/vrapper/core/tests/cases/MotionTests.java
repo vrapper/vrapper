@@ -119,6 +119,15 @@ public class MotionTests extends CommandTestCase {
 		checkMotion(moveRight,
 				"Ala ma kota",'\n',"\rLata osa koło nosa.",
 				"Ala ma kota\n\r",'L',"ata osa koło nosa.");
+		// Cannot be tested because LineInformation in test is different from Eclipse implementation
+//		checkMotion(moveRight,
+//				"Ala ma kot",'a',"\n\rLata osa koło nosa.",
+//				"Ala ma kota\n\r",'L',"ata osa koło nosa.");
+//
+//		// Don't skip last character when in INSERT mode.
+//		checkMotion(MoveRightAcrossLines.INSTANCE_INSERT,
+//				"Ala ma kota",'\n',"\rLata osa koło nosa.",
+//				"Ala ma kota\n\r",'L',"ata osa koło nosa.");
 	}
 	
 	@Test
