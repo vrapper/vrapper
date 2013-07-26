@@ -55,6 +55,13 @@ public class TestCursorAndSelection implements CursorService, SelectionService {
 	    stickyColumnNo = Integer.MAX_VALUE;
 	}
 
+    @Override
+    public void stickToBOL() {
+        int offset = position.getModelOffset();
+        int beginOffset = content.getLineInformationOfOffset(offset).getBeginOffset();
+        stickyColumnNo = offset - beginOffset;
+    }
+
 	public Position stickyColumnAtModelLine(int lineNo) {
 	    return stickyColumnAtViewLine(lineNo);
 	}
