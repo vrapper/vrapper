@@ -20,6 +20,7 @@ import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.KeyMapProvider;
 import net.sourceforge.vrapper.platform.PlatformSpecificStateProvider;
+import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.Command;
@@ -252,7 +253,13 @@ public abstract class CommandBasedMode extends AbstractMode {
         }
 
         Transition<Command> transition = currentState.press(keyStroke);
-        keyMapResolver.press(keyStroke);
+        if (transition == null && VimUtils.fixAltGrKey(keyStroke) != null) {
+            KeyStroke key = VimUtils.fixAltGrKey(keyStroke);
+            transition = currentState.press(key);
+            keyMapResolver.press(key);
+        } else {
+            keyMapResolver.press(keyStroke);
+        }
         commandBuffer.append(keyStroke.getCharacter());
         if (transition != null) {
             Command command = transition.getValue();
