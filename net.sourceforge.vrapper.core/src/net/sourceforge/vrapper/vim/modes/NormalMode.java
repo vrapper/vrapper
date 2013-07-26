@@ -48,6 +48,7 @@ import net.sourceforge.vrapper.vim.commands.FormatOperation;
 import net.sourceforge.vrapper.vim.commands.IncrementDecrementCommand;
 import net.sourceforge.vrapper.vim.commands.InsertLineCommand;
 import net.sourceforge.vrapper.vim.commands.JoinLinesCommand;
+import net.sourceforge.vrapper.vim.commands.LineStartCommand;
 import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.commands.MotionPairTextObject;
@@ -254,6 +255,8 @@ public class NormalMode extends CommandBasedMode {
         final Command repeatLastOne = DotCommand.INSTANCE;
         final Command tildeCmd = SwapCaseCommand.INSTANCE;
         final Command stickToEOL = StickToEOLCommand.INSTANCE;
+        final Command lineStart = LineStartCommand.NON_WHITESPACE;
+        final Command column0 = LineStartCommand.COLUMN0;
         final LineEndMotion lineEndMotion = new LineEndMotion(BorderPolicy.LINE_WISE);
         final Command substituteLine = new TextOperationTextObjectCommand(change, new MotionTextObject(lineEndMotion));
         final Command substituteChar = new TextOperationTextObjectCommand(change, new MotionTextObject(moveRight));
@@ -309,6 +312,8 @@ public class NormalMode extends CommandBasedMode {
                 operatorCmdsWithUpperCase('c', change, toEol,     textObjectsForChange),
                 prefixedOperatorCmds('g', 'q', format, textObjects),
                 state(leafBind('$', stickToEOL)),
+                state(leafBind('^', lineStart)),
+                state(leafBind('0', column0)),
                 motionCommands,
                 state(
                         leafBind('i', (Command) new ChangeToInsertModeCommand()),

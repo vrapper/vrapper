@@ -275,6 +275,13 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         stickToEOL = true;
     }
 
+    @Override
+    public void stickToBOL() {
+        stickToEOL = false;
+        int carretOffset = textViewer.getTextWidget().getCaretOffset();
+        updateStickyColumn(carretOffset);
+    }
+
     private final class SelectionChangeListener implements SelectionListener {
         boolean enabled = true;
         @Override
@@ -307,13 +314,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
 		@Override
         public void caretMoved(final CaretEvent e) {
 			if (enabled) {
-				final int offset = e.caretOffset;
-	            StyledText textWidget = textViewer.getTextWidget();
-                stickyColumn = textWidget.getLocationAtOffset(offset).x + textWidget.getHorizontalPixel();
-				final LineInformation line = textContent.getViewContent().getLineInformationOfOffset(offset);
-				if (stickToEOL && offset < line.getEndOffset()) {
-				    stickToEOL = false;
-				}
+                updateStickyColumn(e.caretOffset);
 			}
 		}
 
@@ -591,5 +592,13 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         return visualWidth / averageCharWidth;
     }
 
+    private void updateStickyColumn(final int offset) {
+        StyledText textWidget = textViewer.getTextWidget();
+        stickyColumn = textWidget.getLocationAtOffset(offset).x + textWidget.getHorizontalPixel();
+        final LineInformation line = textContent.getViewContent().getLineInformationOfOffset(offset);
+        if (stickToEOL && offset < line.getEndOffset()) {
+            stickToEOL = false;
+        }
+    }
 
 }
