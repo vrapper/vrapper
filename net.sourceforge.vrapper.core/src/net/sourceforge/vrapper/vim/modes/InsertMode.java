@@ -467,7 +467,7 @@ public class InsertMode extends AbstractMode {
             platformSpecificState,
             state(
                     // Alt+O - temporary go into command mode
-                    leafBind(new SimpleKeyStroke('o', false, true),
+                    leafBind(new SimpleKeyStroke('o', false, true, false),
                             (Command)new ChangeModeCommand(CommandLineMode.NAME, RESUME_ON_MODE_ENTER)),
             		leafCtrlBind('a', (Command)PasteRegisterCommand.PASTE_LAST_INSERT),
             		leafCtrlBind('e', (Command)InsertAdjacentCharacter.LINE_BELOW),
