@@ -7,7 +7,6 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import net.sourceforge.vrapper.keymap.KeyStroke;
-import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.vim.SimpleKeyStroke;
 import net.sourceforge.vrapper.platform.SearchAndReplaceService;
 import net.sourceforge.vrapper.platform.SimpleConfiguration.NewLine;
@@ -245,20 +244,19 @@ public class VimUtils {
      * @return Either a KeyStroke or <tt>null</tt> if not applicable.
      */
     public static KeyStroke fixAltGrKey(KeyStroke key) {
-        //Frequent case, bail as fast as possible
-        if (SpecialKey.ESC.equals(key.getSpecialKey())) {
+        //Most-common case, bail as fast as possible
+        if( ! (key.withAltKey() && key.withCtrlKey()) ) {
             return null;
         }
 
-        KeyStroke result = null;
         //Special keys are never (?) formed with AltGr, ignore those.
-        if (key.getSpecialKey() == null && key.withAltKey() && key.withCtrlKey()) {
-            result = new SimpleKeyStroke(key.getCharacter(), key.withShiftKey(),
-                    false, false);
-        } else if (key.withAltKey() && key.withCtrlKey()) {
-            result = new SimpleKeyStroke(key.getSpecialKey(), key.withShiftKey(),
+        if (key.getSpecialKey() == null) {
+            return new SimpleKeyStroke(key.getCharacter(), key.withShiftKey(),
                     false, false);
         }
-        return result;
+        else {
+            return new SimpleKeyStroke(key.getSpecialKey(), key.withShiftKey(),
+                    false, false);
+        }
     }
 }
