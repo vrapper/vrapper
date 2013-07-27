@@ -8,19 +8,22 @@ public class SimpleKeyStroke implements KeyStroke {
     private final char character;
     private final SpecialKey specialKey;
     private final boolean shiftKey;
+    private final boolean ctrlKey;
     private final boolean altKey;
     
-    public SimpleKeyStroke(char character, boolean shiftKey, boolean altKey) {
+    public SimpleKeyStroke(char character, boolean shiftKey, boolean altKey, boolean ctrlKey) {
         this.character = character;
         this.specialKey = null;
         this.shiftKey = shiftKey;
+        this.ctrlKey = ctrlKey;
         this.altKey = altKey;
     }
 
-    public SimpleKeyStroke(SpecialKey key, boolean shiftKey, boolean altKey) {
+    public SimpleKeyStroke(SpecialKey key, boolean shiftKey, boolean altKey, boolean ctrlKey) {
         this.character = SPECIAL_KEY;
         this.specialKey = key;
         this.shiftKey = shiftKey;
+        this.ctrlKey = ctrlKey;
         this.altKey = altKey;
     }
 
@@ -28,6 +31,7 @@ public class SimpleKeyStroke implements KeyStroke {
         this.character = character;
         this.specialKey = null;
         this.shiftKey = false;
+        this.ctrlKey = false;
         this.altKey = false;
     }
 
@@ -35,6 +39,7 @@ public class SimpleKeyStroke implements KeyStroke {
         this.character = '\0';
         this.specialKey = key;
         this.shiftKey = false;
+        this.ctrlKey = false;
         this.altKey = false;
     }
 
@@ -52,6 +57,10 @@ public class SimpleKeyStroke implements KeyStroke {
     
     public boolean withAltKey() {
     	return altKey;
+    }
+
+    public boolean withCtrlKey() {
+    	return ctrlKey;
     }
 
     @Override
@@ -87,6 +96,10 @@ public class SimpleKeyStroke implements KeyStroke {
         if (altKey != other.withAltKey()) {
             return false;
         }
+        if (ctrlKey != other.withCtrlKey()) {
+            return false;
+        }
+
         //only check shift key if it doesn't change the keycode
         if (specialKey != null && withShiftKey() != other.withShiftKey()) {
         	return false;

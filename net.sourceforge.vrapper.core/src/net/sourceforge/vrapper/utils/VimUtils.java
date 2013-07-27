@@ -6,6 +6,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import net.sourceforge.vrapper.keymap.KeyStroke;
+import net.sourceforge.vrapper.keymap.SpecialKey;
+import net.sourceforge.vrapper.keymap.vim.SimpleKeyStroke;
 import net.sourceforge.vrapper.platform.SearchAndReplaceService;
 import net.sourceforge.vrapper.platform.SimpleConfiguration.NewLine;
 import net.sourceforge.vrapper.platform.TextContent;
@@ -235,4 +238,27 @@ public class VimUtils {
         return result2;
     }
 
+    /**
+     * Windows passes AltGr key combinations as Ctrl + Alt, check if this is the case and return
+     * a KeyStroke without those modifiers. If you did press those keys and hit this function,
+     * then check your bindings.
+     * @return Either a KeyStroke or <tt>null</tt> if not applicable.
+     */
+    public static KeyStroke fixAltGrKey(KeyStroke key) {
+        //Frequent case, bail as fast as possible
+        if (SpecialKey.ESC.equals(key.getSpecialKey())) {
+            return null;
+        }
+
+        KeyStroke result = null;
+        //Special keys are never (?) formed with AltGr, ignore those.
+        if (key.getSpecialKey() == null && key.withAltKey() && key.withCtrlKey()) {
+            result = new SimpleKeyStroke(key.getCharacter(), key.withShiftKey(),
+                    false, false);
+        } else if (key.withAltKey() && key.withCtrlKey()) {
+            result = new SimpleKeyStroke(key.getSpecialKey(), key.withShiftKey(),
+                    false, false);
+        }
+        return result;
+    }
 }

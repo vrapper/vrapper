@@ -8,4 +8,5 @@ public interface KeyStroke {
 	boolean isVirtual();
 	boolean withShiftKey();
 	boolean withAltKey();
+	boolean withCtrlKey();
 }
