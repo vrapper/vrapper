@@ -253,6 +253,11 @@ public abstract class CommandBasedMode extends AbstractMode {
         }
 
         Transition<Command> transition = currentState.press(keyStroke);
+        
+        /* If no transition was found, check if an AltGr modifier was pressed and try with no mods.
+         * For example, the user presses AltGr + Q which means @ with the user's keyboard layout,
+         * but Vrapper on Windows saw this as Control + Alt + @ which it treats as another KeyStroke
+         */
         if (transition == null && VimUtils.fixAltGrKey(keyStroke) != null) {
             KeyStroke key = VimUtils.fixAltGrKey(keyStroke);
             transition = currentState.press(key);

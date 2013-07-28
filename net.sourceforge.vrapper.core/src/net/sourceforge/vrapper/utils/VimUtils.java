@@ -249,14 +249,10 @@ public class VimUtils {
             return null;
         }
 
-        //Special keys are never (?) formed with AltGr, ignore those.
         if (key.getSpecialKey() == null) {
-            return new SimpleKeyStroke(key.getCharacter(), key.withShiftKey(),
-                    false, false);
-        }
-        else {
-            return new SimpleKeyStroke(key.getSpecialKey(), key.withShiftKey(),
-                    false, false);
+            return new SimpleKeyStroke(key.getCharacter(), key.withShiftKey(), false, false);
+        } else {
+            return new SimpleKeyStroke(key.getSpecialKey(), key.withShiftKey(), false, false);
         }
     }
 }
