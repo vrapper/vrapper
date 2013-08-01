@@ -17,13 +17,19 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.ISelectionService;
 import org.eclipse.ui.IWorkbenchCommandConstants;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.IHandlerService;
@@ -45,11 +51,15 @@ public class EclipseFileService implements FileService {
      * support. The cursor will be in the exact same position in gvim as it was
      * in Vrapper.  As soon as you save and close gvim, the file will be reloaded.
      */
-    public boolean openInGvim(String gvimpath, int row, int col) {
+    public boolean openInGvim(String gvimpath, int row, int col) throws IOException {
     	if(editor.isDirty()) {
     		editor.doSave(null);
     	}
-    	String filePath = getCurrentFile().getRawLocation().toString();
+    	IFile currentFile = getCurrentFile();
+    	if (currentFile == null) {
+    	    throw new IOException("Could not open current file externally.");
+    	}
+        String filePath = currentFile.getRawLocation().toString();
     	final String[] cmd = { gvimpath, "+" + row, "-c", "normal zv" + col + "|", "-c", "set nobackup", "-f", "-n", filePath };
     	new Thread() {
     		public void run() {
@@ -604,13 +614,13 @@ public class EclipseFileService implements FileService {
     }
     
     private IFile getCurrentFile() {
-    	IEditorPart  editorPart =
-    			PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
-    	
-    	if(editorPart  != null) {
-    		IFileEditorInput input = (IFileEditorInput)editorPart.getEditorInput() ;
-    		IFile file = input.getFile();
-    		return file;
+    	IWorkbenchWindow activeWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+        IEditorPart editorPart = activeWindow.getActivePage().getActiveEditor();
+
+    	if (editorPart != null) {
+    		IEditorInput input = editorPart.getEditorInput();
+			// Can still be null at this point, let caller handle it.
+    		return (IFile) input.getAdapter(IFile.class);
     	}
     	return null;
     }

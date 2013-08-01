@@ -1,8 +1,10 @@
 package net.sourceforge.vrapper.platform;
 
+import java.io.IOException;
+
 public interface FileService {
 
-	boolean openInGvim(String gvimpath, int row, int col);
+	boolean openInGvim(String gvimpath, int row, int col) throws IOException;
 	
 	boolean isEditable();
 
@@ -30,5 +32,10 @@ public interface FileService {
 	
 	boolean findAndOpenFile(String filename, String[] paths);
 	
+	/**
+	 * Get the "absolute" path to the current file in the workspace, based on the workspace dir.
+	 * <p>Example:<br/>
+	 * <tt>/project/src/main/java/net/sf/vrapper/FileService.java</tt>
+	 */
     String getCurrentFilePath();
 }

@@ -1,5 +1,8 @@
 package net.sourceforge.vrapper.vim.commands;
 
+import java.io.IOException;
+
+import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
@@ -17,7 +20,12 @@ public class OpenInGvimCommand extends CountIgnoringNonRepeatableCommand {
     	int row = line.getNumber() + 1; //1-based, not 0-based
     	int col = cursor.getModelOffset() - line.getBeginOffset() + 1; //1-based, not 0-based
     	String gvim = editorAdaptor.getConfiguration().get(Options.GVIM_PATH);
-        editorAdaptor.getFileService().openInGvim(gvim, row, col);
+        try {
+            editorAdaptor.getFileService().openInGvim(gvim, row, col);
+        } catch (IOException e) {
+            VrapperLog.error("Failed to open file in Vim", e);
+            throw new CommandExecutionException(e.getMessage());
+        }
     }
 
 }
