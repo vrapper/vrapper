@@ -23,8 +23,8 @@ public class OpenInGvimCommand extends CountIgnoringNonRepeatableCommand {
         try {
             editorAdaptor.getFileService().openInGvim(gvim, row, col);
         } catch (IOException e) {
-            VrapperLog.error("Failed to open file in Vim", e);
-            throw new CommandExecutionException(e.getMessage());
+            VrapperLog.error("Failed to open file in Vim, file might not have been written yet.", e);
+            throw new CommandExecutionException("Could not open current file externally, save first.");
         }
     }
 
