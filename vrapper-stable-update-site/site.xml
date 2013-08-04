@@ -3,23 +3,43 @@
    <description name="Vrapper" url="http://vrapper.sourceforge.net/update-site/stable">
       Stable releases of Vrapper.
    </description>
-   <feature url="features/net.sourceforge.vrapper_0.32.0.jar" id="net.sourceforge.vrapper" version="0.32.0">
+   <feature url="features/net.sourceforge.vrapper_0.34.0.jar" id="net.sourceforge.vrapper" version="0.34.0">
       <category name="Vrapper"/>
    </feature>
-   <feature url="features/net.sourceforge.vrapper.eclipse.cdt.feature_0.32.0.jar" id="net.sourceforge.vrapper.eclipse.cdt.feature" version="0.32.0">
+   <feature url="features/net.sourceforge.vrapper.eclipse.cdt.feature_0.34.0.jar" id="net.sourceforge.vrapper.eclipse.cdt.feature" version="0.34.0">
+      <category name="Optional Programming Language Plugins"/>
+   </feature>
+   <feature url="features/net.sourceforge.vrapper.eclipse.jdt.feature_0.34.0.jar" id="net.sourceforge.vrapper.eclipse.jdt.feature" version="0.34.0">
+      <category name="Optional Programming Language Plugins"/>
+   </feature>
+   <feature url="features/net.sourceforge.vrapper.plugin.surround_0.34.0.jar" id="net.sourceforge.vrapper.plugin.surround" version="0.34.0">
+      <category name="Optional Vimscript Plugins"/>
+   </feature>
+   <feature url="features/net.sourceforge.vrapper.eclipse.pydev.feature_0.34.0.jar" id="net.sourceforge.vrapper.eclipse.pydev.feature" version="0.34.0">
+      <category name="Optional Programming Language Plugins"/>
+   </feature>
+   <feature url="features/net.sourceforge.vrapper.plugin.ipmotion_0.34.0.jar" id="net.sourceforge.vrapper.plugin.ipmotion" version="0.34.0">
+      <category name="Optional Vimscript Plugins"/>
+   </feature>
+   <feature url="features/net.sourceforge.vrapper.plugin.splitEditor_0.34.0.jar" id="net.sourceforge.vrapper.plugin.splitEditor" version="0.34.0">
       <category name="Vrapper"/>
    </feature>
-   <feature url="features/net.sourceforge.vrapper.eclipse.jdt.feature_0.32.0.jar" id="net.sourceforge.vrapper.eclipse.jdt.feature" version="0.32.0">
-      <category name="Vrapper"/>
+   <feature url="features/net.sourceforge.vrapper.plugin.argtextobj_0.34.0.jar" id="net.sourceforge.vrapper.plugin.argtextobj" version="0.34.0">
+      <category name="Optional Vimscript Plugins"/>
    </feature>
-   <feature url="features/net.sourceforge.vrapper.plugin.surround_0.32.0.jar" id="net.sourceforge.vrapper.plugin.surround" version="0.32.0">
-      <category name="Vrapper"/>
-   </feature>
-   <feature url="features/net.sourceforge.vrapper.eclipse.pydev.feature_0.32.0.jar" id="net.sourceforge.vrapper.eclipse.pydev.feature" version="0.32.0">
-      <category name="Vrapper"/>
-   </feature>
-   <feature url="features/net.sourceforge.vrapper.plugin.ipmotion_0.32.0.jar" id="net.sourceforge.vrapper.plugin.ipmotion" version="0.32.0">
-      <category name="Vrapper"/>
-   </feature>
-   <category-def name="Vrapper" label="Vrapper"/>
+   <category-def name="Vrapper" label="Vrapper">
+      <description>
+         Vrapper Core Features.
+      </description>
+   </category-def>
+   <category-def name="Optional Vimscript Plugins" label="Optional Vimscript Plugins">
+      <description>
+         Vrapper ports of various useful vimscripts
+      </description>
+   </category-def>
+   <category-def name="Optional Programming Language Plugins" label="Optional Programming Language Plugins">
+      <description>
+         Extensions for Vrapper which provide features for programming languages.
+      </description>
+   </category-def>
 </site>
