@@ -16,3 +16,21 @@ Or, you can temporarily override those options by putting '\c' or '\C' anywhere 
 <p>"*" and "#" commands are also available. These search for an exact match of the word under the cursor.</p>
 
 <p>All search commands (n, N, *, #, /, ?) can be used like motions, i. e. combined with counts and operators.</p>
+
+<h2>And Replace</h2>
+<p>Vrapper supports a couple special cases when performing a search and replace (:s/foo/bar/).
+These should all align with the equivalent Vim behavior.</p>
+
+<p>Whatever character appears after the ':s' will be used as the delimiter.
+For example, ':s/foo/bar/g' and ':s_foo_bar_g'.</p>
+
+<p>In the replace string, '\r' will be interpreted as a (platform-independent)
+newline.  Using '\n' in the replace string will result in the '\n' character
+being inserted literally.  This means it may work fine on files with Unix line
+endings but if you have Windows line endings '\n' will cause problems.</p>
+
+<p>If the replace string exactly matches '\=@&lt;char&gt;' then the contents of
+register &lt;char&gt; will be used for the replacement.  For example,
+:s/foo/\=@x/ will replace 'foo' with the contents of register 'x'.</p>
+
+<p>The following flags are supported after the replace string: 'c' (confirm), 'g' (global), 'i' (insensitive case), 'I' (sensitive case)</p>

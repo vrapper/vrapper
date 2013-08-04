@@ -194,6 +194,23 @@
         <td>Defines path to gvim used with :vim command.</td>
     </tr>
     <tr>
+        <td>:set&nbsp;cleanindent<br />:set&nbsp;nocleanindent</td>
+        <td>none</td>
+        <td>On</td>
+        <td>If you create a new line with 'o' while autoindent is enabled, that new line will be indented.
+        If you then exit insert mode without entering any text, that auto-indent is typically removed
+        (leaving only a blank line).  Disable cleanindent if you <i>don't</i> want it to cleanup that auto-indent.</td>
+    </tr>
+    <tr>
+        <td>:set&nbsp;exitlinkmode<br />:set&nbsp;noexitlinkmode</td>
+        <td>:set&nbsp;elm<br />:set&nbsp;noelm</td>
+        <td>On</td>
+        <td>If set, Vrapper will return to NormalMode anytime Eclipse exits its "Link Mode".
+        Eclipse moves into Link Mode when prompting you to fill out arguments.  This typically
+        means Eclipse has drawn a box around some words and it wants you to fill them in.
+        </td>
+    </tr>
+    <tr>
         <td>:set&nbsp;imdisable<br />:set&nbsp;noimdisable</td>
         <td>none</td>
         <td>Off</td>

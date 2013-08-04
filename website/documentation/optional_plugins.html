@@ -1,9 +1,100 @@
 
 <h2>Optional Plugins</h2>
-In addition to the standard Vrapper plugin, we have a couple optional plugins
+<p>In addition to the standard Vrapper plugin, we have a couple optional plugins
 that you can install to further enhance Vrapper's features.  These plugins either have
 extra dependencies which everyone might not have installed, or they provide behaviors
-which aren't found in Vim.
+which aren't found in Vim.</p>
+
+<h3>Split Editor Plugin</h3>
+<p>The Split Editor Plugin provides commands for splitting editors vertically or
+horizontally and managing those splits.  This is a standard Vim feature so it
+<i>should</i> be included in the core Vrapper plugin but our implementation
+utilizes the Eclipse 4 API. Rather than forcing all of our users to upgrade to
+Eclipse 4.x we are providing these features in an optional plugin so the core
+Vrapper plugin can continue to function on Eclipse 3.x.</p>
+
+<p>The Split Editor Plugin supports the following commands:</p>
+<table>
+<tr>
+<td style="border:none">
+<table class="commands">
+	<tr>
+       <td>:split<br/>&lt;C-W&gt;&lt;C-S&gt;<br/>&lt;C-W&gt;s<br/>&lt;C-W&gt;S</td>
+       <td>Create Horizontal Split</td>
+    </tr>
+	<tr>
+       <td>:vsplit<br/>&lt;C-W&gt;&lt;C-V&gt;<br/>&lt;C-W&gt;v</td>
+       <td>Create Vertical Split</td>
+    </tr>
+	<tr>
+       <td>:wincmd w<br/>&lt;C-W&gt;&lt;C-W&gt;<br/>&lt;C-W&gt;w</td>
+       <td>Go to other split</td>
+    </tr>
+	<tr>
+       <td>:wincmd o<br/>&lt;C-W&gt;&lt;C-O&gt;<br/>&lt;C-W&gt;o</td>
+	   <td>Close other splits</td>
+	</tr>
+	<tr>
+	   <td>:wincmd H!<br/>&lt;C-W&gt;ch<br/>&lt;C-W&gt;c&lt;LEFT&gt;</td>
+	   <td>Clone current split left</td>
+	</tr>
+	<tr>
+	   <td>:wincmd L!<br/>&lt;C-W&gt;cl<br/>&lt;C-W&gt;c&lt;RIGHT&gt;</td>
+	   <td>Clone current split right</td>
+	</tr>
+	<tr>
+	   <td>:wincmd J!<br/>&lt;C-W&gt;cj<br/>&lt;C-W&gt;c&lt;DOWN&gt;</td>
+	   <td>Clone current split down</td>
+	</tr>
+	<tr>
+	   <td>:wincmd K!<br/>&lt;C-W&gt;ck<br/>&lt;C-W&gt;c&lt;UP&gt;</td>
+	   <td>Clone current split up</td>
+	</tr>
+</table>
+</td>
+
+
+<td style="border:none">
+<table class="commands">
+	<tr>
+	   <td>:wincmd h<br/>&lt;C-W&gt;&lt;C-H&gt;<br/>&lt;C-W&gt;h<br/>&lt;C-W&gt;&lt;LEFT&gt;</td>
+	   <td>Move cursor to left split</td>
+	</tr>
+	<tr>
+	   <td>:wincmd l<br/>&lt;C-W&gt;&lt;C-L&gt;<br/>&lt;C-W&gt;l<br/>&lt;C-W&gt;&lt;RIGHT&gt;</td>
+	   <td>Move cursor to right split</td>
+	</tr>
+	<tr>
+	   <td>:wincmd j<br/>&lt;C-W&gt;&lt;C-J&gt;<br/>&lt;C-W&gt;j<br/>&lt;C-W&gt;&lt;DOWN&gt;</td>
+	   <td>Move cursor to split below</td>
+	</tr>
+	<tr>
+	   <td>:wincmd k<br/>&lt;C-W&gt;&lt;C-K&gt;<br/>&lt;C-W&gt;k<br/>&lt;C-W&gt;&lt;UP&gt;</td>
+	   <td>Move cursor to split above</td>
+	</tr>
+	<tr>
+	   <td>:wincmd H<br/>&lt;C-W&gt;H</td>
+	   <td>Move current split left</td>
+	</tr>
+	<tr>
+	   <td>:wincmd L<br/>&lt;C-W&gt;L</td>
+	   <td>Move current split right</td>
+	</tr>
+	<tr>
+	   <td>:wincmd J<br/>&lt;C-W&gt;J</td>
+	   <td>Move current split down</td>
+	</tr>
+	<tr>
+	   <td>:wincmd K<br/>&lt;C-W&gt;K</td>
+	   <td>Move current split up</td>
+	</tr>
+</table>
+</td>
+</tr>
+</table>
+
+
+<h2>Programming Language Plugins</h3>
 
 <h3>CDT, JDT, and PyDev Plugins</h3>
 <p>The CDT, JDT, and PyDev plugins access Eclipse features found only in the CDT package (C++ Development Tools)
@@ -37,6 +128,9 @@ Eclipse namespaces.  If there are any commands you'd like us to support,
 just file an <a href="https://github.com/vrapper/vrapper/issues">Issue</a> on our GitHub project.
 </p>
 
+
+<h2>Vimscript Ports</h2>
+
 <h3>Surround.vim Plugin</h3>
 <p>Surround.vim is a vim plugin defined here:<br>
 <a href="http://www.vim.org/scripts/script.php?script_id=1697">http://www.vim.org/scripts/script.php?script_id=1697</a><br/>
@@ -64,3 +158,8 @@ example, cs"( would replace the surrounding double-quotes with parentheses.</p>
 This script modifies the behavior of '{' and '}' to be non-Vim compliant but more sensible.  Basically, a line with only whitespace
 is considered a paragraph boundary rather than requiring lines to be completely empty.  The script allows for any arbitrary
 regex to be used in determining paragraph boundaries; our port of this script does not currently include that behavior.</p>
+
+<h3>Argument Text Object (argtextobj.vim) Plugin</h3>
+<p>Argtextobj.vim is a vim plugin defined here:<br>
+<a href="http://www.vim.org/scripts/script.php?script_id=2699">http://www.vim.org/scripts/script.php?script_id=2699</a><br/>
+This script defines a text object 'a' (argument) to easily modify arguments within a method declaration.</p>

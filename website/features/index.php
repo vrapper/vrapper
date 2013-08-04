@@ -53,11 +53,6 @@
         <li>
             Search / Replace with ":%s/..."
         </li>
-    </ul>
-    <h3 class="considered">Considered for future versions:</h3>
-    If I can ever figure out how to perform these operations with the Eclipse API I'll add these features.
-    Until that time, I'm hoping someone else might come along with a solution for me.
-    <ul>
         <li>
             Visual Block Selection
         </li>

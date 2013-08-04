@@ -155,6 +155,8 @@
     <li>ZZ</li>
     <li>ZQ</li>
     <li>ga</li>
+    <li>gv</li>
+    <li>gi</li>
     <li>g;</li>
     <li>g,</li>
 </ul>
@@ -166,58 +168,73 @@
     for any of the following Vrapper bindings to work.
 
 	<h4 style="margin-bottom:0px">Normal Mode</h4>
-    <ul>
-		<li>&lt;C-F&gt; (page down)</li>
-		<li>&lt;C-B&gt; (page up)</li>
-		<li>&lt;C-D&gt; (half-page down)</li>
-		<li>&lt;C-U&gt; (half-page up)</li>
-		<li>&lt;C-Y&gt; (scroll line up)</li>
-		<li>&lt;C-E&gt; (scroll line down)</li>
-		<li>&lt;C-I&gt; (forward navigation history)</li>
-		<li>&lt;C-O&gt; (backward navigation history)</li>
-		<li>&lt;C-R&gt; (redo)</li>
-		<li>&lt;C-A&gt; (increment number under cursor)</li>
-		<li>&lt;C-X&gt; (decrement number under cursor)</li>
-	</ul>
+    <table class="commands">
+		<tr><td>&lt;C-F&gt;</td><td>Page down</td></tr>
+		<tr><td>&lt;C-B&gt;</td><td>Page up</td></tr>
+		<tr><td>&lt;C-D&gt;</td><td>Half-page down</td></tr>
+		<tr><td>&lt;C-U&gt;</td><td>Half-page up</td></tr>
+		<tr><td>&lt;C-Y&gt;</td><td>Scroll line up</td></tr>
+		<tr><td>&lt;C-E&gt;</td><td>Scroll line down</td></tr>
+		<tr><td>&lt;C-I&gt;</td><td>Forward navigation history</td></tr>
+		<tr><td>&lt;C-O&gt;</td><td>Backward navigation history</td></tr>
+		<tr><td>&lt;C-R&gt;</td><td>Redo</td></tr>
+		<tr><td>&lt;C-A&gt;</td><td>Increment number under cursor</td></tr>
+		<tr><td>&lt;C-X&gt;</td><td>Decrement number under cursor</td></tr>
+    </table>
 
 	<h4 style="margin-bottom:0px">Insert Mode</h4>
-    <ul>
-		<li>&lt;C-C&gt; (leave insert mode)</li>
-		<li>&lt;C-R&gt; (paste contents of a register)</li>
-		<li>&lt;C-A&gt; (paste contents of last insert)</li>
-		<li>&lt;C-E&gt; (insert character below cursor)</li>
-		<li>&lt;C-Y&gt; (insert character above cursor)</li>
-		<li>&lt;C-W&gt; (delete previous word)</li>
-		<li>&lt;C-N&gt; (word completion, like content assist)</li>
-		<li>&lt;C-P&gt; (word completion, like content assist)</li>
-	</ul>
+    <table class="commands">
+		<tr><td>&lt;C-C&gt;</td><td>Leave insert mode</td></tr>
+		<tr><td>&lt;C-R&gt;</td><td>Paste contents of a register</td></tr>
+		<tr><td>&lt;C-A&gt;</td><td>Paste contents of last insert</td></tr>
+		<tr><td>&lt;C-E&gt;</td><td>Insert character below cursor</td></tr>
+		<tr><td>&lt;C-Y&gt;</td><td>Insert character above cursor</td></tr>
+		<tr><td>&lt;C-W&gt;</td><td>Delete previous word</td></tr>
+		<tr><td>&lt;C-N&gt;</td><td>Word completion, like content assist</td></tr>
+		<tr><td>&lt;C-P&gt;</td><td>Word completion, like content assist</td></tr>
+		<tr><td>&lt;C-X&gt;&lt;C-L&gt;</td><td>Line completion</td></tr>
+		<tr><td>&lt;C-U&gt;</td><td>Delete characters on line before cursor</td></tr>
+		<tr><td>&lt;C-O&gt;</td><td>Perform a single NormalMode command</td></tr>
+	</table>
 
 	<h4 style="margin-bottom:0px">Visual Mode</h4>
-    <ul>
-		<li>&lt;C-C&gt; (leave visual mode)</li>
-		<li>&lt;C-F&gt; (page down)</li>
-		<li>&lt;C-B&gt; (page up)</li>
-		<li>&lt;C-D&gt; (half-page down)</li>
-		<li>&lt;C-U&gt; (half-page up)</li>
-	</ul>
+    <table class="commands">
+		<tr><td>&lt;C-C&gt;</td><td>Leave visual mode</td></tr>
+		<tr><td>&lt;C-F&gt;</td><td>Page down</td></tr>
+		<tr><td>&lt;C-B&gt;</td><td>Page up</td></tr>
+		<tr><td>&lt;C-D&gt;</td><td>Half-page down</td></tr>
+		<tr><td>&lt;C-U&gt;</td><td>Half-page up</td></tr>
+	</table>
 
 	<h4 style="margin-bottom:0px">Command Mode</h4>
-    <ul>
-		<li>&lt;C-C&gt; (leave command mode)</li>
-		<li>&lt;C-W&gt; (delete previous word)</li>
-		<li>&lt;Shift-Insert&gt; (paste clipboard contents into command line)</li>
-	</ul>
+    <table class="commands">
+		<tr><td>&lt;C-C&gt;</td><td>Leave command mode</td></tr>
+		<tr><td>&lt;C-W&gt;</td><td>Delete previous word</td></tr>
+		<tr><td>&lt;C-U&gt;</td><td>Delete all characters before the cursor</td></tr>
+		<tr><td>&lt;C-Y&gt;</td><td>Copy selection to clipboard</td></tr>
+		<tr><td>&lt;Shift-Insert&gt;</td><td>Paste clipboard contents into command line</td></tr>
+	</table>
 
 	<h4 style="margin-bottom:0px">Search Mode</h4>
-    <ul>
-		<li>&lt;C-C&gt; (leave search mode)</li>
-		<li>&lt;C-W&gt; (delete previous word)</li>
-	</ul>
+    <table class="commands">
+		<tr><td>&lt;C-C&gt;</td><td>Leave search mode</td></tr>
+		<tr><td>&lt;C-W&gt;</td><td>Delete previous word</td></tr>
+	</table>
     
 	<h4 style="margin-bottom:0px">CDT/JDT/PyDev optional plugins</h4>
-    <ul>
-		<li>&lt;C-]&gt; (go to declaration)</li>
-	</ul>
+    <table class="commands">
+		<tr><td>&lt;C-]&gt;</td><td>Go to declaration</td></tr>
+	</table>
+
+	<h4 style="margin-bottom:0px">Split Editor optional plugin</h4>
+    <table class="commands">
+		<tr><td>&lt;C-W&gt;&lt;C-W&gt;</td><td>Go to other split</td></tr>
+		<tr><td>&lt;C-W&gt;&lt;C-O&gt;</td><td>Close other splits</td></tr>
+		<tr><td>&lt;C-W&gt;&lt;C-H&gt;</td><td>Move to left split</td></tr>
+		<tr><td>&lt;C-W&gt;&lt;C-L&gt;</td><td>Move to right split</td></tr>
+		<tr><td>&lt;C-W&gt;&lt;C-J&gt;</td><td>Move to split below</td></tr>
+		<tr><td>&lt;C-W&gt;&lt;C-K&gt;</td><td>Move to split above</td></tr>
+	</table>
 </ul>
 
 <h3>Quirks (incompatibilities with Vim)</h3>

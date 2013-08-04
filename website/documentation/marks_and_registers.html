@@ -1,22 +1,33 @@
 <h2>Marks and Registers</h2>
 
 <h3>Marks</h3>
-<p>Any position in the text may be marked using 'm&lt;x&gt;' where &lt;x&gt; is a
-character from a-z. You can jump to a mark with `x and to the begin of
-the line where the mark is set with 'x. Marks are local to the editor in
+
+<p>Any position in the text may be marked using 'm&lt;x&gt;' where &lt;x&gt; is
+a character from a-z. You can jump to a mark with `x and to the begin of the
+line where the mark is set with 'x. Lowercase marks are local to the editor in
 which they are set.</p>
-<p>Uppercase marks, which should mark a position in a specific file, are
-not supported yet.</p>
-<p>There are three special marks: "'", ".", and "^". "'" marks the
-position from which the last jump was made. "." is where the change was made
-. "^" marks the end of the last insert operation. There is also a mark
-"`" which is the same as "'".</p>
+
+<p>Uppercase marks (A-Z) and marks 0-9 mark positions in a specific file and
+are defined globally.</p>
+
+<p>There are a couple special marks which are automatically updated:</p>
+<table class="commands">
+    <tr><td>'<br/>`</td><td>Position of last jump</td></tr>
+    <tr><td>.</td><td>Position of last change</td></tr>
+    <tr><td>^</td><td>Position of last insert</td></tr>
+    <tr><td>[</td><td>First character of previously changed text</td></tr>
+    <tr><td>]</td><td>Last character of previously changed text</td></tr>
+    <tr><td>&lt;</td><td>First character of previous visual mode selection</td></tr>
+    <tr><td>&gt;</td><td>Last character of previous visual mode selection</td></tr>
+</table>
 
 <p>All marks are motions and can be combined with operators.</p>
 
 <h3>Registers</h3>
+
 <p>Vrapper also supports some registers for storing text and operations.
   Please refer to Vim documentation for their use (:help registers)</p>
+
 <table>
     <tr><td>"a-"z</td><td>Named registers</td></tr> 
     <tr><td>"0-"9</td><td>Yank/Delete registers</td></tr> 

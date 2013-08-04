@@ -115,10 +115,29 @@
         <td>Include another config file (e.g., ":source .vimrc") to extend current configuration</td>
     </tr>
     <tr>
-        <td><nobr>:[%]s/&lt;search&gt;/&lt;replace&gt;/[g|i]</nobr></td>
+        <td>:!&lt;command&gt;</td>
+        <td>Execute a shell command with the selected text as input.</td>
+    </tr>
+    <tr>
+        <td>:r!&lt;command&gt;</td>
+        <td>Execute a shell command and insert the output.</td>
+    </tr>
+    <tr>
+        <td>:autocmd &lt;editor type&gt; &lt;command&gt;</td>
+        <td>Execute a .vrapperrc &lt;command&gt; only if the current editor is of Eclipse editor type &lt;editor&nbsp;type&gt;.
+        The &lt;editor&nbsp;type&gt; is the "registered name" of the Eclipse "part".<br/><br/>
+        For example:
+        <ul>
+            <li>autocmd "C/C++ Editor" eclipseaction gv org.eclipse.cdt.ui.edit.text.c.select.last</li>
+            <li>autocmd "CMake Editor" nnoremap &lt;CR&gt; gf</li>
+        </ul>
+        </td>
+    </tr>
+    <tr>
+        <td><nobr>:[%]s/&lt;search&gt;/&lt;replace&gt;/[g|c|i|I]</nobr></td>
         <td>The famous substitution feature.
         <ul>
-        <li>Supports 'g' flag for global (all matches) and 'i' flag for case-insensitive</li>
+        <li>Supports flags 'g' for global (all matches), 'c' for confirmation, 'i' for case-insensitive</li>
         <li>Supports '%' for performing substitution on all lines<br/>(e.g., :%s/foo/bar/)</li>
         <li>Whatever non-alphanumeric character is after :s will be the delimiter<br/>(e.g., :s_foo_bar_)</li>
         <li>Uses Eclipse's flavor of regex<br/>(e.g., :s/foo(.+)foo/bar$1bar/)</li>
