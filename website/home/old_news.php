@@ -2,6 +2,101 @@
 <a href="index.php">&lt;&lt; Newer Posts</a><br/>
 
 <div class="newsbox">
+    <div class="date">2012-09-15</div>
+    <h4>0.24.0 Released</h4>
+    <p>I don't like sitting on unreleased features when I'm not working on anything new.  If I have a list
+    of things completed but none of them are major, there's nothing that says I can't release them into the world.
+    So, I am now releasing version 0.24.0 of Vrapper.  This is mostly a minor bug fix release but since
+    I have nothing pending right now, I might as well give you what I have.</p>
+    <p>In addition to the miscellaneous bug fixes and minor features listed in my previous news post, I've added
+     the following changes:</p>
+     <ul>
+        <li>Refactored Ctrl+u/Ctrl+d to scroll by half-screen, not fullscreen</li>
+        <li>Add support for '?' on all command-line options, not just booleans.</li>
+        <ul>
+            <li>For example, ':set textwidth?' or ':set clipboard?' to see current value.</li>
+        </ul>
+        <li>In our optional Surround plugin, added support for 'yss' to surround entire line</li>
+     </ul>
+     <p>That's a pretty short list of changes in the month since my last news post.  It feels like things are
+     slowing down here.  The only major features left pending are the ones I don't feel confident implementing
+     myself (see the previous news post about my inadequacies with the Eclipse API).  I'll still do my best
+     to fix any defects that may arise, but I have nothing new on the horizon.  Other than that, hurray! A new release!</p>
+</div>
+<div class="newsbox">
+    <div class="date">2012-08-19</div>
+    <h4>Current state of the Unstable update site</h4>
+    <p>Things have been pretty slow here since releasing 0.22.0.  As far as I can tell, the only major features
+    Vrapper has left to implement are visual block selection and split editor views.  Unfortunately, both those
+    features rely heavily on poking and prodding the Eclipse API just right and I haven't yet found the magical
+    incantation to do either one of them.  I'm afraid I'll need outside help if I'm ever going to get those features
+    working.</p>
+    
+    <p>With that said, I have found time to fix/implement a couple things in between sessions of banging my head
+    against the Eclipse API.  The unstable update site currently has the following changes from 0.22.0:</p>
+    
+    <ul>
+        <li>Fixed multi-character mappings to &lt;ESC&gt; when inside parentheses</li>
+        <ul>
+			<li>Vrapper now displays pending characters when typing multi-character mappings</li>
+			<li>This is more aligned with Vim behavior and appears to work in all cases now</li>
+        </ul>
+        <li>Fixed behavior of &gt;i{ to match Vim</li>
+        <li>Preserve counts sent to '.' command for future '.' executions</li>
+        <li>Fixed '*' and '#' when regexsearch is enabled.</li>
+        <li>Added support for '+' and '-' line motions</li>
+        <li>Fixed issue with exiting InsertMode at the end of a file</li>
+        <li>Added support for 'gq' paragraph formatting</li>
+        <li>Refactored 'gt' and 'gT' commands for Eclipse Juno</li>
+        <ul>
+			<li>'gt' and 'gT' should work correctly but '&lt;number&gt;gt' still doesn't work</li>
+			<li>'gt' and 'gT' in Eclipse 3.x should still work but it won't wrap around the first and last tabs anymore</li>
+        </ul>
+        <li>Fixed issue with newline characters being shared between editors</li>
+        <ul>
+			<li>If you open both a Unix file and a Windows file Vrapper will keep the newlines straight</li>
+        </ul>
+        <li>Defined behavior for the &lt;END&gt; key</li>
+        <ul>
+			<li>You'll need to unbind &lt;END&gt; in Eclipse before using it in Vrapper operations</li>
+        </ul>
+    </ul>
+    
+    <p>I don't think any of those changes are very big so I'm not itching to release the next version of Vrapper.
+    We'll see what else I can add in the near future.  If things remain slow and no defects arrive, I might release it.</p>
+    
+</div>
+<div class="newsbox">
+    <div class="date">2012-07-07</div>
+    <h4>0.22.0 Released</h4>
+    <p>Aside from a couple minor defect fixes, the code was idle for the last 2 weeks.
+    So, I'm releasing 0.22.0.  There are still a couple defects I'd like fixed, but I want to get 0.22.0 out now
+    for a couple reasons.  First, I want to get the substitution feature out to everyone that has been waiting
+    so patiently for it.  Second (and probably more importantly), version 0.20.0 throws a nasty stack trace during startup
+    in Eclipse Juno (4.2) which leaves Vrapper in a weird state.  I fixed that issue in 0.22.0 so Vrapper will start
+    correctly in Ecipse Juno for anyone who has already upgraded.  However, I haven't yet gone through and verified
+    all functionality against Eclipse Juno so there may be more problems.</p>
+    
+    <p>Here are a couple known defects that I wanted to fix but didn't want to delay 0.22.0 for:</p>
+    
+    <ul>
+        <li>'u' undo operation doesn't work in some files (<a href="https://github.com/vrapper/vrapper/issues/86">#86</a>)</li>
+        <ul>
+            <li>This is consistently a problem in certain XML files like Maven pom.xml files but is otherwise difficult to reproduce.</li>
+            <li>If you run into this issue, Eclipse's normal Ctrl+Z undo will still function</li>
+        </ul>
+        <li>'gt' has inconsistent behavior in Eclipse Juno</li>
+        <ul>
+            <li>I'm going to do my best to refactor this feature so it works in both Eclipse 3.x and 4.x
+            but I'm not sure if that will be possible</li>
+            <li>I don't want to break compatibility with the Ecipse 3.x series so quickly after 4.2 releasing</li>
+        </ul>
+    </ul>
+    
+    <p>Aside from those issues, everything is looking good.  See the previous news posts for all the features/fixes
+    we've included since 0.20.0.  I think it's a pretty impressive list given that 0.20.0 was released less than 2 months ago.</p>
+</div>
+<div class="newsbox">
     <div class="date">2012-06-23</div>
     <h4>2 weeks later, no new release</h4>
     <p>2 weeks ago, I said that if the code sat idle for 2 weeks I'd release 0.22.0.  Well, it didn't sit idle.
