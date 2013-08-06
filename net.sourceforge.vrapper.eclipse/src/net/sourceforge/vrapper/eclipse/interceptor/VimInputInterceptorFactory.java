@@ -44,6 +44,7 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
 
     private static final HashMap<Integer, SpecialKey> specialKeys;
     private static final HashMap<Character, SpecialKey> specialChars;
+    private static final char ESC_CHAR = '\u001B';
     private static final HashSet<Integer> ignoredKeyCodes;
     static {
         specialKeys = new HashMap<Integer, SpecialKey>();
@@ -70,7 +71,6 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
         specialChars = new HashMap<Character, SpecialKey>();
         specialChars.put(Character.valueOf('\n'), SpecialKey.RETURN);
         specialChars.put(Character.valueOf('\r'), SpecialKey.RETURN);
-        specialChars.put(Character.valueOf('\u001B'), SpecialKey.ESC);
 
         ignoredKeyCodes = new HashSet<Integer>();
         ignoredKeyCodes.add(SWT.CTRL);
@@ -123,6 +123,9 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
             boolean ctrlKey   = (event.stateMask & SWT.CONTROL)   != 0;
             if(specialKeys.containsKey(event.keyCode)) {
                 keyStroke = new SimpleKeyStroke(specialKeys.get(event.keyCode), shiftKey, altKey, ctrlKey);
+            } else if (event.character == ESC_CHAR) {
+                //Either 'Ctrl + [' or 'Escape' was pressed, always ignore Control to be sure.
+                keyStroke = new SimpleKeyStroke(SpecialKey.ESC, shiftKey, altKey, false);
             } else if (specialChars.containsKey(event.character)) {
                 keyStroke = new SimpleKeyStroke(specialChars.get(event.character), shiftKey, altKey, ctrlKey);
             } else {
