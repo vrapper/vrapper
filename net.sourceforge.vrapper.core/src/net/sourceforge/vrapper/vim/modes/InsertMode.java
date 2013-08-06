@@ -194,9 +194,12 @@ public class InsertMode extends AbstractMode {
                 editorAdaptor.getHistory().endCompoundChange();
             }
         }
-        // Mark is placed one to the right to resume editing where mode was exited.
-        editorAdaptor.getCursorService().setMark(CursorService.LAST_INSERT_MARK,
-                editorAdaptor.getPosition().addModelOffset(1));
+        Position lastInsertOffset = editorAdaptor.getPosition();
+        if (lastInsertOffset.getModelOffset() < editorAdaptor.getModelContent().getTextLength()) {
+            //Mark is placed one to the right to resume editing where we exited, except for file end
+            lastInsertOffset = lastInsertOffset.addModelOffset(1);
+        }
+        editorAdaptor.getCursorService().setMark(CursorService.LAST_INSERT_MARK, lastInsertOffset);
     }
 
     private void repeatInsert() {
