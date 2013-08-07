@@ -8,6 +8,7 @@ import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.platform.Configuration.Option;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.Search;
+import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
@@ -141,13 +142,18 @@ public class CommandLineParser extends AbstractCommandParser {
         Evaluator sort = new Evaluator() {
             public Object evaluate(EditorAdaptor vim, Queue<String> command) {
         		String commandStr = "";
-            	while(command.size() > 0)
+            	while(command.size() > 0) {
             		//attempt to preserve spacing in case a pattern is in use
             		//(if you attempt to sort with "/foo    bar/" it won't work)
             		commandStr += command.poll() + " ";
+            	}
+            	TextRange selection = null;
+            	if(vim.getSelection().getModelLength() > 0) {
+            	    selection = vim.getSelection();
+            	}
         		
             	try {
-					new SortOperation(commandStr).execute(vim, null, ContentType.LINES);
+					new SortOperation(commandStr).execute(vim, selection, ContentType.LINES);
 				} catch (CommandExecutionException e) {
             		vim.getUserInterfaceService().setErrorMessage(e.getMessage());
 				}
