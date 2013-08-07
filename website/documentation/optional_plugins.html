@@ -134,25 +134,83 @@ just file an <a href="https://github.com/vrapper/vrapper/issues">Issue</a> on ou
 <h3>Surround (surround.vim) Plugin</h3>
 <p>Surround.vim is a vim plugin defined here:<br>
 <a href="http://www.vim.org/scripts/script.php?script_id=1697">http://www.vim.org/scripts/script.php?script_id=1697</a><br/>
-The Vrapper Surround plugin is a port of this script.  It isn't a complete port, but it
-supports a couple of the Surround operations.  The Vrapper Surround plugin works on the
-'c', 'd', and 'y' commands. After initiating one of those commands, hit 's' followed by
-one of the following characters:</p>
+The Vrapper Surround plugin is a partial port of this script. The Vrapper Surround plugin
+can be invoked as the 'cs', 'ds' and 'ys' commands in normal mode, or as 'S' and 'gS' in
+visual mode. For these commands, the following replacements are supported:
 <ul>
-	<li>a &lt; &gt;</li>
 	<li>b ( )</li>
 	<li>B { }</li>
     <li>[ ]</li>
 	<li>'</li>
 	<li>"</li>
 	<li>`</li>
+	<li>a &gt; &nbsp;&nbsp;&nbsp; (<i>angle brackets, no whitespace</i>)</li>
+    <li>t &lt; &nbsp;&nbsp;&nbsp; (<i>XML tags, asks for input</i>)</li>
 </ul>
+</p>
 
-<p>For the 'c' command you'll have to select the character that represents what the
-text is currently surrounded by then the character you want to replace it with. For
-example, cs"( would replace the surrounding double-quotes with parentheses.</p>
+<p>A few examples:
+<ol>
+    <li>Press <tt>ysE"</tt> to wrap all characters till the next space in double
+        quotes (text objects can also be used, e.g. <tt>ysit"</tt>).</li>
+    <li>Use <tt>cs"}</tt> to change those double quotes into curly brackets.</li>
+    <li>Pressing <tt>ds}</tt> will then remove the surrounding curly brackets.</li>
+</ol>
+Read the original script's documentation for more examples.</p>
 
-<h3>Improve Paragraph Motion (ipmotion.vim) Plugin</h3>
+<h4>Custom delimiters</h4>
+<p>Surround.vim allows to introduce custom delimiters using variables. Vrapper has no
+support for such variables, so the <tt>surround</tt> command was introduced instead.</p>
+
+<p>A few examples:<br/>
+<dl>
+    <dt><tt>:surround - &lt;?php\r?&gt;</tt></dt>
+    <dd>Introduces a new delimiter bound to "-". The "\r" is a marker to know what the
+        left and right bound should be.</dd>
+
+    <dt><tt>:surround + &lt;?php&lt;SPACE&gt;\r&lt;SPACE&gt;?&gt;</tt></dt>
+    <dd>Introduces a new delimiter bound to "+", this time with extra spaces. Spaces MUST
+        be specified as <tt>&lt;SPACE&gt;</tt>, otherwise the command parser will fail.
+        A later version might fix this and simply allow the use of double quotes.
+    </dd>
+</dl>
+
+
+<h4>Surround with XML tags</h4>
+<p>The "surround with XML" feature asks for input to know which tags to place around
+the matched text. While this is similar with the original plugin, the Vrapper version
+has one custom feature, it allows to either ignore, add or override attributes.</p>
+
+<p> For the following examples, assume that we are inside a tag <tt>&lt;div class="comments" id="div1"&gt;
+...&lt;/div&gt;</tt>.</p>
+
+<h5>Replace tag, keep attributes</h5>
+<ol>
+    <li>Press <tt>cstt</tt>. The tag replace prompt pops up.</li>
+    <li>Enter <tt>&lt;span</tt>.</li>
+</ol>
+<p>The attributes are untouched.</p>
+
+<h5>Replace tag, add attributes</h5>
+<ol>
+    <li>Press <tt>cstt</tt>. The tag replace prompt pops up.</li>
+    <li>Enter <tt>&lt;span style="float: left"</tt>.</li>
+</ol>
+<p>The tag is changed and an extra attribute is added at the front.</p>
+
+<h5>Change tag, replace attributes</h5>
+<ol>
+    <li>Press <tt>cstt</tt> again.</li>
+    <li>Enter <tt>&lt;span style="float:left" id="span"&gt;</tt>.</li>
+</ol>
+    
+<h5>Change tag, remove all attributes</h5>
+<ol>
+    <li>Press <tt>cstt</tt> again.</li>
+    <li>Enter <tt>&lt;span&gt;</tt>.</li>
+</ol>
+    
+<h3>Improved Paragraph Motion (ipmotion.vim) Plugin</h3>
 <p>Ipmotion.vim is a vim plugin defined here:<br>
 <a href="http://www.vim.org/scripts/script.php?script_id=3952">http://www.vim.org/scripts/script.php?script_id=3952</a><br/>
 This script modifies the behavior of '{' and '}' to be non-Vim compliant but more sensible.  Basically, a line with only whitespace
@@ -163,3 +221,4 @@ regex to be used in determining paragraph boundaries; our port of this script do
 <p>Argtextobj.vim is a vim plugin defined here:<br>
 <a href="http://www.vim.org/scripts/script.php?script_id=2699">http://www.vim.org/scripts/script.php?script_id=2699</a><br/>
 This script defines a text object 'a' (argument) to easily modify arguments within a method declaration.</p>
+
