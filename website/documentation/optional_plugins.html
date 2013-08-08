@@ -130,6 +130,18 @@ just file an <a href="https://github.com/vrapper/vrapper/issues">Issue</a> on ou
 
 
 <h2>Vimscript Ports</h2>
+    
+<h3>Improved Paragraph Motion (ipmotion.vim) Plugin</h3>
+<p>Ipmotion.vim is a vim plugin defined here:<br>
+<a href="http://www.vim.org/scripts/script.php?script_id=3952">http://www.vim.org/scripts/script.php?script_id=3952</a><br/>
+This script modifies the behavior of '{' and '}' to be non-Vim compliant but more sensible.  Basically, a line with only whitespace
+is considered a paragraph boundary rather than requiring lines to be completely empty.  The script allows for any arbitrary
+regex to be used in determining paragraph boundaries; our port of this script does not currently include that behavior.</p>
+
+<h3>Argument Text Object (argtextobj.vim) Plugin</h3>
+<p>Argtextobj.vim is a vim plugin defined here:<br>
+<a href="http://www.vim.org/scripts/script.php?script_id=2699">http://www.vim.org/scripts/script.php?script_id=2699</a><br/>
+This script defines a text object 'a' (argument) to easily modify arguments within a method declaration.</p>
 
 <h3>Surround (surround.vim) Plugin</h3>
 <p>Surround.vim is a vim plugin defined here:<br>
@@ -209,16 +221,3 @@ has one custom feature, it allows to either ignore, add or override attributes.<
     <li>Press <tt>cstt</tt> again.</li>
     <li>Enter <tt>&lt;span&gt;</tt>.</li>
 </ol>
-    
-<h3>Improved Paragraph Motion (ipmotion.vim) Plugin</h3>
-<p>Ipmotion.vim is a vim plugin defined here:<br>
-<a href="http://www.vim.org/scripts/script.php?script_id=3952">http://www.vim.org/scripts/script.php?script_id=3952</a><br/>
-This script modifies the behavior of '{' and '}' to be non-Vim compliant but more sensible.  Basically, a line with only whitespace
-is considered a paragraph boundary rather than requiring lines to be completely empty.  The script allows for any arbitrary
-regex to be used in determining paragraph boundaries; our port of this script does not currently include that behavior.</p>
-
-<h3>Argument Text Object (argtextobj.vim) Plugin</h3>
-<p>Argtextobj.vim is a vim plugin defined here:<br>
-<a href="http://www.vim.org/scripts/script.php?script_id=2699">http://www.vim.org/scripts/script.php?script_id=2699</a><br/>
-This script defines a text object 'a' (argument) to easily modify arguments within a method declaration.</p>
-
