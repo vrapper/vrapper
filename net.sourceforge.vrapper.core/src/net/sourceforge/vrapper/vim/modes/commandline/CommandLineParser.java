@@ -356,7 +356,8 @@ public class CommandLineParser extends AbstractCommandParser {
         }
 
         public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
-            Selection selection = range.parseRangeDefinition(editorAdaptor, !isFromVisual);
+            boolean linewise = !isFromVisual || editorAdaptor.getSelection().getContentType(editorAdaptor.getConfiguration()) == ContentType.LINES;
+            Selection selection = range.parseRangeDefinition(editorAdaptor, linewise);
             editorAdaptor.setSelection(selection);
             command.evaluate(editorAdaptor, tokens);
             editorAdaptor.setSelection(null);
