@@ -121,16 +121,6 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
     		return null;
     	}
     }
-   
-    /*
-     * When parsing a range, this determines the first letter of the actual operation we're
-     * trying to do, so stop parsing the range. Range operations include :sort, :retab, :yank, :delete
-     */
-    private boolean isOperationChar(char c) {
-    	//what other operations do we support?
-    	return c == 'd' || c == 'y' || c == 's' || c == 'v' || c == 'g'
-    			|| c == 'r' || c == 't' || c == 'c' || c == 'm' ;
-    }
     
     /**
      * Parse the desired operation to perform on this range.
