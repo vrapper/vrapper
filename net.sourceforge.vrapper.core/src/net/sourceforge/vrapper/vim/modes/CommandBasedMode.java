@@ -203,6 +203,7 @@ public abstract class CommandBasedMode extends AbstractMode {
                     leafBind('#', findWordPrevious),
                     leafBind('0', column0),
                     leafBind('$', lineEnd),
+                    leafBind(SpecialKey.HOME, lineStart),
                     leafBind(SpecialKey.END, lineEnd),
                     leafBind('%', parenthesesMove),
                     leafBind('^', lineStart),
