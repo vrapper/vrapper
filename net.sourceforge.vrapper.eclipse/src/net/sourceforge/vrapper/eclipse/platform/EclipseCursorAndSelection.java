@@ -77,8 +77,14 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         this.textContent = textContent;
         StyledText tw = textViewer.getTextWidget();
         this.stickyColumn = tw.getLeftMargin();
-        final GC gc = new GC(tw);
-        averageCharWidth = gc.getFontMetrics().getAverageCharWidth();
+        GC gc = null;
+        try {
+            gc = new GC(tw);
+            averageCharWidth = gc.getFontMetrics().getAverageCharWidth();
+        } finally {
+            if (gc != null)
+                gc.dispose();
+        }
         converter = OffsetConverter.create(textViewer);
         selectionChangeListener = new SelectionChangeListener();
         caretListener = new StickyColumnUpdater();
