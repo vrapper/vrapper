@@ -198,8 +198,10 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         final int len = sel.y;
         if (len > 0) {
             final int pos = converter.widgetOffset2ModelOffset(textViewer.getTextWidget().getCaretOffset());
-            if (start == pos) {
-                start += len+1;
+            if (sel.x == pos) {
+                //sel.x is left bound of UI selection and cursor is to the left,
+                //so start of the selection should be moved to the right (reversed selection).
+                start += len;
             } else {
                 end += len;
             }
