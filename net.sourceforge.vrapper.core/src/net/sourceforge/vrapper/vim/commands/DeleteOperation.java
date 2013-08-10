@@ -4,6 +4,8 @@ import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.LineInformation;
+import net.sourceforge.vrapper.utils.Position;
+import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
@@ -20,6 +22,22 @@ public class DeleteOperation extends SimpleTextOperation {
     public void execute(EditorAdaptor editorAdaptor, TextRange region, ContentType contentType) {
         try {
             editorAdaptor.getHistory().beginCompoundChange();
+
+            //if we're in LINES mode but the text doesn't end in a newline
+            //try to include the previous newline character
+            //(this is mostly to handle the last line of a file)
+            TextContent txtContent = editorAdaptor.getModelContent();
+            int position = region.getLeftBound().getModelOffset();
+            int length = region.getModelLength();
+            String text = txtContent.getText(position, length);
+            if (contentType == ContentType.LINES && position > 0
+                    && (text.length() == 0 || ! VimUtils.isNewLine(text.substring(text.length()-1)))) {
+                LineInformation line = txtContent.getLineInformationOfOffset(position);
+                int previousNewlinePos = txtContent.getLineInformation(line.getNumber() - 1).getEndOffset();
+                //include the previous newline by moving back a few characters (1 or 2)
+                Position newPosition = region.getLeftBound().addModelOffset(-(position - previousNewlinePos));
+                region = new StartEndTextRange(newPosition, region.getRightBound());
+            }
             doIt(editorAdaptor, region, contentType);
         } finally {
             editorAdaptor.getHistory().endCompoundChange();
@@ -49,19 +67,6 @@ public class DeleteOperation extends SimpleTextOperation {
             int position = range.getLeftBound().getModelOffset();
             int length = range.getModelLength();
             
-            String text = txtContent.getText(position, length);
-            //if we're in LINES mode but the text doesn't end in a newline
-            //try to include the previous newline character
-            //(this is mostly to handle the last line of a file)
-            if(contentType == ContentType.LINES && position > 0
-                    && (text.length() == 0 || ! VimUtils.isNewLine(text.substring(text.length()-1)))) {
-                //include the previous newline
-                LineInformation line = txtContent.getLineInformationOfOffset(position);
-                int previousNewlinePos = txtContent.getLineInformation(line.getNumber() - 1).getEndOffset();
-                length += position - previousNewlinePos;
-                position = previousNewlinePos;
-            }
-
             txtContent.replace(position, length, "");
 
             if (contentType == ContentType.LINES) {
