@@ -1,4 +1,29 @@
 <div class="newsbox">
+    <div class="date">2013-08-10</div>
+    <h4>0.34.1 Released</h4>
+
+    <p>I released 0.34.0 last week and a number of people found defects.  One defect
+    in particular (where the cursor would disappear on Linux systems) was major
+    enough to warrant a new release.  I've released 0.34.1 with that defect fixed along
+    with a couple others.  Changes between 0.34.0 and 0.34.1 are:</p>
+
+    <ul>
+        <li>Fixed issue on Linux systems where cursor would disappear during horizontal movements</li>
+        <li>Fixed issue where &lt;C-[&gt; was ignored</li>
+        <li>Fixed issue where :sort was ignoring selections</li>
+        <li>Fixed 'last insert mark' at the end of a file</li>
+        <li>Fixed HOME and END behavior</li>
+    </ul>
+    
+    <p>I apologize to anyone that was frustrated by these defects after
+    upgrading to 0.34.0. It seems the unstable update site isn't being tested as
+    much as I'd hoped.  I may have to introduce some concept of a 'release
+    candidate update site' which isn't updated as often as unstable but provides
+    our users who don't want an "unstable" build to play with new builds before I
+    declare them "stable".</p>
+    
+</div>
+<div class="newsbox">
     <div class="date">2013-08-04</div>
     <h4>0.34.0 Released</h4>
     <p>As I mentioned in my previous post, this is a big release for us.  This release
