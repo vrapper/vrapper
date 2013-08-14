@@ -82,15 +82,22 @@ public class CommandLineUIFactory {
             StyledText parent = (StyledText) e.widget;
             e.gc.setForeground(parent.getForeground());
             e.gc.setBackground(parent.getBackground());
-            int bottom = parent.getBounds().height - parent.getHorizontalBar().getSize().y;
-            int right = parent.getBounds().width - parent.getVerticalBar().getSize().x;
+            int bottom = parent.getBounds().height;
+            if (parent.getHorizontalBar() != null)
+                bottom -= parent.getHorizontalBar().getSize().y;
+            int right = parent.getBounds().width;
+            if (parent.getVerticalBar() != null)
+                right -= parent.getVerticalBar().getSize().x;
             commandLineUI.setMaxHeight(parent.getBounds().height / 2);
             commandLineUI.setWidth(right - 1);
             commandLineUI.setBottom(bottom);
             Point size = commandLineText.getSize();
             // if the scrollbar changed, the whole component must be repainted
-            if (horScroll == parent.getHorizontalBar().getSelection()
-                    && verScroll == parent.getVerticalBar().getSelection()) {
+            // if there is no scrollbar, paint anyway.
+            if ((parent.getHorizontalBar() == null
+                        || horScroll == parent.getHorizontalBar().getSelection())
+                    && (parent.getVerticalBar() == null
+                        || verScroll == parent.getVerticalBar().getSelection())) {
                 commandLineText.setLocation(0, bottom - size.y);
                 commandLineText.redraw();
             } else {
