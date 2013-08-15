@@ -35,6 +35,7 @@ import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.CountIgnoringNonRepeatableCommand;
 import net.sourceforge.vrapper.vim.commands.InsertAdjacentCharacter;
 import net.sourceforge.vrapper.vim.commands.InsertLineCommand;
+import net.sourceforge.vrapper.vim.commands.InsertShiftWidth;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.commands.PasteBeforeCommand;
 import net.sourceforge.vrapper.vim.commands.PasteRegisterCommand;
@@ -474,7 +475,8 @@ public class InsertMode extends AbstractMode {
                             (Command)new ChangeModeCommand(CommandLineMode.NAME, RESUME_ON_MODE_ENTER)),
             		leafCtrlBind('a', (Command)PasteRegisterCommand.PASTE_LAST_INSERT),
             		leafCtrlBind('e', (Command)InsertAdjacentCharacter.LINE_BELOW),
-            		leafCtrlBind('y', (Command)InsertAdjacentCharacter.LINE_ABOVE)
+            		leafCtrlBind('y', (Command)InsertAdjacentCharacter.LINE_ABOVE),
+            		leafCtrlBind('t', (Command)InsertShiftWidth.INSTANCE)
             )
         ));
     }
