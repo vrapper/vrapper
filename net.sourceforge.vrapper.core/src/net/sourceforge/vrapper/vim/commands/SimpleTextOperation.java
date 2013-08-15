@@ -13,6 +13,12 @@ public abstract class SimpleTextOperation implements TextOperation {
         execute(editorAdaptor, range, textObject.getContentType(editorAdaptor.getConfiguration()));
     }
 
+    /**
+     * Apply the operation on a textrange.
+     * @param editorAdaptor editor reference.
+     * @param region textrange, can be <tt>null</tt> if a motion didn't select any text.
+     * @param contentType range content type.
+     */
     public abstract void execute(EditorAdaptor editorAdaptor, TextRange region,
             ContentType contentType) throws CommandExecutionException;
 
