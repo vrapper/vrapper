@@ -20,6 +20,10 @@ public class DeleteOperation extends SimpleTextOperation {
 
     @Override
     public void execute(EditorAdaptor editorAdaptor, TextRange region, ContentType contentType) {
+        if (region == null) {
+            return;
+        }
+
         try {
             editorAdaptor.getHistory().beginCompoundChange();
 
