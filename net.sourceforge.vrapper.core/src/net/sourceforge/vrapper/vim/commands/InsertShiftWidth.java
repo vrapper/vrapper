@@ -15,9 +15,9 @@ public class InsertShiftWidth extends CountIgnoringNonRepeatableCommand {
     @Override
     public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
         int tabstop = editorAdaptor.getConfiguration().get(Options.TAB_STOP);
-        tabstop = Math.max(0, tabstop);
+        tabstop = Math.max(1, tabstop);
         int shiftwidth = editorAdaptor.getConfiguration().get(Options.SHIFT_WIDTH);
-        shiftwidth = Math.max(0, shiftwidth);
+        shiftwidth = Math.max(1, shiftwidth);
 
         //I wish java could do (" " * tabstop)
         String replaceTab = "";
