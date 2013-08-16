@@ -202,8 +202,11 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
 
     @Override
     public boolean sourceConfigurationFile(final String filename) {
-        final File homeDir = new File(System.getProperty("user.home"));
-        final File config = new File(homeDir, filename);
+        File config = new File(filename);
+        if( ! config.isAbsolute()) {
+            final File homeDir = new File(System.getProperty("user.home"));
+            config = new File(homeDir, filename);
+        }
 
         if(config.exists()) {
         	BufferedReader reader = null;
