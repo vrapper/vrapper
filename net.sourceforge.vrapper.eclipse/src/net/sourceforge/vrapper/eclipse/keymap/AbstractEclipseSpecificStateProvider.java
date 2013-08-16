@@ -88,7 +88,7 @@ public class AbstractEclipseSpecificStateProvider implements
 
     protected static class EclipseActionEvaluator implements Evaluator {
 
-        private final boolean force;
+        private boolean force;
 
         protected EclipseActionEvaluator(boolean force) {
             super();
@@ -97,6 +97,12 @@ public class AbstractEclipseSpecificStateProvider implements
 
         public Object evaluate(EditorAdaptor vim, Queue<String> command) {
             String name = command.poll();
+            if("!".equals(name)) {
+            	//we made a change where the '!' is separated from the command name
+            	//if that's the case (eclipseaction!), this isn't the name yet
+            	force = true;
+            	name = command.poll();
+            }
             String action = command.poll();
             if (name != null && action != null) {
                 CommandLineMode mode = (CommandLineMode) vim
