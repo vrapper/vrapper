@@ -6,6 +6,7 @@ import net.sourceforge.vrapper.utils.LineAddressParser;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.TextRange;
+import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 
 /**
@@ -22,13 +23,16 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
  */
 public class CopyMoveLinesOperation extends SimpleTextOperation {
 	
-	private String address;
+	private String address = null;
 	private boolean move; //move (true) or copy (false)
 	
 	public CopyMoveLinesOperation(String address, boolean move) {
 		//address should be something like "co 12" or "co .+3"
 		//chop off the operation and space, leaving the definition
-    	this.address = address.substring(address.indexOf(' ')).trim();
+	    final int addrPos = address.indexOf(' ');
+	    if (addrPos != -1) {
+	        this.address = address.substring(addrPos).trim();
+	    }
     	this.move = move;
 	}
 
@@ -41,6 +45,10 @@ public class CopyMoveLinesOperation extends SimpleTextOperation {
 	public void execute(EditorAdaptor editorAdaptor, TextRange region,
 			ContentType contentType) throws CommandExecutionException {
 		
+		if(address == null) {
+			throw new CommandExecutionException("Address required");
+		}
+
 		Position destination = LineAddressParser.parseAddressPosition(address, editorAdaptor);
 		
 		if(destination == null) {
@@ -52,13 +60,22 @@ public class CopyMoveLinesOperation extends SimpleTextOperation {
 		//destination might be a position in the middle of a line
 		LineInformation line = content.getLineInformationOfOffset(destination.getModelOffset());
 		int offset = content.getLineInformation(line.getNumber() + 1).getBeginOffset();
+		final int sourceOffset = region.getStart().getModelOffset();
+		final LineInformation sourceLine = content.getLineInformationOfOffset(region.getLeftBound().getModelOffset());
+		final int cursorPos = offset + VimUtils.getFirstNonWhiteSpaceOffset(content, sourceLine) - sourceLine.getBeginOffset();
 		
 		editorAdaptor.getHistory().beginCompoundChange();
+		//
+		// Make sure to perform delete/insert operation in reverse order
+		// of offsets to guarantee both offsets are valid.
+		//
+		if (move && offset < sourceOffset) {
+		    content.replace(sourceOffset, region.getModelLength(), "");
+		}
 		content.replace(offset, 0, lines);
-    		
-		if(move) {
-			//remove the old content
-			content.replace(region.getStart().getModelOffset(), region.getModelLength(), "");
+		editorAdaptor.setPosition(editorAdaptor.getCursorService().newPositionForModelOffset(cursorPos), true);
+		if (move && offset >= sourceOffset) {
+		    content.replace(sourceOffset, region.getModelLength(), "");
 		}
 		
 		editorAdaptor.getHistory().endCompoundChange();

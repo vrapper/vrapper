@@ -440,6 +440,10 @@ public class CommandLineParser extends AbstractCommandParser {
                 return AutoCmdParser.INSTANCE;
             }
         }
+        // copy/move operation without range to copy/move the current line
+        if (LineRangeOperationCommand.isCurrentLineCopyMove(command)) {
+            return new LineRangeOperationCommand("." + command);
+        }
         
         EvaluatorMapping platformCommands = editor.getPlatformSpecificStateProvider().getCommands();
         

@@ -27,12 +27,13 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
  **/
 public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand {
 	//                                               1                                      2       3                  4
-	private static final String START_SEL_RE = "^\\s*(%|\\$|[+-]?\\d+|\\.|\\^|'[<\\[a-zA-Z]|([?\\/])((?:\\\\2|.)+?)\\2)([+-]\\d+)?\\s*";
+	private static final String START_SEL_RE = "^\\s*(%|\\$|[+-.]?\\d+|\\.|\\^|'[<\\[a-zA-Z]|([?\\/])((?:\\\\2|.)+?)\\2)([+-]\\d+)?\\s*";
 	//                                                      5                                6       7                  8
-	private static final String END_SEL_RE =   "\\s*[,;]\\s*([+-]?\\d+|\\.|\\$|'[>\\]a-zA-Z]|([?\\/])((?:\\\\6|.)+?)\\6)([+-]\\d+)?\\s*";
+	private static final String END_SEL_RE =   "\\s*[,;]\\s*([+-.]?\\d+|\\.|\\$|'[>\\]a-zA-Z]|([?\\/])((?:\\\\6|.)+?)\\6)([+-]\\d+)?\\s*";
 	private static final Pattern START_AND_STOP = Pattern.compile(START_SEL_RE + END_SEL_RE + "(\\D.*)");
 	private static final Pattern JUST_START = Pattern.compile(START_SEL_RE + "(\\D.*)");
 	private static final Pattern JUST_STOP = Pattern.compile("^" + END_SEL_RE + "(\\D.*)");
+	private static final Pattern COPY_MOVE = Pattern.compile("^(co(p(y)?)?|m(o(v(e?)?)?)?)\\s+.*");
 	private String definition;
     private String startStr = "";
     private String stopStr = "";
@@ -50,6 +51,10 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
 		//list all possible starting characters for a line range
 		//<number> $ / ? . ' + - , 
 	    return JUST_START.matcher(command).matches() || JUST_STOP.matcher(command).matches();
+	}
+	
+	public static boolean isCurrentLineCopyMove(String command) {
+	    return COPY_MOVE.matcher(command).matches();
 	}
 	
 	public String getOperationStr() {
@@ -82,6 +87,8 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
             if (matchingRe.matches()) {
                 // Only start position specified
                 startStr = matchingRe.group(1) + (matchingRe.group(4) != null ? matchingRe.group(4) : "");
+                // One line only addressed
+                stopStr = startStr;
             } else {
                 // Only stop position specified
                 matchingRe = JUST_STOP.matcher(definition);

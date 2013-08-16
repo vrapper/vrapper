@@ -129,7 +129,7 @@ public class LineAddressParser {
     	else if(lineDef.startsWith("/") || lineDef.startsWith("?")) {
     		pos = parseSearchPosition(lineDef, editorAdaptor);
     	}
-    	else if(".".equals(lineDef)) { //current line
+    	else if(".".equals(lineDef) || lineDef.isEmpty()) { //current line
     		pos = cursorService.getPosition();
     	}
     	else if("$".equals(lineDef)) { //last line
