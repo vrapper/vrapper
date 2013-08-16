@@ -19,6 +19,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Caret;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.services.IDisposable;
@@ -98,6 +99,12 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener,
             @Override
             public void widgetSelected(SelectionEvent e) {
                 commandLineText.setSelection(contentsOffset, commandLineText.getCharCount());
+                //Manually trigger selection listener because for some reason the method call above doesn't.
+                Event e2 = new Event();
+                e2.widget = commandLineText;
+                e2.x = contentsOffset;
+                e2.y = commandLineText.getCharCount();
+                EclipseCommandLineUI.this.widgetSelected(new SelectionEvent(e2));
             }
         });
     }
