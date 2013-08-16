@@ -143,6 +143,7 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener,
     @Override
     public void type(String characters) {
         clipSelection();
+        setMode(CommandLineMode.DEFAULT);
         int start = commandLineText.getCaretOffset();
         //Check caret position after replacing selection - caret might have been at end of selection
         if (commandLineText.getSelectionCount() > 0) {

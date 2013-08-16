@@ -47,7 +47,10 @@ public interface CommandLineUI {
      */
     public String getFullContents();
 
-    /** Inserts characters or replaces the current selection with new characters. */
+    /**
+     * Inserts characters or replaces the current selection with new characters.
+     * <p>The command line will always revert to DEFAULT mode when this method is invoked!
+     */
     public void type(String characters);
 
     public void copySelectionToClipboard();
