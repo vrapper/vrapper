@@ -6,6 +6,11 @@ import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 
+/**
+ * Insert <shiftwidth> spaces at the beginning of the line.
+ * Then replace every <tabstop> spaces with a TAB character if
+ * <expandtab> is disabled.
+ */
 public class InsertShiftWidth extends CountIgnoringNonRepeatableCommand {
 
     public static final InsertShiftWidth INSTANCE = new InsertShiftWidth();
@@ -40,13 +45,15 @@ public class InsertShiftWidth extends CountIgnoringNonRepeatableCommand {
         //introduce new indent
         indent = replaceShiftWidth + indent;
 
-        //collapse tabstops back to tab characters
         String replace = "";
-        while(indent.length() >= tabstop) {
-            indent = indent.substring(tabstop);
-            replace += "\t";
+        if( ! editorAdaptor.getConfiguration().get(Options.EXPAND_TAB)) {
+            //collapse <tabstop> spaces into tab characters
+            while(indent.length() >= tabstop) {
+                indent = indent.substring(tabstop);
+                replace += "\t";
+            }
         }
-        replace += indent; //preserve any non-shiftwidth divisible spaces
+        replace += indent; //preserve any non-tabstop divisible spaces
         model.replace(line.getBeginOffset(), whitespaceEnd, replace);
     }
 
