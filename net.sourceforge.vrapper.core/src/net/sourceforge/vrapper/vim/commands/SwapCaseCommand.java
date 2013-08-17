@@ -7,12 +7,12 @@ import static java.lang.Math.min;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.HistoryService;
 import net.sourceforge.vrapper.platform.TextContent;
+import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.BlockWiseSelection.TextBlock;
-import net.sourceforge.vrapper.vim.commands.motions.BlockSelectionMotion;
 
 public class SwapCaseCommand extends AbstractModelSideCommand {
 
@@ -84,6 +84,17 @@ public class SwapCaseCommand extends AbstractModelSideCommand {
 			}
     	}
     	
+    };
+    public static final SimpleTextOperation TEXT_OBJECT_INSTANCE = new SimpleTextOperation() {
+        @Override
+        public TextOperation repetition() {
+            return this;
+        }
+        
+        @Override
+        public void execute(EditorAdaptor editorAdaptor, TextRange region, ContentType contentType) throws CommandExecutionException {
+            swapCase(editorAdaptor.getModelContent(), region.getLeftBound().getModelOffset(), region.getModelLength());
+        }
     };
 
     private SwapCaseCommand() { /* NOP */ }

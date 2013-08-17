@@ -310,6 +310,7 @@ public class NormalMode extends CommandBasedMode {
                 operatorCmdsWithUpperCase('y', yank,   toEolForY, textObjects),
                 operatorCmdsWithUpperCase('c', change, toEol,     textObjectsForChange),
                 prefixedOperatorCmds('g', 'q', format, textObjects),
+                prefixedOperatorCmds('g', '~', SwapCaseCommand.TEXT_OBJECT_INSTANCE, textObjects),
                 state(leafBind('$', stickToEOL)),
                 state(leafBind('^', lineStart)),
                 state(leafBind('0', column0)),
