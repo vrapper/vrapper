@@ -23,7 +23,7 @@ public class SubstitutionOperation extends SimpleTextOperation {
 	}
 
     @Override
-    public void execute(EditorAdaptor editorAdaptor, TextRange region, ContentType contentType) {
+    public void execute(EditorAdaptor editorAdaptor, TextRange region, ContentType contentType) throws CommandExecutionException {
         TextContent model = editorAdaptor.getModelContent();
     	int startLine;
     	int endLine;
@@ -49,8 +49,7 @@ public class SubstitutionOperation extends SimpleTextOperation {
     	    subDef = new SubstitutionDefinition(substitution, editorAdaptor.getRegisterManager());
     	}
     	catch(IllegalArgumentException e) {
-			editorAdaptor.getUserInterfaceService().setErrorMessage(e.getMessage());
-			return;
+			throw new CommandExecutionException(e.getMessage());
     	}
     	
     	if(subDef.flags.indexOf('c') > -1) {
