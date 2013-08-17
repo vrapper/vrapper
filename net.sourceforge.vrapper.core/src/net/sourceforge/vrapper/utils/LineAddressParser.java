@@ -105,20 +105,35 @@ public class LineAddressParser {
     	Position pos = null;
     	if(lineDef.startsWith("'") && lineDef.length() > 1) { //mark
     		String mark = lineDef.substring(1);
-    		if(mark.equals("<")) { //selection begin
+    		if(mark.equals(CursorService.LAST_SELECTION_START_MARK)) {
     			try {
-					pos = editorAdaptor.getSelection().getRegion(editorAdaptor, 0).getLeftBound();
+    			    Selection selection = editorAdaptor.getSelection();
+    			    if(selection.getModelLength() == 0) {
+    			        //get last selection
+    			        pos = editorAdaptor.getCursorService().getMark(CursorService.LAST_SELECTION_START_MARK);
+    			    }
+    			    else {
+    			        //get current selection
+    			        pos = editorAdaptor.getSelection().getRegion(editorAdaptor, 0).getLeftBound();
+    			    }
 				} catch (CommandExecutionException e) { }
     		}
-    		else if(mark.equals(">")) { //selection end
+    		else if(mark.equals(CursorService.LAST_SELECTION_END_MARK)) {
     			try {
     			    Selection sel = editorAdaptor.getSelection();
-    			    pos = editorAdaptor.getSelection().getRegion(editorAdaptor, 0).getRightBound();
-    			    if (sel instanceof LineWiseSelection) {
-    			        //getRightBound is exclusive, meaning in linewise-mode it will
-    			        //include the first character on the next line.  Back up one
-    			        //character to make this inclusive.
-    			        pos = pos.addModelOffset(-1);
+    			    if(sel.getModelLength() == 0) {
+    			        //get last selection
+    			        pos = editorAdaptor.getCursorService().getMark(CursorService.LAST_SELECTION_END_MARK);
+    			    }
+    			    else {
+    			        //get current selection
+    			        pos = editorAdaptor.getSelection().getRegion(editorAdaptor, 0).getRightBound();
+    			        if (sel instanceof LineWiseSelection) {
+    			            //getRightBound is exclusive, meaning in linewise-mode it will
+    			            //include the first character on the next line.  Back up one
+    			            //character to make this inclusive.
+    			            pos = pos.addModelOffset(-1);
+    			        }
     			    }
 				} catch (CommandExecutionException e) { }
     		}

@@ -36,6 +36,8 @@ public abstract class AbstractCommandLineMode extends AbstractMode {
         	    parser.setFromVisual(true);
         		//display '<,'> to represent visual selection
         	    commandLine.resetContents("'<,'>");
+        	    //set the '< and '> marks
+        	    editorAdaptor.rememberLastActiveSelection();
         	}
         }
     }
