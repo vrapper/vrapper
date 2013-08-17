@@ -424,6 +424,52 @@ public class CommandLineParser extends AbstractCommandParser {
     }
     @Override
     public Command parseAndExecute(String first, String command) {
+        if(command.indexOf(" | ") > -1) {
+            String[] commands = command.split(" | ");
+            editor.getHistory().beginCompoundChange();
+            editor.getHistory().lock("chained-commands");
+            boolean performedChain = false;
+            try {
+                Command c;
+                for(String chainCommand : commands) {
+                    if( ! "|".equals(chainCommand)) {
+                        //recurse!
+                        c = parseAndExecute(first, chainCommand);
+                        if(c != null) {
+                            c.execute(editor);
+                            //this really was a set of commands chained together!
+                            performedChain = true;
+                        }
+                        else {
+                            //exit on first failed command
+                            break;
+                        }
+                    }
+                }
+            }
+            catch(CommandExecutionException e) {
+                if(performedChain) {
+                    //if this error wasn't due to us executing a string that
+                    //wasn't actually a set of commands chained together then
+                    //display the error.
+                    editor.getUserInterfaceService().setErrorMessage(e.getMessage());
+                }
+            }
+            editor.getHistory().unlock("chained-commands");
+            editor.getHistory().endCompoundChange();
+
+            //If the first chained command succeeded then this really was a set
+            //of commands chained together and we can exit here.  If that first
+            //command couldn't be parsed, maybe this was just a '|' within a
+            //command and wasn't intended to chain things together.  So, if the
+            //first command failed, continue into parseAndExecute() with the
+            //original unmodified command.
+            //(this is to handle the case of :s/ | /foo/g)
+            if(performedChain) {
+                return null;
+            }
+        }
+
         try {
             // if the command is a number, jump to the given line
             int line = Integer.parseInt(command);
