@@ -1,7 +1,5 @@
 package net.sourceforge.vrapper.vim.commands;
 
-import java.util.regex.PatternSyntaxException;
-
 import net.sourceforge.vrapper.platform.SearchAndReplaceService;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.ContentType;
@@ -50,8 +48,8 @@ public class SubstitutionOperation extends SimpleTextOperation {
     	try {
     	    subDef = new SubstitutionDefinition(substitution, editorAdaptor.getRegisterManager());
     	}
-    	catch(PatternSyntaxException e) {
-			editorAdaptor.getUserInterfaceService().setErrorMessage(e.getDescription());
+    	catch(IllegalArgumentException e) {
+			editorAdaptor.getUserInterfaceService().setErrorMessage(e.getMessage());
 			return;
     	}
     	

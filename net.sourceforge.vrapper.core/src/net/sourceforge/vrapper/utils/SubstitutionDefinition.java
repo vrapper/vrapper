@@ -15,7 +15,7 @@ public class SubstitutionDefinition {
     public String replace;
     public String flags;
     
-    public SubstitutionDefinition(String def, RegisterManager registers) throws PatternSyntaxException {
+    public SubstitutionDefinition(String def, RegisterManager registers) throws IllegalArgumentException {
         String lastSearch = registers.getRegister("/").getContent().getText();
 		//whatever character is after 's' is our delimiter
 		String delim = "" + def.charAt( def.indexOf('s') + 1);
@@ -49,8 +49,16 @@ public class SubstitutionDefinition {
 			flags = fields[3];
 		}
 		
+		if(find.length() == 0) {
+		    throw new IllegalArgumentException("No search string defined");
+		}
+		
 		//before attempting substitution, is this regex even valid?
-		//(this will throw a PatternSyntaxException if not valid)
-		Pattern.compile(find);
+		try {
+		    Pattern.compile(find);
+		}
+		catch(PatternSyntaxException e) {
+		    throw new IllegalArgumentException(e.getDescription());
+		}
     }
 }
