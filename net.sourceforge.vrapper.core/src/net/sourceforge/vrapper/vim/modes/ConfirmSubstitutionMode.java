@@ -30,6 +30,7 @@ public class ConfirmSubstitutionMode extends AbstractMode {
     private int endOffset;
     private int nextLine;
     private int totalLength;
+    private int replaceOffset = 0;
     private boolean globalFlag = false;
     private CommandLineUI commandLine;
     private SearchResult lastMatch;
@@ -110,7 +111,11 @@ public class ConfirmSubstitutionMode extends AbstractMode {
         int startOffset;
         if(lastMatch != null && globalFlag) {
             //next match might be on the same line
-            startOffset = lastMatch.getRightBound().getModelOffset();
+            startOffset = lastMatch.getRightBound().getModelOffset() + replaceOffset;
+            //performing a substitution could change our next starting position
+            //(so we don't match on the replaced string) reset replaceOffset in
+            //case the user hits 'n' and we *don't* modify starting position
+            replaceOffset = 0;
         }
         else {
             //start on next line
@@ -198,8 +203,9 @@ public class ConfirmSubstitutionMode extends AbstractMode {
                 subDef.find, subDef.flags, subDef.replace);
         
         int newTotal = editorAdaptor.getModelContent().getTextLength();
-        //keep endOffset in sync when find and replace are different lengths
-        endOffset += newTotal - totalLength;
+        //keep offsets in sync when find and replace are different lengths
+        replaceOffset = newTotal - totalLength;
+        endOffset += replaceOffset;
         totalLength = newTotal;
     }
 
