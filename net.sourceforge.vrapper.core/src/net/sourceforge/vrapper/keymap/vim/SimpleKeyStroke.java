@@ -65,7 +65,8 @@ public class SimpleKeyStroke implements KeyStroke {
 
     @Override
     public int hashCode() {
-        return character << 16 ^ (specialKey == null ? 0 : specialKey.hashCode());
+        return character << 16 ^ (specialKey == null ? 0 : specialKey.hashCode())
+                ^ ( ctrlKey ? 1 << 5 : 0);
     }
 
     @Override

@@ -43,7 +43,8 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
     public static final VimInputInterceptorFactory INSTANCE = new VimInputInterceptorFactory();
 
     private static final HashMap<Integer, SpecialKey> specialKeys;
-    private static final HashMap<Character, SpecialKey> specialChars;
+    /** Maps "Escape characters" to the corresponding Control + <i>x</i> character. */
+    private static final HashMap<Character, Character> escapedChars;
     private static final char ESC_CHAR = '\u001B';
     private static final HashSet<Integer> ignoredKeyCodes;
     static {
@@ -60,6 +61,8 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
         specialKeys.put( SWT.PAGE_UP,            SpecialKey.PAGE_UP);
         specialKeys.put( SWT.HOME,               SpecialKey.HOME);
         specialKeys.put( SWT.END,                SpecialKey.END);
+        specialKeys.put( (int)SWT.ESC,           SpecialKey.ESC);
+        specialKeys.put( (int)SWT.CR,            SpecialKey.RETURN);
         
         SpecialKey[] values = SpecialKey.values();
         int swtStart = SWT.F1;
@@ -68,9 +71,43 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
         for (int i=0; i < 20; ++i)
         	specialKeys.put(swtStart+i, values[skStart+i]);
 
-        specialChars = new HashMap<Character, SpecialKey>();
-        specialChars.put(Character.valueOf('\n'), SpecialKey.RETURN);
-        specialChars.put(Character.valueOf('\r'), SpecialKey.RETURN);
+        /*
+         * Translate the "Escape characters" sent by Ctrl + alpha keys to regular characters.
+         * This circumvents problems with the user language where raw keyCode values might not.
+         */
+        escapedChars = new HashMap<Character, Character>();
+        escapedChars.put('\u0000', '@');
+        escapedChars.put('\u0001', 'a');
+        escapedChars.put('\u0002', 'b');
+        escapedChars.put('\u0003', 'c');
+        escapedChars.put('\u0004', 'd');
+        escapedChars.put('\u0005', 'e');
+        escapedChars.put('\u0006', 'f');
+        escapedChars.put('\u0007', 'g');
+        escapedChars.put('\u0008', 'h');
+        escapedChars.put('\t',     'i');
+        escapedChars.put('\n',     'j');
+        escapedChars.put('\u000B', 'k');
+        escapedChars.put('\u000C', 'l');
+        escapedChars.put('\r',     'm');
+        escapedChars.put('\u000E', 'n');
+        escapedChars.put('\u000F', 'o');
+        escapedChars.put('\u0010', 'p');
+        escapedChars.put('\u0011', 'q');
+        escapedChars.put('\u0012', 'r');
+        escapedChars.put('\u0013', 's');
+        escapedChars.put('\u0014', 't');
+        escapedChars.put('\u0015', 'u');
+        escapedChars.put('\u0016', 'v');
+        escapedChars.put('\u0017', 'w');
+        escapedChars.put('\u0018', 'x');
+        escapedChars.put('\u0019', 'y');
+        escapedChars.put('\u001A', 'z');
+        escapedChars.put('\u001B', '[');
+        escapedChars.put('\u001C', '\\');
+        escapedChars.put('\u001D', ']');
+        escapedChars.put('\u001E', '^');
+        escapedChars.put('\u001F', '_');
 
         ignoredKeyCodes = new HashSet<Integer>();
         ignoredKeyCodes.add(SWT.CTRL);
@@ -123,11 +160,8 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
             boolean ctrlKey   = (event.stateMask & SWT.CONTROL)   != 0;
             if(specialKeys.containsKey(event.keyCode)) {
                 keyStroke = new SimpleKeyStroke(specialKeys.get(event.keyCode), shiftKey, altKey, ctrlKey);
-            } else if (event.character == ESC_CHAR) {
-                //Either 'Ctrl + [' or 'Escape' was pressed, always ignore Control to be sure.
-                keyStroke = new SimpleKeyStroke(SpecialKey.ESC, shiftKey, altKey, false);
-            } else if (specialChars.containsKey(event.character)) {
-                keyStroke = new SimpleKeyStroke(specialChars.get(event.character), shiftKey, altKey, ctrlKey);
+            } else if (escapedChars.containsKey(event.character)) {
+                keyStroke = new SimpleKeyStroke(escapedChars.get(event.character), shiftKey, altKey, ctrlKey);
             } else {
                 keyStroke = new SimpleKeyStroke(event.character, shiftKey, altKey, ctrlKey);
             }
