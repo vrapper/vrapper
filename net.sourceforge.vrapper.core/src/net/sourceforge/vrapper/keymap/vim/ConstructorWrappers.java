@@ -20,6 +20,7 @@ import net.sourceforge.vrapper.keymap.SimpleTransition;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.Transition;
+import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.Function;
 import net.sourceforge.vrapper.vim.PerformOperationOnSearchResultCommand;
@@ -72,6 +73,9 @@ public class ConstructorWrappers {
                     sb.deleteCharAt(sb.length()-1);
                     String key = sb.toString().toUpperCase();
                     stroke = parseSpecialKey(key);
+                    if (stroke == null) {
+                        VrapperLog.info("Key code <" + key + "> is unknown. Ignoring.");
+                    }
                 }
                 if (stroke != null) {
                     result.add(stroke);
@@ -96,36 +100,40 @@ public class ConstructorWrappers {
      */
     private static KeyStroke parseSpecialKey(String key) {
     	KeyStroke stroke = null;
+    	//Sanity check for recursion.
+    	if (key.length() > 20 || key.length() == 0) {
+    		return null;
+    	}
     	if(key.startsWith("S-")) { //Shift
-    		KeyStroke k = keyNames.get( key.substring(2) );
+    		KeyStroke k = parseSpecialKey( key.substring(2) );
     		if(k != null) {
-    			if(k.getSpecialKey() != null) {
-    				stroke = new SimpleKeyStroke(k.getSpecialKey(), true, false, k.withCtrlKey());
-    			}
-    			else {
-    				stroke = new SimpleKeyStroke(k.getCharacter(), true, false, k.withCtrlKey());
-    			}
-    		}
-    	}
-    	else if(key.startsWith("A-") || key.startsWith("M-")) { //Alt (Meta)
-    		if(keyNames.containsKey( key.substring(2) )) {
-    			KeyStroke k = keyNames.get( key.substring(2) );
-    			if(k.getSpecialKey() != null) {
-    				stroke = new SimpleKeyStroke(k.getSpecialKey(), false, true, k.withCtrlKey());
-    			}
-    			else {
-    				stroke = new SimpleKeyStroke(k.getCharacter(), false, true, k.withCtrlKey());
+    			if (k.getSpecialKey() == null && ! k.withCtrlKey() && k.getCharacter() > ' ') {
+    				//for combinations like A-S-x. Never convert S-C-x to uppercase!
+    				stroke = new SimpleKeyStroke(Character.toUpperCase(k.getCharacter()),
+    						true, k.withAltKey(), k.withCtrlKey());
+    			} else {
+    				stroke = new SimpleKeyStroke(k, true, k.withAltKey(), k.withCtrlKey());
     			}
     		}
-    		else if(key.length() == 3) { //normal character, not special key (e.g., <A-x>)
-    			//force lower-case! (don't allow Shift+Alt+<char>)
-    			stroke = new SimpleKeyStroke(key.toLowerCase().charAt(2), false, true, false);
+    	} else if(key.startsWith("A-") || key.startsWith("M-")) { //Alt (Meta)
+    		KeyStroke k = parseSpecialKey(key.substring(2));
+    		if(k != null) {
+    			stroke = new SimpleKeyStroke(k, k.withShiftKey(), true, k.withCtrlKey());
     		}
-    		//else, ignore (if it isn't a keyName, and not a char, what is it?)
-    	}
-    	else {
+    	} else if (key.startsWith("C-")) { //Control
+    		KeyStroke k = parseSpecialKey(key.substring(2));
+    		if (k != null) {
+    			stroke = new SimpleKeyStroke(k, k.withShiftKey(), k.withAltKey(), true);
+    		}
+    	} else if (keyNames.containsKey(key)) {
     		stroke = keyNames.get(key);
+
+    	} else if (key.length() == 1 && key.charAt(0) >= ' ') {
+    		//normal character, not special key (e.g., <A-x>)
+    		//force lower-case, let the shift modifier convert it back to uppercase if needed.
+    		stroke = new SimpleKeyStroke(key.toLowerCase().charAt(0));
     	}
+    	// else we return null, maybe some unknown special key?
     	return stroke;
     }
 
