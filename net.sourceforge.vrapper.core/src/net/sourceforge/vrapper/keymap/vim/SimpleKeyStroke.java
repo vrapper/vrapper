@@ -73,6 +73,12 @@ public class SimpleKeyStroke implements KeyStroke {
     public String toString() {
         // this is mainly for debugging
         String key = specialKey == null ? Character.toString(character) : specialKey.toString();
+        if (specialKey != null && shiftKey)
+            key = "S-" + key;
+        if (altKey)
+            key = "A-" + key;
+        if (ctrlKey)
+            key = "C-" + key;
         return "SimpleKeyStroke(" + key + ")";
     }
 
