@@ -15,6 +15,7 @@ import java.util.Queue;
 import net.sourceforge.vrapper.keymap.KeyMap;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SpecialKey;
+import net.sourceforge.vrapper.keymap.Transition;
 import net.sourceforge.vrapper.keymap.vim.SimpleKeyStroke;
 import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.CommandLineUI;
@@ -487,7 +488,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
      *   - (Eclipse moves the cursor on me in its "Smart Insert" mode with auto-closing parentheses)
      * - single-character mapping in InsertMode (perform mapping but don't display pending character)
      */
-    private boolean handleKey0(final KeyStroke key) {
+    private boolean handleKey0(KeyStroke key) {
         if (currentMode != null) {
             final KeyMap map = currentMode.resolveKeyMap(keyMapProvider);
             if (map != null) {
@@ -513,6 +514,11 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
                     		}
                     		else {
                     			//we've already displayed all but this most recent key
+
+                    			//mapping failed though, check if key is in global map.
+                    			if (KeyMap.GLOBAL_MAP.containsKey(key)) {
+                    				key = KeyMap.GLOBAL_MAP.get(key);
+                    			}
                     			return currentMode.handleKey(key);
                     		}
                     	}
@@ -529,6 +535,9 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
                     }
                     return true;
                 }
+            }
+            if (KeyMap.GLOBAL_MAP.containsKey(key)) {
+                key = KeyMap.GLOBAL_MAP.get(key);
             }
             return currentMode.handleKey(key);
         }
