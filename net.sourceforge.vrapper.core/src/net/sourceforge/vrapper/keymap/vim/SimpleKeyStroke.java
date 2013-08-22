@@ -43,6 +43,22 @@ public class SimpleKeyStroke implements KeyStroke {
         this.altKey = false;
     }
 
+    /**
+     * Copy character or specialkey from source but use different modifiers.
+     */
+    public SimpleKeyStroke(KeyStroke source, boolean shiftKey, boolean altKey, boolean ctrlKey) {
+        if (source.getSpecialKey() == null) {
+            this.specialKey = null;
+            this.character = source.getCharacter();
+        } else {
+            this.character = SPECIAL_KEY;
+            this.specialKey = source.getSpecialKey();
+        }
+        this.shiftKey = shiftKey;
+        this.ctrlKey = ctrlKey;
+        this.altKey = altKey;
+    }
+
     public char getCharacter() {
         return character;
     }
