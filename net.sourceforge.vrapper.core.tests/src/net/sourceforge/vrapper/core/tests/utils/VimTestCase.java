@@ -50,20 +50,24 @@ public class VimTestCase {
     }
 
     public void initMocks() {
-        DefaultEditorAdaptor.SHOULD_READ_RC_FILE = false;
+    	DefaultEditorAdaptor.SHOULD_READ_RC_FILE = false;
     	MockitoAnnotations.initMocks(this);
     	cursorAndSelection = spy(new TestCursorAndSelection());
     	content = spy(new TestTextContent(cursorAndSelection));
     	cursorAndSelection.setContent(content);
     	keyMapProvider = spy(new DefaultKeyMapProvider());
     	configuration = spy(new SimpleConfiguration());
+    	when(configuration.getNewLine()).thenReturn("\n");
+    	for (Option<Boolean> o : Options.BOOLEAN_OPTIONS) {
+    		when(configuration.get(o)).thenReturn(Boolean.FALSE);
+    	}
     	when(platform.getCursorService()).thenReturn(cursorAndSelection);
     	when(platform.getSelectionService()).thenReturn(cursorAndSelection);
     	when(platform.getModelContent()).thenReturn(content);
     	when(platform.getViewContent()).thenReturn(content);
     	when(platform.getViewportService()).thenReturn(viewportService);
     	ViewPortInformation viewPortInfo = new ViewPortInformation(0, 10);
-        when(viewportService.getViewPortInformation()).thenReturn(viewPortInfo);
+    	when(viewportService.getViewPortInformation()).thenReturn(viewPortInfo);
     	when(platform.getUserInterfaceService()).thenReturn(userInterfaceService);
     	when(platform.getFileService()).thenReturn(fileService);
     	when(platform.getHistoryService()).thenReturn(historyService);
@@ -78,10 +82,6 @@ public class VimTestCase {
 		when(registerManager.getActiveRegister()).thenReturn(defaultRegister);
 		when(registerManager.getLastEditRegister()).thenReturn(lastEditRegister);
 		when(fileService.isEditable()).thenReturn(true);
-		when(configuration.getNewLine()).thenReturn("\n");
-		for (Option<Boolean> o : Options.BOOLEAN_OPTIONS) {
-    		when(configuration.get(o)).thenReturn(Boolean.FALSE);
-		}
 
     }
 
