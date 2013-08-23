@@ -69,6 +69,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     private final Configuration configuration;
     private final EclipseTextContent textContent;
     private int averageCharWidth;
+    private CaretType caretType = null;
 
 	public EclipseCursorAndSelection(final Configuration configuration,
 			final ITextViewer textViewer, final EclipseTextContent textContent) {
@@ -269,11 +270,14 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
 
     @Override
     public void setCaret(final CaretType caretType) {
-        final StyledText styledText = textViewer.getTextWidget();
-        final Caret old = styledText.getCaret();
-        styledText.setCaret(CaretUtils.createCaret(caretType, styledText));
-        // old caret is not disposed automatically
-        old.dispose();
+        if (this.caretType != caretType) {
+            final StyledText styledText = textViewer.getTextWidget();
+            final Caret old = styledText.getCaret();
+            styledText.setCaret(CaretUtils.createCaret(caretType, styledText));
+            // old caret is not disposed automatically
+            old.dispose();
+            this.caretType = caretType;
+        }
     }
 
     @Override
