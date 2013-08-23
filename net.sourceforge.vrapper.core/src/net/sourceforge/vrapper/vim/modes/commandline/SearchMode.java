@@ -91,8 +91,7 @@ public class SearchMode extends AbstractCommandLineMode {
         boolean incsearch = editorAdaptor.getConfiguration().get(Options.INCREMENTAL_SEARCH);
         if (incsearch &&
                 (stroke.equals(AbstractCommandParser.KEY_RETURN) ||
-                    stroke.equals(AbstractCommandParser.KEY_ESCAPE) ||
-                       stroke.equals(AbstractCommandParser.KEY_CTRL_C))) {
+                    stroke.equals(AbstractCommandParser.KEY_ESCAPE))) {
                 resetIncSearch();
         }
         super.handleKey(stroke);

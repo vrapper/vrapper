@@ -30,7 +30,6 @@ public abstract class AbstractCommandParser {
 
     protected static final KeyStroke KEY_RETURN  = key(SpecialKey.RETURN);
     protected static final KeyStroke KEY_ESCAPE  = key(SpecialKey.ESC);
-    protected static final KeyStroke KEY_CTRL_C  = ctrlKey('c');
     protected static final KeyStroke KEY_CTRL_W  = ctrlKey('w');
     protected static final KeyStroke KEY_CTRL_R  = ctrlKey('r');
     protected static final KeyStroke KEY_CTRL_U  = ctrlKey('u');
@@ -174,7 +173,7 @@ public abstract class AbstractCommandParser {
         //Exit register mode but not command line mode.
         if (pasteRegister && e.equals(KEY_ESCAPE)) {
             pasteRegister = false;
-        } else if (e.equals(KEY_RETURN) || e.equals(KEY_ESCAPE) || e.equals(KEY_CTRL_C)) {
+        } else if (e.equals(KEY_RETURN) || e.equals(KEY_ESCAPE)) {
             //Pressing return on an empty command line quits this mode rather than execute a command
             if (c == null) {
                 editor.changeModeSafely(NormalMode.NAME);

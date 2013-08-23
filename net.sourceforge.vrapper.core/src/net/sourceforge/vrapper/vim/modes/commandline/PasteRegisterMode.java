@@ -1,6 +1,5 @@
 package net.sourceforge.vrapper.vim.modes.commandline;
 
-import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.ctrlKey;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.key;
 import net.sourceforge.vrapper.keymap.KeyMap;
 import net.sourceforge.vrapper.keymap.KeyStroke;
@@ -32,7 +31,6 @@ public class PasteRegisterMode extends AbstractMode {
 
     protected static final KeyStroke KEY_RETURN = key(SpecialKey.RETURN);
     protected static final KeyStroke KEY_ESCAPE = key(SpecialKey.ESC);
-    protected static final KeyStroke KEY_CTRL_C = ctrlKey('c');
     protected static final KeyStroke KEY_BACKSP = key(SpecialKey.BACKSPACE);
 
     protected CommandLineUI commandLine;
@@ -72,7 +70,7 @@ public class PasteRegisterMode extends AbstractMode {
     @Override
     public boolean handleKey(KeyStroke e) {
         if (e.equals(KEY_RETURN) || e.equals(KEY_ESCAPE)
-                || e.equals(KEY_CTRL_C) || e.equals(KEY_BACKSP)) {
+                || e.equals(KEY_BACKSP)) {
             editorAdaptor.changeModeSafely(InsertMode.NAME);
             return true;
         }

@@ -20,6 +20,7 @@ public class KeyMap {
     
     static {
         GLOBAL_MAP.put(ConstructorWrappers.ctrlKey('['), ConstructorWrappers.key(SpecialKey.ESC));
+        GLOBAL_MAP.put(ConstructorWrappers.ctrlKey('C'), ConstructorWrappers.key(SpecialKey.ESC));
         GLOBAL_MAP.put(ConstructorWrappers.ctrlKey('H'), ConstructorWrappers.key(SpecialKey.BACKSPACE));
         GLOBAL_MAP.put(ConstructorWrappers.ctrlKey('I'), ConstructorWrappers.key(SpecialKey.TAB));
         GLOBAL_MAP.put(ConstructorWrappers.ctrlKey('J'), ConstructorWrappers.key(SpecialKey.RETURN));

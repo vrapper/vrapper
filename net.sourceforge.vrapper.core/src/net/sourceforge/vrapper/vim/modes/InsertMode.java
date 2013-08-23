@@ -66,7 +66,6 @@ public class InsertMode extends AbstractMode {
     public static final ModeSwitchHint RETURN_TO_INSERTMODE = new ModeSwitchHint() {};
     public static final KeyStroke ESC = key(SpecialKey.ESC);
     public static final KeyStroke BACKSPACE = key(SpecialKey.BACKSPACE);
-    public static final KeyStroke CTRL_C = ctrlKey('c');
     public static final KeyStroke CTRL_R = ctrlKey('r');
     public static final KeyStroke CTRL_O = ctrlKey('o');
     public static final KeyStroke CTRL_U = ctrlKey('u');
@@ -271,7 +270,7 @@ public class InsertMode extends AbstractMode {
         		editorAdaptor.getUserInterfaceService().setErrorMessage(e.getMessage());
         	}
         }
-        else if (stroke.equals(ESC) || stroke.equals(CTRL_C)) {
+        else if (stroke.equals(ESC)) {
             editorAdaptor.changeModeSafely(NormalMode.NAME);
             if (editorAdaptor.getConfiguration().get(Options.IM_DISABLE)) {
             	editorAdaptor.getEditorSettings().disableInputMethod();
