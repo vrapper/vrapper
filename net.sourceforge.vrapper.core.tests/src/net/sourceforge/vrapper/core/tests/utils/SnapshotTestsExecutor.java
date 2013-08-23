@@ -35,7 +35,12 @@ public class SnapshotTestsExecutor {
         for (File snapshot : states) {
             String s = snapshot.getName();
             String number = s.substring(0, 1);
-            String command = s.substring(1);
+            if (! s.endsWith(".txt")) {
+                throw new IllegalStateException("Snapshot " + number + " in testset " + testSetName
+                        + " is missing .txt extension!");
+            }
+            //strip off .txt extension
+            String command = s.substring(1, s.length() - 4);
             String expectedState = readFile(snapshot);
             assertTransition(number, lastNumber, command, expectedState, specialChars);
             lastNumber = number;
