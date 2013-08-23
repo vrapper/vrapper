@@ -94,6 +94,13 @@ public class KeyStrokeTranslator {
     }
 
     private void prependUnconsumed() {
+        //Check if any unmatched keys are in the global map 
+        for (int i = 0; i < unconsumedKeyStrokes.size(); i++) {
+            KeyStroke key = unconsumedKeyStrokes.get(i);
+            if (KeyMap.GLOBAL_MAP.containsKey(key)) {
+                unconsumedKeyStrokes.set(i, new RemappedKeyStroke(KeyMap.GLOBAL_MAP.get(key), false));
+            }
+        }
         resultingKeyStrokes.addAll(0, unconsumedKeyStrokes);
         unconsumedKeyStrokes.clear();
     }

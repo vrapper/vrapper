@@ -47,6 +47,12 @@ public class RemappedKeyStroke implements KeyStroke {
     @Override
     public String toString() {
         String key = getSpecialKey() == null ? Character.toString(getCharacter()) : getSpecialKey().toString();
+        if (getSpecialKey() != null && withShiftKey())
+            key = "S-" + key;
+        if (withAltKey())
+            key = "A-" + key;
+        if (withCtrlKey())
+            key = "C-" + key;
         return "RemappedKeyStroke(" + key + ")";
     }
 

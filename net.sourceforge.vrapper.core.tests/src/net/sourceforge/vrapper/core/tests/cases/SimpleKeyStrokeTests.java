@@ -54,10 +54,10 @@ public class SimpleKeyStrokeTests {
 	public void testGetChar() {
 		assertGetCharReturns('a', key('a'));
 		assertGetCharReturns('%', key('%'));
-		assertGetCharReturns('\u001d', ctrlKey(']'));
-		assertGetCharReturns('\u0001', ctrlKey('a'));
+		assertGetCharReturns(']', ctrlKey(']'));
+		assertGetCharReturns('a', ctrlKey('a'));
 		assertGetCharReturns('A', key('A'));
-		assertGetCharReturns('\u0001', ctrlKey('A'));
+		assertGetCharReturns('a', ctrlKey('A'));
 	}
 
 	private void assertGetCharReturns(char expected, KeyStroke key) {

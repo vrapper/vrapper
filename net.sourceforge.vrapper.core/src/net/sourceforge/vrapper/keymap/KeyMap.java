@@ -1,6 +1,9 @@
 package net.sourceforge.vrapper.keymap;
 
+import java.util.HashMap;
 import java.util.Iterator;
+
+import net.sourceforge.vrapper.keymap.vim.ConstructorWrappers;
 
 /**
  * Maps collections of keystrokes to another collection of keystrokes.
@@ -8,6 +11,20 @@ import java.util.Iterator;
  * @author Matthias Radig
  */
 public class KeyMap {
+
+    /**
+     * Group of keys which have a default binding in ANY mode, for example Control-[ for Escape.
+     * These can be overriden with a mapping if really needed.
+     */
+    public static final HashMap<KeyStroke, KeyStroke> GLOBAL_MAP = new HashMap<KeyStroke, KeyStroke>();
+    
+    static {
+        GLOBAL_MAP.put(ConstructorWrappers.ctrlKey('['), ConstructorWrappers.key(SpecialKey.ESC));
+        GLOBAL_MAP.put(ConstructorWrappers.ctrlKey('H'), ConstructorWrappers.key(SpecialKey.BACKSPACE));
+        GLOBAL_MAP.put(ConstructorWrappers.ctrlKey('I'), ConstructorWrappers.key(SpecialKey.TAB));
+        GLOBAL_MAP.put(ConstructorWrappers.ctrlKey('J'), ConstructorWrappers.key(SpecialKey.RETURN));
+        GLOBAL_MAP.put(ConstructorWrappers.ctrlKey('M'), ConstructorWrappers.key(SpecialKey.RETURN));
+    }
 
     private KeyMapState root = new KeyMapState();
 
