@@ -54,7 +54,7 @@ public class SnapshotTestsExecutor {
         }
         int[] rowcol = getPosition();
         vimTestCase.type(parseKeyStrokes(command));
-        String assertMsg = String.format("[%d, %d]'%s': %s -> %s", rowcol[0], rowcol[1], command, lastNumber, number);
+        String assertMsg = String.format("[%d, %d] '%s': %s -> %s", rowcol[0], rowcol[1], command, lastNumber, number);
         Assert.assertEquals(assertMsg, expectedState, vimTestCase.getBuffer());
     }
 
