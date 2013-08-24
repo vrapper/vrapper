@@ -17,6 +17,18 @@ import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.vim.VimConstants;
 
+/**
+ * Takes an input file and several snapshot files with commands in their filenames.
+ * 
+ * <p>
+ * The names of the snapshot files are parsed to extract a number of commands.
+ * These commands are run in order, once they are finished the contents of the snapshot file
+ * will be compared to the contents of the test buffer.
+ * 
+ * <p>
+ * Because the filesystem cannot handle "special" characters like &lt; or <Esc> in filenames,
+ * a String replacement system is provided to replace e.g. "-" with "<ESC>".
+ */
 public class SnapshotTestsExecutor {
 
     private static final File SNAPSHOT_DIRECTORY = new File("test-resources/snapshots/");

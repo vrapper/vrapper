@@ -13,6 +13,12 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+/**
+ * Run a number of commands on a test buffer and compare the contents of the buffer with a
+ * "snapshot file" at given moments.
+ * 
+ * @see SnapshotTestsExecutor
+ */
 public class SnapshotTests extends VimTestCase {
 
 
