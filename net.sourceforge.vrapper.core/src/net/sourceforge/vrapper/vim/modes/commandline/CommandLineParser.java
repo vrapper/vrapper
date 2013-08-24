@@ -400,18 +400,15 @@ public class CommandLineParser extends AbstractCommandParser {
         boolean dirsOnly = false;
         if (commandLineContents.toString().startsWith("e ")) {
             cmdLen = 2;
-        } else {
-            if(commandLineContents.toString().startsWith("find ") ||
-                    commandLineContents.toString().startsWith("tabf ") ) {
-                cmdLen = 5;
-                paths = true;
-            } else {
-                if(commandLineContents.toString().startsWith("cd ")) {
-                    cmdLen = 3;
-                    dirsOnly = true;
-                }
-            }
+        } else if(commandLineContents.toString().startsWith("find ") ||
+                commandLineContents.toString().startsWith("tabf ") ) {
+            cmdLen = 5;
+            paths = true;
+        } else if(commandLineContents.toString().startsWith("cd ")) {
+            cmdLen = 3;
+            dirsOnly = true;
         }
+
         if (cmdLen > 0) {
             String cmd = commandLineContents.substring(0, cmdLen);
             String prefix = commandLineContents.substring(cmdLen);
