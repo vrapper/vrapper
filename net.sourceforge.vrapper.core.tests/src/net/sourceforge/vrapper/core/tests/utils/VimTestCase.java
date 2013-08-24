@@ -26,6 +26,8 @@ import org.junit.Before;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 public class VimTestCase {
 
@@ -61,6 +63,17 @@ public class VimTestCase {
     	for (Option<Boolean> o : Options.BOOLEAN_OPTIONS) {
     		when(configuration.get(o)).thenReturn(Boolean.FALSE);
     	}
+        //let UIInterface mock print out error messages
+    	Mockito.doAnswer(new Answer<Void>() {
+			@Override
+			public Void answer(InvocationOnMock invocation) throws Throwable {
+				for (Object argument : invocation.getArguments()) {
+					System.err.println(argument);
+				}
+				return null;
+			}
+		}).when(userInterfaceService).setErrorMessage(Mockito.anyString());
+    	when(userInterfaceService.getCommandLineUI(Mockito.any(EditorAdaptor.class))).thenReturn(new CommandLineUIStub());
     	when(platform.getCursorService()).thenReturn(cursorAndSelection);
     	when(platform.getSelectionService()).thenReturn(cursorAndSelection);
     	when(platform.getModelContent()).thenReturn(content);
@@ -75,7 +88,6 @@ public class VimTestCase {
     	when(platform.getServiceProvider()).thenReturn(serviceProvider);
     	when(platform.getConfiguration()).thenReturn(configuration);
     	when(platform.getPlatformSpecificStateProvider()).thenReturn(platformSpecificStateProvider);
-    	when(userInterfaceService.getCommandLineUI(Mockito.any(EditorAdaptor.class))).thenReturn(new CommandLineUIStub());
     	reloadEditorAdaptor();
     	defaultRegister = spy(new SimpleRegister());
     	lastEditRegister = spy(new SimpleRegister());
