@@ -15,10 +15,11 @@ import java.util.Map.Entry;
 import junit.framework.Assert;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.Position;
+import net.sourceforge.vrapper.vim.VimConstants;
 
 public class SnapshotTestsExecutor {
 
-    private static final String SNAPSHOT_DIRECTORY = "test-resources/snapshots/";
+    private static final File SNAPSHOT_DIRECTORY = new File("test-resources/snapshots/");
     private final VimTestCase vimTestCase;
 
     public SnapshotTestsExecutor(VimTestCase vimTestCase) {
@@ -74,11 +75,15 @@ public class SnapshotTestsExecutor {
         return rowcol;
     }
 
+    /**
+     * Reads an external file into a String, converting the newlines to
+     *  {@link VimConstants#REGISTER_NEWLINE}
+     */
     private String readFile(File start) throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader(start));
         String line;
         StringBuilder sb = new StringBuilder();
-        String newline = "\n"; // FIXME: vim.getVariables().getNewLine();
+        String newline = VimConstants.REGISTER_NEWLINE;
         while((line = reader.readLine()) != null) {
             sb.append(line);
             sb.append(newline);
@@ -91,7 +96,7 @@ public class SnapshotTestsExecutor {
     }
 
     private File getStart(String textName) {
-        return new File(SNAPSHOT_DIRECTORY+"common/"+textName);
+        return new File(SNAPSHOT_DIRECTORY, "common/"+textName);
     }
 
     private File[] getStates(String testSetName) {
