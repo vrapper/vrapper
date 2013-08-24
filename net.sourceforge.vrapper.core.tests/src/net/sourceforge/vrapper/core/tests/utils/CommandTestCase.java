@@ -58,8 +58,8 @@ public class CommandTestCase extends VimTestCase {
 		final String actualLine = formatLine(actualFinalContent, actualFinalOffset, actualFinalOffset + 1);
 
 		final String msg = String.format("STARTING FROM:\n%s\nEXPECTED:\n%s\nGOT:\n%s\n", initialLine, expectedLine, actualLine);
-		if (!actualFinalContent.equals(expectedFinalContent) || actualFinalOffset != expectedFinalOffset)
-            fail(msg);
+		assertEquals(msg,  expectedFinalContent, actualFinalContent);
+		assertEquals(msg, expectedFinalOffset, actualFinalOffset);
     }
 
     protected static String formatLine(final String line, final int from, final int to) {
