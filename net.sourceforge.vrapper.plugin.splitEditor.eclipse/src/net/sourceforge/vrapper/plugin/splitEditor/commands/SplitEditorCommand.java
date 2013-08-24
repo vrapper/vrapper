@@ -29,11 +29,17 @@ public class SplitEditorCommand extends AbstractWindowCommand {
     private final SplitDirection direction;
     private final SplitMode mode;
     private final SplitContainer containerMode;
+    private final String filename;
 
     public SplitEditorCommand(SplitDirection dir, SplitMode mode, SplitContainer containerMode) {
+    	this(dir, mode, containerMode, null);
+    }
+
+    public SplitEditorCommand(SplitDirection dir, SplitMode mode, SplitContainer containerMode, String filename) {
         this.direction = dir;
         this.mode = mode;
         this.containerMode = containerMode;
+        this.filename = filename;
     }
 
     public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
@@ -86,6 +92,17 @@ public class SplitEditorCommand extends AbstractWindowCommand {
         if (mode == SplitMode.CLONE) {
             try {
                 newPart = cloneEditor();
+                newStack.getChildren().add(newPart);
+                // Temporary activate the cloned editor.
+                psvc.activate(p);
+            } catch (PartInitException e) {
+                userInterfaceService.setErrorMessage("Unable to split editor");
+                VrapperLog.error("Unable to split editor", e);
+                return;
+            }
+        } else if(filename != null) {
+        	try {
+                newPart = openFileInEditor(filename);
                 newStack.getChildren().add(newPart);
                 // Temporary activate the cloned editor.
                 psvc.activate(p);

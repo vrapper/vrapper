@@ -91,5 +91,10 @@ public abstract class AbstractWindowCommand extends CountIgnoringNonRepeatableCo
         return newPart;
     }
 
+    protected static MPart openFileInEditor(String filename) throws PartInitException {
+    	//I don't know what to do here!
+    	return null;
+    }
+
     
 }

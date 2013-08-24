@@ -407,6 +407,13 @@ public class CommandLineParser extends AbstractCommandParser {
         } else if(commandLineContents.toString().startsWith("cd ")) {
             cmdLen = 3;
             dirsOnly = true;
+        } else if(commandLineContents.toString().startsWith("split ")) {
+            //add support for tab-completion on :split command
+            //even though the Split Editor Plugin must be installed
+            //to execute the :split command
+            cmdLen = 6;
+        } else if(commandLineContents.toString().startsWith("vsplit ")) {
+            cmdLen = 7;
         }
 
         if (cmdLen > 0) {

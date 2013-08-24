@@ -19,6 +19,7 @@ import net.sourceforge.vrapper.plugin.splitEditor.commands.SplitEditorCommand;
 import net.sourceforge.vrapper.plugin.splitEditor.commands.SplitMode;
 import net.sourceforge.vrapper.plugin.splitEditor.commands.SwitchEditorCommand;
 import net.sourceforge.vrapper.plugin.splitEditor.commands.SwitchOtherEditorCommand;
+import net.sourceforge.vrapper.utils.StringUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
@@ -89,10 +90,16 @@ public class WindowCmdStateProvider extends AbstractEclipseSpecificStateProvider
             SplitContainer containerMode = SplitContainer.SHARED_AREA;
             if (!command.isEmpty() && command.peek().startsWith("++nos")) {
                 containerMode = SplitContainer.TOP_LEVEL;
+                command.poll();
+            }
+            String filename = null;
+            if(!command.isEmpty()) {
+            	//use join in case this is a Windows path with spaces in it
+            	filename = StringUtils.join(" ", command.toArray());
             }
 
             try {
-                new SplitEditorCommand(direction, mode, containerMode).execute(vim);
+                new SplitEditorCommand(direction, mode, containerMode, filename).execute(vim);
             } catch (CommandExecutionException e) {
                 VrapperLog.error(":[v]split error", e);
                 vim.getUserInterfaceService().setErrorMessage(":[v]split error: " + e.getMessage());
