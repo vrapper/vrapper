@@ -1,19 +1,17 @@
 package net.sourceforge.vrapper.core.tests.cases;
 
-import static org.mockito.Mockito.when;
-
 import java.io.IOException;
 import java.util.HashMap;
 
 import net.sourceforge.vrapper.core.tests.utils.SnapshotTestsExecutor;
 import net.sourceforge.vrapper.core.tests.utils.VimTestCase;
-import net.sourceforge.vrapper.platform.CommandLineUI;
-import net.sourceforge.vrapper.platform.UserInterfaceService;
-import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
 
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 public class SnapshotTests extends VimTestCase {
 
@@ -23,26 +21,16 @@ public class SnapshotTests extends VimTestCase {
         super.setUp();
         // we need no mock magic for register manager
         registerManager = new DefaultRegisterManager();
-        when(platform.getUserInterfaceService()).thenReturn(new UserInterfaceService() {
-            public void setRecording(boolean recording, String macroName) { }
-            public void setEditorMode(String modeName) { }
-            public void setInfoMessage(String content) { }
-
-            public void setErrorMessage(String content) {
-                System.err.println(content);
-            }
-            public void setAsciiValues(String asciiValue, int decValue, String hexValue, String octalValue) { }
-            public String getLastCommandResultValue() { return null; }
-            public void setLastCommandResultValue(String lastCommandResultValue) { }
-            public String getCurrentEditorMode() { return null; }
-            public String getLastInfoValue() { return null; }
-            public String getLastErrorValue() { return null; }
-            public void setInfoSet(boolean infoSet) { }
-            public boolean isInfoSet() { return false; }
-            public CommandLineUI getCommandLineUI(EditorAdaptor editorAdaptor) {
+        //let UIInterface mock print out error messages
+        Mockito.doAnswer(new Answer<Void>() {
+            @Override
+            public Void answer(InvocationOnMock invocation) throws Throwable {
+                for (Object argument : invocation.getArguments()) {
+                    System.err.println(argument);
+                }
                 return null;
             }
-        });
+        }).when(userInterfaceService).setErrorMessage(Mockito.anyString());
         reloadEditorAdaptor();
         adaptor.changeModeSafely(NormalMode.NAME);
     }
