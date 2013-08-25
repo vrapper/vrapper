@@ -3,6 +3,7 @@ package net.sourceforge.vrapper.plugin.splitEditor.commands;
 import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.UserInterfaceService;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 
 import org.eclipse.e4.ui.model.application.ui.MElementContainer;
@@ -29,7 +30,7 @@ public class SplitEditorCommand extends AbstractWindowCommand {
     private final SplitDirection direction;
     private final SplitMode mode;
     private final SplitContainer containerMode;
-    private final String filename;
+    private String filename;
 
     public SplitEditorCommand(SplitDirection dir, SplitMode mode, SplitContainer containerMode) {
     	this(dir, mode, containerMode, null);
@@ -101,6 +102,15 @@ public class SplitEditorCommand extends AbstractWindowCommand {
                 return;
             }
         } else if(filename != null) {
+        	if(!filename.startsWith("/")) {
+        		if(editorAdaptor.getConfiguration().get(Options.AUTO_CHDIR)) {
+        			filename = editorAdaptor.getFileService().getCurrentFilePath() + "/" + filename;
+        		}
+        		else {
+        			filename = editorAdaptor.getRegisterManager().getCurrentWorkingDirectory() + "/" + filename;
+        		}
+        	}
+
         	try {
                 newPart = openFileInEditor(filename);
                 newStack.getChildren().add(newPart);
