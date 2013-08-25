@@ -5,9 +5,14 @@ import java.util.HashMap;
 
 import net.sourceforge.vrapper.core.tests.utils.SnapshotTestsExecutor;
 import net.sourceforge.vrapper.core.tests.utils.VimTestCase;
+import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
+import net.sourceforge.vrapper.vim.register.Register;
+import net.sourceforge.vrapper.vim.register.RegisterManager;
+import net.sourceforge.vrapper.vim.register.StringRegisterContent;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
@@ -76,4 +81,19 @@ public class SnapshotTests extends VimTestCase {
         executeRegistersTest();
     }
 
+//    @Ignore
+    @Test public void testRegistersNewlineConversion() throws IOException {
+        registerManager.getRegister("a").setContent(
+                new StringRegisterContent(ContentType.LINES, "Francis Bacon said\r\njust too many things\r\n"));
+        registerManager.getRegister("b").setContent(
+                new StringRegisterContent(ContentType.TEXT, "No circumferential\r\ndata available."));
+        registerManager.getRegister("c").setContent(
+                new StringRegisterContent(ContentType.TEXT, "The word of 1952:\r\nPotrzebie"));
+
+        SnapshotTestsExecutor executor = new SnapshotTestsExecutor(this);
+        HashMap<String, String> map = new HashMap<String, String>();
+        map.put("-", "<Esc>");
+        map.put("_", "\"");
+        executor.execute("text.txt", "EOLConversion", map);
+    }
 }

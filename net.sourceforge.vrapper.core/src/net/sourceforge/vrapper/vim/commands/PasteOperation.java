@@ -37,6 +37,7 @@ public class PasteOperation implements TextOperation {
             count = 1;
         RegisterContent registerContent = editorAdaptor.getRegisterManager().getActiveRegister().getContent();
         String text = StringUtils.multiply(registerContent.getText(), count);
+        text = VimUtils.replaceNewLines(text, editorAdaptor.getConfiguration().getNewLine());
 
         ContentType pastingContentType = registerContent.getPayloadType();
         ContentType selectionContentType = editorAdaptor.getSelection().getContentType(editorAdaptor.getConfiguration());
