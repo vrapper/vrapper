@@ -50,11 +50,25 @@ public class InsertShiftWidth extends CountIgnoringNonRepeatableCommand {
 
         if(insert) {
             //introduce new indent
-            indent = replaceShiftWidth + indent;
+            if(indent.length() % shiftwidth == 0) {
+                indent = replaceShiftWidth + indent;
+            }
+            else {
+                while(indent.length() % shiftwidth != 0) {
+                    indent += " ";
+                }
+            }
         }
         else {
             //remove an indent
-            indent = indent.substring(shiftwidth);
+            if(indent.length() >= shiftwidth && indent.length() % shiftwidth == 0) {
+                indent = indent.substring(shiftwidth);
+            }
+            else {
+                while(indent.length() % shiftwidth != 0) {
+                    indent = indent.substring(1);
+                }
+            }
         }
 
         String replace = "";
@@ -65,7 +79,7 @@ public class InsertShiftWidth extends CountIgnoringNonRepeatableCommand {
                 replace += "\t";
             }
         }
-        replace += indent; //preserve any non-tabstop divisible spaces
+        replace += indent;
         model.replace(line.getBeginOffset(), whitespaceEnd, replace);
     }
 
