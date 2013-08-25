@@ -33,6 +33,7 @@ public class PasteAfterCommand extends CountAwareCommand {
         final CursorService cursorService = editorAdaptor.getCursorService();
         RegisterContent registerContent = editorAdaptor.getRegisterManager().getActiveRegister().getContent();
         String text = registerContent.getText();
+        text = VimUtils.replaceNewLines(text, editorAdaptor.getConfiguration().getNewLine());
         TextContent content = editorAdaptor.getModelContent();
         int offset = editorAdaptor.getPosition().getModelOffset();
         LineInformation line = content.getLineInformationOfOffset(offset);

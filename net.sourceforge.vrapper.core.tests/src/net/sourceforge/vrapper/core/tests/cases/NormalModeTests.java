@@ -363,6 +363,19 @@ public class NormalModeTests extends CommandTestCase {
 				"",'A',"s to pies Ali\nAla ma kota");
 	}
 
+	@Test public void test_newline_conversion() {
+		//suppose this is copied from another file in Eclipse which uses Windows newlines...
+		//( testing default is \n )
+		defaultRegister.setContent(new StringRegisterContent(ContentType.LINES, "As to\r\npies Ali\r\n"));
+		checkCommand(forKeySeq("P"),
+				"Al",'a'," ma kota",
+				"",'A',"s to\npies Ali\nAla ma kota");
+
+		checkCommand(forKeySeq("p"),
+				"Al",'a'," ma kota",
+				"Ala ma kota\n",'A',"s to\npies Ali");
+	}
+
 	@Test public void test_dot() {
 		Command dw = new TextOperationTextObjectCommand(DeleteOperation.INSTANCE, new MotionTextObject(MoveWordRight.INSTANCE));
 		when(registerManager.getLastEdit()).thenReturn(dw);

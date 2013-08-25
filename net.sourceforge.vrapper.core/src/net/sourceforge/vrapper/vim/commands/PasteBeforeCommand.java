@@ -5,6 +5,7 @@ import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StringUtils;
+import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.register.RegisterContent;
 
@@ -33,6 +34,7 @@ public class PasteBeforeCommand extends CountAwareCommand {
 		    return;
 		}
 		String text = registerContent.getText();
+		text = VimUtils.replaceNewLines(text, editorAdaptor.getConfiguration().getNewLine());
 		TextContent content = editorAdaptor.getModelContent();
 		boolean linewise = registerContent.getPayloadType() == ContentType.LINES;
 		int offset = editorAdaptor.getPosition().getModelOffset();
