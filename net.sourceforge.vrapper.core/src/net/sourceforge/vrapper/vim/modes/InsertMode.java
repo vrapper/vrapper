@@ -475,7 +475,8 @@ public class InsertMode extends AbstractMode {
             		leafCtrlBind('a', (Command)PasteRegisterCommand.PASTE_LAST_INSERT),
             		leafCtrlBind('e', (Command)InsertAdjacentCharacter.LINE_BELOW),
             		leafCtrlBind('y', (Command)InsertAdjacentCharacter.LINE_ABOVE),
-            		leafCtrlBind('t', (Command)InsertShiftWidth.INSTANCE)
+            		leafCtrlBind('t', (Command)InsertShiftWidth.INSERT),
+            		leafCtrlBind('d', (Command)InsertShiftWidth.REMOVE)
             )
         ));
     }

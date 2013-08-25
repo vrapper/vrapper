@@ -7,15 +7,20 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 
 /**
- * Insert <shiftwidth> spaces at the beginning of the line.
- * Then replace every <tabstop> spaces with a TAB character if
- * <expandtab> is disabled.
+ * Insert (or remove) <shiftwidth> spaces at the beginning of the line. Then
+ * replace every <tabstop> spaces with a TAB character if <expandtab> is
+ * disabled.
  */
 public class InsertShiftWidth extends CountIgnoringNonRepeatableCommand {
 
-    public static final InsertShiftWidth INSTANCE = new InsertShiftWidth();
+    public static final InsertShiftWidth INSERT = new InsertShiftWidth(true);
+    public static final InsertShiftWidth REMOVE = new InsertShiftWidth(false);
     
-    private InsertShiftWidth() { /** no-op **/ }
+    private final boolean insert;
+    
+    private InsertShiftWidth(boolean insert) {
+        this.insert = insert;
+    }
 
     @Override
     public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
@@ -42,8 +47,15 @@ public class InsertShiftWidth extends CountIgnoringNonRepeatableCommand {
         String indent = lineStr.substring(0, whitespaceEnd);
         //expand all tab characters so we can recalculate tabstops
         indent = indent.replaceAll("\t", replaceTab);
-        //introduce new indent
-        indent = replaceShiftWidth + indent;
+
+        if(insert) {
+            //introduce new indent
+            indent = replaceShiftWidth + indent;
+        }
+        else {
+            //remove an indent
+            indent = indent.substring(shiftwidth);
+        }
 
         String replace = "";
         if( ! editorAdaptor.getConfiguration().get(Options.EXPAND_TAB)) {
