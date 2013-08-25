@@ -334,19 +334,11 @@ public abstract class CommandBasedMode extends AbstractMode {
 
     public void leaveMode(ModeSwitchHint... hints) throws CommandExecutionException {
         super.leaveMode(hints);
-        resetCommandBuffer();
+        commandDone();
     }
 
     /**
      * this is a hook method which is called when command execution is done
-     */
-    /* TODO: better name
-     * NOTE: commandDone isn't the worst name ever.
-     *       Possible suggestions: cleanup(), afterCommand()
-     *       Another suggestion - unless we're adding more to commandDone(),
-     *       why not just change resetCommandBuffer() access to protected
-     *       and scrap commandDone() optionally changing the name of 
-     *       resetCommandBuffer(). Just some thoughts on this TODO -- BRD
      */
     protected void commandDone() {
         resetCommandBuffer();
