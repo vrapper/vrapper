@@ -16,7 +16,6 @@ public class AppendRegister implements Register {
     }
 
     public void setContent(RegisterContent content) {
-        // TODO: use correct newline
         String newline = VimConstants.REGISTER_NEWLINE;
     	// TODO: keystroke content type
         RegisterContent oldContent = getContent();
