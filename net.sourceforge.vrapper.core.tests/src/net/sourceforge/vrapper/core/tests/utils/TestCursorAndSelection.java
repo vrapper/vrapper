@@ -7,7 +7,9 @@ import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
+import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.vim.commands.Selection;
+import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 
 // TODO: currently caret can point behind the content
 public class TestCursorAndSelection implements CursorService, SelectionService {
@@ -73,7 +75,11 @@ public class TestCursorAndSelection implements CursorService, SelectionService {
 	}
 
 	public Selection getSelection() {
-		return selection;
+	    if (selection != null)
+	        return selection;
+	    else
+	        //basically an empty selection centered around the cursor.
+	        return new SimpleSelection(new StartEndTextRange(position, position));
 	}
 
 	public void setSelection(Selection selection) {

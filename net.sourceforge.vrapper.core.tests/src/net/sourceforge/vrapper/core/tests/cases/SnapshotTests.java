@@ -2,6 +2,7 @@ package net.sourceforge.vrapper.core.tests.cases;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import net.sourceforge.vrapper.core.tests.utils.SnapshotTestsExecutor;
 import net.sourceforge.vrapper.core.tests.utils.VimTestCase;
@@ -91,9 +92,11 @@ public class SnapshotTests extends VimTestCase {
                 new StringRegisterContent(ContentType.TEXT, "The word of 1952:\r\nPotrzebie"));
 
         SnapshotTestsExecutor executor = new SnapshotTestsExecutor(this);
-        HashMap<String, String> map = new HashMap<String, String>();
+        // Must keep ordering! Otherwise the Esc mapping messes up <C-R>.
+        HashMap<String, String> map = new LinkedHashMap<String, String>();
         map.put("-", "<Esc>");
         map.put("_", "\"");
+        map.put("@", "<C-R>");
         executor.execute("text.txt", "EOLConversion", map);
     }
 }
