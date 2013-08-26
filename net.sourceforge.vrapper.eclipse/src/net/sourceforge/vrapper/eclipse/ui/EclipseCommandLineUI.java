@@ -3,6 +3,7 @@ package net.sourceforge.vrapper.eclipse.ui;
 import net.sourceforge.vrapper.platform.CommandLineUI;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.ContentType;
+import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.register.Register;
 import net.sourceforge.vrapper.vim.register.RegisterContent;
@@ -90,8 +91,11 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener,
             @Override
             public void widgetSelected(SelectionEvent e) {
                 RegisterContent content = clipboard.getContent();
-                if (content.getPayloadType() == ContentType.TEXT) {
-                    type(content.getText());
+                if (content.getPayloadType() == ContentType.TEXT
+                        || content.getPayloadType() == ContentType.LINES) {
+                    String text = content.getText();
+                    text = VimUtils.replaceNewLines(text, "<CR>");
+                    type(text);
                 }
             }
         });
