@@ -9,8 +9,8 @@ public abstract class LeftRightMotion extends AbstractModelSideMotion {
     }
 
     @Override
-    public boolean updateStickyColumn() {
-        return true;
+    public StickyColumnPolicy stickyColumnPolicy() {
+        return StickyColumnPolicy.ON_CHANGE;
     }
 
 	@Override

@@ -61,8 +61,8 @@ public class SearchResultMotion extends CountAwareMotion {
         return BorderPolicy.EXCLUSIVE;
     }
 
-    public boolean updateStickyColumn() {
-        return true;
+    public StickyColumnPolicy stickyColumnPolicy() {
+        return StickyColumnPolicy.ON_CHANGE;
     }
 
     private Position doSearch(Search search, EditorAdaptor vim, Position position) {

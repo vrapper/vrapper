@@ -10,6 +10,7 @@ import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 
 // TODO: currently caret can point behind the content
 public class TestCursorAndSelection implements CursorService, SelectionService {
@@ -27,10 +28,11 @@ public class TestCursorAndSelection implements CursorService, SelectionService {
 		return position;
 	}
 
-	public void setPosition(Position position, boolean updateColumn) {
+	@Override
+	public void setPosition(Position position, StickyColumnPolicy columnPolicy) {
 	    this.selection = null;
 		this.position = position;
-		if (updateColumn) {
+		if (columnPolicy != StickyColumnPolicy.NEVER) {
 		    int offset = position.getModelOffset();
             int beginOffset = content.getLineInformationOfOffset(offset).getBeginOffset();
             stickyColumnNo = offset - beginOffset;

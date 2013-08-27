@@ -27,7 +27,7 @@ public class BlockwiseVisualMotionCommand extends AbstractVisualMotionCommand {
             // to the old position.
             //
             to = oldSelection.getTo();
-            editorAdaptor.setPosition(to, motion.updateStickyColumn());
+            editorAdaptor.setPosition(to, motion.stickyColumnPolicy());
         }
         editorAdaptor.setSelection(new BlockWiseSelection(editorAdaptor, from, to));
     }

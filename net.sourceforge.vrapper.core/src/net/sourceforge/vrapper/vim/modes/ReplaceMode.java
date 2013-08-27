@@ -12,6 +12,7 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.ChangeToInsertModeCommand;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.CountAwareCommand;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 
 /**
  * Replace mode for overwriting existing text.
@@ -87,14 +88,14 @@ public class ReplaceMode extends InsertMode {
     			}
     			//move cursor to before the character we just replaced
     			Position newPos = editorAdaptor.getCursorService().newPositionForModelOffset(cursorOffset);
-    			editorAdaptor.getCursorService().setPosition(newPos, true);
+    			editorAdaptor.getCursorService().setPosition(newPos, StickyColumnPolicy.ON_CHANGE);
     			return true;
     		}
     		else if(cursorOffset < startCursorOffset) {
     			//backspace before our start position,
     			//just move the cursor (matches Vim behavior)
     			Position newPos = editorAdaptor.getCursorService().newPositionForModelOffset(cursorOffset);
-    			editorAdaptor.getCursorService().setPosition(newPos, true);
+    			editorAdaptor.getCursorService().setPosition(newPos, StickyColumnPolicy.ON_CHANGE);
     			return true;
     		}
     		else {

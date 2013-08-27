@@ -93,6 +93,7 @@ import net.sourceforge.vrapper.vim.commands.motions.MoveWordLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordRight;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordRightForUpdate;
 import net.sourceforge.vrapper.vim.commands.motions.ParagraphMotion.ParagraphTextObject;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.commandline.CommandLineMode;
 
 public class NormalMode extends CommandBasedMode {
@@ -389,7 +390,7 @@ public class NormalMode extends CommandBasedMode {
         final int offset = pos.getViewOffset();
         final LineInformation line = editorAdaptor.getViewContent().getLineInformationOfOffset(offset);
         if (isEnabled && line.getEndOffset() == offset && line.getLength() > 0) {
-            editorAdaptor.setPosition(pos.addViewOffset(-1), false);
+            editorAdaptor.setPosition(pos.addViewOffset(-1), StickyColumnPolicy.NEVER);
         }
     }
 

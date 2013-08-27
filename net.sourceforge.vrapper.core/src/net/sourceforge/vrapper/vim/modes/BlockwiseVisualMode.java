@@ -36,6 +36,7 @@ import net.sourceforge.vrapper.vim.commands.SwapCaseCommand;
 import net.sourceforge.vrapper.vim.commands.TextObject;
 import net.sourceforge.vrapper.vim.commands.motions.BlockSelectionMotion;
 import net.sourceforge.vrapper.vim.commands.motions.Motion;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.register.Register;
 import net.sourceforge.vrapper.vim.register.RegisterContent;
 import net.sourceforge.vrapper.vim.register.StringRegisterContent;
@@ -99,7 +100,7 @@ public class BlockwiseVisualMode extends AbstractVisualMode {
             final CursorService cursorService = editorAdaptor.getCursorService();
             //final Position newStart = editorAdaptor.getPosition().addModelOffset(-string.length() + 1);
             final Position newStart = cursorService.getMark(CursorService.LAST_CHANGE_START);
-	        editorAdaptor.setPosition(newStart, false);
+	        editorAdaptor.setPosition(newStart, StickyColumnPolicy.NEVER);
 	        final TextContent modelContent = editorAdaptor.getModelContent();
             if (mode == InsertModeType.INSERT) {
                 final TextRange region = sel.getRegion(editorAdaptor, NO_COUNT_GIVEN);
@@ -117,7 +118,7 @@ public class BlockwiseVisualMode extends AbstractVisualMode {
 	                executeInsertAtVOffset(editorAdaptor, insertion, vOffset, line, mode);
 	            }
 	        }
-	        editorAdaptor.setPosition(newStart, true);
+	        editorAdaptor.setPosition(newStart, StickyColumnPolicy.NEVER);
             
             editorAdaptor.getRegisterManager().setLastEdit(repetition());
             finish(editorAdaptor);
@@ -141,7 +142,7 @@ public class BlockwiseVisualMode extends AbstractVisualMode {
                 pos = pos.addModelOffset(padding);
             }
             if (pos != null) {
-                editorAdaptor.setPosition(pos, false);
+                editorAdaptor.setPosition(pos, StickyColumnPolicy.NEVER);
                 insertion.execute(editorAdaptor);
             }
         }
@@ -198,7 +199,7 @@ public class BlockwiseVisualMode extends AbstractVisualMode {
                             editorAdaptor, insertion, vOffset, line, mode);
 	            }
 	        }
-            editorAdaptor.setPosition(regionStart, true);
+            editorAdaptor.setPosition(regionStart, StickyColumnPolicy.ON_CHANGE);
             history.unlock("block-action");
             history.endCompoundChange();
         }

@@ -6,6 +6,7 @@ import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StringUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.register.RegisterContent;
 import net.sourceforge.vrapper.vim.register.TextBlockRegisterContent;
 
@@ -76,7 +77,7 @@ abstract public class BlockPasteHelper {
                 }
             }
             Position destination = cursorService.newPositionForModelOffset(newCursorOfs);
-            editorAdaptor.setPosition(destination, true);
+            editorAdaptor.setPosition(destination, StickyColumnPolicy.ON_CHANGE);
         } finally {
             editorAdaptor.getHistory().endCompoundChange();
         }

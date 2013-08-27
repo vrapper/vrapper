@@ -16,6 +16,7 @@ import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.TextObject;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.EditorMode;
 import net.sourceforge.vrapper.vim.modes.ModeSwitchHint;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
@@ -56,7 +57,7 @@ public interface EditorAdaptor {
 
     boolean sourceConfigurationFile(String filename);
     Position getPosition();
-    void setPosition(Position destination, boolean updateStickyColumn);
+    void setPosition(Position destination, StickyColumnPolicy stickyColumnPolicy);
     void setSelection(Selection selection);
     Selection getSelection();
     <T>T getService(Class<T> serviceClass);

@@ -4,6 +4,7 @@ import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 
 public class SwapSelectionSidesCommand extends CountIgnoringNonRepeatableCommand {
 
@@ -18,7 +19,7 @@ public class SwapSelectionSidesCommand extends CountIgnoringNonRepeatableCommand
             // do nothing
             return;
         }
-        editorAdaptor.setPosition(selection.getEnd(), true);
+        editorAdaptor.setPosition(selection.getEnd(), StickyColumnPolicy.ON_CHANGE);
         editorAdaptor.setSelection(new SimpleSelection(
                 new StartEndTextRange(selection.getEnd(), selection.getStart())));
         if (!isSelectionExclusive) {

@@ -2,6 +2,7 @@ package net.sourceforge.vrapper.platform;
 
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.Position;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 
 public interface CursorService {
 
@@ -17,9 +18,9 @@ public interface CursorService {
      * Set the current position in the text, i.e. where the caret is displayed.
      *
      * @param position the new position.
-     * @param updateColumn should "sticky" column be updated?
+     * @param stickyColumnPolicy should "sticky" column be updated?
      */
-    void setPosition(Position position, boolean updateColumn);
+    void setPosition(Position position, StickyColumnPolicy stickyColumnPolicy);
 
     /**
      * Makes sticky column stick to end of line

@@ -5,6 +5,7 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.BorderPolicy;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.motions.CountAwareMotion;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 
 public class EclipseMoveCommand extends CountAwareMotion {
 
@@ -30,12 +31,12 @@ public class EclipseMoveCommand extends CountAwareMotion {
         Position oldCarretOffset = editorAdaptor.getPosition();
         EclipseCommand.doIt(count, motionName, editorAdaptor);
         Position newCarretOffset = editorAdaptor.getPosition();
-        editorAdaptor.setPosition(oldCarretOffset, true);
+        editorAdaptor.setPosition(oldCarretOffset, StickyColumnPolicy.ON_CHANGE);
         return newCarretOffset;
     }
 
-    public boolean updateStickyColumn() {
-        return true;
+    public StickyColumnPolicy stickyColumnPolicy() {
+        return StickyColumnPolicy.ON_CHANGE;
     }
 
     public Command command() {

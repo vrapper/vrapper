@@ -6,6 +6,7 @@ import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Space;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 
 /**
  * A simple {@link TextContent} implementation for unit tests.
@@ -102,7 +103,7 @@ public class TestTextContent implements TextContent {
 
     public void replace(int index, int length, String s) {
 		buffer.replace(index, index+length, s);
-		cursorService.setPosition(new DumbPosition(index + s.length()), false);
+		cursorService.setPosition(new DumbPosition(index + s.length()), StickyColumnPolicy.NEVER);
     }
 
 	public Space getSpace() {

@@ -4,6 +4,7 @@ import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.motions.LineStartMotion;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 
 public class LineStartCommand extends CountAwareCommand {
 
@@ -28,7 +29,7 @@ public class LineStartCommand extends CountAwareCommand {
         try {
             Position position = motion.destination(editorAdaptor, count);
             final CursorService cursorService = editorAdaptor.getCursorService();
-            cursorService.setPosition(position, false);
+            cursorService.setPosition(position, StickyColumnPolicy.NEVER);
             cursorService.stickToBOL();
         } catch (CommandExecutionException e) {
         }

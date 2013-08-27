@@ -7,6 +7,7 @@ import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StringUtils;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.register.RegisterContent;
 
 public class PasteBeforeCommand extends CountAwareCommand {
@@ -59,7 +60,7 @@ public class PasteBeforeCommand extends CountAwareCommand {
 						position -= 1;
 				}
 				Position destination = editorAdaptor.getCursorService().newPositionForModelOffset(position);
-				editorAdaptor.setPosition(destination, true);
+				editorAdaptor.setPosition(destination, StickyColumnPolicy.ON_CHANGE);
 			}
 		} finally {
 			editorAdaptor.getHistory().endCompoundChange();

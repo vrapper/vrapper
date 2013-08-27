@@ -52,8 +52,8 @@ public class FindMotion extends FindBalancedMotion {
             return FindMotion.this.borderPolicy();
         }
 
-        public boolean updateStickyColumn() {
-            return FindMotion.this.updateStickyColumn();
+        public StickyColumnPolicy stickyColumnPolicy() {
+            return FindMotion.this.stickyColumnPolicy();
         }
     };
 

@@ -65,8 +65,8 @@ public class BlockSelectionMotion implements Motion {
     }
 
     @Override
-    public boolean updateStickyColumn() {
-        return false;
+    public StickyColumnPolicy stickyColumnPolicy() {
+        return StickyColumnPolicy.NEVER;
     }
 
     @Override

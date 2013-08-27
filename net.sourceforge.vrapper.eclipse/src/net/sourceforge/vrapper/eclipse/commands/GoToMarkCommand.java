@@ -10,6 +10,7 @@ import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.CountIgnoringNonRepeatableCommand;
 import net.sourceforge.vrapper.vim.commands.motions.GoToMarkMotion;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IWorkspaceRoot;
@@ -123,7 +124,7 @@ public class GoToMarkCommand extends CountIgnoringNonRepeatableCommand {
             break;
         }
         if (markPos != null) {
-            markEditor.getCursorService().setPosition(markPos, true);
+            markEditor.getCursorService().setPosition(markPos, StickyColumnPolicy.ON_CHANGE);
         }
 	}
 

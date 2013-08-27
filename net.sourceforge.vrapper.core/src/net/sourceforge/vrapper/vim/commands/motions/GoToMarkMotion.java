@@ -49,8 +49,8 @@ public class GoToMarkMotion implements Motion {
         return markPos;
     }
 
-    public boolean updateStickyColumn() {
-        return true;
+    public StickyColumnPolicy stickyColumnPolicy() {
+        return StickyColumnPolicy.ON_CHANGE;
     }
 
     public int getCount() {

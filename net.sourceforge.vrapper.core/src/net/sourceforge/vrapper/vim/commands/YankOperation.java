@@ -1,18 +1,16 @@
 package net.sourceforge.vrapper.vim.commands;
 
 import net.sourceforge.vrapper.platform.CursorService;
-import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
-import net.sourceforge.vrapper.vim.commands.BlockWiseSelection.TextBlock;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.register.RegisterContent;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
 import net.sourceforge.vrapper.vim.register.StringRegisterContent;
-import net.sourceforge.vrapper.vim.register.TextBlockRegisterContent;
 
 public class YankOperation extends SimpleTextOperation {
 
@@ -65,19 +63,19 @@ public class YankOperation extends SimpleTextOperation {
         	//(keep stickyColumn for the 'yy' case)
             int lineNo = editorAdaptor.getModelContent().getLineInformationOfOffset(range.getLeftBound().getModelOffset()).getNumber();
             Position stickyPosition = editorAdaptor.getCursorService().stickyColumnAtModelLine(lineNo);
-            editorAdaptor.getCursorService().setPosition(stickyPosition, true);
+            editorAdaptor.getCursorService().setPosition(stickyPosition, StickyColumnPolicy.ON_CHANGE);
         }
         else {
             if (contentType == ContentType.TEXT_RECTANGLE) {
                 content = BlockWiseSelection.getTextBlockContent(editorAdaptor, range);
-                editorAdaptor.setPosition(range.getLeftBound(), true);
+                editorAdaptor.setPosition(range.getLeftBound(), StickyColumnPolicy.ON_CHANGE);
             } else {
                 Position cursor = editorAdaptor.getCursorService().getPosition();
                 Position newPos = range.getLeftBound();
                 //if cursor is at beginning of selection, leave it there
                 if(cursor.getModelOffset() != newPos.getModelOffset()) {
                     //move cursor to beginning of selection
-                    editorAdaptor.getCursorService().setPosition(newPos, true);
+                    cur.setPosition(newPos, StickyColumnPolicy.ON_CHANGE);
                 }
             }
         }

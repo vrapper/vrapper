@@ -5,6 +5,7 @@ import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.motions.LineEndMotion;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 
 public class StickToEOLCommand extends CountAwareCommand {
 
@@ -23,7 +24,7 @@ public class StickToEOLCommand extends CountAwareCommand {
 		int destination = LineEndMotion.getDestination(offset, content, count);
 		Position position = cursorService.newPositionForModelOffset(destination);
 		cursorService.stickToEOL();
-		cursorService.setPosition(position, false);
+		cursorService.setPosition(position, StickyColumnPolicy.NEVER);
 	}
 
 	@Override

@@ -12,6 +12,7 @@ import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 
 /**
  * See :help ins-completion 
@@ -76,7 +77,7 @@ public class InsertExpandMode extends InsertMode {
             String newString = lastIndent + lastMatches.get(lastIndex) + lastSuffix;
             model.replace(lineInfo.getBeginOffset(), lineInfo.getLength(), newString);
             int newCursor = lineInfo.getBeginOffset() + lastIndent.length() + lastMatches.get(lastIndex).length();
-            editorAdaptor.getCursorService().setPosition(cursorPos.setModelOffset(newCursor), true);
+            editorAdaptor.getCursorService().setPosition(cursorPos.setModelOffset(newCursor), StickyColumnPolicy.ON_CHANGE);
             if(lastIndex == 0) {
                 editorAdaptor.getUserInterfaceService().setInfoMessage("Back at original");
             }
