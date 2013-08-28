@@ -115,10 +115,31 @@ public class VimUtils {
     	return nlLen;
     }
 
+    /**
+     * Replaces all combinations of newline characters in a string with another string.
+     */
+    public static String replaceNewLines(String inputString, String replacement) {
+        char[] input = inputString.toCharArray();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < input.length; i++) {
+            if (input[i] == '\r' && i + 1 < input.length && input[i+1] == '\n') {
+                sb.append(replacement);
+                i++; // skip \n
+            } else if (input[i] == '\r') {
+                sb.append(replacement);
+            } else if (input[i] == '\n') {
+                sb.append(replacement);
+            } else {
+                sb.append(input[i]);
+            }
+        }
+        return sb.toString();
+    }
+
     public static boolean isWordCharacter(final String s) {
         return VimUtils.COMPILED_WORD_CHAR_PATTERN.matcher(s).find();
     }
-    
+
     public static boolean isPatternDelimiter(final String s) {
         return VimUtils.COMPILED_PATTERN_DELIM_PATTERN.matcher(s).find();
     }

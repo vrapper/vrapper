@@ -2,6 +2,7 @@ package net.sourceforge.vrapper.vim.commands;
 
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.Position;
+import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.register.Register;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
@@ -20,6 +21,7 @@ public class PasteRegisterCommand extends CountIgnoringNonRepeatableCommand {
 	public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
 		Register reg = editorAdaptor.getRegisterManager().getRegister(registerName);
 		String text = reg.getContent().getText();
+		text = VimUtils.replaceNewLines(text, editorAdaptor.getConfiguration().getNewLine());
 
 		if(text.length() > 0) {
 			TextContent content = editorAdaptor.getModelContent();

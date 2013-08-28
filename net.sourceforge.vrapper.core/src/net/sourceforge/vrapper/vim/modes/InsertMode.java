@@ -264,36 +264,37 @@ public class InsertMode extends AbstractMode {
     public boolean handleKey(final KeyStroke stroke) {
         final Transition<Command> transition = currentState.press(stroke);
         if (transition != null && transition.getValue() != null) {
-        	try {
-        		transition.getValue().execute(editorAdaptor);
-        	} catch (final CommandExecutionException e) {
-        		editorAdaptor.getUserInterfaceService().setErrorMessage(e.getMessage());
-        	}
-        }
-        else if (stroke.equals(ESC)) {
+            try {
+                transition.getValue().execute(editorAdaptor);
+            } catch (final CommandExecutionException e) {
+                editorAdaptor.getUserInterfaceService().setErrorMessage(e.getMessage());
+            }
+            return true;
+        } else if (stroke.equals(ESC)) {
             editorAdaptor.changeModeSafely(NormalMode.NAME);
             if (editorAdaptor.getConfiguration().get(Options.IM_DISABLE)) {
-            	editorAdaptor.getEditorSettings().disableInputMethod();
+                editorAdaptor.getEditorSettings().disableInputMethod();
             }
             if (mOnLeaveHint != null && stroke.equals(ESC)) {
-                // ctrl+c is "cancel," it seems
                 try {
                     mOnLeaveHint.getCommand().execute(editorAdaptor);
                 } catch (final CommandExecutionException e) {
-                    editorAdaptor.getUserInterfaceService().setErrorMessage(
-                            e.getMessage());
+                    editorAdaptor.getUserInterfaceService().setErrorMessage(e.getMessage());
                 }
             }
             return true;
-		} else if (stroke.equals(CTRL_R)) {
-			//move to "paste register" mode, but don't actually perform the
-			//"leave insert mode" operations
-			editorAdaptor.changeModeSafely(PasteRegisterMode.NAME, RESUME_ON_MODE_ENTER);
-		} else if (stroke.equals(CTRL_X)) {
-			editorAdaptor.changeModeSafely(InsertExpandMode.NAME, RESUME_ON_MODE_ENTER);
-		} else if (stroke.equals(CTRL_O)) {
-		    //perform a single NormalMode command then return to InsertMode
-		    editorAdaptor.changeModeSafely(NormalMode.NAME, RETURN_TO_INSERTMODE);
+        } else if (stroke.equals(CTRL_R)) {
+            // move to "paste register" mode, but don't actually perform the
+            // "leave insert mode" operations
+            editorAdaptor.changeModeSafely(PasteRegisterMode.NAME, RESUME_ON_MODE_ENTER);
+            return true;
+        } else if (stroke.equals(CTRL_X)) {
+            editorAdaptor.changeModeSafely(InsertExpandMode.NAME, RESUME_ON_MODE_ENTER);
+            return true;
+        } else if (stroke.equals(CTRL_O)) {
+            // perform a single NormalMode command then return to InsertMode
+            editorAdaptor.changeModeSafely(NormalMode.NAME, RETURN_TO_INSERTMODE);
+            return true;
         } else if (stroke.equals(CTRL_U) || stroke.equals(CTRL_W)) {
             Motion motion;
             Position pos;
@@ -309,24 +310,27 @@ public class InsertMode extends AbstractMode {
                     motion = MoveWordLeft.INSTANCE;
                 }
                 pos = motion.destination(editorAdaptor);
-                if (pos.getModelOffset() < line.getBeginOffset() || pos.getModelOffset() == cursorPos) {
+                if (pos.getModelOffset() < line.getBeginOffset()
+                        || pos.getModelOffset() == cursorPos) {
                     motion = LineStartMotion.COLUMN0;
                     pos = motion.destination(editorAdaptor);
                 }
                 int position = pos.getModelOffset();
                 if (cursorPos == line.getBeginOffset()) {
-                    position = txt.getLineInformation(line.getNumber() - 1).getEndOffset();
+                    position = txt.getLineInformation(line.getNumber() - 1)
+                            .getEndOffset();
                 } else {
                     if (cursorPos > startEditPos && position < startEditPos) {
                         position = startEditPos;
                     }
                 }
-                int length =  cursorPos - position;
+                int length = cursorPos - position;
                 txt.replace(position, length, "");
                 if (position < startEditPos) {
                     startEditPosition = startEditPosition.setModelOffset(position);
                 }
-            } catch (CommandExecutionException e) { }
+            } catch (CommandExecutionException e) {
+            }
             return true;
         } else if (!allowed(stroke)) {
             startEditPosition = editorAdaptor.getCursorService().getPosition();
@@ -338,9 +342,9 @@ public class InsertMode extends AbstractMode {
                 editorAdaptor.getHistory().lock();
             }
         } else if (stroke.equals(BACKSPACE)
-        		&& editorAdaptor.getConfiguration().get(Options.SOFT_TAB) > 1) {
-        	//soft tab stop is enabled, check to see if there are spaces
-        	return softTabDelete();
+                && editorAdaptor.getConfiguration().get(Options.SOFT_TAB) > 1) {
+            // soft tab stop is enabled, check to see if there are spaces
+            return softTabDelete();
         } else if (stroke.isVirtual()) {
             // stroke was generated by Vrapper, it will not be passed to the
             // editor

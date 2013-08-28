@@ -3,7 +3,6 @@ package net.sourceforge.vrapper.core.tests.cases;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -250,7 +249,8 @@ public class VisualModeTests extends CommandTestCase {
 	    cursorService.setPosition(position, true);
 		adaptor.changeMode(NormalMode.NAME);
 		adaptor.changeMode(VisualMode.NAME);
-		assertNull(adaptor.getSelection());
+		// verify that selection has been cleared. getSelection will return non-null!
+		verify(adaptor).setSelection(null);
 	}
 
 	@Test public void testTextObjects() {
