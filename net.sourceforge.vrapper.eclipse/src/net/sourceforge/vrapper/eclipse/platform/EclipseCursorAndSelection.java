@@ -294,18 +294,6 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         }
     }
 
-    @Override
-    public void stickToEOL() {
-        stickToEOL = true;
-    }
-
-    @Override
-    public void stickToBOL() {
-        stickToEOL = false;
-        int carretOffset = textViewer.getTextWidget().getCaretOffset();
-        updateStickyColumn(carretOffset);
-    }
-
     private final class SelectionChangeListener implements SelectionListener {
         boolean enabled = true;
         @Override

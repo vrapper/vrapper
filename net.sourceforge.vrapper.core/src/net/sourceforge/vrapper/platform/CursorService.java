@@ -23,16 +23,6 @@ public interface CursorService {
     void setPosition(Position position, StickyColumnPolicy stickyColumnPolicy);
 
     /**
-     * Makes sticky column stick to end of line
-     */
-	void stickToEOL();
-
-    /**
-     * Makes sticky column stick to beginning of line
-     */
-    void stickToBOL();
-
-    /**
      * @return the current position in the text, i.e. where the caret is
      *         displayed.
      */
