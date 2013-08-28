@@ -110,7 +110,8 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
 
     @Override
     public void setPosition(final Position position, final StickyColumnPolicy columnPolicy) {
-    	if (columnPolicy == StickyColumnPolicy.NEVER) {
+    	if (columnPolicy == StickyColumnPolicy.NEVER
+    	        || columnPolicy == StickyColumnPolicy.RESET_EOL) {
 	    	caretListener.disable();
     	}
     	int viewOffset = position.getViewOffset();
@@ -120,6 +121,12 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     		viewOffset = 0;
     	}
         textViewer.getTextWidget().setSelection(viewOffset);
+        if (columnPolicy == StickyColumnPolicy.RESET_EOL) {
+            stickToEOL = false;
+            updateStickyColumn(viewOffset);
+        } else if (columnPolicy == StickyColumnPolicy.TO_EOL) {
+            stickToEOL = true;
+        }
         caretListener.enable();
     }
 

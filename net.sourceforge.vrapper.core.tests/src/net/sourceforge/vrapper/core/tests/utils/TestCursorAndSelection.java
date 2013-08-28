@@ -32,7 +32,9 @@ public class TestCursorAndSelection implements CursorService, SelectionService {
 	public void setPosition(Position position, StickyColumnPolicy columnPolicy) {
 	    this.selection = null;
 		this.position = position;
-		if (columnPolicy != StickyColumnPolicy.NEVER) {
+		if (columnPolicy == StickyColumnPolicy.TO_EOL) {
+		    stickToEOL();
+		} else if (columnPolicy != StickyColumnPolicy.NEVER) {
 		    int offset = position.getModelOffset();
             int beginOffset = content.getLineInformationOfOffset(offset).getBeginOffset();
             stickyColumnNo = offset - beginOffset;
