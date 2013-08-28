@@ -160,7 +160,7 @@ public abstract class AbstractCommandParser {
                 if (e.getCharacter() != KeyStroke.SPECIAL_KEY && pasteRegister) {
                     String text = editor.getRegisterManager().getRegister(Character.toString(e.getCharacter())).getContent().getText();
                     text = VimUtils.stripLastNewline(text);
-                    text = VimUtils.replaceNewLines(text, "<CR>");
+                    text = VimUtils.replaceNewLines(text, " ");
                     commandLine.type(text);
                     pasteRegister = false;
                     modified = true;

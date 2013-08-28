@@ -94,7 +94,7 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener,
                 if (content.getPayloadType() == ContentType.TEXT
                         || content.getPayloadType() == ContentType.LINES) {
                     String text = content.getText();
-                    text = VimUtils.replaceNewLines(text, "<CR>");
+                    text = VimUtils.replaceNewLines(text, " ");
                     type(text);
                 }
             }
