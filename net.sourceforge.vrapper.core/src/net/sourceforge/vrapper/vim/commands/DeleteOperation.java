@@ -20,7 +20,8 @@ public class DeleteOperation extends SimpleTextOperation {
 
     @Override
     public void execute(EditorAdaptor editorAdaptor, TextRange region, ContentType contentType) {
-        if (region == null) {
+        if (region == null || (region.getModelLength() == 0 && contentType != ContentType.LINES)) {
+            // Nothing to delete.
             return;
         }
 

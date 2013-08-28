@@ -241,7 +241,7 @@ public class BlockwiseVisualModeTests extends CommandTestCase {
 	    cursorService.setPosition(position, true);
 		adaptor.changeMode(NormalMode.NAME);
 		adaptor.changeMode(BlockwiseVisualMode.NAME);
-		assertNull(adaptor.getSelection());
+		assertEquals(adaptor.getSelection().getModelLength(), 0);
 	}
 
 	@Test

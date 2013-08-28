@@ -11,10 +11,13 @@ import net.sourceforge.vrapper.keymap.vim.VisualMotionState;
 import net.sourceforge.vrapper.keymap.vim.VisualMotionState.Motion2VMC;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.HistoryService;
+import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.ContentType;
+import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.SelectionArea;
+import net.sourceforge.vrapper.utils.StringUtils;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
@@ -80,7 +83,7 @@ public class BlockwiseVisualMode extends AbstractVisualMode {
 	        final Command insertion = editorAdaptor.getRegisterManager().getLastInsertion();
 	        final Register lastEdit = editorAdaptor.getRegisterManager().getLastEditRegister();
 	        final RegisterContent content = lastEdit.getContent();
-	        if (!(content instanceof StringRegisterContent)) {
+	        if (!(content instanceof StringRegisterContent) || insertion == null) {
 	            finish(editorAdaptor);
 	            return;
 	        }
@@ -97,22 +100,50 @@ public class BlockwiseVisualMode extends AbstractVisualMode {
             //final Position newStart = editorAdaptor.getPosition().addModelOffset(-string.length() + 1);
             final Position newStart = cursorService.getMark(CursorService.LAST_CHANGE_START);
 	        editorAdaptor.setPosition(newStart, false);
-	        final TextRange region = sel.getRegion(editorAdaptor, NO_COUNT_GIVEN);
-            final TextBlock block = BlockWiseSelection.getTextBlock(region.getStart(), region.getEnd(),
-                    editorAdaptor.getModelContent(), cursorService);
-            if (insertion != null) {
+	        final TextContent modelContent = editorAdaptor.getModelContent();
+            if (mode == InsertModeType.INSERT) {
+                final TextRange region = sel.getRegion(editorAdaptor, NO_COUNT_GIVEN);
+                final TextBlock block = BlockWiseSelection.getTextBlock(region.getStart(), region.getEnd(),
+                        modelContent, cursorService);
                 for (int line = block.startLine + 1; line <= block.endLine; ++line) {
-                    final Position newUl = cursorService.getPositionByVisualOffset(line, block.startVisualOffset);
-                    if (newUl != null) {
-                        editorAdaptor.setPosition(newUl, false);
-                        insertion.execute(editorAdaptor);
-                    }
+                    executeInsertAtVOffset(editorAdaptor, insertion, block.startVisualOffset, line, mode);
                 }
-            }
+	        } else {
+	            final int vOffset = cursorService.getVisualOffset(newStart);
+	            LineInformation lineInfo = modelContent.getLineInformationOfOffset(newStart.getModelOffset());
+	            final int startLine = lineInfo.getNumber();
+	            final int endLine = Math.min(startLine + sel.getLinesSpanned(),  modelContent.getNumberOfLines());
+	            for (int line = startLine + 1; line < endLine; ++line) {
+	                executeInsertAtVOffset(editorAdaptor, insertion, vOffset, line, mode);
+	            }
+	        }
 	        editorAdaptor.setPosition(newStart, true);
             
             editorAdaptor.getRegisterManager().setLastEdit(repetition());
             finish(editorAdaptor);
+        }
+
+        static void executeInsertAtVOffset(final EditorAdaptor editorAdaptor,
+                final Command insertion, final int vOffset, int line, final InsertModeType mode)
+                throws CommandExecutionException {
+            final CursorService cursorService = editorAdaptor.getCursorService();
+	        final TextContent modelContent = editorAdaptor.getModelContent();
+            Position pos = cursorService.getPositionByVisualOffset(line, vOffset);
+            if (pos == null && mode == InsertModeType.APPEND) {
+                //
+                // "Extend" the line with spaces until it reaches vOffset.
+                //
+                final LineInformation lineInfo = modelContent.getLineInformation(line);
+                pos = cursorService.newPositionForModelOffset(lineInfo.getEndOffset());
+                final int lineEndVOfs = cursorService.getVisualOffset(pos);
+                final int padding = cursorService.visualWidthToChars(vOffset - lineEndVOfs);
+                modelContent.replace(lineInfo.getEndOffset(), 0, StringUtils.multiply(" ", padding));
+                pos = pos.addModelOffset(padding);
+            }
+            if (pos != null) {
+                editorAdaptor.setPosition(pos, false);
+                insertion.execute(editorAdaptor);
+            }
         }
         
         private void finish(final EditorAdaptor editorAdaptor) {
@@ -134,31 +165,40 @@ public class BlockwiseVisualMode extends AbstractVisualMode {
         @Override
         public void execute(final EditorAdaptor editorAdaptor, final int count)
                 throws CommandExecutionException {
-            final TextObject lastSelection = editorAdaptor.getLastActiveSelectionArea();
-            if (lastSelection.getContentType(editorAdaptor.getConfiguration()) != ContentType.TEXT_RECTANGLE) {
+            final SelectionArea sel = editorAdaptor.getRegisterManager().getLastActiveSelectionArea();
+            if (sel.getContentType(editorAdaptor.getConfiguration()) != ContentType.TEXT_RECTANGLE) {
                 return;
             }
             final HistoryService history = editorAdaptor.getHistory();
             final Command insertion = editorAdaptor.getRegisterManager().getLastInsertion();
-            final TextRange region = lastSelection.getRegion(editorAdaptor, count);
+            final TextRange region = sel.getRegion(editorAdaptor, count);
             final CursorService cursorService = editorAdaptor.getCursorService();
-            final TextBlock block = BlockWiseSelection.getTextBlock(region.getStart(), region.getEnd(),
-                    editorAdaptor.getModelContent(), cursorService);
+            Position regionStart = region.getStart();
+            if (mode == InsertModeType.APPEND) {
+                regionStart = regionStart.addModelOffset(1);
+            }
             history.beginCompoundChange();
             history.lock("block-action");
-            for (int line = block.startLine; line <= block.endLine; ++line) {
-                Position newUl = cursorService.getPositionByVisualOffset(line, block.startVisualOffset);
-                if (newUl != null) {
-                    if (mode == InsertModeType.APPEND) {
-                        newUl = newUl.addModelOffset(1);
-                    }
-                    editorAdaptor.setPosition(newUl, false);
-                    insertion.execute(editorAdaptor);
+            if (mode == InsertModeType.INSERT) {
+                final TextBlock block = BlockWiseSelection.getTextBlock(regionStart, region.getEnd(),
+                        editorAdaptor.getModelContent(), cursorService);
+                for (int line = block.startLine; line <= block.endLine; ++line) {
+                    BlockwiseRepeatInsertCommand.executeInsertAtVOffset(
+                            editorAdaptor, insertion, block.startVisualOffset,
+                            line, mode);
                 }
-            }
-            editorAdaptor.setPosition(
-                    region.getStart().addModelOffset(
-                            mode == InsertModeType.APPEND ? 1 : 0), true);
+	        } else {
+	            final TextContent modelContent = editorAdaptor.getModelContent();
+	            final int vOffset = cursorService.getVisualOffset(regionStart);
+	            LineInformation lineInfo = modelContent.getLineInformationOfOffset(regionStart.getModelOffset());
+	            final int startLine = lineInfo.getNumber();
+	            final int endLine = Math.min(startLine + sel.getLinesSpanned(),  modelContent.getNumberOfLines());
+	            for (int line = startLine; line < endLine; ++line) {
+                    BlockwiseRepeatInsertCommand.executeInsertAtVOffset(
+                            editorAdaptor, insertion, vOffset, line, mode);
+	            }
+	        }
+            editorAdaptor.setPosition(regionStart, true);
             history.unlock("block-action");
             history.endCompoundChange();
         }

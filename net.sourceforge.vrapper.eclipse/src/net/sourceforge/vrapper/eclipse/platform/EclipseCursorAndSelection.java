@@ -238,6 +238,10 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
                 styled.setBlockSelection(true);
                 final int starOfs = selection.getFrom().getViewOffset();
                 final int endOfs = selection.getTo().getViewOffset();
+                if (endOfs == textViewer.getDocument().getLength()) {
+                    // Don't change selection if the caret is after the last character.
+                    return;
+                }
                 final Rectangle fromRect = styled.getTextBounds(starOfs, starOfs);
                 final Rectangle toRect = styled.getTextBounds(endOfs, endOfs);
                 final Rectangle blockRect = fromRect.union(toRect);
@@ -572,7 +576,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
                 return null;
             }
             final int lineOffset = converter.modelOffset2WidgetOffset(region.getOffset());
-            final Rectangle lineBounds = tw.getTextBounds(lineOffset, lineOffset + region.getLength());
+            final Rectangle lineBounds = tw.getTextBounds(lineOffset, lineOffset + region.getLength() - 1);
             if (!lineBounds.contains(visualOffset, lineBounds.y)) {
                 return null;
             }

@@ -1,9 +1,7 @@
 package net.sourceforge.vrapper.vim.commands;
 
-import net.sourceforge.vrapper.platform.CursorService;
-import net.sourceforge.vrapper.platform.TextContent;
+import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
-import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.motions.Motion;
 
@@ -22,13 +20,16 @@ public class BlockwiseVisualMotionCommand extends AbstractVisualMotionCommand {
     protected void extendSelection(final EditorAdaptor editorAdaptor,
             final Selection oldSelection) {
         final Position from = oldSelection.getFrom(); // always constant
-        final Position to = editorAdaptor.getPosition();
-//        System.out.println("extendSelection ? " + to.getModelOffset() 
-//                + " <= " + from.getModelOffset());
-        
+        Position to = editorAdaptor.getPosition();
+        if (to.getModelOffset() >= editorAdaptor.getModelContent().getTextLength()) {
+            //
+            // Don't allow caret past the end of a document by moving it back
+            // to the old position.
+            //
+            to = oldSelection.getTo();
+            editorAdaptor.setPosition(to, motion.updateStickyColumn());
+        }
         editorAdaptor.setSelection(new BlockWiseSelection(editorAdaptor, from, to));
-        
-//        System.out.println("New selection: " + BlockWiseSelection.getRect(text, editorAdaptor.getSelection()));
     }
 
     @Override

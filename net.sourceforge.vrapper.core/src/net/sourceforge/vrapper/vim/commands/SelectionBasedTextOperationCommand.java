@@ -133,7 +133,17 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
                     }
                 }
 		    }
-            editorAdaptor.setPosition(cursorService.getPositionByVisualOffset(block.startLine, block.startVisualOffset), true);
+            Position newPos = cursorService.getPositionByVisualOffset(block.startLine, block.startVisualOffset);
+            if (newPos == null) {
+                // Position may have been deleted -- place caret on the last
+                // character of the first block line.
+                final LineInformation lineInfo = textContent.getLineInformation(block.startLine);
+                newPos = cursorService.newPositionForModelOffset(lineInfo.getEndOffset());
+                if (lineInfo.getLength() > 0) {
+                    newPos = newPos.addModelOffset(-1);
+                }
+            }
+            editorAdaptor.setPosition(newPos, true);
         }
 
     }
@@ -173,10 +183,14 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
         final CursorService cursorService = editorAdaptor.getCursorService();
         final TextBlock textBlock = BlockWiseSelection.getTextBlock(blockRange.getStart(), blockRange.getEnd(),
                     editorAdaptor.getModelContent(), cursorService);
-        final Position runStart = cursorService.getPositionByVisualOffset(textBlock.startLine, textBlock.startVisualOffset);
+        Position runStart = cursorService.getPositionByVisualOffset(textBlock.startLine, textBlock.startVisualOffset);
+        final LineInformation lineInfo = textContent.getLineInformation(textBlock.startLine);
+        if (runStart == null) {
+            // Empty line?
+            runStart = cursorService.newPositionForModelOffset(lineInfo.getBeginOffset());
+        }
         Position runEnd = cursorService.getPositionByVisualOffset(textBlock.startLine, textBlock.endVisualOffset);
         if (runEnd == null) {
-            final LineInformation lineInfo = textContent.getLineInformation(textBlock.startLine);
             runEnd = cursorService.newPositionForModelOffset(lineInfo.getEndOffset());
         } else {
             runEnd = runEnd.addModelOffset(1);
