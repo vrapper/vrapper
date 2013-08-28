@@ -41,7 +41,7 @@ public class MoveUpDownNonWhitespace extends CountAwareMotion {
     }
 
     public StickyColumnPolicy stickyColumnPolicy() {
-        return StickyColumnPolicy.ON_CHANGE;
+        return StickyColumnPolicy.RESET_EOL;
     }
 
 }
