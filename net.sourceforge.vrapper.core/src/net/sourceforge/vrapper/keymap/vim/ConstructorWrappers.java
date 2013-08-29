@@ -362,7 +362,7 @@ public class ConstructorWrappers {
         //function keys
         SpecialKey[] values = SpecialKey.values();
         for (int i=0, start=SpecialKey.F1.ordinal(); i < 20; ++i)
-        	map.put("F" + i+1, key(values[start+i]));
+        	map.put("F" + (i+1), key(values[start+i]));
         
         // add these ctrl keys to keep parseSpecialKey working
         map.put("C-@", new SimpleKeyStroke('@', false, false, true));
