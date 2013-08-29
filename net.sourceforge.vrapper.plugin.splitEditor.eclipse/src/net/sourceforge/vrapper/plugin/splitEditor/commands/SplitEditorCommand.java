@@ -38,9 +38,13 @@ public class SplitEditorCommand extends AbstractWindowCommand {
 
     public SplitEditorCommand(SplitDirection dir, SplitMode mode, SplitContainer containerMode, String filename) {
         this.direction = dir;
-        this.mode = mode;
         this.containerMode = containerMode;
         this.filename = filename;
+        if (filename != null) {
+            this.mode = SplitMode.MOVE;
+        } else {
+            this.mode = mode;
+        }
     }
 
     public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
@@ -49,7 +53,19 @@ public class SplitEditorCommand extends AbstractWindowCommand {
 
         EModelService svc = (EModelService) editorSite.getService(EModelService.class);
         EPartService psvc = (EPartService) editorSite.getService(EPartService.class);
-        MPart p = (MPart) editorSite.getService(MPart.class);
+        MPart p = null;
+        if (filename == null) {
+            p = (MPart) editorSite.getService(MPart.class);
+        } else {
+            if (!filename.startsWith("/")) {
+                if (editorAdaptor.getConfiguration().get(Options.AUTO_CHDIR)) {
+                    filename = editorAdaptor.getFileService().getCurrentFilePath() + "/" + filename;
+                } else {
+                    filename = editorAdaptor.getRegisterManager().getCurrentWorkingDirectory() + "/" + filename;
+                }
+            }
+            p = openFileInEditor(filename);
+        }
         MElementContainer<MUIElement> editorStack = p.getParent();
         MWindow window = svc.getTopLevelWindowFor(editorStack);
 
@@ -93,26 +109,6 @@ public class SplitEditorCommand extends AbstractWindowCommand {
         if (mode == SplitMode.CLONE) {
             try {
                 newPart = cloneEditor();
-                newStack.getChildren().add(newPart);
-                // Temporary activate the cloned editor.
-                psvc.activate(p);
-            } catch (PartInitException e) {
-                userInterfaceService.setErrorMessage("Unable to split editor");
-                VrapperLog.error("Unable to split editor", e);
-                return;
-            }
-        } else if(filename != null) {
-        	if(!filename.startsWith("/")) {
-        		if(editorAdaptor.getConfiguration().get(Options.AUTO_CHDIR)) {
-        			filename = editorAdaptor.getFileService().getCurrentFilePath() + "/" + filename;
-        		}
-        		else {
-        			filename = editorAdaptor.getRegisterManager().getCurrentWorkingDirectory() + "/" + filename;
-        		}
-        	}
-
-        	try {
-                newPart = openFileInEditor(filename);
                 newStack.getChildren().add(newPart);
                 // Temporary activate the cloned editor.
                 psvc.activate(p);

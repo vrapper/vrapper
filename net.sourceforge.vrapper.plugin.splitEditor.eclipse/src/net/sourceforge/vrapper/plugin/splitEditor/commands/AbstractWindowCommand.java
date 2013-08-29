@@ -1,7 +1,15 @@
 package net.sourceforge.vrapper.plugin.splitEditor.commands;
 
+import java.io.ByteArrayInputStream;
+
+import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.CountIgnoringNonRepeatableCommand;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.e4.ui.model.application.ui.MGenericTile;
 import org.eclipse.e4.ui.model.application.ui.MUIElement;
 import org.eclipse.e4.ui.model.application.ui.advanced.MPlaceholder;
@@ -9,11 +17,14 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartSashContainerElement;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.ui.IEditorDescriptor;
+import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.part.FileEditorInput;
 
 // Eclipse 4 API version 0.10.1 bundled with Eclipse 4.2.1 is considered provisional.
 @SuppressWarnings("restriction")
@@ -91,9 +102,30 @@ public abstract class AbstractWindowCommand extends CountIgnoringNonRepeatableCo
         return newPart;
     }
 
-    protected static MPart openFileInEditor(String filename) throws PartInitException {
-    	//I don't know what to do here!
-    	return null;
+    protected static MPart openFileInEditor(String filename) throws CommandExecutionException {
+        IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+        IEditorInput input = page.getActiveEditor().getEditorInput();
+        IFile currentFile = (IFile) input.getAdapter(IFile.class);
+        IProject currentProject = currentFile.getProject();
+        IPath filePath = new Path(filename);
+        IFile file = currentProject.getFile(filePath);
+        if (!file.exists()) {
+            try {
+                file.create(new ByteArrayInputStream(new byte[0]), false, null);
+            } catch (CoreException e) {
+                throw new CommandExecutionException("Error creating '" + filePath.toString() + "': " + e.getMessage());
+            }
+        }
+        IEditorInput editorInput = new FileEditorInput(file);
+        IEditorDescriptor desc = PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor(file.getName());
+        try {
+            IEditorPart newEditor = page.openEditor(editorInput,
+                    desc == null ? "org.eclipse.ui.DefaultTextEditor" : desc.getId(),
+                    false, IWorkbenchPage.MATCH_NONE);
+            return (MPart) newEditor.getSite().getService(MPart.class);
+        } catch (PartInitException e) {
+            throw new CommandExecutionException("Unable to open editor for '" + filePath.toString() + "'");
+        }
     }
 
     
