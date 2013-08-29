@@ -84,4 +84,7 @@ public class SimpleSelection implements Selection {
         return range.getRightBound().addModelOffset(-1);
     }
 
+    public String toString() {
+        return "SimpleSelection( " + range.toString() + " )";
+    }
 }

@@ -84,6 +84,12 @@ public class StartEndTextRange implements TextRange {
         }
     }
 
+    /** Only for debugging. */
+    public String toString() {
+        return "StartEndTextRange(M " + start.getModelOffset() + "/" + start.getViewOffset()
+                + " V - M " + end.getModelOffset() + "/" + end.getViewOffset() + " V)";
+    }
+
     public static TextRange exclusive(Position from, Position to) {
         return new StartEndTextRange(from, to);
     }
