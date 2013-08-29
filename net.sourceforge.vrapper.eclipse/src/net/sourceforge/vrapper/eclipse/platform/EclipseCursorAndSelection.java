@@ -570,6 +570,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     @Override
     public Position getPositionByVisualOffset(int lineNo, int visualOffset) {
         final StyledText tw = textViewer.getTextWidget();
+        final int relVOffset = visualOffset - tw.getHorizontalPixel();
         try {
             final IRegion region = textViewer.getDocument().getLineInformation(lineNo);
             if (region.getLength() == 0) {
@@ -577,7 +578,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
             }
             final int lineOffset = converter.modelOffset2WidgetOffset(region.getOffset());
             final Rectangle lineBounds = tw.getTextBounds(lineOffset, lineOffset + region.getLength() - 1);
-            if (!lineBounds.contains(visualOffset, lineBounds.y)) {
+            if (!lineBounds.contains(relVOffset, lineBounds.y)) {
                 return null;
             }
             //
@@ -589,8 +590,8 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
             // Check the guess and adjust is offset if missed.
             //
             Rectangle rect;
-            while (!(rect = tw.getTextBounds(offset, offset)).contains(visualOffset, rect.y)) {
-                if (rect.x > visualOffset) {
+            while (!(rect = tw.getTextBounds(offset, offset)).contains(relVOffset, rect.y)) {
+                if (rect.x > relVOffset) {
                     --offset;
                 } else {
                     ++offset;
