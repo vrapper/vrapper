@@ -40,8 +40,8 @@ public class MoveUpDownNonWhitespace extends CountAwareMotion {
         return BorderPolicy.LINE_WISE;
     }
 
-    public boolean updateStickyColumn() {
-        return true;
+    public StickyColumnPolicy stickyColumnPolicy() {
+        return StickyColumnPolicy.RESET_EOL;
     }
 
 }

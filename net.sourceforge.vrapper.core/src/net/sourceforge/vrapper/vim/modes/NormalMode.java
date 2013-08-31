@@ -47,7 +47,6 @@ import net.sourceforge.vrapper.vim.commands.FormatOperation;
 import net.sourceforge.vrapper.vim.commands.IncrementDecrementCommand;
 import net.sourceforge.vrapper.vim.commands.InsertLineCommand;
 import net.sourceforge.vrapper.vim.commands.JoinLinesCommand;
-import net.sourceforge.vrapper.vim.commands.LineStartCommand;
 import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.commands.MotionPairTextObject;
@@ -67,7 +66,6 @@ import net.sourceforge.vrapper.vim.commands.SaveCommand;
 import net.sourceforge.vrapper.vim.commands.SetMarkCommand;
 import net.sourceforge.vrapper.vim.commands.SimpleDelimitedText;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
-import net.sourceforge.vrapper.vim.commands.StickToEOLCommand;
 import net.sourceforge.vrapper.vim.commands.SwapCaseCommand;
 import net.sourceforge.vrapper.vim.commands.TextObject;
 import net.sourceforge.vrapper.vim.commands.TextOperation;
@@ -93,6 +91,7 @@ import net.sourceforge.vrapper.vim.commands.motions.MoveWordLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordRight;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordRightForUpdate;
 import net.sourceforge.vrapper.vim.commands.motions.ParagraphMotion.ParagraphTextObject;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.commandline.CommandLineMode;
 
 public class NormalMode extends CommandBasedMode {
@@ -253,9 +252,6 @@ public class NormalMode extends CommandBasedMode {
         final Command deletePrevious = new TextOperationTextObjectCommand(delete, new MotionTextObject(moveLeft));
         final Command repeatLastOne = DotCommand.INSTANCE;
         final Command tildeCmd = SwapCaseCommand.INSTANCE;
-        final Command stickToEOL = StickToEOLCommand.INSTANCE;
-        final Command lineStart = LineStartCommand.NON_WHITESPACE;
-        final Command column0 = LineStartCommand.COLUMN0;
         final LineEndMotion lineEndMotion = new LineEndMotion(BorderPolicy.LINE_WISE);
         final Command substituteLine = new TextOperationTextObjectCommand(change, new MotionTextObject(lineEndMotion));
         final Command substituteChar = new TextOperationTextObjectCommand(change, new MotionTextObject(moveRight));
@@ -311,9 +307,6 @@ public class NormalMode extends CommandBasedMode {
                 operatorCmdsWithUpperCase('c', change, toEol,     textObjectsForChange),
                 prefixedOperatorCmds('g', 'q', format, textObjects),
                 prefixedOperatorCmds('g', '~', SwapCaseCommand.TEXT_OBJECT_INSTANCE, textObjects),
-                state(leafBind('$', stickToEOL)),
-                state(leafBind('^', lineStart)),
-                state(leafBind('0', column0)),
                 motionCommands,
                 state(
                         leafBind('i', (Command) new ChangeToInsertModeCommand()),
@@ -389,7 +382,7 @@ public class NormalMode extends CommandBasedMode {
         final int offset = pos.getViewOffset();
         final LineInformation line = editorAdaptor.getViewContent().getLineInformationOfOffset(offset);
         if (isEnabled && line.getEndOffset() == offset && line.getLength() > 0) {
-            editorAdaptor.setPosition(pos.addViewOffset(-1), false);
+            editorAdaptor.setPosition(pos.addViewOffset(-1), StickyColumnPolicy.NEVER);
         }
     }
 

@@ -8,6 +8,7 @@ import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 
 /**
  * :[range]co[py] {address}				*:co* *:copy*
@@ -73,7 +74,9 @@ public class CopyMoveLinesOperation extends SimpleTextOperation {
 		    content.replace(sourceOffset, region.getModelLength(), "");
 		}
 		content.replace(offset, 0, lines);
-		editorAdaptor.setPosition(editorAdaptor.getCursorService().newPositionForModelOffset(cursorPos), true);
+		editorAdaptor.setPosition(
+		        editorAdaptor.getCursorService().newPositionForModelOffset(cursorPos),
+		        StickyColumnPolicy.ON_CHANGE);
 		if (move && offset >= sourceOffset) {
 		    content.replace(sourceOffset, region.getModelLength(), "");
 		}

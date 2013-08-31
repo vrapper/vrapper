@@ -38,13 +38,13 @@ public class ContinueFindingMotion extends CountAwareMotion {
             int tweakOffset = reverse ? -1 : 1;
             try {
                 //move cursor to be on top of the last match
-                editorAdaptor.setPosition(dest.addModelOffset(tweakOffset), false);
+                editorAdaptor.setPosition(dest.addModelOffset(tweakOffset), StickyColumnPolicy.NEVER);
                 //try again
                 dest = findMotion.destination(editorAdaptor, count);
             }
             catch(CommandExecutionException e) {
                 //no match, un-tweak the cursor position
-                editorAdaptor.setPosition(dest.addModelOffset(tweakOffset * -1), false);
+                editorAdaptor.setPosition(dest.addModelOffset(tweakOffset * -1), StickyColumnPolicy.NEVER);
             }
         }
         return dest;
@@ -54,8 +54,8 @@ public class ContinueFindingMotion extends CountAwareMotion {
         return borderPolicy;
     }
 
-    public boolean updateStickyColumn() {
-        return true;
+    public StickyColumnPolicy stickyColumnPolicy() {
+        return StickyColumnPolicy.ON_CHANGE;
     }
 
 }

@@ -4,6 +4,7 @@ import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 
 public class JoinVisualLinesCommand extends AbstractCommand {
@@ -27,7 +28,7 @@ public class JoinVisualLinesCommand extends AbstractCommand {
         try {
             editorAdaptor.getHistory().beginCompoundChange();
             editorAdaptor.changeMode(NormalMode.NAME);
-            editorAdaptor.setPosition(from, false);
+            editorAdaptor.setPosition(from, StickyColumnPolicy.NEVER);
             
             int length = 1 + lastLineNo - firstLineNo;
             if (ContentType.LINES.equals(selection.getContentType(editorAdaptor.getConfiguration()))) {

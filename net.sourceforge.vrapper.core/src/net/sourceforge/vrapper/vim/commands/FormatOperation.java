@@ -8,6 +8,7 @@ import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 
 /**
  * Format text based on the configuration setting 'textwidth'.
@@ -89,7 +90,7 @@ public class FormatOperation implements TextOperation {
 		int start = region.getLeftBound().getModelOffset();
 		int length = region.getModelLength();
 		editorAdaptor.getModelContent().replace(start, length, newLines);
-		editorAdaptor.getCursorService().setPosition(region.getStart(), true);
+		editorAdaptor.getCursorService().setPosition(region.getStart(), StickyColumnPolicy.ON_CHANGE);
 	}
 	
 	/**

@@ -19,8 +19,8 @@ public class CountedMotion implements Motion {
         return motion.destination(editorAdaptor, count);
     }
 
-    public boolean updateStickyColumn() {
-        return motion.updateStickyColumn();
+    public StickyColumnPolicy stickyColumnPolicy() {
+        return motion.stickyColumnPolicy();
     }
 
     public BorderPolicy borderPolicy() {

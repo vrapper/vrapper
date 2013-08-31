@@ -9,6 +9,7 @@ import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 
 /*
  *  *:ret* *:retab* *:retab!*
@@ -201,7 +202,7 @@ public class RetabOperation extends SimpleTextOperation {
         //put cursor at beginning of sorted text
         editorAdaptor.setPosition(
         		editorAdaptor.getCursorService().newPositionForModelOffset(startLine.getBeginOffset()),
-        		true);
+        		StickyColumnPolicy.ON_CHANGE);
     }
 
 	public TextOperation repetition() {

@@ -37,8 +37,8 @@ public class RangeSearchMotion implements Motion {
     	return BorderPolicy.LINE_WISE;
     }
 
-    public boolean updateStickyColumn() {
-        return false;
+    public StickyColumnPolicy stickyColumnPolicy() {
+        return StickyColumnPolicy.NEVER;
     }
 
     public boolean isJump() {

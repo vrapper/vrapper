@@ -15,6 +15,7 @@ import net.sourceforge.vrapper.vim.LocalConfigurationListener;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.ExecuteCommandHint;
 import net.sourceforge.vrapper.vim.modes.ModeSwitchHint;
 
@@ -104,7 +105,7 @@ public class SearchMode extends AbstractCommandLineMode {
 
     private void resetIncSearch() {
         editorAdaptor.getSearchAndReplaceService().removeIncSearchHighlighting();
-        editorAdaptor.getCursorService().setPosition(startPos, false);
+        editorAdaptor.getCursorService().setPosition(startPos, StickyColumnPolicy.NEVER);
         editorAdaptor.getViewportService().setTopLine(originalTopLine);
     }
 
@@ -117,7 +118,7 @@ public class SearchMode extends AbstractCommandLineMode {
                 SearchAndReplaceService sars = editorAdaptor.getSearchAndReplaceService();
                 sars.incSearchhighlight(res.getStart(), res.getModelLength());
             }
-            MotionCommand.gotoAndChangeViewPort(editorAdaptor, res.getStart(), false);
+            MotionCommand.gotoAndChangeViewPort(editorAdaptor, res.getStart(), StickyColumnPolicy.NEVER);
         } else {
             resetIncSearch();
         }

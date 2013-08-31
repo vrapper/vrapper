@@ -3,6 +3,7 @@ package net.sourceforge.vrapper.vim.commands;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 
 /* FIXME: In Vim, if line ends with dot, two spaces are inserted instead of one
  * when joining lines. It's not implemented here.
@@ -90,7 +91,8 @@ public class JoinLinesCommand extends CountAwareCommand {
                 glue = "";
                 
             modelContent.replace(eolOffset, bolOffset - eolOffset, glue);
-            editorAdaptor.setPosition(editorAdaptor.getPosition().setModelOffset(eolOffset), true);
+            editorAdaptor.setPosition(editorAdaptor.getPosition().setModelOffset(eolOffset),
+                    StickyColumnPolicy.ON_CHANGE);
         }
     }
 

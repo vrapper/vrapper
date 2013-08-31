@@ -16,6 +16,7 @@ import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.modes.VisualMode;
 import net.sourceforge.vrapper.vim.register.StringRegisterContent;
@@ -246,7 +247,7 @@ public class VisualModeTests extends CommandTestCase {
 	@Test public void visualModeShouldEnterPainlesslyAndDeselectOnLeave() throws Exception {
 	    CursorService cursorService = platform.getCursorService();
 	    Position position = cursorService.newPositionForModelOffset(42);
-	    cursorService.setPosition(position, true);
+	    cursorService.setPosition(position, StickyColumnPolicy.ON_CHANGE);
 		adaptor.changeMode(NormalMode.NAME);
 		adaptor.changeMode(VisualMode.NAME);
 		// verify that selection has been cleared. getSelection will return non-null!

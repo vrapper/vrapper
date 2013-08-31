@@ -8,8 +8,8 @@ import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StringUtils;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.register.RegisterContent;
-import net.sourceforge.vrapper.vim.register.TextBlockRegisterContent;
 
 public class PasteAfterCommand extends CountAwareCommand {
 
@@ -73,7 +73,7 @@ public class PasteAfterCommand extends CountAwareCommand {
 	                position = content.getLineInformation(followingLine).getBeginOffset();
             }
             Position destination = cursorService.newPositionForModelOffset(position);
-            editorAdaptor.setPosition(destination, true);
+            editorAdaptor.setPosition(destination, StickyColumnPolicy.ON_CHANGE);
         } finally {
             editorAdaptor.getHistory().endCompoundChange();
         }

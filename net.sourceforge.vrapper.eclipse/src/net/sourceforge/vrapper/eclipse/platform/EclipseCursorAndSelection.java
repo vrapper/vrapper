@@ -18,6 +18,7 @@ import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -108,8 +109,9 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     }
 
     @Override
-    public void setPosition(final Position position, final boolean updateColumn) {
-    	if (!updateColumn) {
+    public void setPosition(final Position position, final StickyColumnPolicy columnPolicy) {
+    	if (columnPolicy == StickyColumnPolicy.NEVER
+    	        || columnPolicy == StickyColumnPolicy.RESET_EOL) {
 	    	caretListener.disable();
     	}
     	int viewOffset = position.getViewOffset();
@@ -119,6 +121,12 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     		viewOffset = 0;
     	}
         textViewer.getTextWidget().setSelection(viewOffset);
+        if (columnPolicy == StickyColumnPolicy.RESET_EOL) {
+            stickToEOL = false;
+            updateStickyColumn(viewOffset);
+        } else if (columnPolicy == StickyColumnPolicy.TO_EOL) {
+            stickToEOL = true;
+        }
         caretListener.enable();
     }
 
@@ -284,18 +292,6 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
             old.dispose();
             this.caretType = caretType;
         }
-    }
-
-    @Override
-    public void stickToEOL() {
-        stickToEOL = true;
-    }
-
-    @Override
-    public void stickToBOL() {
-        stickToEOL = false;
-        int carretOffset = textViewer.getTextWidget().getCaretOffset();
-        updateStickyColumn(carretOffset);
     }
 
     private final class SelectionChangeListener implements SelectionListener {

@@ -32,8 +32,8 @@ public abstract class AbstractModelSideMotion extends CountAwareMotion {
         return editorAdaptor.getCursorService().newPositionForModelOffset(destination);
     }
 
-    public boolean updateStickyColumn() {
-        return true;
+    public StickyColumnPolicy stickyColumnPolicy() {
+        return StickyColumnPolicy.ON_CHANGE;
     }
 
 }

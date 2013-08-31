@@ -5,6 +5,7 @@ import net.sourceforge.vrapper.keymap.vim.ConstructorWrappers;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 
 /**
  * Immediately execute a set of commands without storing them
@@ -27,7 +28,7 @@ public class AnonymousMacroOperation extends SimpleTextOperation {
 			ContentType contentType) throws CommandExecutionException {
 		
 		//put cursor at beginning of the region
-		editorAdaptor.getCursorService().setPosition(region.getLeftBound(), false);
+		editorAdaptor.getCursorService().setPosition(region.getLeftBound(), StickyColumnPolicy.NEVER);
 		
 		//set macro
 		Iterable<KeyStroke> parsed = ConstructorWrappers.parseKeyStrokes(macro);

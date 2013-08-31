@@ -10,6 +10,7 @@ import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.ProcessHelper;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 
 public class ReadExternalOperation extends SimpleTextOperation
 {
@@ -57,7 +58,8 @@ public class ReadExternalOperation extends SimpleTextOperation
             } else {
                 int position = range.getRightBound().getModelOffset();
                 editorAdaptor.getModelContent().replace(position, 0, s);
-                editorAdaptor.getCursorService().setPosition(range.getRightBound(), true);
+                editorAdaptor.getCursorService().setPosition(range.getRightBound(),
+                        StickyColumnPolicy.ON_CHANGE);
             }
         } catch (Exception e) {
             VrapperLog.error("r!<cmd> failed : " + e.getMessage(), e);

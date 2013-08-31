@@ -12,6 +12,7 @@ import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.CountIgnoringNonRepeatableCommand;
 import net.sourceforge.vrapper.vim.commands.motions.Motion;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 
 
 public class CommandTestCase extends VimTestCase {
@@ -33,7 +34,7 @@ public class CommandTestCase extends VimTestCase {
 			assertEquals("Test shouldn't expect motion to change content", initialContent, expectedFinalContent);
 
 		content.setText(initialContent);
-		cursorAndSelection.setPosition(new DumbPosition(initalOffset), true);
+		cursorAndSelection.setPosition(new DumbPosition(initalOffset), StickyColumnPolicy.RESET_EOL);
 		
 		executeCommand(command);
 		

@@ -13,6 +13,7 @@ import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.BlockWiseSelection.TextBlock;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 
 public class SwapCaseCommand extends AbstractModelSideCommand {
 
@@ -28,7 +29,7 @@ public class SwapCaseCommand extends AbstractModelSideCommand {
 				final TextRange range = selection.getRegion(editorAdaptor, NO_COUNT_GIVEN);
 				super.swapCase(editorAdaptor.getModelContent(), range.getLeftBound().getModelOffset(), range.getModelLength());
 				//move cursor to beginning of selection to match vim behavior
-				editorAdaptor.getCursorService().setPosition(range.getLeftBound(), true);
+				editorAdaptor.getCursorService().setPosition(range.getLeftBound(), StickyColumnPolicy.ON_CHANGE);
 				LeaveVisualModeCommand.doIt(editorAdaptor);
 			} catch (final CommandExecutionException e) {
         		editorAdaptor.getUserInterfaceService().setErrorMessage(e.getMessage());
@@ -73,7 +74,9 @@ public class SwapCaseCommand extends AbstractModelSideCommand {
                 }
                 
 				//move cursor to beginning of selection to match vim behavior
-                cursorService.setPosition(cursorService.getPositionByVisualOffset(textBlock.startLine, textBlock.startVisualOffset), true);
+                cursorService.setPosition(
+                        cursorService.getPositionByVisualOffset(textBlock.startLine, textBlock.startVisualOffset),
+                        StickyColumnPolicy.ON_CHANGE);
 				
                 history.unlock("block-action");
                 history.endCompoundChange();

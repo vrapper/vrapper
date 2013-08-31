@@ -4,6 +4,7 @@ import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.register.Register;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
 
@@ -36,7 +37,7 @@ public class PasteRegisterCommand extends CountIgnoringNonRepeatableCommand {
 			int position = offset + text.length();
 			content.replace(offset, 0, text);
 			Position destination = editorAdaptor.getCursorService().newPositionForModelOffset(position);
-			editorAdaptor.setPosition(destination, true);
+			editorAdaptor.setPosition(destination, StickyColumnPolicy.ON_CHANGE);
 		}
 	}
 

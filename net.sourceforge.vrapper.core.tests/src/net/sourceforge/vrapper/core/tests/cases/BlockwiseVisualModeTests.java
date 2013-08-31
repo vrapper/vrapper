@@ -14,6 +14,7 @@ import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.commands.BlockWiseSelection;
 import net.sourceforge.vrapper.vim.commands.Command;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.BlockwiseVisualMode;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 
@@ -238,7 +239,7 @@ public class BlockwiseVisualModeTests extends CommandTestCase {
 	@Test public void visualModeShouldEnterPainlesslyAndDeselectOnLeave() throws Exception {
 	    final CursorService cursorService = platform.getCursorService();
 	    final Position position = cursorService.newPositionForModelOffset(42);
-	    cursorService.setPosition(position, true);
+	    cursorService.setPosition(position, StickyColumnPolicy.ON_CHANGE);
 		adaptor.changeMode(NormalMode.NAME);
 		adaptor.changeMode(BlockwiseVisualMode.NAME);
 		assertEquals(adaptor.getSelection().getModelLength(), 0);

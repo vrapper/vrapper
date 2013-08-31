@@ -14,6 +14,7 @@ import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.BlockWiseSelection;
 import net.sourceforge.vrapper.vim.commands.BlockWiseSelection.TextBlock;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.InsertLineCommand;
@@ -184,7 +185,7 @@ public class AddDelimiterToSelectionCommand implements Command, DelimiterChanged
         }
         cursor.setPosition(
                 cursor.getPositionByVisualOffset(textBlock.startLine, textBlock.startVisualOffset),
-                true);
+                StickyColumnPolicy.ON_CHANGE);
     }
 
     protected Position fillWithSpacesUntil(int line, int visualOffset,

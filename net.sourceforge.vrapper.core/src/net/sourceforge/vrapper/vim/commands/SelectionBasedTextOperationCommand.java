@@ -11,6 +11,7 @@ import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.BlockWiseSelection.TextBlock;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.register.Register;
 import net.sourceforge.vrapper.vim.register.RegisterContent;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
@@ -73,7 +74,7 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
             	        
             	        // re-position to beginning of insert
             	        final Position newStart = editorAdaptor.getPosition().addModelOffset(-string.length() + 1);
-            	        editorAdaptor.setPosition(newStart, false);
+            	        editorAdaptor.setPosition(newStart, StickyColumnPolicy.NEVER);
         	        }
     	        }
 		    }
@@ -119,7 +120,7 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
                     runEnd = runEnd.addModelOffset(1);
                 }
                 if (runStart != null) {
-                    editorAdaptor.setPosition(runStart, false);
+                    editorAdaptor.setPosition(runStart, StickyColumnPolicy.NEVER);
                     final TextObject nextLine = new SimpleSelection(new StartEndTextRange(runStart, runEnd));
 
                     final RegisterContent content = lastEditRegister.getContent();
@@ -143,7 +144,7 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
                     newPos = newPos.addModelOffset(-1);
                 }
             }
-            editorAdaptor.setPosition(newPos, true);
+            editorAdaptor.setPosition(newPos, StickyColumnPolicy.ON_CHANGE);
         }
 
     }

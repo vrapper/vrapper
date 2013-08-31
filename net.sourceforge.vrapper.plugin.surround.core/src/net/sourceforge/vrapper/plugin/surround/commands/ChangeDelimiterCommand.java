@@ -9,6 +9,7 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.CountAwareCommand;
 import net.sourceforge.vrapper.vim.commands.DelimitedText;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 
 public class ChangeDelimiterCommand extends CountAwareCommand implements DelimiterChangedListener {
 
@@ -53,7 +54,7 @@ public class ChangeDelimiterCommand extends CountAwareCommand implements Delimit
         change(editorAdaptor, rightRange, replacement.getRight());
         change(editorAdaptor, leftRange, replacement.getLeft());
         // TODO: option to turn it off?
-        editorAdaptor.getCursorService().setPosition(leftRange.getLeftBound(), true);
+        editorAdaptor.getCursorService().setPosition(leftRange.getLeftBound(), StickyColumnPolicy.ON_CHANGE);
     }
 
     private static void change(EditorAdaptor editorAdaptor, TextRange range, String to) {
