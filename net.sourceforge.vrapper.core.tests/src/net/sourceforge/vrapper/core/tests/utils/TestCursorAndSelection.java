@@ -10,6 +10,7 @@ import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 
 // TODO: currently caret can point behind the content
 public class TestCursorAndSelection implements CursorService, SelectionService {
@@ -27,15 +28,18 @@ public class TestCursorAndSelection implements CursorService, SelectionService {
 		return position;
 	}
 
-	public void setPosition(Position position, boolean updateColumn) {
-	    this.selection = null;
-		this.position = position;
-		if (updateColumn) {
-		    int offset = position.getModelOffset();
+    @Override
+    public void setPosition(Position position, StickyColumnPolicy columnPolicy) {
+        this.selection = null;
+        this.position = position;
+        if (columnPolicy == StickyColumnPolicy.TO_EOL) {
+            stickyColumnNo = Integer.MAX_VALUE;
+        } else if (columnPolicy != StickyColumnPolicy.NEVER) {
+            int offset = position.getModelOffset();
             int beginOffset = content.getLineInformationOfOffset(offset).getBeginOffset();
             stickyColumnNo = offset - beginOffset;
         }
-	}
+    }
 
 	public Position newPositionForModelOffset(int offset) {
 		return new DumbPosition(offset);
@@ -52,17 +56,6 @@ public class TestCursorAndSelection implements CursorService, SelectionService {
 	public CaretType getCaret() {
 		return caretType;
 	}
-
-	public void stickToEOL() {
-	    stickyColumnNo = Integer.MAX_VALUE;
-	}
-
-    @Override
-    public void stickToBOL() {
-        int offset = position.getModelOffset();
-        int beginOffset = content.getLineInformationOfOffset(offset).getBeginOffset();
-        stickyColumnNo = offset - beginOffset;
-    }
 
 	public Position stickyColumnAtModelLine(int lineNo) {
 	    return stickyColumnAtViewLine(lineNo);

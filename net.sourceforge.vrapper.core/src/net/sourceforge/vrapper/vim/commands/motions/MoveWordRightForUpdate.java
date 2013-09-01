@@ -33,8 +33,8 @@ public class MoveWordRightForUpdate extends CountAwareMotion {
         return delegate.borderPolicy();
     }
 
-    public boolean updateStickyColumn() {
-        return delegate.updateStickyColumn();
+    public StickyColumnPolicy stickyColumnPolicy() {
+        return delegate.stickyColumnPolicy();
     }
 
     public boolean isJump() {

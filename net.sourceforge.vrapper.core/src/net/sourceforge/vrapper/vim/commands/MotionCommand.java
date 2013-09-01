@@ -12,6 +12,7 @@ import net.sourceforge.vrapper.utils.ViewPortInformation;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.motions.Motion;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 
 public class MotionCommand extends CountAwareCommand {
 
@@ -34,7 +35,7 @@ public class MotionCommand extends CountAwareCommand {
 	public static void doIt(EditorAdaptor editorAdaptor, Motion motion) throws CommandExecutionException {
 		final Position destination = motion.destination(editorAdaptor);
         Position previousPosition = editorAdaptor.getPosition();
-        gotoAndChangeViewPort(editorAdaptor, destination, motion.updateStickyColumn());
+        gotoAndChangeViewPort(editorAdaptor, destination, motion.stickyColumnPolicy());
 	    if (motion.isJump()) {
             editorAdaptor.getCursorService().setMark(CursorService.LAST_JUMP_MARK, previousPosition);
 	    }
@@ -44,7 +45,7 @@ public class MotionCommand extends CountAwareCommand {
      * Moves the cursor to the given position and centers the cursor line
      * if it is not inside the viewport.
      */
-    public static void gotoAndChangeViewPort(EditorAdaptor editorAdaptor, Position pos, boolean updateStickyColumn) {
+    public static void gotoAndChangeViewPort(EditorAdaptor editorAdaptor, Position pos, StickyColumnPolicy stickyColumnPolicy) {
 		if (pos.getViewOffset() < 0) {
             editorAdaptor.getViewportService().exposeModelPosition(pos);
         }
@@ -69,7 +70,7 @@ public class MotionCommand extends CountAwareCommand {
             int jumpLineNo = Math.max(lineNo-scrollJump+1, 0);
             CenterLineCommand.TOP.doIt(editorAdaptor, jumpLineNo);
         }
-        editorAdaptor.getCursorService().setPosition(pos, updateStickyColumn);
+        editorAdaptor.getCursorService().setPosition(pos, stickyColumnPolicy);
     }
 
 

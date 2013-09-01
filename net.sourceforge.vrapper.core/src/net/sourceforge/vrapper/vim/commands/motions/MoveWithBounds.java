@@ -18,8 +18,8 @@ public abstract class MoveWithBounds extends CountAwareMotion {
         this.bailOff = bailOff;
     }
     
-    public boolean updateStickyColumn() {
-        return true;
+    public StickyColumnPolicy stickyColumnPolicy() {
+        return StickyColumnPolicy.ON_CHANGE;
     }
     
     @Override

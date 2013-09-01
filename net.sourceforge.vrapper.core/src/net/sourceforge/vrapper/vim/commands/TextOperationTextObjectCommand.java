@@ -2,6 +2,7 @@ package net.sourceforge.vrapper.vim.commands;
 
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.ConfirmSubstitutionMode;
 
 public class TextOperationTextObjectCommand extends CountAwareCommand {
@@ -32,7 +33,7 @@ public class TextOperationTextObjectCommand extends CountAwareCommand {
         //highlighted when in ConfirmSubstitutionMode.
         if(editorAdaptor.getCurrentModeName() != ConfirmSubstitutionMode.NAME) {
             CursorService cursorService = editorAdaptor.getCursorService();
-            cursorService.setPosition(cursorService.getPosition(), true);
+            cursorService.setPosition(cursorService.getPosition(), StickyColumnPolicy.ON_CHANGE);
         }
     }
 

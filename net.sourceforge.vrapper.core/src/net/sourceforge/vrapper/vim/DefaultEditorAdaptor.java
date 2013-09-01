@@ -40,6 +40,7 @@ import net.sourceforge.vrapper.utils.SelectionArea;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.Selection;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.BlockwiseVisualMode;
 import net.sourceforge.vrapper.vim.modes.ConfirmSubstitutionMode;
 import net.sourceforge.vrapper.vim.modes.EditorMode;
@@ -363,8 +364,8 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     }
 
     @Override
-    public void setPosition(final Position destination, final boolean updateStickyColumn) {
-        cursorService.setPosition(destination, updateStickyColumn);
+    public void setPosition(final Position destination, final StickyColumnPolicy stickyColumnPolicy) {
+        cursorService.setPosition(destination, stickyColumnPolicy);
     }
 
     @Override

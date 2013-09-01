@@ -6,6 +6,7 @@ import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 
 /**
  * Inserts a new line.
@@ -60,7 +61,7 @@ public final class InsertLineCommand implements Command {
                 p.replace(line.getBeginOffset(), 0, indent + newline);
                 vim.getCursorService().setPosition(
                         vim.getCursorService().newPositionForModelOffset(line.getBeginOffset() + indent.length()),
-                        true);
+                        StickyColumnPolicy.ON_CHANGE);
             }
 
             @Override
@@ -73,10 +74,10 @@ public final class InsertLineCommand implements Command {
                     p.smartInsert(index, newline);
                     cs.setPosition(cs.newPositionForModelOffset(
                             p.getLineInformation(line.getNumber())
-                            .getEndOffset()), true);
+                            .getEndOffset()), StickyColumnPolicy.ON_CHANGE);
                 } else {
                     p.smartInsert(0, newline);
-                    cs.setPosition(cs.newPositionForModelOffset(0), true);
+                    cs.setPosition(cs.newPositionForModelOffset(0), StickyColumnPolicy.ON_CHANGE);
                 }
             }
         },
@@ -93,7 +94,7 @@ public final class InsertLineCommand implements Command {
                 p.replace(begin, 0, newline+indent);
                 CursorService cursorService = vim.getCursorService();
                 cursorService.setPosition(cursorService.newPositionForModelOffset(
-                        begin+indent.length()+newline.length()), true);
+                        begin+indent.length()+newline.length()), StickyColumnPolicy.ON_CHANGE);
             }
 
             @Override
@@ -105,7 +106,7 @@ public final class InsertLineCommand implements Command {
                 int begin = line.getEndOffset();
                 p.smartInsert(begin, newline);
                 cs.setPosition(cs.newPositionForModelOffset(p.getLineInformation(
-                        line.getNumber() + 1).getEndOffset()), true);
+                        line.getNumber() + 1).getEndOffset()), StickyColumnPolicy.ON_CHANGE);
             }
 
         };

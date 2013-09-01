@@ -79,8 +79,8 @@ public class ParagraphMotion extends CountAwareMotion {
     }
 
     @Override
-    public boolean updateStickyColumn() {
-        return true;
+    public StickyColumnPolicy stickyColumnPolicy() {
+        return StickyColumnPolicy.ON_CHANGE;
     }
     
     @Override

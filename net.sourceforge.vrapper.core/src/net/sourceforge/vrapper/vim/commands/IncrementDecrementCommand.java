@@ -4,6 +4,7 @@ import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 
 /**
  * Increment (Ctrl-A) or decrement (Ctrl-X) the number under (or to the right of)
@@ -107,7 +108,7 @@ public class IncrementDecrementCommand extends CountAwareCommand {
 	 	Position newPos = editorAdaptor.getCursorService().newPositionForModelOffset(
 	 			line.getBeginOffset() + boundary.numStartIndex + numStr.length() -1
 		);
-	 	editorAdaptor.getCursorService().setPosition(newPos, true);
+	 	editorAdaptor.getCursorService().setPosition(newPos, StickyColumnPolicy.ON_CHANGE);
 	}
 	
 	/**

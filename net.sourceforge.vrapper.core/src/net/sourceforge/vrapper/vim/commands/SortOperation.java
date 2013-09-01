@@ -15,6 +15,7 @@ import net.sourceforge.vrapper.utils.PatternSortComparator;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 
 /**
  * 7. Sorting text						*sorting*
@@ -401,7 +402,7 @@ public class SortOperation extends SimpleTextOperation {
         //put cursor at beginning of sorted text
         editorAdaptor.setPosition(
         		editorAdaptor.getCursorService().newPositionForModelOffset(startLine.getBeginOffset()),
-        		true
+        		StickyColumnPolicy.ON_CHANGE
         );
     }
 

@@ -9,6 +9,7 @@ import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.register.RegisterContent;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
 
@@ -81,9 +82,9 @@ public class DeleteOperation extends SimpleTextOperation {
                 LineInformation lastLine = txtContent.getLineInformationOfOffset(position);
                 int indent = VimUtils.getIndent(txtContent, lastLine).length();
                 int offset = lastLine.getBeginOffset() + indent;
-                cur.setPosition(cur.newPositionForModelOffset(offset), true);
+                cur.setPosition(cur.newPositionForModelOffset(offset), StickyColumnPolicy.ON_CHANGE);
             } else // fix sticky column
-                cur.setPosition(cur.getPosition(), true);
+                cur.setPosition(cur.getPosition(), StickyColumnPolicy.ON_CHANGE);
         }
     }
 }

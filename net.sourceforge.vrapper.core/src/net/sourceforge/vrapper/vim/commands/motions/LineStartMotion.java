@@ -21,6 +21,11 @@ public class LineStartMotion extends AbstractModelSideMotion {
     }
 
     @Override
+    public StickyColumnPolicy stickyColumnPolicy() {
+        return StickyColumnPolicy.RESET_EOL;
+    }
+
+    @Override
     protected int destination(int position, TextContent content, int count) {
         // note: it ignores count, because that's what Vim's '^' and '0' motions do
         // (well, '^' does, try to do counted '0' ;-])

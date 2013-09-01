@@ -8,6 +8,7 @@ import net.sourceforge.vrapper.utils.StringUtils;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.register.RegisterContent;
 
 public class PasteOperation implements TextOperation {
@@ -68,6 +69,6 @@ public class PasteOperation implements TextOperation {
         }
         // content.replace(offset, 0, StringUtils.multiply(text, count));
         Position destination = editorAdaptor.getCursorService().newPositionForModelOffset(position);
-        editorAdaptor.setPosition(destination, true);
+        editorAdaptor.setPosition(destination, StickyColumnPolicy.ON_CHANGE);
     }
 }

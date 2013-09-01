@@ -77,8 +77,8 @@ public class PageScrollMotion extends CountAwareMotion {
         return BorderPolicy.LINE_WISE;
     }
 
-    public boolean updateStickyColumn() {
-        return true;
+    public StickyColumnPolicy stickyColumnPolicy() {
+        return StickyColumnPolicy.ON_CHANGE;
     }
 
     @Override

@@ -14,6 +14,7 @@ import net.sourceforge.vrapper.utils.ProcessHelper;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 
 public class PipeExternalOperation extends SimpleTextOperation
 {
@@ -75,7 +76,8 @@ public class PipeExternalOperation extends SimpleTextOperation
                     s = VimUtils.stripLastNewline(s);
                 }
                 txt.replace(position, length, s);
-                editorAdaptor.getCursorService().setPosition(range.getLeftBound(), true);
+                editorAdaptor.getCursorService().setPosition(range.getLeftBound(),
+                        StickyColumnPolicy.ON_CHANGE);
             }
         } catch (Exception e) {
             VrapperLog.error("!<cmd> failed : " + e.getMessage(), e);

@@ -15,6 +15,7 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.CenterLineCommand;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 
 /**
  * Prompt the user for each match in a substitution, activated by the 'c' flag
@@ -133,7 +134,7 @@ public class ConfirmSubstitutionMode extends AbstractMode {
             return;
         }
 
-        editorAdaptor.setPosition(result.getLeftBound(), false);
+        editorAdaptor.setPosition(result.getLeftBound(), StickyColumnPolicy.NEVER);
         if(doHighlight) {
             //force match to be visible (move scrollbars)
             //is there a better way to do this?

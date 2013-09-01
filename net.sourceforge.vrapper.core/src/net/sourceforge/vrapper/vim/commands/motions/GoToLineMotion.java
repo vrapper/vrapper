@@ -57,8 +57,8 @@ public class GoToLineMotion extends CountAwareMotion {
         return 0;
     }
 
-    public boolean updateStickyColumn() {
-        return true;
+    public StickyColumnPolicy stickyColumnPolicy() {
+        return StickyColumnPolicy.ON_CHANGE;
     }
 
     public BorderPolicy borderPolicy() {

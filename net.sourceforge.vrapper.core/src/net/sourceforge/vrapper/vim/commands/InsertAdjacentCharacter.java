@@ -6,6 +6,7 @@ import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 
 /**
  * While in InsertMode, you can hit Ctrl-E or Ctrl-Y.
@@ -56,7 +57,7 @@ public class InsertAdjacentCharacter extends CountIgnoringNonRepeatableCommand {
         	//insert this adjacent character at the cursor position
         	content.smartInsert(adjacentChar);
         	//update stickyColumn in case the user does this operation back-to-back
-        	cursorService.setPosition(cursorService.newPositionForViewOffset(cursorOffset+1), true);
+        	cursorService.setPosition(cursorService.newPositionForViewOffset(cursorOffset+1), StickyColumnPolicy.ON_CHANGE);
         }
 	}
 

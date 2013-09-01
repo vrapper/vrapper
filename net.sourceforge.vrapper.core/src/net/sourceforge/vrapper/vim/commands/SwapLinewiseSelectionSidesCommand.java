@@ -2,6 +2,7 @@ package net.sourceforge.vrapper.vim.commands;
 
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 
 public class SwapLinewiseSelectionSidesCommand extends CountIgnoringNonRepeatableCommand {
     
@@ -25,7 +26,7 @@ public class SwapLinewiseSelectionSidesCommand extends CountIgnoringNonRepeatabl
         
         selection = new LineWiseSelection(editorAdaptor, end, start);
         
-        editorAdaptor.setPosition(end, true);
+        editorAdaptor.setPosition(end, StickyColumnPolicy.ON_CHANGE);
         editorAdaptor.setSelection(selection);
     }
 

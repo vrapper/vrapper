@@ -16,6 +16,11 @@ public class LineEndMotion extends AbstractModelSideMotion {
     }
 
     @Override
+    public StickyColumnPolicy stickyColumnPolicy() {
+        return StickyColumnPolicy.TO_EOL;
+    }
+
+    @Override
     protected int destination(int modelOffset, TextContent modelContent, int count) {
         return getDestination(modelOffset, modelContent, count);
     }

@@ -41,8 +41,8 @@ public class GoToEditLocation extends CountAwareMotion {
 		return BorderPolicy.EXCLUSIVE;
 	}
 
-	public boolean updateStickyColumn() {
-		return true;
+	public StickyColumnPolicy stickyColumnPolicy() {
+		return StickyColumnPolicy.ON_CHANGE;
 	}
 
 	@Override

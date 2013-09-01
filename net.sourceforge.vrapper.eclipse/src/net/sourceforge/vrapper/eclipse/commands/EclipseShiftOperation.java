@@ -13,6 +13,7 @@ import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 import net.sourceforge.vrapper.vim.commands.TextObject;
 import net.sourceforge.vrapper.vim.commands.TextOperation;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 
@@ -66,7 +67,8 @@ public abstract class EclipseShiftOperation implements TextOperation {
             editorAdaptor.setPosition(
                     editorAdaptor.getCursorService().newPositionForModelOffset(
                             VimUtils.getFirstNonWhiteSpaceOffset(
-                                    modelContent, modelContent.getLineInformation(startLine))), true);
+                                    modelContent, modelContent.getLineInformation(startLine))),
+                    StickyColumnPolicy.ON_CHANGE);
         } finally {
             editorAdaptor.getHistory().unlock();
             editorAdaptor.getHistory().endCompoundChange();

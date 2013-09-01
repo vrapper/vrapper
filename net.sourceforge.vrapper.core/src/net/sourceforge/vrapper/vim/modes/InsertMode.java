@@ -49,6 +49,7 @@ import net.sourceforge.vrapper.vim.commands.motions.MoveLeftAcrossLines;
 import net.sourceforge.vrapper.vim.commands.motions.MoveRightAcrossLines;
 import net.sourceforge.vrapper.vim.commands.motions.MoveUp;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordLeft;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.commandline.CommandLineMode;
 import net.sourceforge.vrapper.vim.modes.commandline.PasteRegisterMode;
 import net.sourceforge.vrapper.vim.register.Register;
@@ -394,7 +395,7 @@ public class InsertMode extends AbstractMode {
 
     	model.replace(pos - toDelete, toDelete, "");
     	editorAdaptor.setPosition(editorAdaptor.getCursorService()
-    			.newPositionForModelOffset(pos - toDelete), false);
+    			.newPositionForModelOffset(pos - toDelete), StickyColumnPolicy.NEVER);
 
     	return true;
     }
@@ -414,7 +415,7 @@ public class InsertMode extends AbstractMode {
                 }
                 c.replace(pos2, pos - pos2, "");
                 editorAdaptor.setPosition(editorAdaptor.getCursorService()
-                        .newPositionForModelOffset(pos2), false);
+                        .newPositionForModelOffset(pos2), StickyColumnPolicy.NEVER);
             }
         } else if (SpecialKey.ARROW_LEFT.equals(stroke.getSpecialKey())
                 || SpecialKey.ARROW_RIGHT.equals(stroke.getSpecialKey())
@@ -435,7 +436,7 @@ public class InsertMode extends AbstractMode {
             }
             try {
                 Position destination = direction.destination(editorAdaptor);
-                editorAdaptor.setPosition(destination, direction.updateStickyColumn());
+                editorAdaptor.setPosition(destination, direction.stickyColumnPolicy());
             } catch (CommandExecutionException e) {
                 VrapperLog.error("Failed to navigate in editor", e);
             }
@@ -502,8 +503,8 @@ public class InsertMode extends AbstractMode {
         @Override
         public void execute(final EditorAdaptor editorAdaptor)
                 throws CommandExecutionException {
-            editorAdaptor.setPosition(editorAdaptor.getPosition()
-                    .addModelOffset(offset), true);
+            editorAdaptor.setPosition(editorAdaptor.getPosition().addModelOffset(offset),
+                    StickyColumnPolicy.ON_CHANGE);
         }
     }
 
@@ -523,7 +524,7 @@ public class InsertMode extends AbstractMode {
                     SimpleInsertCommandSequence.this.execute(editorAdaptor);
                     for (int i = 1; i < count; i++) {
                         final Position pos = editorAdaptor.getPosition();
-                        editorAdaptor.setPosition(pos.addModelOffset(1), false);
+                        editorAdaptor.setPosition(pos.addModelOffset(1), StickyColumnPolicy.NEVER);
                         SimpleInsertCommandSequence.this.execute(editorAdaptor);
                     }
                 }

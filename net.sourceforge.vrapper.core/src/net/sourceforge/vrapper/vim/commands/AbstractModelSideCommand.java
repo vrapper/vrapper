@@ -3,6 +3,7 @@ package net.sourceforge.vrapper.vim.commands;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 
 public abstract class AbstractModelSideCommand extends CountAwareCommand {
 
@@ -24,7 +25,7 @@ public abstract class AbstractModelSideCommand extends CountAwareCommand {
         try {
             editorAdaptor.getHistory().beginCompoundChange();
             offset = execute(content, offset, count);
-            cursorService.setPosition(cursorService.newPositionForModelOffset(offset), true);
+            cursorService.setPosition(cursorService.newPositionForModelOffset(offset), StickyColumnPolicy.ON_CHANGE);
         } finally {
             editorAdaptor.getHistory().endCompoundChange();
         }
