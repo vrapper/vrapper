@@ -140,6 +140,11 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
     		editorAdaptor.getUserInterfaceService().setErrorMessage("No operation specified.");
     		return null;
         }
+        while(operationStr.startsWith(":")) {
+            //remove any superfluous ':' preceding the operation
+            operationStr = operationStr.substring(1);
+        }
+
         char operation = operationStr.charAt(0);
     	if(operation == 'y') {
     		return YankOperation.INSTANCE;
