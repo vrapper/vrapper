@@ -428,9 +428,11 @@ public class CommandLineParser extends AbstractCommandParser {
     }
     @Override
     public Command parseAndExecute(String first, String command) {
-        while(command.startsWith(first)) {
-            //remove any superfluous ':' preceding the command
-            command = command.substring(1);
+        if(first != null) {
+            while(command.startsWith(first)) {
+                //remove any superfluous ':' preceding the command
+                command = command.substring(1);
+            }
         }
         if(command.indexOf(" | ") > -1) {
             String[] commands = command.split(" | ");
