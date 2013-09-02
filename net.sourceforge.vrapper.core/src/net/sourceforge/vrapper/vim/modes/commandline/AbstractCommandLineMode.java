@@ -4,6 +4,7 @@ import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.platform.CommandLineUI;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.modes.AbstractMode;
+import net.sourceforge.vrapper.vim.modes.InitialContentsHint;
 import net.sourceforge.vrapper.vim.modes.ModeSwitchHint;
 
 public abstract class AbstractCommandLineMode extends AbstractMode {
@@ -38,6 +39,9 @@ public abstract class AbstractCommandLineMode extends AbstractMode {
         	    commandLine.resetContents("'<,'>");
         	    //set the '< and '> marks
         	    editorAdaptor.rememberLastActiveSelection();
+        	}
+        	else if(hint instanceof InitialContentsHint) {
+        	    commandLine.resetContents( ((InitialContentsHint)hint).getContents() );
         	}
         }
     }
