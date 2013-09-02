@@ -1,4 +1,42 @@
 <div class="newsbox">
+    <div class="date">2013-09-02</div>
+    <h4>Updates to unstable update site</h4>
+
+    <p>Time for another monthly status update on Vrapper.  Our last release
+    added a lot of new features so this last month has been mostly defect
+    fixing.  The occasional new feature or two has been added though.  The
+    unstable update site currently includes the following changes from
+    0.34.1:</p>
+
+    <ul>
+        <li>Fixed issue with 'S', 'cc', 'Vs', and 'Vc' on the last line of a file</li>
+        <li>Fixed issue where ':source' couldn't handle absolute paths</li>
+        <li>Fixed ':eclipseaction!'</li>
+        <li>Fixed Ctrl-R in command-line mode</li>
+        <li>Fixed issue where substitution 'c' confirm would match on a replace</li>
+        <li>Fixed issue with 'i_ctrl-o' followed by ':&lt;command&gt;'</li>
+        <li>Fixed visual block selection on the last line of a file</li>
+        <li>Fixed visual block selection with horizontally scrolled view</li>
+        <li>Added support for 'i_ctrl-t' and 'i_ctrl-d'</li>
+        <li>Added support for 'g~'</li>
+        <li>Added support for '!' in NormalMode</li>
+        <li>Added support for pipe '|' to chain commands</li>
+        <li>Added support for ':move' and ':copy' without a line range definition</li>
+        <li>Added support for `:split &lt;filename&gt;` in Split Editor plugin</li>
+        <li>Refactored sticky column handling</li>
+        <li>Refactored newline handling when pasting text</li>
+        <li>Refactored function keys (F1-F20) mapping</li>
+        <li>Refactored key handling of certain Ctrl keys</li>
+    </ul>
+    
+    <p>There are still plenty more defects and feature requests to address but
+    I'm constantly amazed by how much we get done each month.  I guess I'm just
+    shocked that a Vim plugin for Eclipse requires monthly status updates and a
+    2-month release cycle.  But, it seems we're doing something right, we've had
+    over 1,500 installs via the Eclipse Marketplace for two months in a row!</p>
+    
+</div>
+<div class="newsbox">
     <div class="date">2013-08-10</div>
     <h4>0.34.1 Released</h4>
 
