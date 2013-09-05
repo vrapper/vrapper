@@ -10,6 +10,6 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
  * @author Krzysiek Goj
  */
 public interface DelimitedText {
-    TextRange leftDelimiter(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException;
-    TextRange rightDelimiter(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException;
+    TextRange leftDelimiter(int offset, EditorAdaptor editorAdaptor, int count) throws CommandExecutionException;
+    TextRange rightDelimiter(int offset, EditorAdaptor editorAdaptor, int count) throws CommandExecutionException;
 }

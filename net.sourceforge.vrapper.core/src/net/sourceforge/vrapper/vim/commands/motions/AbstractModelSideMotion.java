@@ -5,7 +5,6 @@ import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.Selection;
-import net.sourceforge.vrapper.vim.modes.VisualMode;
 
 public abstract class AbstractModelSideMotion extends CountAwareMotion {
 
@@ -15,16 +14,13 @@ public abstract class AbstractModelSideMotion extends CountAwareMotion {
 
     @Override
     public Position destination(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
+        return destination(editorAdaptor.getCursorService().getPosition().getModelOffset(), 
+                editorAdaptor, count);
+    }
+
+    public Position destination(int modelOffset, EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
         if (count == NO_COUNT_GIVEN) {
             count = 1;
-        }
-        int modelOffset = editorAdaptor.getCursorService().getPosition().getModelOffset();
-        if (VisualMode.NAME.equals(editorAdaptor.getCurrentModeName())) {
-        	//workaround for hack in EvilCaret.java
-            Selection selection = editorAdaptor.getSelection();
-            if (selection != null && !isLeftRight() && selection.getStart().getModelOffset() < selection.getEnd().getModelOffset()) {
-                modelOffset--;
-            }
         }
         setCurrentState(editorAdaptor.getCurrentModeName(), editorAdaptor.getSelection());
         TextContent modelContent = editorAdaptor.getModelContent();
