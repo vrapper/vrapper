@@ -131,4 +131,8 @@ public class TestTextContent implements TextContent {
         smartInsert(cursorService.getPosition().getModelOffset(), s);
     }
 
+    public String toString() {
+        return "TestTextContent(" + buffer + ")";
+    }
+
 }
