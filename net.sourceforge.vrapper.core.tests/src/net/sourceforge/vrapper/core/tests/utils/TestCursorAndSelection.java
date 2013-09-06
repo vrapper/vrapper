@@ -22,7 +22,7 @@ public class TestCursorAndSelection implements CursorService, SelectionService {
 
 	public Position getPosition() {
 	    if (selection != null) {
-	        return selection.getEnd();
+	        return selection.getEnd().addModelOffset(-1);
 	    }
 		return position;
 	}
