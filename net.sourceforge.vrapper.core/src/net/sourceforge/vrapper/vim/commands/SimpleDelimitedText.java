@@ -7,14 +7,15 @@ import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.motions.AbstractModelSideMotion;
 import net.sourceforge.vrapper.vim.commands.motions.BailOffMotion;
 import net.sourceforge.vrapper.vim.commands.motions.CountAwareMotion;
 import net.sourceforge.vrapper.vim.commands.motions.FindBalancedMotion;
 
 public class SimpleDelimitedText implements DelimitedText {
 
-    private CountAwareMotion leftMotion;
-    private CountAwareMotion rightMotion;
+    private AbstractModelSideMotion leftMotion;
+    private AbstractModelSideMotion rightMotion;
 
     public SimpleDelimitedText(char leftDelim, char rightDelim) {
         leftMotion = new BailOffMotion(leftDelim, new FindBalancedMotion(leftDelim, rightDelim, true, true));
@@ -33,8 +34,8 @@ public class SimpleDelimitedText implements DelimitedText {
      * newline boundary at the other end.  This is to handle the difference
      * between 'i' and 'a' for delimited text objects.
      */
-    public TextRange leftDelimiter(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
-        Position left = leftMotion.destination(editorAdaptor, count);
+    public TextRange leftDelimiter(int offset, EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
+        Position left = leftMotion.destination(offset, editorAdaptor, count);
         Position endDelim = left.addModelOffset(1);
         
         TextContent content = editorAdaptor.getModelContent();
@@ -49,8 +50,8 @@ public class SimpleDelimitedText implements DelimitedText {
         return new StartEndTextRange(left, endDelim);
     }
 
-    public TextRange rightDelimiter(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
-        Position right = rightMotion.destination(editorAdaptor, count);
+    public TextRange rightDelimiter(int offset, EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
+        Position right = rightMotion.destination(offset, editorAdaptor, count);
         
         TextContent content = editorAdaptor.getModelContent();
         int startIndex = right.getModelOffset();

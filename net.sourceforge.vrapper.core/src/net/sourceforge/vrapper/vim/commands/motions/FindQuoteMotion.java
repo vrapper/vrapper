@@ -34,7 +34,7 @@ public class FindQuoteMotion extends AbstractModelSideMotion {
     }
 
 	@Override
-	protected int destination(int offset, TextContent content, int count) throws CommandExecutionException {
+	public int destination(int offset, TextContent content, int count) throws CommandExecutionException {
 		if(startIndex > -1) {
 			//the left quote is after offset, we need to find
 			//the next quote after *that*

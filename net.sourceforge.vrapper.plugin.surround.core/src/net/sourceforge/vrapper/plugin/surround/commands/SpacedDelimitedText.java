@@ -13,8 +13,8 @@ public class SpacedDelimitedText extends SimpleDelimitedText {
     }
     
     @Override
-    public TextRange leftDelimiter(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
-        TextRange result = super.leftDelimiter(editorAdaptor, count);
+    public TextRange leftDelimiter(int startOffset, EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
+        TextRange result = super.leftDelimiter(startOffset, editorAdaptor, count);
         int offset = result.getRightBound().getModelOffset();
         TextContent modelContent = editorAdaptor.getModelContent();
         int length = modelContent.getLineInformationOfOffset(offset).getEndOffset() - offset;
@@ -27,8 +27,8 @@ public class SpacedDelimitedText extends SimpleDelimitedText {
     }
     
     @Override
-    public TextRange rightDelimiter(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
-        TextRange result = super.rightDelimiter(editorAdaptor, count);
+    public TextRange rightDelimiter(int startOffset, EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
+        TextRange result = super.rightDelimiter(startOffset, editorAdaptor, count);
         int offset = result.getLeftBound().getModelOffset();
         TextContent modelContent = editorAdaptor.getModelContent();
         int beginOffset = modelContent.getLineInformationOfOffset(offset).getBeginOffset();
