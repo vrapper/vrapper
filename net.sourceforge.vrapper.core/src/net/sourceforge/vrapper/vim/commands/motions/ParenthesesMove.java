@@ -57,7 +57,12 @@ public class ParenthesesMove extends AbstractModelSideMotion {
             }
         }
         if (pair == null) {
-            throw new CommandExecutionException("no parentheses to jump found");
+            if(CPreProcessorMove.containsPreProcessor(content, info, offset)) {
+                return new CPreProcessorMove().destination(offset, content, count);
+            }
+            else {
+                throw new CommandExecutionException("no parentheses to jump found");
+            }
         }
 
         int match = findMatch(index, pair, content, count);
