@@ -49,8 +49,9 @@ public class ChangeDelimiterCommand extends CountAwareCommand implements Delimit
     public static void doIt(EditorAdaptor editorAdaptor, int count, DelimitedText delimitedText,
             DelimiterHolder replacement)
             throws CommandExecutionException {
-        TextRange rightRange = delimitedText.rightDelimiter(editorAdaptor, count);
-        TextRange leftRange = delimitedText.leftDelimiter(editorAdaptor, count);
+        final int startOffset = editorAdaptor.getPosition().getModelOffset();
+        TextRange rightRange = delimitedText.rightDelimiter(startOffset, editorAdaptor, count);
+        TextRange leftRange = delimitedText.leftDelimiter(startOffset, editorAdaptor, count);
         change(editorAdaptor, rightRange, replacement.getRight());
         change(editorAdaptor, leftRange, replacement.getLeft());
         // TODO: option to turn it off?

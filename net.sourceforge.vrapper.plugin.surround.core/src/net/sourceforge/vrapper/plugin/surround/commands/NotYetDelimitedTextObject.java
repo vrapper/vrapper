@@ -18,12 +18,16 @@ class NotYetDelimitedTextObject implements DelimitedText {
         this.textObject = textObject;
     }
 
-    public TextRange leftDelimiter(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
+    @Override
+    public TextRange leftDelimiter(int offset, EditorAdaptor editorAdaptor,
+            int count) throws CommandExecutionException {
         Position leftBound = textObject.getRegion(editorAdaptor, textObject.getCount()).getLeftBound();
         return new StartEndTextRange(leftBound, leftBound);
     }
 
-    public TextRange rightDelimiter(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
+    @Override
+    public TextRange rightDelimiter(int offset, EditorAdaptor editorAdaptor,
+            int count) throws CommandExecutionException {
         Position rightBound = textObject.getRegion(editorAdaptor, textObject.getCount()).getRightBound();
         return new StartEndTextRange(rightBound, rightBound);
     }

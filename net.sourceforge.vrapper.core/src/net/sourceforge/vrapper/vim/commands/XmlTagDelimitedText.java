@@ -37,22 +37,26 @@ public class XmlTagDelimitedText implements DelimitedText {
     private TextRange endTag;
     private TextRange openTag;
 	
-    public TextRange leftDelimiter(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
-    	calculateOpenAndCloseTag(editorAdaptor, count);
+    @Override
+    public TextRange leftDelimiter(int offset, EditorAdaptor editorAdaptor,
+            int count) throws CommandExecutionException {
+    	calculateOpenAndCloseTag(offset, editorAdaptor, count);
         return openTag;
     }
 
-    public TextRange rightDelimiter(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
-        calculateOpenAndCloseTag(editorAdaptor, count);
+    @Override
+    public TextRange rightDelimiter(int offset, EditorAdaptor editorAdaptor,
+            int count) throws CommandExecutionException {
+        calculateOpenAndCloseTag(offset, editorAdaptor, count);
         return endTag;
     }
     
-    private void calculateOpenAndCloseTag(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
+    private void calculateOpenAndCloseTag(int offset, EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
         if(count == 0) {
     		count = 1;
     	}
     	
-    	Position beginningPosition = getStartingPosition(editorAdaptor);
+    	Position beginningPosition = getStartingPosition(offset, editorAdaptor);
     	
     	Position startOpenSearch = beginningPosition.addModelOffset(1);
     	Position startCloseSearch = beginningPosition.addModelOffset(-1);
@@ -77,18 +81,8 @@ public class XmlTagDelimitedText implements DelimitedText {
      * Account for the possibility that we're in front of a tag (indentation) or inside an opening or closing tag.
      * @throws CommandExecutionException 
      */
-    private Position getStartingPosition(EditorAdaptor editorAdaptor) throws CommandExecutionException {
-        Position beginningPosition = editorAdaptor.getCursorService()
-                .getPosition();
-
-        if (VisualMode.NAME.equals(editorAdaptor.getCurrentModeName())) {
-            // workaround for hack in EvilCaret.java
-            Selection selection = editorAdaptor.getSelection();
-            if (selection != null
-                    && selection.getStart().getModelOffset() < selection .getEnd().getModelOffset()) {
-                beginningPosition = beginningPosition.addModelOffset(-1);
-            }
-        }
+    private Position getStartingPosition(int offset, EditorAdaptor editorAdaptor) throws CommandExecutionException {
+        Position beginningPosition = editorAdaptor.getCursorService().newPositionForModelOffset(offset);
 
         if (insideIndentation(beginningPosition, editorAdaptor)) {
             // we are in the indentation at the start of a line, move to tags on the right.
