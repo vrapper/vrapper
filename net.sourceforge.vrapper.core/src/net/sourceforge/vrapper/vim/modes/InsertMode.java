@@ -447,8 +447,19 @@ public class InsertMode extends AbstractMode {
             } else {
                 s = String.valueOf(stroke.getCharacter());
             }
-            c.smartInsert(s);
+            handleVirtualInsert(c, s);
         }
+    }
+    
+    /**
+     * This method only exists for ReplaceMode to override it. I know, I know,
+     * it's a horrible hack.  I couldn't find a way for smartInsert to know when
+     * Eclipse is in overwrite mode though.  So, if we're in InsertMode, perform
+     * the virtual insert.  If we're in ReplaceMode, the ReplaceMode class will
+     * handle the insert (by actually performing a replace).
+     */
+    protected void handleVirtualInsert(TextContent content, String str) {
+        content.smartInsert(str);
     }
 
     /**

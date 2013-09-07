@@ -126,6 +126,20 @@ public class ReplaceMode extends InsertMode {
     	}
     }
     
+    /**
+     * Perform a replace rather than an insert.  This method is called when
+     * replaying a macro that contains a replace because InsertMode's
+     * handleVirtualStroke method would've performed an insert.  All of the
+     * other logic in handleVirtualStroke is valid for both ReplaceMode and
+     * InsertMode so I only need to tweak the actual insert (replace).
+     */
+    @Override
+    protected void handleVirtualInsert(TextContent content, String str) {
+        content.replace(editorAdaptor.getPosition().getModelOffset(), str.length(), str);
+        //replace mode moves cursor after each character replaced
+        editorAdaptor.setPosition( editorAdaptor.getPosition().addModelOffset(str.length()), StickyColumnPolicy.NEVER );
+    }
+    
     public static class ChangeToReplaceModeCommand extends ChangeToInsertModeCommand {
     	@Override
     	public void execute(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
