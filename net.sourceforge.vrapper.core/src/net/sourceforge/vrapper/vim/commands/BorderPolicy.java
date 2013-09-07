@@ -1,8 +1,6 @@
 package net.sourceforge.vrapper.vim.commands;
 
 public enum BorderPolicy {
-	/** Unused, likely has undefined behavior. */
-	DONT_CARE,
 	/** If cursor is on a char, use the offset of the cursor for a selection. */
 	EXCLUSIVE,
 	/**
