@@ -518,7 +518,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
 
                     			//mapping failed though, check if key is in global map.
                     			if (KeyMap.GLOBAL_MAP.containsKey(key)) {
-                    				key = KeyMap.GLOBAL_MAP.get(key);
+                    				key = new RemappedKeyStroke(KeyMap.GLOBAL_MAP.get(key), false);
                     			}
                     			return currentMode.handleKey(key);
                     		}
@@ -538,7 +538,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
                 }
             }
             if (KeyMap.GLOBAL_MAP.containsKey(key)) {
-                key = KeyMap.GLOBAL_MAP.get(key);
+                key = new RemappedKeyStroke(KeyMap.GLOBAL_MAP.get(key), false);
             }
             return currentMode.handleKey(key);
         }
