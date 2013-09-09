@@ -422,7 +422,9 @@ public class CommandLineParser extends AbstractCommandParser {
             prefix = tabComplete.getNextMatch(prefix, paths, dirsOnly, e.withShiftKey());
             return cmd + prefix;
         } else {
-            // user hit TAB for no reason
+            //user hit TAB but it wasn't intended as a tab-completion
+            //insert tab character
+            commandLine.type("\t");
         }
         return null;
     }
