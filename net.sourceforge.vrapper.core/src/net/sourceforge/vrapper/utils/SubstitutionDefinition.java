@@ -39,6 +39,10 @@ public class SubstitutionDefinition {
 			//carriage-return.  Eclipse uses \R as a platform-independent newline
 			replace = replace.replaceAll("\\\\r", "\\\\R");
 
+			//replace "\t" with the tab character "\t"
+			//(otherwise it gets interpreted as \\t, which is two characters)
+			replace = replace.replaceAll("\\\\t", "\t");
+
 			//  '\=@x' means 'insert register x'
 			//but you can't include *anything* else in the replace string
 			if(replace.matches("^\\\\=@.$")) {
