@@ -114,10 +114,8 @@ public class SearchMode extends AbstractCommandLineMode {
         Search s = SearchCommandParser.createSearch(editorAdaptor, keyword, !forward, false, SearchOffset.NONE);
         SearchResult res = VimUtils.wrapAroundSearch(editorAdaptor, s, startPos);
         if (res.isFound()) {
-            if (editorAdaptor.getConfiguration().get(Options.SEARCH_HIGHLIGHT)) {
-                SearchAndReplaceService sars = editorAdaptor.getSearchAndReplaceService();
-                sars.incSearchhighlight(res.getStart(), res.getModelLength());
-            }
+            SearchAndReplaceService sars = editorAdaptor.getSearchAndReplaceService();
+            sars.incSearchhighlight(res.getStart(), res.getModelLength());
             MotionCommand.gotoAndChangeViewPort(editorAdaptor, res.getStart(), StickyColumnPolicy.NEVER);
         } else {
             resetIncSearch();
