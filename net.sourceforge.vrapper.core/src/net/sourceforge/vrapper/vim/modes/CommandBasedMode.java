@@ -334,7 +334,7 @@ public abstract class CommandBasedMode extends AbstractMode {
 
     public void leaveMode(ModeSwitchHint... hints) throws CommandExecutionException {
         super.leaveMode(hints);
-        commandDone();
+        resetCommandBuffer();
     }
 
     /**
