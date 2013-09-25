@@ -15,7 +15,6 @@ import java.util.Queue;
 import net.sourceforge.vrapper.keymap.KeyMap;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SpecialKey;
-import net.sourceforge.vrapper.keymap.Transition;
 import net.sourceforge.vrapper.keymap.vim.SimpleKeyStroke;
 import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.CommandLineUI;
@@ -50,6 +49,7 @@ import net.sourceforge.vrapper.vim.modes.LinewiseVisualMode;
 import net.sourceforge.vrapper.vim.modes.ModeSwitchHint;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.modes.ReplaceMode;
+import net.sourceforge.vrapper.vim.modes.TempNormalMode;
 import net.sourceforge.vrapper.vim.modes.VisualMode;
 import net.sourceforge.vrapper.vim.modes.commandline.CommandLineMode;
 import net.sourceforge.vrapper.vim.modes.commandline.CommandLineParser;
@@ -149,6 +149,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         modeMap.clear();
         final EditorMode[] modes = {
                 new NormalMode(self),
+                new TempNormalMode(self),
                 new VisualMode(self),
                 new LinewiseVisualMode(self),
                 new BlockwiseVisualMode(self),

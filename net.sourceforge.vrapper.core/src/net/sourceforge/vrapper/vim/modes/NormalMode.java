@@ -104,7 +104,6 @@ public class NormalMode extends CommandBasedMode {
     private static State<TextObject> textObjects;
     private static State<DelimitedText> delimitedTexts;
     private static State<Motion> textMotions;
-    private boolean returnToInsertMode = false;
 
     public NormalMode(final EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
@@ -394,10 +393,6 @@ public class NormalMode extends CommandBasedMode {
         super.commandDone();
         editorAdaptor.getCursorService().setCaret(CaretType.RECTANGULAR);
         editorAdaptor.getRegisterManager().activateDefaultRegister();
-        if(returnToInsertMode) {
-            returnToInsertMode = false;
-            editorAdaptor.changeModeSafely(InsertMode.NAME);
-        }
     }
 
     @Override
@@ -412,9 +407,6 @@ public class NormalMode extends CommandBasedMode {
                 } catch (final CommandExecutionException e) {
                     editorAdaptor.getUserInterfaceService().setErrorMessage(e.getMessage());
                 }
-            }
-            else if(args[0] == InsertMode.RETURN_TO_INSERTMODE) {
-                returnToInsertMode = true;
             }
         }
     }
