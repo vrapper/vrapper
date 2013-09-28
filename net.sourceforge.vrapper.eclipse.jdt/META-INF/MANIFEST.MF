@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Vrapper - JDT enchantments
 Bundle-SymbolicName: net.sourceforge.vrapper.eclipse.jdt;singleton:=true
-Bundle-Version: 0.35.201309211
-Fragment-Host: net.sourceforge.vrapper.eclipse;bundle-version="0.35.201309211"
+Bundle-Version: 0.35.201309281
+Fragment-Host: net.sourceforge.vrapper.eclipse;bundle-version="0.35.201309281"
 Require-Bundle: org.eclipse.jdt.ui;bundle-version="3.5.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
