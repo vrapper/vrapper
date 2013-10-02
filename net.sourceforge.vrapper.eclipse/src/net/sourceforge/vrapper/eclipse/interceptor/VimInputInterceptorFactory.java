@@ -115,6 +115,7 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
         ignoredKeyCodes.add(SWT.SHIFT);
         ignoredKeyCodes.add(SWT.ALT);
         ignoredKeyCodes.add(SWT.CAPS_LOCK);
+        ignoredKeyCodes.add(SWT.COMMAND);
     }
 
 
