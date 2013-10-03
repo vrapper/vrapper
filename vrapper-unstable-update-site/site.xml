@@ -3,28 +3,28 @@
    <description name="Vrapper Unstable" url="http://vrapper.sourceforge.net/update-site/unstable">
       Unstable releases of Vrapper for testing.
    </description>
-   <feature url="features/net.sourceforge.vrapper_0.35.201309281.jar" id="net.sourceforge.vrapper" version="0.35.201309281">
+   <feature url="features/net.sourceforge.vrapper_0.35.201310021.jar" id="net.sourceforge.vrapper" version="0.35.201310021">
       <category name="Vrapper Unstable"/>
    </feature>
-   <feature url="features/net.sourceforge.vrapper.eclipse.cdt.feature_0.35.201309281.jar" id="net.sourceforge.vrapper.eclipse.cdt.feature" version="0.35.201309281">
+   <feature url="features/net.sourceforge.vrapper.eclipse.cdt.feature_0.35.201310021.jar" id="net.sourceforge.vrapper.eclipse.cdt.feature" version="0.35.201310021">
       <category name="Optional Programming Language Plugins"/>
    </feature>
-   <feature url="features/net.sourceforge.vrapper.eclipse.jdt.feature_0.35.201309281.jar" id="net.sourceforge.vrapper.eclipse.jdt.feature" version="0.35.201309281">
+   <feature url="features/net.sourceforge.vrapper.eclipse.jdt.feature_0.35.201310021.jar" id="net.sourceforge.vrapper.eclipse.jdt.feature" version="0.35.201310021">
       <category name="Optional Programming Language Plugins"/>
    </feature>
-   <feature url="features/net.sourceforge.vrapper.plugin.surround_0.35.201309281.jar" id="net.sourceforge.vrapper.plugin.surround" version="0.35.201309281">
+   <feature url="features/net.sourceforge.vrapper.plugin.surround_0.35.201310021.jar" id="net.sourceforge.vrapper.plugin.surround" version="0.35.201310021">
       <category name="Optional Vimscript Plugins"/>
    </feature>
-   <feature url="features/net.sourceforge.vrapper.eclipse.pydev.feature_0.35.201309281.jar" id="net.sourceforge.vrapper.eclipse.pydev.feature" version="0.35.201309281">
+   <feature url="features/net.sourceforge.vrapper.eclipse.pydev.feature_0.35.201310021.jar" id="net.sourceforge.vrapper.eclipse.pydev.feature" version="0.35.201310021">
       <category name="Optional Programming Language Plugins"/>
    </feature>
-   <feature url="features/net.sourceforge.vrapper.plugin.ipmotion_0.35.201309281.jar" id="net.sourceforge.vrapper.plugin.ipmotion" version="0.35.201309281">
+   <feature url="features/net.sourceforge.vrapper.plugin.ipmotion_0.35.201310021.jar" id="net.sourceforge.vrapper.plugin.ipmotion" version="0.35.201310021">
       <category name="Optional Vimscript Plugins"/>
    </feature>
-   <feature url="features/net.sourceforge.vrapper.plugin.splitEditor_0.35.201309281.jar" id="net.sourceforge.vrapper.plugin.splitEditor" version="0.35.201309281">
+   <feature url="features/net.sourceforge.vrapper.plugin.splitEditor_0.35.201310021.jar" id="net.sourceforge.vrapper.plugin.splitEditor" version="0.35.201310021">
       <category name="Vrapper Unstable"/>
    </feature>
-   <feature url="features/net.sourceforge.vrapper.plugin.argtextobj_0.35.201309281.jar" id="net.sourceforge.vrapper.plugin.argtextobj" version="0.35.201309281">
+   <feature url="features/net.sourceforge.vrapper.plugin.argtextobj_0.35.201310021.jar" id="net.sourceforge.vrapper.plugin.argtextobj" version="0.35.201310021">
       <category name="Optional Vimscript Plugins"/>
    </feature>
    <category-def name="Vrapper Unstable" label="Vrapper Unstable">
