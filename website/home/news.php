@@ -1,4 +1,33 @@
 <div class="newsbox">
+    <div class="date">2013-10-05</div>
+    <h4>0.36.0 Released</h4>
+
+    <p>In keeping with our two-month release cycle, I have released Vrapper version 0.36.0.
+    There weren't too many changes from last month and they were almost entirely bug fixes.
+    The changes since the last status update (included in 0.36.0) are:</p>
+
+    <ul>
+        <li>Fixed repetition of delimited text</li>
+        <li>Fixed replace mode in macros</li>
+        <li>Fixed Ctrl-H (for backspace) in InsertMode</li>
+        <li>Fixed '\t' in substitution replace</li>
+        <li>Fixed numpad 'return' mapping to 'enter'</li>
+        <li>Fixed incsearch</li>
+        <li>Added support for C pre-processor conditionals with '%'</li>
+        <ul>
+            <li>#if, #ifdef, #else, #elif, #endif</li>
+        </ul>
+    </ul>
+    
+    <p>If you run into any issues with this release, please file an issue on our GitHub project:<br/>
+    <a href="https://github.com/vrapper/vrapper/issues">https://github.com/vrapper/vrapper/issues</a><br/>
+    I'm not sure how much testing our unstable update site really gets since we had to rush out a 0.34.1
+    with the last release.  I'm hoping that doesn't happen again but Vrapper just gets more features
+    and not everything is covered by our unit tests.  Fortunately we have a constantly growing userbase
+    that helps us find those obscure defects.  Thank you for all your support in keeping Vrapper alive!</p>
+    
+</div>
+<div class="newsbox">
     <div class="date">2013-09-02</div>
     <h4>Updates to unstable update site</h4>
 
