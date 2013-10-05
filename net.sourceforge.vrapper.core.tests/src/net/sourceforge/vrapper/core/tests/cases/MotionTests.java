@@ -727,6 +727,10 @@ public class MotionTests extends CommandTestCase {
 	    checkMotion(fa,
 	            "A",'l',"a ma kota",
 	            "Al",'a'," ma kota");
+	    //don't skip escaped character
+	    checkMotion(fa,
+	            "A",'l',"\\a m\\a kota",
+	            "Al\\",'a'," m\\a kota");
 	    // TODO: assert raises
 	}
 
@@ -1026,7 +1030,6 @@ public class MotionTests extends CommandTestCase {
 		checkMotion(matchCloseCurly,
 			"{",'m',"atch",
 			"{",'m',"atch");
-		
 	}
 
 }

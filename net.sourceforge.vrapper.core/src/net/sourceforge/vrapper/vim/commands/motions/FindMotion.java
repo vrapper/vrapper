@@ -26,7 +26,7 @@ public class FindMotion extends FindBalancedMotion {
     }
 
     public FindMotion(char target, boolean upToTarget, boolean reversed) {
-        super(target, '\0', upToTarget, reversed);
+        super(target, '\0', upToTarget, reversed, true);
     }
 
     @Override

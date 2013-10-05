@@ -9,7 +9,6 @@ import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.motions.AbstractModelSideMotion;
 import net.sourceforge.vrapper.vim.commands.motions.BailOffMotion;
-import net.sourceforge.vrapper.vim.commands.motions.CountAwareMotion;
 import net.sourceforge.vrapper.vim.commands.motions.FindBalancedMotion;
 
 public class SimpleDelimitedText implements DelimitedText {
@@ -18,13 +17,13 @@ public class SimpleDelimitedText implements DelimitedText {
     private AbstractModelSideMotion rightMotion;
 
     public SimpleDelimitedText(char leftDelim, char rightDelim) {
-        leftMotion = new BailOffMotion(leftDelim, new FindBalancedMotion(leftDelim, rightDelim, true, true));
-        rightMotion = new BailOffMotion(rightDelim, new FindBalancedMotion(rightDelim, leftDelim, true, false));
+        leftMotion = new BailOffMotion(leftDelim, new FindBalancedMotion(leftDelim, rightDelim, true, true, false));
+        rightMotion = new BailOffMotion(rightDelim, new FindBalancedMotion(rightDelim, leftDelim, true, false, false));
     }
 
     public SimpleDelimitedText(char delimiter) {
-        leftMotion = new FindBalancedMotion(delimiter, '\0', true, true);
-        rightMotion = new BailOffMotion(delimiter, new FindBalancedMotion(delimiter, '\0', true, false));
+        leftMotion = new FindBalancedMotion(delimiter, '\0', true, true, false);
+        rightMotion = new BailOffMotion(delimiter, new FindBalancedMotion(delimiter, '\0', true, false, false));
     }
 
     /**

@@ -15,12 +15,14 @@ public class FindBalancedMotion extends AbstractModelSideMotion {
     protected final char pair;
     protected boolean upToTarget;
     protected boolean backwards;
+    protected boolean ignoreEscape;
 
-    public FindBalancedMotion(char target, char pair, boolean upToTarget, boolean backwards) {
+    public FindBalancedMotion(char target, char pair, boolean upToTarget, boolean backwards, boolean ignoreEscape) {
         this.target = target;
         this.pair = pair;
         this.upToTarget = upToTarget;
         this.backwards = backwards;
+        this.ignoreEscape = ignoreEscape;
     }
 
     @Override
@@ -51,7 +53,7 @@ public class FindBalancedMotion extends AbstractModelSideMotion {
     
     //skip over escaped delimiters
     protected boolean isEscaped(TextContent content, int offset) {
-        if(offset == 0) {
+        if(offset == 0 || ignoreEscape) {
             return false;
         }
         return content.getText(offset - 1, 1).charAt(0) == '\\';
