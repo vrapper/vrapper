@@ -24,7 +24,7 @@
     I'm not sure how much testing our unstable update site really gets since we had to rush out a 0.34.1
     with the last release.  I'm hoping that doesn't happen again but Vrapper just gets more features
     and not everything is covered by our unit tests.  Fortunately we have a constantly growing userbase
-    that helps us find those obscure defects.  Thank you for all your support in keeping Vrapper alive!</p>
+    that helps us find those obscure defects.  Thank you for all your support and keeping Vrapper alive!</p>
     
 </div>
 <div class="newsbox">
