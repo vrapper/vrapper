@@ -163,14 +163,21 @@
         <td>:set&nbsp;tabstop=&lt;N&gt;</td>
         <td>:set&nbsp;ts=&lt;N&gt;</td>
         <td>tabstop=8</td>
-        <td>Only used by :retab operation.  Determines number of spaces used to replace each tab in current file
-            when 'expandtab' is enabled.</td>
+        <td>Used by i_ctrl-t, i_ctrl-d, and :retab.  Determines number of spaces to replace each tab character with
+        when 'expandtab' is enabled.</td>
     </tr>
     <tr>
         <td>:set&nbsp;expandtab<br/>:set&nbsp;noexpandtab</td>
         <td>:set&nbsp;et<br />:set&nbsp;noet</td>
         <td>On</td>
-        <td>Only used by :retab operation.  Determines whether :retab should replace all tabs with spaces (true) or spaces with tabs (false).</td>
+        <td>Used by i_ctrl-t, i_ctrl-d, and :retab.  Determines whether :retab should replace all tabs with spaces (true)
+        or spaces with tabs (false).  Also determines whether i_ctrl-t and i_ctrl-d will replace 'tabstop' spaces with a tab.</td>
+    </tr>
+    <tr>
+        <td>:set&nbsp;shiftwidth=&lt;N&gt;</td>
+        <td>:set&nbsp;sw=&lt;N&gt;</td>
+        <td>shiftwidth=8</td>
+        <td>Only used by i_ctrl-t and i_ctrl-d.  Determines how many spaces are used for each indent added or removed.</td>
     </tr>
     <tr>
         <td>:set&nbsp;path=&lt;comma-delimited list of dirs&gt;</td>

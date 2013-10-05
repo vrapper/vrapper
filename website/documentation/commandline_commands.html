@@ -1,5 +1,11 @@
 <h2>Command-Line Commands</h2>
 
+This page describes the commands available within the command-line ' : ' mode.<br/><br/>
+
+Commands may be chained with a '|' character between them. For example:<br/>
+:'<,'>s/foo/bar/g  |  '<,'>s/baz/bat/g
+<br/><br/>
+
 <table class="commands">
     <tr>
         <th>Command</th>
@@ -121,6 +127,14 @@
     <tr>
         <td>:r!&lt;command&gt;</td>
         <td>Execute a shell command and insert the output.</td>
+    </tr>
+    <tr>
+        <td>:move [line number]</td>
+        <td>Move current line to [line number]</td>
+    </tr>
+    <tr>
+        <td>:copy [line number]</td>
+        <td>Copy current line to [line number]</td>
     </tr>
     <tr>
         <td>:autocmd &lt;editor type&gt; &lt;command&gt;</td>
