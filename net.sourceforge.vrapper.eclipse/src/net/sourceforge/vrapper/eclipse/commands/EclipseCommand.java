@@ -20,13 +20,20 @@ import org.eclipse.ui.handlers.IHandlerService;
 public class EclipseCommand extends AbstractCommand {
 
     private final String action;
+    private final boolean async;
 
     public EclipseCommand(String action) {
         this.action = action;
+        this.async = false;
+    }
+
+    public EclipseCommand(String action, boolean async) {
+        this.action = action;
+        this.async = async;
     }
 
     public void execute(EditorAdaptor editorAdaptor) {
-        doIt(1, action, editorAdaptor);
+        doIt(1, action, editorAdaptor, async);
     }
 
     public String getCommandName() {
@@ -46,26 +53,36 @@ public class EclipseCommand extends AbstractCommand {
         return display;
     }
 
-    public static void doIt(int count, final String action, EditorAdaptor editorAdaptor) {
+    public static void doIt(int count, final String action, EditorAdaptor editorAdaptor, boolean async) {
         final IHandlerService handlerService = editorAdaptor.getService(IHandlerService.class);
         final ICommandService commandService = editorAdaptor.getService(ICommandService.class);
         if (handlerService != null && commandService != null) {
-            //
-            // Some commands misbehave if not run asynchronously.
-            //
-            getDisplay().asyncExec(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        final ParameterizedCommand command = commandService.deserialize(action);
-                        handlerService.executeCommand(command, null);
-                    } catch (CommandException e) {
-                        VrapperLog.error("Command not handled: " + action, e);
+            if (async) {
+                //
+                // Some commands misbehave if not run asynchronously.
+                //
+                getDisplay().asyncExec(new Runnable() {
+                    @Override
+                    public void run() {
+                        executeAction(action, handlerService, commandService);
                     }
-                }
-            });
+                });
+            } else {
+                executeAction(action, handlerService, commandService);
+            }
         } else {
             VrapperLog.error("No handler service, cannot execute: " + action);
+        }
+    }
+
+    private static void executeAction(final String action,
+            final IHandlerService handlerService,
+            final ICommandService commandService) {
+        try {
+            final ParameterizedCommand command = commandService.deserialize(action);
+            handlerService.executeCommand(command, null);
+        } catch (CommandException e) {
+            VrapperLog.error("Command not handled: " + action, e);
         }
     }
 

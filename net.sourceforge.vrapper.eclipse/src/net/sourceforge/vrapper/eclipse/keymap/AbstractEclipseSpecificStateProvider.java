@@ -89,10 +89,12 @@ public class AbstractEclipseSpecificStateProvider implements
     protected static class EclipseActionEvaluator implements Evaluator {
 
         private boolean force;
+        private boolean async;
 
-        protected EclipseActionEvaluator(boolean force) {
+        protected EclipseActionEvaluator(boolean force, boolean async) {
             super();
             this.force = force;
+            this.async = async;
         }
 
         public Object evaluate(EditorAdaptor vim, Queue<String> command) {
@@ -107,7 +109,7 @@ public class AbstractEclipseSpecificStateProvider implements
             if (name != null && action != null) {
                 CommandLineMode mode = (CommandLineMode) vim
                         .getMode(CommandLineMode.NAME);
-                mode.addCommand(name, new EclipseCommand(action), force);
+                mode.addCommand(name, new EclipseCommand(action, async), force);
             }
             return null;
         }

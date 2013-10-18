@@ -62,7 +62,7 @@ public abstract class EclipseShiftOperation implements TextOperation {
             
             for (int i = 0; i < count; i++) {
                 editorAdaptor.setSelection(createSelection(editorAdaptor, startLine, endLine));
-                EclipseCommand.doIt(1, action, editorAdaptor);
+                EclipseCommand.doIt(1, action, editorAdaptor, false);
             }
             editorAdaptor.setPosition(
                     editorAdaptor.getCursorService().newPositionForModelOffset(
