@@ -9,8 +9,10 @@ import net.sourceforge.vrapper.vim.commands.MultipleExecutionCommand;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.NotEnabledException;
 import org.eclipse.core.commands.NotHandledException;
+import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.CommandException;
 import org.eclipse.core.commands.common.NotDefinedException;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.handlers.IHandlerService;
 
@@ -35,26 +37,36 @@ public class EclipseCommand extends AbstractCommand {
         return this;
     }
 
-    public static void doIt(int count, String action, EditorAdaptor editorAdaptor) {
-        try {
-            IHandlerService handlerService = editorAdaptor.getService(IHandlerService.class);
-            ICommandService commandService = editorAdaptor.getService(ICommandService.class);
-            if (handlerService != null && commandService != null) {
-                handlerService.executeCommand(commandService.deserialize(action), null);
-            } else {
-                VrapperLog.error("No handler service, cannot execute: " + action);
-            }
-        } catch (ExecutionException e) {
-            VrapperLog.error("Error when executing command: " + action, e);
-        } catch (NotDefinedException e) {
-            VrapperLog.error("Command not defined: " + action, e);
-        } catch (NotEnabledException e) {
-            VrapperLog.error("Command not enabled: " + action, e);
-        } catch (NotHandledException e) {
-            VrapperLog.error("Command not handled: " + action, e);
-        } catch (CommandException e) {
-            VrapperLog.error("Command not handled: " + action, e);
-		}
+    public static Display getDisplay() {
+        Display display = Display.getCurrent();
+        // may be null if outside the UI thread
+        if (display == null) {
+            display = Display.getDefault();
+        }
+        return display;
+    }
+
+    public static void doIt(int count, final String action, EditorAdaptor editorAdaptor) {
+        final IHandlerService handlerService = editorAdaptor.getService(IHandlerService.class);
+        final ICommandService commandService = editorAdaptor.getService(ICommandService.class);
+        if (handlerService != null && commandService != null) {
+            //
+            // Some commands misbehave if not run asynchronously.
+            //
+            getDisplay().asyncExec(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        final ParameterizedCommand command = commandService.deserialize(action);
+                        handlerService.executeCommand(command, null);
+                    } catch (CommandException e) {
+                        VrapperLog.error("Command not handled: " + action, e);
+                    }
+                }
+            });
+        } else {
+            VrapperLog.error("No handler service, cannot execute: " + action);
+        }
     }
 
     public Command withCount(int count) {
