@@ -133,11 +133,13 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
 
         fileService = editor.getFileService();
         __set_modes(this);
-        readConfiguration();
         setNewLineFromFirstLine();
         if (isActive) {
             changeModeSafely(NormalMode.NAME);
         }
+        // NOTE: Read the config _after_ changing mode to allow default keys
+        //       remapping.
+        readConfiguration();
     }
 
     public String getLastModeName() {

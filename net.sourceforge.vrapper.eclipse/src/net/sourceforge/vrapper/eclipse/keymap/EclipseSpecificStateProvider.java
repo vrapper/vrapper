@@ -35,8 +35,10 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
 
     // Loaded on Eclipse start
     public EclipseSpecificStateProvider() {
-        commands.add("eclipseaction", new EclipseActionEvaluator(false));
-        commands.add("eclipseaction!", new EclipseActionEvaluator(true));
+        commands.add("eclipseaction", new EclipseActionEvaluator(false, false));
+        commands.add("eclipseaction!", new EclipseActionEvaluator(true, false));
+        commands.add("eclipseuiaction", new EclipseActionEvaluator(false, true));
+        commands.add("eclipseuiaction!", new EclipseActionEvaluator(true, true));
 
     	commands.add("ls",          dontRepeat(cmd("org.eclipse.ui.window.openEditorDropDown")));
     	commands.add("buffers",     dontRepeat(cmd("org.eclipse.ui.window.openEditorDropDown")));
