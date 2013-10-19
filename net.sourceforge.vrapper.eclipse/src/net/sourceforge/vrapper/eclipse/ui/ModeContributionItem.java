@@ -8,7 +8,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Text;
 
 public class ModeContributionItem extends ContributionItem {
     
@@ -26,6 +25,7 @@ public class ModeContributionItem extends ContributionItem {
     public void fill(Composite parent) {
         Composite reservedSpace = new Composite(parent, SWT.NO_FOCUS);
         reservedSpace.setBackground(parent.getBackground());
+        reservedSpace.setForeground(parent.getForeground());
         GridLayout layout = new GridLayout();
         layout.horizontalSpacing = 50;
         layout.numColumns = 2;
@@ -35,6 +35,7 @@ public class ModeContributionItem extends ContributionItem {
         recordingText.setText(RECORDING_MESSAGE + recMacro);
         recordingText.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
         recordingText.setBackground(parent.getBackground());
+        recordingText.setForeground(parent.getForeground());
         recordingText.setVisible(isRecording);
         Font boldFont = recordingText.getFont();
         FontData fontData[] = boldFont.getFontData();
@@ -48,6 +49,7 @@ public class ModeContributionItem extends ContributionItem {
         modeLayoutData.minimumWidth = MODEMESSAGE_WIDTH;
         modeText.setLayoutData(modeLayoutData);
         modeText.setBackground(parent.getBackground());
+        modeText.setForeground(parent.getForeground());
         modeText.setText(mode);
         
         reservedSpace.layout();
