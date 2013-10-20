@@ -34,6 +34,7 @@ import net.sourceforge.vrapper.vim.commands.motions.GoToLineMotion;
 import net.sourceforge.vrapper.vim.commands.motions.GoToMarkMotion;
 import net.sourceforge.vrapper.vim.commands.motions.LineEndMotion;
 import net.sourceforge.vrapper.vim.commands.motions.LineStartMotion;
+import net.sourceforge.vrapper.vim.commands.motions.MethodDeclarationMotion;
 import net.sourceforge.vrapper.vim.commands.motions.Motion;
 import net.sourceforge.vrapper.vim.commands.motions.MoveBigWORDEndLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveBigWORDEndRight;
@@ -133,6 +134,10 @@ public abstract class CommandBasedMode extends AbstractMode {
             final Motion matchCloseParen = ParenthesesMove.MATCH_CLOSE_PAREN;
             final Motion matchOpenCurly = ParenthesesMove.MATCH_OPEN_CURLY;
             final Motion matchCloseCurly = ParenthesesMove.MATCH_CLOSE_CURLY;
+            final Motion methodNextStart = MethodDeclarationMotion.NEXT_START;
+            final Motion methodPrevStart = MethodDeclarationMotion.PREV_START;
+            final Motion methodNextEnd = MethodDeclarationMotion.NEXT_END;
+            final Motion methodPrevEnd = MethodDeclarationMotion.PREV_END;
             
             final Motion findForward = ContinueFindingMotion.NORMAL;
             final Motion findBackward = ContinueFindingMotion.REVERSE;
@@ -208,9 +213,13 @@ public abstract class CommandBasedMode extends AbstractMode {
                     leafBind('%', parenthesesMove),
                     leafBind('^', lineStart),
                     transitionBind('[', 
+                    		leafBind('m', methodPrevStart),
+                    		leafBind('M', methodPrevEnd),
                     		leafBind('(', matchOpenParen),
                     		leafBind('{', matchOpenCurly)),
                     transitionBind(']', 
+                    		leafBind('m', methodNextStart),
+                    		leafBind('M', methodNextEnd),
                     		leafBind(')', matchCloseParen),
                     		leafBind('}', matchCloseCurly)),
                     transitionBind('g',

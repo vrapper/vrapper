@@ -3,6 +3,7 @@ package net.sourceforge.vrapper.core.tests.cases;
 import net.sourceforge.vrapper.core.tests.utils.CommandTestCase;
 import net.sourceforge.vrapper.vim.commands.motions.FindMotion;
 import net.sourceforge.vrapper.vim.commands.motions.GoToLineMotion;
+import net.sourceforge.vrapper.vim.commands.motions.MethodDeclarationMotion;
 import net.sourceforge.vrapper.vim.commands.motions.Motion;
 import net.sourceforge.vrapper.vim.commands.motions.MoveBigWORDEndLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveBigWORDEndRight;
@@ -892,6 +893,86 @@ public class MotionTests extends CommandTestCase {
                 "eins\n\nzwei\n\ndrei\n\n",'P',"olizei!",
                 "eins\n",'\n',"zwei\n\ndrei\n\nPolizei!");
     }
+	
+	@Test
+	public void testMethodDeclarationMotion() {
+		Motion nextStart = MethodDeclarationMotion.NEXT_START;
+		Motion nextEnd = MethodDeclarationMotion.NEXT_END;
+		Motion prevStart = MethodDeclarationMotion.PREV_START;
+		Motion prevEnd = MethodDeclarationMotion.PREV_END;
+		
+		checkMotion(nextStart,
+				"{ ", ' ', "{ } }",
+				"{  ", '{', " } }");
+
+		checkMotion(nextStart,
+				"{ { } ", ' ', "{ } }",
+				"{ { }  ", '{', " } }");
+
+		checkMotion(nextStart,
+				"{ { ", ' ', " } { } }",
+				"{ {   } ", '{', " } }");
+
+		checkMotion(nextStart,
+				"{ {{{{ ", ' ', " }}}} { } }",
+				"{ {{{{   }}}} ", '{', " } }");
+		
+		checkMotion(nextEnd,
+				"{ ", ' ', "{ } }",
+				"{  { ", '}', " }");
+
+		checkMotion(nextEnd,
+				"{ { } ", ' ', "{ } }",
+				"{ { }  { ", '}', " }");
+
+		checkMotion(nextEnd,
+				"{ { ", ' ', " } { } }",
+				"{ {   ", '}', " { } }");
+
+		checkMotion(nextEnd,
+				"{ {{{{ ", ' ', " }}}} { } }",
+				"{ {{{{   }}}", '}', " { } }");
+		
+		checkMotion(prevStart,
+				"{ { } ", ' ', " }",
+				"{ ", '{', " }   }");
+		
+		checkMotion(prevStart,
+				"{ { } { ", ' ', "} }",
+				"{ { } ", '{', "  } }");
+		
+		checkMotion(prevStart,
+				"{ { } {{{{ ", ' ', "}}}} }",
+				"{ { } ", '{', "{{{  }}}} }");
+		
+		checkMotion(prevEnd,
+				"{ { } ", ' ', " }",
+				"{ { ", '}', "   }");
+		
+		checkMotion(prevEnd,
+				"{ { } { ", ' ', "} }",
+				"{ { ", '}', " {  } }");
+		
+		checkMotion(prevEnd,
+				"{ { } {{{{ ", ' ', "}}}} }",
+				"{ { ", '}', " {{{{  }}}} }");
+		
+		checkMotion(nextStart,
+				"no declar", 'a', "tions",
+				"no declar", 'a', "tions");
+		
+		checkMotion(nextEnd,
+				"no declar", 'a', "tions",
+				"no declar", 'a', "tions");
+		
+		checkMotion(prevStart,
+				"no declar", 'a', "tions",
+				"no declar", 'a', "tions");
+
+		checkMotion(prevEnd,
+				"no declar", 'a', "tions",
+				"no declar", 'a', "tions");
+	}
 	
 	@Test
 	public void testPercentMatch() {
