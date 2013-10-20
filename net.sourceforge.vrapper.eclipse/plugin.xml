@@ -37,7 +37,7 @@
        <menuContribution
             locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
          <toolbar
-               id="net.sourceforge.vrapper.toolbar">
+               id="net.sourceforge.vrapper.Vrapper">
             <command
                   commandId="net.sourceforge.vrapper.eclipse.commands.toggle"
                   icon="icons/icon.png"
