@@ -49,13 +49,13 @@ public class MethodDeclarationMotion extends AbstractModelSideMotion {
                 if(depth == 1) {
                     lastOpen = testOffset;
                 }
-                depth += 1;
+                depth++;
             }
             else if(testChar == '}') {
                 if(depth == 2) {
                     lastClose = testOffset;
                 }
-                depth -= 1;
+                depth--;
             }
             testOffset++;
             
