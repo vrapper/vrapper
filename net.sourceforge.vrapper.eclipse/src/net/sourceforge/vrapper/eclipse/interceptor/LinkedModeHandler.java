@@ -21,15 +21,19 @@ public class LinkedModeHandler implements IDocumentListener, ILinkedModeListener
     }
 
     public void onCheckForLinkedMode(final IDocument document) {
-        // make sure to check AFTER the current UI stuff is done
-        //  (sometimes eclipse is weird)
-        Display.getCurrent().asyncExec(new Runnable() {
-            @Override
-            public void run() {
-                
-                checkInternal(document);
-            }
-        });
+    	
+        Display current = Display.getCurrent();
+        if(current != null) {
+        	// make sure to check AFTER the current UI stuff is done
+        	//  (sometimes eclipse is weird)
+        	current.asyncExec(new Runnable() {
+        		@Override
+        		public void run() {
+
+        			checkInternal(document);
+        		}
+        	});
+        }
     }
     
     protected void checkInternal(final IDocument document) {
