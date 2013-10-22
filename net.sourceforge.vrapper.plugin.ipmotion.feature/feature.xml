@@ -2,7 +2,7 @@
 <feature
       id="net.sourceforge.vrapper.plugin.ipmotion"
       label="Vrapper - ipmotion.vim Plugin (Optional)"
-      version="0.37.20131019"
+      version="0.37.20131021"
       provider-name="Vrapper Team">
 
    <description url="http://vrapper.sourceforge.net/documentation/">
@@ -861,8 +861,8 @@ Public License instead of this License.  But first, please read
    </license>
 
    <requires>
-      <import plugin="net.sourceforge.vrapper.eclipse" version="0.37.20131019" match="greaterOrEqual"/>
-      <import feature="net.sourceforge.vrapper" version="0.37.20131019"/>
+      <import plugin="net.sourceforge.vrapper.eclipse" version="0.37.20131021" match="greaterOrEqual"/>
+      <import feature="net.sourceforge.vrapper" version="0.37.20131021"/>
    </requires>
 
    <plugin
