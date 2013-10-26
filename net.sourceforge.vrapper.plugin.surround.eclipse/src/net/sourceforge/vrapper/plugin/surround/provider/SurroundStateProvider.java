@@ -7,7 +7,6 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionB
 
 import java.util.Queue;
 
-import net.sourceforge.vrapper.eclipse.commands.EclipseShiftOperation;
 import net.sourceforge.vrapper.eclipse.keymap.AbstractEclipseSpecificStateProvider;
 import net.sourceforge.vrapper.keymap.ConvertingState;
 import net.sourceforge.vrapper.keymap.State;
@@ -23,6 +22,7 @@ import net.sourceforge.vrapper.plugin.surround.state.DelimiterValues;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.DelimitedText;
+import net.sourceforge.vrapper.vim.commands.InsertShiftWidth;
 import net.sourceforge.vrapper.vim.commands.SimpleDelimitedText;
 import net.sourceforge.vrapper.vim.commands.TextObject;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
@@ -84,7 +84,7 @@ public class SurroundStateProvider extends AbstractEclipseSpecificStateProvider 
     @Override
     @SuppressWarnings("unchecked")
     protected State<Command> visualModeBindings() {
-        EclipseShiftOperation shift = EclipseShiftOperation.Visual.RIGHT;
+        InsertShiftWidth shift = InsertShiftWidth.INSERT;
         return state(
                 transitionBind('S', new AddVisualDelimiterState(false, shift)),
                 transitionBind('g', transitionBind('S',  new AddVisualDelimiterState(true, shift)))

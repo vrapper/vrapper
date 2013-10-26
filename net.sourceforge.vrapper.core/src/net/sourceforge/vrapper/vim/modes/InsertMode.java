@@ -39,7 +39,9 @@ import net.sourceforge.vrapper.vim.commands.InsertShiftWidth;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.commands.PasteBeforeCommand;
 import net.sourceforge.vrapper.vim.commands.PasteRegisterCommand;
+import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 import net.sourceforge.vrapper.vim.commands.SwitchRegisterCommand;
+import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
 import net.sourceforge.vrapper.vim.commands.VimCommandSequence;
 import net.sourceforge.vrapper.vim.commands.motions.LineStartMotion;
 import net.sourceforge.vrapper.vim.commands.motions.Motion;
@@ -491,8 +493,8 @@ public class InsertMode extends AbstractMode {
             		leafCtrlBind('a', (Command)PasteRegisterCommand.PASTE_LAST_INSERT),
             		leafCtrlBind('e', (Command)InsertAdjacentCharacter.LINE_BELOW),
             		leafCtrlBind('y', (Command)InsertAdjacentCharacter.LINE_ABOVE),
-            		leafCtrlBind('t', (Command)InsertShiftWidth.INSERT),
-            		leafCtrlBind('d', (Command)InsertShiftWidth.REMOVE)
+            		leafCtrlBind('t', (Command)new TextOperationTextObjectCommand(InsertShiftWidth.INSERT, new SimpleSelection(null))),
+            		leafCtrlBind('d', (Command)new TextOperationTextObjectCommand(InsertShiftWidth.REMOVE, new SimpleSelection(null)))
             )
         ));
     }

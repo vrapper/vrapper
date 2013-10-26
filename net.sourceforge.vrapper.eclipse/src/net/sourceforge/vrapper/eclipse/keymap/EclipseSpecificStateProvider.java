@@ -3,14 +3,12 @@ package net.sourceforge.vrapper.eclipse.keymap;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.convertKeyStroke;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafCtrlBind;
-import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.operatorCmds;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.prefixedOperatorCmds;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.dontRepeat;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
 import net.sourceforge.vrapper.eclipse.commands.ChangeTabCommand;
-import net.sourceforge.vrapper.eclipse.commands.EclipseShiftOperation;
 import net.sourceforge.vrapper.eclipse.commands.GoToMarkCommand;
 import net.sourceforge.vrapper.eclipse.commands.TabNewCommand;
 import net.sourceforge.vrapper.eclipse.commands.ToggleFoldingCommand;
@@ -20,7 +18,6 @@ import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.DeselectAllCommand;
 import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
-import net.sourceforge.vrapper.vim.commands.SelectionBasedTextOperationCommand;
 import net.sourceforge.vrapper.vim.commands.TextObject;
 import net.sourceforge.vrapper.vim.modes.KeyMapResolver;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
@@ -61,15 +58,11 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
     @Override
     protected State<Command> visualModeBindings() {
         Command leaveVisual = LeaveVisualModeCommand.INSTANCE;
-        Command shiftRight = new SelectionBasedTextOperationCommand(EclipseShiftOperation.Visual.RIGHT);
-        Command shiftLeft = new SelectionBasedTextOperationCommand(EclipseShiftOperation.Visual.LEFT);
 
         return state(
             transitionBind('g',
                     leafBind('U', seq(editText("upperCase"),      leaveVisual)),
-                    leafBind('u', seq(editText("lowerCase"),      leaveVisual))),
-            leafBind('>', shiftRight),
-            leafBind('<', shiftLeft));
+                    leafBind('u', seq(editText("lowerCase"),      leaveVisual))));
     }
 
     @Override
@@ -113,9 +106,7 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
                         GoToMarkCommand.CHARWISE_CONVERTER,
                         VimConstants.PRINTABLE_KEYSTROKES))),
             prefixedOperatorCmds('g', 'u', seq(editText("lowerCase"), DeselectAllCommand.INSTANCE), textObjects),
-            prefixedOperatorCmds('g', 'U', seq(editText("upperCase"), DeselectAllCommand.INSTANCE), textObjects),
-            operatorCmds('>', EclipseShiftOperation.Normal.RIGHT, textObjects),
-            operatorCmds('<', EclipseShiftOperation.Normal.LEFT, textObjects)
+            prefixedOperatorCmds('g', 'U', seq(editText("upperCase"), DeselectAllCommand.INSTANCE), textObjects)
          );
         return normalModeBindings;
     }

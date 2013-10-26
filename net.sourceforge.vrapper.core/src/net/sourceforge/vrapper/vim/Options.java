@@ -33,10 +33,11 @@ public interface Options {
     // TODO: This is an Eclipse setting under Window->Preferences->Editors->Text Editors->"Insert spaces for tabs"
     //       Changing this value should change the Eclipse configuration too. -- BRD
     public static final Option<Boolean> EXPAND_TAB            = bool("expandtab",    true,  "et");
+    public static final Option<Boolean> SHIFT_ROUND           = bool("shiftround",   false, "sr");
 
     @SuppressWarnings("unchecked")
     public static final Set<Option<Boolean>> BOOLEAN_OPTIONS = set(
-            EXPAND_TAB, SMART_INDENT, AUTO_INDENT, ATOMIC_INSERT, IGNORE_CASE,
+            EXPAND_TAB, SHIFT_ROUND, SMART_INDENT, AUTO_INDENT, ATOMIC_INSERT, IGNORE_CASE,
             SMART_CASE, SANE_CW, SANE_Y, SEARCH_HIGHLIGHT, SEARCH_REGEX,
             INCREMENTAL_SEARCH, LINE_NUMBERS, SHOW_WHITESPACE, IM_DISABLE,
             VISUAL_MOUSE, EXIT_LINK_MODE, CLEAN_INDENT, AUTO_CHDIR, HIGHLIGHT_CURSOR_LINE);

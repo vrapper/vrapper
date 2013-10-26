@@ -47,6 +47,7 @@ import net.sourceforge.vrapper.vim.commands.FindFileCommand;
 import net.sourceforge.vrapper.vim.commands.FormatOperation;
 import net.sourceforge.vrapper.vim.commands.IncrementDecrementCommand;
 import net.sourceforge.vrapper.vim.commands.InsertLineCommand;
+import net.sourceforge.vrapper.vim.commands.InsertShiftWidth;
 import net.sourceforge.vrapper.vim.commands.JoinLinesCommand;
 import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
@@ -308,6 +309,8 @@ public class NormalMode extends CommandBasedMode {
                 operatorCmdsWithUpperCase('y', yank,   toEolForY, textObjects),
                 operatorCmdsWithUpperCase('c', change, toEol,     textObjectsForChange),
                 operatorCmds('!', NormalLineRangeOperation.INSTANCE, textObjects),
+                operatorCmds('>', InsertShiftWidth.INSERT, textObjects),
+                operatorCmds('<', InsertShiftWidth.REMOVE, textObjects),
                 prefixedOperatorCmds('g', 'q', format, textObjects),
                 prefixedOperatorCmds('g', '~', SwapCaseCommand.TEXT_OBJECT_INSTANCE, textObjects),
                 motionCommands,
