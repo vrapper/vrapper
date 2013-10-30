@@ -14,7 +14,7 @@ public class ToggleLocalOptionCommand extends ConfigCommand<Boolean> {
     public void execute(EditorAdaptor editorAdaptor)
             throws CommandExecutionException {
         Boolean value = editorAdaptor.getConfiguration().get(option);
-        editorAdaptor.getConfiguration().set_local(option, !value);
+        editorAdaptor.getConfiguration().setLocal(option, !value);
     }
 
 }

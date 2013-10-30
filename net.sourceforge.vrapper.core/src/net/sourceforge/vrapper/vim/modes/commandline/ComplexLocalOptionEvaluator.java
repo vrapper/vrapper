@@ -10,7 +10,7 @@ public class ComplexLocalOptionEvaluator extends ComplexOptionEvaluator {
         if (opt.getLegalValues() != null && !opt.getLegalValues().contains(value)) {
             throw new ValueException();
         }
-        adaptor.getConfiguration().set_local(opt, value);
+        adaptor.getConfiguration().setLocal(opt, value);
     }
 
 }

@@ -6,7 +6,7 @@ public interface LocalConfiguration extends Configuration {
 
     public void removeListener(LocalConfigurationListener listener);
 
-    public <T> void set_local(Option<T> key, T value);
+    public <T> void setLocal(Option<T> key, T value);
 
     public void addListener(LocalConfigurationListener listener);
 

@@ -14,7 +14,7 @@ public class SetLocalOptionCommand<T> extends ConfigCommand<T> {
 
     public void execute(EditorAdaptor editorAdaptor)
             throws CommandExecutionException {
-        editorAdaptor.getConfiguration().set_local(option, value);
+        editorAdaptor.getConfiguration().setLocal(option, value);
     }
 
 }

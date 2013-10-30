@@ -47,7 +47,7 @@ public class SimpleLocalConfiguration implements LocalConfiguration {
     }
 
     @Override
-    public <T> void set_local(Option<T> key, T value) {
+    public <T> void setLocal(Option<T> key, T value) {
         localConfiguration.set(key, value);
     }
 
