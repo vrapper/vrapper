@@ -4,12 +4,14 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import net.sourceforge.vrapper.platform.Configuration;
+import net.sourceforge.vrapper.platform.SimpleConfiguration;
 import net.sourceforge.vrapper.platform.SimpleConfiguration.NewLine;
 
 /** Wraps a {@link Configuration}, allowing to notify {@link LocalConfigurationListener}. */
 public class SimpleLocalConfiguration implements LocalConfiguration {
     
     protected Configuration sharedConfiguration;
+    protected SimpleConfiguration localConfiguration = new SimpleConfiguration();
     
     protected String newLine;
     
@@ -44,8 +46,17 @@ public class SimpleLocalConfiguration implements LocalConfiguration {
             }
     }
 
+    @Override
+    public <T> void set_local(Option<T> key, T value) {
+        localConfiguration.set(key, value);
+    }
+
     public <T> T get(Option<T> key) {
-        return sharedConfiguration.get(key);
+        if (localConfiguration.isSet(key)) {
+            return localConfiguration.get(key);
+        } else {
+            return sharedConfiguration.get(key);
+        }
     }
     
     public void addListener(LocalConfigurationListener listener) {
@@ -55,4 +66,5 @@ public class SimpleLocalConfiguration implements LocalConfiguration {
     public void removeListener(LocalConfigurationListener listener) {
         listeners.remove(listener);
     }
+
 }

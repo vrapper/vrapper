@@ -11,10 +11,14 @@ public class SimpleConfiguration implements Configuration {
 
     @SuppressWarnings("unchecked")
     public <T> T get(Option<T> key) {
-        if (vars.containsKey(key)) {
+        if (isSet(key)) {
             return (T) vars.get(key);
         }
         return key.getDefaultValue();
+    }
+
+    public <T> boolean isSet(Option<T> key) {
+        return vars.containsKey(key);
     }
 
     public <T> void set(Option<T> key, T value) {

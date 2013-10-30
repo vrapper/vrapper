@@ -48,7 +48,7 @@ public class ComplexOptionEvaluator implements Evaluator {
         vim.getUserInterfaceService().setErrorMessage("Unknown option: " + name);
     }
 
-    private <T> void set(EditorAdaptor adaptor, Option<T> opt, T value) throws ValueException {
+    protected <T> void set(EditorAdaptor adaptor, Option<T> opt, T value) throws ValueException {
         if (opt.getLegalValues() != null && !opt.getLegalValues().contains(value)) {
             throw new ValueException();
         }
@@ -67,6 +67,6 @@ public class ComplexOptionEvaluator implements Evaluator {
     }
 
     @SuppressWarnings("serial")
-    private class ValueException extends Exception { /* private marker exception */ }
+    class ValueException extends Exception { /* private marker exception */ }
 
 }
