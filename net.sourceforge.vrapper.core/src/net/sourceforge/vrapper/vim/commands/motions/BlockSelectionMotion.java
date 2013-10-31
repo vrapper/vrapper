@@ -55,10 +55,10 @@ public class BlockSelectionMotion implements Motion {
             return cs.getPositionByVisualOffset(tb.startLine, tb.startVisualOffset);
         } else {
             final Position pos = cs.getPositionByVisualOffset(tb.startLine, tb.endVisualOffset);
-            if (pos != null) {
+            final LineInformation line = mc.getLineInformation(tb.startLine);
+            if (pos != null && pos.getModelOffset() < line.getEndOffset()) {
                 return pos.addModelOffset(1);
             } else {
-                LineInformation line = mc.getLineInformation(tb.startLine);
                 return cs.newPositionForModelOffset(line.getEndOffset());
             }
         }

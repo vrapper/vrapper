@@ -570,7 +570,13 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         try {
             final IRegion region = textViewer.getDocument().getLineInformation(lineNo);
             if (region.getLength() == 0) {
-                return null;
+                final Point lineStartPos = tw.getLocationAtOffset(region.getOffset());
+                if (relVOffset == lineStartPos.x) {
+                    // Beginning of an empty line.
+                    return new TextViewerPosition(textViewer, Space.MODEL, region.getOffset());
+                } else {
+                    return null;
+                }
             }
             final int lineOffset = converter.modelOffset2WidgetOffset(region.getOffset());
             final Rectangle lineBounds = tw.getTextBounds(lineOffset, lineOffset + region.getLength() - 1);
