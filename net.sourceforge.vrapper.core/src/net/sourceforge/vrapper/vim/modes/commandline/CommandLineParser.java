@@ -30,6 +30,7 @@ import net.sourceforge.vrapper.vim.commands.RetabOperation;
 import net.sourceforge.vrapper.vim.commands.SaveAllCommand;
 import net.sourceforge.vrapper.vim.commands.SaveCommand;
 import net.sourceforge.vrapper.vim.commands.Selection;
+import net.sourceforge.vrapper.vim.commands.SetLocalOptionCommand;
 import net.sourceforge.vrapper.vim.commands.SetOptionCommand;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 import net.sourceforge.vrapper.vim.commands.SortOperation;
@@ -202,7 +203,8 @@ public class CommandLineParser extends AbstractCommandParser {
         
         mapping = new EvaluatorMapping();
         // options
-        mapping.add("set", buildConfigEvaluator());
+        mapping.add("set", buildConfigEvaluator(/*local=*/false));
+        mapping.add("setlocal", buildConfigEvaluator(/*local=*/true));
         mapping.add("source", sourceConfigFile);
         // save, close
         mapping.add("w", save);
@@ -276,13 +278,28 @@ public class CommandLineParser extends AbstractCommandParser {
     	mapping.add("ascii", ascii);
     }
 
-    private static Evaluator buildConfigEvaluator() {
-        EvaluatorMapping config = new EvaluatorMapping(new ComplexOptionEvaluator());
+    private static Evaluator buildConfigEvaluator(boolean local) {
+        Evaluator ev;
+        if (local) {
+            ev = new ComplexLocalOptionEvaluator();
+        } else {
+            ev = new ComplexOptionEvaluator();
+        }
+        EvaluatorMapping config = new EvaluatorMapping(ev);
         // boolean options
         for (Option<Boolean> o: Options.BOOLEAN_OPTIONS) {
-            ConfigCommand<Boolean> enable = new SetOptionCommand<Boolean>(o, Boolean.TRUE);
-            ConfigCommand<Boolean> disable = new SetOptionCommand<Boolean>(o, Boolean.FALSE);
-            ConfigCommand<Boolean> toggle = new ToggleOptionCommand(o);
+            ConfigCommand<Boolean> enable;
+            ConfigCommand<Boolean> disable;
+            ConfigCommand<Boolean> toggle;
+            if (local) {
+                enable  = new SetLocalOptionCommand<Boolean>(o, Boolean.TRUE);
+                disable = new SetLocalOptionCommand<Boolean>(o, Boolean.FALSE);
+                toggle  = new ToggleLocalOptionCommand(o);
+            } else {
+                enable  = new SetOptionCommand<Boolean>(o, Boolean.TRUE);
+                disable = new SetOptionCommand<Boolean>(o, Boolean.FALSE);
+                toggle  = new ToggleOptionCommand(o);
+            }
             ConfigCommand<Boolean> status = new PrintOptionCommand<Boolean>(o);
             for (String alias: o.getAllNames()) {
                 config.add(alias, enable);
