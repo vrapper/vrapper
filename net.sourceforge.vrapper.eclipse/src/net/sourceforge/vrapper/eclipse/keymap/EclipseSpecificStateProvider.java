@@ -12,6 +12,7 @@ import net.sourceforge.vrapper.eclipse.commands.ChangeTabCommand;
 import net.sourceforge.vrapper.eclipse.commands.GoToMarkCommand;
 import net.sourceforge.vrapper.eclipse.commands.TabNewCommand;
 import net.sourceforge.vrapper.eclipse.commands.ToggleFoldingCommand;
+import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.StateUtils;
 import net.sourceforge.vrapper.vim.VimConstants;
@@ -94,8 +95,9 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
                         leafBind('T', (Command)ChangeTabCommand.PREVIOUS_EDITOR)),
                 leafCtrlBind('y', dontRepeat(editText("scroll.lineUp"))),
                 leafCtrlBind('e', dontRepeat(editText("scroll.lineDown"))),
-                leafCtrlBind('i', dontRepeat(cmd("org.eclipse.ui.navigate.forwardHistory"))),
                 leafCtrlBind('o', dontRepeat(cmd("org.eclipse.ui.navigate.backwardHistory"))),
+                leafCtrlBind('i', dontRepeat(cmd("org.eclipse.ui.navigate.forwardHistory"))),
+                leafBind(SpecialKey.TAB, dontRepeat(cmd("org.eclipse.ui.navigate.forwardHistory"))),
                 transitionBind('\\', convertKeyStroke(
                         GoToMarkCommand.EDITOR_CONVERTER,
                         VimConstants.PRINTABLE_KEYSTROKES)),
