@@ -34,6 +34,8 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.ITextViewerExtension6;
 import org.eclipse.jface.text.IUndoManager;
+import org.eclipse.ui.IWorkbenchPartSite;
+import org.eclipse.ui.part.MultiPageEditorSite;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 
 public class EclipsePlatform implements Platform {
@@ -202,7 +204,12 @@ public class EclipsePlatform implements Platform {
     }
 
     public String getEditorType() {
-        return underlyingEditor.getSite().getRegisteredName();
+    	IWorkbenchPartSite site = underlyingEditor.getSite();
+    	if(site instanceof MultiPageEditorSite) {
+    		site = ((MultiPageEditorSite)site).getMultiPageEditor().getSite();
+    	}
+    		
+        return site.getRegisteredName();
     }
 
 }
