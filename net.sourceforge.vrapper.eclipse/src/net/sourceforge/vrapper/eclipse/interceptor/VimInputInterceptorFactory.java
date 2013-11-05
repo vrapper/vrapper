@@ -23,6 +23,8 @@ import net.sourceforge.vrapper.vim.register.RegisterManager;
 
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.TextSelection;
+import org.eclipse.jface.text.source.ContentAssistantFacade;
+import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.VerifyEvent;
@@ -132,6 +134,15 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
             LinkedModeHandler linkedModeHandler = new LinkedModeHandler(editorAdaptor);
             LinkedModeHandler.registerListener(textViewer.getDocument(), linkedModeHandler);
             interceptor.setLinkedModeHandler(linkedModeHandler);
+        }
+        if (editorAdaptor.getConfiguration().get(Options.CONTENT_ASSIST_MODE)) {
+            if (textViewer instanceof SourceViewer) {
+                final SourceViewer sourceViewer = (SourceViewer)textViewer;
+                final ContentAssistantFacade contentAssistant= sourceViewer.getContentAssistantFacade();
+                if (contentAssistant != null) {
+                    contentAssistant.addCompletionListener(new ContentAssistModeHandler(editorAdaptor));
+                }
+            }
         }
         return interceptor;
     }
