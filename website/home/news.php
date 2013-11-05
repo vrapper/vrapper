@@ -1,4 +1,31 @@
 <div class="newsbox">
+    <div class="date">2013-11-04</div>
+    <h4>Updates to unstable update site</h4>
+
+    <p>It's time for your monthly status update on Vrapper.  Here are the
+    current changes on the unstable update site.  Please feel free to install
+    the latest build on the unstable update site and let us know if you find any
+    defects.</p>
+
+    <ul>
+        <li>Fixed issue where escaped characters were being skipped with t/f motions</li>
+        <li>Fixed issue with visual block mode starting on an empty line</li>
+        <li>Fixed autocmd on multi-page editors (like XML Editor)</li>
+        <li>Fixed Ctrl+I in NormalMode (and added TAB in NormalMode for the same operation)</li>
+        <li>Added eclipseuiaction for mapping any Eclipse operation that pops up a dialog</li>
+        <li>Added support for [m, ]m, [M, and ]M</li>
+        <li>Added support for :setlocal command</li>
+        <li>Added support for shiftround setting</li>
+    </ul>
+
+    <b>**Changes in behavior**</b><br/>
+    The following changes modify existing behavior from previous versions of Vrapper:
+    <ul>
+        <li>Refactored &gt;&gt; and &lt;&lt; to use shiftwidth, tabstop, expandtab, and shiftround settings rather than using Eclipse's settings</li>
+        <li>Enable regexsearch property by default.  This matches Vim behavior more closely.</li>
+    </ul>
+</div>
+<div class="newsbox">
     <div class="date">2013-10-05</div>
     <h4>0.36.0 Released</h4>
 
