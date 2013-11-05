@@ -392,6 +392,7 @@ public class ConstructorWrappers {
         map.put("C-]", new SimpleKeyStroke(']', false, false, true));
         map.put("C-^", new SimpleKeyStroke('^', false, false, true));
         map.put("C-_", new SimpleKeyStroke('_', false, false, true));
+        map.put("C-SPACE", new SimpleKeyStroke(' ', false, false, true));
         return map;
     }
 }

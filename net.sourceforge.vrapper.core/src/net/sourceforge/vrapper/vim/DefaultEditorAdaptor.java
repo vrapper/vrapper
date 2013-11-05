@@ -42,6 +42,7 @@ import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.BlockwiseVisualMode;
 import net.sourceforge.vrapper.vim.modes.ConfirmSubstitutionMode;
+import net.sourceforge.vrapper.vim.modes.ContentAssistMode;
 import net.sourceforge.vrapper.vim.modes.EditorMode;
 import net.sourceforge.vrapper.vim.modes.InsertExpandMode;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
@@ -161,6 +162,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
                 new CommandLineMode(self),
                 new SearchMode(self),
                 new ConfirmSubstitutionMode(self),
+                new ContentAssistMode(self),
                 new PasteRegisterMode(self)};
         for (final EditorMode mode: modes) {
             modeMap.put(mode.getName(), mode);

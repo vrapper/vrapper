@@ -48,7 +48,7 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
     	commands.add("bnext",       (Command)ChangeTabCommand.NEXT_EDITOR);
     	commands.add("tabprevious", (Command)ChangeTabCommand.PREVIOUS_EDITOR);
     	commands.add("bprevious",   (Command)ChangeTabCommand.PREVIOUS_EDITOR);
-    	commands.add("tabrewind",     (Command)ChangeTabCommand.FIRST_EDITOR);
+    	commands.add("tabrewind",   (Command)ChangeTabCommand.FIRST_EDITOR);
     	commands.add("tablast",     (Command)ChangeTabCommand.LAST_EDITOR);
 
     	// Calls New Wizard dialogue
@@ -62,8 +62,8 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
 
         return state(
             transitionBind('g',
-                    leafBind('U', seq(editText("upperCase"),      leaveVisual)),
-                    leafBind('u', seq(editText("lowerCase"),      leaveVisual))));
+                    leafBind('U', seq(editText("upperCase"), leaveVisual)),
+                    leafBind('u', seq(editText("lowerCase"), leaveVisual))));
     }
 
     @Override
@@ -118,7 +118,19 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
     	return state(
     		leafCtrlBind('n', dontRepeat(editText("hippieCompletion"))),
     		leafCtrlBind('p', dontRepeat(editText("hippieCompletion")))
+    		//leafCtrlBind(' ', seq(dontRepeat(editText("contentAssist.proposals")),
+    		//		new ChangeModeCommand(ContentAssistMode.NAME, InsertMode.RESUME_ON_MODE_ENTER)))
     	);
+    }
+    
+    @Override
+    protected State<Command> contentAssistModeBindings() {
+    	return state(
+    		leafBind('j', dontRepeat(editText("goto.lineDown"))),
+    		leafBind('k', dontRepeat(editText("goto.lineUp"))),
+    		leafCtrlBind('n', dontRepeat(editText("goto.lineDown"))),
+    		leafCtrlBind('p', dontRepeat(editText("goto.lineUp")))
+        );
     }
 
 }

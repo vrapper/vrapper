@@ -11,6 +11,7 @@ import net.sourceforge.vrapper.platform.PlatformSpecificStateProvider;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
+import net.sourceforge.vrapper.vim.modes.ContentAssistMode;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.modes.commandline.CommandLineMode;
@@ -35,6 +36,7 @@ public class AbstractEclipseSpecificStateProvider implements
         keyMaps.put(NormalMode.NAME, normalModeKeymap());
         keyMaps.put(AbstractVisualMode.NAME, visualModeKeymap());
         states.put(InsertMode.NAME, insertModeBindings());
+        states.put(ContentAssistMode.NAME, contentAssistModeBindings());
     }
 
     public void setInitializationData(IConfigurationElement config,
@@ -66,6 +68,10 @@ public class AbstractEclipseSpecificStateProvider implements
     }
     
     protected State<Command> insertModeBindings() {
+        return EmptyState.getInstance();
+    }
+    
+    protected State<Command> contentAssistModeBindings() {
         return EmptyState.getInstance();
     }
     
