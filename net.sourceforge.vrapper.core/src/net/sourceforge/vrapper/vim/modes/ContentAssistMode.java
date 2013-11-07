@@ -1,10 +1,8 @@
 package net.sourceforge.vrapper.vim.modes;
 
-import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.key;
 import net.sourceforge.vrapper.keymap.EmptyState;
 import net.sourceforge.vrapper.keymap.KeyMap;
 import net.sourceforge.vrapper.keymap.KeyStroke;
-import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.Transition;
 import net.sourceforge.vrapper.platform.KeyMapProvider;
@@ -23,9 +21,6 @@ public class ContentAssistMode extends AbstractMode {
     public static final String DISPLAY_NAME = "CONTENT-ASSIST";
 
     protected State<Command> currentState = buildState();
-
-    private static final KeyStroke ESC = key(SpecialKey.ESC);
-    private static final KeyStroke RETURN = key(SpecialKey.RETURN);
 
     public ContentAssistMode(EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
@@ -47,14 +42,12 @@ public class ContentAssistMode extends AbstractMode {
         if (transition != null && transition.getValue() != null) {
             try {
                 transition.getValue().execute(editorAdaptor);
+                return true;
             } catch (final CommandExecutionException e) {
                 editorAdaptor.getUserInterfaceService().setErrorMessage(e.getMessage());
             }
         }
-        else if (keyStroke.equals(ESC) || keyStroke.equals(RETURN)) {
-            editorAdaptor.changeModeSafely(InsertMode.NAME, InsertMode.RESUME_ON_MODE_ENTER);
-        }
-        return true;
+        return false;
     }
     
     protected State<Command> buildState() {
