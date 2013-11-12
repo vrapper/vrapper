@@ -13,6 +13,7 @@ import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.AsciiCommand;
+import net.sourceforge.vrapper.vim.commands.ChangeToInsertModeCommand;
 import net.sourceforge.vrapper.vim.commands.CloseCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
@@ -39,6 +40,7 @@ import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
 import net.sourceforge.vrapper.vim.commands.UndoCommand;
 import net.sourceforge.vrapper.vim.commands.VimCommandSequence;
 import net.sourceforge.vrapper.vim.commands.motions.GoToLineMotion;
+import net.sourceforge.vrapper.vim.commands.motions.MoveRight;
 import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
@@ -200,6 +202,22 @@ public class CommandLineParser extends AbstractCommandParser {
             	return null;
             }
         };
+        Evaluator startInsert = new Evaluator() {
+            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
+                try {
+                    if(! command.isEmpty() && command.poll().equals("!")) {
+                        new ChangeToInsertModeCommand(new MotionCommand(MoveRight.INSTANCE)).execute(vim);
+                    }
+                    else {
+                        new ChangeToInsertModeCommand().execute(vim);
+                    }
+				}
+                catch (CommandExecutionException e) {
+            		vim.getUserInterfaceService().setErrorMessage(e.getMessage());
+				}
+                return null;
+            }
+        };
         
         mapping = new EvaluatorMapping();
         // options
@@ -276,6 +294,7 @@ public class CommandLineParser extends AbstractCommandParser {
         mapping.add("sort", sort);
         mapping.add("retab", retab);
     	mapping.add("ascii", ascii);
+    	mapping.add("startinsert", startInsert);
     }
 
     private static Evaluator buildConfigEvaluator(boolean local) {
