@@ -14,7 +14,7 @@ import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
  * This mode handles the content-assist popup in Eclipse. All operations are
  * Eclipse commands so they are defined in the EcipseSpecificStateProvider.
  */
-public class ContentAssistMode extends AbstractMode {
+public class ContentAssistMode extends InsertMode {
 
     public static final String KEYMAP_NAME = "Content Assist Mode Keymap";
     public static final String NAME = "content assist";
@@ -35,6 +35,16 @@ public class ContentAssistMode extends AbstractMode {
     public String getDisplayName() {
         return DISPLAY_NAME;
     }
+
+    @Override
+    public void enterMode(final ModeSwitchHint... args) throws CommandExecutionException {
+        super.enterMode(InsertMode.RESUME_ON_MODE_ENTER, InsertMode.DONT_LOCK_HISTORY);
+    }
+
+    @Override
+    public void leaveMode(final ModeSwitchHint... hints) {
+        super.leaveMode(InsertMode.RESUME_ON_MODE_ENTER, InsertMode.DONT_MOVE_CURSOR);
+    }
     
     @Override
     public boolean handleKey(KeyStroke keyStroke) {
@@ -47,7 +57,7 @@ public class ContentAssistMode extends AbstractMode {
                 editorAdaptor.getUserInterfaceService().setErrorMessage(e.getMessage());
             }
         }
-        return false;
+        return super.handleKey(keyStroke);
     }
     
     protected State<Command> buildState() {

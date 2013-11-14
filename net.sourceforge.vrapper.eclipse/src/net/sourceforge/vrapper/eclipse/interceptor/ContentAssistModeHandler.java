@@ -24,7 +24,8 @@ public class ContentAssistModeHandler implements ICompletionListener {
         // Only switch from INSERT mode.
         //
         if (VrapperPlugin.isVrapperEnabled() && InsertMode.NAME.equals(mode)) {
-            editorAdaptor.changeModeSafely(ContentAssistMode.NAME, InsertMode.RESUME_ON_MODE_ENTER);
+            editorAdaptor.changeModeSafely(ContentAssistMode.NAME,
+            		InsertMode.DONT_MOVE_CURSOR, InsertMode.RESUME_ON_MODE_ENTER);
         }
     }
 
@@ -32,7 +33,8 @@ public class ContentAssistModeHandler implements ICompletionListener {
     public void assistSessionEnded(ContentAssistEvent event) {
         final String mode = editorAdaptor.getCurrentModeName();
         if (VrapperPlugin.isVrapperEnabled() && ContentAssistMode.NAME.equals(mode)) {
-            editorAdaptor.changeModeSafely(InsertMode.NAME);
+            editorAdaptor.changeModeSafely(InsertMode.NAME,
+            		InsertMode.DONT_MOVE_CURSOR, InsertMode.RESUME_ON_MODE_ENTER);
         }
     }
 

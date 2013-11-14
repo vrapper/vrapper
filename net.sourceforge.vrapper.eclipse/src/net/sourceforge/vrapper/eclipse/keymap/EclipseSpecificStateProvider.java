@@ -118,8 +118,6 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
     	return state(
     		leafCtrlBind('n', dontRepeat(editText("hippieCompletion"))),
     		leafCtrlBind('p', dontRepeat(editText("hippieCompletion")))
-    		//leafCtrlBind(' ', seq(dontRepeat(editText("contentAssist.proposals")),
-    		//		new ChangeModeCommand(ContentAssistMode.NAME, InsertMode.RESUME_ON_MODE_ENTER)))
     	);
     }
     
