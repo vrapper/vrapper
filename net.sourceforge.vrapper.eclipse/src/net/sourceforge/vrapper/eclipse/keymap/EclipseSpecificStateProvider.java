@@ -124,8 +124,6 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
     @Override
     protected State<Command> contentAssistModeBindings() {
     	return state(
-    		leafBind('j', dontRepeat(editText("goto.lineDown"))),
-    		leafBind('k', dontRepeat(editText("goto.lineUp"))),
     		leafCtrlBind('n', dontRepeat(editText("goto.lineDown"))),
     		leafCtrlBind('p', dontRepeat(editText("goto.lineUp")))
         );

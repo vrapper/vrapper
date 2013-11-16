@@ -42,6 +42,7 @@ import net.sourceforge.vrapper.vim.commands.VimCommandSequence;
 import net.sourceforge.vrapper.vim.commands.motions.GoToLineMotion;
 import net.sourceforge.vrapper.vim.commands.motions.MoveRight;
 import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
+import net.sourceforge.vrapper.vim.modes.ContentAssistMode;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.modes.VisualMode;
@@ -67,6 +68,8 @@ public class CommandLineParser extends AbstractCommandParser {
         Evaluator vmap = new KeyMapper.Map(true, VisualMode.KEYMAP_NAME);
         Evaluator inoremap = new KeyMapper.Map(false, InsertMode.KEYMAP_NAME);
         Evaluator imap = new KeyMapper.Map(true, InsertMode.KEYMAP_NAME);
+        Evaluator canoremap = new KeyMapper.Map(false, ContentAssistMode.KEYMAP_NAME);
+        Evaluator camap = new KeyMapper.Map(true, ContentAssistMode.KEYMAP_NAME);
         Command ascii = AsciiCommand.INSTANCE;
         Command save = SaveCommand.INSTANCE;
         Command saveAll = SaveAllCommand.INSTANCE;
@@ -244,6 +247,8 @@ public class CommandLineParser extends AbstractCommandParser {
         mapping.add("nn", nnoremap);
         mapping.add("inoremap", inoremap);
         mapping.add("ino", inoremap);
+        mapping.add("canoremap", canoremap);
+        mapping.add("cano", canoremap);
         mapping.add("vnoremap", vnoremap);
         mapping.add("vn", vnoremap);
         // recursive mapping
@@ -252,6 +257,8 @@ public class CommandLineParser extends AbstractCommandParser {
         mapping.add("nm", nmap);
         mapping.add("imap", imap);
         mapping.add("im", imap);
+        mapping.add("camap", camap);
+        mapping.add("cam", camap);
         mapping.add("vmap", vmap);
         mapping.add("vm", vmap);
         // unmapping
