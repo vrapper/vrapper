@@ -1,7 +1,5 @@
 package net.sourceforge.vrapper.vim.commands;
 
-import net.sourceforge.vrapper.platform.TextContent;
-import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
@@ -35,41 +33,24 @@ public class SimpleDelimitedText implements DelimitedText {
      */
     public TextRange leftDelimiter(int offset, EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
         Position left = leftMotion.destination(offset, editorAdaptor, count);
-        Position endDelim = left.addModelOffset(1);
+
+        Position leftDelim = VimUtils.fixLeftDelimiter(
+                editorAdaptor.getModelContent(),
+                editorAdaptor.getCursorService(),
+                left);
         
-        TextContent content = editorAdaptor.getModelContent();
-        //is character after delimiter a newline?
-        if(VimUtils.isNewLine(content.getText(left.getModelOffset() + 1, 1))) {
-            //start after newline
-            LineInformation line = content.getLineInformationOfOffset(left.getModelOffset());
-            LineInformation nextLine = content.getLineInformation(line.getNumber() +1);
-            endDelim = editorAdaptor.getCursorService().newPositionForModelOffset(nextLine.getBeginOffset());
-        }
-        
-        return new StartEndTextRange(left, endDelim);
+        return new StartEndTextRange(left, leftDelim);
     }
 
     public TextRange rightDelimiter(int offset, EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
         Position right = rightMotion.destination(offset, editorAdaptor, count);
+
+        Position rightDelim = VimUtils.fixRightDelimiter(
+                editorAdaptor.getModelContent(),
+                editorAdaptor.getCursorService(),
+                right);
         
-        TextContent content = editorAdaptor.getModelContent();
-        int startIndex = right.getModelOffset();
-        LineInformation line = content.getLineInformationOfOffset(startIndex);
-        int lineStart = line.getBeginOffset();
-        
-        Position startDelim = right;
-        if(startIndex > lineStart) {
-            //is everything before the delimiter just whitespace?
-            String text = content.getText(lineStart, startIndex - lineStart);
-            if(VimUtils.isBlank(text)) {
-                //end on previous line
-                LineInformation previousLine = content.getLineInformation(line.getNumber() -1);
-                startIndex = previousLine.getEndOffset();
-                startDelim = editorAdaptor.getCursorService().newPositionForModelOffset(startIndex);
-            }
-        }
-        
-        return new StartEndTextRange(startDelim, right.addModelOffset(1));
+        return new StartEndTextRange(rightDelim, right.addModelOffset(1));
     }
 
 }

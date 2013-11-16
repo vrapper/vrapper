@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.vim.SimpleKeyStroke;
+import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.SearchAndReplaceService;
 import net.sourceforge.vrapper.platform.SimpleConfiguration.NewLine;
 import net.sourceforge.vrapper.platform.TextContent;
@@ -256,6 +257,41 @@ public class VimUtils {
             result2 = result;
         }
         return result2;
+    }
+    
+    /**
+     * Vim doesn't start a delimited range on a newline or end a range on an
+     * empty line (try 'vi{' while within a function for proof).
+     */
+    public static Position fixLeftDelimiter(TextContent model, CursorService cursor, Position delim) {
+        //check if the character after delimiter is a newline
+        if(isNewLine(model.getText(delim.getModelOffset() + 1, 1))) {
+            //start after newline
+            LineInformation line = model.getLineInformationOfOffset(delim.getModelOffset());
+            LineInformation nextLine = model.getLineInformation(line.getNumber() + 1);
+            delim = cursor.newPositionForModelOffset(nextLine.getBeginOffset());
+        }
+        else {
+            delim = delim.addModelOffset(1);
+        }
+        return delim;
+    }
+    public static Position fixRightDelimiter(TextContent model, CursorService cursor, Position delim) {
+        int delimIndex = delim.getModelOffset();
+        LineInformation line = model.getLineInformationOfOffset(delimIndex);
+        int lineStart = line.getBeginOffset();
+        
+        if(delimIndex > lineStart) {
+            //is everything before the delimiter just whitespace?
+            String text = model.getText(lineStart, delimIndex - lineStart);
+            if(VimUtils.isBlank(text)) {
+                //end on previous line
+                LineInformation previousLine = model.getLineInformation(line.getNumber() -1);
+                delimIndex = previousLine.getEndOffset();
+                delim = cursor.newPositionForModelOffset(delimIndex);
+            }
+        }
+        return delim;
     }
 
     /**

@@ -27,6 +27,9 @@
    <feature url="features/net.sourceforge.vrapper.plugin.argtextobj_0.37.20131116.jar" id="net.sourceforge.vrapper.plugin.argtextobj" version="0.37.20131116">
       <category name="Optional Vimscript Plugins"/>
    </feature>
+   <feature url="features/net.sourceforge.vrapper.plugin.methodtextobj_0.37.20131116.jar" id="net.sourceforge.vrapper.plugin.methodtextobj" version="0.37.20131116">
+      <category name="Optional Vimscript Plugins"/>
+   </feature>
    <category-def name="Vrapper Unstable" label="Vrapper Unstable">
       <description>
          Unstable releases of Vrapper.
