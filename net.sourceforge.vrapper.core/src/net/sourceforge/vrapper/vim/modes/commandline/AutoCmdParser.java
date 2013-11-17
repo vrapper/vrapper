@@ -39,6 +39,17 @@ public class AutoCmdParser implements Command {
         Matcher m = AUTOCMD_PATTERN.matcher(s);
         if (m.matches() && m.group(2).equals(editoradaptor.getEditorType())) {
             newCommand = m.group(3);
+            if(newCommand.startsWith("set ")) {
+                //*** workaround for defect #327 ***
+                //https://github.com/vrapper/vrapper/issues/327
+                //Vrapper only evaluates autocmd when a file is first opened but setting properties
+                //is global. This means the global settings for all files will have whatever values
+                //were set by the last opened file. By changing "set" to "setlocal" we're setting
+                //this property for this editor only. This command will be re-evaluated for each
+                //editor's initial open, giving the illusion that it is set for all files of this
+                //type when in reality we're setting it individually for every instance of this type.
+                newCommand = newCommand.replace("set ", "setlocal ");
+            }
         } else {
             newCommand = null;
         }
