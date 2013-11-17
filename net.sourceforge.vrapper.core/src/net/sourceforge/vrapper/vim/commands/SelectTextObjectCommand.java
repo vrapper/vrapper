@@ -10,14 +10,39 @@ import net.sourceforge.vrapper.vim.modes.VisualMode;
 public class SelectTextObjectCommand extends CountAwareCommand {
 
     private final TextObject textObject;
+    //each selection is a new instance, have to make this static
+    //to persist between invocations
+    private static int lastCount = 0;
 
     public SelectTextObjectCommand(final TextObject textObject) {
         this.textObject = textObject;
     }
 
     @Override
-    public void execute(final EditorAdaptor editorAdaptor, final int count) throws CommandExecutionException {
-        final TextRange region = textObject.getRegion(editorAdaptor, count);
+    public void execute(final EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
+        Selection oldSelection = editorAdaptor.getSelection();
+        TextRange region = textObject.getRegion(editorAdaptor, count);
+        //if selection was calculated to be the same as before
+        //it probably means we're chaining i{i{, expand to next region
+        if(oldSelection.getLeftBound().getModelOffset() == region.getLeftBound().getModelOffset()
+                && oldSelection.getRightBound().getModelOffset() == region.getRightBound().getModelOffset()) {
+
+            //get region again and see if selection expands
+            region = textObject.getRegion(editorAdaptor, lastCount);
+
+            if(oldSelection.getLeftBound().getModelOffset() == region.getLeftBound().getModelOffset()
+                    && oldSelection.getRightBound().getModelOffset() == region.getRightBound().getModelOffset()) {
+                //selection didn't change, cursor is probably on the delimiter
+                //increase the count and get region again
+                lastCount += lastCount == 0 ? 2 : 1;
+                region = textObject.getRegion(editorAdaptor, lastCount);
+            }
+        }
+        else {
+            //new selection, reset chaining
+            lastCount = 0;
+        }
+
         Selection selection;
         String newMode;
         switch (textObject.getContentType(editorAdaptor.getConfiguration())) {
