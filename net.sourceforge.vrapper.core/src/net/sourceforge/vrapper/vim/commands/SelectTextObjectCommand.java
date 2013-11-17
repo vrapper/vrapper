@@ -12,7 +12,7 @@ public class SelectTextObjectCommand extends CountAwareCommand {
     private final TextObject textObject;
     //each selection is a new instance, have to make this static
     //to persist between invocations
-    private static int lastCount = 0;
+    private static int chainingCount = 0;
 
     public SelectTextObjectCommand(final TextObject textObject) {
         this.textObject = textObject;
@@ -24,23 +24,29 @@ public class SelectTextObjectCommand extends CountAwareCommand {
         TextRange region = textObject.getRegion(editorAdaptor, count);
         //if selection was calculated to be the same as before
         //it probably means we're chaining i{i{, expand to next region
-        if(oldSelection.getLeftBound().getModelOffset() == region.getLeftBound().getModelOffset()
+        if(textObject instanceof DelimitedTextObject
+                && oldSelection.getLeftBound().getModelOffset() == region.getLeftBound().getModelOffset()
                 && oldSelection.getRightBound().getModelOffset() == region.getRightBound().getModelOffset()) {
 
             //get region again and see if selection expands
-            region = textObject.getRegion(editorAdaptor, lastCount);
+            //(this should work if the cursor is not on a delimiter character)
+            region = textObject.getRegion(editorAdaptor, chainingCount);
 
             if(oldSelection.getLeftBound().getModelOffset() == region.getLeftBound().getModelOffset()
                     && oldSelection.getRightBound().getModelOffset() == region.getRightBound().getModelOffset()) {
                 //selection didn't change, cursor is probably on the delimiter
                 //increase the count and get region again
-                lastCount += lastCount == 0 ? 2 : 1;
-                region = textObject.getRegion(editorAdaptor, lastCount);
+                chainingCount += chainingCount == 0 ? 2 : 1;
+                region = textObject.getRegion(editorAdaptor, chainingCount);
+            }
+            else {
+                //cursor is not on a delimiter anymore
+                chainingCount = 0;
             }
         }
         else {
             //new selection, reset chaining
-            lastCount = 0;
+            chainingCount = 0;
         }
 
         Selection selection;
