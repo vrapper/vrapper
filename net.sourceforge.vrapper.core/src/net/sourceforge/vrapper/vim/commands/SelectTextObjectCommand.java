@@ -28,9 +28,15 @@ public class SelectTextObjectCommand extends CountAwareCommand {
                 && oldSelection.getLeftBound().getModelOffset() == region.getLeftBound().getModelOffset()
                 && oldSelection.getRightBound().getModelOffset() == region.getRightBound().getModelOffset()) {
 
-            //get region again and see if selection expands
-            //(this should work if the cursor is not on a delimiter character)
-            region = textObject.getRegion(editorAdaptor, chainingCount);
+            try {
+                //get region again and see if selection expands
+                //(this should work if the cursor is not on a delimiter character)
+                region = textObject.getRegion(editorAdaptor, chainingCount);
+            }
+            catch(CommandExecutionException e) {
+                chainingCount = 0;
+                region = textObject.getRegion(editorAdaptor, chainingCount);
+            }
 
             if(oldSelection.getLeftBound().getModelOffset() == region.getLeftBound().getModelOffset()
                     && oldSelection.getRightBound().getModelOffset() == region.getRightBound().getModelOffset()) {
