@@ -21,8 +21,9 @@ public abstract class DelimitedTextObject extends AbstractTextObject {
         int currentOffset = currentPosition.getModelOffset();
         TextRange leftDelimiter = delimitedText.leftDelimiter(currentOffset, editorAdaptor, count);
         TextRange rightDelimiter = delimitedText.rightDelimiter(currentOffset, editorAdaptor, count);
-        final Position leftBound = leftDelimiter.getLeftBound();
-        final Position rightBound = rightDelimiter.getRightBound();
+        final TextRange newRegion = getRegion(leftDelimiter, rightDelimiter);
+        final Position leftBound = newRegion.getLeftBound();
+        final Position rightBound = newRegion.getRightBound();
         /* 
          * From VIM's search.c:
          * In Visual mode, when the resulting area is not bigger than what we
@@ -34,8 +35,10 @@ public abstract class DelimitedTextObject extends AbstractTextObject {
                 leftOffset > 0 &&
                 rightOffset <= currentSelection.getRightBound().getModelOffset() &&
                 rightOffset < editorAdaptor.getModelContent().getTextLength()) {
-            leftDelimiter = delimitedText.leftDelimiter(leftOffset - 1, editorAdaptor, count);
-            rightDelimiter = delimitedText.rightDelimiter(rightOffset, editorAdaptor, count);
+            final int nextLeftOffset  = leftDelimiter.getLeftBound().getModelOffset() - 1;
+            final int nextRightOffset = rightDelimiter.getRightBound().getModelOffset();
+            leftDelimiter = delimitedText.leftDelimiter(nextLeftOffset, editorAdaptor, count);
+            rightDelimiter = delimitedText.rightDelimiter(nextRightOffset, editorAdaptor, count);
         }
         return getRegion(leftDelimiter, rightDelimiter);
     }
