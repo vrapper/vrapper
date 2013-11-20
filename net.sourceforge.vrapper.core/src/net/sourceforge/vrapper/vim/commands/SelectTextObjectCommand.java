@@ -10,9 +10,6 @@ import net.sourceforge.vrapper.vim.modes.VisualMode;
 public class SelectTextObjectCommand extends CountAwareCommand {
 
     private final TextObject textObject;
-    //each selection is a new instance, have to make this static
-    //to persist between invocations
-    private static int chainingCount = 0;
 
     public SelectTextObjectCommand(final TextObject textObject) {
         this.textObject = textObject;
@@ -23,36 +20,16 @@ public class SelectTextObjectCommand extends CountAwareCommand {
         Selection oldSelection = editorAdaptor.getSelection();
         TextRange region = textObject.getRegion(editorAdaptor, count);
         //if selection was calculated to be the same as before
-        //it probably means we're chaining i{i{, expand to next region
-        if(textObject instanceof DelimitedTextObject
-                && oldSelection.getLeftBound().getModelOffset() == region.getLeftBound().getModelOffset()
-                && oldSelection.getRightBound().getModelOffset() == region.getRightBound().getModelOffset()) {
-
-            try {
-                //get region again and see if selection expands
-                //(this should work if the cursor is not on a delimiter character)
-                region = textObject.getRegion(editorAdaptor, chainingCount);
-            }
-            catch(CommandExecutionException e) {
-                chainingCount = 0;
-                region = textObject.getRegion(editorAdaptor, chainingCount);
-            }
-
-            if(oldSelection.getLeftBound().getModelOffset() == region.getLeftBound().getModelOffset()
-                    && oldSelection.getRightBound().getModelOffset() == region.getRightBound().getModelOffset()) {
-                //selection didn't change, cursor is probably on the delimiter
-                //increase the count and get region again
-                chainingCount += chainingCount == 0 ? 2 : 1;
-                region = textObject.getRegion(editorAdaptor, chainingCount);
-            }
-            else {
-                //cursor is not on a delimiter anymore
-                chainingCount = 0;
-            }
-        }
-        else {
-            //new selection, reset chaining
-            chainingCount = 0;
+        //it probably means we're chaining i{i{, keep increasing count
+        //until we expand into next the region
+        while(textObject instanceof DelimitedTextObject
+                && oldSelection.getLeftBound().getModelOffset() <= region.getLeftBound().getModelOffset()
+                && oldSelection.getRightBound().getModelOffset() >= region.getRightBound().getModelOffset()) {
+            count++;
+            //this will throw a CommandExecutionException and break out of the
+            //while loop if no delimiter can be found larger than the current
+            //selection
+            region = textObject.getRegion(editorAdaptor, count);
         }
 
         Selection selection;
