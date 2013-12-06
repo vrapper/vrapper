@@ -295,17 +295,26 @@ public class VimUtils {
     }
 
     /**
-     * Windows passes AltGr key combinations as Ctrl + Alt, check if this is the case and return
-     * a KeyStroke without those modifiers. If you did press those keys and hit this function,
-     * then check your bindings.
-     * @return Either a KeyStroke or <tt>null</tt> if not applicable.
+     * Tries to work around AltGr madness if we detect that AltGr was pressed.
+     * If you did press Ctrl + Alt or Alt and hit this function, then check the state provider.
+     * This function should be called as a fallback when remaps and default bindings failed to find
+     * a match.
+     * <p>
+     * Examples for different Operating Systems when AltGr + Q is pressed (@ key on German keybord):
+     * <ul>
+     * <li>Windows SWT sends Ctrl + Alt + @.</li>
+     * <li>Mac OSX SWT sends Alt + @.</li>
+     * <li>Linux SWT passes just @.</li>
+     * </ul>
+     * @return Either a {@link KeyStroke} without modifiers or <tt>null</tt> if not applicable.
      */
     public static KeyStroke fixAltGrKey(KeyStroke key) {
         //Most-common case, bail as fast as possible
-        if( ! (key.withAltKey() && key.withCtrlKey()) ) {
+        if( ! key.withAltKey()) {
             return null;
         }
 
+        // Turn off control and alt key bits.
         if (key.getSpecialKey() == null) {
             return new SimpleKeyStroke(key.getCharacter(), key.withShiftKey(), false, false);
         } else {
