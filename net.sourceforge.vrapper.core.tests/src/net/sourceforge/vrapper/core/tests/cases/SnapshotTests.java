@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import net.sourceforge.vrapper.core.tests.utils.SnapshotTestsExecutor;
 import net.sourceforge.vrapper.core.tests.utils.VimTestCase;
 import net.sourceforge.vrapper.utils.ContentType;
+import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
 import net.sourceforge.vrapper.vim.register.Register;
@@ -27,10 +28,10 @@ import org.mockito.stubbing.Answer;
  */
 public class SnapshotTests extends VimTestCase {
 
-
     @Override
     public void setUp() {
         super.setUp();
+        Mockito.when(configuration.getNewLine()).thenReturn(VimConstants.REGISTER_NEWLINE);
         // we need no mock magic for register manager
         registerManager = new DefaultRegisterManager();
         //let UIInterface mock print out error messages
