@@ -38,7 +38,9 @@ public class PasteOperation implements TextOperation {
             count = 1;
         RegisterContent registerContent = editorAdaptor.getRegisterManager().getActiveRegister().getContent();
         String text = StringUtils.multiply(registerContent.getText(), count);
-        text = VimUtils.replaceNewLines(text, editorAdaptor.getConfiguration().getNewLine());
+
+        final String newLine = editorAdaptor.getConfiguration().getNewLine();
+        text = VimUtils.replaceNewLines(text, newLine);
 
         ContentType pastingContentType = registerContent.getPayloadType();
         ContentType selectionContentType = editorAdaptor.getSelection().getContentType(editorAdaptor.getConfiguration());
@@ -56,9 +58,9 @@ public class PasteOperation implements TextOperation {
         int position;
         if (selectionContentType == ContentType.LINES || pastingContentType == ContentType.LINES) {
             if (pastingContentType != ContentType.LINES) {
-                text = text + "\n";
+                text = text + newLine;
             } else if (selectionContentType != ContentType.LINES) {
-                text = "\n" + text;
+                text = newLine + text;
             }
             content.replace(offset, 0, text);
             LineInformation firstPastedLine = content.getLineInformationOfOffset(offset + 1);
