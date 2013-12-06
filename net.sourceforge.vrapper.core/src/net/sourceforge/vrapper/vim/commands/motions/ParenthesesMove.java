@@ -47,8 +47,13 @@ public class ParenthesesMove extends AbstractModelSideMotion {
     @Override
     protected int destination(int offset, TextContent content, int count) throws CommandExecutionException {
         LineInformation info = content.getLineInformationOfOffset(offset);
-        int index = offset;
         ParenthesesPair pair = null;
+        int index;
+        if(VisualMode.NAME.equals(mode) ) {
+            //visual mode moves the selection forward one character
+            //move it back so we're on the character under the cursor
+            offset--;
+        }
         for(index=offset; index<info.getEndOffset(); index++) {
             String c = content.getText(index, 1);
             if (PARENTHESES.containsKey(c)) {
