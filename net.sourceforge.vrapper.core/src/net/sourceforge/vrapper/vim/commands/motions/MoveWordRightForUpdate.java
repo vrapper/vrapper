@@ -46,8 +46,10 @@ public class MoveWordRightForUpdate extends CountAwareMotion {
         int originalOffset = editorAdaptor.getPosition().getModelOffset();
         Position delegatePosition = delegate.destination(editorAdaptor,count);
         
+        //take length of Windows newlines (\r\n) into account
+        int newlineLength = editorAdaptor.getConfiguration().getNewLine().length();
         //differ from the delegate in that we trim the last newline where appropriate
-        int newOffset = offsetWithoutLastNewline(originalOffset, delegatePosition.getModelOffset(), editorAdaptor.getModelContent());
+        int newOffset = offsetWithoutLastNewline(newlineLength, originalOffset, delegatePosition.getModelOffset(), editorAdaptor.getModelContent());
         
         return editorAdaptor.getCursorService().newPositionForModelOffset(newOffset);
     }
@@ -65,7 +67,7 @@ public class MoveWordRightForUpdate extends CountAwareMotion {
      * 
      * @return the new ending offset, decremented if newlines and whitespace are present
      */
-    public int offsetWithoutLastNewline(int startingIndex, int endingIndex, TextContent content) {
+    public int offsetWithoutLastNewline(int newlineLength, int startingIndex, int endingIndex, TextContent content) {
         int bufferLength = min(MoveWithBounds.BUFFER_LEN, endingIndex);
         if( bufferLength == 0 )
             return endingIndex;
@@ -79,7 +81,7 @@ public class MoveWordRightForUpdate extends CountAwareMotion {
         int trailingNL = numTrailingNewLines(buffer, lastBufferIndex-trailingWS);
         
         if( trailingNL > 0 ) {
-            int newOffset = endingIndex - (trailingWS+1); //only move back a single newline
+            int newOffset = endingIndex - (trailingWS+newlineLength); //only move back a single newline
             if( newOffset > startingIndex ) //words only move right
                 endingIndex = newOffset;
         }
