@@ -2,6 +2,7 @@ package net.sourceforge.vrapper.eclipse.interceptor;
 
 import net.sourceforge.vrapper.eclipse.activator.VrapperPlugin;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.modes.ContentAssistMode;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 
@@ -48,6 +49,7 @@ public class LinkedModeHandler implements IDocumentListener, ILinkedModeListener
             String mode = hintReceiver.getCurrentModeName();
             if (VrapperPlugin.isVrapperEnabled()
                     && ! InsertMode.NAME.equals(mode)
+                    && ! ContentAssistMode.NAME.equals(mode)
                     && ! NormalMode.NAME.equals(mode)) {
                 hintReceiver.changeModeSafely(NormalMode.NAME);
             }
