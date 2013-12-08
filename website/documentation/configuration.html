@@ -3,6 +3,7 @@
 <h3>Settings</h3>
 <p>Vrapper's behaviour can be configured with command-line options.</p>
 <p>You can find the current value of a property with ':set &lt;property&gt;?'</p>
+<p>You can also use ':setlocal' to make a setting only applicable to this file (Eclipse tab) instance.</p>
 <table class="commands">
     <tr>
         <th>Command</th>
@@ -58,7 +59,7 @@
     <tr>
         <td>:set&nbsp;regexsearch<br />:set&nbsp;noregexsearch</td>
         <td>:set&nbsp;rxs<br />:set&nbsp;norxs</td>
-        <td>Off</td>
+        <td>On</td>
         <td>If set, keywords will be handled as (Eclipse style) regular
             expressions.
         </td>
@@ -174,10 +175,16 @@
         or spaces with tabs (false).  Also determines whether i_ctrl-t and i_ctrl-d will replace 'tabstop' spaces with a tab.</td>
     </tr>
     <tr>
+        <td>:set&nbsp;shiftround<br/>:set&nbsp;noshiftround</td>
+        <td>:set&nbsp;sr<br />:set&nbsp;nosr</td>
+        <td>Off</td>
+        <td>Round indent (i_ctrl-t, i_ctrl-d, '&gt;&gt' and '&lt;&lt;') to the nearest multiple of 'shiftwidth'.</td>
+    </tr>
+    <tr>
         <td>:set&nbsp;shiftwidth=&lt;N&gt;</td>
         <td>:set&nbsp;sw=&lt;N&gt;</td>
         <td>shiftwidth=8</td>
-        <td>Only used by i_ctrl-t and i_ctrl-d.  Determines how many spaces are used for each indent added or removed.</td>
+        <td>Used by i_ctrl-t, i_ctrl-d, '&gt;', and '&lt;' commands.  Determines how many spaces are used for each indent added or removed.</td>
     </tr>
     <tr>
         <td>:set&nbsp;path=&lt;comma-delimited list of dirs&gt;</td>
@@ -216,6 +223,13 @@
         Eclipse moves into Link Mode when prompting you to fill out arguments.  This typically
         means Eclipse has drawn a box around some words and it wants you to fill them in.
         </td>
+    </tr>
+    <tr>
+        <td>:set&nbsp;contentassistmode<br />:set&nbsp;nocontentassistmode</td>
+        <td>:set&nbsp;cam<br />:set&nbsp;nocam</td>
+        <td>Off</td>
+        <td>Enables &lt;c-n&gt; and &lt;c-p&gt; to move selection up and down in the content-assist dropdown.<br/>
+        Use 'camap' to map other keys to &lt;c-n&gt; or &lt;c-p&gt;.</td>
     </tr>
     <tr>
         <td>:set&nbsp;imdisable<br />:set&nbsp;noimdisable</td>

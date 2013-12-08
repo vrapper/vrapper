@@ -249,6 +249,10 @@ Commands may be chained with a '|' character between them. For example:<br/>
         </td>
     </tr>
     <tr>
+        <td>:startinsert[!]</td>
+        <td>Start in insertmode (only useful as the last line of a .vrapperrc file)</td>
+    </tr>
+    <tr>
         <td>:vim</td>
         <td>The current active file in Eclipse is opened in a new gvim window.  Cursor is on the exact same line
         and column as it was in Eclipse.  This allows you to perform any operation in gvim which Vrapper doesn't support.
@@ -281,5 +285,9 @@ Commands may be chained with a '|' character between them. For example:<br/>
         <td>Binds the Eclipse action with the specified id to a 
             (command line mode) command &lt;name&gt;. Overwrites the 
             binding if it already exists.</td>
+    </tr>
+    <tr>
+        <td>:eclipseuiaction[!]&nbsp;&lt;name&gt;&nbsp;&lt;id&gt;</td>
+        <td>Similar to :eclipseaction except it handles commands which display (or may display) a popup or dialog.</td>
     </tr>
 </table>
