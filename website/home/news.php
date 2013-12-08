@@ -1,4 +1,33 @@
 <div class="newsbox">
+    <div class="date">2013-12-08</div>
+    <h4>0.38.0 Released</h4>
+
+    <p>Still sticking with our two-month release cycle, 0.38.0 is now released.
+    Changes since the last status update (included in 0.38.0) are:</p>
+
+    <ul>
+        <li>Added :set contentassistmode</li>
+        <ul>
+            <li>Enables &lt;c-n&gt; and &lt;c-p&gt; in content-assist dropdown</li>
+            <li>Use camap to map &lt;c-n&gt; or &lt;c-p&gt; to other keys</li>
+        </ul>
+        <li>Added :startinsert command</li>
+        <li>Added 'method text object' optional plugin</li>
+        <li>Fixed issue with chaining vi{i{i{</li>
+        <li>Fixed autocmd when changing tabs</li>
+        <li>Fixed v%</li>
+        <li>Fixed 'dw' on last word of a line with Windows line endings</li>
+        <li>Fixed Alt key handling on keyboards with AltGr</li>
+        <li>Fixed issue with newlines when pasting text</li>
+    </ul>
+    
+    <p>Real life has been getting in the way recently, preventing me from
+    spending time with Vrapper.  I'll do my best to stay on top of defects and
+    feature requests but I'm afraid I might not be able to continue releasing
+    every two months.  Or at least, the amount of changes in a given two-month
+    period might not be enough to justify a release.  We'll see how it goes.</p>
+</div>
+<div class="newsbox">
     <div class="date">2013-11-04</div>
     <h4>Updates to unstable update site</h4>
 
