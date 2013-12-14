@@ -2,7 +2,7 @@
 <feature
       id="net.sourceforge.vrapper"
       label="Vrapper Unstable"
-      version="0.37.20131206"
+      version="0.39.20131214"
       provider-name="Vrapper Team">
 
    <description url="http://vrapper.sourceforge.net/documentation/">
