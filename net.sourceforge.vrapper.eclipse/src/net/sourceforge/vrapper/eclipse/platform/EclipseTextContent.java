@@ -152,6 +152,10 @@ public class EclipseTextContent {
             int oldIndex = textWidget.getCaretOffset();
             textWidget.setCaretOffset(index);
             textWidget.insert(s);
+            if(oldIndex > 1 && textWidget.getTextRange(oldIndex-1, 2).equals("\r\n")) {
+            	//can't put cursor between \r and \n of a Windows newline
+            	oldIndex++;
+            }
             textWidget.setCaretOffset(oldIndex);
         }
 
