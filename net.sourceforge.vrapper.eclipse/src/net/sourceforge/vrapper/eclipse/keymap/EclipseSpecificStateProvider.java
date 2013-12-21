@@ -10,6 +10,7 @@ import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.dontRepea
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
 import net.sourceforge.vrapper.eclipse.commands.ChangeTabCommand;
 import net.sourceforge.vrapper.eclipse.commands.GoToMarkCommand;
+import net.sourceforge.vrapper.eclipse.commands.ListTabsCommand;
 import net.sourceforge.vrapper.eclipse.commands.TabNewCommand;
 import net.sourceforge.vrapper.eclipse.commands.ToggleFoldingCommand;
 import net.sourceforge.vrapper.keymap.SpecialKey;
@@ -54,6 +55,7 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
     	// Calls New Wizard dialogue
     	commands.add("tabedit",     (Command)TabNewCommand.NEW_EDITOR);
     	commands.add("tabnew",      (Command)TabNewCommand.NEW_EDITOR);
+    	commands.add("tabs",        (Command)ListTabsCommand.INSTANCE);
     }
 
     @Override
