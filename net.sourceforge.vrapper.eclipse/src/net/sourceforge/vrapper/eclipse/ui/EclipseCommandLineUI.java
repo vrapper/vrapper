@@ -243,8 +243,10 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener,
             commandLineText.replaceTextRange(leftOffset, 0, "\"");
             registerModeSelection = sel;
             readOnly = true;
-        } else if (mode == CommandLineMode.MORE) {
+        } else if (mode == CommandLineMode.MESSAGE) {
             commandLineText.setEditable(false);
+            setPosition(0);
+            commandLineText.setTopIndex(0);
             readOnly = true;
         }
     }

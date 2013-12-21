@@ -10,7 +10,7 @@ public interface CommandLineUI {
 
     public static enum CommandLineMode {
         DEFAULT,
-        MORE,
+        MESSAGE,
         REGISTER;
     }
 
