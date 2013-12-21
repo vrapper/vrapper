@@ -6,6 +6,7 @@ import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
@@ -23,11 +24,18 @@ public class ListTabsCommand extends AbstractMessagesCommand {
         IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
         
         IEditorReference[] editorReferences = page.getEditorReferences();
+        IEditorPart current = page.getActiveEditor();
         for (int i = 0; i < editorReferences.length; i++) {
             sb.append("Tab page ").append(i + 1).append("\n");
             IEditorReference editorRef = editorReferences[i];
             IEditorInput editorInput = null;
-            sb.append("    ");
+            IEditorPart editor = editorRef.getEditor(false);
+            // If editor == null, then it isn't the current editor
+            if (editor != null && editor.equals(current)) {
+                sb.append(">   ");
+            } else {
+                sb.append("    ");
+            }
             try {
                 editorInput = editorRef.getEditorInput();
                 if (editorInput instanceof FileEditorInput) {
