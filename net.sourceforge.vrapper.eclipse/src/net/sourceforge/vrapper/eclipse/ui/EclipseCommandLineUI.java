@@ -238,11 +238,13 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener,
             }
             readOnly = false;
         } else if (mode == CommandLineMode.REGISTER) {
-            Point sel = commandLineText.getSelection();
-            int leftOffset = Math.min(sel.x, sel.y);
-            commandLineText.replaceTextRange(leftOffset, 0, "\"");
-            registerModeSelection = sel;
-            readOnly = true;
+            if (registerModeSelection == null) {
+                Point sel = commandLineText.getSelection();
+                int leftOffset = Math.min(sel.x, sel.y);
+                commandLineText.replaceTextRange(leftOffset, 0, "\"");
+                registerModeSelection = sel;
+                readOnly = true;
+            }
         } else if (mode == CommandLineMode.MESSAGE) {
             commandLineText.setEditable(false);
             setPosition(0);
