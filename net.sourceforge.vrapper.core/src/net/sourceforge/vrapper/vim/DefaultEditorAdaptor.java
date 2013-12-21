@@ -54,6 +54,7 @@ import net.sourceforge.vrapper.vim.modes.TempNormalMode;
 import net.sourceforge.vrapper.vim.modes.VisualMode;
 import net.sourceforge.vrapper.vim.modes.commandline.CommandLineMode;
 import net.sourceforge.vrapper.vim.modes.commandline.CommandLineParser;
+import net.sourceforge.vrapper.vim.modes.commandline.MessageMode;
 import net.sourceforge.vrapper.vim.modes.commandline.PasteRegisterMode;
 import net.sourceforge.vrapper.vim.modes.commandline.SearchMode;
 import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
@@ -162,6 +163,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
                 new CommandLineMode(self),
                 new SearchMode(self),
                 new ConfirmSubstitutionMode(self),
+                new MessageMode(self),
                 new ContentAssistMode(self),
                 new PasteRegisterMode(self)};
         for (final EditorMode mode: modes) {
