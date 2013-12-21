@@ -248,6 +248,7 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener,
             setPosition(0);
             commandLineText.setTopIndex(0);
             readOnly = true;
+            pasteItem.setEnabled(false);
         }
     }
 

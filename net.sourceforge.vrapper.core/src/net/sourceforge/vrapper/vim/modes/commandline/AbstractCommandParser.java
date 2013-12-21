@@ -173,6 +173,10 @@ public abstract class AbstractCommandParser {
         //Exit register mode but not command line mode.
         if (pasteRegister && e.equals(KEY_ESCAPE)) {
             pasteRegister = false;
+            commandLine.setMode(CommandLineMode.DEFAULT);
+        } else if (pasteRegister && ! e.equals(KEY_CTRL_R)) {
+            pasteRegister = false;
+            commandLine.setMode(CommandLineMode.DEFAULT);
         } else if (e.equals(KEY_RETURN) || e.equals(KEY_ESCAPE)) {
             //Pressing return on an empty command line quits this mode rather than execute a command
             if (c == null) {
@@ -183,12 +187,10 @@ public abstract class AbstractCommandParser {
                         // command c expects it.
                         AbstractVisualMode.KEEP_SELECTION_HINT);
             }
-        }
-        if (!e.equals(KEY_CTRL_R) && pasteRegister) {
-            pasteRegister = false;
-        }
-        if ( ! pasteRegister) {
-            commandLine.setMode(CommandLineMode.DEFAULT);
+        } else {
+            if ( ! pasteRegister) {
+                commandLine.setMode(CommandLineMode.DEFAULT);
+            }
         }
     }
 
