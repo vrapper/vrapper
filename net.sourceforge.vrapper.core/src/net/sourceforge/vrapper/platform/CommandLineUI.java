@@ -71,4 +71,17 @@ public interface CommandLineUI {
     /** Replaces the contents of the command line between two positions. */
     public void replace(int start, int end, String string);
 
+    /**
+     * Check if the last line of the contents is shown. If not, the content is too large and a 
+     * -- More -- prompt should be shown.
+     */
+    public boolean isLastLineShown();
+
+    /**
+     * Scroll the contents of the command line down so they can be all brought into view.
+     * @param wholeScreen If <tt>false</tt>, scrolls a single line. If true, scrolls down a whole
+     *   screen at a time.
+     */
+    public void scrollDown(boolean wholeScreen);
+
 }

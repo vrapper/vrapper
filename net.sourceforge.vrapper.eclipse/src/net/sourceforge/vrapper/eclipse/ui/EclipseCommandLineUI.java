@@ -390,4 +390,23 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener,
         }
         commandLineText.redraw();
     }
+    
+    public boolean isLastLineShown() {
+        int bottomLine = commandLineText.getLineIndex(commandLineText.getBounds().y);
+        // -1: getLineIndex will always return 0 to getLineCount() - 1.
+        return bottomLine >= commandLineText.getLineCount() - 1;
+    }
+
+    @Override
+    public void scrollDown(boolean wholeScreen) {
+        int topLine = commandLineText.getTopIndex();
+        if (wholeScreen) {
+            int bottomLine = commandLineText.getLineIndex(commandLineText.getBounds().y - 1);
+            int nLines = bottomLine - topLine;
+            commandLineText.setTopIndex(topLine + nLines);
+        } else {
+            // For some reason, getTopIndex() seems to return the second fully shown line... No +1
+            commandLineText.setTopIndex(topLine);
+        }
+    }
 }

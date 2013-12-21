@@ -125,4 +125,14 @@ public class CommandLineUIStub implements CommandLineUI {
         // Nothing to do here, stub doesn't know about selections.
     }
 
+    @Override
+    public boolean isLastLineShown() {
+        return true;
+    }
+
+    @Override
+    public void scrollDown(boolean wholeScreen) {
+        // Does nothing.
+    }
+
 }
