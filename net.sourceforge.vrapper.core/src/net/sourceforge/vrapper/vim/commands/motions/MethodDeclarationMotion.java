@@ -20,7 +20,7 @@ public class MethodDeclarationMotion extends AbstractModelSideMotion {
     public boolean backwards;
     public boolean methodBegin;
     
-    private MethodDeclarationMotion(boolean backwards, boolean methodBegin) {
+    protected MethodDeclarationMotion(boolean backwards, boolean methodBegin) {
         this.backwards = backwards;
         this.methodBegin = methodBegin;
     }
@@ -36,7 +36,7 @@ public class MethodDeclarationMotion extends AbstractModelSideMotion {
         return dest;
     }
     
-    private int doIt(int offset, TextContent content) {
+    protected int doIt(int offset, TextContent content) {
         int depth = 0;
         int lastOpen = -1;
         int lastClose = -1;

@@ -56,6 +56,7 @@ import net.sourceforge.vrapper.vim.commands.motions.PageScrollMotion;
 import net.sourceforge.vrapper.vim.commands.motions.ParagraphMotion;
 import net.sourceforge.vrapper.vim.commands.motions.ParenthesesMove;
 import net.sourceforge.vrapper.vim.commands.motions.SearchResultMotion;
+import net.sourceforge.vrapper.vim.commands.motions.SectionMotion;
 import net.sourceforge.vrapper.vim.commands.motions.SentenceMotion;
 import net.sourceforge.vrapper.vim.commands.motions.ViewPortMotion;
 import net.sourceforge.vrapper.vim.commands.motions.WordSearchMotion;
@@ -138,6 +139,10 @@ public abstract class CommandBasedMode extends AbstractMode {
             final Motion methodPrevStart = MethodDeclarationMotion.PREV_START;
             final Motion methodNextEnd = MethodDeclarationMotion.NEXT_END;
             final Motion methodPrevEnd = MethodDeclarationMotion.PREV_END;
+            final Motion sectionNextStart = SectionMotion.NEXT_START;
+            final Motion sectionPrevStart = SectionMotion.PREV_START;
+            final Motion sectionNextEnd = SectionMotion.NEXT_END;
+            final Motion sectionPrevEnd = SectionMotion.PREV_END;
             
             final Motion findForward = ContinueFindingMotion.NORMAL;
             final Motion findBackward = ContinueFindingMotion.REVERSE;
@@ -215,11 +220,15 @@ public abstract class CommandBasedMode extends AbstractMode {
                     transitionBind('[', 
                     		leafBind('m', methodPrevStart),
                     		leafBind('M', methodPrevEnd),
+                    		leafBind('[', sectionPrevStart),
+                    		leafBind(']', sectionPrevEnd),
                     		leafBind('(', matchOpenParen),
                     		leafBind('{', matchOpenCurly)),
                     transitionBind(']', 
                     		leafBind('m', methodNextStart),
                     		leafBind('M', methodNextEnd),
+                    		leafBind(']', sectionNextStart),
+                    		leafBind('[', sectionNextEnd),
                     		leafBind(')', matchCloseParen),
                     		leafBind('}', matchCloseCurly)),
                     transitionBind('g',
