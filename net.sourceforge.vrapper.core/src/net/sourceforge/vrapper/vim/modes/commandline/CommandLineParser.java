@@ -64,6 +64,8 @@ public class CommandLineParser extends AbstractCommandParser {
                 AbstractVisualMode.KEYMAP_NAME, NormalMode.KEYMAP_NAME);
         Evaluator nnoremap = new KeyMapper.Map(false, NormalMode.KEYMAP_NAME);
         Evaluator nmap = new KeyMapper.Map(true, NormalMode.KEYMAP_NAME);
+        Evaluator onoremap = new KeyMapper.Map(false, NormalMode.OMAP_NAME);
+        Evaluator omap = new KeyMapper.Map(true, NormalMode.OMAP_NAME);
         Evaluator vnoremap = new KeyMapper.Map(false, VisualMode.KEYMAP_NAME);
         Evaluator vmap = new KeyMapper.Map(true, VisualMode.KEYMAP_NAME);
         Evaluator inoremap = new KeyMapper.Map(false, InsertMode.KEYMAP_NAME);
@@ -83,10 +85,12 @@ public class CommandLineParser extends AbstractCommandParser {
         
         Evaluator unmap = new KeyMapper.Unmap(AbstractVisualMode.KEYMAP_NAME, NormalMode.KEYMAP_NAME);
         Evaluator nunmap = new KeyMapper.Unmap(NormalMode.KEYMAP_NAME);
+        Evaluator ounmap = new KeyMapper.Unmap(NormalMode.OMAP_NAME);
         Evaluator vunmap = new KeyMapper.Unmap(AbstractVisualMode.KEYMAP_NAME);
         Evaluator iunmap = new KeyMapper.Unmap(InsertMode.KEYMAP_NAME);
         Evaluator clear = new KeyMapper.Clear(AbstractVisualMode.KEYMAP_NAME, NormalMode.KEYMAP_NAME);
         Evaluator nclear = new KeyMapper.Clear(NormalMode.KEYMAP_NAME);
+        Evaluator oclear = new KeyMapper.Clear(NormalMode.OMAP_NAME);
         Evaluator vclear = new KeyMapper.Clear(AbstractVisualMode.KEYMAP_NAME);
         Evaluator iclear = new KeyMapper.Clear(InsertMode.KEYMAP_NAME);
         Command gotoEOF = new MotionCommand(GoToLineMotion.LAST_LINE);
@@ -245,6 +249,8 @@ public class CommandLineParser extends AbstractCommandParser {
         mapping.add("no", noremap);
         mapping.add("nnoremap", nnoremap);
         mapping.add("nn", nnoremap);
+        mapping.add("onoremap", onoremap);
+        mapping.add("ono", onoremap);
         mapping.add("inoremap", inoremap);
         mapping.add("ino", inoremap);
         mapping.add("canoremap", canoremap);
@@ -255,6 +261,8 @@ public class CommandLineParser extends AbstractCommandParser {
         mapping.add("map", map);
         mapping.add("nmap", nmap);
         mapping.add("nm", nmap);
+        mapping.add("omap", omap);
+        mapping.add("om", omap);
         mapping.add("imap", imap);
         mapping.add("im", imap);
         mapping.add("camap", camap);
@@ -266,6 +274,8 @@ public class CommandLineParser extends AbstractCommandParser {
         mapping.add("unm", unmap);
         mapping.add("nunmap", nunmap);
         mapping.add("nun", nunmap);
+        mapping.add("ounmap", ounmap);
+        mapping.add("oun", ounmap);
         mapping.add("vunmap", vunmap);
         mapping.add("vu", vunmap);
         mapping.add("iunmap", iunmap);
@@ -275,6 +285,8 @@ public class CommandLineParser extends AbstractCommandParser {
         mapping.add("mapc", clear);
         mapping.add("nmapclear", nclear);
         mapping.add("nmapc", nclear);
+        mapping.add("omapclear", oclear);
+        mapping.add("omapc", oclear);
         mapping.add("vmapclear", vclear);
         mapping.add("vmapc", vclear);
         mapping.add("imapclear", iclear);
