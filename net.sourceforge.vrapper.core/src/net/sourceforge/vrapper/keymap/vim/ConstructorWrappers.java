@@ -25,6 +25,7 @@ import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.Function;
 import net.sourceforge.vrapper.vim.PerformOperationOnSearchResultCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeCaretShapeCommand;
+import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeToSearchModeCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.MotionTextObject;
@@ -35,6 +36,7 @@ import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
 import net.sourceforge.vrapper.vim.commands.motions.LineEndMotion;
 import net.sourceforge.vrapper.vim.commands.motions.Motion;
 import net.sourceforge.vrapper.vim.commands.motions.SearchResultMotion;
+import net.sourceforge.vrapper.vim.modes.commandline.CommandLineMode;
 
 /**
  * Static utility methods to construct keymaps.
@@ -295,6 +297,7 @@ public class ConstructorWrappers {
         State<Command> operatorCmds = union(
 		    	leafState('/', (Command) new ChangeToSearchModeCommand(false, new PerformOperationOnSearchResultCommand(command, SearchResultMotion.FORWARD))),
 		    	leafState('?', (Command) new ChangeToSearchModeCommand(true, new PerformOperationOnSearchResultCommand(command, SearchResultMotion.FORWARD))),
+		    	leafState(':', (Command) new ChangeModeCommand(CommandLineMode.NAME)),
 	    		new OperatorCommandState(command, textObjects)
     	);
         return operatorPendingState(key, doubleKey, operatorCmds);
