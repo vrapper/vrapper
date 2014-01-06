@@ -1,4 +1,25 @@
 <div class="newsbox">
+    <div class="date">2014-01-05</div>
+    <h4>Updates to unstable update site</h4>
+
+    <p>As I mentioned in my last post, real life has been getting in the way of
+    me spending time with Vrapper.  The holidays certainly didn't help things
+    either. This was a slow month for Vrapper but here's your monthly status
+    update.  The following changes have been made to the unstable update
+    site:</p>
+
+    <ul>
+        <li>Added support for 'omap' commands</li>
+        <li>Added support for :tabs command</li>
+        <li>Added support for '[[', ']]', '[]', and ']['</li>
+        <li>Fixed issue with 'O' near a blank line with Windows line-endings</li>
+        <li>Fixed issue using counts with mapped keys</li>
+    </ul>
+    
+    <p>I'll probably still release 0.40.0 in a month but after that I might relax my
+    two-month release cycle to be whenever a release is worthwhile.</p>
+</div>
+<div class="newsbox">
     <div class="date">2013-12-08</div>
     <h4>0.38.0 Released</h4>
 
