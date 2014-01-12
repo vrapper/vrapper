@@ -33,9 +33,9 @@ public class ContinueFindingMotion extends CountAwareMotion {
         //If using 't' and the cursor is before the last match, destination()
         //will think this position is the next match and not move the cursor.
         //If this happens, move the cursor forward one (so it's on top of the
-        //last match) and run destination() again.
+        //last match) and run destination() again.  If 'T', go back one.
         if(!findMotion.upToTarget && editorAdaptor.getPosition().getModelOffset() == dest.getModelOffset()) {
-            int tweakOffset = reverse ? -1 : 1;
+            int tweakOffset = findMotion.backwards ? -1 : 1;
             try {
                 //move cursor to be on top of the last match
                 editorAdaptor.setPosition(dest.addModelOffset(tweakOffset), StickyColumnPolicy.NEVER);
