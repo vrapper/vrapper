@@ -57,6 +57,19 @@ public class SubstitutionDefinition {
 		    throw new IllegalArgumentException("No search string defined");
 		}
 		
+        //special case to override global 'ignorecase' property (see :help \c)
+        if(find.contains("\\c")) {
+        	int index = find.indexOf("\\c");
+        	flags += "i";
+        	//replaceAll doesn't like \\c, so cut out the characters this way
+        	find = find.substring(0, index) + find.substring(index+2);
+        }
+        if(find.contains("\\C")) {
+        	int index = find.indexOf("\\C");
+        	flags += "I";
+        	find = find.substring(0, index) + find.substring(index+2);
+        }
+		
 		//before attempting substitution, is this regex even valid?
 		try {
 		    Pattern.compile(find);
