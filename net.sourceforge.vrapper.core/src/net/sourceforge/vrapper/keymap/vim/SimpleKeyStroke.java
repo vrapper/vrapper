@@ -89,7 +89,7 @@ public class SimpleKeyStroke implements KeyStroke {
     public String toString() {
         // this is mainly for debugging
         String key = specialKey == null ? Character.toString(character) : specialKey.toString();
-        if (specialKey != null && shiftKey)
+        if ((specialKey != null || character == ' ') && shiftKey)
             key = "S-" + key;
         if (altKey)
             key = "A-" + key;
@@ -124,7 +124,9 @@ public class SimpleKeyStroke implements KeyStroke {
         }
 
         //only check shift key if it doesn't change the keycode
-        if (specialKey != null && withShiftKey() != other.withShiftKey()) {
+        //Shift-space is ok, shift-! is ambiguous with shift-1.
+        if ((specialKey != null || character == ' ')
+                && withShiftKey() != other.withShiftKey()) {
         	return false;
         }
         return true;
