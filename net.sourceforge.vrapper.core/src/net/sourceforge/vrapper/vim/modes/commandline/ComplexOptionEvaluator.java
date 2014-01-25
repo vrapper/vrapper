@@ -17,7 +17,19 @@ public class ComplexOptionEvaluator implements Evaluator {
             noSuchOptionMessage(vim, next);
             return null;
         }
+
         String optName = next.substring(0, index).trim();
+        boolean additive = false;
+        boolean subtractive = false;
+        if(optName.endsWith("+")) {
+            additive = true;
+            optName = optName.substring(0, optName.length()-1);
+        }
+        else if(optName.endsWith("-")) {
+            subtractive = true;
+            optName = optName.substring(0, optName.length()-1);
+        }
+
         String value = next.substring(index+1);
         if(command.size() > 0) {
         	//restore preceding space and spaces between tokens
@@ -26,12 +38,25 @@ public class ComplexOptionEvaluator implements Evaluator {
         Option<String> strOpt;
         Option<Integer> intOpt;
         try {
-            if ((strOpt = find(Options.STRING_OPTIONS, optName)) != null)
-                set(vim, strOpt, value);
-            else if ((intOpt = find(Options.INT_OPTIONS, optName)) != null)
+            if ((strOpt = find(Options.STRING_OPTIONS, optName)) != null) {
+                if(additive) { //append ( += )
+                    String current = vim.getConfiguration().get(strOpt);
+                    set(vim, strOpt, current + value);
+                }
+                else if(subtractive) { //remove ( -= )
+                    String current = vim.getConfiguration().get(strOpt);
+                    set(vim, strOpt, current.replace(value, ""));
+                }
+                else {//normal set ( = )
+                    set(vim, strOpt, value);
+                }
+            }
+            else if ((intOpt = find(Options.INT_OPTIONS, optName)) != null) {
                 set(vim, intOpt, Integer.valueOf(value));
-            else
+            }
+            else {
                 noSuchOptionMessage(vim, optName);
+            }
         } catch (ValueException e) {
             invalidValueMessage(vim, value);
         } catch (NumberFormatException e) {

@@ -14,6 +14,7 @@ import net.sourceforge.vrapper.platform.CommandLineUI.CommandLineMode;
 import net.sourceforge.vrapper.platform.Platform;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
 import net.sourceforge.vrapper.vim.modes.ExecuteCommandHint;
@@ -215,6 +216,7 @@ public abstract class AbstractCommandParser {
     	    if (offset > contents.length()) {
     	        offset = contents.length();
     	    }
+    	    String iskeyword = editor.getConfiguration().get(Options.KEYWORDS);
     	    char c1, c2;
     	    do {
     	        offset--;
@@ -226,7 +228,7 @@ public abstract class AbstractCommandParser {
     	        c2 = contents.charAt(offset);
     	        //this line was stolen from MoveWordLeft because
     	        //I can't call that class with arbitrary text
-    	    } while (Character.isWhitespace(c2) || characterType(c1) == characterType(c2));
+    	    } while (Character.isWhitespace(c2) || characterType(c1, iskeyword) == characterType(c2, iskeyword));
     	}
     	commandLine.replace(offset, commandLine.getPosition(), "");
     	commandLine.setPosition(offset);

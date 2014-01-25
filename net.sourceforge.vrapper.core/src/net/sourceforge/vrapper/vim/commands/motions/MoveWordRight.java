@@ -14,7 +14,7 @@ public class MoveWordRight extends MoveRightWithBounds {
 
     @Override
     protected boolean atBoundary(char c1, char c2) {
-        return !Character.isWhitespace(c2) && characterType(c1) != characterType(c2);
+        return !Character.isWhitespace(c2) && characterType(c1, keywords) != characterType(c2, keywords);
     }
 
     public BorderPolicy borderPolicy() {

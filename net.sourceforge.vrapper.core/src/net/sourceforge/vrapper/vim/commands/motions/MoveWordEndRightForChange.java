@@ -12,8 +12,8 @@ public class MoveWordEndRightForChange extends MoveWordEndRight {
 
     @Override
     protected boolean atBoundary(char c1, char c2) {
-        return !Character.isWhitespace(c1) && characterType(c1) != characterType(c2)
-        || Character.isWhitespace(c1) && characterType(c1) != characterType(c2);
+        return !Character.isWhitespace(c1) && characterType(c1, keywords) != characterType(c2, keywords)
+        || Character.isWhitespace(c1) && characterType(c1, keywords) != characterType(c2, keywords);
     }
 
 }
