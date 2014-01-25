@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Vrapper - PyDev-specific plugin
 Bundle-SymbolicName: net.sourceforge.vrapper.eclipse.pydev;singleton:=true
-Bundle-Version: 0.39.20140113
-Fragment-Host: net.sourceforge.vrapper.eclipse;bundle-version="0.39.20140113"
+Bundle-Version: 0.39.20140124
+Fragment-Host: net.sourceforge.vrapper.eclipse;bundle-version="0.39.20140124"
 Require-Bundle: org.python.pydev;bundle-version="2.6.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
