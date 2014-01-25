@@ -147,7 +147,13 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
 
         char operation = operationStr.charAt(0);
     	if(operation == 'y') {
-    		return YankOperation.INSTANCE;
+    	    //":y[ank] [x]" where [x] is a register
+    	    if(operationStr.length() > 2 && operationStr.indexOf(' ') == operationStr.length() -2) {
+    	        return new YankOperation(operationStr.substring(operationStr.length()-1));
+    	    }
+    	    else {
+    	        return YankOperation.INSTANCE;
+    	    }
     	}
     	else if(operation == 'd') {
     		return DeleteOperation.INSTANCE;
