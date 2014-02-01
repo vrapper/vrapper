@@ -38,4 +38,9 @@ public interface FileService {
 	 * <tt>/project/src/main/java/net/sf/vrapper/FileService.java</tt>
 	 */
     String getCurrentFilePath();
+
+    /**
+     * Get the absolute path to the current file.
+     */
+    String getCurrentFileLocation() throws IOException;
 }
