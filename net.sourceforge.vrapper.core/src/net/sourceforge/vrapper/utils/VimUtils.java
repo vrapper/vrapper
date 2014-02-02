@@ -24,7 +24,6 @@ import net.sourceforge.vrapper.vim.VimConstants;
 // FIXME: this is just dumb port; some of those utils may be not needed any more, we may move some others elsewhere, etc.
 public class VimUtils {
 
-    public static final Pattern COMPILED_WORD_CHAR_PATTERN = Pattern.compile(VimConstants.WORD_CHAR_PATTERN);
     public static final Pattern COMPILED_PATTERN_DELIM_PATTERN = Pattern.compile(VimConstants.PATTERN_DELIM_PATTERN);
 
     private VimUtils() {
@@ -135,10 +134,6 @@ public class VimUtils {
             }
         }
         return sb.toString();
-    }
-
-    public static boolean isWordCharacter(final String s) {
-        return VimUtils.COMPILED_WORD_CHAR_PATTERN.matcher(s).find();
     }
 
     public static boolean isPatternDelimiter(final String s) {

@@ -5,9 +5,10 @@ import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Search;
 import net.sourceforge.vrapper.utils.SearchOffset;
-import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
+import net.sourceforge.vrapper.vim.commands.Utils;
 import net.sourceforge.vrapper.vim.modes.commandline.SearchCommandParser;
 
 /** Starts a new search with the word the cursor sits on. */
@@ -47,9 +48,10 @@ public class WordSearchMotion extends SearchResultMotion {
         int last = -1;
         String s;
         boolean found = false;
+        String keywords = editorAdaptor.getConfiguration().get(Options.KEYWORDS);
         if (index < max) {
             s = p.getText(index, 1);
-            if (VimUtils.isWordCharacter(s)) {
+            if (Utils.characterType(s.charAt(0), keywords) == Utils.WORD) {
                 found = true;
                 first = index;
                 last = index;
@@ -58,7 +60,7 @@ public class WordSearchMotion extends SearchResultMotion {
         while (index < max-1) {
             index += 1;
             s = p.getText(index, 1);
-            if(VimUtils.isWordCharacter(s)) {
+            if(Utils.characterType(s.charAt(0), keywords) == Utils.WORD) {
                 last = index;
                 if(!found) {
                     first = index;
@@ -73,7 +75,7 @@ public class WordSearchMotion extends SearchResultMotion {
             while (index > min) {
                 index -= 1;
                 s = p.getText(index, 1);
-                if(VimUtils.isWordCharacter(s)) {
+                if(Utils.characterType(s.charAt(0), keywords) == Utils.WORD) {
                     first = index;
                 } else {
                     break;

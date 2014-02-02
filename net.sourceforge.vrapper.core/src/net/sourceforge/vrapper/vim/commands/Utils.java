@@ -4,14 +4,18 @@ import java.util.regex.Pattern;
 
 
 public class Utils {
+    
+    public static final int WHITESPACE = 0;
+    public static final int WORD = 1;
+    public static final int OTHER = 2;
 
 	public static int characterType(char chr, String iskeyword) {
 		if (Character.isWhitespace(chr))
-			return 0;
+			return WHITESPACE;
 		else if (Pattern.matches("["+iskeyword+"]", ""+chr))
-			return 1;
+			return WORD;
 		else
-			return 2;
+			return OTHER;
 	}
 
 }
