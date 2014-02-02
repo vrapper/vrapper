@@ -30,6 +30,9 @@
    <feature url="features/net.sourceforge.vrapper.plugin.methodtextobj_0.39.20140125.jar" id="net.sourceforge.vrapper.plugin.methodtextobj" version="0.39.20140125">
       <category name="Optional Vimscript Plugins"/>
    </feature>
+   <feature url="features/net.sourceforge.vrapper.plugin.clangformat_0.39.20140125.jar" id="net.sourceforge.vrapper.plugin.clangformat" version="0.39.20140125">
+      <category name="Optional Vimscript Plugins"/>
+   </feature>
    <category-def name="Vrapper Unstable" label="Vrapper Unstable">
       <description>
          Unstable releases of Vrapper.

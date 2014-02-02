@@ -619,4 +619,13 @@ public class EclipseFileService implements FileService {
     	return null;
     }
 
+    @Override
+    public String getCurrentFileLocation() throws IOException {
+        final IFile currentFile = getCurrentFile();
+        if (currentFile == null) {
+            throw new IOException("Current editor did not have an associated IFile.");
+    	}
+        return currentFile.getRawLocation().toString();
+    }
+
 }
