@@ -128,6 +128,44 @@ Eclipse namespaces.  If there are any commands you'd like us to support,
 just file an <a href="https://github.com/vrapper/vrapper/issues">Issue</a> on our GitHub project.
 </p>
 
+<h3>Clang-Format Plugin</h3>
+<p>This plugin formats your C/C++/Obj-C code with specific coding style using
+LLVM <code>clang-format</code> tool (<a href="http://clang.llvm.org/docs/ClangFormat.html">http://clang.llvm.org/docs/ClangFormat.html</a>).
+</p>
+
+<p>
+The Clang-Format Plugin provides commands to invoke <code>clang-format</code> on
+a region of text and configure default formatting style options:
+</p>
+
+<dl>
+    <dt><tt>:clang-format [&lt;style&gt;]</tt></dt>
+    <dd>With no region specified formats entire editor content using either
+        default or the style given as the argument to the command. The command
+        accepts any range specification including visual
+        (<code>'&lt;,'&gt;</code>).  The style can be anything that is acceptable
+        as the <code>-style</code> command line argument to
+        <code>clang-format</code>, including <code>file</code>:
+        <blockquote><pre>
+Coding style, currently supports:
+LLVM, Google, Chromium, Mozilla, WebKit.
+Use -style=file to load style configuration from
+.clang-format file located in one of the parent
+directories of the source file (or current
+directory for stdin).
+Use -style="{key: value, ...}" to set specific
+parameters, e.g.:
+-style="{BasedOnStyle: llvm, IndentWidth: 8}"
+        </pre></blockquote>
+    </dd>
+
+    <dt><tt>:clang-format-default-style &lt;style&gt;</tt></dt>
+    <dd>Sets the style to be used for all editors when no style is given to <code>clang-format</code>.
+        </dd>
+    <dt><tt>:clang-format-style &lt;style&gt;</tt></dt>
+    <dd>Sets the style to be used for this editor only when no style is given to <code>clang-format</code>.
+        </dd>
+</dl>
 
 <h2>Vimscript Ports</h2>
     
