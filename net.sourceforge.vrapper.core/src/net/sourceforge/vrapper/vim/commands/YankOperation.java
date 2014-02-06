@@ -17,9 +17,16 @@ public class YankOperation extends SimpleTextOperation {
     public static final YankOperation INSTANCE = new YankOperation(null);
     
     private final String register;
+    private boolean updateCursor;
 
     YankOperation(String register) {
         this.register = register;
+        this.updateCursor = true;
+    }
+
+    YankOperation(String register, boolean updateCursor) {
+        this.register = register;
+        this.updateCursor = updateCursor;
     }
 
     @Override
@@ -28,7 +35,7 @@ public class YankOperation extends SimpleTextOperation {
             RegisterManager registerManager = editorAdaptor.getRegisterManager();
             registerManager.setActiveRegister(register);
         }
-        doIt(editorAdaptor, region, contentType, true);
+        doIt(editorAdaptor, region, contentType, true, updateCursor);
     }
 
     public TextOperation repetition() {
@@ -36,6 +43,10 @@ public class YankOperation extends SimpleTextOperation {
     }
 
     public static void doIt(EditorAdaptor editorAdaptor, TextRange range, ContentType contentType, boolean setLastYank) {
+        doIt(editorAdaptor, range, contentType, setLastYank, false);
+    }
+
+    public static void doIt(EditorAdaptor editorAdaptor, TextRange range, ContentType contentType, boolean setLastYank, boolean updateCursor) {
     	if(range == null) {
     		return;
     	}
@@ -63,7 +74,9 @@ public class YankOperation extends SimpleTextOperation {
         	//(keep stickyColumn for the 'yy' case)
             int lineNo = editorAdaptor.getModelContent().getLineInformationOfOffset(range.getLeftBound().getModelOffset()).getNumber();
             Position stickyPosition = editorAdaptor.getCursorService().stickyColumnAtModelLine(lineNo);
-            editorAdaptor.getCursorService().setPosition(stickyPosition, StickyColumnPolicy.ON_CHANGE);
+            if (updateCursor) {
+                editorAdaptor.getCursorService().setPosition(stickyPosition, StickyColumnPolicy.ON_CHANGE);
+            }
         }
         else {
             if (contentType == ContentType.TEXT_RECTANGLE) {

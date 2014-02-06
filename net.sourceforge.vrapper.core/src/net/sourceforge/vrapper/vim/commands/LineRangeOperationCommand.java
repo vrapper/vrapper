@@ -152,7 +152,7 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
     	        return new YankOperation(operationStr.substring(operationStr.length()-1));
     	    }
     	    else {
-    	        return YankOperation.INSTANCE;
+    	        return new YankOperation(null, false);
     	    }
     	}
     	else if(operation == 'd') {
