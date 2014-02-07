@@ -17,11 +17,10 @@ public class YankOperation extends SimpleTextOperation {
     public static final YankOperation INSTANCE = new YankOperation(null);
     
     private final String register;
-    private boolean updateCursor;
+    private final boolean updateCursor;
 
     YankOperation(String register) {
-        this.register = register;
-        this.updateCursor = true;
+        this(register, true);
     }
 
     YankOperation(String register, boolean updateCursor) {
@@ -43,7 +42,7 @@ public class YankOperation extends SimpleTextOperation {
     }
 
     public static void doIt(EditorAdaptor editorAdaptor, TextRange range, ContentType contentType, boolean setLastYank) {
-        doIt(editorAdaptor, range, contentType, setLastYank, false);
+        doIt(editorAdaptor, range, contentType, setLastYank, true);
     }
 
     public static void doIt(EditorAdaptor editorAdaptor, TextRange range, ContentType contentType, boolean setLastYank, boolean updateCursor) {
