@@ -35,6 +35,7 @@ public interface Options {
     public static final Option<Boolean> EXPAND_TAB            = bool("expandtab",    true,  "et");
     public static final Option<Boolean> SHIFT_ROUND           = bool("shiftround",   false, "sr");
     public static final Option<Boolean> CONTENT_ASSIST_MODE   = bool("contentassistmode", false,  "cam");
+    public static final Option<Boolean> START_NORMAL_MODE     = bool("startnormalmode",   true, "snm");
 
     @SuppressWarnings("unchecked")
     public static final Set<Option<Boolean>> BOOLEAN_OPTIONS = set(
@@ -42,7 +43,7 @@ public interface Options {
             SMART_CASE, SANE_CW, SANE_Y, SEARCH_HIGHLIGHT, SEARCH_REGEX,
             INCREMENTAL_SEARCH, LINE_NUMBERS, SHOW_WHITESPACE, IM_DISABLE,
             VISUAL_MOUSE, EXIT_LINK_MODE, CLEAN_INDENT, AUTO_CHDIR, HIGHLIGHT_CURSOR_LINE,
-            CONTENT_ASSIST_MODE);
+            CONTENT_ASSIST_MODE, START_NORMAL_MODE);
 
     // String options:
     public static final Option<String> CLIPBOARD = string("clipboard", "autoselect", "unnamed, autoselect", "cb");

@@ -10,6 +10,9 @@ import net.sourceforge.vrapper.eclipse.activator.VrapperPlugin;
 import net.sourceforge.vrapper.eclipse.extractor.EditorExtractor;
 import net.sourceforge.vrapper.eclipse.utils.Utils;
 import net.sourceforge.vrapper.log.VrapperLog;
+import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.Options;
+import net.sourceforge.vrapper.vim.modes.NormalMode;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
@@ -183,6 +186,35 @@ public class InputInterceptorManager implements IPartListener {
     }
 
     public void partActivated(IWorkbenchPart arg0) {
+    	InputInterceptor input = interceptors.get(arg0);
+    	if(input == null) {
+    		try {
+    			if (arg0 instanceof MultiPageEditorPart) {
+    				MultiPageEditorPart mPart = (MultiPageEditorPart) arg0;
+    				int pageCount = ((Integer) METHOD_GET_PAGE_COUNT.invoke(arg0)).intValue();
+    				for (int i = 0; i < pageCount; i++) {
+    					IEditorPart subPart = (IEditorPart) METHOD_GET_EDITOR.invoke(mPart, i);
+    					partActivated(subPart);
+    				}
+    			}
+    			else if (arg0 instanceof MultiEditor) {
+    				for (IEditorPart subPart : ((MultiEditor) arg0).getInnerEditors()) {
+    					partActivated(subPart);
+    				}
+    			}
+    		}
+    		catch (Exception exception) {
+    			VrapperLog.error("Exception activating MultiPageEditorPart", exception);
+    		}
+    	}
+    	else {
+    		//changing tab back to existing editor, should we return to NormalMode?
+    		EditorAdaptor editor = input.getEditorAdaptor();
+    		if(editor.getConfiguration().get(Options.START_NORMAL_MODE)) {
+    			editor.setSelection(null);
+    			editor.changeModeSafely(NormalMode.NAME);
+    		}
+    	}
     }
 
     public void partBroughtToTop(IWorkbenchPart arg0) {
