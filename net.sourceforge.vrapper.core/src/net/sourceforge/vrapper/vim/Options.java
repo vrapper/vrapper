@@ -34,8 +34,8 @@ public interface Options {
     //       Changing this value should change the Eclipse configuration too. -- BRD
     public static final Option<Boolean> EXPAND_TAB            = bool("expandtab",    true,  "et");
     public static final Option<Boolean> SHIFT_ROUND           = bool("shiftround",   false, "sr");
-    public static final Option<Boolean> CONTENT_ASSIST_MODE   = bool("contentassistmode", false,  "cam");
-    public static final Option<Boolean> START_NORMAL_MODE     = bool("startnormalmode",   true, "snm");
+    public static final Option<Boolean> CONTENT_ASSIST_MODE   = bool("contentassistmode", false, "cam");
+    public static final Option<Boolean> START_NORMAL_MODE     = bool("startnormalmode",   false, "snm");
 
     @SuppressWarnings("unchecked")
     public static final Set<Option<Boolean>> BOOLEAN_OPTIONS = set(
