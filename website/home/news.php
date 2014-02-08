@@ -17,7 +17,7 @@
         </ul>
         <li>Fixed issue with ';' after 'T'</li>
         <li>Fixed \c and \C in substitution definitions</li>
-        <li>Fixed issue where <S-Space> wasn't being recognized</li>
+        <li>Fixed issue where &lt;S-Space&gt; wasn't being recognized</li>
     </ul>
     
     <p>I'd like to thank all the contributors who continue keeping this project
