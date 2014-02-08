@@ -235,6 +235,8 @@ public class CommandLineParser extends AbstractCommandParser {
         mapping.add("w", save);
         mapping.add("wall", saveAll);
         mapping.add("wqall", saveAndCloseAll);
+        mapping.add("xall", saveAndCloseAll);
+        mapping.add("xa", saveAndCloseAll);
     	mapping.add("update", save);
         mapping.add("wq", saveAndClose);
         mapping.add("x", saveAndClose);
