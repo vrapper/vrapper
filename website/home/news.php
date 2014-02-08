@@ -1,4 +1,30 @@
 <div class="newsbox">
+    <div class="date">2014-02-08</div>
+    <h4>0.40.0 Released</h4>
+
+    <p>0.40.0 has been released.  This release is smaller than most but I'm
+    keeping with my two-month release cycle one more time.  The following changes
+    were added since the last status update and are included in 0.40.0:</p>
+
+    <ul>
+        <li>Created new optional plugin for clang-format</li>
+        <li>Added support for ':y[ank] [x]' to yank into register</li>
+        <li>Added support for 'iskeyword' property</li>
+        <li>Added support for ':xa[ll]'</li>
+        <li>Added support for 'startnormalmode' property</li>
+        <ul>
+            <li>When true, always start in NormalMode after changing tabs</li>
+        </ul>
+        <li>Fixed issue with ';' after 'T'</li>
+        <li>Fixed \c and \C in substitution definitions</li>
+        <li>Fixed issue where <S-Space> wasn't being recognized</li>
+    </ul>
+    
+    <p>I'd like to thank all the contributors who continue keeping this project
+    going even when I'm too busy to spend time with it myself.  Your dedication
+    helps keep this project alive!</p>
+</div>
+<div class="newsbox">
     <div class="date">2014-01-05</div>
     <h4>Updates to unstable update site</h4>
 
