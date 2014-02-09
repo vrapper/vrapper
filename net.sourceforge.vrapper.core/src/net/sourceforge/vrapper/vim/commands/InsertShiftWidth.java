@@ -101,7 +101,8 @@ public class InsertShiftWidth extends SimpleTextOperation {
     
     private int calculateEndLine(TextContent model, int endOffset) {
     	LineInformation endLineInformation = model.getLineInformationOfOffset(endOffset);
-    	String endText = model.getText(endLineInformation.getBeginOffset(), endOffset - endLineInformation.getBeginOffset());
+    	String endText = model.getText(endLineInformation.getBeginOffset(),
+    			endLineInformation.getLength());
     	int endLine = endLineInformation.getNumber();
     	if (endOffset > endLineInformation.getBeginOffset() && !endText.matches("\\s*")) {
     		// if the right bound is beyond the first character of a line, include that entire line
