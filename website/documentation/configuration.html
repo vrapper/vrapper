@@ -4,6 +4,9 @@
 <p>Vrapper's behaviour can be configured with command-line options.</p>
 <p>You can find the current value of a property with ':set &lt;property&gt;?'</p>
 <p>You can also use ':setlocal' to make a setting only applicable to this file (Eclipse tab) instance.</p>
+
+<h3>Vim Settings</h3>
+<p>These settings can be found in Vim and we've done our best to match the Vim behavior as closely as possible.</p>
 <table class="commands">
     <tr>
         <th>Command</th>
@@ -12,15 +15,15 @@
         <th>Description</th>
     </tr>
     <tr>
-        <td>:set&nbsp;smartindent<br />:set&nbsp;nosmartindent</td>
-        <td>:set&nbsp;si<br />:set&nbsp;nosi</td>
+        <td>:set&nbsp;smartindent<br/>:set&nbsp;nosmartindent</td>
+        <td>:set&nbsp;si<br/>:set&nbsp;nosi</td>
         <td>On</td>
         <td>Whether to let the underlying editor indent lines or not.
             Overrides the autoindent option.</td>
     </tr>
     <tr>
-        <td>:set&nbsp;autoindent<br />:set&nbsp;noautoindent</td>
-        <td>:set&nbsp;ai<br />:set&nbsp;noai</td>
+        <td>:set&nbsp;autoindent<br/>:set&nbsp;noautoindent</td>
+        <td>:set&nbsp;ai<br/>:set&nbsp;noai</td>
         <td>Off</td>
         <td>Whether to indent inserted lines or not. When active, lines
             inserted with "o" or "O" will use the indent of
@@ -28,77 +31,31 @@
             whitespace at the beginning of a line.</td>
     </tr>
     <tr>
-        <td>:set&nbsp;globalregisters<br />:set&nbsp;noglobalregisters</td>
-        <td>none</td>
-        <td>On</td>
-        <td>Whether registers (including the last search, last character
-            search and last edit) should be shared across all editors of
-            the workbench or local to the editor.</td>
-    </tr>
-    <tr>
-        <td>:set&nbsp;atomicinsert<br />:set&nbsp;noatomicinsert</td>
-        <td>:set&nbsp;ati<br />:set&nbsp;noati</td>
-        <td>On</td>
-        <td>Whether inserts should be handled as atomic operation.
-            This causes problems sometimes, so it is deactivatable.</td>
-    </tr>
-    <tr>
-        <td>:set&nbsp;ignorecase<br />:set&nbsp;noignorecase</td>
-        <td>:set&nbsp;ic<br />:set&nbsp;noic</td>
+        <td>:set&nbsp;ignorecase<br/>:set&nbsp;noignorecase</td>
+        <td>:set&nbsp;ic<br/>:set&nbsp;noic</td>
         <td>Off</td>
         <td>Whether case should be ignored when searching.</td>
     </tr>
     <tr>
-        <td>:set&nbsp;smartcase<br />:set&nbsp;nosmartcase</td>
-        <td>:set&nbsp;scs<br />:set&nbsp;noscs</td>
+        <td>:set&nbsp;smartcase<br/>:set&nbsp;nosmartcase</td>
+        <td>:set&nbsp;scs<br/>:set&nbsp;noscs</td>
         <td>Off</td>
         <td>If set, searches will be case sensitive if the search string
             includes uppercase characters. Only used if ignorecase is set.  
         </td>
     </tr>
     <tr>
-        <td>:set&nbsp;regexsearch<br />:set&nbsp;noregexsearch</td>
-        <td>:set&nbsp;rxs<br />:set&nbsp;norxs</td>
-        <td>On</td>
-        <td>If set, keywords will be handled as (Eclipse style) regular
-            expressions.
-        </td>
-    </tr>
-    <tr>
-        <td>:set&nbsp;hlsearch<br />:set&nbsp;nohlsearch</td>
-        <td>:set&nbsp;hls<br />:set&nbsp;nohls</td>
+        <td>:set&nbsp;hlsearch<br/>:set&nbsp;nohlsearch</td>
+        <td>:set&nbsp;hls<br/>:set&nbsp;nohls</td>
         <td>Off</td>
         <td>If set, search results will be highlighted.
         </td>
     </tr>
     <tr>
-        <td>:set&nbsp;incsearch<br />:set&nbsp;noincsearch</td>
-        <td>:set&nbsp;is<br />:set&nbsp;nois</td>
+        <td>:set&nbsp;incsearch<br/>:set&nbsp;noincsearch</td>
+        <td>:set&nbsp;is<br/>:set&nbsp;nois</td>
         <td>Off</td>
         <td>Incremental search.  If set, cursor will move to first closest match as you type.
-        </td>
-    </tr>
-    <tr>
-        <td>:set&nbsp;sanecw<br />:set&nbsp;nosanecw</td>
-        <td>none</td>
-        <td>Off</td>
-        <td>If set, "cw" deletes the same as "dw" (i.e. whitespace before
-            the next word is not spared).
-        </td>
-    </tr>
-    <tr>
-        <td>:set&nbsp;saney<br />:set&nbsp;nosaney</td>
-        <td>none</td>
-        <td>Off</td>
-        <td>If set, "Y" will yank from the cursor position to the end of the
-            line instead of yanking the whole line.
-        </td>
-    </tr>
-    <tr>
-        <td>:set&nbsp;visualmouse<br />:set&nbsp;novisualmouse</td>
-        <td>none</td>
-        <td>On</td>
-        <td>If set, selecting text with the mouse will automatically move into Visual Mode.
         </td>
     </tr>
     <tr>
@@ -110,21 +67,21 @@
     </tr>
     <tr>
         <td>:set&nbsp;number<br/>:set&nbsp;nonumber</td>
-        <td>:set&nbsp;nu<br />:set&nbsp;nonu</td>
+        <td>:set&nbsp;nu<br/>:set&nbsp;nonu</td>
         <td>Off</td>
         <td>Show/Hide line numbers.
         </td>
     </tr>
     <tr>
         <td>:set&nbsp;cursorline<br/>:set&nbsp;nocursorline</td>
-        <td>:set&nbsp;cul<br />:set&nbsp;nocul</td>
+        <td>:set&nbsp;cul<br/>:set&nbsp;nocul</td>
         <td>Off</td>
         <td>Show/Hide highlight on line with cursor.
         </td>
     </tr>
     <tr>
         <td>:set&nbsp;autochdir<br/>:set&nbsp;noautochdir</td>
-        <td>:set&nbsp;acd<br />:set&nbsp;noacd</td>
+        <td>:set&nbsp;acd<br/>:set&nbsp;noacd</td>
         <td>Off</td>
         <td>Automatically change the current working directory to the parent of whatever file is currently active in Eclipse.
         The current working directory is used by the ':e' command.
@@ -169,14 +126,14 @@
     </tr>
     <tr>
         <td>:set&nbsp;expandtab<br/>:set&nbsp;noexpandtab</td>
-        <td>:set&nbsp;et<br />:set&nbsp;noet</td>
+        <td>:set&nbsp;et<br/>:set&nbsp;noet</td>
         <td>On</td>
         <td>Used by i_ctrl-t, i_ctrl-d, and :retab.  Determines whether :retab should replace all tabs with spaces (true)
         or spaces with tabs (false).  Also determines whether i_ctrl-t and i_ctrl-d will replace 'tabstop' spaces with a tab.</td>
     </tr>
     <tr>
         <td>:set&nbsp;shiftround<br/>:set&nbsp;noshiftround</td>
-        <td>:set&nbsp;sr<br />:set&nbsp;nosr</td>
+        <td>:set&nbsp;sr<br/>:set&nbsp;nosr</td>
         <td>Off</td>
         <td>Round indent (i_ctrl-t, i_ctrl-d, '&gt;&gt' and '&lt;&lt;') to the nearest multiple of 'shiftwidth'.</td>
     </tr>
@@ -195,11 +152,74 @@
         A path may end in '**' to represent "all sub-directories".<br/>For example, ":set path=src/main/java/**"</td>
     </tr>
     <tr>
+        <td>:set&nbsp;iskeyword=&lt;regex of word characters&gt;</td>
+        <td>:set isk=&lt;characters&gt;</td>
+        <td>iskeyword=a-zA-Z0-9_</td>
+        <td>Regex of character-classes which should be treated as word
+        characters. This will be interpreted as the regex "[&lt;iskeyword
+        value&gt;]".  All contiguous characters matching this regex will be treated
+        as one word for 'w' and '*' commands.<br/>
+        This property can also be modified with += and -= (e.g., ':set isk+=.')</td>
+    </tr>
+    <tr>
         <td>:set&nbsp;clipboard=&lt;name&gt;</td>
         <td>none</td>
         <td>clipboard=autoselect</td>
         <td>:set&nbsp;clipboard=unnamed will use the system clipboard for all 'y' and 'p' operations.<br/>
             :set&nbsp;clipboard=autoselect will use the standard "* clipboard.</td>
+    </tr>
+</table>
+
+
+<h3>Vrapper Settings</h3>
+<p>These settings are specific to Vrapper (not found in Vim).  They either help
+with managing Eclipse behavior or they were feature requests from our community
+which we implemented.</p>
+<table class="commands">
+    <tr>
+        <th>Command</th>
+        <th>Short</th>
+        <th>Default</th>
+        <th>Description</th>
+    </tr>
+    <tr>
+        <td>:set&nbsp;globalregisters<br/>:set&nbsp;noglobalregisters</td>
+        <td>none</td>
+        <td>On</td>
+        <td>Whether registers (including the last search, last character
+            search and last edit) should be shared across all editors of
+            the workbench or local to the editor.</td>
+    </tr>
+    <tr>
+        <td>:set&nbsp;atomicinsert<br/>:set&nbsp;noatomicinsert</td>
+        <td>:set&nbsp;ati<br/>:set&nbsp;noati</td>
+        <td>On</td>
+        <td>Whether inserts should be handled as atomic operation.
+            This causes problems sometimes, so it is deactivatable.</td>
+    </tr>
+    <tr>
+        <td>:set&nbsp;regexsearch<br/>:set&nbsp;noregexsearch</td>
+        <td>:set&nbsp;rxs<br/>:set&nbsp;norxs</td>
+        <td>On</td>
+        <td>If set, keywords will be handled as (Eclipse style) regular expressions.</td>
+    </tr>
+    <tr>
+        <td>:set&nbsp;sanecw<br/>:set&nbsp;nosanecw</td>
+        <td>none</td>
+        <td>Off</td>
+        <td>If set, "cw" deletes the same as "dw" (i.e. whitespace before the next word is not spared).</td>
+    </tr>
+    <tr>
+        <td>:set&nbsp;saney<br/>:set&nbsp;nosaney</td>
+        <td>none</td>
+        <td>Off</td>
+        <td>If set, "Y" will yank from the cursor position to the end of the line instead of yanking the whole line.</td>
+    </tr>
+    <tr>
+        <td>:set&nbsp;visualmouse<br/>:set&nbsp;novisualmouse</td>
+        <td>none</td>
+        <td>On</td>
+        <td>If set, selecting text with the mouse will automatically move into Visual Mode.</td>
     </tr>
     <tr>
         <td>:set&nbsp;gvimpath=&lt;path to gvim executable&gt;</td>
@@ -208,7 +228,7 @@
         <td>Defines path to gvim used with :vim command.</td>
     </tr>
     <tr>
-        <td>:set&nbsp;cleanindent<br />:set&nbsp;nocleanindent</td>
+        <td>:set&nbsp;cleanindent<br/>:set&nbsp;nocleanindent</td>
         <td>none</td>
         <td>On</td>
         <td>If you create a new line with 'o' while autoindent is enabled, that new line will be indented.
@@ -216,8 +236,8 @@
         (leaving only a blank line).  Disable cleanindent if you <i>don't</i> want it to cleanup that auto-indent.</td>
     </tr>
     <tr>
-        <td>:set&nbsp;exitlinkmode<br />:set&nbsp;noexitlinkmode</td>
-        <td>:set&nbsp;elm<br />:set&nbsp;noelm</td>
+        <td>:set&nbsp;exitlinkmode<br/>:set&nbsp;noexitlinkmode</td>
+        <td>:set&nbsp;elm<br/>:set&nbsp;noelm</td>
         <td>On</td>
         <td>If set, Vrapper will return to NormalMode anytime Eclipse exits its "Link Mode".
         Eclipse moves into Link Mode when prompting you to fill out arguments.  This typically
@@ -225,20 +245,29 @@
         </td>
     </tr>
     <tr>
-        <td>:set&nbsp;contentassistmode<br />:set&nbsp;nocontentassistmode</td>
-        <td>:set&nbsp;cam<br />:set&nbsp;nocam</td>
+        <td>:set&nbsp;contentassistmode<br/>:set&nbsp;nocontentassistmode</td>
+        <td>:set&nbsp;cam<br/>:set&nbsp;nocam</td>
         <td>Off</td>
         <td>Enables &lt;c-n&gt; and &lt;c-p&gt; to move selection up and down in the content-assist dropdown.<br/>
         Use 'camap' to map other keys to &lt;c-n&gt; or &lt;c-p&gt;.</td>
     </tr>
     <tr>
-        <td>:set&nbsp;imdisable<br />:set&nbsp;noimdisable</td>
+        <td>:set&nbsp;startnormalmode<br/>:set&nbsp;nostartnormalmode</td>
+        <td>:set&nbsp;snm<br/>:set&nbsp;nosnm</td>
+        <td>Off</td>
+        <td>When enabled, always start in NormalMode after changing tabs.  For
+        example, if you go into InsertMode, change tabs to another file, then
+        change tabs back, you will be in NormalMode (exit InsertMode).</td>
+    </tr>
+    <tr>
+        <td>:set&nbsp;imdisable<br/>:set&nbsp;noimdisable</td>
         <td>none</td>
         <td>Off</td>
         <td>If set, exiting Insert Mode will automatically disable the Input Method (useful on Japanese keyboards).
         </td>
     </tr>
 </table>
+
 
 <h3>Remapping Keys</h3>
 <p>There are a lot of commands for defining different key mappings, but
@@ -257,7 +286,7 @@
                more mappings.</td>
        </tr>
        <tr>
-           <td>:noremap&nbsp;&lt;lhs&gt;&nbsp;&lt;rhs&gt;<br />
+           <td>:noremap&nbsp;&lt;lhs&gt;&nbsp;&lt;rhs&gt;<br/>
                :no&nbsp;&lt;lhs&gt;&nbsp;&lt;rhs&gt;</td>
            <td>Maps &lt;lhs&gt; to &lt;rhs&gt;. Ignores mappings occuring in
                &lt;rhs&gt;</td>
@@ -268,7 +297,7 @@
            <td>Removes the mapping for &lt;mapping&gt;.</td>
        </tr>
        <tr>
-           <td>:mapclear<br />
+           <td>:mapclear<br/>
                :mapc</td>
            <td>Removes all mappings of the corresponding key map.</td>
        </tr>
@@ -280,40 +309,48 @@
    <table class="commands" style="margin-bottom:1em">
        <tr>
            <td>
-               nmap<br />
-               nm<br />
-               imap<br />
-               im<br />
-               vmap<br />
-               vm<br />
+               nmap<br/>
+               nm<br/>
+               imap<br/>
+               im<br/>
+               omap<br/>
+               om<br/>
+               vmap<br/>
+               vm<br/>
            </td>
            <td>
-               nnoremap<br />
-               nn<br />
-               inoremap<br />
-               ino<br />
-               vnoremap<br />
-               vn<br />
+               nnoremap<br/>
+               nn<br/>
+               inoremap<br/>
+               ino<br/>
+               onoremap<br/>
+               ono<br/>
+               vnoremap<br/>
+               vn<br/>
            </td>
            <td>
-               unmap<br />
-               unm<br />
-               nunmap<br />
-               nun<br />
-               vunmap<br />
-               vu<br />
-               iunmap<br />
-               iu<br />
+               nunmap<br/>
+               nun<br/>
+               iunmap<br/>
+               iu<br/>
+               ounmap<br/>
+               ou<br/>
+               vunmap<br/>
+               vu<br/>
+               unmap<br/>
+               unm<br/>
            </td>
            <td>
-               mapclear<br />
-               mapc<br />
-               nmapclear<br />
-               nmapc<br />
-               vmapclear<br />
-               vmapc<br />
-               imapclear<br />
-               imapc<br />
+               nmapclear<br/>
+               nmapc<br/>
+               imapclear<br/>
+               imapc<br/>
+               omapclear<br/>
+               omapc<br/>
+               vmapclear<br/>
+               vmapc<br/>
+               mapclear<br/>
+               mapc<br/>
            </td>
        </tr>
    </table>
@@ -326,24 +363,24 @@
    <ul class="commands">
        <li>GT</li>
        <li>LT</li>
-       <li>LEFT&nbsp;*</li>
-       <li>RIGHT&nbsp;*</li>
-       <li>UP&nbsp;*</li>
-       <li>DOWN&nbsp;*</li>
+       <li>LEFT*</li>
+       <li>RIGHT*</li>
+       <li>UP*</li>
+       <li>DOWN*</li>
        <li>ENTER</li>
-       <li>RETURN&nbsp;*</li>
-       <li>ESC&nbsp;*</li>
+       <li>RETURN*</li>
+       <li>ESC*</li>
        <li>HOME</li>
        <li>END</li>
        <li>PAGE_UP</li>
        <li>PAGE_DOWN</li>
        <li>INSERT</li>
        <li>DELETE</li>
-       <li>BACKSPACE&nbsp;*</li>
+       <li>BACKSPACE*</li>
        <li>SPACE</li>
    </ul>
    <dl>
-    <dt>* Only the special character names marked with an asterisk are supported in INSERT mode maps. All other special characters of this list are ignored.</dt>
+    <dt>* InsertMode can only map the special character names marked with an asterisk. All other special characters of this list are ignored.</dt>
    </dl>
 <h3>Collisions between Vrapper and Eclipse bindings</h3>
 <p>If a key combination is already mapped by Eclipse (e.g. Ctrl-P on Windows and
