@@ -4,6 +4,7 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import net.sourceforge.vrapper.core.tests.utils.CommandTestCase;
@@ -13,6 +14,7 @@ import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
+import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
@@ -307,4 +309,29 @@ public class VisualModeTests extends CommandTestCase {
 		assertEquals(NormalMode.NAME, adaptor.getCurrentModeName());
 	}
 
+	@Test
+	public void test_ShiftWidth() {
+		when(configuration.get(Options.EXPAND_TAB)).thenReturn(true);
+		when(configuration.get(Options.TAB_STOP)).thenReturn(4);
+		when(configuration.get(Options.SHIFT_WIDTH)).thenReturn(4);
+
+		checkLeavingCommand(forKeySeq(">"),
+				false, "","    Hello,\n    W","orld!\n;-)",
+				"        ",'H',"ello,\n        World!\n;-)");
+		checkLeavingCommand(forKeySeq(">"),
+				false, "    ","Hello,\n    W","orld!\n;-)",
+				"        ",'H',"ello,\n        World!\n;-)");
+		checkLeavingCommand(forKeySeq(">"),
+				false, "   "," Hello,\n   "," World!\n;-)",
+				"        ",'H',"ello,\n        World!\n;-)");
+		checkLeavingCommand(forKeySeq(">"),
+				false, "   "," Hello,\n","    World!\n;-)",
+				"        ",'H',"ello,\n    World!\n;-)");
+		checkLeavingCommand(forKeySeq(">"),
+				false, "   "," Hello,\n    World!\n","\n;-)",
+				"        ",'H',"ello,\n        World!\n\n;-)");
+		checkLeavingCommand(forKeySeq(">"),
+				false, "   "," Hello,\n    World!\n  ","\n;-)",
+				"        ",'H',"ello,\n        World!\n  \n;-)");
+	}
 }
