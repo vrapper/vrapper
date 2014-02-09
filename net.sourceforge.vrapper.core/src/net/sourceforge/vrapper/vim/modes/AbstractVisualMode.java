@@ -112,6 +112,13 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
     	super.leaveMode(hints);
     }
 
+    /**
+     * Convert the current selection to one expected by the current mode.
+     * For example, if a linewise selection is visible and the mode is switched to plain visual,
+     * this function will update the selection so that single characters can be selected.
+     * Vice versa, when switching to linewise mode, this function will make sure to select complete
+     * lines if that weren't the case before.
+     */
     protected abstract void fixSelection();
 
     @Override
