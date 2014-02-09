@@ -13,4 +13,4 @@ Home Page: http://vrapper.sourceforge.net/home/
 
 Documentation: http://vrapper.sourceforge.net/documentation/
 
-Developer Wiki: https://sourceforge.net/apps/trac/vrapper/wiki
+Developer Wiki: https://github.com/vrapper/vrapper/wiki
