@@ -270,6 +270,19 @@ public class VisualModeTests extends CommandTestCase {
 	}
 
 	@Test
+	public void test_tMotions() {
+		// Check repeated use of t motion in visual mode.
+		// Oddly, this appears to fail in Vim 7.4
+	
+		checkCommand(forKeySeq("t)"),
+				false,  "getText(","line.getEndOffset","() - line.getBeginOffset()));",
+				false,  "getText(","line.getEndOffset(",") - line.getBeginOffset()));");
+		checkCommand(forKeySeq("t)"),
+				false,  "getText(","line.getEndOffset(",") - line.getBeginOffset()));",
+				false,  "getText(","line.getEndOffset() - line.getBeginOffset(",")));");
+	}
+
+	@Test
     public void test_J() {
 		checkLeavingCommand(forKeySeq("J"),
 				false,  "Hell","o,\nW","orld!\n;-)",
