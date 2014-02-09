@@ -13,7 +13,10 @@ import net.sourceforge.vrapper.keymap.vim.CountingState;
 import net.sourceforge.vrapper.keymap.vim.RegisterState;
 import net.sourceforge.vrapper.keymap.vim.VisualMotionState;
 import net.sourceforge.vrapper.keymap.vim.VisualTextObjectState;
+import net.sourceforge.vrapper.log.VrapperLog;
+import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.utils.CaretType;
+import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.CenterLineCommand;
@@ -28,6 +31,7 @@ import net.sourceforge.vrapper.vim.commands.JoinVisualLinesCommand;
 import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
 import net.sourceforge.vrapper.vim.commands.PasteOperation;
 import net.sourceforge.vrapper.vim.commands.ReplaceCommand;
+import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SelectionBasedTextOperationCommand;
 import net.sourceforge.vrapper.vim.commands.SetMarkCommand;
 import net.sourceforge.vrapper.vim.commands.SwapCaseCommand;
@@ -93,7 +97,21 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
             }
         }
         if (recallSelection) {
-        	editorAdaptor.setSelection(editorAdaptor.getLastActiveSelection());
+            Selection previousSel = editorAdaptor.getLastActiveSelection();
+            CursorService cursorService = editorAdaptor.getCursorService();
+            Position start = cursorService.getMark(CursorService.LAST_SELECTION_START_MARK);
+            Position end = cursorService.getMark(CursorService.LAST_SELECTION_END_MARK);
+            if (previousSel == null) {
+                VrapperLog.info("Previous selection was null, selection not recalled.");
+            } else {
+                // Can happen during testing, as the testing cursor service won't understand marks.
+                if (start == null || end == null) {
+                    VrapperLog.info("Previous selection marks are null, selection might be wrong.");
+                    start = previousSel.getStartMark(editorAdaptor);
+                    end = previousSel.getEndMark(editorAdaptor);
+                }
+                editorAdaptor.setSelection(previousSel.selectMarks(editorAdaptor, start, end));
+            }
         } else if (!keepSelection) {
             editorAdaptor.setSelection(null);
         }

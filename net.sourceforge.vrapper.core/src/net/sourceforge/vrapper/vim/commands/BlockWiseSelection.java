@@ -177,4 +177,9 @@ public class BlockWiseSelection implements Selection {
         return getTo();
     }
 
+    @Override
+    public Selection selectMarks(EditorAdaptor adaptor, Position start,
+            Position end) {
+        return new BlockWiseSelection(adaptor, start, end);
+    }
 }

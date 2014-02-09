@@ -3,6 +3,7 @@ package net.sourceforge.vrapper.vim.commands;
 import net.sourceforge.vrapper.platform.Configuration;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.Position;
+import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.modes.VisualMode;
@@ -86,5 +87,15 @@ public class SimpleSelection implements Selection {
 
     public String toString() {
         return "SimpleSelection( " + range.toString() + " )";
+    }
+
+    @Override
+    public Selection selectMarks(EditorAdaptor adaptor, Position start, Position end) {
+        // Make sure to add 1 to the end marker, see getEndMark above.
+        if (isReversed()) {
+            return new SimpleSelection(new StartEndTextRange(end.addModelOffset(1), start));
+        } else {
+            return new SimpleSelection(new StartEndTextRange(start, end.addModelOffset(1)));
+        }
     }
 }
