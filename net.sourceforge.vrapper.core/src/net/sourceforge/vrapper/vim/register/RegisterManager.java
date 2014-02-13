@@ -1,7 +1,9 @@
 package net.sourceforge.vrapper.vim.register;
 
-import net.sourceforge.vrapper.utils.SelectionArea;
+import java.util.Set;
+
 import net.sourceforge.vrapper.utils.Search;
+import net.sourceforge.vrapper.utils.SelectionArea;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.TextOperation;
@@ -25,6 +27,7 @@ public interface RegisterManager {
     public static final String REGISTER_NAME_BLACKHOLE = "_";
     public static final String REGISTER_NAME_LAST      = "@";
 
+    Set<String> getRegisterNames();
     Register getRegister(String name);
     Register getDefaultRegister();
     Register getActiveRegister();

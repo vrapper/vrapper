@@ -22,6 +22,7 @@ import net.sourceforge.vrapper.vim.commands.EditFileCommand;
 import net.sourceforge.vrapper.vim.commands.ExCommandOperation;
 import net.sourceforge.vrapper.vim.commands.FindFileCommand;
 import net.sourceforge.vrapper.vim.commands.LineRangeOperationCommand;
+import net.sourceforge.vrapper.vim.commands.ListRegistersCommand;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.commands.OpenInGvimCommand;
 import net.sourceforge.vrapper.vim.commands.ReadExternalOperation;
@@ -225,6 +226,21 @@ public class CommandLineParser extends AbstractCommandParser {
                 return null;
             }
         };
+        Evaluator registers = new Evaluator() {
+            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
+                try {
+                    String names = "";
+                    while(command.size() > 0)
+                        names += command.poll();
+
+                    new ListRegistersCommand(names).execute(vim);
+				}
+                catch (CommandExecutionException e) {
+            		vim.getUserInterfaceService().setErrorMessage(e.getMessage());
+				}
+                return null;
+            }
+        };
         
         mapping = new EvaluatorMapping();
         // options
@@ -316,6 +332,8 @@ public class CommandLineParser extends AbstractCommandParser {
         mapping.add("retab", retab);
     	mapping.add("ascii", ascii);
     	mapping.add("startinsert", startInsert);
+    	mapping.add("registers", registers);
+    	mapping.add("display", registers);
     }
 
     private static Evaluator buildConfigEvaluator(boolean local) {

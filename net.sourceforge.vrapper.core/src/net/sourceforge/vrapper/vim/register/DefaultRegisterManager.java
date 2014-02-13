@@ -3,10 +3,11 @@ package net.sourceforge.vrapper.vim.register;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import net.sourceforge.vrapper.utils.ContentType;
-import net.sourceforge.vrapper.utils.SelectionArea;
 import net.sourceforge.vrapper.utils.Search;
+import net.sourceforge.vrapper.utils.SelectionArea;
 import net.sourceforge.vrapper.utils.StringUtils;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.commands.Command;
@@ -78,6 +79,10 @@ public class DefaultRegisterManager implements RegisterManager {
             }
         };
         registers.put(RegisterManager.REGISTER_NAME_BLACKHOLE, blackholeRegister);
+    }
+    
+    public Set<String> getRegisterNames() {
+        return registers.keySet();
     }
 
     public Register getRegister(String name) {

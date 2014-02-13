@@ -13,7 +13,7 @@ public abstract class AbstractMessagesCommand extends AbstractCommand {
     @Override
     public void execute(EditorAdaptor editorAdaptor)
             throws CommandExecutionException {
-        String messages = getMessages();
+        String messages = getMessages(editorAdaptor);
         editorAdaptor.changeMode(MessageMode.NAME, new MessageMode.MessagesHint(messages));
     }
 
@@ -28,6 +28,6 @@ public abstract class AbstractMessagesCommand extends AbstractCommand {
         return this;
     }
 
-    protected abstract String getMessages() throws CommandExecutionException; 
+    protected abstract String getMessages(EditorAdaptor editorAdaptor) throws CommandExecutionException; 
 
 }

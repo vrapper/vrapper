@@ -1,6 +1,7 @@
 package net.sourceforge.vrapper.eclipse.commands;
 
 import net.sourceforge.vrapper.log.VrapperLog;
+import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.AbstractMessagesCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
@@ -18,7 +19,7 @@ public class ListTabsCommand extends AbstractMessagesCommand {
     public static final Command INSTANCE = new ListTabsCommand();
 
     @Override
-    protected String getMessages() throws CommandExecutionException {
+    protected String getMessages(EditorAdaptor editorAdaptor) throws CommandExecutionException {
         StringBuilder sb = new StringBuilder();
 
         IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
