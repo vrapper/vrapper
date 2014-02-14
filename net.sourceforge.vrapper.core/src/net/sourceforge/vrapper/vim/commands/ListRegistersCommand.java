@@ -55,4 +55,9 @@ public class ListRegistersCommand extends AbstractMessagesCommand {
         return sb.toString();
     }
 
+    @Override
+    public boolean isClipped() {
+        return true;
+    }
+
 }

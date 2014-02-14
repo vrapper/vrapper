@@ -1,6 +1,7 @@
 package net.sourceforge.vrapper.vim.commands;
 
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.modes.ModeSwitchHint;
 import net.sourceforge.vrapper.vim.modes.commandline.MessageMode;
 
 /**
@@ -14,7 +15,14 @@ public abstract class AbstractMessagesCommand extends AbstractCommand {
     public void execute(EditorAdaptor editorAdaptor)
             throws CommandExecutionException {
         String messages = getMessages(editorAdaptor);
-        editorAdaptor.changeMode(MessageMode.NAME, new MessageMode.MessagesHint(messages));
+        ModeSwitchHint[] hints;
+        if (isClipped()) {
+            hints = new ModeSwitchHint[] {new MessageMode.MessagesHint(messages),
+                    MessageMode.CLIP_LINES};
+        } else {
+            hints = new ModeSwitchHint[] { new MessageMode.MessagesHint(messages) };
+        }
+        editorAdaptor.changeMode(MessageMode.NAME, hints);
     }
 
     @Override
@@ -26,6 +34,14 @@ public abstract class AbstractMessagesCommand extends AbstractCommand {
     @Override
     public Command withCount(int count) {
         return this;
+    }
+    
+    /**
+     * Override and return true to clip messages when displaying messages.
+     * Normally word-wrapping is enabled by default.
+     */
+    public boolean isClipped() {
+        return false;
     }
 
     protected abstract String getMessages(EditorAdaptor editorAdaptor) throws CommandExecutionException; 
