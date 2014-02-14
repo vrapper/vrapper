@@ -30,6 +30,8 @@ public class MessageMode extends AbstractMode {
     public static final String NAME = "message or more mode";
     private CommandLineUI commandLine;
 
+    public static final ModeSwitchHint CLIP_LINES_HINT = new ModeSwitchHint() { };
+
     protected static final KeyStroke KEY_SPACE = key(' ');
     protected static final KeyStroke KEY_RETURN = key(SpecialKey.RETURN);
     protected static final KeyStroke KEY_ESCAPE = key(SpecialKey.ESC);
@@ -71,9 +73,13 @@ public class MessageMode extends AbstractMode {
             throws CommandExecutionException {
         super.enterMode(hints);
         String messages = null;
+        boolean clipLines = false;
         for (ModeSwitchHint hint : hints) {
             if (hint instanceof MessagesHint) {
                 messages = ((MessagesHint) hint).getMessages();
+            }
+            if (hint == CLIP_LINES_HINT) {
+                clipLines = true;
             }
         }
         if (messages == null) {
@@ -83,7 +89,11 @@ public class MessageMode extends AbstractMode {
         commandLine = editorAdaptor.getCommandLine();
         commandLine.setPrompt("");
         commandLine.resetContents(messages);
-        commandLine.setMode(CommandLineMode.MESSAGE);
+        if (clipLines) {
+            commandLine.setMode(CommandLineMode.MESSAGE_CLIPPED);
+        } else {
+            commandLine.setMode(CommandLineMode.MESSAGE);
+        }
         commandLine.open();
         
         updateMorePrompt();

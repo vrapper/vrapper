@@ -215,6 +215,7 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener,
         prompt = "";
         contentsOffset = 0;
         resetContents("");
+        commandLineText.setWordWrap(true);
         
         readOnly = false;
         
@@ -245,12 +246,13 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener,
                 registerModeSelection = sel;
                 readOnly = true;
             }
-        } else if (mode == CommandLineMode.MESSAGE) {
+        } else if (mode == CommandLineMode.MESSAGE || mode == CommandLineMode.MESSAGE_CLIPPED) {
             commandLineText.setEditable(false);
             setPosition(0);
             commandLineText.setTopIndex(0);
             readOnly = true;
             pasteItem.setEnabled(false);
+            commandLineText.setWordWrap(mode == CommandLineMode.MESSAGE);
         }
     }
 

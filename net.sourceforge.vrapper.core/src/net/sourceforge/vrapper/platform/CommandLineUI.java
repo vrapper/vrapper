@@ -9,8 +9,13 @@ package net.sourceforge.vrapper.platform;
 public interface CommandLineUI {
 
     public static enum CommandLineMode {
+        /** Default, editable mode. */
         DEFAULT,
+        /** Read-only mode used to display messages, word-wrapped. */
         MESSAGE,
+        /** Read-only mode used to display messages, clipped when line goes off-screen. */
+        MESSAGE_CLIPPED,
+        /** Read-only mode where a <b>"</b> signals that a register name is needed. */
         REGISTER;
     }
 
