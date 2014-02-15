@@ -18,7 +18,6 @@ import net.sourceforge.vrapper.vim.register.RegisterManager;
  */
 public class ListRegistersCommand extends AbstractMessagesCommand {
 
-    public static final Command INSTANCE = new ListRegistersCommand();
     private String toDisplay;
 
     public ListRegistersCommand() {
