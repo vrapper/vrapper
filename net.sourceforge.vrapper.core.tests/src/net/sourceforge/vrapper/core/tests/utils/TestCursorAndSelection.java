@@ -1,6 +1,10 @@
 package net.sourceforge.vrapper.core.tests.utils;
 
 import static java.lang.Math.min;
+
+import java.util.HashSet;
+import java.util.Set;
+
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.SelectionService;
 import net.sourceforge.vrapper.platform.TextContent;
@@ -124,4 +128,14 @@ public class TestCursorAndSelection implements CursorService, SelectionService {
     public int visualWidthToChars(int visualWidth) {
         return visualWidth;
     }
+
+	@Override
+	public Set<String> getAllMarks() {
+		return new HashSet<String>();
+	}
+
+	@Override
+	public boolean isGlobalMark(String id) {
+		return false;
+	}
 }

@@ -39,6 +39,10 @@ public interface FileService {
 	 */
     String getCurrentFilePath();
 
+    String getCurrentFileName();
+
+    String getFileNameOfGlobalMark(String name);
+
     /**
      * Get the absolute path to the current file.
      */

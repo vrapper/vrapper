@@ -101,7 +101,7 @@ public class GoToMarkCommand extends CountIgnoringNonRepeatableCommand {
 	public void execute(EditorAdaptor editorAdaptor)
 			throws CommandExecutionException {
 	    EditorAdaptor markEditor = editorAdaptor;
-	    if (EclipseCursorAndSelection.isGlobalMark(id)) {
+	    if (editorAdaptor.getCursorService().isGlobalMark(id)) {
 	        markEditor = activateMarkEditor(editorAdaptor);
 	    }
         if (markEditor == null) {

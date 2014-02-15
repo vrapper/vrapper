@@ -14,8 +14,11 @@ import org.eclipse.core.commands.common.CommandException;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorInput;
@@ -463,6 +466,31 @@ public class EclipseFileService implements FileService {
     
     public String getCurrentFilePath() {
     	return "/" + getCurrentFileDir().getProjectRelativePath().toString();
+    }
+
+    public String getCurrentFileName() {
+    	return "/" + getCurrentFile().getProjectRelativePath().toString();
+    }
+
+    public String getFileNameOfGlobalMark(String name) {
+    	IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+    	IMarker mark = null;
+        try {
+            final IMarker[] markers = root.findMarkers(IMarker.BOOKMARK, true, IResource.DEPTH_INFINITE);
+            for (final IMarker m: markers) {
+                if (m.getAttribute(IMarker.MESSAGE, "--").equals(name)) {
+                    mark = m;
+                    break;
+                }
+            }
+        } catch (CoreException e) {
+            // Ignore.
+        }
+
+        if(mark == null) {
+        	return "";
+        }
+    	return "/" + mark.getResource().getProjectRelativePath().toString();
     }
     
     /**

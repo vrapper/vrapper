@@ -1,5 +1,7 @@
 package net.sourceforge.vrapper.platform;
 
+import java.util.Set;
+
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
@@ -88,6 +90,10 @@ public interface CursorService {
      *         been set
      */
     Position getMark(String id);
+
+    Set<String> getAllMarks();
+
+    boolean isGlobalMark(final String id);
 
     /**
      * Access change lists, 'g;' and 'g,'.

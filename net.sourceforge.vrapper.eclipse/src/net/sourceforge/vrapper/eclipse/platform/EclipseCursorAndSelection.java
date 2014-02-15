@@ -2,8 +2,10 @@ package net.sourceforge.vrapper.eclipse.platform;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.sourceforge.vrapper.eclipse.ui.CaretUtils;
 import net.sourceforge.vrapper.platform.Configuration;
@@ -339,6 +341,33 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         }
 
     }
+    
+    @Override
+    public Set<String> getAllMarks() {
+    	//the easy part, get all local marks
+    	Set<String> allMarks = new HashSet<String>(marks.keySet());
+
+    	//now iterate every open editor and look for global marks
+        final WorkbenchPage page = (WorkbenchPage) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+        final IEditorReference[] editorReferences = page.getSortedEditors();
+        for (final IEditorReference e : editorReferences) {
+        	try {
+        		IEditorInput editorInput = e.getEditorInput();
+        		if (editorInput instanceof IFileEditorInput) {
+        			final IFileEditorInput fileInput = (IFileEditorInput)editorInput;
+        			final IMarker[] markers = fileInput.getFile().findMarkers(GLOBAL_MARK_TYPE, true, IResource.DEPTH_INFINITE);
+        			for (final IMarker m: markers) {
+        				String name = m.getAttribute(IMarker.MESSAGE, "--");
+        				allMarks.add(name);
+        			}
+        		}
+        	} catch (Exception ex) {
+        		ex.printStackTrace();
+        	}
+        }
+
+    	return allMarks;
+    }
 
     @Override
     public void setMark(final String id, final Position position) {
@@ -377,7 +406,8 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     /**
      * Returns true if mark id is a global mark name
      */
-    static public boolean isGlobalMark(final String id) {
+    @Override
+    public boolean isGlobalMark(final String id) {
         return id.length() == 1
                 && ((   id.charAt(0) >= 'A' && id.charAt(0) <= 'Z')
                     || (id.charAt(0) >= '0' && id.charAt(0) <= '9'));
