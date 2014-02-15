@@ -18,7 +18,7 @@ public abstract class AbstractMessagesCommand extends AbstractCommand {
         ModeSwitchHint[] hints;
         if (isClipped()) {
             hints = new ModeSwitchHint[] {new MessageMode.MessagesHint(messages),
-                    MessageMode.CLIP_LINES};
+                    MessageMode.CLIP_LINES_HINT};
         } else {
             hints = new ModeSwitchHint[] { new MessageMode.MessagesHint(messages) };
         }
