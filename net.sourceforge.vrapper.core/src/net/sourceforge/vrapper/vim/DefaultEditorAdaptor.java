@@ -566,7 +566,11 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
 	@Override
     public void rememberLastActiveSelection() {
 		Selection selection = selectionService.getSelection();
-		registerManager.setLastActiveSelection(selection, SelectionArea.getInstance(this));
+		if(selection.getRightBound().getModelOffset() > getModelContent().getTextLength()) {
+		    Position end = selection.getRightBound().setModelOffset(getModelContent().getTextLength());
+		    selection = selection.selectMarks(this, selection.getLeftBound(), end);
+		}
+		registerManager.setLastActiveSelection(selection, SelectionArea.getInstance(this, selection));
 		cursorService.setMark(CursorService.LAST_SELECTION_START_MARK, selection.getStartMark(this));
 		cursorService.setMark(CursorService.LAST_SELECTION_END_MARK, selection.getEndMark(this));
 	}

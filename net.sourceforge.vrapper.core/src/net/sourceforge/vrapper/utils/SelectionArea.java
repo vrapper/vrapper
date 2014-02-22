@@ -16,8 +16,7 @@ public abstract class SelectionArea implements TextObject {
 
     protected int linesSpanned;
 
-    public static SelectionArea getInstance(final EditorAdaptor editorAdaptor) {
-        final Selection selection = editorAdaptor.getSelection();
+    public static SelectionArea getInstance(final EditorAdaptor editorAdaptor, final Selection selection) {
         if (selection instanceof LineWiseSelection)
             return new LineWiseSelectionArea(editorAdaptor, (LineWiseSelection)selection);
         else if (selection instanceof BlockWiseSelection)
