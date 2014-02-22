@@ -149,10 +149,10 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
     	if(operation == 'y') {
     	    //":y[ank] [x]" where [x] is a register
     	    if(operationStr.length() > 2 && operationStr.indexOf(' ') == operationStr.length() -2) {
-    	        return new YankOperation(operationStr.substring(operationStr.length()-1));
+    	        return new YankOperation(operationStr.substring(operationStr.length()-1), false);
     	    }
     	    else {
-    	        return YankOperation.INSTANCE;
+    	        return new YankOperation(null, false);
     	    }
     	}
     	else if(operation == 'd') {
