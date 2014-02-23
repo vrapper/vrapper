@@ -48,6 +48,7 @@ import net.sourceforge.vrapper.vim.modes.ContentAssistMode;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.modes.VisualMode;
+import net.sourceforge.vrapper.vim.register.StringRegisterContent;
 
 /**
  * Command Line Mode, activated with ':'.
@@ -520,8 +521,13 @@ public class CommandLineParser extends AbstractCommandParser {
         }
         return null;
     }
+
     @Override
     public Command parseAndExecute(String first, String command) {
+        // set the @: register even if this command is invalid
+        StringRegisterContent lastCommand = new StringRegisterContent(ContentType.TEXT, first + command + "<cr>");
+        editor.getRegisterManager().getRegister(":").setContent(lastCommand);
+
         if(first != null) {
             while(command.startsWith(first)) {
                 //remove any superfluous ':' preceding the command

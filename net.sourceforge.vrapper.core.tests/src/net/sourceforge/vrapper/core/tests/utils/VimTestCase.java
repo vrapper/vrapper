@@ -93,6 +93,7 @@ public class VimTestCase {
     	lastEditRegister = spy(new SimpleRegister());
 		when(registerManager.getActiveRegister()).thenReturn(defaultRegister);
 		when(registerManager.getLastEditRegister()).thenReturn(lastEditRegister);
+		when(registerManager.getRegister(":")).thenReturn(defaultRegister);
 		when(fileService.isEditable()).thenReturn(true);
 
     }
