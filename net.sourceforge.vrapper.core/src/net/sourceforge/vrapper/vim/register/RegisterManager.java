@@ -26,6 +26,7 @@ public interface RegisterManager {
     public static final String REGISTER_SMALL_DELETE   = "-";
     public static final String REGISTER_NAME_BLACKHOLE = "_";
     public static final String REGISTER_NAME_LAST      = "@";
+    public static final String REGISTER_NAME_COMMAND   = ":";
 
     Set<String> getRegisterNames();
     Register getRegister(String name);
@@ -56,4 +57,5 @@ public interface RegisterManager {
     public abstract void setDefaultRegister(Register register);
     public void setCurrentWorkingDirectory(String cwd);
     public String getCurrentWorkingDirectory();
+    public void setLastCommand(String macroString);
 }

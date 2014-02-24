@@ -36,6 +36,7 @@ public class DefaultRegisterManager implements RegisterManager {
 	private SelectionArea lastActiveSelectionArea;
 	private Selection lastActiveSelection;
 	private String cwd = "/";
+	private String lastCommand;
 
     public DefaultRegisterManager() {
         this.registers = new HashMap<String, Register>();
@@ -79,6 +80,14 @@ public class DefaultRegisterManager implements RegisterManager {
             }
         };
         registers.put(RegisterManager.REGISTER_NAME_BLACKHOLE, blackholeRegister);
+
+        // ": (or used as @:) - last command register
+        registers.put(REGISTER_NAME_COMMAND, new ReadOnlyRegister() {
+            @Override
+            public RegisterContent getContent() {
+                return new StringRegisterContent(ContentType.TEXT, lastCommand);
+            }
+        });
     }
     
     public Set<String> getRegisterNames() {
@@ -251,6 +260,10 @@ public class DefaultRegisterManager implements RegisterManager {
     
     public String getCurrentWorkingDirectory() {
     	return cwd;
+    }
+
+    public void setLastCommand(String macroString) {
+        this.lastCommand = macroString;
     }
 
 }
