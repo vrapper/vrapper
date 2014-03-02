@@ -1,4 +1,20 @@
 <div class="newsbox">
+    <div class="date">2014-03-02</div>
+    <h4>Updates to unstable update site</h4>
+
+    <p>It's been another slow month but I might as well give an update with
+    the changes to the unstable update site since 0.40.0 released:</p>
+    
+    <ul>
+        <li>Added support for '@:' to repeat last command-line command</li>
+        <li>Added support for ':marks' command</li>
+        <li>Added support for ':reg[isters]' command</li>
+        <li>Fixed issue with 'gv' after modifying lines</li>
+        <li>Fixed issue with visual mode editing at the end of a file</li>
+    </ul>
+    
+</div>
+<div class="newsbox">
     <div class="date">2014-02-08</div>
     <h4>0.40.0 Released</h4>
 
