@@ -38,6 +38,6 @@ public class CommandLineMode extends AbstractCommandLineMode {
     }
 
     public boolean addCommand(String commandName, Command command, boolean overwrite) {
-        return ((CommandLineParser) getParser()).addCommand(commandName, command, overwrite);
+        return CommandLineParser.addCommand(commandName, command, overwrite);
     }
 }

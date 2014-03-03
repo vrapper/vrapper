@@ -721,7 +721,7 @@ public class CommandLineParser extends AbstractCommandParser {
     	return null;
     }
     
-    public boolean addCommand(String commandName, Command command, boolean overwrite) {
+    public static boolean addCommand(String commandName, Command command, boolean overwrite) {
         if (overwrite || !mapping.contains(commandName)) {
             mapping.add(commandName, command);
             return true;
