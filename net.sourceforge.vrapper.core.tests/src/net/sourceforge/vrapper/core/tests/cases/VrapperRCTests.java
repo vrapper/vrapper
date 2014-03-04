@@ -16,6 +16,7 @@ import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.Remapping;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
+import net.sourceforge.vrapper.vim.modes.commandline.CommandLineMode;
 import net.sourceforge.vrapper.vim.modes.commandline.CommandLineParser;
 
 import org.junit.Test;
@@ -29,7 +30,8 @@ public class VrapperRCTests extends VimTestCase {
         try {
             reader = new BufferedReader(new FileReader(config));
             String line;
-            CommandLineParser parser = new CommandLineParser(adaptor);
+            CommandLineMode commandLineMode = new CommandLineMode(adaptor);
+            CommandLineParser parser = commandLineMode.createParser();
             while((line = reader.readLine()) != null) {
                 Command c = parser.parseAndExecute(null, line.trim());
                 if (c != null) {

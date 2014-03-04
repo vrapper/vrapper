@@ -46,7 +46,8 @@ public class CommandLineTests extends VimTestCase {
     
     @Test
     public void testCommandLineParser() {
-    	CommandLineParser parser = new CommandLineParser(adaptor);
+    	CommandLineMode commandLineMode = new CommandLineMode(adaptor);
+    	CommandLineParser parser = commandLineMode.createParser();
     	Command command;
     	
     	command = parser.parseAndExecute(":", "set nohlsearch");

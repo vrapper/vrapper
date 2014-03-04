@@ -222,7 +222,8 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         	try {
         		reader = new BufferedReader(new FileReader(config));
         		String line;
-        		final CommandLineParser parser = new CommandLineParser(this);
+        		CommandLineMode cmdLineMode = (CommandLineMode) modeMap.get(CommandLineMode.NAME);
+        		final CommandLineParser parser = cmdLineMode.createParser();
         		String trimmed;
         		while((line = reader.readLine()) != null) {
         			//*** skip over everything in a .vimrc file that we don't support ***//

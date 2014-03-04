@@ -56,10 +56,10 @@ import net.sourceforge.vrapper.vim.modes.VisualMode;
  */
 public class CommandLineParser extends AbstractCommandParser {
 
-    private static final EvaluatorMapping mapping;
+    private final EvaluatorMapping mapping;
     private final FilePathTabCompletion tabComplete;
 
-    static {
+    static EvaluatorMapping coreCommands() {
         Evaluator noremap = new KeyMapper.Map(false,
                 AbstractVisualMode.KEYMAP_NAME, NormalMode.KEYMAP_NAME);
         Evaluator map = new KeyMapper.Map(true,
@@ -258,7 +258,7 @@ public class CommandLineParser extends AbstractCommandParser {
             }
         };
         
-        mapping = new EvaluatorMapping();
+        EvaluatorMapping mapping = new EvaluatorMapping();
         // options
         mapping.add("set", buildConfigEvaluator(/*local=*/false));
         mapping.add("setlocal", buildConfigEvaluator(/*local=*/true));
@@ -351,6 +351,7 @@ public class CommandLineParser extends AbstractCommandParser {
     	mapping.add("registers", registers);
     	mapping.add("display", registers);
     	mapping.add("marks", marks);
+        return mapping;
     }
 
     private static Evaluator buildConfigEvaluator(boolean local) {
@@ -417,8 +418,9 @@ public class CommandLineParser extends AbstractCommandParser {
         }
     }
 
-    public CommandLineParser(EditorAdaptor vim) {
+    public CommandLineParser(EditorAdaptor vim, EvaluatorMapping commands) {
         super(vim);
+        this.mapping = commands;
         this.tabComplete = new FilePathTabCompletion(vim);
     }
 
@@ -658,12 +660,8 @@ public class CommandLineParser extends AbstractCommandParser {
     	return null;
     }
     
-    public static boolean addCommand(String commandName, Command command, boolean overwrite) {
-        if (overwrite || !mapping.contains(commandName)) {
-            mapping.add(commandName, command);
-            return true;
-        }
-        return false;
+    void addCommand(String commandName, Command command, boolean overwrite) {
+        mapping.add(commandName, command);
     }
     
     class LineRangeExCommandEvaluator implements Command {
