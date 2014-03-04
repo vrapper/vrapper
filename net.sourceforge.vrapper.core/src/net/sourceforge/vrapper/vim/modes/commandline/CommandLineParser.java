@@ -422,69 +422,6 @@ public class CommandLineParser extends AbstractCommandParser {
         this.tabComplete = new FilePathTabCompletion(vim);
     }
 
-    class LineRangeExCommandEvaluator implements Command {
-        private LineRangeOperationCommand range = null;
-        private Evaluator command = null;
-        private Queue<String> tokens = null;
-        private boolean isFromVisual;
-
-        public LineRangeExCommandEvaluator(LineRangeOperationCommand range, Evaluator command, Queue<String> tokens,
-                boolean isFromVisual) {
-            this.range = range;
-            this.command = command;
-            this.tokens = tokens;
-            this.isFromVisual = isFromVisual;
-        }
-
-        public Command repetition() {
-            return null;
-        }
-
-        public Command withCount(int count) {
-            return null;
-        }
-
-        public int getCount() {
-            return 0;
-        }
-
-        public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
-            boolean linewise = !isFromVisual || editorAdaptor.getSelection().getContentType(editorAdaptor.getConfiguration()) == ContentType.LINES;
-            Selection selection = range.parseRangeDefinition(editorAdaptor, linewise);
-            editorAdaptor.setSelection(selection);
-            command.evaluate(editorAdaptor, tokens);
-            editorAdaptor.setSelection(null);
-        }
-
-    };
-    
-    public class ExCommandEvaluator implements Command {
-        private Evaluator mappping = null;
-        private Queue<String> tokens = null;
-
-        public ExCommandEvaluator(Evaluator mappping, Queue<String> tokens) {
-            this.mappping = mappping;
-            this.tokens = tokens;
-        }
-
-        public Command repetition() {
-            return null;
-        }
-
-        public Command withCount(int count) {
-            return null;
-        }
-
-        public int getCount() {
-            return 0;
-        }
-
-        public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
-            mappping.evaluate(editorAdaptor, tokens);
-        }
-
-    };
-
     @Override
     protected String completeArgument(String commandLineContents, KeyStroke e) {
         int cmdLen = 0;
@@ -729,6 +666,69 @@ public class CommandLineParser extends AbstractCommandParser {
         return false;
     }
     
+    class LineRangeExCommandEvaluator implements Command {
+        private LineRangeOperationCommand range = null;
+        private Evaluator command = null;
+        private Queue<String> tokens = null;
+        private boolean isFromVisual;
+    
+        public LineRangeExCommandEvaluator(LineRangeOperationCommand range, Evaluator command, Queue<String> tokens,
+                boolean isFromVisual) {
+            this.range = range;
+            this.command = command;
+            this.tokens = tokens;
+            this.isFromVisual = isFromVisual;
+        }
+    
+        public Command repetition() {
+            return null;
+        }
+    
+        public Command withCount(int count) {
+            return null;
+        }
+    
+        public int getCount() {
+            return 0;
+        }
+    
+        public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
+            boolean linewise = !isFromVisual || editorAdaptor.getSelection().getContentType(editorAdaptor.getConfiguration()) == ContentType.LINES;
+            Selection selection = range.parseRangeDefinition(editorAdaptor, linewise);
+            editorAdaptor.setSelection(selection);
+            command.evaluate(editorAdaptor, tokens);
+            editorAdaptor.setSelection(null);
+        }
+    
+    }
+
+    public class ExCommandEvaluator implements Command {
+        private Evaluator mappping = null;
+        private Queue<String> tokens = null;
+    
+        public ExCommandEvaluator(Evaluator mappping, Queue<String> tokens) {
+            this.mappping = mappping;
+            this.tokens = tokens;
+        }
+    
+        public Command repetition() {
+            return null;
+        }
+    
+        public Command withCount(int count) {
+            return null;
+        }
+    
+        public int getCount() {
+            return 0;
+        }
+    
+        public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
+            mappping.evaluate(editorAdaptor, tokens);
+        }
+    
+    }
+
     private enum ConfigAction implements Evaluator {
 
         GLOBAL_REGISTERS {
