@@ -110,7 +110,7 @@ public class CommandLineParser extends AbstractCommandParser {
                 return null;
             }
         };
-        Evaluator printWorkingDir = new Evaluator() {
+        final Evaluator printWorkingDir = new Evaluator() {
             public Object evaluate(EditorAdaptor vim, Queue<String> command) {
             	String dir;
             	if(vim.getConfiguration().get(Options.AUTO_CHDIR)) {
@@ -121,6 +121,15 @@ public class CommandLineParser extends AbstractCommandParser {
             	}
                 vim.getUserInterfaceService().setInfoMessage(dir);
                 return null;
+            }
+        };
+        Evaluator chDir = new Evaluator() {
+            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
+            	String dir = command.isEmpty() ? "/" : command.poll();
+            	vim.getRegisterManager().setCurrentWorkingDirectory(dir);
+            	//immediately perform a pwd to show new dir
+            	printWorkingDir.evaluate(vim, command);
+            	return null;
             }
         };
         Evaluator editFile = new Evaluator() {
@@ -186,15 +195,6 @@ public class CommandLineParser extends AbstractCommandParser {
             		vim.getUserInterfaceService().setErrorMessage(e.getMessage());
 				}
             	
-            	return null;
-            }
-        };
-        Evaluator chDir = new Evaluator() {
-            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
-            	String dir = command.isEmpty() ? "/" : command.poll();
-            	vim.getRegisterManager().setCurrentWorkingDirectory(dir);
-            	//immediately perform a pwd to show new dir
-            	mapping.get("pwd").evaluate(vim, command);
             	return null;
             }
         };
