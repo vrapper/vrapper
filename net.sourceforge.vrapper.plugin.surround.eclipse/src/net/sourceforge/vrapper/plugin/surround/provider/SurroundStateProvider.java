@@ -29,7 +29,7 @@ import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.modes.commandline.Evaluator;
 
 public class SurroundStateProvider extends AbstractEclipseSpecificStateProvider {
-    public static final PlatformSpecificStateProvider INSTANCE = new SurroundStateProvider();
+    public static final AbstractEclipseSpecificStateProvider INSTANCE = new SurroundStateProvider();
     
     protected static class SurroundEvaluator implements Evaluator {
 
