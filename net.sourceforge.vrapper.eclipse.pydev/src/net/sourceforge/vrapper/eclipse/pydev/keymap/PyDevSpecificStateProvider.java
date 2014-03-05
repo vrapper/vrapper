@@ -16,7 +16,6 @@ import net.sourceforge.vrapper.vim.commands.DeselectAllCommand;
 import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
 import net.sourceforge.vrapper.vim.commands.SetMarkCommand;
 import net.sourceforge.vrapper.vim.commands.TextObject;
-import net.sourceforge.vrapper.vim.modes.NormalMode;
 
 public class PyDevSpecificStateProvider extends AbstractEclipseSpecificStateProvider {
 	
@@ -30,8 +29,7 @@ public class PyDevSpecificStateProvider extends AbstractEclipseSpecificStateProv
     
     @Override
     @SuppressWarnings("unchecked")
-    protected State<Command> normalModeBindings() {
-        State<TextObject> textObjects = NormalMode.textObjects();
+    protected State<Command> normalModeBindings(State<TextObject> textObjects) {
         return union(
                 state(
             		leafCtrlBind(']', gotoDecl()),

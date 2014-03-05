@@ -22,7 +22,6 @@ import net.sourceforge.vrapper.vim.commands.DeselectAllCommand;
 import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
 import net.sourceforge.vrapper.vim.commands.TextObject;
 import net.sourceforge.vrapper.vim.modes.KeyMapResolver;
-import net.sourceforge.vrapper.vim.modes.NormalMode;
 
 /**
  * Provides eclipse-specific bindings for command based modes.
@@ -82,8 +81,7 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
     }
 
     @Override
-    protected State<Command> normalModeBindings() {
-        State<TextObject> textObjects = NormalMode.textObjects();
+    protected State<Command> normalModeBindings(State<TextObject> textObjects) {
         State<Command> normalModeBindings = StateUtils.union(
             state(
                 transitionBind('z',

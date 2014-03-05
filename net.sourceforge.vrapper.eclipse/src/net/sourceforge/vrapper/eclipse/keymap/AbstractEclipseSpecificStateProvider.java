@@ -1,6 +1,7 @@
 package net.sourceforge.vrapper.eclipse.keymap;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Queue;
 
 import net.sourceforge.vrapper.eclipse.commands.EclipseCommand;
@@ -10,6 +11,7 @@ import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.PlatformSpecificStateProvider;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.Command;
+import net.sourceforge.vrapper.vim.commands.TextObject;
 import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
 import net.sourceforge.vrapper.vim.modes.ContentAssistMode;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
@@ -21,22 +23,17 @@ import net.sourceforge.vrapper.vim.modes.commandline.EvaluatorMapping;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 
-public class AbstractEclipseSpecificStateProvider implements
+public abstract class AbstractEclipseSpecificStateProvider implements
         PlatformSpecificStateProvider, Comparable<AbstractEclipseSpecificStateProvider> {
 
-    protected final HashMap<String, State<Command>> states = new HashMap<String, State<Command>>();
-    protected final HashMap<String, State<String>> keyMaps = new HashMap<String, State<String>>();
+    protected HashMap<String, State<Command>> states = null;
+    protected HashMap<String, State<String>> keyMaps = null;
+    protected State<TextObject> textObjects = null;
     protected final EvaluatorMapping commands = new EvaluatorMapping();
     protected int priority = 1;
     protected String name;
 
     protected AbstractEclipseSpecificStateProvider() {
-        states.put(NormalMode.NAME, normalModeBindings());
-        states.put(AbstractVisualMode.NAME, visualModeBindings());
-        keyMaps.put(NormalMode.NAME, normalModeKeymap());
-        keyMaps.put(AbstractVisualMode.NAME, visualModeKeymap());
-        states.put(InsertMode.NAME, insertModeBindings());
-        states.put(ContentAssistMode.NAME, contentAssistModeBindings());
     }
 
     public void setInitializationData(IConfigurationElement config,
@@ -51,7 +48,7 @@ public class AbstractEclipseSpecificStateProvider implements
         }
     }
 
-    protected State<Command> normalModeBindings() {
+    protected State<Command> normalModeBindings(State<TextObject> textObjects) {
         return EmptyState.getInstance();
     }
 
@@ -75,6 +72,9 @@ public class AbstractEclipseSpecificStateProvider implements
         return EmptyState.getInstance();
     }
     
+    protected State<TextObject> textObjects() {
+        return EmptyState.getInstance();
+    }
 
     protected static Command go(String where) {
         return new EclipseCommand("org.eclipse.ui.edit.text.goto." + where);
@@ -127,15 +127,44 @@ public class AbstractEclipseSpecificStateProvider implements
     }
 
     public State<Command> getState(String modeName) {
+        assert states != null;
         return states.get(modeName);
     }
 
+    protected final Map<String, State<Command>> getStates(State<TextObject> textObjects) {
+        if (states == null) {
+            states = new HashMap<String, State<Command>>();
+            states.put(NormalMode.NAME, normalModeBindings(textObjects));
+            states.put(AbstractVisualMode.NAME, visualModeBindings());
+            states.put(InsertMode.NAME, insertModeBindings());
+            states.put(ContentAssistMode.NAME, contentAssistModeBindings());
+        }
+        return states;
+    }
+
     public State<String> getKeyMaps(String name) {
+        assert keyMaps != null;
         return keyMaps.get(name);
+    }
+
+    protected final Map<String, State<String>> getKeyMaps() {
+        if (keyMaps == null) {
+            keyMaps = new HashMap<String, State<String>>();
+            keyMaps.put(NormalMode.NAME, normalModeKeymap());
+            keyMaps.put(AbstractVisualMode.NAME, visualModeKeymap());
+        }
+        return keyMaps;
     }
 
     public final EvaluatorMapping getCommands() {
         return commands;
+    }
+
+    public final State<TextObject> getTextObjects() {
+        if (textObjects == null) {
+            textObjects = textObjects();
+        }
+        return textObjects;
     }
 
     protected void addFormatCommands(Command formatAll) {

@@ -23,6 +23,7 @@ import net.sourceforge.vrapper.utils.StringUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
+import net.sourceforge.vrapper.vim.commands.TextObject;
 import net.sourceforge.vrapper.vim.modes.commandline.Evaluator;
 
 public class WindowCmdStateProvider extends AbstractEclipseSpecificStateProvider {
@@ -117,7 +118,7 @@ public class WindowCmdStateProvider extends AbstractEclipseSpecificStateProvider
 
     @Override
     @SuppressWarnings("unchecked")
-    protected State<Command> normalModeBindings() {
+    protected State<Command> normalModeBindings(State<TextObject> textObjects) {
         final Command vsplit = SplitEditorCommand.VSPLIT;
         final Command split = SplitEditorCommand.HSPLIT;
         final Command removeOther = RemoveOtherWindowsCommand.REMOVE_JOIN;
