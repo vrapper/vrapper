@@ -29,7 +29,7 @@ import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.modes.commandline.Evaluator;
 
 public class SurroundStateProvider extends AbstractEclipseSpecificStateProvider {
-    public static final PlatformSpecificStateProvider INSTANCE = new SurroundStateProvider();
+    public static final AbstractEclipseSpecificStateProvider INSTANCE = new SurroundStateProvider();
     
     protected static class SurroundEvaluator implements Evaluator {
 
@@ -58,7 +58,7 @@ public class SurroundStateProvider extends AbstractEclipseSpecificStateProvider 
     
     @Override
     @SuppressWarnings("unchecked")
-    protected State<Command> normalModeBindings() {
+    protected State<Command> normalModeBindings(State<TextObject> textObjects) {
         State<DelimitedText> delimitedTexts = union(
                 state(
                         leafBind('a', (DelimitedText) new SimpleDelimitedText('<', '>')),
@@ -73,7 +73,7 @@ public class SurroundStateProvider extends AbstractEclipseSpecificStateProvider 
         State<Command> addDelimiterState = new AddDelimiterState(
         		union(
     				state(leafBind('s', (TextObject) new FullLineTextObject())),
-	        		CountingState.wrap(NormalMode.textObjects())
+	        		CountingState.wrap(textObjects)
         		));
         return state(
                 transitionBind('d', transitionBind('s', deleteDelimiterState)),

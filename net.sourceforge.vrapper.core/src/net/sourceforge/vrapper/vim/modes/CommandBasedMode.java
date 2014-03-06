@@ -26,6 +26,7 @@ import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.SwitchRegisterCommand;
+import net.sourceforge.vrapper.vim.commands.TextObject;
 import net.sourceforge.vrapper.vim.commands.VimCommandSequence;
 import net.sourceforge.vrapper.vim.commands.motions.ContinueFindingMotion;
 import net.sourceforge.vrapper.vim.commands.motions.FindMotion;
@@ -380,4 +381,12 @@ public abstract class CommandBasedMode extends AbstractMode {
         return platformSpecificState;
     }
 
+    protected State<TextObject> getPlatformSpecificTextObjects() {
+        State<TextObject> platformSpecificTextObjects = editorAdaptor
+                .getPlatformSpecificStateProvider().getTextObjects();
+        if (platformSpecificTextObjects == null) {
+            platformSpecificTextObjects = EmptyState.getInstance();
+        }
+        return platformSpecificTextObjects;
+    }
 }

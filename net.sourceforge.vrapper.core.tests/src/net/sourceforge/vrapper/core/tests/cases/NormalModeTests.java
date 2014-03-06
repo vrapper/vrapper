@@ -7,7 +7,12 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+
 import net.sourceforge.vrapper.core.tests.utils.CommandTestCase;
+import net.sourceforge.vrapper.eclipse.keymap.UnionStateProvider;
+import net.sourceforge.vrapper.eclipse.mode.UnionModeProvider;
 import net.sourceforge.vrapper.platform.PlatformSpecificModeProvider;
 import net.sourceforge.vrapper.plugin.surround.provider.SurroundModesProvider;
 import net.sourceforge.vrapper.plugin.surround.provider.SurroundStateProvider;
@@ -1243,7 +1248,7 @@ public class NormalModeTests extends CommandTestCase {
 	
 	@Test
     public void testSurroundPlugin_ds() {
-        when(platform.getPlatformSpecificStateProvider()).thenReturn(SurroundStateProvider.INSTANCE);
+        when(platform.getPlatformSpecificStateProvider()).thenReturn(new UnionStateProvider("test", Arrays.asList(SurroundStateProvider.INSTANCE)));
         reloadEditorAdaptor();
         checkCommand(forKeySeq("dsb"),
                 "array[(in",'d',"ex)];",
@@ -1261,7 +1266,7 @@ public class NormalModeTests extends CommandTestCase {
 
 	@Test
     public void testSurroundPlugin_cs() {
-        when(platform.getPlatformSpecificStateProvider()).thenReturn(SurroundStateProvider.INSTANCE);
+        when(platform.getPlatformSpecificStateProvider()).thenReturn(new UnionStateProvider("test", Arrays.asList(SurroundStateProvider.INSTANCE)));
         reloadEditorAdaptor();
         checkCommand(forKeySeq("cs[b"),
                 "fn[ar",'g',"ument];",
@@ -1276,7 +1281,7 @@ public class NormalModeTests extends CommandTestCase {
 
 	@Test
     public void testSurroundPlugin_cs_input() {
-        when(platform.getPlatformSpecificStateProvider()).thenReturn(SurroundStateProvider.INSTANCE);
+        when(platform.getPlatformSpecificStateProvider()).thenReturn(new UnionStateProvider("test", Arrays.asList(SurroundStateProvider.INSTANCE)));
         when(platform.getPlatformSpecificModeProvider()).thenReturn(
                 (PlatformSpecificModeProvider) new SurroundModesProvider());
         reloadEditorAdaptor();
@@ -1296,7 +1301,7 @@ public class NormalModeTests extends CommandTestCase {
 
 	@Test
     public void testSurroundPlugin_cs_replaceTag() {
-        when(platform.getPlatformSpecificStateProvider()).thenReturn(SurroundStateProvider.INSTANCE);
+        when(platform.getPlatformSpecificStateProvider()).thenReturn(new UnionStateProvider("test", Arrays.asList(SurroundStateProvider.INSTANCE)));
         when(platform.getPlatformSpecificModeProvider()).thenReturn(
                 (PlatformSpecificModeProvider) new SurroundModesProvider());
         reloadEditorAdaptor();
@@ -1331,7 +1336,7 @@ public class NormalModeTests extends CommandTestCase {
 	
 	@Test
     public void testSurroundPlugin_ys() {
-        when(platform.getPlatformSpecificStateProvider()).thenReturn(SurroundStateProvider.INSTANCE);
+        when(platform.getPlatformSpecificStateProvider()).thenReturn(new UnionStateProvider("test", Arrays.asList(SurroundStateProvider.INSTANCE)));
         reloadEditorAdaptor();
         checkCommand(forKeySeq("ysiwb"),
                 "so",'m',"ething",

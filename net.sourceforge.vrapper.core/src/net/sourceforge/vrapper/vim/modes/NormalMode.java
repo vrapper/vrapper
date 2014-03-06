@@ -179,7 +179,7 @@ public class NormalMode extends CommandBasedMode {
 
 
     @SuppressWarnings("unchecked")
-    public static synchronized State<TextObject> textObjects() {
+    public static synchronized State<TextObject> baseTextObjects() {
         if (textObjects == null) {
             final TextObject innerWord = new MotionPairTextObject(MoveWordLeft.BAILS_OFF, MoveWordEndRight.BAILS_OFF);
             final TextObject aWord = new MotionPairTextObject(MoveWordLeft.BAILS_OFF, MoveWordRight.BAILS_OFF);
@@ -236,7 +236,7 @@ public class NormalMode extends CommandBasedMode {
         final TextObject toEol = new MotionTextObject(eol);
         final TextObject toEolForY = new OptionDependentTextObject(Options.SANE_Y, eol, wholeLineEol);
 
-        final State<TextObject> textObjects = textObjects();
+        final State<TextObject> textObjects = getPlatformSpecificTextObjects();
         State<TextObject> textObjectsForChange = union(
                 state(
                         leafBind('w', wordForCw),
