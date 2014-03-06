@@ -660,10 +660,6 @@ public class CommandLineParser extends AbstractCommandParser {
     	return null;
     }
     
-    void addCommand(String commandName, Command command, boolean overwrite) {
-        mapping.add(commandName, command);
-    }
-    
     class LineRangeExCommandEvaluator implements Command {
         private LineRangeOperationCommand range = null;
         private Evaluator command = null;

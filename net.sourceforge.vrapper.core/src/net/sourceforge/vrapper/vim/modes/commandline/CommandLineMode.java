@@ -46,11 +46,6 @@ public class CommandLineMode extends AbstractCommandLineMode {
     public boolean addCommand(String commandName, Command command, boolean overwrite) {
         if (overwrite || !commands.contains(commandName)) {
             commands.add(commandName, command);
-            // Only triggered during .vrapperrc sourcing. In the normal flow, createParser()
-            // will be called each time and the userCommands will be injected again.
-            if (getParser() != null) {
-                ((CommandLineParser)getParser()).addCommand(commandName, command, overwrite);
-            }
             return true;
         }
         return false;

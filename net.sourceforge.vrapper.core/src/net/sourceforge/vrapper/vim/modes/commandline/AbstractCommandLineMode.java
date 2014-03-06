@@ -19,7 +19,6 @@ public abstract class AbstractCommandLineMode extends AbstractMode {
 
     public AbstractCommandLineMode(EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
-        parser = createParser();
     }
 
     /**
@@ -57,8 +56,10 @@ public abstract class AbstractCommandLineMode extends AbstractMode {
         return true;
     }
 
+    /**
+     * Returns the current parser, or <tt>null</tt> if command line mode is inactive.
+     */
     protected AbstractCommandParser getParser() {
         return parser;
     }
-
 }
