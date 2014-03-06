@@ -56,10 +56,10 @@ import net.sourceforge.vrapper.vim.modes.VisualMode;
  */
 public class CommandLineParser extends AbstractCommandParser {
 
-    private static final EvaluatorMapping mapping;
+    private final EvaluatorMapping mapping;
     private final FilePathTabCompletion tabComplete;
 
-    static {
+    static EvaluatorMapping coreCommands() {
         Evaluator noremap = new KeyMapper.Map(false,
                 AbstractVisualMode.KEYMAP_NAME, NormalMode.KEYMAP_NAME);
         Evaluator map = new KeyMapper.Map(true,
@@ -110,7 +110,7 @@ public class CommandLineParser extends AbstractCommandParser {
                 return null;
             }
         };
-        Evaluator printWorkingDir = new Evaluator() {
+        final Evaluator printWorkingDir = new Evaluator() {
             public Object evaluate(EditorAdaptor vim, Queue<String> command) {
             	String dir;
             	if(vim.getConfiguration().get(Options.AUTO_CHDIR)) {
@@ -121,6 +121,15 @@ public class CommandLineParser extends AbstractCommandParser {
             	}
                 vim.getUserInterfaceService().setInfoMessage(dir);
                 return null;
+            }
+        };
+        Evaluator chDir = new Evaluator() {
+            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
+            	String dir = command.isEmpty() ? "/" : command.poll();
+            	vim.getRegisterManager().setCurrentWorkingDirectory(dir);
+            	//immediately perform a pwd to show new dir
+            	printWorkingDir.evaluate(vim, command);
+            	return null;
             }
         };
         Evaluator editFile = new Evaluator() {
@@ -189,15 +198,6 @@ public class CommandLineParser extends AbstractCommandParser {
             	return null;
             }
         };
-        Evaluator chDir = new Evaluator() {
-            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
-            	String dir = command.isEmpty() ? "/" : command.poll();
-            	vim.getRegisterManager().setCurrentWorkingDirectory(dir);
-            	//immediately perform a pwd to show new dir
-            	mapping.get("pwd").evaluate(vim, command);
-            	return null;
-            }
-        };
         Evaluator sourceConfigFile = new Evaluator() {
             public Object evaluate(EditorAdaptor vim, Queue<String> command) {
             	if(command.isEmpty()) {
@@ -258,7 +258,7 @@ public class CommandLineParser extends AbstractCommandParser {
             }
         };
         
-        mapping = new EvaluatorMapping();
+        EvaluatorMapping mapping = new EvaluatorMapping();
         // options
         mapping.add("set", buildConfigEvaluator(/*local=*/false));
         mapping.add("setlocal", buildConfigEvaluator(/*local=*/true));
@@ -351,6 +351,7 @@ public class CommandLineParser extends AbstractCommandParser {
     	mapping.add("registers", registers);
     	mapping.add("display", registers);
     	mapping.add("marks", marks);
+        return mapping;
     }
 
     private static Evaluator buildConfigEvaluator(boolean local) {
@@ -417,73 +418,11 @@ public class CommandLineParser extends AbstractCommandParser {
         }
     }
 
-    public CommandLineParser(EditorAdaptor vim) {
+    public CommandLineParser(EditorAdaptor vim, EvaluatorMapping commands) {
         super(vim);
+        this.mapping = commands;
         this.tabComplete = new FilePathTabCompletion(vim);
     }
-
-    class LineRangeExCommandEvaluator implements Command {
-        private LineRangeOperationCommand range = null;
-        private Evaluator command = null;
-        private Queue<String> tokens = null;
-        private boolean isFromVisual;
-
-        public LineRangeExCommandEvaluator(LineRangeOperationCommand range, Evaluator command, Queue<String> tokens,
-                boolean isFromVisual) {
-            this.range = range;
-            this.command = command;
-            this.tokens = tokens;
-            this.isFromVisual = isFromVisual;
-        }
-
-        public Command repetition() {
-            return null;
-        }
-
-        public Command withCount(int count) {
-            return null;
-        }
-
-        public int getCount() {
-            return 0;
-        }
-
-        public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
-            boolean linewise = !isFromVisual || editorAdaptor.getSelection().getContentType(editorAdaptor.getConfiguration()) == ContentType.LINES;
-            Selection selection = range.parseRangeDefinition(editorAdaptor, linewise);
-            editorAdaptor.setSelection(selection);
-            command.evaluate(editorAdaptor, tokens);
-            editorAdaptor.setSelection(null);
-        }
-
-    };
-    
-    public class ExCommandEvaluator implements Command {
-        private Evaluator mappping = null;
-        private Queue<String> tokens = null;
-
-        public ExCommandEvaluator(Evaluator mappping, Queue<String> tokens) {
-            this.mappping = mappping;
-            this.tokens = tokens;
-        }
-
-        public Command repetition() {
-            return null;
-        }
-
-        public Command withCount(int count) {
-            return null;
-        }
-
-        public int getCount() {
-            return 0;
-        }
-
-        public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
-            mappping.evaluate(editorAdaptor, tokens);
-        }
-
-    };
 
     @Override
     protected String completeArgument(String commandLineContents, KeyStroke e) {
@@ -721,14 +660,73 @@ public class CommandLineParser extends AbstractCommandParser {
     	return null;
     }
     
-    public static boolean addCommand(String commandName, Command command, boolean overwrite) {
-        if (overwrite || !mapping.contains(commandName)) {
-            mapping.add(commandName, command);
-            return true;
-        }
-        return false;
+    void addCommand(String commandName, Command command, boolean overwrite) {
+        mapping.add(commandName, command);
     }
     
+    class LineRangeExCommandEvaluator implements Command {
+        private LineRangeOperationCommand range = null;
+        private Evaluator command = null;
+        private Queue<String> tokens = null;
+        private boolean isFromVisual;
+    
+        public LineRangeExCommandEvaluator(LineRangeOperationCommand range, Evaluator command, Queue<String> tokens,
+                boolean isFromVisual) {
+            this.range = range;
+            this.command = command;
+            this.tokens = tokens;
+            this.isFromVisual = isFromVisual;
+        }
+    
+        public Command repetition() {
+            return null;
+        }
+    
+        public Command withCount(int count) {
+            return null;
+        }
+    
+        public int getCount() {
+            return 0;
+        }
+    
+        public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
+            boolean linewise = !isFromVisual || editorAdaptor.getSelection().getContentType(editorAdaptor.getConfiguration()) == ContentType.LINES;
+            Selection selection = range.parseRangeDefinition(editorAdaptor, linewise);
+            editorAdaptor.setSelection(selection);
+            command.evaluate(editorAdaptor, tokens);
+            editorAdaptor.setSelection(null);
+        }
+    
+    }
+
+    public class ExCommandEvaluator implements Command {
+        private Evaluator mappping = null;
+        private Queue<String> tokens = null;
+    
+        public ExCommandEvaluator(Evaluator mappping, Queue<String> tokens) {
+            this.mappping = mappping;
+            this.tokens = tokens;
+        }
+    
+        public Command repetition() {
+            return null;
+        }
+    
+        public Command withCount(int count) {
+            return null;
+        }
+    
+        public int getCount() {
+            return 0;
+        }
+    
+        public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
+            mappping.evaluate(editorAdaptor, tokens);
+        }
+    
+    }
+
     private enum ConfigAction implements Evaluator {
 
         GLOBAL_REGISTERS {
