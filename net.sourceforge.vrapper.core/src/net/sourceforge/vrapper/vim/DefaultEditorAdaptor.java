@@ -85,6 +85,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     private final ServiceProvider serviceProvider;
     private final KeyStrokeTranslator keyStrokeTranslator;
     private final KeyMapProvider keyMapProvider;
+    private final DefaultTextObjectProvider textObjectProvider;
     private final UnderlyingEditorSettings editorSettings;
     private final LocalConfiguration configuration;
     private final PlatformSpecificStateProvider platformSpecificStateProvider;
@@ -94,6 +95,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     private MacroPlayer macroPlayer;
     private String lastModeName;
     private String editorType;
+
 
     public DefaultEditorAdaptor(final Platform editor, final RegisterManager registerManager, final boolean isActive) {
         this.modelContent = editor.getModelContent();
@@ -128,6 +130,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         viewportService = editor.getViewportService();
         userInterfaceService = editor.getUserInterfaceService();
         keyMapProvider = editor.getKeyMapProvider();
+        textObjectProvider = new DefaultTextObjectProvider();
         keyStrokeTranslator = new KeyStrokeTranslator();
         macroRecorder = new MacroRecorder(registerManager, userInterfaceService);
         macroPlayer = null;
@@ -429,6 +432,11 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     @Override
     public KeyMapProvider getKeyMapProvider() {
         return keyMapProvider;
+    }
+    
+    @Override
+    public TextObjectProvider getTextObjectProvider() {
+        return textObjectProvider;
     }
 
     @Override

@@ -48,6 +48,7 @@ public interface EditorAdaptor {
     RegisterManager getRegisterManager();
     UserInterfaceService getUserInterfaceService();
     KeyMapProvider getKeyMapProvider();
+    TextObjectProvider getTextObjectProvider();
     UnderlyingEditorSettings getEditorSettings();
     LocalConfiguration getConfiguration();
     MacroRecorder getMacroRecorder();
