@@ -20,6 +20,7 @@ public interface Platform {
     PlatformSpecificStateProvider getPlatformSpecificStateProvider(
             TextObjectProvider textObjectProvider);
     PlatformSpecificModeProvider getPlatformSpecificModeProvider();
+    PlatformSpecificTextObjectProvider getPlatformSpecificTextObjectProvider();
     SearchAndReplaceService getSearchAndReplaceService();
     String getEditorType();
 }

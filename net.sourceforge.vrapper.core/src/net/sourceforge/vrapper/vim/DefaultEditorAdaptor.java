@@ -26,6 +26,7 @@ import net.sourceforge.vrapper.platform.KeyMapProvider;
 import net.sourceforge.vrapper.platform.Platform;
 import net.sourceforge.vrapper.platform.PlatformSpecificModeProvider;
 import net.sourceforge.vrapper.platform.PlatformSpecificStateProvider;
+import net.sourceforge.vrapper.platform.PlatformSpecificTextObjectProvider;
 import net.sourceforge.vrapper.platform.SearchAndReplaceService;
 import net.sourceforge.vrapper.platform.SelectionService;
 import net.sourceforge.vrapper.platform.ServiceProvider;
@@ -125,6 +126,12 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         };
         this.configuration.addListener(listener);
         textObjectProvider = new DefaultTextObjectProvider();
+        PlatformSpecificTextObjectProvider specificTextObjectProvider =
+                editor.getPlatformSpecificTextObjectProvider();
+        if (specificTextObjectProvider != null) {
+            textObjectProvider.updateDelimitedTexts(specificTextObjectProvider.delimitedTexts());
+            textObjectProvider.updateTextObjects(specificTextObjectProvider.textObjects());
+        }
         this.platformSpecificStateProvider = editor.getPlatformSpecificStateProvider(textObjectProvider);
         this.platformSpecificModeProvider = editor.getPlatformSpecificModeProvider();
         this.searchAndReplaceService = editor.getSearchAndReplaceService();
