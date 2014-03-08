@@ -9,6 +9,7 @@ import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.PlatformSpecificStateProvider;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.TextObjectProvider;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
 import net.sourceforge.vrapper.vim.modes.ContentAssistMode;
@@ -21,6 +22,9 @@ import net.sourceforge.vrapper.vim.modes.commandline.EvaluatorMapping;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 
+/**
+ * @see PlatformSpecificStateProvider
+ */
 public class AbstractEclipseSpecificStateProvider implements
         PlatformSpecificStateProvider, Comparable<AbstractEclipseSpecificStateProvider> {
 
@@ -29,14 +33,9 @@ public class AbstractEclipseSpecificStateProvider implements
     protected final EvaluatorMapping commands = new EvaluatorMapping();
     protected int priority = 1;
     protected String name;
+    protected TextObjectProvider textObjectProvider;
 
     protected AbstractEclipseSpecificStateProvider() {
-        states.put(NormalMode.NAME, normalModeBindings());
-        states.put(AbstractVisualMode.NAME, visualModeBindings());
-        keyMaps.put(NormalMode.NAME, normalModeKeymap());
-        keyMaps.put(AbstractVisualMode.NAME, visualModeKeymap());
-        states.put(InsertMode.NAME, insertModeBindings());
-        states.put(ContentAssistMode.NAME, contentAssistModeBindings());
     }
 
     public void setInitializationData(IConfigurationElement config,
@@ -49,6 +48,17 @@ public class AbstractEclipseSpecificStateProvider implements
         } catch (NumberFormatException e) {
             VrapperLog.error("wrong format of priority", e);
         }
+    }
+    
+    @Override
+    public final void initializeProvider(TextObjectProvider textObjProvider) {
+        textObjectProvider = textObjProvider;
+        states.put(NormalMode.NAME, normalModeBindings());
+        states.put(AbstractVisualMode.NAME, visualModeBindings());
+        keyMaps.put(NormalMode.NAME, normalModeKeymap());
+        keyMaps.put(AbstractVisualMode.NAME, visualModeKeymap());
+        states.put(InsertMode.NAME, insertModeBindings());
+        states.put(ContentAssistMode.NAME, contentAssistModeBindings());
     }
 
     protected State<Command> normalModeBindings() {

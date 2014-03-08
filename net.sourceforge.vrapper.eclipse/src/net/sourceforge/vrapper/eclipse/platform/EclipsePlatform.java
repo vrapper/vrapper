@@ -28,6 +28,7 @@ import net.sourceforge.vrapper.platform.UnderlyingEditorSettings;
 import net.sourceforge.vrapper.platform.UserInterfaceService;
 import net.sourceforge.vrapper.platform.ViewportService;
 import net.sourceforge.vrapper.utils.DefaultKeyMapProvider;
+import net.sourceforge.vrapper.vim.TextObjectProvider;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
@@ -144,10 +145,11 @@ public class EclipsePlatform implements Platform {
     }
 
     @Override
-    public PlatformSpecificStateProvider getPlatformSpecificStateProvider() {
+    public PlatformSpecificStateProvider getPlatformSpecificStateProvider(
+            TextObjectProvider textObjectProvider) {
         final String className = underlyingEditor.getClass().getName();
         if (!providerCache.containsKey(className)) {
-            providerCache.put(className, buildPlatformSpecificStateProvider());
+            providerCache.put(className, buildPlatformSpecificStateProvider(textObjectProvider));
         }
         return providerCache.get(className);
     }
@@ -167,7 +169,8 @@ public class EclipsePlatform implements Platform {
         return searchAndReplaceService;
     }
 
-    private PlatformSpecificStateProvider buildPlatformSpecificStateProvider() {
+    private PlatformSpecificStateProvider buildPlatformSpecificStateProvider(
+            TextObjectProvider textObjectProvider) {
         final IExtensionRegistry registry = org.eclipse.core.runtime.Platform
                 .getExtensionRegistry();
         final IConfigurationElement[] elements = registry
@@ -179,6 +182,7 @@ public class EclipsePlatform implements Platform {
                             underlyingEditor, "editor-must-subclass",
                             element, "provider-class");
             if (provider != null) {
+                provider.initializeProvider(textObjectProvider);
                 matched.add(provider);
             }
         }

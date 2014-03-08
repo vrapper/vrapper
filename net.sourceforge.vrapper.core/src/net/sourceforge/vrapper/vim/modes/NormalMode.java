@@ -106,9 +106,6 @@ public class NormalMode extends CommandBasedMode {
     public static final String OMAP_NAME = "Operator-Pending Keymap";
     public static final String NAME = "normal mode";
     public static final String DISPLAY_NAME = "NORMAL";
-    private static State<TextObject> textObjects;
-    private static State<DelimitedText> delimitedTexts;
-    private static State<Motion> textMotions;
 
     public NormalMode(final EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
@@ -128,86 +125,6 @@ public class NormalMode extends CommandBasedMode {
         final State<String> countEater = new CountConsumingState<String>(state);
         final State<String> registerKeymapState = new RegisterKeymapState(KEYMAP_NAME, countEater);
         return new KeyMapResolver(registerKeymapState, KEYMAP_NAME);
-    }
-    @SuppressWarnings("unchecked")
-    public static synchronized State<DelimitedText> delimitedTexts() {
-        if (delimitedTexts == null) {
-        final DelimitedText inBracket = new SimpleDelimitedText('(', ')');
-        final DelimitedText inSquareBracket = new SimpleDelimitedText('[', ']');
-        final DelimitedText inBrace = new SimpleDelimitedText('{', '}');
-        final DelimitedText inAngleBrace = new SimpleDelimitedText('<', '>');
-        final DelimitedText inString = new QuoteDelimitedText('"');
-        final DelimitedText inGraveString = new QuoteDelimitedText('`');
-        final DelimitedText inChar = new QuoteDelimitedText('\'');
-        final DelimitedText inTag = new XmlTagDelimitedText();
-
-        delimitedTexts = state(
-                leafBind('b', inBracket),
-                leafBind('(', inBracket),
-                leafBind(')', inBracket),
-                leafBind('[', inSquareBracket),
-                leafBind(']', inSquareBracket),
-                leafBind('B', inBrace),
-                leafBind('{', inBrace),
-                leafBind('}', inBrace),
-                leafBind('<', inAngleBrace),
-                leafBind('>', inAngleBrace),
-                leafBind('t', inTag),
-                leafBind('"', inString),
-                leafBind('\'', inChar),
-                leafBind('`', inGraveString));
-        }
-        return delimitedTexts;
-
-    }
-    
-    @SuppressWarnings("unchecked")
-    public static synchronized State<Motion> textMotions() {
-        if (textMotions == null) {
-
-            //override the default motions for a few motions that act differently in text mode
-            textMotions = union(
-            				state(
-            					leafBind('w', MoveWordRightForUpdate.MOVE_WORD_RIGHT_INSTANCE),
-            					leafBind('W', MoveWordRightForUpdate.MOVE_BIG_WORD_RIGHT_INSTANCE)
-            				),
-            				motions()
-            			);
-        }
-        return textMotions;
-    }
-
-
-    @SuppressWarnings("unchecked")
-    public static synchronized State<TextObject> textObjects() {
-        if (textObjects == null) {
-            final TextObject innerWord = new MotionPairTextObject(MoveWordLeft.BAILS_OFF, MoveWordEndRight.BAILS_OFF);
-            final TextObject aWord = new MotionPairTextObject(MoveWordLeft.BAILS_OFF, MoveWordRight.BAILS_OFF);
-            final TextObject innerWORD = new MotionPairTextObject(MoveBigWORDLeft.BAILS_OFF, MoveBigWORDEndRight.BAILS_OFF);
-            final TextObject aWORD = new MotionPairTextObject(MoveBigWORDLeft.BAILS_OFF, MoveBigWORDRight.BAILS_OFF);
-            final TextObject innerParagraph = new ParagraphTextObject(false);
-            final TextObject aParagraph = new ParagraphTextObject(true);
-
-            textObjects = union(
-                        state(
-                            transitionBind('i', union(
-                                    state(  leafBind('w', innerWord),
-                                            leafBind('W', innerWORD),
-                                            leafBind('p', innerParagraph)
-                                    ),
-                                    new DelimitedTextObjectState(delimitedTexts(), DelimitedTextObjectState.INNER))),
-                            transitionBind('a', union(
-                                    state(
-                                            leafBind('w', aWord),
-                                            leafBind('W', aWORD),
-                                            leafBind('p', aParagraph)
-                                    ),
-                                    new DelimitedTextObjectState(delimitedTexts(), DelimitedTextObjectState.OUTER)))),
-                        new TextObjectState(textMotions()));
-
-            textObjects = CountingState.wrap(textObjects);
-        }
-        return textObjects;
     }
 
     @Override
@@ -236,7 +153,7 @@ public class NormalMode extends CommandBasedMode {
         final TextObject toEol = new MotionTextObject(eol);
         final TextObject toEolForY = new OptionDependentTextObject(Options.SANE_Y, eol, wholeLineEol);
 
-        final State<TextObject> textObjects = textObjects();
+        final State<TextObject> textObjects = editorAdaptor.getTextObjectProvider().textObjects();
         State<TextObject> textObjectsForChange = union(
                 state(
                         leafBind('w', wordForCw),

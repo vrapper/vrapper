@@ -124,13 +124,13 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
             }
         };
         this.configuration.addListener(listener);
-        this.platformSpecificStateProvider = editor.getPlatformSpecificStateProvider();
+        textObjectProvider = new DefaultTextObjectProvider();
+        this.platformSpecificStateProvider = editor.getPlatformSpecificStateProvider(textObjectProvider);
         this.platformSpecificModeProvider = editor.getPlatformSpecificModeProvider();
         this.searchAndReplaceService = editor.getSearchAndReplaceService();
         viewportService = editor.getViewportService();
         userInterfaceService = editor.getUserInterfaceService();
         keyMapProvider = editor.getKeyMapProvider();
-        textObjectProvider = new DefaultTextObjectProvider();
         keyStrokeTranslator = new KeyStrokeTranslator();
         macroRecorder = new MacroRecorder(registerManager, userInterfaceService);
         macroPlayer = null;

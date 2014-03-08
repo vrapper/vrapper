@@ -159,7 +159,8 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
         final Command joinLinesDumbWay = JoinVisualLinesCommand.DUMB_INSTANCE;
         final Command findFile = VisualFindFileCommand.INSTANCE;
         final State<Command> visualMotions = getVisualMotionState();
-        final State<Command> visualTextObjects = VisualTextObjectState.INSTANCE;
+        final State<Command> visualTextObjects = new VisualTextObjectState(
+                                        editorAdaptor.getTextObjectProvider());
         final State<Command> initialState = RegisterState.wrap(CountingState.wrap(union(
                 getPlatformSpecificState(NAME),
                 state(

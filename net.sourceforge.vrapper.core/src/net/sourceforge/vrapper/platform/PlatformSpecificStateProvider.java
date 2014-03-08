@@ -1,6 +1,7 @@
 package net.sourceforge.vrapper.platform;
 
 import net.sourceforge.vrapper.keymap.State;
+import net.sourceforge.vrapper.vim.TextObjectProvider;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.modes.KeyMapResolver;
 import net.sourceforge.vrapper.vim.modes.commandline.EvaluatorMapping;
@@ -11,6 +12,12 @@ import net.sourceforge.vrapper.vim.modes.commandline.EvaluatorMapping;
  * @author Matthias Radig
  */
 public interface PlatformSpecificStateProvider {
+
+    /**
+     * Force initialization of the provider.
+     * @param textObjProvider
+     */
+    void initializeProvider(TextObjectProvider textObjProvider);
 
     /**
      * @param modeName
