@@ -2,13 +2,13 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
-         point="net.sourceforge.vrapper.eclipse.pssp">
-      <keymap-provider
+         point="net.sourceforge.vrapper.eclipse.pstop">
+      <textobject-provider
             id="net.sourceforge.vrapper.plugin.argtextobj.provider.ArgumentTextObjectProvider"
-            name="Surround State Provider"
+            name="Argument TextObject Provider"
             priority="20"
             provider-class="net.sourceforge.vrapper.plugin.argtextobj.provider.ArgumentTextObjectProvider">
-      </keymap-provider>
+      </textobject-provider>
    </extension>
 
 </plugin>
