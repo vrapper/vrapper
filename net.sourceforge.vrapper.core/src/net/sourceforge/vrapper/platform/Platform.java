@@ -22,5 +22,6 @@ public interface Platform {
     PlatformSpecificModeProvider getPlatformSpecificModeProvider();
     PlatformSpecificTextObjectProvider getPlatformSpecificTextObjectProvider();
     SearchAndReplaceService getSearchAndReplaceService();
+    HighlightingService getHighlightingService();
     String getEditorType();
 }

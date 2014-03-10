@@ -6,6 +6,7 @@ import java.util.List;
 
 import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.Configuration;
+import net.sourceforge.vrapper.platform.HighlightingService;
 import net.sourceforge.vrapper.platform.SearchAndReplaceService;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
@@ -19,24 +20,21 @@ import org.eclipse.jface.text.FindReplaceDocumentAdapter;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.Region;
-import org.eclipse.jface.text.source.Annotation;
-import org.eclipse.jface.text.source.IAnnotationModel;
-import org.eclipse.ui.texteditor.AbstractTextEditor;
-import org.eclipse.ui.texteditor.IDocumentProvider;
 
 public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
 
     private static final String ANNOTATION_TYPE = "net.sourceforge.vrapper.eclipse.searchhighlight";
-    private final AbstractTextEditor editor;
     private final FindReplaceDocumentAdapter adapter;
+    private final HighlightingService highlightingService;
     final Configuration sharedConfiguration;
     private Search lastHighlightedSearch;
-    private List<Annotation> annotations;
-    private Annotation incSearchAnnotation;
+    private List<Object> annotations;
+    private Object incSearchAnnotation;
 
-    public EclipseSearchAndReplaceService(AbstractTextEditor editor, ITextViewer textViewer, final Configuration sharedConfiguration) {
-        this.editor = editor;
+    public EclipseSearchAndReplaceService(ITextViewer textViewer, final Configuration sharedConfiguration,
+            HighlightingService highlightingService) {
         this.adapter = new FindReplaceDocumentAdapter(textViewer.getDocument());
+        this.highlightingService = highlightingService;
         this.sharedConfiguration = sharedConfiguration;
         this.annotations = Collections.emptyList();
     }
@@ -129,11 +127,8 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
 
     public void removeHighlighting() {
         lastHighlightedSearch = null;
-        IAnnotationModel m = getAnnotationModel();
-        if (m != null) {
-            for (Annotation a : annotations) {
-                m.removeAnnotation(a);
-            }
+        for (Object a : annotations) {
+            highlightingService.removeHighlighting(a);
         }
         annotations = Collections.emptyList();
     }
@@ -146,45 +141,32 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
                 && lastHighlightedSearch.isWholeWord() == search.isWholeWord()) {
             return;
         }
-        IAnnotationModel am = getAnnotationModel();
-        if (am == null) {
-            return;
-        }
         removeHighlighting();
         if (search.isBackward()) {
             search = search.reverse();
         }
         IRegion result = new Region(0, 0);
-        annotations = new ArrayList<Annotation>();
+        annotations = new ArrayList<Object>();
         lastHighlightedSearch = search;
         try {
             while ((result = find(search, result.getOffset()+result.getLength())) != null) {
-                Annotation a = new Annotation(ANNOTATION_TYPE, false, "Vrapper Search");
-                am.addAnnotation(a, new org.eclipse.jface.text.Position(result.getOffset(), result.getLength()));
+                Object a = highlightingService.highlightRegion(ANNOTATION_TYPE,
+                        "Vrapper Search", result.getOffset(), result.getLength());
                 annotations.add(a);
             }
         } catch (BadLocationException e) {
             VrapperLog.error("while highlighting search", e);
         }
     }
-    private IAnnotationModel getAnnotationModel() {
-        IDocumentProvider doc = editor.getDocumentProvider();
-        return doc != null ? doc.getAnnotationModel(editor.getEditorInput()) : null;
-    }
-
     public void incSearchhighlight(Position start, int length) {
-        IAnnotationModel am = getAnnotationModel();
-        if (am != null) {
-            removeIncSearchHighlighting();
-            incSearchAnnotation = new Annotation(ANNOTATION_TYPE, false, "Incremental Search");
-            am.addAnnotation(incSearchAnnotation, new org.eclipse.jface.text.Position(start.getModelOffset(), length));
-        }
+        removeIncSearchHighlighting();
+        incSearchAnnotation = highlightingService.highlightRegion(ANNOTATION_TYPE,
+                "Incremental Search", start.getModelOffset(), length);
     }
 
     public void removeIncSearchHighlighting() {
-        IAnnotationModel am = getAnnotationModel();
-        if (am != null && incSearchAnnotation != null) {
-            am.removeAnnotation(incSearchAnnotation);
+        if (incSearchAnnotation != null) {
+            highlightingService.removeHighlighting(incSearchAnnotation);
         }
     }
 

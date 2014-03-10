@@ -4,6 +4,7 @@ import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.platform.CommandLineUI;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.FileService;
+import net.sourceforge.vrapper.platform.HighlightingService;
 import net.sourceforge.vrapper.platform.HistoryService;
 import net.sourceforge.vrapper.platform.KeyMapProvider;
 import net.sourceforge.vrapper.platform.PlatformSpecificStateProvider;
@@ -55,6 +56,7 @@ public interface EditorAdaptor {
     MacroPlayer getMacroPlayer();
     PlatformSpecificStateProvider getPlatformSpecificStateProvider();
     SearchAndReplaceService getSearchAndReplaceService();
+    HighlightingService getHighlightingService();
 
     boolean sourceConfigurationFile(String filename);
     Position getPosition();
