@@ -17,7 +17,6 @@ import net.sourceforge.vrapper.vim.commands.DeselectAllCommand;
 import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
 import net.sourceforge.vrapper.vim.commands.SetMarkCommand;
 import net.sourceforge.vrapper.vim.commands.TextObject;
-import net.sourceforge.vrapper.vim.modes.NormalMode;
 
 public class JdtSpecificStateProvider extends AbstractEclipseSpecificStateProvider {
 
@@ -38,7 +37,7 @@ public class JdtSpecificStateProvider extends AbstractEclipseSpecificStateProvid
     @Override
     @SuppressWarnings("unchecked")
     protected State<Command> normalModeBindings() {
-        State<TextObject> textObjects = NormalMode.textObjects();
+        State<TextObject> textObjects = textObjectProvider.textObjects();
 		return union(
                 state(
                 		leafCtrlBind(']', gotoDecl()),

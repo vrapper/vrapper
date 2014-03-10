@@ -5,5 +5,5 @@ Bundle-SymbolicName: net.sourceforge.vrapper.plugin.argtextobj.eclipse;singleton
 Bundle-Version: 0.41.20140224
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: net.sourceforge.vrapper.plugin.argtextobj.core;bundle-version="0.33.20130621";visibility:=reexport,
- net.sourceforge.vrapper.eclipse
+ net.sourceforge.vrapper.core
 Eclipse-BuddyPolicy: dependent

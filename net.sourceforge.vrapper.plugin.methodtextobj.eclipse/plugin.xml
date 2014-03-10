@@ -2,13 +2,13 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
-         point="net.sourceforge.vrapper.eclipse.pssp">
-      <keymap-provider
+         point="net.sourceforge.vrapper.eclipse.pstop">
+      <textobject-provider
             id="net.sourceforge.vrapper.plugin.methodtextobj.provider.MethodTextObjectProvider"
             name="MethodTextObject Provider"
             priority="20"
             provider-class="net.sourceforge.vrapper.plugin.methodtextobj.provider.MethodTextObjectProvider">
-      </keymap-provider>
+      </textobject-provider>
    </extension>
 
 </plugin>

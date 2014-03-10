@@ -14,6 +14,7 @@ import net.sourceforge.vrapper.plugin.surround.provider.SurroundStateProvider;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.vim.Options;
+import net.sourceforge.vrapper.vim.TextObjectProvider;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.DeleteOperation;
@@ -27,6 +28,7 @@ import net.sourceforge.vrapper.vim.register.StringRegisterContent;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 public class NormalModeTests extends CommandTestCase {
 	@Override
@@ -1243,7 +1245,10 @@ public class NormalModeTests extends CommandTestCase {
 	
 	@Test
     public void testSurroundPlugin_ds() {
-        when(platform.getPlatformSpecificStateProvider()).thenReturn(SurroundStateProvider.INSTANCE);
+        SurroundStateProvider provider = new SurroundStateProvider();
+        provider.initializeProvider(adaptor.getTextObjectProvider());
+        when(platform.getPlatformSpecificStateProvider(Mockito.<TextObjectProvider>any()))
+                .thenReturn(provider);
         reloadEditorAdaptor();
         checkCommand(forKeySeq("dsb"),
                 "array[(in",'d',"ex)];",
@@ -1259,9 +1264,12 @@ public class NormalModeTests extends CommandTestCase {
                 "array[",'i',"ndex];");
     }
 
-	@Test
+    @Test
     public void testSurroundPlugin_cs() {
-        when(platform.getPlatformSpecificStateProvider()).thenReturn(SurroundStateProvider.INSTANCE);
+        SurroundStateProvider provider = new SurroundStateProvider();
+        provider.initializeProvider(adaptor.getTextObjectProvider());
+        when(platform.getPlatformSpecificStateProvider(Mockito.<TextObjectProvider>any()))
+                .thenReturn(provider);
         reloadEditorAdaptor();
         checkCommand(forKeySeq("cs[b"),
                 "fn[ar",'g',"ument];",
@@ -1276,7 +1284,10 @@ public class NormalModeTests extends CommandTestCase {
 
 	@Test
     public void testSurroundPlugin_cs_input() {
-        when(platform.getPlatformSpecificStateProvider()).thenReturn(SurroundStateProvider.INSTANCE);
+        SurroundStateProvider provider = new SurroundStateProvider();
+        provider.initializeProvider(adaptor.getTextObjectProvider());
+        when(platform.getPlatformSpecificStateProvider(Mockito.<TextObjectProvider>any()))
+                .thenReturn(provider);
         when(platform.getPlatformSpecificModeProvider()).thenReturn(
                 (PlatformSpecificModeProvider) new SurroundModesProvider());
         reloadEditorAdaptor();
@@ -1296,7 +1307,10 @@ public class NormalModeTests extends CommandTestCase {
 
 	@Test
     public void testSurroundPlugin_cs_replaceTag() {
-        when(platform.getPlatformSpecificStateProvider()).thenReturn(SurroundStateProvider.INSTANCE);
+        SurroundStateProvider provider = new SurroundStateProvider();
+        provider.initializeProvider(adaptor.getTextObjectProvider());
+        when(platform.getPlatformSpecificStateProvider(Mockito.<TextObjectProvider>any()))
+                .thenReturn(provider);
         when(platform.getPlatformSpecificModeProvider()).thenReturn(
                 (PlatformSpecificModeProvider) new SurroundModesProvider());
         reloadEditorAdaptor();
@@ -1331,7 +1345,10 @@ public class NormalModeTests extends CommandTestCase {
 	
 	@Test
     public void testSurroundPlugin_ys() {
-        when(platform.getPlatformSpecificStateProvider()).thenReturn(SurroundStateProvider.INSTANCE);
+        SurroundStateProvider provider = new SurroundStateProvider();
+        provider.initializeProvider(adaptor.getTextObjectProvider());
+        when(platform.getPlatformSpecificStateProvider(Mockito.<TextObjectProvider>any()))
+                .thenReturn(provider);
         reloadEditorAdaptor();
         checkCommand(forKeySeq("ysiwb"),
                 "so",'m',"ething",

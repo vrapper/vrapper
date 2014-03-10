@@ -2,9 +2,9 @@ package net.sourceforge.vrapper.eclipse.platform;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
 import net.sourceforge.vrapper.eclipse.keymap.AbstractEclipseSpecificStateProvider;
@@ -20,6 +20,7 @@ import net.sourceforge.vrapper.platform.HistoryService;
 import net.sourceforge.vrapper.platform.Platform;
 import net.sourceforge.vrapper.platform.PlatformSpecificModeProvider;
 import net.sourceforge.vrapper.platform.PlatformSpecificStateProvider;
+import net.sourceforge.vrapper.platform.PlatformSpecificTextObjectProvider;
 import net.sourceforge.vrapper.platform.SearchAndReplaceService;
 import net.sourceforge.vrapper.platform.SelectionService;
 import net.sourceforge.vrapper.platform.ServiceProvider;
@@ -28,6 +29,7 @@ import net.sourceforge.vrapper.platform.UnderlyingEditorSettings;
 import net.sourceforge.vrapper.platform.UserInterfaceService;
 import net.sourceforge.vrapper.platform.ViewportService;
 import net.sourceforge.vrapper.utils.DefaultKeyMapProvider;
+import net.sourceforge.vrapper.vim.TextObjectProvider;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
@@ -52,8 +54,9 @@ public class EclipsePlatform implements Platform {
     private final Configuration configuration;
     private final AbstractTextEditor underlyingEditor;
     private final SearchAndReplaceService searchAndReplaceService;
-    private static final Map<String, PlatformSpecificStateProvider> providerCache = new HashMap<String, PlatformSpecificStateProvider>();
+    private static final Map<String, PlatformSpecificStateProvider> providerCache = new ConcurrentHashMap<String, PlatformSpecificStateProvider>();
     private static final AtomicReference<PlatformSpecificModeProvider> modeProviderCache= new AtomicReference<PlatformSpecificModeProvider>();
+    private static final Map<String, PlatformSpecificTextObjectProvider> textObjProviderCache = new ConcurrentHashMap<String, PlatformSpecificTextObjectProvider>();
 
     public EclipsePlatform(final AbstractTextEditor abstractTextEditor,
             final ITextViewer textViewer, final Configuration sharedConfiguration) {
@@ -144,10 +147,11 @@ public class EclipsePlatform implements Platform {
     }
 
     @Override
-    public PlatformSpecificStateProvider getPlatformSpecificStateProvider() {
+    public PlatformSpecificStateProvider getPlatformSpecificStateProvider(
+            TextObjectProvider textObjectProvider) {
         final String className = underlyingEditor.getClass().getName();
         if (!providerCache.containsKey(className)) {
-            providerCache.put(className, buildPlatformSpecificStateProvider());
+            providerCache.put(className, buildPlatformSpecificStateProvider(textObjectProvider));
         }
         return providerCache.get(className);
     }
@@ -156,10 +160,19 @@ public class EclipsePlatform implements Platform {
     public PlatformSpecificModeProvider getPlatformSpecificModeProvider() {
         if (modeProviderCache.get() == null) {
             final PlatformSpecificModeProvider provider = buildPlatformSpecificModeProvider();
-            // Only set this once.
+            // Only set this once. Custom modes don't use editor-specific test.
             modeProviderCache.compareAndSet(null, provider);
         }
         return modeProviderCache.get();
+    }
+
+    @Override
+    public PlatformSpecificTextObjectProvider getPlatformSpecificTextObjectProvider() {
+        final String className = underlyingEditor.getClass().getName();
+        if (!textObjProviderCache.containsKey(className)) {
+            textObjProviderCache.put(className, buildPlatformSpecificTextObjectProvider());
+        }
+        return textObjProviderCache.get(className);
     }
 
     @Override
@@ -167,7 +180,8 @@ public class EclipsePlatform implements Platform {
         return searchAndReplaceService;
     }
 
-    private PlatformSpecificStateProvider buildPlatformSpecificStateProvider() {
+    private PlatformSpecificStateProvider buildPlatformSpecificStateProvider(
+            TextObjectProvider textObjectProvider) {
         final IExtensionRegistry registry = org.eclipse.core.runtime.Platform
                 .getExtensionRegistry();
         final IConfigurationElement[] elements = registry
@@ -179,6 +193,7 @@ public class EclipsePlatform implements Platform {
                             underlyingEditor, "editor-must-subclass",
                             element, "provider-class");
             if (provider != null) {
+                provider.initializeProvider(textObjectProvider);
                 matched.add(provider);
             }
         }
@@ -201,6 +216,27 @@ public class EclipsePlatform implements Platform {
             }
         }
         return new UnionModeProvider("Extension modes", matched);
+    }
+
+    private PlatformSpecificTextObjectProvider buildPlatformSpecificTextObjectProvider() {
+        final IExtensionRegistry registry = org.eclipse.core.runtime.Platform
+                .getExtensionRegistry();
+        final IConfigurationElement[] elements = registry
+                .getConfigurationElementsFor("net.sourceforge.vrapper.eclipse.pstop");
+        final List<PlatformSpecificTextObjectProvider> matched = new ArrayList<PlatformSpecificTextObjectProvider>();
+        for (final IConfigurationElement element : elements) {
+            final PlatformSpecificTextObjectProvider provider =
+                    (PlatformSpecificTextObjectProvider) Utils.createGizmoForElementConditionally(
+                            underlyingEditor, "editor-must-subclass",
+                            element, "provider-class");
+            if (provider != null) {
+                matched.add(provider);
+            }
+        }
+        // Priority code is not implemented. If it was, add a SortKey decorator.
+        // Collections.sort(matched);
+        return new UnionTextObjectProvider("extensions for "
+                + underlyingEditor.getClass().getName(), matched);
     }
 
     public String getEditorType() {

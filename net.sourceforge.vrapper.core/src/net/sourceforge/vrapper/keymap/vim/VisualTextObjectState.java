@@ -1,12 +1,11 @@
 package net.sourceforge.vrapper.keymap.vim;
 
 import net.sourceforge.vrapper.keymap.ConvertingState;
-import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.utils.Function;
+import net.sourceforge.vrapper.vim.TextObjectProvider;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.SelectTextObjectCommand;
 import net.sourceforge.vrapper.vim.commands.TextObject;
-import net.sourceforge.vrapper.vim.modes.NormalMode;
 
 public class VisualTextObjectState extends ConvertingState<Command, TextObject> {
     
@@ -16,10 +15,8 @@ public class VisualTextObjectState extends ConvertingState<Command, TextObject> 
         }
     };
     
-    public static final State<Command> INSTANCE = new VisualTextObjectState();
-    
-    public VisualTextObjectState() {
-        super(converter, NormalMode.textObjects());
+    public VisualTextObjectState(TextObjectProvider provider) {
+        super(converter, provider.textObjects());
     }
 
 }

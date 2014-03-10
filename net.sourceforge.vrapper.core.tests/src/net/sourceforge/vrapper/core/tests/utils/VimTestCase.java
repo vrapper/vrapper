@@ -19,6 +19,7 @@ import net.sourceforge.vrapper.utils.ViewPortInformation;
 import net.sourceforge.vrapper.vim.DefaultEditorAdaptor;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
+import net.sourceforge.vrapper.vim.TextObjectProvider;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
 import net.sourceforge.vrapper.vim.register.SimpleRegister;
 
@@ -87,7 +88,8 @@ public class VimTestCase {
     	when(platform.getKeyMapProvider()).thenReturn(keyMapProvider);
     	when(platform.getServiceProvider()).thenReturn(serviceProvider);
     	when(platform.getConfiguration()).thenReturn(configuration);
-    	when(platform.getPlatformSpecificStateProvider()).thenReturn(platformSpecificStateProvider);
+    	when(platform.getPlatformSpecificStateProvider(Mockito.<TextObjectProvider>any()))
+    	        .thenReturn(platformSpecificStateProvider);
     	reloadEditorAdaptor();
     	defaultRegister = spy(new SimpleRegister());
     	lastEditRegister = spy(new SimpleRegister());

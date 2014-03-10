@@ -1,17 +1,34 @@
 package net.sourceforge.vrapper.plugin.ipmotion.commands.motions;
 
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
+
 import java.util.regex.Pattern;
 
+import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.LineInformation;
+import net.sourceforge.vrapper.vim.commands.motions.Motion;
 import net.sourceforge.vrapper.vim.commands.motions.ParagraphMotion;
 
 public class ImprovedParagraphMotion extends ParagraphMotion {
     
     public static final ImprovedParagraphMotion FORWARD = new ImprovedParagraphMotion(true);
     public static final ImprovedParagraphMotion BACKWARD = new ImprovedParagraphMotion(false);
+    public static final State<Motion> PARAGRAPH_MOTIONS;
     
-    /** From original ipmotion.vom:
+    static {
+        final Motion paragraphBackward = ImprovedParagraphMotion.BACKWARD;
+        final Motion paragraphForward = ImprovedParagraphMotion.FORWARD;
+        
+        @SuppressWarnings("unchecked")
+        final State<Motion> ipMotions = state(
+                leafBind('{', paragraphBackward),
+                leafBind('}', paragraphForward));
+        PARAGRAPH_MOTIONS = ipMotions;
+    }
+    
+    /** From original ipmotion.vim:
      * 
      *  The global definition of paragraph boundary.
      *  Default value is "\s*$".

@@ -26,6 +26,7 @@ import net.sourceforge.vrapper.platform.KeyMapProvider;
 import net.sourceforge.vrapper.platform.Platform;
 import net.sourceforge.vrapper.platform.PlatformSpecificModeProvider;
 import net.sourceforge.vrapper.platform.PlatformSpecificStateProvider;
+import net.sourceforge.vrapper.platform.PlatformSpecificTextObjectProvider;
 import net.sourceforge.vrapper.platform.SearchAndReplaceService;
 import net.sourceforge.vrapper.platform.SelectionService;
 import net.sourceforge.vrapper.platform.ServiceProvider;
@@ -85,6 +86,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     private final ServiceProvider serviceProvider;
     private final KeyStrokeTranslator keyStrokeTranslator;
     private final KeyMapProvider keyMapProvider;
+    private final DefaultTextObjectProvider textObjectProvider;
     private final UnderlyingEditorSettings editorSettings;
     private final LocalConfiguration configuration;
     private final PlatformSpecificStateProvider platformSpecificStateProvider;
@@ -94,6 +96,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     private MacroPlayer macroPlayer;
     private String lastModeName;
     private String editorType;
+
 
     public DefaultEditorAdaptor(final Platform editor, final RegisterManager registerManager, final boolean isActive) {
         this.modelContent = editor.getModelContent();
@@ -122,7 +125,14 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
             }
         };
         this.configuration.addListener(listener);
-        this.platformSpecificStateProvider = editor.getPlatformSpecificStateProvider();
+        textObjectProvider = new DefaultTextObjectProvider();
+        PlatformSpecificTextObjectProvider specificTextObjectProvider =
+                editor.getPlatformSpecificTextObjectProvider();
+        if (specificTextObjectProvider != null) {
+            textObjectProvider.updateDelimitedTexts(specificTextObjectProvider.delimitedTexts());
+            textObjectProvider.updateTextObjects(specificTextObjectProvider.textObjects());
+        }
+        this.platformSpecificStateProvider = editor.getPlatformSpecificStateProvider(textObjectProvider);
         this.platformSpecificModeProvider = editor.getPlatformSpecificModeProvider();
         this.searchAndReplaceService = editor.getSearchAndReplaceService();
         viewportService = editor.getViewportService();
@@ -429,6 +439,11 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     @Override
     public KeyMapProvider getKeyMapProvider() {
         return keyMapProvider;
+    }
+    
+    @Override
+    public TextObjectProvider getTextObjectProvider() {
+        return textObjectProvider;
     }
 
     @Override

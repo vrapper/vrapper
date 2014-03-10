@@ -5,10 +5,18 @@
          point="net.sourceforge.vrapper.eclipse.pssp">
       <keymap-provider
             id="net.sourceforge.vrapper.plugin.ipmotion.provider.ImprovedParagraphProvider"
-            name="Surround State Provider"
+            name="Improved Paragraph Motions Provider"
             priority="20"
             provider-class="net.sourceforge.vrapper.plugin.ipmotion.provider.ImprovedParagraphProvider">
       </keymap-provider>
+   </extension>
+   <extension
+         point="net.sourceforge.vrapper.eclipse.pstop">
+      <textobject-provider
+            id="net.sourceforge.vrapper.plugin.ipmotion.provider.ImprovedParagraphTextObjectProvider"
+            name="Improved Paragraph TextObjects Provider"
+            provider-class="net.sourceforge.vrapper.plugin.ipmotion.provider.ImprovedParagraphTextObjectProvider">
+      </textobject-provider>
    </extension>
 
 </plugin>
