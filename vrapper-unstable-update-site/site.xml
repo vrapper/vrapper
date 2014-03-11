@@ -33,6 +33,9 @@
    <feature url="features/net.sourceforge.vrapper.plugin.clangformat_0.41.20140309.jar" id="net.sourceforge.vrapper.plugin.clangformat" version="0.41.20140309">
       <category name="Optional Vimscript Plugins"/>
    </feature>
+   <feature url="features/net.sourceforge.vrapper.plugin.exchange_0.41.20140309.jar" id="net.sourceforge.vrapper.plugin.exchange" version="0.41.20140309">
+      <category name="Optional Vimscript Plugins"/>
+   </feature>
    <category-def name="Vrapper Unstable" label="Vrapper Unstable">
       <description>
          Unstable releases of Vrapper.

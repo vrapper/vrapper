@@ -21,6 +21,7 @@ import net.sourceforge.vrapper.platform.CommandLineUI;
 import net.sourceforge.vrapper.platform.Configuration.Option;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.FileService;
+import net.sourceforge.vrapper.platform.HighlightingService;
 import net.sourceforge.vrapper.platform.HistoryService;
 import net.sourceforge.vrapper.platform.KeyMapProvider;
 import net.sourceforge.vrapper.platform.Platform;
@@ -92,6 +93,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     private final PlatformSpecificStateProvider platformSpecificStateProvider;
     private final PlatformSpecificModeProvider platformSpecificModeProvider;
     private final SearchAndReplaceService searchAndReplaceService;
+    private final HighlightingService highlightingService;
     private MacroRecorder macroRecorder;
     private MacroPlayer macroPlayer;
     private String lastModeName;
@@ -137,6 +139,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         this.searchAndReplaceService = editor.getSearchAndReplaceService();
         viewportService = editor.getViewportService();
         userInterfaceService = editor.getUserInterfaceService();
+        this.highlightingService = editor.getHighlightingService();
         keyMapProvider = editor.getKeyMapProvider();
         keyStrokeTranslator = new KeyStrokeTranslator();
         macroRecorder = new MacroRecorder(registerManager, userInterfaceService);
@@ -459,6 +462,11 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     @Override
     public SearchAndReplaceService getSearchAndReplaceService() {
         return searchAndReplaceService;
+    }
+
+    @Override
+    public HighlightingService getHighlightingService() {
+        return highlightingService;
     }
 
     @Override

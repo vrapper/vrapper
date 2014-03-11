@@ -16,6 +16,7 @@ import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.Configuration;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.FileService;
+import net.sourceforge.vrapper.platform.HighlightingService;
 import net.sourceforge.vrapper.platform.HistoryService;
 import net.sourceforge.vrapper.platform.Platform;
 import net.sourceforge.vrapper.platform.PlatformSpecificModeProvider;
@@ -53,6 +54,7 @@ public class EclipsePlatform implements Platform {
     private final UnderlyingEditorSettings underlyingEditorSettings;
     private final Configuration configuration;
     private final AbstractTextEditor underlyingEditor;
+    private final HighlightingService highlightingService;
     private final SearchAndReplaceService searchAndReplaceService;
     private static final Map<String, PlatformSpecificStateProvider> providerCache = new ConcurrentHashMap<String, PlatformSpecificStateProvider>();
     private static final AtomicReference<PlatformSpecificModeProvider> modeProviderCache= new AtomicReference<PlatformSpecificModeProvider>();
@@ -73,7 +75,8 @@ public class EclipsePlatform implements Platform {
         keyMapProvider = new DefaultKeyMapProvider();
         underlyingEditorSettings = new AbstractTextEditorSettings(
                 abstractTextEditor);
-        searchAndReplaceService = new EclipseSearchAndReplaceService(abstractTextEditor, textViewer, sharedConfiguration);
+        highlightingService = new EclipseHighlightingService(abstractTextEditor, cursorAndSelection);
+        searchAndReplaceService = new EclipseSearchAndReplaceService(textViewer, sharedConfiguration, highlightingService);
         if (textViewer instanceof ITextViewerExtension6) {
             final IUndoManager delegate = ((ITextViewerExtension6) textViewer)
                     .getUndoManager();
@@ -246,6 +249,11 @@ public class EclipsePlatform implements Platform {
     	}
     		
         return site.getRegisteredName();
+    }
+
+    @Override
+    public HighlightingService getHighlightingService() {
+        return highlightingService;
     }
 
 }

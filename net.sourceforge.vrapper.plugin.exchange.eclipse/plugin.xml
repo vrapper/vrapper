@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="net.sourceforge.vrapper.eclipse.pssp">
+      <keymap-provider
+            id="net.sourceforge.vrapper.plugin.exchange.provider.ExchangeProvider"
+            name="exchange.vim State Provider"
+            priority="20"
+            provider-class="net.sourceforge.vrapper.plugin.exchange.provider.ExchangeProvider">
+      </keymap-provider>
+   </extension>
+   <extension
+         point="org.eclipse.ui.editors.annotationTypes">
+      <type
+            markerSeverity="0"
+            markerType="net.sourceforge.vrapper.eclipse.exchangeregion"
+            name="net.sourceforge.vrapper.eclipse.exchangeregion">
+      </type>
+   </extension>
+   <extension
+         point="org.eclipse.ui.editors.markerAnnotationSpecification">
+	  <specification
+            annotationType="net.sourceforge.vrapper.eclipse.exchangeregion"
+            label="Vrapper Exchange Region"
+            textPreferenceKey="exchangeRegionIndication"
+            textPreferenceValue="true"
+            highlightPreferenceKey="exchangeRegioningHighlighting"
+            highlightPreferenceValue="true"
+            overviewRulerPreferenceKey="writeOccurrenceIndicationInOverviewRuler"
+            overviewRulerPreferenceValue="false"
+            verticalRulerPreferenceKey="writeOccurrenceIndicationInVerticalRuler"
+            verticalRulerPreferenceValue="false"
+            colorPreferenceKey="exchangeRegionColor"
+            colorPreferenceValue="30,200,230"
+            presentationLayer="4"
+            textStylePreferenceKey="exchangeRegionTextStyle"
+            textStylePreferenceValue="NONE">
+	  </specification>	  
+   </extension>
+
+</plugin>
