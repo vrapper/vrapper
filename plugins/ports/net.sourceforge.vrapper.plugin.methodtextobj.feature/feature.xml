@@ -6,9 +6,11 @@
       provider-name="Vrapper Team">
 
    <description url="http://vrapper.sourceforge.net/documentation/">
-      Vrapper&apos;s port of Ingo Karkat&apos;s Text-object like motion
-for methods vim_movement.vim script.
-For info on vim_movement.vim, see: http://www.vim.org/scripts/script.php?script_id=4002
+      Text-object like motion for Java or C++ functions.
+
+Use &apos;af&apos; and &apos;if&apos; to invoke.
+
+This plugin is inspired by plugins like textobj-function (Vim script id #2619) and vim_movement (Vim script id #4002) which are for C and Vim script respectively.
    </description>
 
    <copyright>
