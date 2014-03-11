@@ -24,9 +24,9 @@ public class MethodTextObjectProvider extends AbstractPlatformSpecificTextObject
         @SuppressWarnings("unchecked")
         final State<TextObject> argObjects = state(
                 transitionBind('i',
-                        state(leafBind('m', innerArgument))),
+                        state(leafBind('f', innerArgument))),
                 transitionBind('a',
-                        state(leafBind('m', outerArgument))));
+                        state(leafBind('f', outerArgument))));
         return argObjects;
     }
 
