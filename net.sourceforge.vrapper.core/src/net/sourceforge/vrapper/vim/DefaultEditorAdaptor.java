@@ -4,7 +4,6 @@ import static java.lang.String.format;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
@@ -230,6 +229,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
             config = new File(homeDir, filename);
         }
 
+        int lineNr = 0;
         if(config.exists()) {
         	BufferedReader reader = null;
         	try {
@@ -239,6 +239,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         		final CommandLineParser parser = cmdLineMode.createParser();
         		String trimmed;
         		while((line = reader.readLine()) != null) {
+        		    lineNr++;
         			//*** skip over everything in a .vimrc file that we don't support ***//
         			trimmed = line.trim().toLowerCase();
         			//ignore comments and key mappings we don't support
@@ -284,18 +285,17 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         			}
         			
         		}
-        	} catch (final FileNotFoundException e) {
-        		// ignore
         	} catch (final IOException e) {
-        		e.printStackTrace();
+        		VrapperLog.error("Failed to parse .vrapperrc", e);
         	} catch (CommandExecutionException e) {
-                e.printStackTrace();
+        		VrapperLog.error("Failed to execute command on line " + lineNr
+        				+ " of .vrapperrc", e);
             } finally {
         		if(reader != null) {
         			try {
         				reader.close();
         			} catch (final IOException e) {
-        				e.printStackTrace();
+        				VrapperLog.error("Failed to close reader to .vrapperrc");
         			}
         		}
         	}
