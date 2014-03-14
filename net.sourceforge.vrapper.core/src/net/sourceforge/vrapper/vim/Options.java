@@ -50,9 +50,10 @@ public interface Options {
     public static final Option<String> SELECTION = string("selection", "inclusive", "old, inclusive, exclusive", "sel");
     public static final Option<String> PATH      = stringNoConstraint("path", ".", "pa");
     public static final Option<String> GVIM_PATH = stringNoConstraint("gvimpath", "/usr/bin/gvim", "gvp");
+    public static final Option<String> GVIM_CMD  = stringNoConstraint("gvimcmd", "");
     public static final Option<String> KEYWORDS  = stringNoConstraint("iskeyword", "a-zA-Z0-9_", "isk");
     @SuppressWarnings("unchecked")
-    public static final Set<Option<String>> STRING_OPTIONS = set(CLIPBOARD, SELECTION, PATH, GVIM_PATH, KEYWORDS);
+    public static final Set<Option<String>> STRING_OPTIONS = set(CLIPBOARD, SELECTION, PATH, GVIM_PATH, GVIM_CMD, KEYWORDS);
 
     // Int options:
     public static final Option<Integer> SCROLL_OFFSET = integer("scrolloff",   0, "so");

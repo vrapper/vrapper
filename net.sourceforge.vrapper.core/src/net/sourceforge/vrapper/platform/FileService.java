@@ -4,7 +4,7 @@ import java.io.IOException;
 
 public interface FileService {
 
-	boolean openInGvim(String gvimpath, int row, int col) throws IOException;
+	boolean openInGvim(String gvimpath, String gvimcmd, int row, int col) throws IOException;
 	
 	boolean isEditable();
 

@@ -502,6 +502,9 @@ public class CommandLineParser extends AbstractCommandParser {
                     editor.getUserInterfaceService().setErrorMessage(e.getMessage());
                 }
             }
+            catch(NullPointerException e) {
+                //must not have been a chain
+            }
             editor.getHistory().unlock("chained-commands");
             editor.getHistory().endCompoundChange();
 

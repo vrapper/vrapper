@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.FileService;
@@ -48,7 +50,7 @@ public class EclipseFileService implements FileService {
      * support. The cursor will be in the exact same position in gvim as it was
      * in Vrapper.  As soon as you save and close gvim, the file will be reloaded.
      */
-    public boolean openInGvim(String gvimpath, int row, int col) throws IOException {
+    public boolean openInGvim(String gvimpath, String gvimcmd, int row, int col) throws IOException {
     	if(editor.isDirty()) {
     		editor.doSave(null);
     	}
@@ -57,7 +59,29 @@ public class EclipseFileService implements FileService {
     	    throw new IOException("Current editor did not have an associated IFile.");
     	}
         String filePath = currentFile.getRawLocation().toString();
-    	final String[] cmd = { gvimpath, "+" + row, "-c", "normal zv" + col + "|", "-c", "set nobackup", "-f", "-n", filePath };
+
+        String[] defaultCmd = { gvimpath, "+" + row, "-c normal zv" + col + "|", "-c set nobackup", "-f", "-n", filePath };
+
+        String[] customCmd = {};
+        if(gvimcmd.length() > 0) {
+        	String gvimCmdExpanded = gvimcmd.replace("{line}", ""+row).replace("{col}", ""+col).replace("{file}", filePath);
+        	//keep quoted strings as a single argument
+        	ArrayList<String> args = new ArrayList<String>();
+        	args.add(gvimpath);
+        	Matcher m = Pattern.compile("\"([^\"]*)\"|(\\S+)").matcher(gvimCmdExpanded);
+        	while (m.find()) {
+        		if (m.group(1) != null) {
+        			//quoted strings
+        			args.add(m.group(1));
+        		} else {
+        			//non-quoted strings
+        			args.add(m.group(2));
+        		}
+        	}
+        	customCmd = args.toArray(new String[args.size()]);
+        }
+        //variable must be final to be used in Thread
+    	final String[] cmd = gvimcmd.length() > 0 ? customCmd : defaultCmd;
     	new Thread() {
     		public void run() {
     			try {
