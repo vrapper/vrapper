@@ -14,7 +14,7 @@ public class AddVisualDelimiterState extends ConvertingState<Command, DelimiterH
      *     selection is line-wise. Can be null for no indentation.
      */
     public AddVisualDelimiterState(boolean isGMode, TextOperation indentOperation) {
-        super(new Converter(isGMode, indentOperation), DelimiterValues.DELIMITER_HOLDERS);
+        super(new Converter(isGMode, indentOperation), DelimiterValues.DELIMITER_HOLDER_STATE);
     }
     
 

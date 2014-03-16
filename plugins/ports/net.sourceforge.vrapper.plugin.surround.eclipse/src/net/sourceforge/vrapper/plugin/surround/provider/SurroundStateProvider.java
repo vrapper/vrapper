@@ -40,7 +40,7 @@ public class SurroundStateProvider extends AbstractEclipseSpecificStateProvider 
                 if (surroundDef.length != 2) {
                     throw new IllegalArgumentException(":surround definition must contain '\\r'");
                 }
-                DelimiterValues.DELIMITER_HOLDERS.addDelimiterHolder(key.charAt(0), surroundDef[0], surroundDef[1]);
+                DelimiterValues.DELIMITER_REGISTRY.addDelimiterHolder(key.charAt(0), surroundDef[0], surroundDef[1]);
             } catch (Exception e) {
                 vim.getUserInterfaceService().setErrorMessage(e.getMessage());
             }
