@@ -998,6 +998,22 @@ public class NormalModeTests extends CommandTestCase {
         checkCommand(forKeySeq("di<LT>"),
               "before <mi",'d',"dle> after",
               "before <",'>'," after");
+        checkCommand(forKeySeq("di>"),
+                "before <middle",'>'," after",
+                "before <",'>'," after");
+        checkCommand(forKeySeq("di<LT>"),
+              "before ",'<',"middle> after",
+              "before <",'>'," after");
+        checkCommand(forKeySeq("dim_"),
+              "before _",'m',"iddle_ after",
+              "before _",'_'," after");
+        // Don't know if this is meant to be supported.
+//        checkCommand(forKeySeq("dim_"),
+//              "before _",'m',"iddle line 1\nmiddle line 2_ after",
+//              "before _",'_'," after");
+        checkCommand(forKeySeq("dim_"),
+              "before ",'_',"middle_ after",
+              "before _",'_'," after");
         checkCommand(forKeySeq("di{"),
                 "function {\n",'f',"oo\n}",
                 "function {\n",'}',"");

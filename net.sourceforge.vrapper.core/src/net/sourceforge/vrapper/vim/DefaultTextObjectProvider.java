@@ -8,6 +8,7 @@ import net.sourceforge.vrapper.keymap.EmptyState;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.vim.CountingState;
 import net.sourceforge.vrapper.keymap.vim.DelimitedTextObjectState;
+import net.sourceforge.vrapper.keymap.vim.MatchAdHocDelimitedTextState;
 import net.sourceforge.vrapper.keymap.vim.TextObjectState;
 import net.sourceforge.vrapper.vim.commands.DelimitedText;
 import net.sourceforge.vrapper.vim.commands.MotionPairTextObject;
@@ -58,7 +59,8 @@ public class DefaultTextObjectProvider implements TextObjectProvider {
                 leafBind('t', inTag),
                 leafBind('"', inString),
                 leafBind('\'', inChar),
-                leafBind('`', inGraveString));
+                leafBind('`', inGraveString),
+                transitionBind('m', MatchAdHocDelimitedTextState.INSTANCE));
         coreDelimitedTexts = delimitedTexts;
         // override the default motions for a few motions that act differently
         // in text mode
