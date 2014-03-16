@@ -994,10 +994,10 @@ public class NormalModeTests extends CommandTestCase {
         checkCommand(forKeySeq("di>"),
                 "before <mi",'d',"dle> after",
                 "before <",'>'," after");
-        //why does this fail in JUnit but work manually?
-        //checkCommand(forKeySeq("di<"),
-        //      "before <mi",'d',"dle> after",
-        //      "before <",'>'," after");
+        // '<' can only be expressed as special key
+        checkCommand(forKeySeq("di<LT>"),
+              "before <mi",'d',"dle> after",
+              "before <",'>'," after");
         checkCommand(forKeySeq("di{"),
                 "function {\n",'f',"oo\n}",
                 "function {\n",'}',"");
@@ -1035,6 +1035,10 @@ public class NormalModeTests extends CommandTestCase {
                 "before [mi",'d',"dle] after",
                 "before ",' ',"after");
         checkCommand(forKeySeq("da>"),
+                "before <mi",'d',"dle> after",
+                "before ",' ',"after");
+        // '<' can only be expressed as special key
+        checkCommand(forKeySeq("da<LT>"),
                 "before <mi",'d',"dle> after",
                 "before ",' ',"after");
         checkCommand(forKeySeq("da{"),
