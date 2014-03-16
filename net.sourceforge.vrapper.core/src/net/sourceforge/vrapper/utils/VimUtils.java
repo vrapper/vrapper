@@ -26,6 +26,22 @@ public class VimUtils {
 
     public static final Pattern COMPILED_PATTERN_DELIM_PATTERN = Pattern.compile(VimConstants.PATTERN_DELIM_PATTERN);
 
+    /**
+     * This static variable shouldn't be permanently used, it's only here to
+     * have a trigger value for conditional breakpoints.
+     * Make sure to remove any references from testcases before committing!
+     * 
+     * <p>To use this, place a conditional breakpoint on the relevant code. Let
+     * it fire "On value change" and use "VimUtils.BREAKPOINT_TRIGGER" as
+     * expression. The breakpoint will always fire once on startup (if you want
+     * to have more control, change it into a value test).
+     * 
+     * <p>Triggering your breakpoint another time should then be easy, just
+     * put the following code in your test case:
+     * <pre>VimUtils.BREAKPOINT_TRIGGER++;</pre>
+     */
+    public static int BREAKPOINT_TRIGGER = 0;
+
     private VimUtils() {
         // no instance
     }
