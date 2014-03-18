@@ -1,8 +1,14 @@
 package net.sourceforge.vrapper.plugin.surround.state;
+
 import static java.util.Arrays.asList;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
+
+import java.util.Collections;
+
 import net.sourceforge.vrapper.keymap.HashMapState;
 import net.sourceforge.vrapper.keymap.KeyBinding;
+import net.sourceforge.vrapper.keymap.State;
 
 public class DelimiterValues {
 
@@ -23,8 +29,7 @@ public class DelimiterValues {
     }
 
     @SuppressWarnings("unchecked")
-    public static DelimiterState DELIMITER_HOLDERS =
-        new DelimiterState(
+    public static DelimiterState DELIMITER_REGISTRY = new DelimiterState(
             leafBind('b', (DelimiterHolder) new SimpleDelimiterHolder("(",")")),
             leafBind('(', (DelimiterHolder) new SimpleDelimiterHolder("( "," )")),
             leafBind(')', (DelimiterHolder) new SimpleDelimiterHolder("(",")")),
@@ -40,5 +45,11 @@ public class DelimiterValues {
             leafBind('\'', (DelimiterHolder) new SimpleDelimiterHolder("'","'")),
             leafBind('"', (DelimiterHolder) new SimpleDelimiterHolder("\"","\"")),
             leafBind('`', (DelimiterHolder) new SimpleDelimiterHolder("`","`")));
-    
+
+    public static State<DelimiterHolder> DELIMITER_HOLDER_STATE =
+                DELIMITER_REGISTRY
+                .union(
+                    new HashMapState<DelimiterHolder>(
+                            Collections.singletonList(
+                                    transitionBind('m', MatchAdHocDelimiterHolderState.INSTANCE))));
 }
