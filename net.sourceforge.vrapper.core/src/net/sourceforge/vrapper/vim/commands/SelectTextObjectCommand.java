@@ -22,9 +22,15 @@ public class SelectTextObjectCommand extends CountAwareCommand {
         //if selection was calculated to be the same as before
         //it probably means we're chaining i{i{, keep increasing count
         //until we expand into next the region
+        int orgCount = count;
         while(textObject instanceof DelimitedTextObject
                 && oldSelection.getLeftBound().getModelOffset() <= region.getLeftBound().getModelOffset()
                 && oldSelection.getRightBound().getModelOffset() >= region.getRightBound().getModelOffset()) {
+            // TextObject might not use count, abort after a while to prevent an endless loop.
+            // FIXME: See if we can do this chaining functionality without looping over count. 
+            if (count > orgCount + 10) {
+                break;
+            }
             count++;
             //this will throw a CommandExecutionException and break out of the
             //while loop if no delimiter can be found larger than the current

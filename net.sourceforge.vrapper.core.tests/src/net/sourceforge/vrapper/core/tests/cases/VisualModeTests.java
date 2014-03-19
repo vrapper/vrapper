@@ -347,4 +347,43 @@ public class VisualModeTests extends CommandTestCase {
 				false, "   "," Hello,\n    World!\n  ","\n;-)",
 				"        ",'H',"ello,\n        World!\n  \n;-)");
 	}
+
+	@Test
+	public void test_RepeatToExpand() {
+		checkCommand(forKeySeq("a'"),
+				false, "'String'Quote'String' ","A","lASim'Quote'String'",
+				false, "'String'Quote'String","' AlASim'","Quote'String'");
+		// FIXME: Vim actually reacts differently.
+		checkCommand(forKeySeq("a'a'"),
+				false, "'String'Quote'String' ","A","lASim'Quote'String'",
+				false, "'String'Quote'String' AlASim","'Quote'","String'");
+		checkCommand(forKeySeq("i'"),
+				false, "'String'Quote'String' ","Al","ASim'Quote'String'",
+				false, "'String'Quote'String'"," AlASim","'Quote'String'");
+		// There was a bug where repeatedly running i' would cause an endless loop.
+		// FIXME: Vim actually reacts differently.
+		checkCommand(forKeySeq("i'i'"),
+				false, "'String'Quote'String' ","Al","ASim'Quote'String'",
+				false, "'String'Quote'String'"," AlASim","'Quote'String'");
+
+		checkCommand(forKeySeq("i}"),
+				false, "{String{Quote{String{ ","Al","ASim}Quote}String}There}",
+				false, "{String{Quote{String{"," AlASim","}Quote}String}There}");
+		checkCommand(forKeySeq("i}i}"),
+				false, "{String{Quote{String{ ","Al","ASim}Quote}String}There}",
+				false, "{String{Quote{","String{ AlASim}Quote","}String}There}");
+		checkCommand(forKeySeq("i}i}i}"),
+				false, "{String{Quote{String{ ","Al","ASim}Quote}String}There}",
+				false, "{String{","Quote{String{ AlASim}Quote}String","}There}");
+		checkCommand(forKeySeq("i}i}i}i}"),
+				false, "{String{Quote{String{ ","Al","ASim}Quote}String}There}",
+				false, "{","String{Quote{String{ AlASim}Quote}String}There","}");
+
+		checkCommand(forKeySeq("a{"),
+				false, "{String{Quote{String{ ","Al","ASim}Quote}String}There}",
+				false, "{String{Quote{String","{ AlASim}","Quote}String}There}");
+		checkCommand(forKeySeq("a{a{"),
+				false, "{String{Quote{String{ ","Al","ASim}Quote}String}There}",
+				false, "{String{Quote","{String{ AlASim}Quote}","String}There}");
+	}
 }
