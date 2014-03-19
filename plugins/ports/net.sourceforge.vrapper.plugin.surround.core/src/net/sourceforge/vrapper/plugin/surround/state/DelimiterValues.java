@@ -4,8 +4,6 @@ import static java.util.Arrays.asList;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
 
-import java.util.Collections;
-
 import net.sourceforge.vrapper.keymap.HashMapState;
 import net.sourceforge.vrapper.keymap.KeyBinding;
 import net.sourceforge.vrapper.keymap.State;
@@ -44,12 +42,8 @@ public class DelimiterValues {
             leafBind('>', (DelimiterHolder) new SimpleDelimiterHolder("<",">")),
             leafBind('\'', (DelimiterHolder) new SimpleDelimiterHolder("'","'")),
             leafBind('"', (DelimiterHolder) new SimpleDelimiterHolder("\"","\"")),
-            leafBind('`', (DelimiterHolder) new SimpleDelimiterHolder("`","`")));
+            leafBind('`', (DelimiterHolder) new SimpleDelimiterHolder("`","`")),
+            transitionBind('m', MatchAdHocDelimiterHolderState.INSTANCE));
 
-    public static State<DelimiterHolder> DELIMITER_HOLDER_STATE =
-                DELIMITER_REGISTRY
-                .union(
-                    new HashMapState<DelimiterHolder>(
-                            Collections.singletonList(
-                                    transitionBind('m', MatchAdHocDelimiterHolderState.INSTANCE))));
+    public static State<DelimiterHolder> DELIMITER_HOLDER_STATE = DELIMITER_REGISTRY;
 }
