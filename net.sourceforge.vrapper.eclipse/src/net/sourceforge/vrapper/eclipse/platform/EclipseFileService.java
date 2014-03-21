@@ -50,7 +50,7 @@ public class EclipseFileService implements FileService {
      * support. The cursor will be in the exact same position in gvim as it was
      * in Vrapper.  As soon as you save and close gvim, the file will be reloaded.
      */
-    public boolean openInGvim(String gvimpath, String gvimcmd, int row, int col) throws IOException {
+    public boolean openInGvim(String gvimpath, String gvimargs, int row, int col) throws IOException {
     	if(editor.isDirty()) {
     		editor.doSave(null);
     	}
@@ -63,12 +63,12 @@ public class EclipseFileService implements FileService {
         String[] defaultCmd = { gvimpath, "+" + row, "-c normal zv" + col + "|", "-c set nobackup", "-f", "-n", filePath };
 
         String[] customCmd = {};
-        if(gvimcmd.length() > 0) {
-        	String gvimCmdExpanded = gvimcmd.replace("{line}", ""+row).replace("{col}", ""+col).replace("{file}", filePath);
+        if(gvimargs.length() > 0) {
+        	String gvimArgsExpanded = gvimargs.replace("{line}", ""+row).replace("{col}", ""+col).replace("{file}", filePath);
         	//keep quoted strings as a single argument
         	ArrayList<String> args = new ArrayList<String>();
         	args.add(gvimpath);
-        	Matcher m = Pattern.compile("\"([^\"]*)\"|(\\S+)").matcher(gvimCmdExpanded);
+        	Matcher m = Pattern.compile("\"([^\"]*)\"|(\\S+)").matcher(gvimArgsExpanded);
         	while (m.find()) {
         		if (m.group(1) != null) {
         			//quoted strings
@@ -81,7 +81,7 @@ public class EclipseFileService implements FileService {
         	customCmd = args.toArray(new String[args.size()]);
         }
         //variable must be final to be used in Thread
-    	final String[] cmd = gvimcmd.length() > 0 ? customCmd : defaultCmd;
+    	final String[] cmd = gvimargs.length() > 0 ? customCmd : defaultCmd;
     	new Thread() {
     		public void run() {
     			try {

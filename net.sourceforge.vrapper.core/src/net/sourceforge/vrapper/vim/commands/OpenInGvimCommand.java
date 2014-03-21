@@ -20,9 +20,9 @@ public class OpenInGvimCommand extends CountIgnoringNonRepeatableCommand {
     	int row = line.getNumber() + 1; //1-based, not 0-based
     	int col = cursor.getModelOffset() - line.getBeginOffset() + 1; //1-based, not 0-based
     	String gvim = editorAdaptor.getConfiguration().get(Options.GVIM_PATH);
-    	String cmd = editorAdaptor.getConfiguration().get(Options.GVIM_CMD);
+    	String args = editorAdaptor.getConfiguration().get(Options.GVIM_ARGS);
         try {
-            editorAdaptor.getFileService().openInGvim(gvim, cmd, row, col);
+            editorAdaptor.getFileService().openInGvim(gvim, args, row, col);
         } catch (IOException e) {
             VrapperLog.error("Failed to open file in Vim, file might not have been written yet.", e);
             throw new CommandExecutionException("Could not open current file externally, save first.");
