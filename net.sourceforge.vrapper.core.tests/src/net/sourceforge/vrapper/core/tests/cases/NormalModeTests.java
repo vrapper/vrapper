@@ -994,14 +994,13 @@ public class NormalModeTests extends CommandTestCase {
         checkCommand(forKeySeq("di>"),
                 "before <mi",'d',"dle> after",
                 "before <",'>'," after");
-        // '<' can only be expressed as special key
-        checkCommand(forKeySeq("di<LT>"),
+        checkCommand(forKeySeq("di<"),
               "before <mi",'d',"dle> after",
               "before <",'>'," after");
         checkCommand(forKeySeq("di>"),
                 "before <middle",'>'," after",
                 "before <",'>'," after");
-        checkCommand(forKeySeq("di<LT>"),
+        checkCommand(forKeySeq("di<"),
               "before ",'<',"middle> after",
               "before <",'>'," after");
         checkCommand(forKeySeq("dim_"),
@@ -1053,8 +1052,7 @@ public class NormalModeTests extends CommandTestCase {
         checkCommand(forKeySeq("da>"),
                 "before <mi",'d',"dle> after",
                 "before ",' ',"after");
-        // '<' can only be expressed as special key
-        checkCommand(forKeySeq("da<LT>"),
+        checkCommand(forKeySeq("da<"),
                 "before <mi",'d',"dle> after",
                 "before ",' ',"after");
         checkCommand(forKeySeq("da{"),
