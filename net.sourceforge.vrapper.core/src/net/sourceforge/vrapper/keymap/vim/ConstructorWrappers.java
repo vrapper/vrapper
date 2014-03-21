@@ -63,31 +63,56 @@ public class ConstructorWrappers {
     public static Iterable<KeyStroke> parseKeyStrokes(String s) {
         List<KeyStroke> result = new ArrayList<KeyStroke>();
         for (int i = 0; i < s.length(); i++) {
-            char next = s.charAt(i);
-            if (next == '<') {
+            char input = s.charAt(i);
+            if (input == '<') {
                 StringBuilder sb = new StringBuilder();
-                while (next != '>' && ++i < s.length()) {
-                    next = s.charAt(i);
-                    sb.append(next);
+                if (i + 1 < s.length()) {
+                    sb.append('<');
+                    i++;
+                    input = s.charAt(i);
                 }
-                KeyStroke stroke = null;
-                if (sb.length() > 0) {
-                    sb.deleteCharAt(sb.length()-1);
-                    String key = sb.toString().toUpperCase();
-                    stroke = parseSpecialKey(key);
-                    if (stroke == null) {
-                        VrapperLog.info("Key code <" + key + "> is unknown. Ignoring.");
+                while (i < s.length() && input != '>' && isSpecialKeyChar(input)) {
+                    sb.append(input);
+                    i++;
+                    if ( i < s.length()) {
+                        input = s.charAt(i);
                     }
                 }
-                if (stroke != null) {
-                    result.add(stroke);
+                // sb must contain characters, otherwise we have found part of a > shift operator
+                if (input == '>' && sb.length() > 1) {
+                    KeyStroke stroke = null;
+                    String key = sb.substring(1).toUpperCase();
+                    if (key.length() > 0) { 
+                        stroke = parseSpecialKey(key);
+                    }
+                    if (stroke == null) {
+                        VrapperLog.info("Key code <" + key + "> is unknown. Ignoring.");
+                    } else {
+                        result.add(stroke);
+                    }
+                } else {
+                    for (char c : sb.toString().toCharArray()) {
+                        result.add(key(c));
+                    }
+                    if (i + 1 < s.length() && input == '<') {
+                        // Nested < chars. There might be a special key next up, recheck current i.
+                        i--;
+                    } else if (! isSpecialKeyChar(input)) {
+                        // Special char, not yet added to sb so append it manually.
+                        result.add(key(input));
+                    } // else char is already in sb because i must have been incremented to s.length
                 }
             } else {
-                result.add(key(next));
+                result.add(key(input));
             }
         }
         return result;
     }
+    
+    private static boolean isSpecialKeyChar(char c) {
+        return Character.isLetterOrDigit(c) || c == '-' || c == '_';
+    }
+    
     
     /**
      * Parse the KeyStoke found within '<' and '>' tags.
