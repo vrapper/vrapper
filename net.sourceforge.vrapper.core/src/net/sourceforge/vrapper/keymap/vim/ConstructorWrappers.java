@@ -86,7 +86,8 @@ public class ConstructorWrappers {
                         stroke = parseSpecialKey(key);
                     }
                     if (stroke == null) {
-                        VrapperLog.info("Key code <" + key + "> is unknown. Ignoring.");
+                        VrapperLog.info("Key code <" + key + "> in mapping '" + s + "' is unknown."
+                                + " Ignoring.");
                     } else {
                         result.add(stroke);
                     }
