@@ -7,7 +7,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.parseKeyStrokes;
 import net.sourceforge.vrapper.core.tests.utils.CommandTestCase;
+import net.sourceforge.vrapper.core.tests.utils.VimTestCase;
 import net.sourceforge.vrapper.platform.PlatformSpecificModeProvider;
 import net.sourceforge.vrapper.plugin.surround.provider.SurroundModesProvider;
 import net.sourceforge.vrapper.plugin.surround.provider.SurroundStateProvider;
@@ -1925,6 +1927,24 @@ public class NormalModeTests extends CommandTestCase {
 				"", 'a', " test is this ... xxx abc",
 				"", 'a', " test is this ... xxx abc");
 		assertEquals(NormalMode.NAME, adaptor.getCurrentModeName());
+	}
+	
+	@Test
+	public void test_map() {
+		type(parseKeyStrokes(":no d h<enter>"));
+		type(parseKeyStrokes(":no e d<enter>"));
+		checkCommand(forKeySeq("d"),
+				"first line\nsecond ", 'l', "ine\nthird line",
+				"first line\nsecond", ' ', "line\nthird line");
+		checkCommand(forKeySeq("5d"),
+				"first line\nsecond ", 'l', "ine\nthird line",
+				"first line\nse", 'c', "ond line\nthird line");
+		checkCommand(forKeySeq("2ee"),
+				"first line\nsecond ", 'l', "ine\nthird line",
+				"", 'f', "irst line");
+		checkCommand(forKeySeq("5ed"),
+				"first line\nsecond ", 'l', "ine\nthird line",
+				"first line\nse", 'l', "ine\nthird line");
 	}
 
     private void installSaneRegisterManager() {

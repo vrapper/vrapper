@@ -60,10 +60,10 @@ public class CommandLineParser extends AbstractCommandParser {
     private final FilePathTabCompletion tabComplete;
 
     static EvaluatorMapping coreCommands() {
-        Evaluator noremap = new KeyMapper.Map(false,
-                AbstractVisualMode.KEYMAP_NAME, NormalMode.KEYMAP_NAME);
-        Evaluator map = new KeyMapper.Map(true,
-                AbstractVisualMode.KEYMAP_NAME, NormalMode.KEYMAP_NAME);
+        Evaluator noremap = new KeyMapper.Map(false, AbstractVisualMode.KEYMAP_NAME,
+                NormalMode.KEYMAP_NAME, NormalMode.OMAP_NAME);
+        Evaluator map = new KeyMapper.Map(true, AbstractVisualMode.KEYMAP_NAME,
+                NormalMode.KEYMAP_NAME, NormalMode.OMAP_NAME);
         Evaluator nnoremap = new KeyMapper.Map(false, NormalMode.KEYMAP_NAME);
         Evaluator nmap = new KeyMapper.Map(true, NormalMode.KEYMAP_NAME);
         Evaluator onoremap = new KeyMapper.Map(false, NormalMode.OMAP_NAME);
