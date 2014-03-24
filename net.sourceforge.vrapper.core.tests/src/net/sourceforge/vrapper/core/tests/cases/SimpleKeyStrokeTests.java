@@ -117,6 +117,19 @@ public class SimpleKeyStrokeTests {
                 new SimpleKeyStroke('`'), new SimpleKeyStroke('`'), new SimpleKeyStroke('g'),
                 new SimpleKeyStroke('v')),
                 parseKeyStrokes("<ESC>'<m`O<Esc>``gv"));
+        // Make sure all special characters are handled.
+        assertEquals(asList(new SimpleKeyStroke(']', false, false, true)),
+                 parseKeyStrokes("<C-]>"));
+        assertEquals(asList(new SimpleKeyStroke('[', false, false, true)),
+                 parseKeyStrokes("<C-[>"));
+        assertEquals(asList(new SimpleKeyStroke('@', false, false, true)),
+                 parseKeyStrokes("<C-@>"));
+        assertEquals(asList(new SimpleKeyStroke('\\', false, false, true)),
+                 parseKeyStrokes("<C-\\>"));
+        assertEquals(asList(new SimpleKeyStroke('^', false, false, true)),
+                 parseKeyStrokes("<C-^>"));
+        assertEquals(asList(new SimpleKeyStroke('_', false, false, true)),
+                 parseKeyStrokes("<C-_>"));
     }
 
 }

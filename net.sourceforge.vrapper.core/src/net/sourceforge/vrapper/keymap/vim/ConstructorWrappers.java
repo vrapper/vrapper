@@ -111,7 +111,8 @@ public class ConstructorWrappers {
     }
     
     private static boolean isSpecialKeyChar(char c) {
-        return Character.isLetterOrDigit(c) || c == '-' || c == '_';
+        return Character.isLetterOrDigit(c) || c == '-' || c == '_' ||
+               c == '@' || c == ']' || c == '[' || c == '\\' || c == '^';
     }
     
     
