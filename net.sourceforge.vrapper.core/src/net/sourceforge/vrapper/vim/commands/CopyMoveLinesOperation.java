@@ -27,14 +27,22 @@ public class CopyMoveLinesOperation extends SimpleTextOperation {
 	private String address = null;
 	private boolean move; //move (true) or copy (false)
 	
-	public CopyMoveLinesOperation(String address, boolean move) {
-		//address should be something like "co 12" or "co .+3"
-		//chop off the operation and space, leaving the definition
-	    final int addrPos = address.indexOf(' ');
-	    if (addrPos != -1) {
-	        this.address = address.substring(addrPos).trim();
-	    }
-    	this.move = move;
+	public CopyMoveLinesOperation(String op, boolean move) {
+		// Find the end of the operation -- first non-alpha and non-whitespace
+	    // character.
+	    assert op.length() >= 1;
+		int addrPos;
+		for (addrPos = 1; addrPos < op.length(); ++addrPos) {
+		    final char ch = op.charAt(addrPos);
+		    if (!Character.isAlphabetic(ch) && !Character.isWhitespace(ch)) {
+		        break;
+		    }
+		}
+		//chop off the operation and an optional space, leaving the definition
+		if (addrPos < op.length()) {
+		    this.address = op.substring(addrPos).trim();
+		}
+		this.move = move;
 	}
 
 	@Override
