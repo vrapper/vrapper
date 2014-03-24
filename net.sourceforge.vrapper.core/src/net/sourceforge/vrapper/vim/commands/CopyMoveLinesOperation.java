@@ -34,7 +34,7 @@ public class CopyMoveLinesOperation extends SimpleTextOperation {
 		int addrPos;
 		for (addrPos = 1; addrPos < op.length(); ++addrPos) {
 		    final char ch = op.charAt(addrPos);
-		    if (!Character.isAlphabetic(ch) && !Character.isWhitespace(ch)) {
+		    if (!Character.isLetter(ch) && !Character.isWhitespace(ch)) {
 		        break;
 		    }
 		}
