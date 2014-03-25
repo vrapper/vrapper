@@ -59,4 +59,8 @@ public class TextViewerPosition extends AbstractPosition {
         return new TextViewerPosition(converter, Space.VIEW, offset);
     }
 
+    @Override
+    public String toString() {
+        return "TextViewerPosition(" + space + "-" + offset + ")";
+    }
 }
