@@ -1,6 +1,5 @@
 package net.sourceforge.vrapper.vim.modes.commandline;
 
-import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -72,8 +71,9 @@ public class SearchCommandParser extends AbstractCommandParser {
 
 	private Search parseSearchCommand(String first, String command) {
         boolean backward = first.equals(VimConstants.BACKWARD_SEARCH_CHAR);
-        StringTokenizer nizer = new StringTokenizer(command, first);
-        String keyword = parseKeyWord(first, command, nizer);
+		//split on the delimiter, unless that delimiter is escaped with a backslash (/foo\/bar/e+2)
+		String[] fields = command.split("(?<!\\\\)"+first);
+        String keyword = fields[0].replace("\\/", "/");
         Search lastSearch = editor.getRegisterManager().getSearch();
         // if keyword is empty, last keyword is used
         boolean useLastKeyword = keyword.length() == 0 && lastSearch != null;
@@ -81,9 +81,8 @@ public class SearchCommandParser extends AbstractCommandParser {
             keyword = lastSearch.getKeyword();
         }
         SearchOffset searchOffset;
-        if (nizer.hasMoreTokens()) {
-            String afterSearch = nizer.nextToken();
-            searchOffset = createSearchOffset(keyword, afterSearch);
+        if (fields.length > 1) {
+            searchOffset = createSearchOffset(keyword, fields[1]);
         } else if (useLastKeyword) {
             searchOffset = lastSearch.getSearchOffset();
         } else {
@@ -97,28 +96,8 @@ public class SearchCommandParser extends AbstractCommandParser {
 	public String getKeyWord() {
         String first = commandLine.getPrompt();
         String command = commandLine.getContents();
-	    return parseKeyWord(first, command, new StringTokenizer(command, first));
+        return command.split("(?<!\\\\)"+first)[0];
 	}
-
-	/** Parses the keyword tokens to remove escaped search delimiters. */ 
-    private static String parseKeyWord(String first, String command,
-            StringTokenizer nizer) {
-        StringBuilder sb = new StringBuilder();
-        // check whether a keyword was given
-        if (!command.startsWith(first)) {
-            while (nizer.hasMoreTokens()) {
-                String token = nizer.nextToken();
-                sb.append(token);
-                if (token.endsWith(VimConstants.ESCAPE_CHAR)) {
-                    sb.replace(sb.length()-1, sb.length(), first);
-                } else {
-                    break;
-                }
-            }
-        }
-        String keyword = sb.toString();
-        return keyword;
-    }
 
     private SearchOffset createSearchOffset(String keyword, String afterSearch) {
         Matcher m = AFTER_SEARCH_PATTERN.matcher(afterSearch);

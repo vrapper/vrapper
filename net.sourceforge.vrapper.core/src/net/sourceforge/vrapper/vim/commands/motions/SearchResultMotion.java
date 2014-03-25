@@ -1,5 +1,8 @@
 package net.sourceforge.vrapper.vim.commands.motions;
 
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Search;
 import net.sourceforge.vrapper.utils.SearchOffset.End;
@@ -33,6 +36,16 @@ public class SearchResultMotion extends CountAwareMotion {
         if (search == null) {
             throw new CommandExecutionException("no search string given");
         }
+        if(editorAdaptor.getConfiguration().get(Options.SEARCH_REGEX)) {
+            //before attempting search, is this regex even valid?
+            try {
+                Pattern.compile(search.getKeyword());
+            }
+            catch(PatternSyntaxException e) {
+                throw new CommandExecutionException("Invalid regex search string: " + search.getKeyword());
+            }
+        }
+
         includesTarget = search.getSearchOffset() instanceof End;
         lineWise = search.getSearchOffset().lineWise();
         Position position = search.getSearchOffset().unapply(
