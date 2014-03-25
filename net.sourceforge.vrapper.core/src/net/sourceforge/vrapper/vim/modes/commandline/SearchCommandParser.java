@@ -73,7 +73,7 @@ public class SearchCommandParser extends AbstractCommandParser {
         boolean backward = first.equals(VimConstants.BACKWARD_SEARCH_CHAR);
 		//split on the delimiter, unless that delimiter is escaped with a backslash (/foo\/bar/e+2)
 		String[] fields = command.split("(?<!\\\\)"+first);
-        String keyword = fields[0].replace("\\/", "/");
+        String keyword = fields[0].replace("\\"+first, first);
         Search lastSearch = editor.getRegisterManager().getSearch();
         // if keyword is empty, last keyword is used
         boolean useLastKeyword = keyword.length() == 0 && lastSearch != null;
