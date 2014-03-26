@@ -15,18 +15,16 @@ public class SwapLinewiseSelectionSidesCommand extends CountIgnoringNonRepeatabl
         // because LEFT_SHIFTED_RECTANGULAR would be invisible on beginnings of empty lines
         
         Selection selection = editorAdaptor.getSelection();
+        selection.getTo();
         
-        Position start = selection.getStart();
-        Position end = selection.getEnd();
+        Position from = selection.getFrom();
+        Position to = selection.getTo();
         
-        if (selection.isReversed())
-            start = start.addModelOffset(-1);
-        else
-            end = end.addModelOffset(-1);
+        selection = new LineWiseSelection(editorAdaptor, to, from);
         
-        selection = new LineWiseSelection(editorAdaptor, end, start);
-        
-        editorAdaptor.setPosition(end, StickyColumnPolicy.ON_CHANGE);
+        // This is more feature-rich in Vim: it actually remembers the sticky column
+        // for both ends of the selection. We always reset the column.
+        editorAdaptor.setPosition(to, StickyColumnPolicy.ON_CHANGE);
         editorAdaptor.setSelection(selection);
     }
 
