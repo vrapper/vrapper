@@ -15,7 +15,6 @@ public class SwapLinewiseSelectionSidesCommand extends CountIgnoringNonRepeatabl
         // because LEFT_SHIFTED_RECTANGULAR would be invisible on beginnings of empty lines
         
         Selection selection = editorAdaptor.getSelection();
-        selection.getTo();
         
         Position from = selection.getFrom();
         Position to = selection.getTo();
