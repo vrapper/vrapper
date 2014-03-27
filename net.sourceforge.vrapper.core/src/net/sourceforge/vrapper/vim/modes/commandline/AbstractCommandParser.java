@@ -16,6 +16,7 @@ import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.Command;
+import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
 import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
 import net.sourceforge.vrapper.vim.modes.ExecuteCommandHint;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
@@ -180,7 +181,11 @@ public abstract class AbstractCommandParser {
             commandLine.setMode(CommandLineMode.DEFAULT);
         } else if (e.equals(KEY_RETURN) || e.equals(KEY_ESCAPE)) {
             //Pressing return on an empty command line quits this mode rather than execute a command
-            if (c == null) {
+            if (c == null && isFromVisual) {
+                // Reset selection.
+                editor.changeModeSafely(NormalMode.NAME,
+                        new ExecuteCommandHint.OnEnter(LeaveVisualModeCommand.INSTANCE));
+            } else if (c == null) {
                 editor.changeModeSafely(NormalMode.NAME);
             } else {
                 editor.changeModeSafely(editor.getLastModeName(), new ExecuteCommandHint.OnEnter(c),

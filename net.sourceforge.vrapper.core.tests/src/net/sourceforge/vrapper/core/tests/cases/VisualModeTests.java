@@ -8,6 +8,8 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import net.sourceforge.vrapper.core.tests.utils.CommandTestCase;
+import net.sourceforge.vrapper.keymap.SpecialKey;
+import net.sourceforge.vrapper.keymap.vim.SimpleKeyStroke;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.SelectionService;
 import net.sourceforge.vrapper.utils.ContentType;
@@ -247,13 +249,28 @@ public class VisualModeTests extends CommandTestCase {
 	}
 
 	@Test public void visualModeShouldEnterPainlesslyAndDeselectOnLeave() throws Exception {
-	    CursorService cursorService = platform.getCursorService();
-	    Position position = cursorService.newPositionForModelOffset(42);
-	    cursorService.setPosition(position, StickyColumnPolicy.ON_CHANGE);
+		CursorService cursorService = platform.getCursorService();
+		Position position = cursorService.newPositionForModelOffset(42);
+		cursorService.setPosition(position, StickyColumnPolicy.ON_CHANGE);
 		adaptor.changeMode(NormalMode.NAME);
 		adaptor.changeMode(VisualMode.NAME);
-		// verify that selection has been cleared. getSelection will return non-null!
-		verify(adaptor).setSelection(null);
+		adaptor.handleKey(new SimpleKeyStroke(SpecialKey.ESC));
+		// Verify that selection has been cleared. getSelection will return non-null!
+		// setSelection must have been called 2 times, once for entering, once for leaving visual.
+		verify(adaptor, times(2)).setSelection(null);
+	}
+
+	@Test public void visualModeShouldEnterPainlesslyAndDeselectOnLeaveVisualCommand() throws Exception {
+		CursorService cursorService = platform.getCursorService();
+		Position position = cursorService.newPositionForModelOffset(42);
+		cursorService.setPosition(position, StickyColumnPolicy.ON_CHANGE);
+		adaptor.changeMode(NormalMode.NAME);
+		adaptor.changeMode(VisualMode.NAME);
+		adaptor.handleKey(new SimpleKeyStroke(':'));
+		adaptor.handleKey(new SimpleKeyStroke(SpecialKey.ESC));
+		// Verify that selection has been cleared. getSelection will return non-null!
+		// Again, setSelection must be called 2 times, once for entering, once for leaving visual.
+		verify(adaptor, times(2)).setSelection(null);
 	}
 
 	@Test public void testTextObjects() {
