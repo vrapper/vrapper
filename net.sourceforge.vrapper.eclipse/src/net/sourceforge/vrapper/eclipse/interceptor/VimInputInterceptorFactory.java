@@ -16,8 +16,10 @@ import net.sourceforge.vrapper.vim.DefaultEditorAdaptor;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
+import net.sourceforge.vrapper.vim.modes.InsertMode;
 import net.sourceforge.vrapper.vim.modes.LinewiseVisualMode;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
+import net.sourceforge.vrapper.vim.modes.TempVisualMode;
 import net.sourceforge.vrapper.vim.modes.VisualMode;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
 
@@ -47,7 +49,6 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
     private static final HashMap<Integer, SpecialKey> specialKeys;
     /** Maps "Escape characters" to the corresponding Control + <i>x</i> character. */
     private static final HashMap<Character, Character> escapedChars;
-    private static final char ESC_CHAR = '\u001B';
     private static final HashSet<Integer> ignoredKeyCodes;
     static {
         specialKeys = new HashMap<Integer, SpecialKey>();
@@ -198,11 +199,13 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
 						(VisualMode.NAME.equals(editorAdaptor.getCurrentModeName())
 							|| LinewiseVisualMode.NAME.equals(editorAdaptor.getCurrentModeName()))) {
 					editorAdaptor.changeModeSafely(NormalMode.NAME);
-				} else if(selection.getLength() != 0 && NormalMode.NAME.equals(editorAdaptor.getCurrentModeName())) {
-					 /* gvim supports switching to visual from insert but we
-					 * don't allow it because it might interfere with
-					 * functionality of the underlying editor */
-		    		editorAdaptor.changeModeSafely(VisualMode.NAME, AbstractVisualMode.KEEP_SELECTION_HINT);
+				} else if(selection.getLength() != 0) {
+					if(NormalMode.NAME.equals(editorAdaptor.getCurrentModeName())) {
+						editorAdaptor.changeModeSafely(VisualMode.NAME, AbstractVisualMode.KEEP_SELECTION_HINT);
+					}
+					else if (InsertMode.NAME.equals(editorAdaptor.getCurrentModeName())) {
+						editorAdaptor.changeModeSafely(TempVisualMode.NAME, AbstractVisualMode.KEEP_SELECTION_HINT, InsertMode.RESUME_ON_MODE_ENTER);
+					}
 				}
 	        }
 		}
