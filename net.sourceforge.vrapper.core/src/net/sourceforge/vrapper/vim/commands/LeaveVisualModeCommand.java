@@ -4,7 +4,9 @@
 package net.sourceforge.vrapper.vim.commands;
 
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.modes.InsertMode;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
+import net.sourceforge.vrapper.vim.modes.TempVisualMode;
 
 public class LeaveVisualModeCommand extends CountIgnoringNonRepeatableCommand {
 
@@ -22,6 +24,11 @@ public class LeaveVisualModeCommand extends CountIgnoringNonRepeatableCommand {
 
     public static void doIt(EditorAdaptor editorAdaptor) throws CommandExecutionException {
         editorAdaptor.setSelection(null);
-        editorAdaptor.changeMode(NormalMode.NAME);
+        if(editorAdaptor.getCurrentModeName().equals(TempVisualMode.NAME)) {
+            editorAdaptor.changeMode(InsertMode.NAME);
+        }
+        else {
+            editorAdaptor.changeMode(NormalMode.NAME);
+        }
     }
 }
