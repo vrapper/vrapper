@@ -104,6 +104,9 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
             if (previousSel == null) {
                 VrapperLog.info("Previous selection was null, selection not recalled.");
             } else {
+                if (previousSel.isReversed()) {
+                    editorAdaptor.getCursorService().setCaret(CaretType.RECTANGULAR);
+                }
                 // Can happen during testing, as the testing cursor service won't understand marks.
                 if (start == null || end == null) {
                     VrapperLog.info("Previous selection marks are null, selection might be wrong.");
