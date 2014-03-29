@@ -43,6 +43,6 @@ public class LineInformation {
     }
 
     public String toString() {
-        return "LineInfo: S:" + beginOffset + " E:"+ beginOffset + length + " L:" + length;
+        return "LineInfo: S:" + beginOffset + " E:"+ (beginOffset + length) + " L:" + length;
     }
 }
