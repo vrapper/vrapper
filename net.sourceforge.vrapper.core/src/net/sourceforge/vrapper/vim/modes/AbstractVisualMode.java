@@ -18,6 +18,7 @@ import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.CenterLineCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
@@ -104,7 +105,9 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
             if (previousSel == null) {
                 VrapperLog.info("Previous selection was null, selection not recalled.");
             } else {
-                if (previousSel.isReversed()) {
+                if (previousSel.isReversed()
+                        && editorAdaptor.getConfiguration().get(Options.SELECTION)
+                            .equals("inclusive")) {
                     editorAdaptor.getCursorService().setCaret(CaretType.RECTANGULAR);
                 }
                 // Can happen during testing, as the testing cursor service won't understand marks.
