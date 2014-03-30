@@ -5,7 +5,9 @@ import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
+import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.modes.VisualMode;
 
 public class SimpleSelection implements Selection {
@@ -82,7 +84,13 @@ public class SimpleSelection implements Selection {
 
     @Override
     public Position getEndMark(EditorAdaptor defaultEditorAdaptor) {
-        return range.getRightBound().addModelOffset(-1);
+        if (defaultEditorAdaptor.getConfiguration().get(Options.SELECTION).equals("inclusive")) {
+            // Selection might include a newline. The end mark should be on the previous line.
+            return VimUtils.safeAddModelOffset(defaultEditorAdaptor, range.getRightBound(), -1, true);
+        } else {
+            // Exclusive mode either selects up to end line or to the right of it. Don't change pos.
+            return range.getRightBound();
+        }
     }
 
     public String toString() {
@@ -91,11 +99,19 @@ public class SimpleSelection implements Selection {
 
     @Override
     public Selection selectMarks(EditorAdaptor adaptor, Position start, Position end) {
-        // Make sure to add 1 to the end marker, see getEndMark above.
-        if (isReversed()) {
-            return new SimpleSelection(new StartEndTextRange(end.addModelOffset(1), start));
-        } else {
-            return new SimpleSelection(new StartEndTextRange(start, end.addModelOffset(1)));
+        Position selStart;
+        Position selEnd;
+        // Make sure to add 1 to the end marker for inclusive mode, see getEndMark above.
+        if (adaptor.getConfiguration().get(Options.SELECTION).equals("inclusive")) {
+            end = VimUtils.safeAddModelOffset(adaptor, end, 1, true);
         }
+        if (isReversed()) {
+            selStart = end;
+            selEnd = start;
+        } else {
+            selStart = start;
+            selEnd = end;
+        }
+        return new SimpleSelection(new StartEndTextRange(selStart, selEnd));
     }
 }
