@@ -21,7 +21,9 @@ import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.ITextViewerExtension;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPartListener;
+import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.part.MultiEditor;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
@@ -32,7 +34,7 @@ import org.eclipse.ui.texteditor.AbstractTextEditor;
  * 
  * @author Matthias Radig
  */
-public class InputInterceptorManager implements IPartListener {
+public class InputInterceptorManager implements IPartListener2 {
 
     public static final InputInterceptorManager INSTANCE = new InputInterceptorManager(
             VimInputInterceptorFactory.INSTANCE);
@@ -50,13 +52,6 @@ public class InputInterceptorManager implements IPartListener {
         this.watchedChildren = new WeakHashMap<IWorkbenchPart, Collection<WeakReference<IWorkbenchPart>>>();
     }
 
-    public void partDeactivated(IWorkbenchPart arg0) {
-    }
-
-    public void partOpened(IWorkbenchPart part) {
-        interceptWorkbenchPart(part);
-    }
-
     public void interceptWorkbenchPart(IWorkbenchPart part) {
         if (part == null) {
             //VrapperLog.error("WTF: null part?!?");
@@ -70,7 +65,7 @@ public class InputInterceptorManager implements IPartListener {
             multiPartOpened(part);
         } else if (part instanceof MultiEditor) {
             for (IEditorPart subPart : ((MultiEditor) part).getInnerEditors()) {
-                partOpened(subPart);
+                interceptWorkbenchPart(subPart);
             }
         } else {
 //            VrapperLog.info("other kind of part opened, trying extensions");
@@ -123,7 +118,7 @@ public class InputInterceptorManager implements IPartListener {
             for (int i = 0; i < pageCount; i++) {
                 IEditorPart subPart = (IEditorPart) METHOD_GET_EDITOR.invoke(
                         mPart, i);
-                partOpened(subPart);
+                interceptWorkbenchPart(subPart);
             }
         } catch (Exception exception) {
             VrapperLog.error("Exception during opening of MultiPageEditorPart",
@@ -217,9 +212,6 @@ public class InputInterceptorManager implements IPartListener {
     	}
     }
 
-    public void partBroughtToTop(IWorkbenchPart arg0) {
-    }
-
     private static Method getMultiPartEditorMethod(String name,
             Class<?>... args) {
         try {
@@ -235,6 +227,46 @@ public class InputInterceptorManager implements IPartListener {
 
     public Iterable<InputInterceptor> getInterceptors() {
         return interceptors.values();
+    }
+
+    @Override
+    public void partActivated(IWorkbenchPartReference partRef) {
+        this.partActivated(partRef.getPart(true));
+    }
+
+    @Override
+    public void partBroughtToTop(IWorkbenchPartReference partRef) {
+    }
+
+    @Override
+    public void partClosed(IWorkbenchPartReference partRef) {
+        partClosed(partRef.getPart(true));
+    }
+
+    @Override
+    public void partDeactivated(IWorkbenchPartReference partRef) {
+    }
+
+    @Override
+    public void partOpened(IWorkbenchPartReference partRef) {
+        interceptWorkbenchPart(partRef.getPart(true));
+    }
+
+    @Override
+    public void partHidden(IWorkbenchPartReference partRef) {
+    }
+
+    @Override
+    public void partVisible(IWorkbenchPartReference partRef) {
+    }
+
+    @Override
+    public void partInputChanged(IWorkbenchPartReference partRef) {
+        final IWorkbenchPart part = partRef.getPart(true);
+        // The underlying editor has changed for the part -- reset Vrapper's
+        // editor-related references.
+        partClosed(part);
+        interceptWorkbenchPart(part);
     }
 
 }
