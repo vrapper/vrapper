@@ -302,6 +302,10 @@ public class NormalMode extends CommandBasedMode {
                         )))));
     }
 
+    /**
+     * Fix the cursor position so that our rectangle caret doesn't go past the last character.
+     * Only changes the position if NormalMode is enabled.
+     */
     @Override
     protected void placeCursor() {
         final Position pos = editorAdaptor.getPosition();
@@ -321,9 +325,9 @@ public class NormalMode extends CommandBasedMode {
 
     @Override
     public void enterMode(final ModeSwitchHint... args) throws CommandExecutionException {
-        placeCursor();
         editorAdaptor.getCursorService().setCaret(CaretType.RECTANGULAR);
         super.enterMode(args);
+        placeCursor();
         if (args.length > 0) {
             if(args[0] instanceof ExecuteCommandHint) {
                 try {
