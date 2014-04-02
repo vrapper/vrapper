@@ -9,7 +9,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.parseKeyStrokes;
 import net.sourceforge.vrapper.core.tests.utils.CommandTestCase;
-import net.sourceforge.vrapper.core.tests.utils.VimTestCase;
 import net.sourceforge.vrapper.platform.PlatformSpecificModeProvider;
 import net.sourceforge.vrapper.plugin.surround.provider.SurroundModesProvider;
 import net.sourceforge.vrapper.plugin.surround.provider.SurroundStateProvider;
@@ -821,23 +820,23 @@ public class NormalModeTests extends CommandTestCase {
 	    // Make sure that tag gets matched when EvilCaret pushed the cursor towards the end of line.
         checkCommand(forKeySeq("vatd"),
                 " <tag1></tag1", '>', "\r",
-                " ", '\r', "");
+                "", ' ', "\r");
 	    // EvilCaret would cause a StringOutOfBoundsException when at end of line.
         checkCommand(forKeySeq("vatd"),
                 " <tag1></tag1>", ' ', "\r",
-                " <tag1></tag1>", '\r', "");
+                " <tag1></tag1", '>', "\r");
 	    // Another StringOutOfBoundsException was caused when on an empty line.
         checkCommand(forKeySeq("vatd"),
                 " <tag1>\r", '\r', "</tag1>\r",
-                " ", '\r', "");
+                "", ' ', "\r");
 	    // EvilCaret may also cause a StringOutOfBoundsException when sitting on the newline char
         //  in windows.
         checkCommand(forKeySeq("vatd"),
                 " <tag1>", '\r', "\n</tag1>\r",
-                " ", '\r', "");
+                "", ' ', "\r");
         checkCommand(forKeySeq("vatd"),
                 " <tag1>\r", '\n', "</tag1>\r",
-                " ", '\r', "");
+                "", ' ', "\r");
 	}
 
     @Test
