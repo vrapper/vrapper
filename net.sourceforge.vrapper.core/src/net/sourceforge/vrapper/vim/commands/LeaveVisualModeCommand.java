@@ -22,12 +22,8 @@ public class LeaveVisualModeCommand extends CountIgnoringNonRepeatableCommand {
         
         // Only save selection when this command is executed - other commands call doIt() as well.
         editorAdaptor.rememberLastActiveSelection();
-        doIt(editorAdaptor);
-    }
 
-    public static void doIt(EditorAdaptor editorAdaptor) throws CommandExecutionException {
         Selection selection = editorAdaptor.getSelection();
-        editorAdaptor.setSelection(null);
         
         // Get last position of the cursor.
         Position exitPoint = selection.getTo();
@@ -40,6 +36,11 @@ public class LeaveVisualModeCommand extends CountIgnoringNonRepeatableCommand {
         }
         editorAdaptor.setPosition(exitPoint, StickyColumnPolicy.ON_CHANGE);
 
+        doIt(editorAdaptor);
+    }
+
+    public static void doIt(EditorAdaptor editorAdaptor) throws CommandExecutionException {
+        editorAdaptor.setSelection(null);
         if (editorAdaptor.getCurrentModeName().equals(TempVisualMode.NAME)) {
             editorAdaptor.changeMode(InsertMode.NAME);
         } else {
