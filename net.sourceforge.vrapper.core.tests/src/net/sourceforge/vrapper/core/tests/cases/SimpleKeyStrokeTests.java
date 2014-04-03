@@ -12,7 +12,6 @@ import static org.junit.Assert.assertTrue;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.vim.SimpleKeyStroke;
-import net.sourceforge.vrapper.utils.VimUtils;
 
 import org.junit.Test;
 

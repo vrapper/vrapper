@@ -10,7 +10,6 @@ import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
-import net.sourceforge.vrapper.vim.modes.VisualMode;
 
 /**
  * The cursor is inside a pair of XML tags.  Find the open tag *before* the cursor

@@ -3,7 +3,6 @@ package net.sourceforge.vrapper.plugin.surround.state;
 import static java.util.Arrays.asList;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
-
 import net.sourceforge.vrapper.keymap.HashMapState;
 import net.sourceforge.vrapper.keymap.KeyBinding;
 import net.sourceforge.vrapper.keymap.State;

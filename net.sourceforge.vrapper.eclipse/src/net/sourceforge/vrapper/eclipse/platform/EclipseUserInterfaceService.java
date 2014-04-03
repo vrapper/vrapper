@@ -1,6 +1,5 @@
 package net.sourceforge.vrapper.eclipse.platform;
 
-import net.sourceforge.vrapper.eclipse.interceptor.LinkedModeHandler;
 import net.sourceforge.vrapper.eclipse.ui.CommandLineUIFactory;
 import net.sourceforge.vrapper.eclipse.ui.ModeContributionItem;
 import net.sourceforge.vrapper.platform.CommandLineUI;

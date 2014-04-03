@@ -1,9 +1,9 @@
 package net.sourceforge.vrapper.eclipse.platform;
 
-import org.eclipse.swt.widgets.Display;
-
 import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
+
+import org.eclipse.swt.widgets.Display;
 
 public class SWTRegisterManager extends DefaultRegisterManager {
 

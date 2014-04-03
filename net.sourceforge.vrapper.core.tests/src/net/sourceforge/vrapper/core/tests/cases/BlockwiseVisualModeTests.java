@@ -3,7 +3,6 @@ package net.sourceforge.vrapper.core.tests.cases;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;

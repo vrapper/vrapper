@@ -1,5 +1,7 @@
 package net.sourceforge.vrapper.plugin.clangformat.commands;
 
+import static net.sourceforge.vrapper.platform.Configuration.Option.stringNoConstraint;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -14,7 +16,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.Configuration.Option;
-import static net.sourceforge.vrapper.platform.Configuration.Option.stringNoConstraint;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.FileService;
 import net.sourceforge.vrapper.platform.TextContent;
