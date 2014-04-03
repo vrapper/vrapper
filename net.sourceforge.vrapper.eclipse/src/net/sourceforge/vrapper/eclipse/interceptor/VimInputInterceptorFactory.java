@@ -195,10 +195,14 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
         	TextSelection selection = (TextSelection) event.getSelection();
         	// selection.isEmpty() is false even if length == 0, don't use it
         	if (selection instanceof TextSelection) {
-				if (selection.getLength() == 0 &&
-						(VisualMode.NAME.equals(editorAdaptor.getCurrentModeName())
-							|| LinewiseVisualMode.NAME.equals(editorAdaptor.getCurrentModeName()))) {
-					editorAdaptor.changeModeSafely(NormalMode.NAME);
+				if (selection.getLength() == 0) {
+					if(VisualMode.NAME.equals(editorAdaptor.getCurrentModeName())
+							|| LinewiseVisualMode.NAME.equals(editorAdaptor.getCurrentModeName())) {
+						editorAdaptor.changeModeSafely(NormalMode.NAME);
+					}
+					else if(TempVisualMode.NAME.equals(editorAdaptor.getCurrentModeName())) {
+						editorAdaptor.changeModeSafely(InsertMode.NAME);
+					}
 				} else if(selection.getLength() != 0) {
 					if(NormalMode.NAME.equals(editorAdaptor.getCurrentModeName())) {
 						editorAdaptor.changeModeSafely(VisualMode.NAME, AbstractVisualMode.KEEP_SELECTION_HINT);
