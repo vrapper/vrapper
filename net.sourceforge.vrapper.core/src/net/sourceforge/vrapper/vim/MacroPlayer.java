@@ -55,10 +55,14 @@ public class MacroPlayer {
         try {
             view.setRepaint(false);
             view.lockRepaint(this);
+            editorAdaptor.getHistory().beginCompoundChange();
+            editorAdaptor.getHistory().lock("macroplayback");
             while (!playlist.isEmpty()) {
                 editorAdaptor.handleKeyOffRecord(playlist.poll());
             }
         } finally {
+            editorAdaptor.getHistory().unlock("macroplayback");
+            editorAdaptor.getHistory().endCompoundChange();
             view.unlockRepaint(this);
             view.setRepaint(true);
         }
