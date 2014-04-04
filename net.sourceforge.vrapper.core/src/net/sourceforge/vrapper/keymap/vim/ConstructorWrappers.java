@@ -388,6 +388,7 @@ public class ConstructorWrappers {
         map.put("SPACE",   key(' '));
         map.put("GT",      key('>'));
         map.put("LT",      key('<'));
+        map.put("BAR",     key('|'));
         
         // add these ctrl keys to keep parseSpecialKey working
         map.put("C-@", new SimpleKeyStroke('@', false, false, true));
