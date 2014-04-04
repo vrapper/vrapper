@@ -280,6 +280,10 @@ public class CommandLineParser extends AbstractCommandParser {
                     vim.getUserInterfaceService().setErrorMessage("Could not parse " + args);
                     return null;
                 }
+                if(expr[1].startsWith("'") && expr[1].endsWith("'") || 
+                       expr[1].startsWith("\"") && expr[1].endsWith("\"")) {
+                    expr[1] = expr[1].substring(1, expr[1].length() - 1);
+                }
                 RegisterContent content = new StringRegisterContent(ContentType.TEXT, expr[1]);
                 vim.getRegisterManager().getRegister( expr[0].substring(1, 2) ).setContent(content);
                 return null;
