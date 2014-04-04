@@ -48,6 +48,8 @@ import net.sourceforge.vrapper.vim.modes.ContentAssistMode;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.modes.VisualMode;
+import net.sourceforge.vrapper.vim.register.RegisterContent;
+import net.sourceforge.vrapper.vim.register.StringRegisterContent;
 
 /**
  * Command Line Mode, activated with ':'.
@@ -257,12 +259,39 @@ public class CommandLineParser extends AbstractCommandParser {
                 return null;
             }
         };
+        Evaluator let = new Evaluator() {
+            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
+                if(command.isEmpty()) {
+                    vim.getUserInterfaceService().setErrorMessage("Argument required");
+                    return null;
+                }
+                String args = "";
+                //remove superfluous whitespace
+                while(command.size() > 0)
+                    args += command.poll().trim();
+
+                if( ! args.startsWith("@")) {
+                    vim.getUserInterfaceService().setErrorMessage("Can only set register contents (@<char>)");
+                    return null;
+                }
+
+                String[] expr = args.split("=");
+                if(expr.length != 2) {
+                    vim.getUserInterfaceService().setErrorMessage("Could not parse " + args);
+                    return null;
+                }
+                RegisterContent content = new StringRegisterContent(ContentType.TEXT, expr[1]);
+                vim.getRegisterManager().getRegister( expr[0].substring(1, 2) ).setContent(content);
+                return null;
+            }
+        };
         
         EvaluatorMapping mapping = new EvaluatorMapping();
         // options
         mapping.add("set", buildConfigEvaluator(/*local=*/false));
         mapping.add("setlocal", buildConfigEvaluator(/*local=*/true));
         mapping.add("source", sourceConfigFile);
+        mapping.add("let", let);
         // save, close
         mapping.add("w", save);
         mapping.add("wall", saveAll);
