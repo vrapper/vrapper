@@ -2,8 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Vrapper Clang-Format Plug-in Core
 Bundle-SymbolicName: net.sourceforge.vrapper.plugin.clangformat.core;singleton:=true
-Bundle-Version: 0.41.20140403
+Bundle-Version: 0.41.20140404
 Export-Package: net.sourceforge.vrapper.plugin.clangformat.commands
-Require-Bundle: net.sourceforge.vrapper.core;bundle-version="0.41.20140403";visibility:=reexport
+Require-Bundle: net.sourceforge.vrapper.core;bundle-version="0.41.20140404";visibility:=reexport
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Eclipse-BuddyPolicy: dependent
