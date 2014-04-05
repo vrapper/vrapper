@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import net.sourceforge.vrapper.eclipse.ui.CaretUtils;
+import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.Configuration;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.SelectionService;
@@ -29,6 +30,7 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.ITextViewerExtension5;
@@ -236,8 +238,22 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
             // is placed in the line below the selection by eclipse. this
             // corrects that behaviour
             if (ContentType.LINES.equals(newSelection.getContentType(configuration))) {
-                if (!newSelection.isReversed()) {
-                    length -=1;
+                int endOffset = newSelection.getEnd().getModelOffset();
+                IDocument document = textViewer.getDocument();
+                int documentLength = document.getLength();
+                if (endOffset == documentLength) {
+                    try {
+                        int lastLineLength = document.getLineInformationOfOffset(endOffset).getLength();
+                        // Only fix if the last line is empty or we won't select the last character.
+                        if (lastLineLength == 0) {
+                            length--;
+                        }
+                    } catch (BadLocationException e) { // Shouldn't really happen...
+                        VrapperLog.error("Failed to get last line info", e);
+                    }
+                // Only fix if selection isn't reversed, reverse selection ends at column 0.
+                } else if (!newSelection.isReversed()) {
+                    length--;
                 }
             }
             selection = newSelection;
