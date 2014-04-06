@@ -194,7 +194,11 @@ files or similarly formatted code.</p>
 <p>exchange.vim is a vim plugin defined here:<br>
 <a href="https://github.com/tommcdo/vim-exchange">https://github.com/tommcdo/vim-exchange</a><br/>
 <br/>
-Easy text exchange operator for Vim.</p>
+Easy text exchange operator for Vim.  Perform cx&lt;text object&gt; once to
+highlight a text object.  Then perform cx&lt;text object&gt; again and the first
+(highlighted) text object will be swapped with the second text object. If you're
+using the same motion again (e.g. exchanging two words using <code>cxiw</code>), you can use
+<code>.</code> the second time.</p>
 <p>The plugin provides the following commands:</p>
 <table class="commands">
     <tr><th>Command</th><th>Mode</th><th>Description</th></tr>
