@@ -1,4 +1,78 @@
 <div class="newsbox">
+    <div class="date">2014-04-06</div>
+    <h4>0.42.0 Released</h4>
+
+    <p>It seems springtime brought some new life for Vrapper development after
+    such a slow winter. 0.42.0 has been released and just look at the list of
+    changes made in the last month (included in 0.42.0):</p>
+    
+    <ul>
+        <li>Added new plugin for exchange.vim port</li>
+        <ul>
+            <li>based on <a href="https://github.com/tommcdo/vim-exchange">https://github.com/tommcdo/vim-exchange</a></li>
+            <li>cx&lt;text object&gt; highlights a text object</li>
+            <li>cx&lt;text object&gt; again swaps text object with highlighted text object</li>
+        </ul>
+        <li>Added support for 'gvimargs' property</li>
+        <ul>
+            <li>Defines args sent to 'gvimpath' for use by :vim command</li>
+            <li>Uses placeholder strings {line}, {col}, and {file}</li>
+            <li>Defaults to: +{line} -c normal zv{col}| -c set nobackup -f -n {file}</li>
+        </ul>
+        <li>Added support for 'ad hoc delimiter' m&lt;char&gt;</li>
+        <ul>
+            <li>Based on a Vim patch which has not yet been merged into Vim</li>
+            <li><a href="https://groups.google.com/forum/#!searchin/vim_dev/im$20am/vim_dev/pZxLAAXxk0M/wdOgpOQ05Z8J">Google Groups discussion</a></li>
+            <li>Use m&lt;char&gt; with i/a to match strings delimited by any arbitrary &lt;char&gt;</li>
+            <li>For example, 'vim*' will select (in VisualMode) the text between two '*' characters</li>
+            <li>**Modified methodtextobj.vim plugin to use 'f' rather than 'm' to avoid this collision**</li>
+        </ul>
+        <li>Added support for '(insert) VISUAL' mode</li>
+        <ul>
+            <li>Highlighting text while in InsertMode moves into '(insert) VISUAL' mode for a single visual operation, then returns to InsertMode</li>
+        </ul>
+        <li>Added support for ':let @&lt;char&gt;=' to set register contents via command-line</li>
+        <ul>
+            <li>Using ':let' ONLY supports setting registers right now</li>
+        </ul>
+        <li>Added ability to map '|' character using '&lt;BAR&gt;'</li>
+        <li>Fixed issue with Vrapper not re-initializing when Eclipse re-uses editors</li>
+        <ul>
+            <li>For the "Close editors automatically" feature in Eclipse</li>
+        </ul>
+        <li>Fixed issue with :eclipseaction from command-line of an editor</li>
+        <li>Fixed issue with :eclipseaction being defined statically for all editors</li>
+        <li>Fixed issue with :surround command in Surround.vim plugin</li>
+        <li>Fixed issue with mappings which use '&lt;' or '&gt;' character</li>
+        <li>Fixed issue with search strings that end in a backslash</li>
+        <li>Fixed issue where :t/:move/:copy were requiring a space after the command (which Vim doesn't require)</li>
+        <li>Fixed issue with map and noremap not including omap</li>
+        <li>Fixed issue with cursor position when exiting visual line mode</li>
+        <li>Fixed issue swapping between beginning and end of a visual selection when Windows line-endings are present</li>
+        <li>Fixed issue where having a visual selection, moving into command-line mode, then hitting &lt;ESC&gt; didn't clear the selection</li>
+        <li>Fixed issue where executing a macro wasn't a single undo-able operation</li>
+        <li>Fixed issue with visually selecting the last character in a file</li>
+        <li>Fixed display issue when restoring a reversed selection</li>
+        <li>Refactored how text objects are defined to better support plugins</li>
+    </ul>
+    
+    <p>I occasionally like to include some shameless self-congratulation when
+    releasing a new version.  I searched Twitter for 'Vrapper' and here are some
+    of my favorite tweets about Vrapper.  Thank you for all the love!</p>
+    <p>‏@RobertFischer: Installed Vrapper and rebooted Eclipse. The skies opened opened up,
+    angels sang, a tear came to my eye. IDE Heaven.</p>
+    <p>@bigtbigtbigt: Just discovered Vrapper for Eclipse after a long session of coding (I'm
+    new to @EclipseFdn).  I am in heaven!</p>
+    <p>@yottamoto: Just discovered the vrapper VI plugin for eclipse
+    (http://vrapper.sourceforge.net/home/ ). Now, my day is made, And possibly,
+    the rest of my days also.</p>
+    <p>@NicolasBrailo: Vrapper: a real text editor for Eclipse</p>
+    <p>@jmaicher: How could I have used eclipse without vrapper (vim-like editing
+    in Eclipse)? Awesome tool, it just works! &lt;3</p>
+    <p>@mojavelinux: OMG, my dev environment is complete! Just discovered
+    vrapper, a *lightweight* vim mode for all #Eclipse editors</p>
+</div>
+<div class="newsbox">
     <div class="date">2014-03-02</div>
     <h4>Updates to unstable update site</h4>
 
