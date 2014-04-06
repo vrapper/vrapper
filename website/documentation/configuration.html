@@ -228,6 +228,14 @@ which we implemented.</p>
         <td>Defines path to gvim used with :vim command.</td>
     </tr>
     <tr>
+        <td>:set&nbsp;gvimargs=&lt;arguments for gvim executable&gt;</td>
+        <td>none</td>
+        <td>gvimargs=+{line} -c normal zv{col}| -c set nobackup -f -n {file}</td>
+        <td>Defines arguments to send to gvim when using :vim command.  Supports
+        placeholder strings {line}, {col}, and {file} which define current
+        cursor position and filename in Eclipse.</td>
+    </tr>
+    <tr>
         <td>:set&nbsp;cleanindent<br/>:set&nbsp;nocleanindent</td>
         <td>none</td>
         <td>On</td>
@@ -378,6 +386,7 @@ which we implemented.</p>
        <li>DELETE</li>
        <li>BACKSPACE*</li>
        <li>SPACE</li>
+       <li>BAR</li>
    </ul>
    <dl>
     <dt>* InsertMode can only map the special character names marked with an asterisk. All other special characters of this list are ignored.</dt>

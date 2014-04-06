@@ -125,6 +125,11 @@ Commands may be chained with a '|' character between them. For example:<br/>
         <td>Include another config file (e.g., ":source .vimrc") to extend current configuration</td>
     </tr>
     <tr>
+        <td>:let @&lt;char&gt;=&lt;register contents&gt;</td>
+        <td>Programmatically set register contents for register &lt;char&gt;.  Register can then be executed as a macro.<br/><br/>
+        We don't currently support any other <code>:let</code> behavior.</td>
+    </tr>
+    <tr>
         <td>:!&lt;command&gt;</td>
         <td>Execute a shell command with the selected text as input.</td>
     </tr>
@@ -262,7 +267,9 @@ Commands may be chained with a '|' character between them. For example:<br/>
         and column as it was in Eclipse.  This allows you to perform any operation in gvim which Vrapper doesn't support.
         After you save the file and exit gvim (:wq) Eclipse will reload the file with your changes.
         <br/><br/>
-        Path to gvim is determined by 'gvimpath' property (defaults to /usr/bin/gvim).</td>
+        Path to gvim is determined by 'gvimpath' property (defaults to /usr/bin/gvim).<br/>
+        Arguments for gvim is determined by 'gvimargs' property.<br/>
+        </td>
     </tr>
     <tr>
         <td>:maximize</td>
