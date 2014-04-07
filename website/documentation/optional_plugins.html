@@ -123,7 +123,7 @@ and the Vrapper PyDev plugin has a dependency on the PyDev package.</p>
 <br/>
 <p>
 We are able to define a mapping for any Eclipse operation within
-the org.eclipse.cdt.ui.edit.* or org.eclipse.jdt.ui.edit.text.java.*
+the <code>org.eclipse.cdt.ui.edit.*</code> or <code>org.eclipse.jdt.ui.edit.text.java.*</code>
 Eclipse namespaces.  If there are any commands you'd like us to support,
 just file an <a href="https://github.com/vrapper/vrapper/issues">Issue</a> on our GitHub project.
 </p>
@@ -131,7 +131,7 @@ just file an <a href="https://github.com/vrapper/vrapper/issues">Issue</a> on ou
 <h3>Clang-Format Plugin</h3>
 <p>This plugin formats your C/C++/Obj-C code with specific coding style using
 LLVM <code>clang-format</code> tool (<a href="http://clang.llvm.org/docs/ClangFormat.html">http://clang.llvm.org/docs/ClangFormat.html</a>).
-You must have the <code>clang-format</code> command in your $PATH for the plugin to work.
+You must have the <code>clang-format</code> command in your <code>$PATH</code> for the plugin to work.
 </p>
 
 <p>
@@ -150,13 +150,13 @@ a region of text and configure default formatting style options:
         <blockquote><pre>
 Coding style, currently supports:
 LLVM, Google, Chromium, Mozilla, WebKit.
-Use -style=file to load style configuration from
+Use <code>-style=file</code> to load style configuration from
 .clang-format file located in one of the parent
 directories of the source file (or current
 directory for stdin).
-Use -style="{key: value, ...}" to set specific
+Use <code>-style="{key: value, ...}"</code> to set specific
 parameters, e.g.:
--style="{BasedOnStyle: llvm, IndentWidth: 8}"
+<code>-style="{BasedOnStyle: llvm, IndentWidth: 8}"</code>
         </pre></blockquote>
     </dd>
 
@@ -173,20 +173,20 @@ parameters, e.g.:
 <h3>Improved Paragraph Motion (ipmotion.vim) Plugin</h3>
 <p>Ipmotion.vim is a vim plugin defined here:<br>
 <a href="http://www.vim.org/scripts/script.php?script_id=3952">http://www.vim.org/scripts/script.php?script_id=3952</a><br/>
-This script modifies the behavior of '{' and '}' to be non-Vim compliant but more sensible.  Basically, a line with only whitespace
+This script modifies the behavior of <code>{</code> and <code>}</code> to be non-Vim compliant but more sensible.  Basically, a line with only whitespace
 is considered a paragraph boundary rather than requiring lines to be completely empty.  The script allows for any arbitrary
 regex to be used in determining paragraph boundaries; our port of this script does not currently include that behavior.</p>
 
 <h3>Argument Text Object (argtextobj.vim) Plugin</h3>
 <p>Argtextobj.vim is a vim plugin defined here:<br>
 <a href="http://www.vim.org/scripts/script.php?script_id=2699">http://www.vim.org/scripts/script.php?script_id=2699</a><br/>
-This script defines a text object 'a' (argument) to easily modify arguments within a method declaration.</p>
+This script defines a text object <code>a</code> (argument) to easily modify arguments within a method declaration.</p>
 
 <h3>Method Text Object (methodtextobj.vim) Plugin</h3>
 <p>Methodtextobj.vim is a vim plugin based loosely on:<br>
 <a href="http://www.vim.org/scripts/script.php?script_id=2619">http://www.vim.org/scripts/script.php?script_id=2619</a><br/>
-This script defines a text object 'f' (function) to easily change and delete function contents.  It is defined as the 2nd-level
-of matching '{' and '}' in a file (where a class definition would be the 1st-level). Thus it is handy for Java and C++ source
+This script defines a text object <code>f</code> (function) to easily change and delete function contents.  It is defined as the 2nd-level
+of matching <code>{</code> and <code>}</code> in a file (where a class definition would be the 1st-level). Thus it is handy for Java and C++ source
 files or similarly formatted code.</p>
 
 <h3>Exchange (exchange.vim) Plugin</h3>
@@ -194,8 +194,8 @@ files or similarly formatted code.</p>
 <p>exchange.vim is a vim plugin defined here:<br>
 <a href="https://github.com/tommcdo/vim-exchange">https://github.com/tommcdo/vim-exchange</a><br/>
 <br/>
-Easy text exchange operator for Vim.  Perform cx&lt;text object&gt; once to
-highlight a text object.  Then perform cx&lt;text object&gt; again and the first
+Easy text exchange operator for Vim.  Perform <code>cx&lt;text object&gt;</code> once to
+highlight a text object.  Then perform <code>cx&lt;text object&gt;</code> again and the first
 (highlighted) text object will be swapped with the second text object. If you're
 using the same motion again (e.g. exchanging two words using <code>cxiw</code>), you can use
 <code>.</code> the second time.</p>
@@ -209,7 +209,7 @@ using the same motion again (e.g. exchanging two words using <code>cxiw</code>),
 </table>
 
 <p>The colour of the exchange region is configured in <br/>
-<i>Windows</i> -&gt <i>Preferences</i> -&gt <i>General</i> -&gt <i>Editors</i> -&gt <i>Text Editors</i> -&gt <i>Annotations</i> -&gt <i>Vrapper Exchange Region</i></p>
+<i>Windows</i> -&gt; <i>Preferences</i> -&gt; <i>General</i> -&gt; <i>Editors</i> -&gt; <i>Text Editors</i> -&gt; <i>Annotations</i> -&gt; <i>Vrapper Exchange Region</i></p>
 
 <p>NOTE: Block-wise visual selection is not implemented.</p>
 
@@ -217,7 +217,7 @@ using the same motion again (e.g. exchanging two words using <code>cxiw</code>),
 <p>Surround.vim is a vim plugin defined here:<br>
 <a href="http://www.vim.org/scripts/script.php?script_id=1697">http://www.vim.org/scripts/script.php?script_id=1697</a><br/>
 The Vrapper Surround plugin is a partial port of this script. The Vrapper Surround plugin
-can be invoked as the 'cs', 'ds' and 'ys' commands in normal mode, or as 'S' and 'gS' in
+can be invoked as the <code>cs</code>, <code>ds</code> and <code>ys</code> commands in normal mode, or as <code>S</code> and <code>gS</code> in
 visual mode. For these commands, the following replacements are supported:
 <ul>
 	<li>b ( )</li>
@@ -233,26 +233,26 @@ visual mode. For these commands, the following replacements are supported:
 
 <p>A few examples:
 <ol>
-    <li>Press <tt>ysE"</tt> to wrap all characters till the next space in double
-        quotes (text objects can also be used, e.g. <tt>ysit"</tt>).</li>
-    <li>Use <tt>cs"}</tt> to change those double quotes into curly brackets.</li>
-    <li>Pressing <tt>ds}</tt> will then remove the surrounding curly brackets.</li>
+    <li>Press <code>ysE"</code> to wrap all characters till the next space in double
+        quotes (text objects can also be used, e.g. <code>ysit"</code>).</li>
+    <li>Use <code>cs"}</code> to change those double quotes into curly brackets.</li>
+    <li>Pressing <code>ds}</code> will then remove the surrounding curly brackets.</li>
 </ol>
 Read the original script's documentation for more examples.</p>
 
 <h4>Custom delimiters</h4>
 <p>Surround.vim allows to introduce custom delimiters using variables. Vrapper has no
-support for such variables, so the <tt>surround</tt> command was introduced instead.</p>
+support for such variables, so the <code>surround</code> command was introduced instead.</p>
 
 <p>A few examples:<br/>
 <dl>
-    <dt><tt>:surround - &lt;?php\r?&gt;</tt></dt>
-    <dd>Introduces a new delimiter bound to "-". The "\r" is a marker to know what the
+    <dt><code>:surround - &lt;?php\r?&gt;</code></dt>
+    <dd>Introduces a new delimiter bound to <code>-</code>. The <code>\r</code> is a marker to know what the
         left and right bound should be.</dd>
 
-    <dt><tt>:surround + &lt;?php&lt;SPACE&gt;\r&lt;SPACE&gt;?&gt;</tt></dt>
-    <dd>Introduces a new delimiter bound to "+", this time with extra spaces. Spaces MUST
-        be specified as <tt>&lt;SPACE&gt;</tt>, otherwise the command parser will fail.
+    <dt><code>:surround + &lt;?php&lt;SPACE&gt;\r&lt;SPACE&gt;?&gt;</code></dt>
+    <dd>Introduces a new delimiter bound to <code>+</code>, this time with extra spaces. Spaces MUST
+        be specified as <code>&lt;SPACE&gt;</code>, otherwise the command parser will fail.
         A later version might fix this and simply allow the use of double quotes.
     </dd>
 </dl>
@@ -263,31 +263,31 @@ support for such variables, so the <tt>surround</tt> command was introduced inst
 the matched text. While this is similar with the original plugin, the Vrapper version
 has one custom feature, it allows to either ignore, add or override attributes.</p>
 
-<p> For the following examples, assume that we are inside a tag <tt>&lt;div class="comments" id="div1"&gt;
-...&lt;/div&gt;</tt>.</p>
+<p> For the following examples, assume that we are inside a tag <code>&lt;div class="comments" id="div1"&gt;
+    ...&lt;/div&gt;</code>.</p>
 
 <h5>Replace tag, keep attributes</h5>
 <ol>
-    <li>Press <tt>cstt</tt>. The tag replace prompt pops up.</li>
-    <li>Enter <tt>&lt;span</tt></li>
+    <li>Press <code>cstt</code>. The tag replace prompt pops up.</li>
+    <li>Enter <code>&lt;span</code></li>
 </ol>
 <p>The attributes are untouched.</p>
 
 <h5>Replace tag, add attributes</h5>
 <ol>
-    <li>Press <tt>cstt</tt>. The tag replace prompt pops up.</li>
-    <li>Enter <tt>&lt;span style="float: left"</tt></li>
+    <li>Press <code>cstt</code>. The tag replace prompt pops up.</li>
+    <li>Enter <code>&lt;span style="float: left"</code></li>
 </ol>
 <p>The tag is changed and an extra attribute is added at the front.</p>
 
 <h5>Change tag, replace attributes</h5>
 <ol>
-    <li>Press <tt>cstt</tt> again.</li>
-    <li>Enter <tt>&lt;span style="float:left" id="span"&gt;</tt></li>
+    <li>Press <code>cstt</code> again.</li>
+    <li>Enter <code>&lt;span style="float:left" id="span"&gt;</code></li>
 </ol>
     
 <h5>Change tag, remove all attributes</h5>
 <ol>
-    <li>Press <tt>cstt</tt> again.</li>
-    <li>Enter <tt>&lt;span&gt;</tt></li>
+    <li>Press <code>cstt</code> again.</li>
+    <li>Enter <code>&lt;span&gt;</code></li>
 </ol>

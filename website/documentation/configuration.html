@@ -2,8 +2,8 @@
 
 <h3>Settings</h3>
 <p>Vrapper's behaviour can be configured with command-line options.</p>
-<p>You can find the current value of a property with ':set &lt;property&gt;?'</p>
-<p>You can also use ':setlocal' to make a setting only applicable to this file (Eclipse tab) instance.</p>
+<p>You can find the current value of a property with <code>:set &lt;property&gt;?</code></p>
+<p>You can also use <code>:setlocal</code> to make a setting only applicable to this file (Eclipse tab) instance.</p>
 
 <h3>Vim Settings</h3>
 <p>These settings can be found in Vim and we've done our best to match the Vim behavior as closely as possible.</p>
@@ -26,8 +26,8 @@
         <td>:set&nbsp;ai<br/>:set&nbsp;noai</td>
         <td>Off</td>
         <td>Whether to indent inserted lines or not. When active, lines
-            inserted with "o" or "O" will use the indent of
-            the line under the cursor. "cc" or "S" will keep the
+            inserted with <code>o</code> or <code>O</code> will use the indent of
+            the line under the cursor. <code>cc</code> or <code>S</code> will keep the
             whitespace at the beginning of a line.</td>
     </tr>
     <tr>
@@ -84,7 +84,7 @@
         <td>:set&nbsp;acd<br/>:set&nbsp;noacd</td>
         <td>Off</td>
         <td>Automatically change the current working directory to the parent of whatever file is currently active in Eclipse.
-        The current working directory is used by the ':e' command.
+        The current working directory is used by the <code>:e</code> command.
         </td>
     </tr>
     <tr>
@@ -106,67 +106,66 @@
         <td>:set&nbsp;textwidth=&lt;N&gt;</td>
         <td>:set&nbsp;tw=&lt;N&gt;</td>
         <td>textwidth=80</td>
-        <td>Only used by the 'gq' command to format paragraphs.  Defines max line length when formatting.
+        <td>Only used by the <code>gq</code> command to format paragraphs.  Defines max line length when formatting.
         </td>
     </tr>
     <tr>
         <td>:set&nbsp;softtabstop=&lt;N&gt;</td>
         <td>:set&nbsp;sts=&lt;N&gt;</td>
         <td>softtabstop=0</td>
-        <td>When using spaces for tabs, set this to the number of spaces inserted for each &lt;TAB&gt; key press
-        and hitting &lt;backspace&gt; in InsertMode will delete that many spaces as if you had deleted a TAB character.
+        <td>When using spaces for tabs, set this to the number of spaces inserted for each <code>Tab</code> key press
+        and hitting <code>Backspace</code> in InsertMode will delete that many spaces as if you had deleted a tab character.
         </td>
     </tr>
     <tr>
         <td>:set&nbsp;tabstop=&lt;N&gt;</td>
         <td>:set&nbsp;ts=&lt;N&gt;</td>
         <td>tabstop=8</td>
-        <td>Used by i_ctrl-t, i_ctrl-d, and :retab.  Determines number of spaces to replace each tab character with
-        when 'expandtab' is enabled.</td>
+        <td>Used by i_ctrl-t, i_ctrl-d, and <code>:retab</code>.  Determines number of spaces to replace each tab character with
+        when <code>expandtab</code> is enabled.</td>
     </tr>
     <tr>
         <td>:set&nbsp;expandtab<br/>:set&nbsp;noexpandtab</td>
         <td>:set&nbsp;et<br/>:set&nbsp;noet</td>
         <td>On</td>
-        <td>Used by i_ctrl-t, i_ctrl-d, and :retab.  Determines whether :retab should replace all tabs with spaces (true)
-        or spaces with tabs (false).  Also determines whether i_ctrl-t and i_ctrl-d will replace 'tabstop' spaces with a tab.</td>
+        <td>Used by i_ctrl-t, i_ctrl-d, and <code>:retab</code>.  Determines whether <code>:retab</code> should replace all tabs with spaces (true)
+        or spaces with tabs (false).  Also determines whether i_ctrl-t and i_ctrl-d will replace <code>tabstop</code> spaces with a tab.</td>
     </tr>
     <tr>
         <td>:set&nbsp;shiftround<br/>:set&nbsp;noshiftround</td>
         <td>:set&nbsp;sr<br/>:set&nbsp;nosr</td>
         <td>Off</td>
-        <td>Round indent (i_ctrl-t, i_ctrl-d, '&gt;&gt' and '&lt;&lt;') to the nearest multiple of 'shiftwidth'.</td>
+        <td>Round indent (i_ctrl-t, i_ctrl-d, <code>&gt;&gt;</code> and <code>&lt;&lt;</code>) to the nearest multiple of <code>shiftwidth</code>.</td>
     </tr>
     <tr>
         <td>:set&nbsp;shiftwidth=&lt;N&gt;</td>
         <td>:set&nbsp;sw=&lt;N&gt;</td>
         <td>shiftwidth=8</td>
-        <td>Used by i_ctrl-t, i_ctrl-d, '&gt;', and '&lt;' commands.  Determines how many spaces are used for each indent added or removed.</td>
+        <td>Used by i_ctrl-t, i_ctrl-d, <code>&gt;</code>, and <code>&lt;</code> commands.  Determines how many spaces are used for each indent added or removed.</td>
     </tr>
     <tr>
         <td>:set&nbsp;path=&lt;comma-delimited list of dirs&gt;</td>
         <td>none</td>
         <td>path=.</td>
-        <td>List of directories searched during the ':find &lt;filename&gt;' command.
-        Default directory of '.' represents directory of the current active file in Eclipse.
-        A path may end in '**' to represent "all sub-directories".<br/>For example, ":set path=src/main/java/**"</td>
+        <td>List of directories searched during the <code>:find &lt;filename&gt;</code> command.
+        Default directory of <code>.</code> represents directory of the current active file in Eclipse.
+        A path may end in <code>**</code> to represent "all sub-directories".<br/>For example, <code>:set path=src/main/java/**</code></td>
     </tr>
     <tr>
         <td>:set&nbsp;iskeyword=&lt;regex of word characters&gt;</td>
         <td>:set isk=&lt;characters&gt;</td>
         <td>iskeyword=a-zA-Z0-9_</td>
         <td>Regex of character-classes which should be treated as word
-        characters. This will be interpreted as the regex "[&lt;iskeyword
-        value&gt;]".  All contiguous characters matching this regex will be treated
-        as one word for 'w' and '*' commands.<br/>
-        This property can also be modified with += and -= (e.g., ':set isk+=.')</td>
+        characters. This will be interpreted as the regex <code>[&lt;iskeyword value&gt;]</code>.  All contiguous characters matching this regex will be treated
+        as one word for <code>w</code> and <code>*</code> commands.<br/>
+        This property can also be modified with <code>+=</code> and <code>-=</code> (e.g., <code>:set isk+=.</code>)</td>
     </tr>
     <tr>
         <td>:set&nbsp;clipboard=&lt;name&gt;</td>
         <td>none</td>
         <td>clipboard=autoselect</td>
-        <td>:set&nbsp;clipboard=unnamed will use the system clipboard for all 'y' and 'p' operations.<br/>
-            :set&nbsp;clipboard=autoselect will use the standard "* clipboard.</td>
+        <td><code>:set&nbsp;clipboard=unnamed</code> will use the system clipboard (also known as <code>"+</code>) for all <code>y</code> and <code>p</code> operations.<br/>
+            <code>:set&nbsp;clipboard=autoselect</code> will use the standard <code>"*</code> clipboard.</td>
     </tr>
 </table>
 
@@ -232,14 +231,14 @@ which we implemented.</p>
         <td>none</td>
         <td>gvimargs=+{line} -c normal zv{col}| -c set nobackup -f -n {file}</td>
         <td>Defines arguments to send to gvim when using :vim command.  Supports
-        placeholder strings {line}, {col}, and {file} which define current
+        placeholder strings <code>{line}</code>, <code>{col}</code>, and <code>{file}</code> which define current
         cursor position and filename in Eclipse.</td>
     </tr>
     <tr>
         <td>:set&nbsp;cleanindent<br/>:set&nbsp;nocleanindent</td>
         <td>none</td>
         <td>On</td>
-        <td>If you create a new line with 'o' while autoindent is enabled, that new line will be indented.
+        <td>If you create a new line with <code>o</code> while autoindent is enabled, that new line will be indented.
         If you then exit insert mode without entering any text, that auto-indent is typically removed
         (leaving only a blank line).  Disable cleanindent if you <i>don't</i> want it to cleanup that auto-indent.</td>
     </tr>
@@ -256,8 +255,8 @@ which we implemented.</p>
         <td>:set&nbsp;contentassistmode<br/>:set&nbsp;nocontentassistmode</td>
         <td>:set&nbsp;cam<br/>:set&nbsp;nocam</td>
         <td>Off</td>
-        <td>Enables &lt;c-n&gt; and &lt;c-p&gt; to move selection up and down in the content-assist dropdown.<br/>
-        Use 'camap' to map other keys to &lt;c-n&gt; or &lt;c-p&gt;.</td>
+        <td>Enables <code>c-n</code> and <code>c-p</code> to move selection up and down in the content-assist dropdown.<br/>
+        Use <code>camap</code> to map other keys to <code>c-n</code> or <code>c-p</code>.</td>
     </tr>
     <tr>
         <td>:set&nbsp;startnormalmode<br/>:set&nbsp;nostartnormalmode</td>
@@ -277,11 +276,13 @@ which we implemented.</p>
 </table>
 
 
+<a name="remapping"/>
 <h3>Remapping Keys</h3>
 <p>There are a lot of commands for defining different key mappings, but
    essentially four actions: create a mapping which is searched again for
    other mappings, create one which is not mapped again, clear a mapping,
-   and clear all mappings. Each of these four actions can be done either for   normal and visual mode together or for one of normal, visual, or insert
+   and clear all mappings. Each of these four actions can be done either for
+   normal and visual mode together or for one of normal, visual, or insert
    mode alone. The commands are:</p>
    <table class="commands" style="margin-bottom:1em">
        <tr>
@@ -363,12 +364,14 @@ which we implemented.</p>
        </tr>
    </table>
 <p>It is possible to map multiple keys to multiple other keys, e.g.
-   ":ino jj &lt;ESC&gt;" or ":nn cw ce".</p>
-   <p>Special characters can be mapped by using the notation &lt;NAME&gt;.
-   Control characters are mapped by using &lt;C-x&gt;, where x is a character from A-Z. Similarly, Alt (meta) characters
-   are mapped by using &lt;A-x&gt; or &lt;M-x&gt; and Shift characters are mapped by using &lt;S-x&gt;.
+   <code>:ino jj &lt;ESC&gt;</code> or <code>:nn cw ce</code>.</p>
+   <p>Special characters can be mapped by using the notation <code>&lt;NAME&gt;</code>.
+   Control characters are mapped by using <code>&lt;C-x&gt;</code>, where x is a character from A-Z. Similarly, Alt (meta) characters
+   are mapped by using <code>&lt;A-x&gt;</code> or <code>&lt;M-x&gt;</code>. Shift characters are mapped by using
+   <code>&lt;S-x&gt;</code> but only the special keys are supported.
    Here is a list of special character names:</p>
    <ul class="commands">
+       <li>F1 to F12</li>
        <li>GT</li>
        <li>LT</li>
        <li>LEFT*</li>
@@ -389,10 +392,13 @@ which we implemented.</p>
        <li>BAR</li>
    </ul>
    <dl>
-    <dt>* InsertMode can only map the special character names marked with an asterisk. All other special characters of this list are ignored.</dt>
+       <dt>* InsertMode can only understand the special character names marked with an asterisk.
+           For example, <code>:inoremap &lt;C-E&gt; &lt;DELETE&gt;</code> won't currently do anything.</dt>
    </dl>
+
+
 <h3>Collisions between Vrapper and Eclipse bindings</h3>
-<p>If a key combination is already mapped by Eclipse (e.g. Ctrl-P on Windows and
+<p>If a key combination is already mapped by Eclipse (e.g. <code>Ctrl-P</code> on Windows and
 Linux based systems is mapped to print), Vrapper will not receive the keystroke,
 so mapping it to some Vrapper action will not work.</p>
 <p>In Eclipse, go to the Preferences window, then General -&gt; Keys. Find the
@@ -402,9 +408,9 @@ Vrapper should now receive the keystrokes and your mapping should work
 correctly.</p>
 <h3>Configuration File</h3>
 <p>The options described above only change the behaviour of the editor in which they are set.
-To change the default configuration, a file is used. When a new editor is opened, the plugin checks for a file called "<b>.vrapperrc</b>"
-in the user's home directory (or "<b>_vrapperrc</b>" to make it easier for Windows people). If found, the commands in the file are executed. You may use any
-configuration command in this file. As with ".vimrc" files, the leading ":" is omitted in the configuration file.</p>
+To change the default configuration, a file is used. When a new editor is opened, the plugin checks for a file called <b><code>.vrapperrc</code></b>
+in the user's home directory (or <b><code>_vrapperrc</code></b> to make it easier for Windows people). If found, the commands in the file are executed. You may use any
+configuration command in this file. As with <code>.vimrc</code> files, the leading <code>:</code> is omitted in the configuration file.</p>
 <p>This is an example of the contents of a configuration file:</p>
 <pre>
 noremap d h

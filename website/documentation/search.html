@@ -1,19 +1,19 @@
 <h2>Search</h2>
 
 <p>Vrapper uses search functionality offered by Eclipse to do the actual search.
-You can use "/keyword" or "?keyword" to search for a keyword. "n" jumps to the
-next match while "N" jumps to the previous match.</p>
+You can use <code>/keyword</code> or <code>?keyword</code> to search for a keyword. <code>n</code> jumps to the
+next match while <code>N</code> jumps to the previous match.</p>
 
 <p>You may also specify search offsets as known from Vim. For example,
-"/keyword/e-2" searches for the keyword and then jumps to the "o" of the match.
-If the keyword is omitted, like "//b+2", the last keyword is used and only the
+<code>/keyword/e-2</code> searches for the keyword and then jumps to the <code>o</code> of the match.
+If the keyword is omitted, like <code>//b+2</code>, the last keyword is used and only the
 offset of the search changes.</p>
 
 <p>Case sensitivity can be controlled via the options <a href="?page=6">ignorecase and smartcase</a>.
-Or, you can temporarily override those options by putting '\c' or '\C' anywhere in your search string.
-'\c' forces case <b>insensitive</b> for this search, '\C' forces case <b>sensitive</b> for this search.</p>
+Or, you can temporarily override those options by putting <code>\c</code> or <code>\C</code> anywhere in your search string.
+<code>\c</code> forces case <b>insensitive</b> for this search, <code>\C</code> forces case <b>sensitive</b> for this search.</p>
 
-<p>"*" and "#" commands are also available. These search for an exact match of the word under the cursor.</p>
+<p><code>*</code> and <code>#</code> commands are also available. These search for an exact match of the word under the cursor.</p>
 
 <p>All search commands (n, N, *, #, /, ?) can be used like motions, i. e. combined with counts and operators.</p>
 
@@ -21,16 +21,16 @@ Or, you can temporarily override those options by putting '\c' or '\C' anywhere 
 <p>Vrapper supports a couple special cases when performing a search and replace (:s/foo/bar/).
 These should all align with the equivalent Vim behavior.</p>
 
-<p>Whatever character appears after the ':s' will be used as the delimiter.
-For example, ':s/foo/bar/g' and ':s_foo_bar_g'.</p>
+<p>Whatever character appears after the <code>:s</code> will be used as the delimiter.
+For example, <code>:s/foo/bar/g</code> and <code>:s_foo_bar_g</code>.</p>
 
-<p>In the replace string, '\r' will be interpreted as a (platform-independent)
-newline.  Using '\n' in the replace string will result in the '\n' character
+<p>In the replace string, <code>\r</code> will be interpreted as a (platform-independent)
+newline.  Using <code>\n</code> in the replace string will result in the cariage return (0x0D) character
 being inserted literally.  This means it may work fine on files with Unix line
-endings but if you have Windows line endings '\n' will cause problems.</p>
+endings but if you have Windows line endings <code>\n</code> will cause problems.</p>
 
-<p>If the replace string exactly matches '\=@&lt;char&gt;' then the contents of
+<p>If the replace string exactly matches <code>\=@&lt;char&gt;</code> then the contents of
 register &lt;char&gt; will be used for the replacement.  For example,
-:s/foo/\=@x/ will replace 'foo' with the contents of register 'x'.</p>
+<code>:s/foo/\=@x/</code> will replace 'foo' with the contents of register <code>x</code>.</p>
 
-<p>The following flags are supported after the replace string: 'c' (confirm), 'g' (global), 'i' (insensitive case), 'I' (sensitive case)</p>
+<p>The following flags are supported after the replace string: <code>c</code> (confirm), <code>g</code> (global), <code>i</code> (insensitive case), <code>I</code> (sensitive case)</p>

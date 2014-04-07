@@ -1,9 +1,9 @@
 <h2>Command-Line Commands</h2>
 
-This page describes the commands available within the command-line ' : ' mode.<br/><br/>
+This page describes the commands available within the command-line <code> : </code> mode.<br/><br/>
 
-Commands may be chained with a '|' character between them. For example:<br/>
-:'<,'>s/foo/bar/g  |  '<,'>s/baz/bat/g
+Commands may be chained with a <code>|</code> character between them. For example:<br/>
+<code>:'<,'>s/foo/bar/g  |  '<,'>s/baz/bat/g</code>
 <br/><br/>
 
 <table class="commands">
@@ -74,7 +74,7 @@ Commands may be chained with a '|' character between them. For example:<br/>
     </tr>
     <tr>
         <td>:cd &lt;directory&gt;</td>
-        <td>Changes current working directory (used by :e command).</td>
+        <td>Changes current working directory (used by <code>:e</code> command).</td>
     </tr>
     <tr>
         <td>:pwd</td>
@@ -122,7 +122,7 @@ Commands may be chained with a '|' character between them. For example:<br/>
     </tr>
     <tr>
         <td>:source &lt;filename&gt;</td>
-        <td>Include another config file (e.g., ":source .vimrc") to extend current configuration</td>
+        <td>Include another config file (e.g. <code>:source .vimrc</code>) to extend current configuration</td>
     </tr>
     <tr>
         <td>:let @&lt;char&gt;=&lt;register contents&gt;</td>
@@ -151,8 +151,8 @@ Commands may be chained with a '|' character between them. For example:<br/>
         The &lt;editor&nbsp;type&gt; is the "registered name" of the Eclipse "part".<br/><br/>
         For example:
         <ul>
-            <li>autocmd "C/C++ Editor" eclipseaction gv org.eclipse.cdt.ui.edit.text.c.select.last</li>
-            <li>autocmd "CMake Editor" nnoremap &lt;CR&gt; gf</li>
+            <li><code>autocmd "C/C++ Editor" eclipseaction gv org.eclipse.cdt.ui.edit.text.c.select.last</code></li>
+            <li><code>autocmd "CMake Editor" nnoremap &lt;CR&gt; gf</code></li>
         </ul>
         </td>
     </tr>
@@ -160,42 +160,42 @@ Commands may be chained with a '|' character between them. For example:<br/>
         <td><nobr>:[%]s/&lt;search&gt;/&lt;replace&gt;/[g|c|i|I]</nobr></td>
         <td>The famous substitution feature.
         <ul>
-        <li>Supports flags 'g' for global (all matches), 'c' for confirmation, 'i' for case-insensitive</li>
-        <li>Supports '%' for performing substitution on all lines<br/>(e.g., :%s/foo/bar/)</li>
-        <li>Whatever non-alphanumeric character is after :s will be the delimiter<br/>(e.g., :s_foo_bar_)</li>
-        <li>Uses Eclipse's flavor of regex<br/>(e.g., :s/foo(.+)foo/bar$1bar/)</li>
+        <li>Supports flags <code>g</code> for global (all matches), <code>c</code> for confirmation, <code>i</code> for case-insensitive</li>
+        <li>Supports <code>%</code> for performing substitution on all lines<br/>(e.g., <code>:%s/foo/bar/</code>)</li>
+        <li>Whatever non-alphanumeric character is after <code>:s</code> will be the delimiter<br/>(e.g., <code>:s_foo_bar_</code>)</li>
+        <li>Uses Eclipse's flavor of regex<br/>(e.g., <code>:s/foo(.+)foo/bar$1bar/</code>)</li>
         </ul>
         </td>
     </tr>
     <tr>
         <td>:&lt;range&gt;,&lt;range&gt;[y|d|s|c|t|m]</td>
-        <td>Perform either the yank (y), delete (d), substitution (s), copy (c, t), or move (m) operation on a range of lines.
+        <td>Perform either the yank (<code>y</code>), delete (<code>d</code>), substitution (<code>s</code>), copy (<code>c</code>, <code>t</code>), or move (<code>m</code>) operation on a range of lines.
         <table>
         <tr>
         <td style="border:none">Supports:<br/>
             <ul>
-            <li>number for specific line number</li>
-            <li>. for current line</li>
-            <li>$ for last line in the file</li>
-            <li>?&lt;pattern&gt;? for first match above current line</li>
-            <li>/&lt;pattern&gt;/ for first match below current line</li>
-            <li>'&lt;a-x&gt; for mark</li>
-            <li>You can also add modifiers +/-</li>
+            <li><code>number</code> for specific line number</li>
+            <li><code>.</code> for current line</li>
+            <li><code>$</code> for last line in the file</li>
+            <li><code>?&lt;pattern&gt;?</code> for first match above current line</li>
+            <li><code>/&lt;pattern&gt;/</code> for first match below current line</li>
+            <li><code>'&lt;a-x&gt;</code> for mark</li>
+            <li>You can also add modifiers <code>+</code>/<code>-</code></li>
             </ul>
         </td>
         <td style="border:none">Examples:<br/>
         	<ul>
-        	<li>:3,5d</li>
-			<li>:3,5y</li>
-			<li>:.,$y</li>
-			<li>:.+3,$-2y</li>
-            <li>:2,5s/foo/bar/g</li>
-            <li>:1,/foo/d</li>
-            <li>:'a,'bd</li>
-            <li>:?something?,+4y</li>
-            <li>:?something?,/foo/y</li>
-            <li>:10,20 copy 140</li>
-            <li>:15,35 move 110</li>
+        	<li><code>:3,5d</code></li>
+			<li><code>:3,5y</code></li>
+			<li><code>:.,$y</code></li>
+			<li><code>:.+3,$-2y</code></li>
+            <li><code>:2,5s/foo/bar/g</code></li>
+            <li><code>:1,/foo/d</code></li>
+            <li><code>:'a,'bd</code></li>
+            <li><code>:?something?,+4y</code></li>
+            <li><code>:?something?,/foo/y</code></li>
+            <li><code>:10,20 copy 140</code></li>
+            <li><code>:15,35 move 110</code></li>
             </ul>
         </td>
         </tr>
@@ -206,29 +206,29 @@ Commands may be chained with a '|' character between them. For example:<br/>
         <td><nobr>:[range,range]sort[!] [/pattern/] [i|n|x|o|u]</nobr></td>
         <td>Sort lines in entire file or over specified range.
         <ul>
-        <li>Supports '!' flag for reverse sort</li>
-        <li>Supports 'i' flag for case-insensitive sort</li>
-        <li>Supports 'n' flag for numeric sort</li>
-        <li>Supports 'x' flag for hex-numeric sort</li>
-        <li>Supports 'o' flag for octal-numeric sort</li>
-        <li>Supports 'u' flag for unique sort (remove duplicates)</li>
-        <li>Supports /pattern/ to only sort lines (within the range) which include /pattern/</li>
+        <li>Supports <code>!</code> flag for reverse sort</li>
+        <li>Supports <code>i</code> flag for case-insensitive sort</li>
+        <li>Supports <code>n</code> flag for numeric sort</li>
+        <li>Supports <code>x</code> flag for hex-numeric sort</li>
+        <li>Supports <code>o</code> flag for octal-numeric sort</li>
+        <li>Supports <code>u</code> flag for unique sort (remove duplicates)</li>
+        <li>Supports <code>/pattern/</code> to only sort lines (within the range) which include <code>/pattern/</code></li>
         <ul>
         <li>Strings only, no regex</li>
-        <li>Sort will compare the text at cursor position after the /pattern/ match</li>
+        <li>Sort will compare the text at cursor position after the <code>/pattern/</code> match</li>
         </ul>
         </ul>
         </td>
     </tr>
     <tr>
-        <td>:retab[!] [N]</td>
+        <td>:retab[!] [new_tabstop]</td>
         <td>Replace all tabs with spaces (or spaces with tabs) within the file.
             <ul>
-                <li>If '!' is specified, replace all spaces with equivalent number of tabs</li>
-                <li>If 'N' is specified, replace each tab with 'N'
-                    spaces rather than the value stored in 'tabstop' config property.</li>
+                <li>If <code>!</code> is specified, replace all spaces with equivalent number of tabs</li>
+                <li>If <code>new_tabstop</code> is specified, replace each tab with the given number of
+                    spaces rather than the value stored in <code>tabstop</code> config property.</li>
             </ul>
-            If neither '!' nor 'N' is specified, the behavior is determined by the 'expandtab' and 'tabstop'
+            If neither <code>!</code> nor <code>new_tabstop</code> is specified, the behavior is determined by the <code>expandtab</code> and <code>tabstop</code>
             config properties.
         </td>
     </tr>
@@ -237,22 +237,16 @@ Commands may be chained with a '|' character between them. For example:<br/>
         :g!/&lt;pattern&gt;/[d|s|normal]<br/>
         :v/&lt;pattern&gt;/[d|s|normal]
         </td>
-        <td>Perform an operation on all lines that match &lt;pattern&gt;.  Or, in the case of :g! and :v, all lines that <b>don't</b> match &lt;pattern&gt;.<br/>
+        <td>Perform an operation on all lines that match <code>pattern</code>.  Or, in the case of <code>:g!</code> and <code>:v</code>, all lines that <b>don't</b> match <code>pattern</code>.<br/>
         Operations are:
             <ul>
-            <li>'d' to delete those lines</li>
+                <li><code>d</code> to delete those lines<br/><code>:g/foo/d</code></li>
+                <li><code>s</code> to perform substitution on those lines<br/><code>:g/foo/s/something/else/g</code></li>
+                <li><code>normal</code> to perform (basic) normal-mode commands on those lines<br/><code>:g/foo/normal wwdw</code><br/>
+                    This basically executes an anonymous macro on all lines that match (or don't match, for <code>:g!</code> and <code>:v</code>).
+                    Special keys are defined like in mappings.  For example, <code>&lt;esc&gt;</code>
+                </li>
             <ul>
-                <li>:g/foo/d</li>
-            </ul>
-            <li>'s' to perform substitution on those lines</li>
-            <ul>
-                <li>:g/foo/s/something/else/g</li>
-            </ul>
-            <li>'normal' to perform (basic) normal-mode commands on those lines</li>
-            <ul>
-                <li>:g/foo/normal wwdw</li>
-                <li>This basically executes an anonymous macro on all lines that match (or don't match, for :g! and :v).
-                Special keys are defined like in mappings.  For example, &ltesc&gt;.</li>
             </ul>
             </ul>
         </td>
@@ -265,10 +259,10 @@ Commands may be chained with a '|' character between them. For example:<br/>
         <td>:vim</td>
         <td>The current active file in Eclipse is opened in a new gvim window.  Cursor is on the exact same line
         and column as it was in Eclipse.  This allows you to perform any operation in gvim which Vrapper doesn't support.
-        After you save the file and exit gvim (:wq) Eclipse will reload the file with your changes.
+        After you save the file and exit gvim (<code>:wq</code>) Eclipse will reload the file with your changes.
         <br/><br/>
-        Path to gvim is determined by 'gvimpath' property (defaults to /usr/bin/gvim).<br/>
-        Arguments for gvim is determined by 'gvimargs' property.<br/>
+        Path to gvim is determined by <code>gvimpath</code> property (defaults to <code>/usr/bin/gvim</code>).<br/>
+        Arguments for gvim is determined by <code>gvimargs</code> property.<br/>
         </td>
     </tr>
     <tr>
@@ -276,7 +270,7 @@ Commands may be chained with a '|' character between them. For example:<br/>
         <td>Maximize this editor tab in Eclipse.  Run again to restore editor size.</td>
     </tr>
     <tr>
-        <td>:eclipseaction&nbsp;&lt;name&gt;&nbsp;&lt;id&gt;</td>
+        <td>:eclipseaction[!]&nbsp;&lt;name&gt;&nbsp;&lt;id&gt;</td>
         <td>Binds the Eclipse action with the specified id to a 
             (command line mode) command &lt;name&gt;.<br />
             There are lists with action ids for
@@ -284,18 +278,13 @@ Commands may be chained with a '|' character between them. For example:<br/>
             <a href="http://help.eclipse.org/help33/topic/org.eclipse.platform.doc.isv/reference/api/org/eclipse/ui/texteditor/ITextEditorActionDefinitionIds.html">text editors</a>,
             and <a href="http://help.eclipse.org/ganymede/topic/org.eclipse.jdt.doc.isv/reference/api/org/eclipse/jdt/ui/actions/IJavaEditorActionDefinitionIds.html">java editors</a>.
             <br/><br/>
-            For example, if I wanted to define an action for JDT's "Find all References in Workspace" I would put the following in my .vrapperrc file:<br/>
-            <b>eclipseaction findref org.eclipse.jdt.ui.edit.text.java.search.references.in.workspace</b><br/>
-            I could then call that command with <b>:findref</b><br/>
-            If I wanted to map that action to the keys 'gr' I would put this in my .vrapperrc file:<br/>
-            <b>nmap gr :findref&lt;enter&gt;</b>
+            For example, if you wanted to define an action for JDT's "Find all References in Workspace" you can put the following in the .vrapperrc file:<br/>
+            <code>eclipseaction findref org.eclipse.jdt.ui.edit.text.java.search.references.in.workspace</code><br/>
+            This command can then be called with <code>:findref</code><br/>
+            The action can be mapped to keys, for example <code>gr</code>:<br/>
+            <code>nmap gr :findref&lt;enter&gt;</code><br/>
+            If <code>!</code> is passed any existing command binding will be overwritten!
         </td>
-    </tr>
-    <tr>
-        <td>:eclipseaction!&nbsp;&lt;name&gt;&nbsp;&lt;id&gt;</td>
-        <td>Binds the Eclipse action with the specified id to a 
-            (command line mode) command &lt;name&gt;. Overwrites the 
-            binding if it already exists.</td>
     </tr>
     <tr>
         <td>:eclipseuiaction[!]&nbsp;&lt;name&gt;&nbsp;&lt;id&gt;</td>
