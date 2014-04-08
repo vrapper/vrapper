@@ -12,6 +12,7 @@ import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.vim.SimpleKeyStroke;
 import net.sourceforge.vrapper.platform.Configuration;
 import net.sourceforge.vrapper.platform.SimpleConfiguration;
+import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.vim.DefaultEditorAdaptor;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
@@ -204,6 +205,14 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
                         editorAdaptor.changeModeSafely(InsertMode.NAME);
                     }
                 } else if(selection.getLength() != 0) {
+                    // Fix caret type
+                    if (editorAdaptor.getConfiguration().get(Options.SELECTION).equals("inclusive")) {
+                        CaretType type = CaretType.LEFT_SHIFTED_RECTANGULAR;
+                        if (editorAdaptor.getSelection().isReversed()) {
+                            type = CaretType.RECTANGULAR;
+                        }
+                        editorAdaptor.getCursorService().setCaret(type);
+                    }
                     if(NormalMode.NAME.equals(editorAdaptor.getCurrentModeName())) {
                         editorAdaptor.changeModeSafely(VisualMode.NAME, AbstractVisualMode.KEEP_SELECTION_HINT);
                     }
