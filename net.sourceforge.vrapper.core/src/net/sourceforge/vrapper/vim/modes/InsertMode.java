@@ -339,6 +339,8 @@ public class InsertMode extends AbstractMode {
                 && (stroke.getSpecialKey() == null
                     || ! VimConstants.SPECIAL_KEYS_ALLOWED_FOR_UNMODIFIABLE_INSERT
                             .contains(stroke.getSpecialKey()))) {
+            editorAdaptor.getUserInterfaceService().setErrorMessage("Cannot modify contents, " +
+            		"'modifiable' is off!");
             // Mark as handled (= ignored)
             return true;
         } else if (!allowed(stroke)) {

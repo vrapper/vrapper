@@ -104,8 +104,11 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
 
     public DefaultEditorAdaptor(final Platform editor, final RegisterManager registerManager, final boolean isActive) {
         this.configuration = new SimpleLocalConfiguration(editor.getConfiguration());
-        this.modelContent = new UnmodifiableTextContentDecorator(editor.getModelContent(), configuration);
-        this.viewContent = new UnmodifiableTextContentDecorator(editor.getViewContent(), configuration);
+        userInterfaceService = editor.getUserInterfaceService();
+        this.modelContent = new UnmodifiableTextContentDecorator(editor.getModelContent(),
+                                    configuration, userInterfaceService);
+        this.viewContent = new UnmodifiableTextContentDecorator(editor.getViewContent(),
+                                    configuration, userInterfaceService);
         this.cursorService = editor.getCursorService();
         this.selectionService = editor.getSelectionService();
         this.historyService = editor.getHistoryService();
@@ -140,7 +143,6 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         this.platformSpecificModeProvider = editor.getPlatformSpecificModeProvider();
         this.searchAndReplaceService = editor.getSearchAndReplaceService();
         viewportService = editor.getViewportService();
-        userInterfaceService = editor.getUserInterfaceService();
         this.highlightingService = editor.getHighlightingService();
         keyMapProvider = editor.getKeyMapProvider();
         keyStrokeTranslator = new KeyStrokeTranslator();
