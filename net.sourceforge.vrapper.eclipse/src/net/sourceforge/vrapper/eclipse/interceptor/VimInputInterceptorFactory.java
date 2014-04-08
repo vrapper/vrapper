@@ -208,7 +208,8 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
                         editorAdaptor.changeModeSafely(VisualMode.NAME, AbstractVisualMode.KEEP_SELECTION_HINT);
                     }
                     else if (InsertMode.NAME.equals(editorAdaptor.getCurrentModeName())) {
-                        editorAdaptor.changeModeSafely(TempVisualMode.NAME, AbstractVisualMode.KEEP_SELECTION_HINT);
+                        editorAdaptor.changeModeSafely(TempVisualMode.NAME,
+                                AbstractVisualMode.KEEP_SELECTION_HINT, InsertMode.DONT_MOVE_CURSOR);
                     }
                 }
             }
