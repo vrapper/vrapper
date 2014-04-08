@@ -37,6 +37,7 @@ import net.sourceforge.vrapper.platform.ViewportService;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.SelectionArea;
+import net.sourceforge.vrapper.utils.UnmodifiableTextContentDecorator;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.Selection;
@@ -102,8 +103,9 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
 
 
     public DefaultEditorAdaptor(final Platform editor, final RegisterManager registerManager, final boolean isActive) {
-        this.modelContent = editor.getModelContent();
-        this.viewContent = editor.getViewContent();
+        this.configuration = new SimpleLocalConfiguration(editor.getConfiguration());
+        this.modelContent = new UnmodifiableTextContentDecorator(editor.getModelContent(), configuration);
+        this.viewContent = new UnmodifiableTextContentDecorator(editor.getViewContent(), configuration);
         this.cursorService = editor.getCursorService();
         this.selectionService = editor.getSelectionService();
         this.historyService = editor.getHistoryService();
@@ -111,7 +113,6 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         this.globalRegisterManager = registerManager;
         this.serviceProvider = editor.getServiceProvider();
         this.editorSettings = editor.getUnderlyingEditorSettings();
-        this.configuration = new SimpleLocalConfiguration(editor.getConfiguration());
         final LocalConfigurationListener listener = new LocalConfigurationListener() {
 
             @Override

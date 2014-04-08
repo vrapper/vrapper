@@ -1,6 +1,7 @@
 package net.sourceforge.vrapper.vim;
 
 import static net.sourceforge.vrapper.platform.Configuration.Option.bool;
+import static net.sourceforge.vrapper.platform.Configuration.Option.localBool;
 import static net.sourceforge.vrapper.platform.Configuration.Option.integer;
 import static net.sourceforge.vrapper.platform.Configuration.Option.string;
 import static net.sourceforge.vrapper.platform.Configuration.Option.stringNoConstraint;
@@ -37,13 +38,15 @@ public interface Options {
     public static final Option<Boolean> CONTENT_ASSIST_MODE   = bool("contentassistmode", false, "cam");
     public static final Option<Boolean> START_NORMAL_MODE     = bool("startnormalmode",   false, "snm");
 
+    public static final Option<Boolean> MODIFIABLE            = localBool("modifiable", true, "ma");
+
     @SuppressWarnings("unchecked")
     public static final Set<Option<Boolean>> BOOLEAN_OPTIONS = set(
             EXPAND_TAB, SHIFT_ROUND, SMART_INDENT, AUTO_INDENT, ATOMIC_INSERT, IGNORE_CASE,
             SMART_CASE, SANE_CW, SANE_Y, SEARCH_HIGHLIGHT, SEARCH_REGEX,
             INCREMENTAL_SEARCH, LINE_NUMBERS, SHOW_WHITESPACE, IM_DISABLE,
             VISUAL_MOUSE, EXIT_LINK_MODE, CLEAN_INDENT, AUTO_CHDIR, HIGHLIGHT_CURSOR_LINE,
-            CONTENT_ASSIST_MODE, START_NORMAL_MODE);
+            CONTENT_ASSIST_MODE, START_NORMAL_MODE, MODIFIABLE);
 
     // String options:
     public static final Option<String> CLIPBOARD = string("clipboard", "autoselect", "unnamed, autoselect", "cb");

@@ -73,6 +73,11 @@ public interface Configuration {
             return new Option<Boolean>(id, Boolean.valueOf(defaultValue), null, alias);
         }
 
+        public static final Option<Boolean> localBool(String id, boolean defaultValue, String... alias) {
+            return new Option<Boolean>(id, OptionScope.LOCAL, Boolean.valueOf(defaultValue), null,
+                    alias);
+        }
+
         public static final Option<String> string(String id, String defaultValue, String csv, String... alias) {
             Set<String> legalValues = new HashSet<String>();
             for (String value: csv.split(", *"))
