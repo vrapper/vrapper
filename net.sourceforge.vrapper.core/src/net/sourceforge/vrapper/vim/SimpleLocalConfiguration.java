@@ -40,15 +40,32 @@ public class SimpleLocalConfiguration implements LocalConfiguration {
 
     public <T> void set(Option<T> key, T value) {
         T oldValue = sharedConfiguration.get(key);
-        sharedConfiguration.set(key, value);
-            for (LocalConfigurationListener listener : listeners) {
-                listener.optionChanged(key, oldValue, value);
-            }
+        if ( ! key.getScope().equals(OptionScope.LOCAL)) {
+            sharedConfiguration.set(key, value);
+        }
+        if (localConfiguration.isSet(key) || key.getScope().equals(OptionScope.LOCAL)) {
+            oldValue = localConfiguration.get(key);
+            localConfiguration.set(key, value);
+        }
+        for (LocalConfigurationListener listener : listeners) {
+            listener.optionChanged(key, oldValue, value);
+        }
     }
 
     @Override
     public <T> void setLocal(Option<T> key, T value) {
-        localConfiguration.set(key, value);
+        if (key.getScope() == OptionScope.GLOBAL) {
+            set(key, value);
+        } else {
+            T oldValue = localConfiguration.get(key);
+            if (key.getScope().equals(OptionScope.DEFAULT) && oldValue == null) {
+                oldValue = sharedConfiguration.get(key);
+            }
+            localConfiguration.set(key, value);
+            for (LocalConfigurationListener listener : listeners) {
+                listener.optionChanged(key, oldValue, value);
+            }
+        }
     }
 
     public <T> T get(Option<T> key) {
