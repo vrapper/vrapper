@@ -1,6 +1,6 @@
 <h2>Command-Line Commands</h2>
 
-This page describes the commands available within the command-line <code> : </code> mode.<br/><br/>
+This page describes the commands available within the command-line <code>:</code> mode.<br/><br/>
 
 Commands may be chained with a <code>|</code> character between them. For example:<br/>
 <code>:'<,'>s/foo/bar/g  |  '<,'>s/baz/bat/g</code>
@@ -61,12 +61,12 @@ Commands may be chained with a <code>|</code> character between them. For exampl
     </tr>
     <tr>
         <td>:&lt;number&gt;</td>
-        <td>Jumps to line &lt;number&gt;.</td>
+        <td>Jumps to line <code>&lt;number&gt;</code>.</td>
     </tr>
     <tr>
         <td>:e &lt;filename&gt;</td>
         <td>Opens a file relative to the current working directory.<br/>
-            If &lt;filename&gt; doesn't exist, create a new file in the current working directory.</td>
+            If <code>&lt;filename&gt;</code> doesn't exist, create a new file in the current working directory.</td>
     </tr>
     <tr>
         <td>:e!</td>
@@ -82,7 +82,7 @@ Commands may be chained with a <code>|</code> character between them. For exampl
     </tr>
     <tr>
         <td>:find &lt;filename&gt;<br/>:tabfind &lt;filename&gt;</td>
-        <td>Opens a file found in the list of directories defined by 'path' variable.</td>
+        <td>Opens a file found in the list of directories defined by <code>path</code> variable.</td>
     </tr>
     <tr>
         <td>:tabnext<br/>:bnext<br/>:bn</td>
@@ -126,7 +126,7 @@ Commands may be chained with a <code>|</code> character between them. For exampl
     </tr>
     <tr>
         <td>:let @&lt;char&gt;=&lt;register contents&gt;</td>
-        <td>Programmatically set register contents for register &lt;char&gt;.  Register can then be executed as a macro.<br/><br/>
+        <td>Programmatically set register contents for register <code>&lt;char&gt;</code>.  Register can then be executed as a macro.<br/><br/>
         We don't currently support any other <code>:let</code> behavior.</td>
     </tr>
     <tr>
@@ -288,6 +288,6 @@ Commands may be chained with a <code>|</code> character between them. For exampl
     </tr>
     <tr>
         <td>:eclipseuiaction[!]&nbsp;&lt;name&gt;&nbsp;&lt;id&gt;</td>
-        <td>Similar to :eclipseaction except it handles commands which display (or may display) a popup or dialog.</td>
+        <td>Similar to <code>:eclipseaction</code> except it handles commands which display (or may display) a popup or dialog.</td>
     </tr>
 </table>

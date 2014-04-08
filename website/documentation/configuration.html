@@ -41,7 +41,7 @@
         <td>:set&nbsp;scs<br/>:set&nbsp;noscs</td>
         <td>Off</td>
         <td>If set, searches will be case sensitive if the search string
-            includes uppercase characters. Only used if ignorecase is set.  
+            includes uppercase characters. Only used if <code>ignorecase</code> is set.  
         </td>
     </tr>
     <tr>
@@ -91,7 +91,7 @@
         <td>:set&nbsp;scrolloff=&lt;N&gt;</td>
         <td>:set&nbsp;so=&lt;N&gt;</td>
         <td>scrolloff=0</td>
-        <td>When the cursor gets within &lt;N&gt; lines from the top or bottom of the view,
+        <td>When the cursor gets within <code>&lt;N&gt;</code> lines from the top or bottom of the view,
             perform a scrolljump.
         </td>
     </tr>
@@ -99,7 +99,7 @@
         <td>:set&nbsp;scrolljump=&lt;N&gt;</td>
         <td>:set&nbsp;sj=&lt;N&gt;</td>
         <td>scrolljump=1</td>
-        <td>When the view needs to scroll, jump &lt;N&gt; lines at a time.
+        <td>When the view needs to scroll, jump <code>&lt;N&gt;</code> lines at a time.
         </td>
     </tr>
     <tr>
@@ -121,7 +121,7 @@
         <td>:set&nbsp;tabstop=&lt;N&gt;</td>
         <td>:set&nbsp;ts=&lt;N&gt;</td>
         <td>tabstop=8</td>
-        <td>Used by i_ctrl-t, i_ctrl-d, and <code>:retab</code>.  Determines number of spaces to replace each tab character with
+        <td>Used by <code>i_ctrl-t</code>, <code>i_ctrl-d</code>, and <code>:retab</code>.  Determines number of spaces to replace each tab character with
         when <code>expandtab</code> is enabled.</td>
     </tr>
     <tr>
@@ -129,19 +129,19 @@
         <td>:set&nbsp;et<br/>:set&nbsp;noet</td>
         <td>On</td>
         <td>Used by i_ctrl-t, i_ctrl-d, and <code>:retab</code>.  Determines whether <code>:retab</code> should replace all tabs with spaces (true)
-        or spaces with tabs (false).  Also determines whether i_ctrl-t and i_ctrl-d will replace <code>tabstop</code> spaces with a tab.</td>
+        or spaces with tabs (false).  Also determines whether <code>i_ctrl-t</code> and <code>i_ctrl-d</code> will replace <code>tabstop</code> spaces with a tab.</td>
     </tr>
     <tr>
         <td>:set&nbsp;shiftround<br/>:set&nbsp;noshiftround</td>
         <td>:set&nbsp;sr<br/>:set&nbsp;nosr</td>
         <td>Off</td>
-        <td>Round indent (i_ctrl-t, i_ctrl-d, <code>&gt;&gt;</code> and <code>&lt;&lt;</code>) to the nearest multiple of <code>shiftwidth</code>.</td>
+        <td>Round indent (<code>i_ctrl-t</code>, <code>i_ctrl-d</code>, <code>&gt;&gt;</code> and <code>&lt;&lt;</code>) to the nearest multiple of <code>shiftwidth</code>.</td>
     </tr>
     <tr>
         <td>:set&nbsp;shiftwidth=&lt;N&gt;</td>
         <td>:set&nbsp;sw=&lt;N&gt;</td>
         <td>shiftwidth=8</td>
-        <td>Used by i_ctrl-t, i_ctrl-d, <code>&gt;</code>, and <code>&lt;</code> commands.  Determines how many spaces are used for each indent added or removed.</td>
+        <td>Used by <code>i_ctrl-t</code>, <code>i_ctrl-d</code>, <code>&gt;</code>, and <code>&lt;</code> commands.  Determines how many spaces are used for each indent added or removed.</td>
     </tr>
     <tr>
         <td>:set&nbsp;path=&lt;comma-delimited list of dirs&gt;</td>
@@ -206,13 +206,13 @@ which we implemented.</p>
         <td>:set&nbsp;sanecw<br/>:set&nbsp;nosanecw</td>
         <td>none</td>
         <td>Off</td>
-        <td>If set, "cw" deletes the same as "dw" (i.e. whitespace before the next word is not spared).</td>
+        <td>If set, <code>cw</code> deletes the same as <code>dw</code> (i.e. whitespace before the next word is not spared).</td>
     </tr>
     <tr>
         <td>:set&nbsp;saney<br/>:set&nbsp;nosaney</td>
         <td>none</td>
         <td>Off</td>
-        <td>If set, "Y" will yank from the cursor position to the end of the line instead of yanking the whole line.</td>
+        <td>If set, <code>Y</code> will yank from the cursor position to the end of the line instead of yanking the whole line.</td>
     </tr>
     <tr>
         <td>:set&nbsp;visualmouse<br/>:set&nbsp;novisualmouse</td>
@@ -224,7 +224,7 @@ which we implemented.</p>
         <td>:set&nbsp;gvimpath=&lt;path to gvim executable&gt;</td>
         <td>none</td>
         <td>gvimpath=/usr/bin/gvim</td>
-        <td>Defines path to gvim used with :vim command.</td>
+        <td>Defines path to gvim used with <code>:vim</code> command.</td>
     </tr>
     <tr>
         <td>:set&nbsp;gvimargs=&lt;arguments for gvim executable&gt;</td>
@@ -238,9 +238,9 @@ which we implemented.</p>
         <td>:set&nbsp;cleanindent<br/>:set&nbsp;nocleanindent</td>
         <td>none</td>
         <td>On</td>
-        <td>If you create a new line with <code>o</code> while autoindent is enabled, that new line will be indented.
+        <td>If you create a new line with <code>o</code> while <code>autoindent</code> is enabled, that new line will be indented.
         If you then exit insert mode without entering any text, that auto-indent is typically removed
-        (leaving only a blank line).  Disable cleanindent if you <i>don't</i> want it to cleanup that auto-indent.</td>
+        (leaving only a blank line).  Disable <code>cleanindent</code> if you <i>don't</i> want it to cleanup that auto-indent.</td>
     </tr>
     <tr>
         <td>:set&nbsp;exitlinkmode<br/>:set&nbsp;noexitlinkmode</td>

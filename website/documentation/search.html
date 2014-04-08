@@ -18,7 +18,7 @@ Or, you can temporarily override those options by putting <code>\c</code> or <co
 <p>All search commands (n, N, *, #, /, ?) can be used like motions, i. e. combined with counts and operators.</p>
 
 <h2>And Replace</h2>
-<p>Vrapper supports a couple special cases when performing a search and replace (:s/foo/bar/).
+<p>Vrapper supports a couple special cases when performing a search and replace (<code>:s/foo/bar/</code>).
 These should all align with the equivalent Vim behavior.</p>
 
 <p>Whatever character appears after the <code>:s</code> will be used as the delimiter.
@@ -30,7 +30,7 @@ being inserted literally.  This means it may work fine on files with Unix line
 endings but if you have Windows line endings <code>\n</code> will cause problems.</p>
 
 <p>If the replace string exactly matches <code>\=@&lt;char&gt;</code> then the contents of
-register &lt;char&gt; will be used for the replacement.  For example,
+register <code>&lt;char&gt;</code> will be used for the replacement.  For example,
 <code>:s/foo/\=@x/</code> will replace 'foo' with the contents of register <code>x</code>.</p>
 
 <p>The following flags are supported after the replace string: <code>c</code> (confirm), <code>g</code> (global), <code>i</code> (insensitive case), <code>I</code> (sensitive case)</p>
