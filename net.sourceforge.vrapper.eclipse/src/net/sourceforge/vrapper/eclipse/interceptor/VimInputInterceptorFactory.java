@@ -158,7 +158,7 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
         private LinkedModeHandler linkedModeHandler;
 
         private VimInputInterceptor(EditorAdaptor editorAdaptor) {
-			this.editorAdaptor = editorAdaptor;
+            this.editorAdaptor = editorAdaptor;
         }
 
         public void verifyKey(VerifyEvent event) {
@@ -185,34 +185,34 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
         public EditorAdaptor getEditorAdaptor() {
             return editorAdaptor;
         }
-        
-		public void selectionChanged(SelectionChangedEvent event) {
-			if (!VrapperPlugin.isMouseDown()
-					|| !(event.getSelection() instanceof TextSelection)
-					|| !editorAdaptor.getConfiguration().get(Options.VISUAL_MOUSE))
-				return;
-			
-        	TextSelection selection = (TextSelection) event.getSelection();
-        	// selection.isEmpty() is false even if length == 0, don't use it
-        	if (selection instanceof TextSelection) {
-				if (selection.getLength() == 0) {
-					if(VisualMode.NAME.equals(editorAdaptor.getCurrentModeName())
-							|| LinewiseVisualMode.NAME.equals(editorAdaptor.getCurrentModeName())) {
-						editorAdaptor.changeModeSafely(NormalMode.NAME);
-					}
-					else if(TempVisualMode.NAME.equals(editorAdaptor.getCurrentModeName())) {
-						editorAdaptor.changeModeSafely(InsertMode.NAME);
-					}
-				} else if(selection.getLength() != 0) {
-					if(NormalMode.NAME.equals(editorAdaptor.getCurrentModeName())) {
-						editorAdaptor.changeModeSafely(VisualMode.NAME, AbstractVisualMode.KEEP_SELECTION_HINT);
-					}
-					else if (InsertMode.NAME.equals(editorAdaptor.getCurrentModeName())) {
-						editorAdaptor.changeModeSafely(TempVisualMode.NAME, AbstractVisualMode.KEEP_SELECTION_HINT);
-					}
-				}
-	        }
-		}
+
+        public void selectionChanged(SelectionChangedEvent event) {
+            if (!VrapperPlugin.isMouseDown()
+                    || !(event.getSelection() instanceof TextSelection)
+                    || !editorAdaptor.getConfiguration().get(Options.VISUAL_MOUSE))
+                return;
+
+            TextSelection selection = (TextSelection) event.getSelection();
+            // selection.isEmpty() is false even if length == 0, don't use it
+            if (selection instanceof TextSelection) {
+                if (selection.getLength() == 0) {
+                    if(VisualMode.NAME.equals(editorAdaptor.getCurrentModeName())
+                            || LinewiseVisualMode.NAME.equals(editorAdaptor.getCurrentModeName())) {
+                        editorAdaptor.changeModeSafely(NormalMode.NAME);
+                    }
+                    else if(TempVisualMode.NAME.equals(editorAdaptor.getCurrentModeName())) {
+                        editorAdaptor.changeModeSafely(InsertMode.NAME);
+                    }
+                } else if(selection.getLength() != 0) {
+                    if(NormalMode.NAME.equals(editorAdaptor.getCurrentModeName())) {
+                        editorAdaptor.changeModeSafely(VisualMode.NAME, AbstractVisualMode.KEEP_SELECTION_HINT);
+                    }
+                    else if (InsertMode.NAME.equals(editorAdaptor.getCurrentModeName())) {
+                        editorAdaptor.changeModeSafely(TempVisualMode.NAME, AbstractVisualMode.KEEP_SELECTION_HINT);
+                    }
+                }
+            }
+        }
 
         @Override
         public LinkedModeHandler getLinkedModeHandler() {
