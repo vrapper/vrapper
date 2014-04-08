@@ -20,6 +20,11 @@ table.links th {
     text-align:left;
     padding-top:20px;
 }
+code {
+    border: 1px solid #ddd;
+    background-color: #f8f8f8;
+    vertical-align: middle;
+}
 #whopper {
     margin-left:auto;
     margin-right:auto;
