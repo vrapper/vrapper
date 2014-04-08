@@ -334,6 +334,13 @@ public class InsertMode extends AbstractMode {
             } catch (CommandExecutionException e) {
             }
             return true;
+        // Check if editor is unmodifiable.
+        } else if (Boolean.FALSE.equals(editorAdaptor.getConfiguration().get(Options.MODIFIABLE))
+                && (stroke.getSpecialKey() == null
+                    || ! VimConstants.SPECIAL_KEYS_ALLOWED_FOR_UNMODIFIABLE_INSERT
+                            .contains(stroke.getSpecialKey()))) {
+            // Mark as handled (= ignored)
+            return true;
         } else if (!allowed(stroke)) {
             startEditPosition = editorAdaptor.getCursorService().getPosition();
             count = 1;
