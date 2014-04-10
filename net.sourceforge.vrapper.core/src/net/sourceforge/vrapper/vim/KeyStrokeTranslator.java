@@ -23,7 +23,6 @@ public class KeyStrokeTranslator {
     private Remapping lastValue;
     private final List<RemappedKeyStroke> unconsumedKeyStrokes;
     private final LinkedList<RemappedKeyStroke> resultingKeyStrokes;
-    private int numUnconsumed = 0;
     private boolean mappingSucceeded = false;
 
     public KeyStrokeTranslator() {
@@ -42,7 +41,6 @@ public class KeyStrokeTranslator {
             //begin new mapping, make sure values are reset
             resultingKeyStrokes.clear();
             unconsumedKeyStrokes.clear();
-            numUnconsumed = 0;
             mappingSucceeded = true;
         } else {
             trans = currentState.press(key);
@@ -52,14 +50,12 @@ public class KeyStrokeTranslator {
             if (trans.getValue() != null) {
             	//mapping completed successfully
                 lastValue = trans.getValue();
-                numUnconsumed = unconsumedKeyStrokes.size();
                 unconsumedKeyStrokes.clear();
             } else { //mapping pending
                 // as long as no preliminary result is found, keystrokes
                 // should not be evaluated again
                 boolean recursive = !unconsumedKeyStrokes.isEmpty() || lastValue != null;
                 unconsumedKeyStrokes.add(new RemappedKeyStroke(key, recursive));
-                numUnconsumed++;
             }
             if (trans.getNextState() == null) {
             	//mapping completed
@@ -82,11 +78,6 @@ public class KeyStrokeTranslator {
 
     public Queue<RemappedKeyStroke> resultingKeyStrokes() {
         return resultingKeyStrokes;
-    }
-
-    public int numUnconsumedKeys() {
-    	//how many keys are being swallowed by this completed mapping?
-        return numUnconsumed;
     }
 
     public boolean didMappingSucceed() {

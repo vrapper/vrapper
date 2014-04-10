@@ -98,6 +98,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     private MacroPlayer macroPlayer;
     private String lastModeName;
     private String editorType;
+    private int cursorBeforeMapping = -1;
 
 
     public DefaultEditorAdaptor(final Platform editor, final RegisterManager registerManager, final boolean isActive) {
@@ -533,16 +534,25 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
                     //if we're in a mapping in InsertMode, display the pending characters
                     //(we'll delete them if the user completes the mapping)
                     if(currentMode.getName() == InsertMode.NAME) {
+                        if(cursorBeforeMapping == -1) {
+                            //keep track of where the cursor is at the start of a mapping
+                            //so we can delete the pending characters if the mapping completes
+                            cursorBeforeMapping = cursorService.getPosition().getModelOffset();
+                        }
                     	//display pending character
                     	if(resultingKeyStrokes.isEmpty()) {
                     		return currentMode.handleKey(key);
                     	}
                     	//there are resulting key strokes,
-                    	//mapping exited either successfully or unsuccessfully
-                    	else if(keyStrokeTranslator.numUnconsumedKeys() > 0) {
+                    	//mapping exited either successfully or unsuccessfully.
+                    	//do we have pending characters to delete?
+                    	else if(cursorService.getPosition().getModelOffset() - cursorBeforeMapping > 0) {
+                    	    int pendingChars = cursorService.getPosition().getModelOffset() - cursorBeforeMapping;
+                    	    //prepare for next mapping
+                    	    cursorBeforeMapping = -1;
                     		if(keyStrokeTranslator.didMappingSucceed()) {
                     			//delete all the pending characters we had displayed
-                    			for(int i=0; i < keyStrokeTranslator.numUnconsumedKeys(); i++) {
+                    			for(int i=0; i < pendingChars; i++) {
                     				currentMode.handleKey(new RemappedKeyStroke(new SimpleKeyStroke(SpecialKey.BACKSPACE), false));
                     			}
                     		}
@@ -557,6 +567,9 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
                     		}
                     	}
                     	//else, mapping is only one character long (no pending characters to remove)
+                    	
+                    	//prepare for next mapping
+                    	cursorBeforeMapping = -1;
                     }
                     //play all resulting key strokes
                     while (!resultingKeyStrokes.isEmpty()) {
