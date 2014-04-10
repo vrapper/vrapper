@@ -71,6 +71,7 @@ public class VimTestCase {
     	        when(configuration.get(o)).thenReturn(Boolean.FALSE);
     	    }
     	}
+    	when(fileService.isEditable()).thenReturn(true);
         //let UIInterface mock print out error messages
     	Mockito.doAnswer(new Answer<Void>() {
 			@Override
@@ -103,7 +104,6 @@ public class VimTestCase {
 		when(registerManager.getActiveRegister()).thenReturn(defaultRegister);
 		when(registerManager.getLastEditRegister()).thenReturn(lastEditRegister);
 		when(registerManager.getRegister(":")).thenReturn(defaultRegister);
-		when(fileService.isEditable()).thenReturn(true);
 
     }
 

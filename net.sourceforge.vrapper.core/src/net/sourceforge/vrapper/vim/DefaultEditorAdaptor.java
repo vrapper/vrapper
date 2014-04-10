@@ -106,9 +106,9 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         this.configuration = new SimpleLocalConfiguration(editor.getConfiguration());
         userInterfaceService = editor.getUserInterfaceService();
         this.modelContent = new UnmodifiableTextContentDecorator(editor.getModelContent(),
-                                    configuration, userInterfaceService);
+                                    configuration, editor);
         this.viewContent = new UnmodifiableTextContentDecorator(editor.getViewContent(),
-                                    configuration, userInterfaceService);
+                                    configuration, editor);
         this.cursorService = editor.getCursorService();
         this.selectionService = editor.getSelectionService();
         this.historyService = editor.getHistoryService();

@@ -1,7 +1,8 @@
 package net.sourceforge.vrapper.utils;
 
-import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.platform.Configuration.Option;
+import net.sourceforge.vrapper.platform.Platform;
+import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.platform.UserInterfaceService;
 import net.sourceforge.vrapper.vim.LocalConfiguration;
 import net.sourceforge.vrapper.vim.LocalConfigurationListener;
@@ -14,13 +15,15 @@ import net.sourceforge.vrapper.vim.Options;
 public class UnmodifiableTextContentDecorator implements TextContent {
     
     private TextContent textContent;
+    private boolean editable;
     private boolean modifiable = true;
     private UserInterfaceService uiService;
 
     public UnmodifiableTextContentDecorator(TextContent target, LocalConfiguration configuration,
-            UserInterfaceService userInterfaceService) {
+            Platform platform) {
         this.textContent = target;
-        this.uiService = userInterfaceService;
+        this.uiService = platform.getUserInterfaceService();
+        this.editable = platform.getFileService().isEditable();
         configuration.addListener(new LocalConfigurationListener() {
             @Override
             public <T> void optionChanged(Option<T> option, T oldValue, T newValue) {
@@ -48,25 +51,21 @@ public class UnmodifiableTextContentDecorator implements TextContent {
 
     @Override
     public void replace(int index, int length, String s) {
-        if (modifiable) {
+        if (allowChanges()) {
             textContent.replace(index, length, s);
-        } else {
-            uiService.setErrorMessage("Cannot modify contents, 'modifiable' is off!");
         }
     }
 
     @Override
     public void smartInsert(int index, String s) {
-        if (modifiable) {
+        if (allowChanges()) {
             textContent.smartInsert(index, s);
-        } else {
-            uiService.setErrorMessage("Cannot modify contents, 'modifiable' is off!");
         }
     }
 
     @Override
     public void smartInsert(String s) {
-        if (modifiable) {
+        if (allowChanges()) {
             textContent.smartInsert(s);
         }
     }
@@ -91,4 +90,14 @@ public class UnmodifiableTextContentDecorator implements TextContent {
         return textContent.getSpace();
     }
 
+    protected boolean allowChanges() {
+        if (modifiable && editable) {
+            return true;
+        } else if ( ! editable) {
+            uiService.setErrorMessage("Cannot modify contents, file is not editable!");
+        } else {
+            uiService.setErrorMessage("Cannot modify contents, 'modifiable' is off!");
+        }
+        return false;
+    }
 }

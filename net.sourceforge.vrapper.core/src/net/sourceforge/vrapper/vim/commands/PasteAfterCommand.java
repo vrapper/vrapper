@@ -24,9 +24,6 @@ public class PasteAfterCommand extends CountAwareCommand {
 
     @Override
     public void execute(EditorAdaptor editorAdaptor, int count) {
-        if (!editorAdaptor.getFileService().isEditable()) {
-            return;
-        }
         if (count == NO_COUNT_GIVEN) {
             count = 1;
         }
