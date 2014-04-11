@@ -9,7 +9,9 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.Utils;
+import net.sourceforge.vrapper.vim.modes.commandline.CommandLineHistory;
 import net.sourceforge.vrapper.vim.modes.commandline.SearchCommandParser;
+import net.sourceforge.vrapper.vim.modes.commandline.SearchMode;
 
 /** Starts a new search with the word the cursor sits on. */
 public class WordSearchMotion extends SearchResultMotion {
@@ -34,6 +36,14 @@ public class WordSearchMotion extends SearchResultMotion {
         Search search = SearchCommandParser.createSearch(editorAdaptor, keyword, reverse, wholeWord,
                 SearchOffset.NONE);
         editorAdaptor.getRegisterManager().setSearch(search);
+        //add '*' and '#' searches to command-line history for search mode
+        CommandLineHistory history = CommandLineHistory.INSTANCE;
+        history.setMode(SearchMode.NAME);
+        if(this.wholeWord) {
+            keyword = "\\b" + keyword + "\\b";
+        }
+        history.append(keyword);
+
         return super.destination(editorAdaptor, count);
     }
 
