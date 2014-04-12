@@ -159,6 +159,12 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         // NOTE: Read the config _after_ changing mode to allow default keys
         //       remapping.
         readConfiguration();
+
+        // Set 'modifiable' flag if not done so by an autocmnd in .vrapperc
+        if (configuration.get(Options.SYNC_MODIFIABLE).booleanValue()
+                && ! configuration.isSet(Options.MODIFIABLE)) {
+            configuration.set(Options.MODIFIABLE, ( ! fileService.isReadOnly()));
+        }
     }
 
     public String getLastModeName() {

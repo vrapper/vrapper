@@ -2,6 +2,7 @@ package net.sourceforge.vrapper.vim;
 
 import static net.sourceforge.vrapper.platform.Configuration.Option.bool;
 import static net.sourceforge.vrapper.platform.Configuration.Option.localBool;
+import static net.sourceforge.vrapper.platform.Configuration.Option.globalBool;
 import static net.sourceforge.vrapper.platform.Configuration.Option.integer;
 import static net.sourceforge.vrapper.platform.Configuration.Option.string;
 import static net.sourceforge.vrapper.platform.Configuration.Option.stringNoConstraint;
@@ -40,13 +41,15 @@ public interface Options {
 
     public static final Option<Boolean> MODIFIABLE            = localBool("modifiable", true, "ma");
 
+    public static final Option<Boolean> SYNC_MODIFIABLE            = globalBool("syncmodifiable", true, "syncma");
+
     @SuppressWarnings("unchecked")
     public static final Set<Option<Boolean>> BOOLEAN_OPTIONS = set(
             EXPAND_TAB, SHIFT_ROUND, SMART_INDENT, AUTO_INDENT, ATOMIC_INSERT, IGNORE_CASE,
             SMART_CASE, SANE_CW, SANE_Y, SEARCH_HIGHLIGHT, SEARCH_REGEX,
             INCREMENTAL_SEARCH, LINE_NUMBERS, SHOW_WHITESPACE, IM_DISABLE,
             VISUAL_MOUSE, EXIT_LINK_MODE, CLEAN_INDENT, AUTO_CHDIR, HIGHLIGHT_CURSOR_LINE,
-            CONTENT_ASSIST_MODE, START_NORMAL_MODE, MODIFIABLE);
+            CONTENT_ASSIST_MODE, START_NORMAL_MODE, MODIFIABLE, SYNC_MODIFIABLE);
 
     // String options:
     public static final Option<String> CLIPBOARD = string("clipboard", "autoselect", "unnamed, autoselect", "cb");

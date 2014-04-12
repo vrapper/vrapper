@@ -101,6 +101,10 @@ public class EclipseFileService implements FileService {
         return editor.isEditable();
     }
     
+    public boolean isReadOnly() {
+        return editor.isEditorInputReadOnly();
+    }
+
     private boolean runCommand(String commandId) {
     	IHandlerService handlerService = (IHandlerService) PlatformUI
                 .getWorkbench().getService(IHandlerService.class);

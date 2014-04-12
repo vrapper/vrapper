@@ -25,6 +25,14 @@ public interface Configuration {
 
     public <T> T get(Option<T> key);
 
+    /**
+     * Whether the option is actually set in this config.
+     * <p> If not, {@link #get(Option)} will either fetch the global config when
+     * called on the local configuration, or the {@link Option}'s default value
+     * will be returned when called on the global configuration.
+     */
+    public <T> boolean isSet(Option<T> key);
+
     public static enum OptionScope {
         /** This option's value will never be shared between editors, even using <tt>set</tt>. */
         LOCAL,
@@ -75,6 +83,11 @@ public interface Configuration {
 
         public static final Option<Boolean> localBool(String id, boolean defaultValue, String... alias) {
             return new Option<Boolean>(id, OptionScope.LOCAL, Boolean.valueOf(defaultValue), null,
+                    alias);
+        }
+
+        public static final Option<Boolean> globalBool(String id, boolean defaultValue, String... alias) {
+            return new Option<Boolean>(id, OptionScope.GLOBAL, Boolean.valueOf(defaultValue), null,
                     alias);
         }
 

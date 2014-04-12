@@ -76,6 +76,11 @@ public class SimpleLocalConfiguration implements LocalConfiguration {
         }
     }
     
+    @Override
+    public <T> boolean isSet(Option<T> key) {
+        return localConfiguration.isSet(key);
+    }
+    
     public void addListener(LocalConfigurationListener listener) {
         listeners.add(listener);
     }
