@@ -773,20 +773,6 @@ public class CommandLineParser extends AbstractCommandParser {
                 return null;
             }
         },
-        EXPAND_TAB {
-            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
-                vim.getConfiguration().set(Options.EXPAND_TAB, Boolean.TRUE);
-                vim.getEditorSettings().setShowLineNumbers(true);
-                return null;
-            }
-        },
-        NO_EXPAND_TAB {
-            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
-                vim.getConfiguration().set(Options.EXPAND_TAB, Boolean.FALSE);
-                vim.getEditorSettings().setShowLineNumbers(false);
-                return null;
-            }
-        },
         LINE_NUMBERS {
             public Object evaluate(EditorAdaptor vim, Queue<String> command) {
                 vim.getConfiguration().set(Options.LINE_NUMBERS, Boolean.TRUE);
