@@ -67,24 +67,23 @@ public class DeleteOperation extends SimpleTextOperation {
         	registerManager.setLastDelete(register);
         }
 
-        if (editorAdaptor.getFileService().isEditable()) {
-            TextContent txtContent = editorAdaptor.getModelContent();
-            CursorService cur = editorAdaptor.getCursorService();
-            int position = range.getLeftBound().getModelOffset();
-            int length = range.getModelLength();
-            
-            txtContent.replace(position, length, "");
-
-            if (contentType == ContentType.LINES) {
-                // move cursor on indented position
-                // this is Vim-compatible, but does everyone really want this?
-                // FIXME: make this an option
-                LineInformation lastLine = txtContent.getLineInformationOfOffset(position);
-                int indent = VimUtils.getIndent(txtContent, lastLine).length();
-                int offset = lastLine.getBeginOffset() + indent;
-                cur.setPosition(cur.newPositionForModelOffset(offset), StickyColumnPolicy.ON_CHANGE);
-            } else // fix sticky column
-                cur.setPosition(cur.getPosition(), StickyColumnPolicy.ON_CHANGE);
+        TextContent txtContent = editorAdaptor.getModelContent();
+        CursorService cur = editorAdaptor.getCursorService();
+        int position = range.getLeftBound().getModelOffset();
+        int length = range.getModelLength();
+        
+        txtContent.replace(position, length, "");
+        
+        if (contentType == ContentType.LINES) {
+            // move cursor on indented position
+            // this is Vim-compatible, but does everyone really want this?
+            // FIXME: make this an option
+            LineInformation lastLine = txtContent.getLineInformationOfOffset(position);
+            int indent = VimUtils.getIndent(txtContent, lastLine).length();
+            int offset = lastLine.getBeginOffset() + indent;
+            cur.setPosition(cur.newPositionForModelOffset(offset), StickyColumnPolicy.ON_CHANGE);
+        } else { // fix sticky column
+            cur.setPosition(cur.getPosition(), StickyColumnPolicy.ON_CHANGE);
         }
     }
 }

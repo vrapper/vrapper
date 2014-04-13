@@ -2,9 +2,13 @@ package net.sourceforge.vrapper.core.tests.utils;
 
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+
+import java.util.EnumSet;
+
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.platform.Configuration;
 import net.sourceforge.vrapper.platform.Configuration.Option;
+import net.sourceforge.vrapper.platform.Configuration.OptionScope;
 import net.sourceforge.vrapper.platform.FileService;
 import net.sourceforge.vrapper.platform.HistoryService;
 import net.sourceforge.vrapper.platform.KeyMapProvider;
@@ -62,8 +66,12 @@ public class VimTestCase {
     	configuration = spy(new SimpleConfiguration());
     	when(configuration.getNewLine()).thenReturn("\n");
     	for (Option<Boolean> o : Options.BOOLEAN_OPTIONS) {
-    		when(configuration.get(o)).thenReturn(Boolean.FALSE);
+    	    // Use defaults for local options.
+    	    if (EnumSet.of(OptionScope.GLOBAL, OptionScope.DEFAULT).contains(o.getScope())) {
+    	        when(configuration.get(o)).thenReturn(Boolean.FALSE);
+    	    }
     	}
+    	when(fileService.isEditable()).thenReturn(true);
         //let UIInterface mock print out error messages
     	Mockito.doAnswer(new Answer<Void>() {
 			@Override
@@ -96,7 +104,6 @@ public class VimTestCase {
 		when(registerManager.getActiveRegister()).thenReturn(defaultRegister);
 		when(registerManager.getLastEditRegister()).thenReturn(lastEditRegister);
 		when(registerManager.getRegister(":")).thenReturn(defaultRegister);
-		when(fileService.isEditable()).thenReturn(true);
 
     }
 

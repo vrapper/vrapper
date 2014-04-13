@@ -22,6 +22,7 @@ public class VimConstants {
     public static final Set<String> NEWLINE = createNewlineSet();
     public static final Set<KeyStroke> PRINTABLE_KEYSTROKES = createPrintableKeyStrokes();
     public static final Set<KeyStroke> PRINTABLE_KEYSTROKES_WITH_NL = createPrintableKeyStrokesWithNL();
+    public static final Set<SpecialKey> SPECIAL_KEYS_ALLOWED_FOR_UNMODIFIABLE_INSERT = createSpecialKeysAllowedForUnmodifiableInsert();
     public static final Set<SpecialKey> SPECIAL_KEYS_ALLOWED_FOR_INSERT = createSpecialKeysAllowedForInsert();
 
     //public static final String NEWLINE = System.getProperty("line.separator");
@@ -54,6 +55,11 @@ public class VimConstants {
         Set<KeyStroke> result = new HashSet<KeyStroke>(createPrintableKeyStrokes());
         result.add(key(SpecialKey.RETURN));
         return Collections.unmodifiableSet(result);
+    }
+
+    private static Set<SpecialKey> createSpecialKeysAllowedForUnmodifiableInsert() {
+        return VimUtils.set(SpecialKey.ARROW_LEFT, SpecialKey.ARROW_RIGHT,
+                SpecialKey.ARROW_UP, SpecialKey.ARROW_DOWN);
     }
 
     private static Set<SpecialKey> createSpecialKeysAllowedForInsert() {

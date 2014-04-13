@@ -167,6 +167,15 @@
         <td><code>:set&nbsp;clipboard=unnamed</code> will use the system clipboard (also known as <code>"+</code>) for all <code>y</code> and <code>p</code> operations.<br/>
             <code>:set&nbsp;clipboard=autoselect</code> will use the standard <code>"*</code> clipboard.</td>
     </tr>
+    <tr>
+        <td>:set&nbsp;modifiable<br/>:set&nbsp;nomodifiable</td>
+        <td>:set ma<br/>:set noma</td>
+        <td>On</td>
+        <td>
+            (Editor local) Whether the current file can be modified. If unset, Vrapper will print the following error in the statusline: <code>Cannot modify contents, 'modifiable' is off!</code><br/>
+            Note that certain editors are completely read-only (e.g. Java class viewers), for these editors the <code>'modifiable'</code> setting has no effect. Vrapper will always print the following error when trying to modify such a file: <code>Cannot modify contents, file is not editable!</code>. If you want to edit such a file, try copying the contents to a new file and edit that file instead.
+        </td>
+    </tr>
 </table>
 
 
@@ -271,6 +280,14 @@ which we implemented.</p>
         <td>none</td>
         <td>Off</td>
         <td>If set, exiting Insert Mode will automatically disable the Input Method (useful on Japanese keyboards).
+        </td>
+    </tr>
+    <tr>
+        <td>:set&nbsp;syncmodifiable<br/>:set&nbsp;nosyncmodifiable</td>
+        <td>:set syncma<br/>:set nosyncma</td>
+        <td>On</td>
+        <td>If set, Vrapper syncs the editor's "read-only" flag with its own 'modifiable' flag. When unset, a read-only file can be edited but Eclipse will ask what if you want to save to another file.<br/>
+            This is a global setting, and any opened editor must be re-opened before this setting takes effect.
         </td>
     </tr>
 </table>

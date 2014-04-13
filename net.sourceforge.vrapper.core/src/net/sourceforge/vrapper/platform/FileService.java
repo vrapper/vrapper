@@ -8,6 +8,8 @@ public interface FileService {
 	
 	boolean isEditable();
 
+	boolean isReadOnly();
+
 	boolean revertFile();
 	
 	boolean close(boolean force);

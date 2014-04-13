@@ -37,6 +37,7 @@ import net.sourceforge.vrapper.platform.ViewportService;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.SelectionArea;
+import net.sourceforge.vrapper.utils.UnmodifiableTextContentDecorator;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.Selection;
@@ -102,8 +103,12 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
 
 
     public DefaultEditorAdaptor(final Platform editor, final RegisterManager registerManager, final boolean isActive) {
-        this.modelContent = editor.getModelContent();
-        this.viewContent = editor.getViewContent();
+        this.configuration = new SimpleLocalConfiguration(editor.getConfiguration());
+        userInterfaceService = editor.getUserInterfaceService();
+        this.modelContent = new UnmodifiableTextContentDecorator(editor.getModelContent(),
+                                    configuration, editor);
+        this.viewContent = new UnmodifiableTextContentDecorator(editor.getViewContent(),
+                                    configuration, editor);
         this.cursorService = editor.getCursorService();
         this.selectionService = editor.getSelectionService();
         this.historyService = editor.getHistoryService();
@@ -111,7 +116,6 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         this.globalRegisterManager = registerManager;
         this.serviceProvider = editor.getServiceProvider();
         this.editorSettings = editor.getUnderlyingEditorSettings();
-        this.configuration = new SimpleLocalConfiguration(editor.getConfiguration());
         final LocalConfigurationListener listener = new LocalConfigurationListener() {
 
             @Override
@@ -139,7 +143,6 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         this.platformSpecificModeProvider = editor.getPlatformSpecificModeProvider();
         this.searchAndReplaceService = editor.getSearchAndReplaceService();
         viewportService = editor.getViewportService();
-        userInterfaceService = editor.getUserInterfaceService();
         this.highlightingService = editor.getHighlightingService();
         keyMapProvider = editor.getKeyMapProvider();
         keyStrokeTranslator = new KeyStrokeTranslator();
@@ -156,6 +159,12 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         // NOTE: Read the config _after_ changing mode to allow default keys
         //       remapping.
         readConfiguration();
+
+        // Set 'modifiable' flag if not done so by an autocmnd in .vrapperc
+        if (configuration.get(Options.SYNC_MODIFIABLE).booleanValue()
+                && ! configuration.isSet(Options.MODIFIABLE)) {
+            configuration.set(Options.MODIFIABLE, ( ! fileService.isReadOnly()));
+        }
     }
 
     public String getLastModeName() {
