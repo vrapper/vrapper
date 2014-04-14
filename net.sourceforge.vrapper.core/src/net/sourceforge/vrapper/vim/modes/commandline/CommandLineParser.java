@@ -46,6 +46,7 @@ import net.sourceforge.vrapper.vim.commands.motions.MoveRight;
 import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
 import net.sourceforge.vrapper.vim.modes.ContentAssistMode;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
+import net.sourceforge.vrapper.vim.modes.KeyMapResolver;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.modes.VisualMode;
 import net.sourceforge.vrapper.vim.register.RegisterContent;
@@ -63,13 +64,13 @@ public class CommandLineParser extends AbstractCommandParser {
 
     static EvaluatorMapping coreCommands() {
         Evaluator noremap = new KeyMapper.Map(false, AbstractVisualMode.KEYMAP_NAME,
-                NormalMode.KEYMAP_NAME, NormalMode.OMAP_NAME);
+                NormalMode.KEYMAP_NAME, KeyMapResolver.OMAP_NAME);
         Evaluator map = new KeyMapper.Map(true, AbstractVisualMode.KEYMAP_NAME,
-                NormalMode.KEYMAP_NAME, NormalMode.OMAP_NAME);
+                NormalMode.KEYMAP_NAME, KeyMapResolver.OMAP_NAME);
         Evaluator nnoremap = new KeyMapper.Map(false, NormalMode.KEYMAP_NAME);
         Evaluator nmap = new KeyMapper.Map(true, NormalMode.KEYMAP_NAME);
-        Evaluator onoremap = new KeyMapper.Map(false, NormalMode.OMAP_NAME);
-        Evaluator omap = new KeyMapper.Map(true, NormalMode.OMAP_NAME);
+        Evaluator onoremap = new KeyMapper.Map(false, KeyMapResolver.OMAP_NAME);
+        Evaluator omap = new KeyMapper.Map(true, KeyMapResolver.OMAP_NAME);
         Evaluator vnoremap = new KeyMapper.Map(false, VisualMode.KEYMAP_NAME);
         Evaluator vmap = new KeyMapper.Map(true, VisualMode.KEYMAP_NAME);
         Evaluator inoremap = new KeyMapper.Map(false, InsertMode.KEYMAP_NAME);
@@ -89,12 +90,12 @@ public class CommandLineParser extends AbstractCommandParser {
         
         Evaluator unmap = new KeyMapper.Unmap(AbstractVisualMode.KEYMAP_NAME, NormalMode.KEYMAP_NAME);
         Evaluator nunmap = new KeyMapper.Unmap(NormalMode.KEYMAP_NAME);
-        Evaluator ounmap = new KeyMapper.Unmap(NormalMode.OMAP_NAME);
+        Evaluator ounmap = new KeyMapper.Unmap(KeyMapResolver.OMAP_NAME);
         Evaluator vunmap = new KeyMapper.Unmap(AbstractVisualMode.KEYMAP_NAME);
         Evaluator iunmap = new KeyMapper.Unmap(InsertMode.KEYMAP_NAME);
         Evaluator clear = new KeyMapper.Clear(AbstractVisualMode.KEYMAP_NAME, NormalMode.KEYMAP_NAME);
         Evaluator nclear = new KeyMapper.Clear(NormalMode.KEYMAP_NAME);
-        Evaluator oclear = new KeyMapper.Clear(NormalMode.OMAP_NAME);
+        Evaluator oclear = new KeyMapper.Clear(KeyMapResolver.OMAP_NAME);
         Evaluator vclear = new KeyMapper.Clear(AbstractVisualMode.KEYMAP_NAME);
         Evaluator iclear = new KeyMapper.Clear(InsertMode.KEYMAP_NAME);
         Command gotoEOF = new MotionCommand(GoToLineMotion.LAST_LINE);

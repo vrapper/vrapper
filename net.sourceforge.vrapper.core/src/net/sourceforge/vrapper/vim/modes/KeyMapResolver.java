@@ -13,6 +13,8 @@ import net.sourceforge.vrapper.keymap.Transition;
 public final class KeyMapResolver {
 
     public static final String NO_KEYMAP = KeyMapResolver.class.getCanonicalName()+".NO_KEYMAP";
+    /** Operator-pending keymap ID. */
+    public static final String OMAP_NAME = KeyMapResolver.class.getCanonicalName()+".OMAP";
 
     private final State<String> initialState;
     private final String defaultValue;

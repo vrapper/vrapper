@@ -13,15 +13,12 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.dontRepeat;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
-import net.sourceforge.vrapper.keymap.ConvertingState;
-import net.sourceforge.vrapper.keymap.KeyMap;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.vim.CountingState;
 import net.sourceforge.vrapper.keymap.vim.GoThereState;
 import net.sourceforge.vrapper.keymap.vim.RegisterState;
 import net.sourceforge.vrapper.platform.CursorService;
-import net.sourceforge.vrapper.platform.KeyMapProvider;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
@@ -90,7 +87,6 @@ import net.sourceforge.vrapper.vim.modes.commandline.CommandLineMode;
 public class NormalMode extends CommandBasedMode {
 
     public static final String KEYMAP_NAME = "Normal Mode Keymap";
-    public static final String OMAP_NAME = "Operator-Pending Keymap";
     public static final String NAME = "normal mode";
     public static final String DISPLAY_NAME = "NORMAL";
 
@@ -323,16 +319,6 @@ public class NormalMode extends CommandBasedMode {
                     editorAdaptor.getUserInterfaceService().setErrorMessage(e.getMessage());
                 }
             }
-        }
-    }
-    
-    @Override
-    public KeyMap resolveKeyMap(KeyMapProvider provider) {
-        if(currentState instanceof ConvertingState<?, ?>) {
-            return provider.getKeyMap(OMAP_NAME);
-        }
-        else {
-            return super.resolveKeyMap(provider);
         }
     }
 
