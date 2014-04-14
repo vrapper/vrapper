@@ -16,6 +16,7 @@ import net.sourceforge.vrapper.vim.commands.DeselectAllCommand;
 import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
 import net.sourceforge.vrapper.vim.commands.SetMarkCommand;
 import net.sourceforge.vrapper.vim.commands.TextObject;
+import net.sourceforge.vrapper.vim.modes.KeyMapResolver;
 
 public class PyDevSpecificStateProvider extends AbstractEclipseSpecificStateProvider {
 	
@@ -41,6 +42,13 @@ public class PyDevSpecificStateProvider extends AbstractEclipseSpecificStateProv
                 ),
                 prefixedOperatorCmds('g', 'c', actionAndDeselect("togglecomment"), textObjects)
                 );
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    protected State<String> normalModeKeymap() {
+        return state(
+                transitionBind('g', leafBind('c', KeyMapResolver.OMAP_NAME)));
     }
 
     @Override

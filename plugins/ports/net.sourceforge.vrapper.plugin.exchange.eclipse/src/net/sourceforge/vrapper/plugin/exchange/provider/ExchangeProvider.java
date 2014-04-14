@@ -19,6 +19,7 @@ import net.sourceforge.vrapper.vim.commands.SelectionBasedTextOperationCommand;
 import net.sourceforge.vrapper.vim.commands.TextOperation;
 import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
 import net.sourceforge.vrapper.vim.commands.motions.LineEndMotion;
+import net.sourceforge.vrapper.vim.modes.KeyMapResolver;
 
 public class ExchangeProvider extends AbstractEclipseSpecificStateProvider {
     public static final PlatformSpecificStateProvider INSTANCE = new ExchangeProvider();
@@ -37,6 +38,13 @@ public class ExchangeProvider extends AbstractEclipseSpecificStateProvider {
                     state(transitionBind('x', union(leafState('c', (Command)ClearExchangeRegionCommand.INSTANCE),
                                                     leafState('x', doLinewise)))),
                             operatorCmds('x', (TextOperation)ExchangeOperation.INSTANCE, textObjectProvider.textObjects())));
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public State<String> normalModeKeymap() {
+        return state(
+                transitionBind('c', leafBind('x', KeyMapResolver.OMAP_NAME)));
     }
 
     @SuppressWarnings("unchecked")

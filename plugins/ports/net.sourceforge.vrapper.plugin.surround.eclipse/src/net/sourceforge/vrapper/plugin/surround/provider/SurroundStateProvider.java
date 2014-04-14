@@ -24,6 +24,7 @@ import net.sourceforge.vrapper.vim.commands.DelimitedText;
 import net.sourceforge.vrapper.vim.commands.InsertShiftWidth;
 import net.sourceforge.vrapper.vim.commands.SimpleDelimitedText;
 import net.sourceforge.vrapper.vim.commands.TextObject;
+import net.sourceforge.vrapper.vim.modes.KeyMapResolver;
 import net.sourceforge.vrapper.vim.modes.commandline.Evaluator;
 
 public class SurroundStateProvider extends AbstractEclipseSpecificStateProvider {
@@ -76,6 +77,15 @@ public class SurroundStateProvider extends AbstractEclipseSpecificStateProvider 
                 transitionBind('d', transitionBind('s', deleteDelimiterState)),
                 transitionBind('c', transitionBind('s', changeDelimiterState)),
                 transitionBind('y', transitionBind('s', addDelimiterState)));
+    }
+    
+    @Override
+    @SuppressWarnings("unchecked")
+    protected State<String> normalModeKeymap() {
+        return state(
+                transitionBind('d', leafBind('s', KeyMapResolver.OMAP_NAME)),
+                transitionBind('c', leafBind('s', KeyMapResolver.OMAP_NAME)),
+                transitionBind('y', leafBind('s', KeyMapResolver.OMAP_NAME)));
     }
 
     @Override

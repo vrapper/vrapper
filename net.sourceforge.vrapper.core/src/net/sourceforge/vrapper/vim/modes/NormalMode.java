@@ -102,7 +102,18 @@ public class NormalMode extends CommandBasedMode {
                     leafBind('r', KeyMapResolver.NO_KEYMAP),
                     leafBind('z', KeyMapResolver.NO_KEYMAP),
                     leafBind('q', KeyMapResolver.NO_KEYMAP),
-                    leafBind('@', KeyMapResolver.NO_KEYMAP)),
+                    leafBind('@', KeyMapResolver.NO_KEYMAP),
+                    // Operators
+                    leafBind('c', KeyMapResolver.OMAP_NAME),
+                    leafBind('d', KeyMapResolver.OMAP_NAME),
+                    leafBind('y', KeyMapResolver.OMAP_NAME),
+                    leafBind('!', KeyMapResolver.OMAP_NAME),
+                    leafBind('<', KeyMapResolver.OMAP_NAME),
+                    leafBind('>', KeyMapResolver.OMAP_NAME),
+                    transitionBind('g', 
+                        leafBind('q', KeyMapResolver.OMAP_NAME),
+                        leafBind('~', KeyMapResolver.OMAP_NAME)
+                    )),
                 getKeyMapsForMotions(),
                 editorAdaptor.getPlatformSpecificStateProvider().getKeyMaps(NAME));
         final State<String> countEater = new CountConsumingState<String>(state);

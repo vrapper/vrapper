@@ -17,6 +17,7 @@ import net.sourceforge.vrapper.vim.commands.DeselectAllCommand;
 import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
 import net.sourceforge.vrapper.vim.commands.SetMarkCommand;
 import net.sourceforge.vrapper.vim.commands.TextObject;
+import net.sourceforge.vrapper.vim.modes.KeyMapResolver;
 
 public class JdtSpecificStateProvider extends AbstractEclipseSpecificStateProvider {
 
@@ -44,6 +45,15 @@ public class JdtSpecificStateProvider extends AbstractEclipseSpecificStateProvid
                 		transitionBind('g', getGSomethingBindings())),
                 prefixedOperatorCmds('g', 'c', editJavaAndDeselect("toggle.comment"), textObjects),
                 operatorCmds('=', editJavaAndDeselect("indent"), textObjects));
+    }
+    
+    @Override
+    protected State<String> normalModeKeymap() {
+        @SuppressWarnings("unchecked")
+        State<String> state = state(
+                transitionBind('g', leafBind('c', KeyMapResolver.OMAP_NAME)),
+                leafBind('=', KeyMapResolver.OMAP_NAME));
+        return state;
     }
     
 	@Override

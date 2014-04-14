@@ -68,14 +68,6 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
     }
 
     @Override
-    protected State<String> normalModeKeymap() {
-        State<String> normalModeKeymap = state(
-                        leafBind('z', KeyMapResolver.NO_KEYMAP),
-                        leafBind('g', KeyMapResolver.NO_KEYMAP));
-        return normalModeKeymap;
-    }
-
-    @Override
     protected State<String> visualModeKeymap() {
         return state(leafBind('g', KeyMapResolver.NO_KEYMAP));
     }
@@ -112,6 +104,18 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
             prefixedOperatorCmds('g', 'U', seq(editText("upperCase"), DeselectAllCommand.INSTANCE), textObjects)
          );
         return normalModeBindings;
+    }
+    
+    @Override
+    protected State<String> normalModeKeymap() {
+        State<String> normalModeKeymap = state(
+                leafBind('z', KeyMapResolver.NO_KEYMAP),
+                transitionBind('g', 
+                        leafBind('t', KeyMapResolver.NO_KEYMAP),
+                        leafBind('T', KeyMapResolver.NO_KEYMAP),
+                        leafBind('u', KeyMapResolver.OMAP_NAME),
+                        leafBind('U', KeyMapResolver.OMAP_NAME)));
+        return normalModeKeymap;
     }
 
     @Override
