@@ -2,7 +2,6 @@ package net.sourceforge.vrapper.core.tests.cases;
 
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.parseKeyStrokes;
 import net.sourceforge.vrapper.core.tests.utils.CommandTestCase;
-import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 
 import org.junit.After;
@@ -67,7 +66,6 @@ public class RemappingTests extends CommandTestCase {
                 "[", 'a', "bc\ndef\ngh]\njkl",
                 "[", ']', "\njkl");
         type(parseKeyStrokes(":noremap ]] j<CR>"));
-        VimUtils.BREAKPOINT_TRIGGER++;
         checkCommand(forKeySeq("di]"),
                 "[", 'a', "bc\ndef\ngh]\njkl",
                 "[", ']', "\njkl");
