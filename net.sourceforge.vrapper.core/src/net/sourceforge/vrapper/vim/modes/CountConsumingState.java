@@ -9,8 +9,8 @@ import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.Transition;
 
 /**
- * Wraps a state. Number keys are mapped to a transition to the state itself.
- * Other keystrokes are given to the wrapped state.
+ * State which will cause count characters to be ignored.
+ * Must be wrapped around another state.
  *
  * @author Matthias Radig
  */
