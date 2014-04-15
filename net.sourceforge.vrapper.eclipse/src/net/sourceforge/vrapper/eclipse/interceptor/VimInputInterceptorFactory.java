@@ -188,9 +188,10 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
         }
 
         public void selectionChanged(SelectionChangedEvent event) {
-            if (!VrapperPlugin.isMouseDown()
-                    || !(event.getSelection() instanceof TextSelection)
-                    || !editorAdaptor.getConfiguration().get(Options.VISUAL_MOUSE))
+            if ( ! VrapperPlugin.isVrapperEnabled()
+                    || ! VrapperPlugin.isMouseDown()
+                    || ! (event.getSelection() instanceof TextSelection)
+                    || ! editorAdaptor.getConfiguration().get(Options.VISUAL_MOUSE))
                 return;
 
             TextSelection selection = (TextSelection) event.getSelection();
