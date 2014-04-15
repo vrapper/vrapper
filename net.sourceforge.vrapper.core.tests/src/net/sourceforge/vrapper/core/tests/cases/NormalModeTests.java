@@ -25,6 +25,7 @@ import net.sourceforge.vrapper.vim.commands.motions.MoveWordRight;
 import net.sourceforge.vrapper.vim.modes.CommandBasedMode;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
+import net.sourceforge.vrapper.vim.register.Register;
 import net.sourceforge.vrapper.vim.register.StringRegisterContent;
 
 import org.junit.Ignore;
@@ -1944,6 +1945,38 @@ public class NormalModeTests extends CommandTestCase {
 		checkCommand(forKeySeq("5ed"),
 				"first line\nsecond ", 'l', "ine\nthird line",
 				"first line\nse", 'l', "ine\nthird line");
+	}
+
+	@Test
+	public void testCountingDeleteToRegister() {
+	    installSaneRegisterManager();
+	    Register defaultReg = registerManager.getDefaultRegister();
+
+	    checkCommand(forKeySeq("\"_3dl"),
+	            "This is",' ',"a deja-vu.",
+	            "This is",'d',"eja-vu.");
+	    assertEquals("Black hole register was not used!", "", defaultReg.getContent().getText());
+
+	    checkCommand(forKeySeq("3\"_dl"),
+	            "This is",' ',"a deja-vu.",
+	            "This is",'d',"eja-vu.");
+	    assertEquals("Black hole register was not used!", "", defaultReg.getContent().getText());
+
+	    checkCommand(forKeySeq("\"_3dd"),
+	            "a", 'b', "c\ndef\nghi\njkl",
+	            "", 'j', "kl");
+	    assertEquals("Black hole register was not used!", "", defaultReg.getContent().getText());
+
+	    checkCommand(forKeySeq("3\"_dd"),
+	            "a", 'b', "c\ndef\nghi\njkl",
+	            "", 'j', "kl");
+	    assertEquals("Black hole register was not used!", "", defaultReg.getContent().getText());
+
+	    // Crazy - this does multiplication: equivalent to "_4dd
+	    checkCommand(forKeySeq("2\"_2dd"),
+	            "a", 'b', "c\ndef\nghi\njkl\n\n\n",
+	            "", '\n', "\n");
+	    assertEquals("Black hole register was not used!", "", defaultReg.getContent().getText());
 	}
 
     private void installSaneRegisterManager() {

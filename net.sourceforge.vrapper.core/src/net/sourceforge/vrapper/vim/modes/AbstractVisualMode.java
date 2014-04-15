@@ -65,7 +65,8 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
                 editorAdaptor.getPlatformSpecificStateProvider().getKeyMaps(VisualMode.NAME));
         final State<String> countEater = new CountConsumingState<String>(state);
         final State<String> registerKeymapState = new RegisterKeymapState(KEYMAP_NAME, countEater);
-        return new KeyMapResolver(registerKeymapState, KEYMAP_NAME);
+        final State<String> outerCountEater = new CountConsumingState<String>(registerKeymapState);
+        return new KeyMapResolver(outerCountEater, KEYMAP_NAME);
     }
 
     @Override
@@ -167,7 +168,9 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
         final State<Command> visualMotions = getVisualMotionState();
         final State<Command> visualTextObjects = new VisualTextObjectState(
                                         editorAdaptor.getTextObjectProvider());
-        final State<Command> initialState = RegisterState.wrap(CountingState.wrap(union(
+        final State<Command> initialState = CountingState.wrap(
+          RegisterState.wrap(
+            CountingState.wrap(union(
                 getPlatformSpecificState(NAME),
                 state(
                 leafBind(SpecialKey.ESC, leaveVisual),
@@ -206,7 +209,7 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
                                 SetMarkCommand.KEYSTROKE_CONVERTER,
                                 VimConstants.PRINTABLE_KEYSTROKES))
         ), visualMotions, visualTextObjects
-        )));
+        ))));
         return initialState;
     }
 

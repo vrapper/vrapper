@@ -118,7 +118,8 @@ public class NormalMode extends CommandBasedMode {
                 editorAdaptor.getPlatformSpecificStateProvider().getKeyMaps(NAME));
         final State<String> countEater = new CountConsumingState<String>(state);
         final State<String> registerKeymapState = new RegisterKeymapState(KEYMAP_NAME, countEater);
-        return new KeyMapResolver(registerKeymapState, KEYMAP_NAME);
+        final State<String> outerCountEater = new CountConsumingState<String>(registerKeymapState);
+        return new KeyMapResolver(outerCountEater, KEYMAP_NAME);
     }
 
     @Override
@@ -217,7 +218,7 @@ public class NormalMode extends CommandBasedMode {
         final Command nextResult = motionCommands.press(key('n')).getValue();
 
         final State<Command> platformSpecificState = getPlatformSpecificState(NAME);
-        return RegisterState.wrap(CountingState.wrap(union(
+        return CountingState.wrap(RegisterState.wrap(CountingState.wrap(union(
                 platformSpecificState,
                 operatorCmdsWithUpperCase('d', delete, toEol,     textObjects),
                 operatorCmdsWithUpperCase('y', yank,   toEolForY, textObjects),
@@ -293,7 +294,7 @@ public class NormalMode extends CommandBasedMode {
                             leafBind('b', centerBottomLine),
                             leafBind('t', centerTopLine),
                             leafBind(SpecialKey.RETURN, centerTopLine)
-                        )))));
+                        ))))));
     }
 
     /**
