@@ -61,6 +61,7 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
     	int lengthDiff = replace.length() - toFind.length();
     	int match;
     	int numReplaces = 0;
+    	toFind = convertRegexSearch(toFind, replace);
     	try {
     		while(start < end) {
     			IRegion result = adapter.find(start, toFind, true, caseSensitive, false, true);
@@ -107,6 +108,7 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
     public boolean substitute(int start, String toFind, String flags, String toReplace) {
     	boolean success = false;
     	try {
+    		toFind = convertRegexSearch(toFind, toReplace);
 			IRegion result = adapter.find(start, toFind, true, isCaseSensitive(toFind, flags), false, true);
 			if(result != null) {
 				adapter.replace(toReplace, true);
@@ -118,11 +120,54 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
     }
 
     private IRegion find(Search search, int begin) throws BadLocationException {
+    	if(search.isRegExSearch()) {
+    		search = convertRegexSearch(search);
+    	}
         IRegion result = adapter.find(
                     begin, search.getKeyword(),
                     !search.isBackward(), search.isCaseSensitive(),
                     search.isWholeWord(), search.isRegExSearch());
         return result;
+    }
+    
+    /**
+     * We're using Eclipse's (Java's) Regex engine for search/replace. However,
+     * a lot of people are used to Vim's syntax for regex. So, check for Vim
+     * regex syntax and map to Eclipse's (Java's) syntax where possible.
+     * \< and \> =  \b   = word boundary
+     * \( and \) = (   ) = create group
+     *  ( and )  = \( \) = parentheses characters
+     */
+    private Search convertRegexSearch(Search search) {
+    	String keyword = search.getKeyword();
+    	keyword = convertRegexSearch(keyword, null);
+    	return new Search(keyword, search.isBackward(), search.isWholeWord(),
+            search.isCaseSensitive(), search.getSearchOffset(), search.isRegExSearch());
+    }
+    private String convertRegexSearch(String keyword, String replace) {
+    	//if Vim-style groupings defined       [ s/\(foo\)/\1/ ],
+    	//     convert to Eclipse-style regex  [ s/(foo)/\1/   ]
+    	//     (Eclipse actually supports \1 and $1 syntax so I can leave that alone)
+    	//else, no groupings being defined   [ s/(foo)/(bar)/ ]
+    	//     search on literal parentheses [ s/\(foo\)/(bar)/ ]
+    	//in Vim, '( )' are parentheses and '\( \)' are groups
+    	//in Eclipse, '( )' are groups and '\( \)' are parentheses
+    	if(replace != null) {
+    		if(replace.contains("\\1")) {
+    			//if using Vim-style replacements, expect Vim-style grouping definition
+    			//(and convert to Eclipse-style grouping)
+    			keyword = keyword.replaceAll("\\\\\\(", "(").replaceAll("\\\\\\)", ")");
+    		}
+    		else if( (!replace.contains("$1")) && keyword.contains("(") && (!keyword.contains("\\(")) ) {
+    			//if Eclipse-style replacements aren't defined and '(' isn't escaped,
+    			//escape '(' so Eclipse treats it as a '(' character
+    			//(Vim would've considered this a grouping definition but in Eclipse it's escaping the character)
+    			keyword = keyword.replaceAll("\\(", "\\\\(").replaceAll("\\)", "\\\\)");
+    		}
+    	}
+    	//in Vim, '\<' and '\>' are word boundaries
+    	//in Eclipse, '\b' is word boundaries
+    	return keyword.replaceAll("\\<|\\>", "\\b");
     }
 
     public void removeHighlighting() {
