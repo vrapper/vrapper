@@ -37,7 +37,7 @@ public class RemappingTests extends CommandTestCase {
     }
 
     @Test
-    public void testCounting() {
+    public void testCountingRemap() {
         type(parseKeyStrokes(":nmap L dd<CR>"));
         checkCommand(forKeySeq("3L"),
                 "a", 'b', "c\ndef\nghi\njkl",
@@ -45,34 +45,87 @@ public class RemappingTests extends CommandTestCase {
     }
 
     @Test
-    @Ignore // This has more to do with the way registers are implemented than keymapping.
-    public void testCountingBlackHole() {
+    public void testOmap() {
+        // Sanity check
+        checkCommand(forKeySeq("d$"),
+                "a", 'b', "c\ndef\nghi\njkl\nm",
+                "", 'a', "\ndef\nghi\njkl\nm");
+
+        type(parseKeyStrokes(":onoremap L $<CR>"));
+        checkCommand(forKeySeq("dL"),
+                "a", 'b', "c\ndef\nghi\njkl\nm",
+                "", 'a', "\ndef\nghi\njkl\nm");
+    }
+
+    @Test
+    public void testBlackHoleRegisterRemap() {
+
+        // Sanity check
+        checkCommand(forKeySeq("\"_dd"),
+                "a", 'b', "c\ndef\nghi\njkl",
+                "", 'd', "ef\nghi\njkl");
+        type(parseKeyStrokes(":nnoremap R \"_dd<CR>"));
+        checkCommand(forKeySeq("R"),
+                "a", 'b', "c\ndef\nghi\njkl",
+                "", 'd', "ef\nghi\njkl");
+
+        type(parseKeyStrokes(":nnoremap D \"_d$<CR>"));
+        checkCommand(forKeySeq("D"),
+                "a", 'b', "c\ndef\nghi\njkl",
+                "", 'a', "\ndef\nghi\njkl");
+    }
+
+    @Test
+    public void testBlackHoleRegisterCountingRemap() {
+        // Sanity checks
         checkCommand(forKeySeq("\"_3dd"),
                 "a", 'b', "c\ndef\nghi\njkl",
                 "", 'j', "kl");
         checkCommand(forKeySeq("3\"_dd"),
                 "a", 'b', "c\ndef\nghi\njkl",
                 "", 'j', "kl");
+        // Crazy - this does multiplication: equivalent to "_4dd
+        checkCommand(forKeySeq("2\"_2dd"),
+                "a", 'b', "c\ndef\nghi\njkl\n\n\n",
+                "", '\n', "\n");
+
         type(parseKeyStrokes(":noremap dd \"_dd<CR>"));
         checkCommand(forKeySeq("3dd"),
                 "a", 'b', "c\ndef\nghi\njkl",
                 "", 'j', "kl");
+        type(parseKeyStrokes(":noremap dd \"_2dd<CR>"));
+        checkCommand(forKeySeq("2dd"),
+                "a", 'b', "c\ndef\nghi\njkl\nm",
+                "", 'm', "");
+
+        type(parseKeyStrokes(":nnoremap D \"_d$<CR>"));
+        checkCommand(forKeySeq("D"),
+                "a", 'b', "c\ndef\nghi\njkl",
+                "", 'a', "\ndef\nghi\njkl");
+        checkCommand(forKeySeq("2D"),
+                "a", 'b', "c\ndef\nghi\njkl",
+                "", 'a', "\nghi\njkl");
     }
 
     @Test
-    @Ignore // Needs some work in KeyStrokeTranslator and related code to do it nicely.
+    @Ignore
+    // [TODO] Needs some work in KeyStrokeTranslator and related code to do it nicely.
+    // Using :nnoremap / :nmap could be an acceptable workaround. See issue #415.
     public void testPrefixTextObject() {
-        checkCommand(forKeySeq("di]"),
-                "[", 'a', "bc\ndef\ngh]\njkl",
-                "[", ']', "\njkl");
-        type(parseKeyStrokes(":noremap ]] j<CR>"));
-        checkCommand(forKeySeq("di]"),
-                "[", 'a', "bc\ndef\ngh]\njkl",
-                "[", ']', "\njkl");
-        type(parseKeyStrokes(":map ]] j<CR>"));
-        checkCommand(forKeySeq("di]"),
-                "[", 'a', "bc\ndef\ngh]\njkl",
-                "[", ']', "\njkl");
+        checkCommand(forKeySeq("di)"),
+                "(", 'a', "bc\ndef\ngh)\njkl",
+                "(", ')', "\njkl");
+        type(parseKeyStrokes(":nnoremap )) j<CR>"));
+        checkCommand(forKeySeq("di)"),
+                "(", 'a', "bc\ndef\ngh)\njkl",
+                "(", ')', "\njkl");
+        type(parseKeyStrokes(":omap )) j<CR>"));
+        checkCommand(forKeySeq("d))"),
+                "(", 'a', "bc\ndef\ngh)\njkl",
+                "", 'g', "h)\njkl");
+        checkCommand(forKeySeq("di)"),
+                "(", 'a', "bc\ndef\ngh)\njkl",
+                "(", ')', "\njkl");
     }
 
     @Test
