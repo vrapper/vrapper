@@ -19,7 +19,11 @@ Or, you can temporarily override those options by putting <code>\c</code> or <co
 
 <h2>And Replace</h2>
 <p>Vrapper supports a couple special cases when performing a search and replace (<code>:s/foo/bar/</code>).
-These should all align with the equivalent Vim behavior.</p>
+These should all align with the equivalent Vim behavior.
+
+<code>:s/foo/bar/</code> will perform a replace on the current line.  You can
+also use line ranges (<code>:2,5s/foo/bar/</code>) or <code>:%s/foo/bar/</code>
+to replace within the entire file.</p>
 
 <p>Whatever character appears after the <code>:s</code> will be used as the delimiter.
 For example, <code>:s/foo/bar/g</code> and <code>:s_foo_bar_g</code>.</p>
