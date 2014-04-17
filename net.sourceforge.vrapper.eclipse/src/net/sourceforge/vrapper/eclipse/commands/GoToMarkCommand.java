@@ -4,13 +4,12 @@ import net.sourceforge.vrapper.eclipse.activator.VrapperPlugin;
 import net.sourceforge.vrapper.eclipse.platform.EclipseCursorAndSelection;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.utils.Function;
-import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.CountIgnoringNonRepeatableCommand;
+import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.commands.motions.GoToMarkMotion;
-import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IWorkspaceRoot;
@@ -111,20 +110,16 @@ public class GoToMarkCommand extends CountIgnoringNonRepeatableCommand {
         // The associated editor is open and active, change current position
         // if requested.
         //
-        Position markPos = null;
         switch (mode) {
         case LINEWISE:
-            markPos = new GoToMarkMotion(true, id).destination(markEditor);
+        	new MotionCommand(new GoToMarkMotion(true, id)).execute(markEditor);
             break;
         case CHARWISE:
-            markPos = new GoToMarkMotion(false, id).destination(markEditor);
+        	new MotionCommand(new GoToMarkMotion(false, id)).execute(markEditor);
             break;
         case EDITOR:
             // Don't change current position.
             break;
-        }
-        if (markPos != null) {
-            markEditor.getCursorService().setPosition(markPos, StickyColumnPolicy.ON_CHANGE);
         }
 	}
 
