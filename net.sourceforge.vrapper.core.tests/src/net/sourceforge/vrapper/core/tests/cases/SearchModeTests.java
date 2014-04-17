@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import net.sourceforge.vrapper.core.tests.utils.CommandTestCase;
+import net.sourceforge.vrapper.core.tests.utils.TestSearchService;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
@@ -15,7 +16,7 @@ public class SearchModeTests extends CommandTestCase {
     public void setUp() {
         super.setUp();
         registerManager = new DefaultRegisterManager();
-        when(platform.getSearchAndReplaceService()).thenReturn(searchService);
+        when(platform.getSearchAndReplaceService()).thenReturn(new TestSearchService(content));
         reloadEditorAdaptor();
     }
 

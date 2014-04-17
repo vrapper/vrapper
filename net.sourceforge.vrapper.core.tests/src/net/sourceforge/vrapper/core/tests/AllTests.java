@@ -7,6 +7,7 @@ import net.sourceforge.vrapper.core.tests.cases.MacroTests;
 import net.sourceforge.vrapper.core.tests.cases.MotionTests;
 import net.sourceforge.vrapper.core.tests.cases.NormalModeTests;
 import net.sourceforge.vrapper.core.tests.cases.RemappingTests;
+import net.sourceforge.vrapper.core.tests.cases.SearchModeTests;
 import net.sourceforge.vrapper.core.tests.cases.SimpleKeyStrokeTests;
 import net.sourceforge.vrapper.core.tests.cases.SnapshotTests;
 import net.sourceforge.vrapper.core.tests.cases.StateAndTransitionTests;
@@ -23,6 +24,7 @@ import org.junit.runners.Suite;
 	MacroTests.class,
 	MotionTests.class,
 	NormalModeTests.class,
+	SearchModeTests.class,
 	RemappingTests.class,
 	SimpleKeyStrokeTests.class,
 	SnapshotTests.class,
