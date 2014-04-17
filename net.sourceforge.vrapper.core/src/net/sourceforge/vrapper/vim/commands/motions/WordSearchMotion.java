@@ -40,7 +40,9 @@ public class WordSearchMotion extends SearchResultMotion {
         CommandLineHistory history = CommandLineHistory.INSTANCE;
         history.setMode(SearchMode.NAME);
         if(this.wholeWord) {
-            keyword = "\\b" + keyword + "\\b";
+            //these will be converted to '\b' before the search actually runs
+            //but we want '\<' and '\>' to appear in the search history
+            keyword = "\\<" + keyword + "\\>";
         }
         history.append(keyword);
 
