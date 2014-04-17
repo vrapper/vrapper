@@ -71,8 +71,10 @@ public class SearchCommandParser extends AbstractCommandParser {
 
 	private Search parseSearchCommand(String first, String command) {
         boolean backward = first.equals(VimConstants.BACKWARD_SEARCH_CHAR);
-		//split on the delimiter, unless that delimiter is escaped with a backslash (/foo\/bar/e+2)
-		String[] fields = command.split("(?<!\\\\)"+first);
+        // split on the delimiter, unless that delimiter is escaped with a backslash (/foo\/bar/e+2)
+        // backwards search delimiter '?' needs extra escaping in this split
+        // because it is a reserved character in regex.
+        String[] fields = command.split("(?<!\\\\)"+(backward ? '\\' + first : first));
         String keyword = fields[0].replace("\\"+first, first);
         Search lastSearch = editor.getRegisterManager().getSearch();
         // if keyword is empty, last keyword is used
