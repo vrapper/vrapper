@@ -58,6 +58,25 @@ public class RemappingTests extends CommandTestCase {
     }
 
     @Test
+    public void testCountingOmap() {
+        // Sanity check
+        checkCommand(forKeySeq("2\"_2d$"),
+                "a", 'b', "c\ndef\nghi\njkl\nm",
+                "", 'a', "\nm");
+
+        type(parseKeyStrokes(":onoremap L $<CR>"));
+        checkCommand(forKeySeq("2\"_2dL"),
+                "a", 'b', "c\ndef\nghi\njkl\nm",
+                "", 'a', "\nm");
+        checkCommand(forKeySeq("d4L"),
+                "a", 'b', "c\ndef\nghi\njkl\nm",
+                "", 'a', "\nm");
+        checkCommand(forKeySeq("\"_d4L"),
+                "a", 'b', "c\ndef\nghi\njkl\nm",
+                "", 'a', "\nm");
+    }
+
+    @Test
     public void testBlackHoleRegisterRemap() {
 
         // Sanity check

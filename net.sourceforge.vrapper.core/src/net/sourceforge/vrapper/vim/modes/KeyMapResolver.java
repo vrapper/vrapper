@@ -42,7 +42,7 @@ public final class KeyMapResolver {
 
     private String getValue(Transition<String> trans) {
         String value = trans.getValue();
-        return value != null ? value : defaultValue;
+        return value != null ? value : lastValue;
     }
 
     public String getKeyMapName() {
