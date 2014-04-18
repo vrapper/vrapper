@@ -32,9 +32,7 @@ public final class KeyMapResolver {
         if (currentState != null) {
             Transition<String> trans = currentState.press(key);
             if (trans != null) {
-                if (trans.getNextState() != null) {
-                    currentState = trans.getNextState();
-                }
+                currentState = trans.getNextState();
                 lastValue = getValue(trans);
             }
         }

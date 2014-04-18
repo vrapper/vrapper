@@ -104,15 +104,15 @@ public class NormalMode extends CommandBasedMode {
                     leafBind('q', KeyMapResolver.NO_KEYMAP),
                     leafBind('@', KeyMapResolver.NO_KEYMAP),
                     // Operators
-                    leafBind('c', KeyMapResolver.OMAP_NAME),
-                    leafBind('d', KeyMapResolver.OMAP_NAME),
-                    leafBind('y', KeyMapResolver.OMAP_NAME),
-                    leafBind('!', KeyMapResolver.OMAP_NAME),
-                    leafBind('<', KeyMapResolver.OMAP_NAME),
-                    leafBind('>', KeyMapResolver.OMAP_NAME),
+                    transitionBind('c', KeyMapResolver.OMAP_NAME, getKeyMapsForMotions()),
+                    transitionBind('d', KeyMapResolver.OMAP_NAME, getKeyMapsForMotions()),
+                    transitionBind('y', KeyMapResolver.OMAP_NAME, getKeyMapsForMotions()),
+                    transitionBind('!', KeyMapResolver.OMAP_NAME, getKeyMapsForMotions()),
+                    transitionBind('<', KeyMapResolver.OMAP_NAME, getKeyMapsForMotions()),
+                    transitionBind('>', KeyMapResolver.OMAP_NAME, getKeyMapsForMotions()),
                     transitionBind('g', 
-                        leafBind('q', KeyMapResolver.OMAP_NAME),
-                        leafBind('~', KeyMapResolver.OMAP_NAME)
+                        transitionBind('q', KeyMapResolver.OMAP_NAME, getKeyMapsForMotions()),
+                        transitionBind('~', KeyMapResolver.OMAP_NAME, getKeyMapsForMotions())
                     )),
                 getKeyMapsForMotions(),
                 editorAdaptor.getPlatformSpecificStateProvider().getKeyMaps(NAME));

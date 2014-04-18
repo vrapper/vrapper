@@ -187,5 +187,11 @@ public class RemappingTests extends CommandTestCase {
         checkCommand(forKeySeq("fL"),
                 "old", ' ', "McDonnaLD had some $",
                 "old McDonna", 'L', "D had some $");
+        checkCommand(forKeySeq("dfL"),
+                "old", ' ', "McDonnaLD had some $LLaz",
+                "old", 'D', " had some $LLaz");
+        checkCommand(forKeySeq("d2fL"),
+                "old", ' ', "McDonnaLD had some $LLaz",
+                "old", 'L', "az");
     }
 }
