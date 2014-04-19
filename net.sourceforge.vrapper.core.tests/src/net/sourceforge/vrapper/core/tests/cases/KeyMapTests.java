@@ -16,11 +16,20 @@ import net.sourceforge.vrapper.keymap.Transition;
 
 import org.junit.Test;
 
+/**
+ * White-box tests for the {@link KeyMap} class.
+ *
+ */
 public class KeyMapTests extends TestCase {
 
     private final KeyMap map = new KeyMap();
     private final Remapping mapping = new SimpleRemapping(key('h'));
 
+    /**
+     * Test if dynamically mapping and unmapping will build and traverse
+     * the right state machine structure. The numbers present the number
+     * of nodes at each level.
+     */
     @Test
     public void testKeyMap() throws Exception {
         for (char i = 0; i < 0xFF; i++) {
