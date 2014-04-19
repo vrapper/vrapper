@@ -21,6 +21,8 @@ import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
+import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
+import net.sourceforge.vrapper.vim.modes.InsertMode;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.modes.VisualMode;
 import net.sourceforge.vrapper.vim.register.StringRegisterContent;
@@ -50,7 +52,10 @@ public class VisualModeTests extends CommandTestCase {
             selectFrom += selected.length();
         }
 
-        adaptor.changeModeSafely(VisualMode.NAME);
+        // Don't switch when already in temp Visual mode or linewise mode.
+        if ( ! (adaptor.getMode(adaptor.getCurrentModeName()) instanceof AbstractVisualMode)) {
+            adaptor.changeModeSafely(VisualMode.NAME);
+        }
 
         CursorService cursorService = platform.getCursorService();
         SelectionService selectionService = platform.getSelectionService();
@@ -180,66 +185,67 @@ public class VisualModeTests extends CommandTestCase {
                 true,  "A","la"," ma kota",
                 false, "A","la"," ma kota");
 
-        // FIXME:
-        // it's broken in test case, works quite well
-        // in real eclipse
-        checkCommand(forKeySeq("x"),
+        checkLeavingCommand(forKeySeq("x"),
                 false, "A","la"," ma kota",
-                false, "A",""," ma kota");
-        verify(adaptor).changeMode(NormalMode.NAME);
+                "A",' ',"ma kota");
+        assertEquals(NormalMode.NAME, adaptor.getCurrentModeName());
 
-        checkCommand(forKeySeq("d"),
+        checkLeavingCommand(forKeySeq("d"),
                 true,  "A","LA"," MA kota",
-                true,  "A",""," MA kota");
-        verify(adaptor, times(2)).changeMode(NormalMode.NAME);
+                "A",' ',"MA kota");
+        assertEquals(NormalMode.NAME, adaptor.getCurrentModeName());
 
         checkLeavingCommand(forKeySeq("y"), true,
                 "A", "LA", " MA kota",
                 "A", 'L', "A MA kota");
-        verify(adaptor, times(3)).changeMode(NormalMode.NAME);
+        assertEquals(NormalMode.NAME, adaptor.getCurrentModeName());
 
-        checkCommand(forKeySeq("s"),
+        checkLeavingCommand(forKeySeq("c"),
                 true,  "A","LA"," MA kota",
-                true,  "A",""," MA kota");
-        // TODO: obtain correct arguments used by by ChangeOperation when changing mode
-        //		verify(adaptor).changeMode(InsertMode.NAME);
+                "A",' ',"MA kota");
+        assertEquals(InsertMode.NAME, adaptor.getCurrentModeName());
+
+        checkLeavingCommand(forKeySeq("s"),
+                true,  "A","LA"," MA kota",
+                "A",' ',"MA kota");
+        assertEquals(InsertMode.NAME, adaptor.getCurrentModeName());
     }
 
     @Test
     public void testPastingInVisualMode() throws Exception {
         defaultRegister.setContent(new StringRegisterContent(ContentType.TEXT, "a series of tubes"));
-        checkCommand(forKeySeq("p"),
+        checkLeavingCommand(forKeySeq("p"),
                 false, "The internet is ","awesome","!",
-                false, "The internet is a series of tube","","s!");
-        verify(adaptor).changeMode(NormalMode.NAME);
+                "The internet is a series of tube",'s',"!");
+        assertEquals(NormalMode.NAME, adaptor.getCurrentModeName());
         assertYanked(ContentType.TEXT, "awesome");
 
         defaultRegister.setContent(new StringRegisterContent(ContentType.LINES, "\t\ta series of tubes\n"));
-        checkCommand(forKeySeq("p"),
+        checkLeavingCommand(forKeySeq("p"),
                 true, "The internet is ","awesome","!",
-                true, "The internet is \n\t\t","","a series of tubes\n!");
-        verify(adaptor, times(2)).changeMode(NormalMode.NAME);
+                "The internet is \n\t\t",'a'," series of tubes\n!");
+        assertEquals(NormalMode.NAME, adaptor.getCurrentModeName());
         assertYanked(ContentType.TEXT, "awesome");
 
         defaultRegister.setContent(new StringRegisterContent(ContentType.LINES, "a series of tubes\n"));
         checkCommand(forKeySeq("p"),
                 false, "The internet is \n","awesome\n","!",
                 false, "The internet is \n","","a series of tubes\n!");
-        verify(adaptor, times(3)).changeMode(NormalMode.NAME);
+        assertEquals(NormalMode.NAME, adaptor.getCurrentModeName());
         assertYanked(ContentType.LINES, "awesome\n");
 
         defaultRegister.setContent(new StringRegisterContent(ContentType.TEXT, "a series of tubes"));
         checkCommand(forKeySeq("p"),
                 false, "The internet is \n","awesome\n","!",
                 false, "The internet is \n","","a series of tubes\n!");
-        verify(adaptor, times(4)).changeMode(NormalMode.NAME);
+        assertEquals(NormalMode.NAME, adaptor.getCurrentModeName());
         assertYanked(ContentType.LINES, "awesome\n");
 
         defaultRegister.setContent(new StringRegisterContent(ContentType.TEXT, "a series of tubes"));
         checkCommand(forKeySeq("2p"),
                 false, "The internet is ","awesome","!",
                 false, "The internet is a series of tubesa series of tube","","s!");
-        verify(adaptor, times(5)).changeMode(NormalMode.NAME);
+        assertEquals(NormalMode.NAME, adaptor.getCurrentModeName());
         assertYanked(ContentType.TEXT, "awesome");
     }
 
@@ -317,18 +323,22 @@ public class VisualModeTests extends CommandTestCase {
         checkLeavingCommand(forKeySeq("~"),
                 false,  "with ","some CAPITAL"," letters",
                 "with ",'S',"OME capital letters");
+        assertEquals(NormalMode.NAME, adaptor.getCurrentModeName());
 
         checkLeavingCommand(forKeySeq("~"),
                 false,  "with ","some\nCAPITAL"," letters",
                 "with ",'S',"OME\ncapital letters");
+        assertEquals(NormalMode.NAME, adaptor.getCurrentModeName());
 
         checkLeavingCommand(forKeySeq("~"),
                 true,  "with ","some CAPITAL"," letters",
                 "with ",'S',"OME capital letters");
+        assertEquals(NormalMode.NAME, adaptor.getCurrentModeName());
 
         checkLeavingCommand(forKeySeq("~"),
                 true,  "with ","some\nCAPITAL"," letters",
                 "with ",'S',"OME\ncapital letters");
+        assertEquals(NormalMode.NAME, adaptor.getCurrentModeName());
     }
 
     @Test
@@ -348,6 +358,7 @@ public class VisualModeTests extends CommandTestCase {
         checkLeavingCommand(forKeySeq(">"),
                 false, "","    Hello,\n    W","orld!\n;-)",
                 "        ",'H',"ello,\n        World!\n;-)");
+        assertEquals(NormalMode.NAME, adaptor.getCurrentModeName());
         checkLeavingCommand(forKeySeq(">"),
                 false, "    ","Hello,\n    W","orld!\n;-)",
                 "        ",'H',"ello,\n        World!\n;-)");
