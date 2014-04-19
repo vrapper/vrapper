@@ -306,6 +306,42 @@ public class VisualModeTests extends CommandTestCase {
     }
 
     @Test
+    public void testSwitchSelectionSides() throws CommandExecutionException {
+        checkCommand(forKeySeq("o"),
+                false,  "getText(","line.getEndOffset","() - line.getBeginOffset()));",
+                true,  "getText(","line.getEndOffset","() - line.getBeginOffset()));");
+        
+        checkCommand(forKeySeq("o"),
+                true,  "getText(","line.getEndOffset","() - line.getBeginOffset()));",
+                false,  "getText(","line.getEndOffset","() - line.getBeginOffset()));");
+
+        // Sanity check: see if switch to line-wise visual works as expected.
+        checkCommand(forKeySeq("V"),
+                false,  "Hell","o,","\nWorld!\n;-)",
+                false,  "","Hello,\n","World!\n;-)");
+
+        // Switch sides does nothing for single line.
+        // Always change back to visual mode to fix the selection.
+        adaptor.changeMode(VisualMode.NAME);
+        checkCommand(forKeySeq("Vo"),
+                false, "Hell","o,","\nWorld!\n;-)",
+                false, "","Hello,\n","World!\n;-)");
+
+        adaptor.changeMode(VisualMode.NAME);
+        checkCommand(forKeySeq("Vj"),
+                false, "Hell","o,","\nWorld!\n;-)",
+                false, "","Hello,\nWorld!\n",";-)");
+        adaptor.changeMode(VisualMode.NAME);
+        checkCommand(forKeySeq("Vjo"),
+                false, "Hell","o,","\nWorld!\n;-)",
+                true, "","Hello,\nWorld!\n",";-)");
+        adaptor.changeMode(VisualMode.NAME);
+        checkCommand(forKeySeq("Vjoo"),
+                false, "Hell","o,","\nWorld!\n;-)",
+                false, "","Hello,\nWorld!\n",";-)");
+    }
+
+    @Test
     public void test_J() {
         checkLeavingCommand(forKeySeq("J"),
                 false,  "Hell","o,\nW","orld!\n;-)",
