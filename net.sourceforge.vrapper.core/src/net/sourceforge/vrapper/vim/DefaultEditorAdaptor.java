@@ -99,6 +99,8 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     private MacroPlayer macroPlayer;
     private String lastModeName;
     private String editorType;
+    /** Previous selection, or null if editor is fresh. Must be editor-local. */
+    private Selection lastSelection;
     private int cursorBeforeMapping = -1;
 
 
@@ -611,27 +613,28 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         }
     }
 
-	@Override
+    @Override
     public void rememberLastActiveSelection() {
-		Selection selection = selectionService.getSelection();
-		if(selection.getRightBound().getModelOffset() > getModelContent().getTextLength()) {
-		    Position end = selection.getRightBound().setModelOffset(getModelContent().getTextLength());
-		    selection = selection.selectMarks(this, selection.getLeftBound(), end);
-		}
-		registerManager.setLastActiveSelection(selection, SelectionArea.getInstance(this, selection));
-		cursorService.setMark(CursorService.LAST_SELECTION_START_MARK, selection.getStartMark(this));
-		cursorService.setMark(CursorService.LAST_SELECTION_END_MARK, selection.getEndMark(this));
-	}
+        Selection selection = selectionService.getSelection();
+        if(selection.getRightBound().getModelOffset() > getModelContent().getTextLength()) {
+            Position end = selection.getRightBound().setModelOffset(getModelContent().getTextLength());
+            selection = selection.selectMarks(this, selection.getLeftBound(), end);
+        }
+        registerManager.setLastActiveSelection(SelectionArea.getInstance(this, selection));
+        cursorService.setMark(CursorService.LAST_SELECTION_START_MARK, selection.getStartMark(this));
+        cursorService.setMark(CursorService.LAST_SELECTION_END_MARK, selection.getEndMark(this));
+        lastSelection = selection;
+    }
 
-	@Override
+    @Override
     public SelectionArea getLastActiveSelectionArea() {
-		return registerManager.getLastActiveSelectionArea();
-	}
+        return registerManager.getLastActiveSelectionArea();
+    }
 
-	@Override
+    @Override
     public Selection getLastActiveSelection() {
-		return registerManager.getLastActiveSelection();
-	}
+        return lastSelection;
+    }
 
 	@Override
     public String getCurrentModeName() {
