@@ -5,7 +5,7 @@ import net.sourceforge.vrapper.platform.Platform;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.platform.UserInterfaceService;
 import net.sourceforge.vrapper.vim.LocalConfiguration;
-import net.sourceforge.vrapper.vim.LocalConfigurationListener;
+import net.sourceforge.vrapper.vim.ConfigurationListener;
 import net.sourceforge.vrapper.vim.Options;
 
 /**
@@ -24,7 +24,7 @@ public class UnmodifiableTextContentDecorator implements TextContent {
         this.textContent = target;
         this.uiService = platform.getUserInterfaceService();
         this.editable = platform.getFileService().isEditable();
-        configuration.addListener(new LocalConfigurationListener() {
+        configuration.addListener(new ConfigurationListener() {
             @Override
             public <T> void optionChanged(Option<T> option, T oldValue, T newValue) {
                 if (option.equals(Options.MODIFIABLE)) {

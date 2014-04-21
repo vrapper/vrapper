@@ -118,7 +118,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         this.globalRegisterManager = registerManager;
         this.serviceProvider = editor.getServiceProvider();
         this.editorSettings = editor.getUnderlyingEditorSettings();
-        final LocalConfigurationListener listener = new LocalConfigurationListener() {
+        final ConfigurationListener listener = new ConfigurationListener() {
 
             @Override
             public <T> void optionChanged(final Option<T> option, final T oldValue, final T newValue) {

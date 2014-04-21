@@ -16,7 +16,7 @@ public interface Platform {
     ServiceProvider getServiceProvider();
     KeyMapProvider getKeyMapProvider();
     UnderlyingEditorSettings getUnderlyingEditorSettings();
-    Configuration getConfiguration();
+    GlobalConfiguration getConfiguration();
     PlatformSpecificStateProvider getPlatformSpecificStateProvider(
             TextObjectProvider textObjectProvider);
     PlatformSpecificModeProvider getPlatformSpecificModeProvider();

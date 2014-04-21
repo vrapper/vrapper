@@ -16,6 +16,7 @@ import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.Configuration;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.FileService;
+import net.sourceforge.vrapper.platform.GlobalConfiguration;
 import net.sourceforge.vrapper.platform.HighlightingService;
 import net.sourceforge.vrapper.platform.HistoryService;
 import net.sourceforge.vrapper.platform.Platform;
@@ -52,7 +53,7 @@ public class EclipsePlatform implements Platform {
     private final EclipseUserInterfaceService userInterfaceService;
     private final DefaultKeyMapProvider keyMapProvider;
     private final UnderlyingEditorSettings underlyingEditorSettings;
-    private final Configuration configuration;
+    private final GlobalConfiguration configuration;
     private final AbstractTextEditor underlyingEditor;
     private final HighlightingService highlightingService;
     private final SearchAndReplaceService searchAndReplaceService;
@@ -61,7 +62,7 @@ public class EclipsePlatform implements Platform {
     private static final Map<String, PlatformSpecificTextObjectProvider> textObjProviderCache = new ConcurrentHashMap<String, PlatformSpecificTextObjectProvider>();
 
     public EclipsePlatform(final AbstractTextEditor abstractTextEditor,
-            final ITextViewer textViewer, final Configuration sharedConfiguration) {
+            final ITextViewer textViewer, final GlobalConfiguration sharedConfiguration) {
         underlyingEditor = abstractTextEditor;
         configuration = sharedConfiguration;
         textContent = new EclipseTextContent(textViewer);
@@ -145,7 +146,7 @@ public class EclipsePlatform implements Platform {
     }
 
     @Override
-    public Configuration getConfiguration() {
+    public GlobalConfiguration getConfiguration() {
         return configuration;
     }
 

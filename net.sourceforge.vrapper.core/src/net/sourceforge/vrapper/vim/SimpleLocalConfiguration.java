@@ -7,7 +7,7 @@ import net.sourceforge.vrapper.platform.Configuration;
 import net.sourceforge.vrapper.platform.SimpleConfiguration;
 import net.sourceforge.vrapper.platform.SimpleConfiguration.NewLine;
 
-/** Wraps a {@link Configuration}, allowing to notify {@link LocalConfigurationListener}. */
+/** Wraps a {@link Configuration}, allowing to notify {@link ConfigurationListener}. */
 public class SimpleLocalConfiguration implements LocalConfiguration {
     
     protected Configuration sharedConfiguration;
@@ -15,8 +15,8 @@ public class SimpleLocalConfiguration implements LocalConfiguration {
     
     protected String newLine;
     
-    protected List<LocalConfigurationListener> listeners =
-            new CopyOnWriteArrayList<LocalConfigurationListener>();
+    protected List<ConfigurationListener> listeners =
+            new CopyOnWriteArrayList<ConfigurationListener>();
 
     public SimpleLocalConfiguration(Configuration configuration) {
         sharedConfiguration = configuration;
@@ -47,7 +47,7 @@ public class SimpleLocalConfiguration implements LocalConfiguration {
             oldValue = localConfiguration.get(key);
             localConfiguration.set(key, value);
         }
-        for (LocalConfigurationListener listener : listeners) {
+        for (ConfigurationListener listener : listeners) {
             listener.optionChanged(key, oldValue, value);
         }
     }
@@ -62,7 +62,7 @@ public class SimpleLocalConfiguration implements LocalConfiguration {
                 oldValue = sharedConfiguration.get(key);
             }
             localConfiguration.set(key, value);
-            for (LocalConfigurationListener listener : listeners) {
+            for (ConfigurationListener listener : listeners) {
                 listener.optionChanged(key, oldValue, value);
             }
         }
@@ -81,11 +81,11 @@ public class SimpleLocalConfiguration implements LocalConfiguration {
         return localConfiguration.isSet(key);
     }
     
-    public void addListener(LocalConfigurationListener listener) {
+    public void addListener(ConfigurationListener listener) {
         listeners.add(listener);
     }
  
-    public void removeListener(LocalConfigurationListener listener) {
+    public void removeListener(ConfigurationListener listener) {
         listeners.remove(listener);
     }
 

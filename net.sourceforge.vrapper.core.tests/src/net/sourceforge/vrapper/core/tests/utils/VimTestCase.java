@@ -6,16 +6,15 @@ import static org.mockito.Mockito.when;
 import java.util.EnumSet;
 
 import net.sourceforge.vrapper.keymap.KeyStroke;
-import net.sourceforge.vrapper.platform.Configuration;
 import net.sourceforge.vrapper.platform.Configuration.Option;
 import net.sourceforge.vrapper.platform.Configuration.OptionScope;
 import net.sourceforge.vrapper.platform.FileService;
+import net.sourceforge.vrapper.platform.GlobalConfiguration;
 import net.sourceforge.vrapper.platform.HistoryService;
 import net.sourceforge.vrapper.platform.KeyMapProvider;
 import net.sourceforge.vrapper.platform.Platform;
 import net.sourceforge.vrapper.platform.PlatformSpecificStateProvider;
 import net.sourceforge.vrapper.platform.ServiceProvider;
-import net.sourceforge.vrapper.platform.SimpleConfiguration;
 import net.sourceforge.vrapper.platform.UserInterfaceService;
 import net.sourceforge.vrapper.platform.ViewportService;
 import net.sourceforge.vrapper.utils.DefaultKeyMapProvider;
@@ -23,6 +22,7 @@ import net.sourceforge.vrapper.utils.ViewPortInformation;
 import net.sourceforge.vrapper.vim.DefaultEditorAdaptor;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
+import net.sourceforge.vrapper.vim.SimpleGlobalConfiguration;
 import net.sourceforge.vrapper.vim.TextObjectProvider;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
 import net.sourceforge.vrapper.vim.register.SimpleRegister;
@@ -44,7 +44,7 @@ public class VimTestCase {
     @Mock protected HistoryService historyService;
     @Mock protected ServiceProvider serviceProvider;
     @Mock protected PlatformSpecificStateProvider platformSpecificStateProvider;
-    protected Configuration configuration;
+    protected GlobalConfiguration configuration;
     protected TestTextContent content;
     protected TestCursorAndSelection cursorAndSelection;
     protected EditorAdaptor adaptor;
@@ -63,7 +63,7 @@ public class VimTestCase {
     	content = spy(new TestTextContent(cursorAndSelection));
     	cursorAndSelection.setContent(content);
     	keyMapProvider = spy(new DefaultKeyMapProvider());
-    	configuration = spy(new SimpleConfiguration());
+    	configuration = spy(new SimpleGlobalConfiguration());
     	when(configuration.getNewLine()).thenReturn("\n");
     	for (Option<Boolean> o : Options.BOOLEAN_OPTIONS) {
     	    // Use defaults for local options.

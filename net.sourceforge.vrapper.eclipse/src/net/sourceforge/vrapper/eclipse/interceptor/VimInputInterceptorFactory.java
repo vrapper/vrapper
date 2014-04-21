@@ -10,12 +10,12 @@ import net.sourceforge.vrapper.eclipse.platform.SWTRegisterManager;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.vim.SimpleKeyStroke;
-import net.sourceforge.vrapper.platform.Configuration;
-import net.sourceforge.vrapper.platform.SimpleConfiguration;
+import net.sourceforge.vrapper.platform.GlobalConfiguration;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.vim.DefaultEditorAdaptor;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
+import net.sourceforge.vrapper.vim.SimpleGlobalConfiguration;
 import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
 import net.sourceforge.vrapper.vim.modes.LinewiseVisualMode;
@@ -123,8 +123,8 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
     }
 
 
+    private static final GlobalConfiguration sharedConfiguration = new SimpleGlobalConfiguration();
     private static final RegisterManager globalRegisterManager = new SWTRegisterManager(PlatformUI.getWorkbench().getDisplay());
-    private static final Configuration sharedConfiguration = new SimpleConfiguration();
 
     public InputInterceptor createInterceptor(AbstractTextEditor abstractTextEditor, ITextViewer textViewer) {
         EclipsePlatform platform = new EclipsePlatform(abstractTextEditor, textViewer, sharedConfiguration);
