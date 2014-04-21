@@ -34,7 +34,6 @@ public class SWTRegisterManager extends DefaultRegisterManager {
                     if (activeRegister == oldDefault) {
                         activeRegister = defaultRegister;
                     }
-                    registers.put(REGISTER_NAME_UNNAMED, defaultRegister);
                 }
             }
         };

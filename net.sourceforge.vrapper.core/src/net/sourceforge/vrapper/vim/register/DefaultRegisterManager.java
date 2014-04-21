@@ -95,7 +95,7 @@ public class DefaultRegisterManager implements RegisterManager {
     public Register getRegister(String name) {
         String key = name.toLowerCase();
         if (!registers.containsKey(key)) {
-            registers.put(key, new NamedRegister(defaultRegister));
+            registers.put(key, new NamedRegister(unnamedRegister));
         }
         Register r = registers.get(key);
         if (!name.equals(key)) {
