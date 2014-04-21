@@ -52,7 +52,6 @@ public interface RegisterManager {
     boolean isDefaultRegisterActive();
     void setLastActiveSelection(SelectionArea selectionArea);
     SelectionArea getLastActiveSelectionArea();
-    public abstract void setDefaultRegister(Register register);
     public void setCurrentWorkingDirectory(String cwd);
     public String getCurrentWorkingDirectory();
     public void setLastCommand(String macroString);

@@ -98,6 +98,14 @@ public interface Configuration {
             assert legalValues.contains(defaultValue);
             return new Option<String>(id, defaultValue, legalValues, alias);
         }
+        
+        public static final Option<String> globalString(String id, String defaultValue, String csv, String... alias) {
+            Set<String> legalValues = new HashSet<String>();
+            for (String value: csv.split(", *"))
+                legalValues.add(value);
+            assert legalValues.contains(defaultValue);
+            return new Option<String>(id, OptionScope.GLOBAL, defaultValue, legalValues, alias);
+        }
 
         public static final Option<String> stringNoConstraint(String id, String defaultValue, String... alias) {
             return new Option<String>(id, defaultValue, null, alias);

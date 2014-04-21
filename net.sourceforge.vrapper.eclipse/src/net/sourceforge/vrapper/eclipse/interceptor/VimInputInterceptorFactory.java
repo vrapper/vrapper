@@ -124,7 +124,8 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
 
 
     private static final GlobalConfiguration sharedConfiguration = new SimpleGlobalConfiguration();
-    private static final RegisterManager globalRegisterManager = new SWTRegisterManager(PlatformUI.getWorkbench().getDisplay());
+    private static final RegisterManager globalRegisterManager = new SWTRegisterManager(
+            PlatformUI.getWorkbench().getDisplay(), sharedConfiguration);
 
     public InputInterceptor createInterceptor(AbstractTextEditor abstractTextEditor, ITextViewer textViewer) {
         EclipsePlatform platform = new EclipsePlatform(abstractTextEditor, textViewer, sharedConfiguration);

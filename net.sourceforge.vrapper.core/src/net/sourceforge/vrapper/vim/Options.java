@@ -5,6 +5,7 @@ import static net.sourceforge.vrapper.platform.Configuration.Option.localBool;
 import static net.sourceforge.vrapper.platform.Configuration.Option.globalBool;
 import static net.sourceforge.vrapper.platform.Configuration.Option.integer;
 import static net.sourceforge.vrapper.platform.Configuration.Option.string;
+import static net.sourceforge.vrapper.platform.Configuration.Option.globalString;
 import static net.sourceforge.vrapper.platform.Configuration.Option.stringNoConstraint;
 import static net.sourceforge.vrapper.utils.VimUtils.set;
 
@@ -52,7 +53,7 @@ public interface Options {
             CONTENT_ASSIST_MODE, START_NORMAL_MODE, MODIFIABLE, SYNC_MODIFIABLE);
 
     // String options:
-    public static final Option<String> CLIPBOARD = string("clipboard", "autoselect", "unnamed, autoselect", "cb");
+    public static final Option<String> CLIPBOARD = globalString("clipboard", "autoselect", "unnamed, autoselect", "cb");
     public static final Option<String> SELECTION = string("selection", "inclusive", "old, inclusive, exclusive", "sel");
     public static final Option<String> PATH      = stringNoConstraint("path", ".", "pa");
     public static final Option<String> GVIM_PATH = stringNoConstraint("gvimpath", "/usr/bin/gvim", "gvp");

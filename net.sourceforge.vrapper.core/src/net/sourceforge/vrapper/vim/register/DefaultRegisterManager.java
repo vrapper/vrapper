@@ -24,9 +24,9 @@ import net.sourceforge.vrapper.vim.commands.motions.FindMotion;
 public class DefaultRegisterManager implements RegisterManager {
 
     protected final Map<String, Register> registers;
-    private Register activeRegister;
-    private Register unnamedRegister;
-    private Register defaultRegister;
+    protected Register activeRegister;
+    protected Register defaultRegister;
+    protected final Register unnamedRegister;
     private final Register lastEditRegister;
     private Search search;
     private Command lastEdit, lastInsertion;
@@ -106,11 +106,6 @@ public class DefaultRegisterManager implements RegisterManager {
 
     public Register getDefaultRegister() {
         return defaultRegister;
-    }
-
-    public void setDefaultRegister(Register register) {
-        this.defaultRegister = register;
-        registers.put(RegisterManager.REGISTER_NAME_UNNAMED, register);
     }
 
     public Register getActiveRegister() {

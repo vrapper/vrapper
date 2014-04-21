@@ -118,22 +118,6 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         this.globalRegisterManager = registerManager;
         this.serviceProvider = editor.getServiceProvider();
         this.editorSettings = editor.getUnderlyingEditorSettings();
-        final ConfigurationListener listener = new ConfigurationListener() {
-
-            @Override
-            public <T> void optionChanged(final Option<T> option, final T oldValue, final T newValue) {
-                if("clipboard".equals(option.getId())) {
-                    if("unnamed".equals(newValue)) {
-                        final Register clipboardRegister = DefaultEditorAdaptor.this.getRegisterManager().getRegister(RegisterManager.REGISTER_NAME_CLIPBOARD);
-                        DefaultEditorAdaptor.this.getRegisterManager().setDefaultRegister(clipboardRegister);
-                    } else {
-                        DefaultEditorAdaptor.this.getRegisterManager().setDefaultRegister(new SimpleRegister());
-                    }
-                }
-
-            }
-        };
-        this.configuration.addListener(listener);
         textObjectProvider = new DefaultTextObjectProvider();
         PlatformSpecificTextObjectProvider specificTextObjectProvider =
                 editor.getPlatformSpecificTextObjectProvider();
