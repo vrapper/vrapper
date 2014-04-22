@@ -11,11 +11,19 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.register.RegisterContent;
 
+/**
+ * Replaces a range of text matched by a TextObject with the contents of a register.
+ */
 public class PasteOperation implements TextOperation {
 
-    public static final PasteOperation INSTANCE = new PasteOperation();
+    public static final PasteOperation INSTANCE = new PasteOperation(true);
+    public static final PasteOperation INSTANCE_TEMPVISUAL = new PasteOperation(false);
 
-    private PasteOperation() { } /* NOP */
+    private final boolean fixNormalModeCursor;
+
+    private PasteOperation(boolean fixNormalCursor) {
+        fixNormalModeCursor = fixNormalCursor;
+    }
 
     public void execute(EditorAdaptor editorAdaptor, int count,
             TextObject textObject) throws CommandExecutionException {
@@ -33,7 +41,7 @@ public class PasteOperation implements TextOperation {
         return this;
     }
 
-    public static void doIt(EditorAdaptor editorAdaptor, int count, TextRange range, ContentType contentType) {
+    protected void doIt(EditorAdaptor editorAdaptor, int count, TextRange range, ContentType contentType) {
         if (count == Command.NO_COUNT_GIVEN)
             count = 1;
         RegisterContent registerContent = editorAdaptor.getRegisterManager().getActiveRegister().getContent();
@@ -66,7 +74,11 @@ public class PasteOperation implements TextOperation {
             LineInformation firstPastedLine = content.getLineInformationOfOffset(offset + 1);
             position = VimUtils.getFirstNonWhiteSpaceOffset(content, firstPastedLine);
         } else {
-            position = offset + text.length() - 1;
+            position = offset + text.length();
+            // TextRange includes the last character. Move cursor back if going to normal mode.
+            if (fixNormalModeCursor) {
+                position -= 1;
+            }
             content.replace(offset, 0, text);
         }
         // content.replace(offset, 0, StringUtils.multiply(text, count));

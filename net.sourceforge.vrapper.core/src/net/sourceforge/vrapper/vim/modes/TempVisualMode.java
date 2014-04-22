@@ -1,6 +1,13 @@
 package net.sourceforge.vrapper.vim.modes;
 
+import static net.sourceforge.vrapper.keymap.StateUtils.union;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
+import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.Command;
+import net.sourceforge.vrapper.vim.commands.PasteOperation;
+import net.sourceforge.vrapper.vim.commands.SelectionBasedTextOperationCommand;
 
 /**
  * When selecting text from InsertMode, move to VisualMode for a single
@@ -27,5 +34,17 @@ public class TempVisualMode extends VisualMode {
     @Override
     public String getDisplayName() {
         return DISPLAY_NAME;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    protected State<Command> buildInitialState() {
+        Command pasteTempVisual = new SelectionBasedTextOperationCommand(PasteOperation.INSTANCE_TEMPVISUAL);
+
+        return union(super.getPlatformSpecificState(VisualMode.NAME),
+                state(
+                        leafBind('p', pasteTempVisual),
+                        leafBind('P', pasteTempVisual)),
+                super.buildInitialState());
     }
 }

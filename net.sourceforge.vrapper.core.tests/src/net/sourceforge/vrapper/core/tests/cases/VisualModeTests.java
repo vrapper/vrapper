@@ -18,12 +18,14 @@ import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.Command;
+import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
+import net.sourceforge.vrapper.vim.modes.TempVisualMode;
 import net.sourceforge.vrapper.vim.modes.VisualMode;
 import net.sourceforge.vrapper.vim.register.StringRegisterContent;
 
@@ -449,5 +451,59 @@ public class VisualModeTests extends CommandTestCase {
         checkCommand(forKeySeq("a{a{"),
                 false, "{String{Quote{String{ ","Al","ASim}Quote}String}There}",
                 false, "{String{Quote","{String{ AlASim}Quote}","String}There}");
+    }
+    
+    @Test
+    public void testCursorPosAfterTempVisualModeLeave() throws CommandExecutionException {
+        adaptor.changeMode(TempVisualMode.NAME);
+        checkLeavingCommand(forKeySeq("<ESC>"),
+                false,  "He","llo,\nW","orld!\n;-)",
+                "Hello,\n",'W',"orld!\n;-)");
+
+        adaptor.changeMode(TempVisualMode.NAME);
+        checkLeavingCommand(forKeySeq("<ESC>"),
+                true,  "He","llo,\nW","orld!\n;-)",
+                "He",'l',"lo,\nWorld!\n;-)");
+
+        
+        adaptor.changeMode(TempVisualMode.NAME);
+        checkLeavingCommand(forKeySeq("y"),
+                false,  "He","llo,\nW","orld!\n;-)",
+                "He",'l',"lo,\nWorld!\n;-)");
+
+        // s and c are the same in visual
+        adaptor.changeMode(TempVisualMode.NAME);
+        checkLeavingCommand(forKeySeq("s"),
+                false,  "He","llo,\nW","orld!\n;-)",
+                "He",'o',"rld!\n;-)");
+
+        // d / X and x are the same in visual
+        adaptor.changeMode(TempVisualMode.NAME);
+        checkLeavingCommand(forKeySeq("d"),
+                false,  "He","llo,\nW","orld!\n;-)",
+                "He",'o',"rld!\n;-)");
+
+        adaptor.changeMode(TempVisualMode.NAME);
+        checkLeavingCommand(forKeySeq("gJ"),
+                false,  "He","llo,\nW","orld!\n;-)",
+                "Hello,",'W',"orld!\n;-)");
+
+        when(defaultRegister.getContent())
+                .thenReturn(new StringRegisterContent(ContentType.TEXT, "Here we go again"));
+
+        // Temp visual to insert mode -> put cursor behind "again"
+        adaptor.changeMode(TempVisualMode.NAME);
+        checkLeavingCommand(forKeySeq("P"),
+                false,  "He","llo,\nW","orld!\n;-)",
+                "HeHere we go again",'o',"rld!\n;-)");
+
+        when(defaultRegister.getContent())
+                .thenReturn(new StringRegisterContent(ContentType.LINES, "There she goes!\n"));
+
+        // Temp visual to insert mode -> line paste puts cursor on first non-whitespace character.
+        adaptor.changeMode(TempVisualMode.NAME);
+        checkLeavingCommand(forKeySeq("P"),
+                false,  "He","llo,\nW","orld!\n;-)",
+                "He\n",'T',"here she goes!\norld!\n;-)");
     }
 }
