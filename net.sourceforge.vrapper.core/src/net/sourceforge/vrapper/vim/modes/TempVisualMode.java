@@ -1,13 +1,15 @@
 package net.sourceforge.vrapper.vim.modes;
 
-import static net.sourceforge.vrapper.keymap.StateUtils.union;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
-import net.sourceforge.vrapper.keymap.State;
-import net.sourceforge.vrapper.vim.EditorAdaptor;
-import net.sourceforge.vrapper.vim.commands.Command;
+import static net.sourceforge.vrapper.keymap.StateUtils.union;
 import net.sourceforge.vrapper.vim.commands.PasteOperation;
 import net.sourceforge.vrapper.vim.commands.SelectionBasedTextOperationCommand;
+import net.sourceforge.vrapper.keymap.State;
+import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
+import net.sourceforge.vrapper.vim.commands.Command;
+import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
 
 /**
  * When selecting text from InsertMode, move to VisualMode for a single
@@ -17,7 +19,7 @@ import net.sourceforge.vrapper.vim.commands.SelectionBasedTextOperationCommand;
  * LeaveVisualModeCommand when it's done, so that class determines whether to
  * return to NormalMode or InsertMode.
  */
-public class TempVisualMode extends VisualMode {
+public class TempVisualMode extends VisualMode implements TemporaryMode {
 
     public static final String NAME = "temporary visual mode";
     public static final String DISPLAY_NAME = "(insert) VISUAL";
@@ -39,12 +41,16 @@ public class TempVisualMode extends VisualMode {
     @SuppressWarnings("unchecked")
     @Override
     protected State<Command> buildInitialState() {
-        Command pasteTempVisual = new SelectionBasedTextOperationCommand(PasteOperation.INSTANCE_TEMPVISUAL);
+        Command pasteTempVisual = new SelectionBasedTextOperationCommand(
+                                        PasteOperation.INSTANCE_TEMPVISUAL);
 
         return union(super.getPlatformSpecificState(VisualMode.NAME),
                 state(
                         leafBind('p', pasteTempVisual),
-                        leafBind('P', pasteTempVisual)),
+                        leafBind('P', pasteTempVisual),
+                        leafBind('V', (Command) new ChangeModeCommand(TempLinewiseVisualMode.NAME,
+                                                                    FIX_SELECTION_HINT)),
+                        leafBind('v', (Command) LeaveVisualModeCommand.INSTANCE)),
                 super.buildInitialState());
     }
 }

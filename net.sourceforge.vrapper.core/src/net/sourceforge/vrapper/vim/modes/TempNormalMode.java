@@ -1,8 +1,15 @@
 package net.sourceforge.vrapper.vim.modes;
 
+import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
+import static net.sourceforge.vrapper.keymap.StateUtils.union;
+import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
+import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 
@@ -10,7 +17,7 @@ import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
  * Temporary normal mode to execute a single command.
  * The mode is to be switched to from the insert mode via <C-O>.
  */
-public class TempNormalMode extends NormalMode {
+public class TempNormalMode extends NormalMode implements TemporaryMode {
 
     public static final String NAME = "temporary normal mode";
     public static final String DISPLAY_NAME = "NORMAL (insert)";
@@ -57,4 +64,15 @@ public class TempNormalMode extends NormalMode {
         return DISPLAY_NAME;
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    protected State<Command> buildInitialState() {
+        State<Command> switchTempModes = state(
+                leafBind('V', seq(new ChangeModeCommand(TempLinewiseVisualMode.NAME),
+                                  AfterLinewiseVisualEnterCommand.INSTANCE)),
+                leafBind('v', seq(new ChangeModeCommand(TempVisualMode.NAME),
+                                  AfterVisualEnterCommand.INSTANCE))
+                );
+        return union(switchTempModes, super.buildInitialState());
+    }
 }

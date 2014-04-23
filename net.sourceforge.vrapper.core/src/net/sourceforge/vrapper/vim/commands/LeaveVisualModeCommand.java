@@ -7,9 +7,10 @@ import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
+import net.sourceforge.vrapper.vim.modes.EditorMode;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
-import net.sourceforge.vrapper.vim.modes.TempVisualMode;
+import net.sourceforge.vrapper.vim.modes.TemporaryMode;
 
 public class LeaveVisualModeCommand extends CountIgnoringNonRepeatableCommand {
 
@@ -41,7 +42,8 @@ public class LeaveVisualModeCommand extends CountIgnoringNonRepeatableCommand {
 
     public static void doIt(EditorAdaptor editorAdaptor) throws CommandExecutionException {
         editorAdaptor.setSelection(null);
-        if (editorAdaptor.getCurrentModeName().equals(TempVisualMode.NAME)) {
+        EditorMode currentMode = editorAdaptor.getMode(editorAdaptor.getCurrentModeName());
+        if (currentMode instanceof TemporaryMode) {
             editorAdaptor.changeMode(InsertMode.NAME);
         } else {
             editorAdaptor.changeMode(NormalMode.NAME);

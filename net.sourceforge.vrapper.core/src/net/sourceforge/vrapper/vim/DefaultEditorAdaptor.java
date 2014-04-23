@@ -52,6 +52,7 @@ import net.sourceforge.vrapper.vim.modes.LinewiseVisualMode;
 import net.sourceforge.vrapper.vim.modes.ModeSwitchHint;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.modes.ReplaceMode;
+import net.sourceforge.vrapper.vim.modes.TempLinewiseVisualMode;
 import net.sourceforge.vrapper.vim.modes.TempNormalMode;
 import net.sourceforge.vrapper.vim.modes.TempVisualMode;
 import net.sourceforge.vrapper.vim.modes.VisualMode;
@@ -166,6 +167,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
                 new VisualMode(self),
                 new TempVisualMode(self),
                 new LinewiseVisualMode(self),
+                new TempLinewiseVisualMode(self),
                 new BlockwiseVisualMode(self),
                 new InsertMode(self),
                 new InsertExpandMode(self),

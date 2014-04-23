@@ -11,7 +11,6 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.operatorCmd
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.prefixedOperatorCmds;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
-import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.dontRepeat;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.State;
@@ -50,7 +49,6 @@ import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.commands.MotionTextObject;
 import net.sourceforge.vrapper.vim.commands.NormalLineRangeOperation;
-import net.sourceforge.vrapper.vim.commands.OptionDependentCommand;
 import net.sourceforge.vrapper.vim.commands.OptionDependentTextObject;
 import net.sourceforge.vrapper.vim.commands.PasteAfterCommand;
 import net.sourceforge.vrapper.vim.commands.PasteBeforeCommand;
@@ -185,35 +183,6 @@ public class NormalMode extends CommandBasedMode {
         final Command repeatSubGlobal = RepeatLastSubstitutionCommand.GLOBALLY;
         final Command saveAndClose = new VimCommandSequence(SaveCommand.INSTANCE, CloseCommand.CLOSE);
 
-        final Command afterEnteringVisualInc = new OptionDependentCommand<String>(Options.SELECTION, "inclusive",
-                new VisualMotionCommand(moveRight));
-        final Command afterEnteringVisualExc = new OptionDependentCommand<String>(Options.SELECTION, "exclusive",
-                new CountIgnoringNonRepeatableCommand() {
-                    @Override
-                    public void execute(final EditorAdaptor editorAdaptor) throws CommandExecutionException {
-                        final Position position = editorAdaptor.getPosition();
-                        editorAdaptor.setSelection(new SimpleSelection(new StartEndTextRange(position, position)));
-                    }
-                });
-        final Command afterEnteringBlockVisual = new CountIgnoringNonRepeatableCommand() {
-            
-            @Override
-            public void execute(final EditorAdaptor editorAdaptor)
-                    throws CommandExecutionException {
-                final Position position = editorAdaptor.getPosition();
-//                final Position next = editorAdaptor.getCursorService().newPositionForModelOffset(position.getModelOffset()+1);
-                editorAdaptor.setSelection(new BlockWiseSelection(editorAdaptor, position, position));
-            }
-        };
-        final Command selectLine = new CountIgnoringNonRepeatableCommand() {
-            @Override
-            public void execute(final EditorAdaptor editorAdaptor) throws CommandExecutionException {
-                        final Position position = editorAdaptor.getPosition();
-                        editorAdaptor.setSelection(new LineWiseSelection(editorAdaptor, position, position));
-            }
-        };
-        final Command afterEnteringVisual = seq(afterEnteringVisualInc, afterEnteringVisualExc);
-
         final State<Command> motionCommands = new GoThereState(motions);
         final Command nextResult = motionCommands.press(key('n')).getValue();
 
@@ -240,10 +209,10 @@ public class NormalMode extends CommandBasedMode {
                         leafBind('R', (Command) new ReplaceMode.ChangeToReplaceModeCommand()),
                         leafBind('o', (Command) new ChangeToInsertModeCommand(InsertLineCommand.POST_CURSOR)),
                         leafBind('O', (Command) new ChangeToInsertModeCommand(InsertLineCommand.PRE_CURSOR)),
-                        leafBind('v', dontRepeat(seq(visualMode, afterEnteringVisual))),
-                        leafBind('V', dontRepeat(seq(linewiseVisualMode, selectLine))),
-                        leafCtrlBind('v', dontRepeat(seq(blockwiseVisualMode, afterEnteringBlockVisual))),
-                        leafCtrlBind('q', dontRepeat(seq(blockwiseVisualMode, afterEnteringBlockVisual))),
+                        leafBind('v', seq(visualMode, AfterVisualEnterCommand.INSTANCE)),
+                        leafBind('V', seq(linewiseVisualMode, AfterLinewiseVisualEnterCommand.INSTANCE)),
+                        leafCtrlBind('v', seq(blockwiseVisualMode, AfterBlockwiseVisualEnterCommand.INSTANCE)),
+                        leafCtrlBind('q', seq(blockwiseVisualMode, AfterBlockwiseVisualEnterCommand.INSTANCE)),
                         leafBind('p', pasteAfter),
                         leafBind('.', repeatLastOne),
                         leafBind('P', pasteBefore),
@@ -295,6 +264,42 @@ public class NormalMode extends CommandBasedMode {
                             leafBind('t', centerTopLine),
                             leafBind(SpecialKey.RETURN, centerTopLine)
                         ))))));
+    }
+
+    protected static class AfterVisualEnterCommand extends CountIgnoringNonRepeatableCommand {
+        public static final Command INSTANCE = new AfterVisualEnterCommand();
+        @Override
+        public void execute(EditorAdaptor editorAdaptor)
+                throws CommandExecutionException {
+            String selectionVal = editorAdaptor.getConfiguration().get(Options.SELECTION);
+            if ("exclusive".equals(selectionVal)) {
+                final Position position = editorAdaptor.getPosition();
+                editorAdaptor.setSelection(new SimpleSelection(new StartEndTextRange(position, position)));
+            } else if ("inclusive".equals(selectionVal)) {
+                new VisualMotionCommand(MoveRight.INSTANCE).execute(editorAdaptor);
+            }
+        }
+    }
+
+    protected static class AfterLinewiseVisualEnterCommand extends CountIgnoringNonRepeatableCommand {
+        public static final Command INSTANCE = new AfterLinewiseVisualEnterCommand();
+        @Override
+        public void execute(EditorAdaptor editorAdaptor)
+                throws CommandExecutionException {
+            final Position position = editorAdaptor.getPosition();
+            editorAdaptor.setSelection(new LineWiseSelection(editorAdaptor, position, position));
+        }
+    }
+
+    protected static class AfterBlockwiseVisualEnterCommand extends CountIgnoringNonRepeatableCommand {
+        public static final Command INSTANCE = new AfterBlockwiseVisualEnterCommand();
+        @Override
+        public void execute(EditorAdaptor editorAdaptor)
+                throws CommandExecutionException {
+            final Position position = editorAdaptor.getPosition();
+//            final Position next = editorAdaptor.getCursorService().newPositionForModelOffset(position.getModelOffset()+1);
+            editorAdaptor.setSelection(new BlockWiseSelection(editorAdaptor, position, position));
+        }
     }
 
     /**

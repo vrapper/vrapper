@@ -17,10 +17,11 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.SimpleGlobalConfiguration;
 import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
+import net.sourceforge.vrapper.vim.modes.EditorMode;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
-import net.sourceforge.vrapper.vim.modes.LinewiseVisualMode;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.modes.TempVisualMode;
+import net.sourceforge.vrapper.vim.modes.TemporaryMode;
 import net.sourceforge.vrapper.vim.modes.VisualMode;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
 
@@ -199,12 +200,12 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
             // selection.isEmpty() is false even if length == 0, don't use it
             if (selection instanceof TextSelection) {
                 if (selection.getLength() == 0) {
-                    if(VisualMode.NAME.equals(editorAdaptor.getCurrentModeName())
-                            || LinewiseVisualMode.NAME.equals(editorAdaptor.getCurrentModeName())) {
-                        editorAdaptor.changeModeSafely(NormalMode.NAME);
-                    }
-                    else if(TempVisualMode.NAME.equals(editorAdaptor.getCurrentModeName())) {
+                    EditorMode currentMode = editorAdaptor.getMode(editorAdaptor.getCurrentModeName());
+                    // User cleared selection or moved caret with mouse in a temporary mode.
+                    if(currentMode instanceof TemporaryMode) {
                         editorAdaptor.changeModeSafely(InsertMode.NAME);
+                    } else if(currentMode instanceof AbstractVisualMode){
+                        editorAdaptor.changeModeSafely(NormalMode.NAME);
                     }
                 } else if(selection.getLength() != 0) {
                     // Fix caret type
