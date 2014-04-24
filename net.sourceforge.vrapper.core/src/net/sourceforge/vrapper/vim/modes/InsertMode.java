@@ -180,6 +180,9 @@ public class InsertMode extends AbstractMode {
             	return;
             }
         }
+        if(count > 1) {
+            moveCursor = false;
+        }
         try {
             saveTypedText();
             try {
@@ -258,7 +261,7 @@ public class InsertMode extends AbstractMode {
         return dontRepeat(seq(
                 repetition,
                 new SwitchRegisterCommand(lastEditRegister),
-                PasteBeforeCommand.CURSOR_ON_TEXT
+                PasteBeforeCommand.CURSOR_AFTER_TEXT
         ));
     }
 
