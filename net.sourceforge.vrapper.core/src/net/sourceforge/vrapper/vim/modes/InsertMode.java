@@ -139,7 +139,7 @@ public class InsertMode extends AbstractMode {
                         mOnLeaveHint = (ExecuteCommandHint) hint;
                     }
                     else { //onEnter, execute command now
-                        Command command = ((ExecuteCommandHint) hint).getCommand();
+                        command = ((ExecuteCommandHint) hint).getCommand();
                         command.execute(editorAdaptor);
                         if(command instanceof InsertLineCommand && editorAdaptor.getConfiguration().get(Options.CLEAN_INDENT)) {
                             //entered insert mode via 'o' or 'O'
