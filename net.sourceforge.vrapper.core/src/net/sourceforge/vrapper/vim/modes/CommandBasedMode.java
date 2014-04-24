@@ -55,7 +55,6 @@ import net.sourceforge.vrapper.vim.commands.motions.MoveWordRight;
 import net.sourceforge.vrapper.vim.commands.motions.PageScrollMotion;
 import net.sourceforge.vrapper.vim.commands.motions.ParagraphMotion;
 import net.sourceforge.vrapper.vim.commands.motions.ParenthesesMove;
-import net.sourceforge.vrapper.vim.commands.motions.PercentMotion;
 import net.sourceforge.vrapper.vim.commands.motions.SearchResultMotion;
 import net.sourceforge.vrapper.vim.commands.motions.SectionMotion;
 import net.sourceforge.vrapper.vim.commands.motions.SentenceMotion;
@@ -131,7 +130,7 @@ public abstract class CommandBasedMode extends AbstractMode {
                                                                  // INCLUSIVE;
                                                                  // bug in Vim
                                                                  // documentation
-            final Motion percentMotion = PercentMotion.INSTANCE;
+            final Motion parenthesesMove = ParenthesesMove.INSTANCE;
             final Motion matchOpenParen = ParenthesesMove.MATCH_OPEN_PAREN;
             final Motion matchCloseParen = ParenthesesMove.MATCH_CLOSE_PAREN;
             final Motion matchOpenCurly = ParenthesesMove.MATCH_OPEN_CURLY;
@@ -216,7 +215,7 @@ public abstract class CommandBasedMode extends AbstractMode {
                     leafBind('$', lineEnd),
                     leafBind(SpecialKey.HOME, lineStart),
                     leafBind(SpecialKey.END, lineEnd),
-                    leafBind('%', percentMotion),
+                    leafBind('%', parenthesesMove),
                     leafBind('^', lineStart),
                     transitionBind('[', 
                     		leafBind('m', methodPrevStart),
