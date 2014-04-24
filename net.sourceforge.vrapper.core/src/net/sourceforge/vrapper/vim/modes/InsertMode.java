@@ -139,7 +139,7 @@ public class InsertMode extends AbstractMode {
                         mOnLeaveHint = (ExecuteCommandHint) hint;
                     }
                     else { //onEnter, execute command now
-                        command = ((ExecuteCommandHint) hint).getCommand();
+                        Command command = ((ExecuteCommandHint) hint).getCommand();
                         command.execute(editorAdaptor);
                         if(command instanceof InsertLineCommand && editorAdaptor.getConfiguration().get(Options.CLEAN_INDENT)) {
                             //entered insert mode via 'o' or 'O'
@@ -179,9 +179,6 @@ public class InsertMode extends AbstractMode {
             	//everything to be considered a single "insert" operation.
             	return;
             }
-        }
-        if(count > 1) {
-            moveCursor = false;
         }
         try {
             saveTypedText();
@@ -261,7 +258,7 @@ public class InsertMode extends AbstractMode {
         return dontRepeat(seq(
                 repetition,
                 new SwitchRegisterCommand(lastEditRegister),
-                PasteBeforeCommand.CURSOR_AFTER_TEXT
+                PasteBeforeCommand.CURSOR_ON_TEXT
         ));
     }
 
