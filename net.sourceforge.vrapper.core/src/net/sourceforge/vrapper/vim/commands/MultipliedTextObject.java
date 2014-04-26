@@ -20,7 +20,16 @@ public class MultipliedTextObject implements TextObject {
     }
 
     public TextRange getRegion(EditorAdaptor editorMode, int count) throws CommandExecutionException {
-        return textObject.getRegion(editorMode, count);
+        int newCount = NO_COUNT_GIVEN;
+
+        // NO_COUNT_GIVEN is a special value, if neither counts are specified we stick to it.If one
+        // of the two values is specified (or both), we multiply the counts. The case where
+        // this.count == NO_COUNT_GIVEN is rare, seeing how this is the MultipliedTextObject class.
+        if (count != NO_COUNT_GIVEN || this.count != NO_COUNT_GIVEN) {
+            newCount = (count == NO_COUNT_GIVEN ? 1 : count)
+                    * (this.count == NO_COUNT_GIVEN ? 1 : this.count);
+        }
+        return textObject.getRegion(editorMode, newCount);
     }
 
     public TextObject withCount(int count) {

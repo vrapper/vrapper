@@ -475,6 +475,9 @@ public class NormalModeTests extends CommandTestCase {
 	    checkCommand(forKeySeq("2d3d"),
 	            "0\n",'1',"\n2\n3\n4\n5\n6\n7\n",
 	            "0\n",'7',"\n");
+	    checkCommand(forKeySeq("2\"_2d2d"),
+	            "0\n",'1',"\n2\n3\n4\n5\n6\n7\n8\n9\n",
+	            "0\n",'9',"\n");
     }
 
 	@Test
@@ -1976,6 +1979,15 @@ public class NormalModeTests extends CommandTestCase {
 	    checkCommand(forKeySeq("2\"_2dd"),
 	            "a", 'b', "c\ndef\nghi\njkl\n\n\n",
 	            "", '\n', "\n");
+	    assertEquals("Black hole register was not used!", "", defaultReg.getContent().getText());
+
+	    // Craziest it gets - 3 different counts get multiplied: equivalent to "_d8l
+	    checkCommand(forKeySeq("\"_d8l"),
+	            "a", 'b', "cdefghijklm",
+	            "a", 'j', "klm");
+	    checkCommand(forKeySeq("2\"_2d2l"),
+	            "a", 'b', "cdefghijklm",
+	            "a", 'j', "klm");
 	    assertEquals("Black hole register was not used!", "", defaultReg.getContent().getText());
 	}
 

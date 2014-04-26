@@ -28,6 +28,7 @@ import net.sourceforge.vrapper.vim.commands.ChangeCaretShapeCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeToSearchModeCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
+import net.sourceforge.vrapper.vim.commands.Counted;
 import net.sourceforge.vrapper.vim.commands.MotionTextObject;
 import net.sourceforge.vrapper.vim.commands.SelectionBasedTextObjectCommand;
 import net.sourceforge.vrapper.vim.commands.TextObject;
@@ -290,21 +291,38 @@ public class ConstructorWrappers {
         return new SelectionBasedTextObjectCommand(operator, new MotionTextObject(move));
     }
 
-    public static State<Command> counted(State<Command> wrapped) {
+    public static <T extends Counted<T>> State<T> counted(State<T> wrapped) {
         return CountingState.wrap(wrapped);
     }
-
 
     public static ChangeCaretShapeCommand changeCaret(CaretType caret) {
         return ChangeCaretShapeCommand.getInstance(caret);
     }
 
     @SuppressWarnings("unchecked")
-    private static State<Command> operatorPendingState(char key,
-            State<Command> doubleKey, State<Command> operatorCmds) {
-        return state(binding(key,
-                transition(changeCaret(CaretType.HALF_RECT),
-                        counted(union(doubleKey, operatorCmds)))));
+    private static State<Command> operatorPendingState(char key, State<Command> operatorCommand) {
+        return state(binding(key, transition(changeCaret(CaretType.HALF_RECT),
+                        operatorCommand)));
+    }
+
+    @SuppressWarnings("unchecked")
+    private static State<TextObject> operatorTextObjects(char doublekey, State<TextObject> textObjects) {
+        LineEndMotion lineEndMotion = new LineEndMotion(LINE_WISE);
+        State<TextObject> toEOL = new TextObjectState(leafState(doublekey, (Motion)lineEndMotion));
+        return union(
+                counted(toEOL),
+                textObjects);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static State<TextObject> prefixedOperatorTextObjects(char key1, char key2, State<TextObject> textObjects) {
+        Motion lineEndMotion = new LineEndMotion(LINE_WISE);
+        State<TextObject> toEOL = new TextObjectState(leafState(key2, (Motion)lineEndMotion));
+        return union(
+                counted(union(
+                    toEOL,
+                    transitionState(key1, toEOL))),
+                textObjects);
     }
 
     @SuppressWarnings("unchecked")
@@ -312,50 +330,37 @@ public class ConstructorWrappers {
         assert Character.isLowerCase(key);
         Command doToEOL = new TextOperationTextObjectCommand(command, eolMotion);
         return union(
-                leafState(Character.toUpperCase(key), doToEOL), // FIXME: was: counted(...)
+                leafState(Character.toUpperCase(key), doToEOL),
                 operatorCmds(key, command, textObjects));
     }
 
     @SuppressWarnings("unchecked")
-	public static State<Command> operatorCmds(char key, TextOperation command, State<TextObject> textObjects) {
-        LineEndMotion lineEndMotion = new LineEndMotion(LINE_WISE);
-        Command doLinewise = new TextOperationTextObjectCommand(command, new MotionTextObject(lineEndMotion));
-        State<Command> doubleKey = leafState(key, doLinewise);
+    public static State<Command> operatorCmds(char key, TextOperation command, State<TextObject> textObjects) {
         State<Command> operatorCmds = union(
-		    	leafState('/', (Command) new ChangeToSearchModeCommand(false, new PerformOperationOnSearchResultCommand(command, SearchResultMotion.FORWARD))),
-		    	leafState('?', (Command) new ChangeToSearchModeCommand(true, new PerformOperationOnSearchResultCommand(command, SearchResultMotion.FORWARD))),
-		    	leafState(':', (Command) new ChangeModeCommand(CommandLineMode.NAME)),
-	    		new OperatorCommandState(command, textObjects)
-    	);
-        return operatorPendingState(key, doubleKey, operatorCmds);
+                leafState('/', (Command) new ChangeToSearchModeCommand(false, new PerformOperationOnSearchResultCommand(command, SearchResultMotion.FORWARD))),
+                leafState('?', (Command) new ChangeToSearchModeCommand(true, new PerformOperationOnSearchResultCommand(command, SearchResultMotion.FORWARD))),
+                leafState(':', (Command) new ChangeModeCommand(CommandLineMode.NAME)),
+                new OperatorCommandState(command, operatorTextObjects(key, textObjects))
+                );
+        return operatorPendingState(key, operatorCmds);
     }
 
     public static State<Command> operatorCmds(char key, Command operator, State<TextObject> textObjects) {
-        Command doLinewise = operatorMoveCmd(operator, new LineEndMotion(LINE_WISE));
-        State<Command> doubleKey = leafState(key, doLinewise);
-        State<Command> operatorCmds = new OperatorCommandState(operator, textObjects);
-        return operatorPendingState(key, doubleKey, operatorCmds);
+        State<Command> operatorCmds = new OperatorCommandState(operator,
+                operatorTextObjects(key, textObjects));
+        return operatorPendingState(key, operatorCmds);
     }
     
     public static State<Command> prefixedOperatorCmds(char prefix, char key, TextOperation command, State<TextObject> textObjects) {
-        LineEndMotion lineEndMotion = new LineEndMotion(LINE_WISE);
-        Command doLinewise = new TextOperationTextObjectCommand(command, new MotionTextObject(lineEndMotion));
-        @SuppressWarnings("unchecked")
-        State<Command> doubleKey = state(
-                leafBind(key, doLinewise), // e.g. for 'g??'
-                transitionBind(prefix, leafBind(key, doLinewise))); // e.g. for 'g?g?'
-        State<Command> operatorCmds = new OperatorCommandState(command, textObjects);
-        return transitionState(prefix, operatorPendingState(key, doubleKey, operatorCmds));
+        State<Command> operatorCmds = new OperatorCommandState(command,
+                prefixedOperatorTextObjects(prefix, key, textObjects));
+        return transitionState(prefix, operatorPendingState(key, operatorCmds));
     }
 
     public static State<Command> prefixedOperatorCmds(char prefix, char key, Command operator, State<TextObject> textObjects) {
-        Command doLinewise = operatorMoveCmd(operator, new LineEndMotion(LINE_WISE));
-        @SuppressWarnings("unchecked")
-        State<Command> doubleKey = state(
-                leafBind(key, doLinewise), // e.g. for 'g??'
-                transitionBind(prefix, leafBind(key, doLinewise))); // e.g. for 'g?g?'
-        State<Command> operatorCmds = new OperatorCommandState(operator, textObjects);
-        return transitionState(prefix, operatorPendingState(key, doubleKey, operatorCmds));
+        State<Command> operatorCmds = new OperatorCommandState(operator,
+                prefixedOperatorTextObjects(prefix, key, textObjects));
+        return transitionState(prefix, operatorPendingState(key, operatorCmds));
     }
 
     public static <T> State<T> convertKeyStroke(Function<T, KeyStroke> converter, Set<KeyStroke> keystrokes) {

@@ -103,10 +103,6 @@ public class RemappingTests extends CommandTestCase {
         checkCommand(forKeySeq("3\"_dd"),
                 "a", 'b', "c\ndef\nghi\njkl",
                 "", 'j', "kl");
-        // Crazy - this does multiplication: equivalent to "_4dd
-        checkCommand(forKeySeq("2\"_2dd"),
-                "a", 'b', "c\ndef\nghi\njkl\n\n\n",
-                "", '\n', "\n");
 
         type(parseKeyStrokes(":noremap dd \"_dd<CR>"));
         checkCommand(forKeySeq("3dd"),
@@ -155,14 +151,26 @@ public class RemappingTests extends CommandTestCase {
                 "[", 'a', "bc\ndef\ngh]\njkl",
                 "[ab", 'c', "\ndef\ngh]\njkl");
 
-        // Should use omap, where 'l' isn't defined yet.
+        // Should use omap, but 'l' isn't defined yet so it should delete just one char at first.
         checkCommand(forKeySeq("dl"),
                 "[", 'a', "bc\ndef\ngh]\njkl",
                 "[", 'b', "c\ndef\ngh]\njkl");
         type(parseKeyStrokes(":onoremap l $<CR>"));
+        // Try again now that l is in omap.
         checkCommand(forKeySeq("dl"),
                 "[", 'a', "bc\ndef\ngh]\njkl",
                 "", '[', "\ndef\ngh]\njkl");
+        // Deletes till end of current line and next line.
+        checkCommand(forKeySeq("d2l"),
+                "[", 'a', "bc\ndef\ngh]\njkl",
+                "", '[', "\ngh]\njkl");
+        checkCommand(forKeySeq("2dl"),
+                "[", 'a', "bc\ndef\ngh]\njkl",
+                "", '[', "\ngh]\njkl");
+        // Should delete till end of current line + 7 more lines
+        checkCommand(forKeySeq("2\"_2d2l"),
+                "[", 'a', "bc\ndef\ngh\njkl\nmno\npqr\nstu\nvwx\nyza\nbcd\nefg",
+                "", '[', "\nyza\nbcd\nefg");
 
         // 'l' isn't remapped yet in visual mode. Try before / after.
         checkCommand(forKeySeq("vld"),
