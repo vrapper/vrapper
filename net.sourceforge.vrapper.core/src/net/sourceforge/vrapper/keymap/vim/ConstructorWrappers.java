@@ -305,6 +305,7 @@ public class ConstructorWrappers {
                         operatorCommand)));
     }
 
+    /** @see #operatorCmds(char, Command, State) */
     @SuppressWarnings("unchecked")
     private static State<TextObject> operatorTextObjects(char doublekey, State<TextObject> textObjects) {
         LineEndMotion lineEndMotion = new LineEndMotion(LINE_WISE);
@@ -314,6 +315,7 @@ public class ConstructorWrappers {
                 textObjects);
     }
 
+    /** @see ConstructorWrappers#prefixedOperatorCmds(char, char, Command, State) */
     @SuppressWarnings("unchecked")
     private static State<TextObject> prefixedOperatorTextObjects(char key1, char key2, State<TextObject> textObjects) {
         Motion lineEndMotion = new LineEndMotion(LINE_WISE);
@@ -325,6 +327,12 @@ public class ConstructorWrappers {
                 textObjects);
     }
 
+    /**
+     * Create a state for an operator which supports a "whole line" mode by
+     * repeating the operator character or "to end of line" when the operator is
+     * passed in as uppercase. For example, "dd" deletes the current line, "D"
+     * deletes till end of line.
+     */
     @SuppressWarnings("unchecked")
     public static State<Command> operatorCmdsWithUpperCase(char key, TextOperation command, TextObject eolMotion, State<TextObject> textObjects) {
         assert Character.isLowerCase(key);
@@ -334,6 +342,11 @@ public class ConstructorWrappers {
                 operatorCmds(key, command, textObjects));
     }
 
+    /**
+     * Create a state for an operator which supports a "whole line" mode by
+     * repeating the operator character. For example, ">>" shifts the current
+     * line.
+     */
     @SuppressWarnings("unchecked")
     public static State<Command> operatorCmds(char key, TextOperation command, State<TextObject> textObjects) {
         State<Command> operatorCmds = union(
@@ -345,18 +358,35 @@ public class ConstructorWrappers {
         return operatorPendingState(key, operatorCmds);
     }
 
+    /**
+     * Create a state for an operator which supports a "whole line" mode by
+     * repeating the operator character. For example, ">>" shifts the current
+     * line.
+     */
     public static State<Command> operatorCmds(char key, Command operator, State<TextObject> textObjects) {
         State<Command> operatorCmds = new OperatorCommandState(operator,
                 operatorTextObjects(key, textObjects));
         return operatorPendingState(key, operatorCmds);
     }
     
+    /**
+     * Create a state for an operator which supports a "whole line" mode by
+     * repeating the last operator charactor or all operator characters.
+     * <p>
+     * For example, "g~~" as well as "g~g~" change the case of the current line.
+     */
     public static State<Command> prefixedOperatorCmds(char prefix, char key, TextOperation command, State<TextObject> textObjects) {
         State<Command> operatorCmds = new OperatorCommandState(command,
                 prefixedOperatorTextObjects(prefix, key, textObjects));
         return transitionState(prefix, operatorPendingState(key, operatorCmds));
     }
 
+    /**
+     * Create a state for an operator which supports a "whole line" mode by
+     * repeating the last operator charactor or all operator characters.
+     * <p>
+     * For example, "g~~" as well as "g~g~" change the case of the current line.
+     */
     public static State<Command> prefixedOperatorCmds(char prefix, char key, Command operator, State<TextObject> textObjects) {
         State<Command> operatorCmds = new OperatorCommandState(operator,
                 prefixedOperatorTextObjects(prefix, key, textObjects));

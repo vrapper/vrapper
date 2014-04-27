@@ -12,6 +12,9 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.TextObject;
 
+/**
+ * Special text object matching the current line from the first non-whitespace charactor to the end.
+ */
 public class FullLineTextObject implements TextObject {
 
 	public TextRange getRegion(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
