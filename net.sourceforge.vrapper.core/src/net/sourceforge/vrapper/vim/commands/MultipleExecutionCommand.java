@@ -19,12 +19,12 @@ public class MultipleExecutionCommand implements Command {
         HistoryService history = editorAdaptor.getHistory();
         try {
             history.beginCompoundChange();
-            history.lock();
+            history.lock("multipleexecution");
             for (int i = 0; i < count; i++) {
                 command.execute(editorAdaptor);
             }
         } finally {
-            history.unlock();
+            history.unlock("multipleexecution");
             history.endCompoundChange();
         }
     }

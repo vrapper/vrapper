@@ -37,6 +37,7 @@ import net.sourceforge.vrapper.vim.commands.InsertAdjacentCharacter;
 import net.sourceforge.vrapper.vim.commands.InsertLineCommand;
 import net.sourceforge.vrapper.vim.commands.InsertShiftWidth;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
+import net.sourceforge.vrapper.vim.commands.PasteAfterCommand;
 import net.sourceforge.vrapper.vim.commands.PasteBeforeCommand;
 import net.sourceforge.vrapper.vim.commands.PasteRegisterCommand;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
@@ -118,7 +119,7 @@ public class InsertMode extends AbstractMode {
         }
         if (initMode && lockHistory && editorAdaptor.getConfiguration().get(Options.ATOMIC_INSERT)) {
             editorAdaptor.getHistory().beginCompoundChange();
-            editorAdaptor.getHistory().lock();
+            editorAdaptor.getHistory().lock("insertmode");
         }
 
         count = 1;
@@ -151,7 +152,7 @@ public class InsertMode extends AbstractMode {
             }
         } catch (final CommandExecutionException e) {
             if (editorAdaptor.getConfiguration().get(Options.ATOMIC_INSERT)) {
-                editorAdaptor.getHistory().unlock();
+                editorAdaptor.getHistory().unlock("insertmode");
                 editorAdaptor.getHistory().endCompoundChange();
             }
             throw e;
@@ -192,7 +193,7 @@ public class InsertMode extends AbstractMode {
             repeatInsert();
         } finally {
             if (editorAdaptor.getConfiguration().get(Options.ATOMIC_INSERT)) {
-                editorAdaptor.getHistory().unlock();
+                editorAdaptor.getHistory().unlock("insertmode");
                 editorAdaptor.getHistory().endCompoundChange();
             }
         }
@@ -255,11 +256,21 @@ public class InsertMode extends AbstractMode {
         Command repetition = null;
         if (command != null)
             repetition = command.repetition();
+
+        Command paste;
+        if(count > 1) {
+            //insert mode with count
+            paste = PasteAfterCommand.CURSOR_ON_TEXT;
+        }
+        else {
+            //'.' command after insert
+            paste = PasteBeforeCommand.CURSOR_ON_TEXT;
+        }
         return dontRepeat(seq(
                 repetition,
                 new SwitchRegisterCommand(lastEditRegister),
-                PasteBeforeCommand.CURSOR_ON_TEXT
-        ));
+                paste
+                ));
     }
 
     @Override
@@ -347,10 +358,10 @@ public class InsertMode extends AbstractMode {
             startEditPosition = editorAdaptor.getCursorService().getPosition();
             count = 1;
             if (editorAdaptor.getConfiguration().get(Options.ATOMIC_INSERT)) {
-                editorAdaptor.getHistory().unlock();
+                editorAdaptor.getHistory().unlock("insertmode");
                 editorAdaptor.getHistory().endCompoundChange();
                 editorAdaptor.getHistory().beginCompoundChange();
-                editorAdaptor.getHistory().lock();
+                editorAdaptor.getHistory().lock("insertmode");
             }
         } else if (stroke.equals(BACKSPACE)
                 && editorAdaptor.getConfiguration().get(Options.SOFT_TAB) > 1) {
