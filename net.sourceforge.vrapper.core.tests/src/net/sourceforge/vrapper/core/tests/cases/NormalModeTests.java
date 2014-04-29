@@ -1951,6 +1951,17 @@ public class NormalModeTests extends CommandTestCase {
 	}
 
 	@Test
+	public void testInsertModeCounts() {
+		installSaneRegisterManager();
+        checkCommand(forKeySeq("5ib <esc>"),
+                "",'x',"",
+                "b b b b b",' ',"x");
+        checkCommand(forKeySeq("."),
+                "b b b b b",' ',"x",
+                "b b b b b b b b b b",' ',"x");
+	}
+
+	@Test
 	public void testCountingDeleteToRegister() {
 	    installSaneRegisterManager();
 	    Register defaultReg = registerManager.getDefaultRegister();
