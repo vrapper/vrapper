@@ -18,9 +18,12 @@ public class RepeatInsertionCommand extends CountAwareCommand {
         Command lastInsertion = editorAdaptor.getRegisterManager().getLastInsertion();
         Command doIt = seq(command, lastInsertion);
         if (count == NO_COUNT_GIVEN)
+            //if count isn't specified, use last count
             count = lastInsertion.getCount();
+
         if (count != NO_COUNT_GIVEN)
-            doIt = repeat(count, doIt);
+            //if using counts, don't repeat command ('5ab <esc>')
+            doIt = repeat(count, lastInsertion);
         doIt.execute(editorAdaptor);
     }
 

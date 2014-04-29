@@ -1954,11 +1954,14 @@ public class NormalModeTests extends CommandTestCase {
 	public void testInsertModeCounts() {
 		installSaneRegisterManager();
         checkCommand(forKeySeq("5ib <esc>"),
-                "",'x',"",
-                "b b b b b",' ',"x");
+                "x",'x',"x",
+                "xb b b b b",' ',"xx");
         checkCommand(forKeySeq("."),
-                "b b b b b",' ',"x",
-                "b b b b b b b b b b",' ',"x");
+                "xb b b b b",' ',"xx",
+                "xb b b b b b b b b b",' ',"xx");
+        checkCommand(forKeySeq("5ab <esc>"),
+                "a",'a',"a",
+                "aab b b b b",' ',"a");
 	}
 
 	@Test
