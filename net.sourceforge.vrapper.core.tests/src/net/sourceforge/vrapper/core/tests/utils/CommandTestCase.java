@@ -50,7 +50,8 @@ public class CommandTestCase extends VimTestCase {
             final String beforeCursor, final char atCursor, final String afterCursor) {
 		final String cursor = cursorStr(atCursor);
 		final int expectedFinalOffset = beforeCursor.length();
-        final String expectedFinalContent = beforeCursor + cursor + afterCursor;
+		final String expectedFinalContent = beforeCursor + (atCursor == 0x04 ? "" : cursor)
+		        + afterCursor;
 		
 		final int actualFinalOffset = cursorAndSelection.getPosition().getModelOffset();
 		final String actualFinalContent = content.getText();
