@@ -17,7 +17,7 @@ public class LinewiseVisualMotionCommand extends AbstractVisualMotionCommand {
 
     @Override
     protected void extendSelection(EditorAdaptor editorAdaptor,
-            Selection oldSelection) {
+            Selection oldSelection, int motionCount) {
         Position from = oldSelection.getFrom();
         Position to = editorAdaptor.getPosition();
 		editorAdaptor.setSelection(new LineWiseSelection(editorAdaptor, from, to));

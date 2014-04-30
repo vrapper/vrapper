@@ -17,7 +17,7 @@ public class BlockwiseVisualMotionCommand extends AbstractVisualMotionCommand {
 
     @Override
     protected void extendSelection(final EditorAdaptor editorAdaptor,
-            final Selection oldSelection) {
+            final Selection oldSelection, int motionCount) {
         final Position from = oldSelection.getFrom(); // always constant
         Position to = editorAdaptor.getPosition();
         if (to.getModelOffset() >= editorAdaptor.getModelContent().getTextLength()) {
@@ -26,7 +26,7 @@ public class BlockwiseVisualMotionCommand extends AbstractVisualMotionCommand {
             // to the old position.
             //
             to = oldSelection.getTo();
-            editorAdaptor.setPosition(to, motion.stickyColumnPolicy());
+            editorAdaptor.setPosition(to, getMotion(motionCount).stickyColumnPolicy());
         }
         editorAdaptor.setSelection(new BlockWiseSelection(editorAdaptor, from, to));
     }

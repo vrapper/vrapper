@@ -16,18 +16,22 @@ import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 
 public class MotionCommand extends CountAwareCommand {
 
-	protected final Motion motion;
+    private final Motion motion;
 
-	public MotionCommand(Motion motion) {
-		this.motion = motion;
-	}
+    public MotionCommand(Motion motion) {
+        this.motion = motion;
+    }
 
-	@Override
-	public void execute(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
-		doIt(editorAdaptor, motion.withCount(count));
-	}
-	
-	@Override
+    public Motion getMotion(int count) {
+        return motion.withCount(count);
+    }
+
+    @Override
+    public void execute(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
+        doIt(editorAdaptor, motion.withCount(count));
+    }
+
+    @Override
     public int getCount() {
         return motion.getCount();
     }

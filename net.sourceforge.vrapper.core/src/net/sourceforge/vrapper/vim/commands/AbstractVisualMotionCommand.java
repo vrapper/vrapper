@@ -10,7 +10,8 @@ public abstract class AbstractVisualMotionCommand extends MotionCommand {
         super(motion);
     }
 
-    protected abstract void extendSelection(EditorAdaptor editorAdaptor, Selection oldSelection);
+    protected abstract void extendSelection(EditorAdaptor editorAdaptor, Selection oldSelection,
+            int motionCount);
 
     protected abstract Selection getSelection(EditorAdaptor editorAdaptor);
 
@@ -20,7 +21,7 @@ public abstract class AbstractVisualMotionCommand extends MotionCommand {
             	Selection oldSelection = getSelection(editorAdaptor);
             	editorAdaptor.setPosition(oldSelection.getTo(), StickyColumnPolicy.NEVER);
             	super.execute(editorAdaptor, count);
-            	extendSelection(editorAdaptor, oldSelection);
+            	extendSelection(editorAdaptor, oldSelection, count);
             }
 
 }

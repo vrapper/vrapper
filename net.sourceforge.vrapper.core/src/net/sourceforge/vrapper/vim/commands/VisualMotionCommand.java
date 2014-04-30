@@ -31,12 +31,13 @@ public class VisualMotionCommand extends AbstractVisualMotionCommand {
 	}
 
 	@Override
-	protected void extendSelection(EditorAdaptor editorAdaptor, Selection oldSelection) {
+	protected void extendSelection(EditorAdaptor editorAdaptor, Selection oldSelection,
+	        int motionCount) {
 	    Position newSelectionStart = oldSelection.getStart();
 	    Position oldSelectionEnd = oldSelection.getEnd();
 	    Position newSelectionEnd = editorAdaptor.getPosition();
 	    // TODO: behaves saner than Vim when shrinking; option?
-	    if (motion.borderPolicy() == BorderPolicy.INCLUSIVE)
+	    if (getMotion(motionCount).borderPolicy() == BorderPolicy.INCLUSIVE)
             newSelectionEnd = newSelectionEnd.addViewOffset(1);
 	    
 	    Selection newSelection;

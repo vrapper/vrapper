@@ -1533,8 +1533,26 @@ public class NormalModeTests extends CommandTestCase {
         verify(userInterfaceService).setErrorMessage("there is nothing to join below last line");
 	}
 
-	@Test
-	public void test_dPercent() {
+    @Test
+    public void test_Percent() {
+        // Shouldn't do anything
+        checkCommand(forKeySeq("500%"),
+                "1\n",'2',"\n3\n4\n5\n6\n7\n8\n9\n10\n",
+                "1\n",'2',"\n3\n4\n5\n6\n7\n8\n9\n10\n");
+        // Deletes current line up to and including last line
+        checkCommand(forKeySeq("100%"),
+                "1\n",'2',"\n3\n4\n5\n6\n7\n8\n9\n10",
+                "1\n2\n3\n4\n5\n6\n7\n8\n9\n",'1',"0");
+        checkCommand(forKeySeq("%"),
+                "fun",'(',"call);",
+                "fun(call",')',";");
+        checkCommand(forKeySeq("%"),
+                "fun(call",')',";",
+                "fun",'(',"call);");
+    }
+
+    @Test
+    public void test_dPercent() {
         checkCommand(forKeySeq("d%"),
                 "fun",'(',"call);",
                 "fun",';',"");
