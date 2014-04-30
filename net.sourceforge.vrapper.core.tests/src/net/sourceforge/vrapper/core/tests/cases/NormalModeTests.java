@@ -1539,10 +1539,13 @@ public class NormalModeTests extends CommandTestCase {
         checkCommand(forKeySeq("500%"),
                 "1\n",'2',"\n3\n4\n5\n6\n7\n8\n9\n10\n",
                 "1\n",'2',"\n3\n4\n5\n6\n7\n8\n9\n10\n");
-        // Deletes current line up to and including last line
         checkCommand(forKeySeq("100%"),
                 "1\n",'2',"\n3\n4\n5\n6\n7\n8\n9\n10",
                 "1\n2\n3\n4\n5\n6\n7\n8\n9\n",'1',"0");
+        // Should go to first non-whitespace character
+        checkCommand(forKeySeq("100%"),
+                "1\n",'2',"\n3\n4\n5\n6\n7\n8\n9\n    10",
+                "1\n2\n3\n4\n5\n6\n7\n8\n9\n    ",'1',"0");
         checkCommand(forKeySeq("%"),
                 "fun",'(',"call);",
                 "fun(call",')',";");
@@ -1553,14 +1556,25 @@ public class NormalModeTests extends CommandTestCase {
 
     @Test
     public void test_dPercent() {
+        // Shouldn't do anything
+        checkCommand(forKeySeq("d500%"),
+                "fun",'(',"call);",
+                "fun",'(',"call);");
+        // Deletes current line up to and including last line
+        checkCommand(forKeySeq("d100%"),
+                "oh my\nfun",'(',"call);",
+                "oh my\n",'\u0004',"");
+        checkCommand(forKeySeq("d100%"),
+                "oh my\nfun",'(',"call);\nis this\nhere",
+                "oh my\n",'\u0004',"");
         checkCommand(forKeySeq("d%"),
                 "fun",'(',"call);",
                 "fun",';',"");
         checkCommand(forKeySeq("d%"),
                 "fun(call",')',";",
                 "fun",';',"");
-	}
-	
+    }
+
 	@Test
 	public void test_incrementDecimal() throws Exception {
 	    checkCommand(forKeySeq("<C-a>"),

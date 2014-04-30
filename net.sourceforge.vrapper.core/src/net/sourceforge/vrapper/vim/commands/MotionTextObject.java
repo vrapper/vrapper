@@ -18,11 +18,13 @@ public class MotionTextObject extends AbstractTextObject {
 
     public TextRange getRegion(EditorAdaptor editorMode, int count) throws CommandExecutionException {
         Position from = editorMode.getPosition();
-        Position to = motion.withCount(count).destination(editorMode);
-        return applyBorderPolicy(editorMode, from, to);
+        Motion motion = this.motion.withCount(count);
+        Position to = motion.destination(editorMode);
+        return applyBorderPolicy(editorMode, from, to, motion);
     };
 
-    private TextRange applyBorderPolicy(EditorAdaptor editorMode, Position from, Position to) {
+    private TextRange applyBorderPolicy(EditorAdaptor editorMode, Position from, Position to,
+            Motion motion) {
         switch (motion.borderPolicy()) {
         case EXCLUSIVE: return StartEndTextRange.exclusive(from, to);
         case INCLUSIVE: return StartEndTextRange.inclusive(from, to);
