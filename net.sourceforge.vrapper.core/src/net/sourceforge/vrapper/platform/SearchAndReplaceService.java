@@ -38,6 +38,12 @@ public interface SearchAndReplaceService {
      */
     boolean substitute(int start, String toFind, String flags, String toReplace);
 
+    /**
+     * Parse find string and flags (and use local config)
+     * to determine whether the search should be case-sensitive.
+     */
+	boolean isCaseSensitive(String toFind, String flags);
+
 	/**
 	 * Highlights all matches of the given search.
 	 */

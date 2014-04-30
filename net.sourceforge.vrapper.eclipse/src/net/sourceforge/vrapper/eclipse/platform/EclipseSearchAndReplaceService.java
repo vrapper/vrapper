@@ -94,7 +94,7 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
     	return numReplaces;
     }
 
-	private boolean isCaseSensitive(String toFind, String flags) {
+	public boolean isCaseSensitive(String toFind, String flags) {
 		boolean caseSensitive = !sharedConfiguration.get(Options.IGNORE_CASE)
             || (sharedConfiguration.get(Options.SMART_CASE)
                 && StringUtils.containsUppercase(toFind));

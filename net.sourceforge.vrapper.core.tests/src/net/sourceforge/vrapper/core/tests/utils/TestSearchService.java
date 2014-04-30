@@ -64,6 +64,10 @@ public class TestSearchService implements SearchAndReplaceService {
         throw new UnsupportedOperationException();
     }
 
+	public boolean isCaseSensitive(String toFind, String flags) {
+		return false;
+	}
+
     /** Does nothing. */
     public void highlight(Search search) {
     }

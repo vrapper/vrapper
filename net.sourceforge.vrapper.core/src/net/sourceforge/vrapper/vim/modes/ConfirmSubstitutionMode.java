@@ -12,6 +12,7 @@ import net.sourceforge.vrapper.utils.SearchOffset;
 import net.sourceforge.vrapper.utils.SearchResult;
 import net.sourceforge.vrapper.utils.SubstitutionDefinition;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.CenterLineCommand;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
@@ -33,6 +34,8 @@ public class ConfirmSubstitutionMode extends AbstractMode {
     private int totalLength;
     private int replaceOffset = 0;
     private boolean globalFlag = false;
+    private boolean caseSensitive = false;
+    private boolean useRegex = true;
     private CommandLineUI commandLine;
     private SearchResult lastMatch;
 
@@ -73,6 +76,8 @@ public class ConfirmSubstitutionMode extends AbstractMode {
             SubstitutionConfirm hint = (SubstitutionConfirm) hints[0];
             subDef = hint.subDef;
             globalFlag = subDef.flags.contains("g");
+            caseSensitive = editorAdaptor.getSearchAndReplaceService().isCaseSensitive(subDef.find, subDef.flags);
+            useRegex = editorAdaptor.getConfiguration().get(Options.SEARCH_REGEX);
             nextLine = hint.startLine;
 
             TextContent model = editorAdaptor.getModelContent();
@@ -124,7 +129,7 @@ public class ConfirmSubstitutionMode extends AbstractMode {
         }
     
         SearchOffset afterSearch = new SearchOffset.Begin(startOffset);
-        Search search = new Search(subDef.find, false, false, false, afterSearch, true);
+        Search search = new Search(subDef.find, false, false, caseSensitive, afterSearch, useRegex);
         SearchResult result = editorAdaptor.getSearchAndReplaceService().find(
                 search,
                 editorAdaptor.getPosition().setModelOffset(startOffset));
