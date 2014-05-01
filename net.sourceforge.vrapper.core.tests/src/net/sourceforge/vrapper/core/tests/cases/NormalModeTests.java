@@ -54,6 +54,38 @@ public class NormalModeTests extends CommandTestCase {
 		checkCommand(forKeySeq("w"),
 				"Ala ",'m', "a kota",
 				"Ala ma ", 'k', "ota");
+		checkCommand(forKeySeq("w"),
+				"Ala ",'m', "a\nkota",
+				"Ala ma\n", 'k', "ota");
+		VimUtils.BREAKPOINT_TRIGGER++;
+		checkCommand(forKeySeq("w"),
+				"Ala ",'m', "a\n\nkota",
+				"Ala ma\n", '\n', "kota");
+		checkCommand(forKeySeq("w"),
+				"Ala ma\n", '\n', "kota",
+				"Ala ma\n\n", 'k', "ota");
+		// Skip over words with '_', go to next line.
+		checkCommand(forKeySeq("w"),
+				"suite=", 'T',"LS_ECDHE_RSA_WITH_RC4_128_SHAS\nnext",
+				"suite=TLS_ECDHE_RSA_WITH_RC4_128_SHAS\n", 'n', "ext");
+		checkCommand(forKeySeq("w"),
+				"suite=", 'T',"LS_ECDHE_RSA_WITH_RC4_128_SHASHERE\nnext",
+				"suite=TLS_ECDHE_RSA_WITH_RC4_128_SHASHERE\n", 'n', "ext");
+		checkCommand(forKeySeq("w"),
+				"suite=", 'T',"LS_ECDHE_RSA_WITH_RC4_128_SHASHERE\n    next",
+				"suite=TLS_ECDHE_RSA_WITH_RC4_128_SHASHERE\n    ", 'n', "ext");
+		checkCommand(forKeySeq("w"),
+				"suite=", 'T',"LS_ECDHE_RSA_WITH_RC4_128_SHASHERE\r\n    next",
+				"suite=TLS_ECDHE_RSA_WITH_RC4_128_SHASHERE\r\n    ", 'n', "ext");
+		checkCommand(forKeySeq("w"),
+				"suite=", 'T',"LS_ECDHE_RSA_WITH_RC4_128_SHASHERE\r\nnext",
+				"suite=TLS_ECDHE_RSA_WITH_RC4_128_SHASHERE\r\n", 'n', "ext");
+		checkCommand(forKeySeq("w"),
+				"suite=", 'T',"LS_ECDHE_RSA_WITH_RC4_128_SHA\r\nnext",
+				"suite=TLS_ECDHE_RSA_WITH_RC4_128_SHA\r\n", 'n', "ext");
+		checkCommand(forKeySeq("w"),
+				"suite=", 'T',"LS_ECDHE_RSA_WITH_RC4_128_SHA\r\n\r\nnext",
+				"suite=TLS_ECDHE_RSA_WITH_RC4_128_SHA\r\n", '\r', "\nnext");
 	}
 	
 	@Test public void test_2w_newline() {
@@ -1563,10 +1595,10 @@ public class NormalModeTests extends CommandTestCase {
         // Deletes current line up to and including last line
         checkCommand(forKeySeq("d100%"),
                 "oh my\nfun",'(',"call);",
-                "oh my\n",'\u0004',"");
+                "oh my\n", EOF, "");
         checkCommand(forKeySeq("d100%"),
                 "oh my\nfun",'(',"call);\nis this\nhere",
-                "oh my\n",'\u0004',"");
+                "oh my\n", EOF, "");
         checkCommand(forKeySeq("d%"),
                 "fun",'(',"call);",
                 "fun",';',"");

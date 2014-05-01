@@ -30,6 +30,9 @@ public abstract class MoveRightWithBounds extends MoveWithBounds {
 				        } else {
 				            i += nlSkip - 1;
 				            offset += nlSkip - 1;
+				            if (i >= len - 1) {
+				                break;
+				            }
 				        }
 				    } 
 				    lookingAtNL = nlSkip != 0;
