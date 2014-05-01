@@ -57,7 +57,6 @@ public class NormalModeTests extends CommandTestCase {
 		checkCommand(forKeySeq("w"),
 				"Ala ",'m', "a\nkota",
 				"Ala ma\n", 'k', "ota");
-		VimUtils.BREAKPOINT_TRIGGER++;
 		checkCommand(forKeySeq("w"),
 				"Ala ",'m', "a\n\nkota",
 				"Ala ma\n", '\n', "kota");
