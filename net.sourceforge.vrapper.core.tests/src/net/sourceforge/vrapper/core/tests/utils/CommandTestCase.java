@@ -17,7 +17,7 @@ import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 
 public class CommandTestCase extends VimTestCase {
 
-	protected static final char EOF = Character.MIN_VALUE;
+	protected static final char EOF = '\u0004';
 
 	private void checkCommand(final Command command, final boolean changesContent,
 			final String beforeCursor1, final char atCursor1, final String afterCursor1,
@@ -48,10 +48,9 @@ public class CommandTestCase extends VimTestCase {
 
 	public void assertCommandResult(final String initialLine,
             final String beforeCursor, final char atCursor, final String afterCursor) {
-		final String cursor = cursorStr(atCursor);
+		final String cursor = cursorStr(atCursor); // Check for EOF value.
 		final int expectedFinalOffset = beforeCursor.length();
-		final String expectedFinalContent = beforeCursor + (atCursor == 0x04 ? "" : cursor)
-		        + afterCursor;
+		final String expectedFinalContent = beforeCursor + cursor + afterCursor;
 		
 		final int actualFinalOffset = cursorAndSelection.getPosition().getModelOffset();
 		final String actualFinalContent = content.getText();
