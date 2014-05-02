@@ -99,6 +99,8 @@ public class NormalMode extends CommandBasedMode {
                 state(
                     leafBind('r', KeyMapResolver.NO_KEYMAP),
                     leafBind('z', KeyMapResolver.NO_KEYMAP),
+                    leafBind('Z', KeyMapResolver.NO_KEYMAP),
+                    leafBind('m', KeyMapResolver.NO_KEYMAP),
                     leafBind('q', KeyMapResolver.NO_KEYMAP),
                     leafBind('@', KeyMapResolver.NO_KEYMAP),
                     // Operators
