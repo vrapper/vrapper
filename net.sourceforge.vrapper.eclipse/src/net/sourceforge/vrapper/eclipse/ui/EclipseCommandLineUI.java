@@ -388,6 +388,10 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener,
     }
 
     protected void updateUISize() {
+        // This function can be run asynchronously, check that UI is still usable.
+        if (commandLineText == null || commandLineText.isDisposed()) {
+            return;
+        }
         Point preferredSize = commandLineText.computeSize(width, SWT.DEFAULT, true);
         int selHeight = Math.min(preferredSize.y, maxHeight);
         commandLineText.setSize(width, selHeight);
