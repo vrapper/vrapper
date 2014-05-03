@@ -1,5 +1,6 @@
 package net.sourceforge.vrapper.eclipse.ui;
 
+import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.CommandLineUI;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.ContentType;
@@ -390,6 +391,7 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener,
     protected void updateUISize() {
         // This function can be run asynchronously, check that UI is still usable.
         if (commandLineText == null || commandLineText.isDisposed()) {
+            VrapperLog.error("Command line UI is already disposed or nulled.");
             return;
         }
         Point preferredSize = commandLineText.computeSize(width, SWT.DEFAULT, true);
