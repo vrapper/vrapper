@@ -309,7 +309,7 @@ public class NormalMode extends CommandBasedMode {
      * Only changes the position if NormalMode is enabled.
      */
     @Override
-    protected void placeCursor() {
+    public void placeCursor() {
         final Position pos = editorAdaptor.getPosition();
         final int offset = pos.getViewOffset();
         final LineInformation line = editorAdaptor.getViewContent().getLineInformationOfOffset(offset);

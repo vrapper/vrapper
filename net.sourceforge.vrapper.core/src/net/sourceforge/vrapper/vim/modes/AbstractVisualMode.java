@@ -70,12 +70,12 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
     }
 
     @Override
-    protected void placeCursor() {
-    //        if (!isEnabled) {
-    //            Position leftSidePosition = editorAdaptor.getSelection().getLeftBound();
-    //            editorAdaptor.setPosition(leftSidePosition, false);
-    //        }
-        }
+    public void placeCursor() {
+//        if (!isEnabled) {
+//            Position leftSidePosition = editorAdaptor.getSelection().getLeftBound();
+//            editorAdaptor.setPosition(leftSidePosition, false);
+//        }
+    }
 
     @Override
     public void enterMode(final ModeSwitchHint... hints) throws CommandExecutionException {

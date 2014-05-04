@@ -94,12 +94,12 @@ public class InputInterceptorManager implements IPartListener2 {
             Object viewer = me.invoke(editor);
             if (viewer != null) {
                 // test for needed interfaces
-                ITextViewerExtension textViewer = (ITextViewerExtension) viewer;
-                InputInterceptor interceptor = factory.createInterceptor(
-                        editor, (ITextViewer) textViewer);
-                textViewer.prependVerifyKeyListener(interceptor);
-				((ITextViewer) textViewer).getSelectionProvider()
-						.addSelectionChangedListener(interceptor);
+                ITextViewer textViewer = (ITextViewer) viewer;
+                ITextViewerExtension textViewerExt = (ITextViewerExtension) viewer;
+                InputInterceptor interceptor = factory.createInterceptor(editor, textViewer);
+                textViewerExt.prependVerifyKeyListener(interceptor);
+                textViewer.getTextWidget().addCaretListener(interceptor);
+                textViewer.getSelectionProvider().addSelectionChangedListener(interceptor);
                 interceptors.put(editor, interceptor);
                 VrapperPlugin.getDefault().registerEditor(editor, interceptor.getEditorAdaptor());
             }
@@ -135,10 +135,11 @@ public class InputInterceptorManager implements IPartListener2 {
                 me.setAccessible(true);
                 Object viewer = me.invoke(part);
                 // test for needed interfaces
-                ITextViewerExtension textViewer = (ITextViewerExtension) viewer;
-                textViewer.removeVerifyKeyListener(interceptor);
-				((ITextViewer) viewer).getSelectionProvider()
-						.removeSelectionChangedListener(interceptor);
+                ITextViewer textViewer = (ITextViewer) viewer;
+                ITextViewerExtension textViewerExt = (ITextViewerExtension) viewer;
+                textViewerExt.removeVerifyKeyListener(interceptor);
+                textViewer.getTextWidget().removeCaretListener(interceptor);
+                textViewer.getSelectionProvider().removeSelectionChangedListener(interceptor);
             } catch (Exception exception) {
                 VrapperLog.error("Exception during closing IWorkbenchPart",
                         exception);

@@ -81,7 +81,8 @@ public abstract class CommandBasedMode extends AbstractMode {
         commandBuffer = new StringBuilder();
     }
 
-    protected abstract void placeCursor();
+    /** Reset cursor position if it is at the end of the line and the current mode won't allow it. */
+    public abstract void placeCursor();
     protected abstract State<Command> buildInitialState();
     protected abstract KeyMapResolver buildKeyMapResolver();
 

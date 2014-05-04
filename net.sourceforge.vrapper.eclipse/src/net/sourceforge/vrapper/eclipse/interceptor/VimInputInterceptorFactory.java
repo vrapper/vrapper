@@ -17,6 +17,7 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.SimpleGlobalConfiguration;
 import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
+import net.sourceforge.vrapper.vim.modes.CommandBasedMode;
 import net.sourceforge.vrapper.vim.modes.EditorMode;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
@@ -31,7 +32,9 @@ import org.eclipse.jface.text.source.ContentAssistantFacade;
 import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CaretEvent;
 import org.eclipse.swt.events.VerifyEvent;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 
@@ -134,6 +137,7 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
                 platform,
                 globalRegisterManager, VrapperPlugin.isVrapperEnabled());
         InputInterceptor interceptor = createInterceptor(editorAdaptor);
+        interceptor.setTextViewer(textViewer);
         if (editorAdaptor.getConfiguration().get(Options.EXIT_LINK_MODE)) {
             LinkedModeHandler linkedModeHandler = new LinkedModeHandler(editorAdaptor);
             LinkedModeHandler.registerListener(textViewer.getDocument(), linkedModeHandler);
@@ -159,6 +163,7 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
 
         private final EditorAdaptor editorAdaptor;
         private LinkedModeHandler linkedModeHandler;
+        private ITextViewer textViewer;
 
         private VimInputInterceptor(EditorAdaptor editorAdaptor) {
             this.editorAdaptor = editorAdaptor;
@@ -235,6 +240,37 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
         @Override
         public void setLinkedModeHandler(LinkedModeHandler handler) {
             this.linkedModeHandler = handler;
+        }
+
+        @Override
+        public void setTextViewer(ITextViewer textViewer) {
+            this.textViewer = textViewer;
+        }
+
+        @Override
+        public void caretMoved(CaretEvent event) {
+            if (!VrapperPlugin.isVrapperEnabled() || !VrapperPlugin.isMouseDown()) {
+                return;
+            }
+            // First disable redraw so that the user doesn't see the cursor move twice.
+            textViewer.getTextWidget().setRedraw(false);
+            
+            // Moving the cursor directly in this function triggers a cascade of caretMoved invokes.
+            // Do this asynchronously so that the cursor position has settled.
+            Display.getCurrent().asyncExec(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        EditorMode mode = editorAdaptor.getMode(editorAdaptor.getCurrentModeName());
+                        if (mode instanceof CommandBasedMode) {
+                            CommandBasedMode commandMode = (CommandBasedMode) mode;
+                            commandMode.placeCursor();
+                        }
+                    } finally {
+                        textViewer.getTextWidget().setRedraw(true);
+                    }
+                }
+            });
         }
     }
 }
