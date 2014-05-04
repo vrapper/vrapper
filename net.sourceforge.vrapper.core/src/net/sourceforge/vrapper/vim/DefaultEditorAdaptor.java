@@ -17,7 +17,6 @@ import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.vim.SimpleKeyStroke;
 import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.CommandLineUI;
-import net.sourceforge.vrapper.platform.Configuration.Option;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.FileService;
 import net.sourceforge.vrapper.platform.HighlightingService;
@@ -62,9 +61,7 @@ import net.sourceforge.vrapper.vim.modes.commandline.MessageMode;
 import net.sourceforge.vrapper.vim.modes.commandline.PasteRegisterMode;
 import net.sourceforge.vrapper.vim.modes.commandline.SearchMode;
 import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
-import net.sourceforge.vrapper.vim.register.Register;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
-import net.sourceforge.vrapper.vim.register.SimpleRegister;
 
 public class DefaultEditorAdaptor implements EditorAdaptor {
 
