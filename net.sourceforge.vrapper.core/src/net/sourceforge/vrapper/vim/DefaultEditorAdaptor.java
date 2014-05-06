@@ -564,6 +564,10 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
                     	
                     	//prepare for next mapping
                     	cursorBeforeMapping = -1;
+                    } else if (resultingKeyStrokes.isEmpty()) {
+                        currentMode.addKeyToMapBuffer(key);
+                    } else {
+                        currentMode.cleanMapBuffer(keyStrokeTranslator.didMappingSucceed());
                     }
                     //play all resulting key strokes
                     while (!resultingKeyStrokes.isEmpty()) {

@@ -1,5 +1,6 @@
 package net.sourceforge.vrapper.vim.modes;
 
+import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 
@@ -18,5 +19,13 @@ public abstract class AbstractMode implements EditorMode {
 
     public void leaveMode(ModeSwitchHint... hints) throws CommandExecutionException {
         isEnabled = false;
+    }
+
+    @Override
+    public void addKeyToMapBuffer(KeyStroke stroke) {
+    }
+
+    @Override
+    public void cleanMapBuffer(boolean mappingSucceeded) {
     }
 }

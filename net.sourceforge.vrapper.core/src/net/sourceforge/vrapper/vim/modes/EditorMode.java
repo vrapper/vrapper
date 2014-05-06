@@ -14,4 +14,6 @@ public interface EditorMode {
     String getDisplayName();
     boolean handleKey(KeyStroke stroke);
     KeyMap resolveKeyMap(KeyMapProvider provider);
+    void addKeyToMapBuffer(KeyStroke stroke);
+    void cleanMapBuffer(boolean mappingSucceeded);
 }
