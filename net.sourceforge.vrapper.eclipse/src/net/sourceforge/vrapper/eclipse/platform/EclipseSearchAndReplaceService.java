@@ -146,7 +146,7 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
     private String convertRegexSearch(String keyword) {
     	//in Vim, '\<' and '\>' are word boundaries
     	//in Eclipse, '\b' is word boundaries
-    	return keyword.replaceAll("\\<|\\>", "\\b");
+    	return keyword.replaceAll("\\\\<|\\\\>", "\\\\b");
     }
 
     public void removeHighlighting() {
