@@ -19,6 +19,7 @@ import net.sourceforge.vrapper.plugin.splitEditor.commands.SplitEditorCommand;
 import net.sourceforge.vrapper.plugin.splitEditor.commands.SplitMode;
 import net.sourceforge.vrapper.plugin.splitEditor.commands.SwitchEditorCommand;
 import net.sourceforge.vrapper.plugin.splitEditor.commands.SwitchOtherEditorCommand;
+import net.sourceforge.vrapper.plugin.splitEditor.commands.SwitchTabCommand;
 import net.sourceforge.vrapper.utils.StringUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.Command;
@@ -53,6 +54,8 @@ public class WindowCmdStateProvider extends AbstractEclipseSpecificStateProvider
             case 'J': cmd = bang ? MoveEditorCommand.CLONE_DOWN  : MoveEditorCommand.MOVE_DOWN; break;
             case 'o': cmd = bang ? RemoveOtherWindowsCommand.REMOVE_CLOSE  : RemoveOtherWindowsCommand.REMOVE_JOIN; break;
             case 'w': cmd = SwitchOtherEditorCommand.INSTANCE; break;
+            case 'n': cmd = SwitchTabCommand.NEXT; break;
+            case 'p': cmd = SwitchTabCommand.PREVIOUS; break;
             }
             if (cmd != null) {
                 try {
@@ -133,6 +136,9 @@ public class WindowCmdStateProvider extends AbstractEclipseSpecificStateProvider
         final Command cloneEditorDown = MoveEditorCommand.CLONE_DOWN;
         final Command cloneEditorUp = MoveEditorCommand.CLONE_UP;
 
+        final Command tabNext = SwitchTabCommand.NEXT;
+        final Command tabPrev = SwitchTabCommand.PREVIOUS;
+
         return state(transitionBind(
                 ctrlKey('w'),
                   state(
@@ -161,6 +167,10 @@ public class WindowCmdStateProvider extends AbstractEclipseSpecificStateProvider
                         leafBind(ctrlKey('w'), switchOther),
                         leafBind('o', removeOther),
                         leafBind(ctrlKey('o'), removeOther),
+                        transitionBind(
+                                'g',
+                                leafBind('t', tabNext),
+                                leafBind('T', tabPrev)),
                         transitionBind(
                                 'c',
                                 leafBind('h', cloneEditorLeft),
