@@ -11,6 +11,7 @@ import net.sourceforge.vrapper.keymap.vim.VisualMotionState.Motion2VMC;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
+import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
@@ -80,9 +81,9 @@ public class VisualMode extends AbstractVisualMode {
         Position start = selection.getStart();
         Position end = selection.getEnd();
         if (selection.isReversed())
-            start = start.addModelOffset(-1);
+            start = VimUtils.safeAddModelOffset(editorAdaptor, start, -1, true);
         else
-            end = end.addModelOffset(-1);
+            end = VimUtils.safeAddModelOffset(editorAdaptor, end, -1, true);
         editorAdaptor.setSelection(new SimpleSelection(new StartEndTextRange(start, end)));
     }
 
