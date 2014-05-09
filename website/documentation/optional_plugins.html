@@ -93,6 +93,37 @@ Vrapper plugin can continue to function on Eclipse 3.x.</p>
 </tr>
 </table>
 
+<h4>Eclipse style tab switching</h4>
+
+<p>
+By default <code>gt</code> and <code>gT</code> commands will switch between
+<b>all</b> open editors regardless of window splits. The plugin provides
+additional mappings to switch tabs only within the currently active split:
+</p>
+
+<table>
+<tr>
+<td style="border:none">
+<table class="commands">
+	<tr>
+	   <td>:wincmd n<br/>&lt;C-W&gt;gt</td>
+	   <td>Switch to the <b>next</b> tab within the current split</td>
+	</tr>
+	<tr>
+	   <td>:wincmd p<br/>&lt;C-W&gt;gT</td>
+	   <td>Switch to the <b>previous</b> tab within the current split</td>
+	</tr>
+</table>
+</td>
+</tr>
+</table>
+
+<p>You can change the default behaviour of <code>gt</code> and <code>gT</code> using the following remapping:</p>
+
+<pre>
+    nnoremap gt &lt;C-W&gt;gt
+    nnoremap gT &lt;C-W&gt;gT
+</pre> 
 
 <h2>Programming Language Plugins</h3>
 

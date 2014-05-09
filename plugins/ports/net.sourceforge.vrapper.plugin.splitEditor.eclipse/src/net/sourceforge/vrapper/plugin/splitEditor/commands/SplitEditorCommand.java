@@ -15,6 +15,7 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartSashContainer;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartSashContainerElement;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
+import org.eclipse.e4.ui.model.application.ui.basic.MTrimmedWindow;
 import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
@@ -78,8 +79,9 @@ public class SplitEditorCommand extends AbstractWindowCommand {
         // Find a parent sash container to insert a new stack.
         //
         MUIElement neighbour = p;
-        MUIElement parent = neighbour.getParent();
+        MElementContainer<? extends MUIElement> parent = neighbour.getParent();
         while (parent != null
+                && !(parent instanceof MTrimmedWindow) // Detached windows
                 && (  !(parent instanceof MPartSashContainer)
                         // NOTE: MArea is an instance of MPartSashContainer
                     || (parent instanceof MArea && containerMode == SplitContainer.TOP_LEVEL))) {
@@ -94,9 +96,9 @@ public class SplitEditorCommand extends AbstractWindowCommand {
                 }
             }
         }
-        MPartSashContainer editorSash = (MPartSashContainer) parent;
-        int neighbourIndex = editorSash.getChildren().indexOf(neighbour);
-        assert editorSash != null;
+        @SuppressWarnings("unchecked")
+        final MElementContainer<MUIElement> parentContainer = (MElementContainer<MUIElement>) parent;
+        final int neighbourIndex = parentContainer.getChildren().indexOf(neighbour);
 
         //
         // Move or clone the editor into a new Stack.
@@ -129,18 +131,22 @@ public class SplitEditorCommand extends AbstractWindowCommand {
         // Do we need a new sash or can we extend the existing one?
         // NOTE: MArea always needs a sash.
         //
+        final MPartSashContainer editorSash = parent instanceof MPartSashContainer ? (MPartSashContainer) parent : null;
         boolean isHorizontal = direction != SplitDirection.HORIZONTALLY;
-        if (isHorizontal == editorSash.isHorizontal() && !(editorSash instanceof MArea)) {
+        if (editorSash != null && isHorizontal == editorSash.isHorizontal() && !(editorSash instanceof MArea)) {
             //
             // We just need to add to the existing sash.
             //
             int totalVisWeight = 0;
-            for (MUIElement child : editorSash.getChildren()) {
-                if (child.isToBeRendered())
+            int countVis = 0;
+            for (MUIElement child : parentContainer.getChildren()) {
+                if (child.isToBeRendered()) {
                     totalVisWeight += getElementWeight(child);
+                    ++countVis;
+                }
             }
-            newStack.setContainerData(Integer.toString(totalVisWeight));
-            editorSash.getChildren().add(neighbourIndex + 1, newStack);
+            newStack.setContainerData(Integer.toString(totalVisWeight / countVis));
+            parentContainer.getChildren().add(neighbourIndex + 1, newStack);
         } else {
             //
             // Create a new PartSashContainer with the designed split property to
@@ -148,7 +154,7 @@ public class SplitEditorCommand extends AbstractWindowCommand {
             //
             MPartSashContainer splitSash = MBasicFactory.INSTANCE.createPartSashContainer();
             splitSash.setHorizontal(isHorizontal);
-            editorSash.getChildren().remove(neighbour);
+            parentContainer.getChildren().remove(neighbour);
             splitSash.getChildren().add((MPartSashContainerElement) neighbour);
             splitSash.getChildren().add(newStack);
 
@@ -160,7 +166,7 @@ public class SplitEditorCommand extends AbstractWindowCommand {
             neighbour.setContainerData("5000");
 
             // Add the new sash at the same location.
-            editorSash.getChildren().add(neighbourIndex, splitSash);
+            parentContainer.getChildren().add(neighbourIndex, (MUIElement)splitSash);
         }
 
         psvc.activate(newPart, true /*requiresFocus*/);
