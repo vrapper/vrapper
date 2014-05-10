@@ -22,8 +22,8 @@ public class XmlTagDelimitedText implements DelimitedText {
     
     //regex usually stops at newlines but open tags might have
     //multiple lines of attributes.  So, include newlines in search.
-	//Skip comments (<!-- foo -->) and empty-element tags (<foo/>)
-    private static final String XML_TAG_REGEX = "<([^<!]|\n)*?[^/]>";
+	//Skip comments (<!-- foo -->), empty-element tags (<foo/>), and jsp (<% %>)
+    private static final String XML_TAG_REGEX = "<([^<!%]|\n)*?[^/]>";
     
     private static final Pattern tagPattern = Pattern.compile(XML_TAG_REGEX);
     
