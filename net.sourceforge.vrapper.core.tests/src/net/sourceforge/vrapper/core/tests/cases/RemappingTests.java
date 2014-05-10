@@ -1,13 +1,17 @@
 package net.sourceforge.vrapper.core.tests.cases;
 
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.parseKeyStrokes;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
 import net.sourceforge.vrapper.core.tests.utils.CommandTestCase;
+import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 /**
  * Tests for remapping in different modes.
@@ -183,8 +187,8 @@ public class RemappingTests extends CommandTestCase {
     }
 
     @Test
-    public void testFTMotionsWithoutOMap() {
-        // Check that no omap binds are mixed in with the f/F or t/T commands.
+    public void testMotionsWithoutOMap() {
+        // Check that no omap binds are mixed in with the prefixed motions: f,F,t,T,`,',i,a
         checkCommand(forKeySeq("fL"),
                 "old", ' ', "McDonnaLD had some $",
                 "old McDonna", 'L', "D had some $");
@@ -201,5 +205,16 @@ public class RemappingTests extends CommandTestCase {
         checkCommand(forKeySeq("d2fL"),
                 "old", ' ', "McDonnaLD had some $LLaz",
                 "old", 'L', "az");
+
+        // Test cursor service doesn't support marks, just check if they're set and get.
+        type(parseKeyStrokes(":noremap s \"_s<CR>"));
+        type(parseKeyStrokes("ms"));
+        verify(cursorAndSelection, times(1)).setMark(Mockito.eq("s"), Mockito.<Position>any());
+        type(parseKeyStrokes("'s"));
+        verify(cursorAndSelection, times(1)).getMark("s");
+
+        checkCommand(forKeySeq("dams"),
+                "so old", ' ', "McDonnaLD had some $LLaz",
+                "", 'o', "me $LLaz");
     }
 }
