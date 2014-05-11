@@ -1,7 +1,5 @@
 package net.sourceforge.vrapper.plugin.surround.mode;
 
-import net.sourceforge.vrapper.keymap.KeyMap;
-import net.sourceforge.vrapper.platform.KeyMapProvider;
 import net.sourceforge.vrapper.plugin.surround.commands.DelimiterChangedListener;
 import net.sourceforge.vrapper.plugin.surround.state.AbstractDynamicDelimiterHolder;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
@@ -81,7 +79,7 @@ public class ReplaceDelimiterMode extends AbstractCommandLineMode {
     }
 
     @Override
-    public KeyMap resolveKeyMap(KeyMapProvider provider) {
+    public String resolveKeyMap() {
         return null;
     }
 

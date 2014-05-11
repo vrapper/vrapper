@@ -519,7 +519,11 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
      */
     private boolean handleKey0(KeyStroke key) {
         if (currentMode != null) {
-            final KeyMap map = currentMode.resolveKeyMap(keyMapProvider);
+            KeyMap map = null;
+            String keyMapName = currentMode.resolveKeyMap();
+            if (keyMapName != null) {
+                map = keyMapProvider.getKeyMap(keyMapName);
+            }
             if (map != null) {
                 final boolean inMapping = keyStrokeTranslator.processKeyStroke(map, key);
                 if (inMapping) {

@@ -1,12 +1,10 @@
 package net.sourceforge.vrapper.vim.modes.commandline;
 
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.key;
-import net.sourceforge.vrapper.keymap.KeyMap;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.platform.CommandLineUI;
 import net.sourceforge.vrapper.platform.CommandLineUI.CommandLineMode;
-import net.sourceforge.vrapper.platform.KeyMapProvider;
 import net.sourceforge.vrapper.platform.UserInterfaceService;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.AbstractMessagesCommand;
@@ -64,7 +62,7 @@ public class MessageMode extends AbstractMode {
     }
 
     @Override
-    public KeyMap resolveKeyMap(KeyMapProvider provider) {
+    public String resolveKeyMap() {
         return null;
     }
 

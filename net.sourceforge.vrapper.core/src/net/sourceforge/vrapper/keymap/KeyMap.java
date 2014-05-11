@@ -28,6 +28,11 @@ public class KeyMap {
     }
 
     private KeyMapState root = new KeyMapState();
+    private final String mapid;
+
+    public KeyMap(String id) {
+        mapid = id;
+    }
 
     /**
      * Remaps the given keystrokes.
@@ -60,6 +65,10 @@ public class KeyMap {
 
     public Transition<Remapping> press(KeyStroke key) {
         return root.press(key);
+    }
+
+    public String toString() {
+        return "KeyMap[" + mapid + "]";
     }
 
     private static class KeyMapState extends HashMapState<Remapping> {

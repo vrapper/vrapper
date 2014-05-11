@@ -1,7 +1,5 @@
 package net.sourceforge.vrapper.vim.modes.commandline;
 
-import net.sourceforge.vrapper.keymap.KeyMap;
-import net.sourceforge.vrapper.platform.KeyMapProvider;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.Command;
 
@@ -39,8 +37,9 @@ public class CommandLineMode extends AbstractCommandLineMode {
         return DISPLAY_NAME;
     }
 
-    public KeyMap resolveKeyMap(KeyMapProvider provider) {
-        return provider.getKeyMap(KEYMAP_NAME);
+    @Override
+    public String resolveKeyMap() {
+        return KEYMAP_NAME;
     }
 
     public boolean addCommand(String commandName, Command command, boolean overwrite) {

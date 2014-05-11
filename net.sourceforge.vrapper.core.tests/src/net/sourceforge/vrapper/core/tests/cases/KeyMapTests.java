@@ -22,7 +22,7 @@ import org.junit.Test;
  */
 public class KeyMapTests extends TestCase {
 
-    private final KeyMap map = new KeyMap();
+    private final KeyMap map = new KeyMap("test");
     private final Remapping mapping = new SimpleRemapping(key('h'));
 
     /**

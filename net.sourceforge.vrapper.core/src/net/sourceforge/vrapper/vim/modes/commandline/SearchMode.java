@@ -1,17 +1,15 @@
 package net.sourceforge.vrapper.vim.modes.commandline;
 
-import net.sourceforge.vrapper.keymap.KeyMap;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.platform.Configuration.Option;
-import net.sourceforge.vrapper.platform.KeyMapProvider;
 import net.sourceforge.vrapper.platform.SearchAndReplaceService;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Search;
 import net.sourceforge.vrapper.utils.SearchOffset;
 import net.sourceforge.vrapper.utils.SearchResult;
 import net.sourceforge.vrapper.utils.VimUtils;
-import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.ConfigurationListener;
+import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
@@ -122,7 +120,8 @@ public class SearchMode extends AbstractCommandLineMode {
         }
     }
 
-    public KeyMap resolveKeyMap(KeyMapProvider provider) {
+    @Override
+    public String resolveKeyMap() {
         return null;
     }
 

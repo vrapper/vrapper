@@ -17,7 +17,7 @@ public class DefaultKeyMapProvider implements KeyMapProvider {
 
     public KeyMap getKeyMap(String id) {
         if (!keymaps.containsKey(id)) {
-            keymaps.put(id, new KeyMap());
+            keymaps.put(id, new KeyMap(id));
         }
         return keymaps.get(id);
     }

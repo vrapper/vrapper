@@ -11,14 +11,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.sourceforge.vrapper.keymap.EmptyState;
-import net.sourceforge.vrapper.keymap.KeyMap;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.Transition;
 import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.CursorService;
-import net.sourceforge.vrapper.platform.KeyMapProvider;
 import net.sourceforge.vrapper.platform.PlatformSpecificStateProvider;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
@@ -344,8 +342,9 @@ public abstract class CommandBasedMode extends AbstractMode {
         keyMapResolver.reset();
     }
 
-    public KeyMap resolveKeyMap(KeyMapProvider provider) {
-        return provider.getKeyMap(keyMapResolver.getKeyMapName());
+    @Override
+    public String resolveKeyMap() {
+        return keyMapResolver.getKeyMapName();
     }
 
     public void leaveMode(ModeSwitchHint... hints) throws CommandExecutionException {
