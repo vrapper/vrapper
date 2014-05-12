@@ -9,6 +9,7 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.State;
+import net.sourceforge.vrapper.keymap.vim.CountConsumingState;
 import net.sourceforge.vrapper.keymap.vim.CountingState;
 import net.sourceforge.vrapper.keymap.vim.RegisterState;
 import net.sourceforge.vrapper.keymap.vim.VisualMotionState;
@@ -58,14 +59,10 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
     @SuppressWarnings("unchecked")
     protected KeyMapResolver buildKeyMapResolver() {
         final State<String> state = union(
-                state(
-                    leafBind('z', KeyMapResolver.NO_KEYMAP),
-                    leafBind('r', KeyMapResolver.NO_KEYMAP)),
-                getKeyMapsForMotions(),
                 editorAdaptor.getPlatformSpecificStateProvider().getKeyMaps(VisualMode.NAME));
-        final State<String> countEater = new CountConsumingState<String>(state);
+        final State<String> countEater = new CountConsumingState<String>(KEYMAP_NAME, state);
         final State<String> registerKeymapState = new RegisterKeymapState(KEYMAP_NAME, countEater);
-        final State<String> outerCountEater = new CountConsumingState<String>(registerKeymapState);
+        final State<String> outerCountEater = new CountConsumingState<String>(KEYMAP_NAME, registerKeymapState);
         return new KeyMapResolver(outerCountEater, KEYMAP_NAME);
     }
 

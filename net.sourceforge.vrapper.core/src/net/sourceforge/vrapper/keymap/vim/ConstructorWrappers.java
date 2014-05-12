@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 
 import net.sourceforge.vrapper.keymap.CovariantState;
+import net.sourceforge.vrapper.keymap.EmptyState;
 import net.sourceforge.vrapper.keymap.HashMapState;
 import net.sourceforge.vrapper.keymap.KeyBinding;
 import net.sourceforge.vrapper.keymap.KeyStroke;
@@ -37,6 +38,7 @@ import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
 import net.sourceforge.vrapper.vim.commands.motions.LineEndMotion;
 import net.sourceforge.vrapper.vim.commands.motions.Motion;
 import net.sourceforge.vrapper.vim.commands.motions.SearchResultMotion;
+import net.sourceforge.vrapper.vim.modes.KeyMapResolver;
 import net.sourceforge.vrapper.vim.modes.commandline.CommandLineMode;
 
 /**
@@ -297,6 +299,21 @@ public class ConstructorWrappers {
 
     public static ChangeCaretShapeCommand changeCaret(CaretType caret) {
         return ChangeCaretShapeCommand.getInstance(caret);
+    }
+
+    public static KeyBinding<String> operatorKeyMap(char key) {
+        String omap = KeyMapResolver.OMAP_NAME;
+        State<String> emptyState = EmptyState.<String>getInstance();
+        State<String> counteater = new CountConsumingState<String>(omap, emptyState);
+        return transitionBind(key, omap, counteater);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static State<String> prefixedOperatorKeyMap(char key1, char key2) {
+        String omap = KeyMapResolver.OMAP_NAME;
+        State<String> emptyState = EmptyState.<String>getInstance();
+        State<String> counteater = new CountConsumingState<String>(omap, emptyState);
+        return transitionState(key1, state(transitionBind(key2, omap, counteater)));
     }
 
     @SuppressWarnings("unchecked")

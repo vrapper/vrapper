@@ -5,7 +5,6 @@ import net.sourceforge.vrapper.keymap.SimpleTransition;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.Transition;
 import net.sourceforge.vrapper.keymap.WrappingState;
-import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.utils.Function;
 import net.sourceforge.vrapper.vim.commands.Counted;
 

@@ -8,12 +8,14 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafCtrlBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.operatorCmds;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.operatorCmdsWithUpperCase;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.operatorKeyMap;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.prefixedOperatorCmds;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.State;
+import net.sourceforge.vrapper.keymap.vim.CountConsumingState;
 import net.sourceforge.vrapper.keymap.vim.CountingState;
 import net.sourceforge.vrapper.keymap.vim.GoThereState;
 import net.sourceforge.vrapper.keymap.vim.RegisterState;
@@ -97,28 +99,19 @@ public class NormalMode extends CommandBasedMode {
     protected KeyMapResolver buildKeyMapResolver() {
         final State<String> state = union(
                 state(
-                    leafBind('r', KeyMapResolver.NO_KEYMAP),
-                    leafBind('z', KeyMapResolver.NO_KEYMAP),
-                    leafBind('Z', KeyMapResolver.NO_KEYMAP),
-                    leafBind('m', KeyMapResolver.NO_KEYMAP),
-                    leafBind('q', KeyMapResolver.NO_KEYMAP),
-                    leafBind('@', KeyMapResolver.NO_KEYMAP),
-                    // Operators
-                    transitionBind('c', KeyMapResolver.OMAP_NAME, getKeyMapsForMotions()),
-                    transitionBind('d', KeyMapResolver.OMAP_NAME, getKeyMapsForMotions()),
-                    transitionBind('y', KeyMapResolver.OMAP_NAME, getKeyMapsForMotions()),
-                    transitionBind('!', KeyMapResolver.OMAP_NAME, getKeyMapsForMotions()),
-                    transitionBind('<', KeyMapResolver.OMAP_NAME, getKeyMapsForMotions()),
-                    transitionBind('>', KeyMapResolver.OMAP_NAME, getKeyMapsForMotions()),
+                    operatorKeyMap('c'),
+                    operatorKeyMap('d'),
+                    operatorKeyMap('y'),
+                    operatorKeyMap('!'),
+                    operatorKeyMap('<'),
+                    operatorKeyMap('>'),
                     transitionBind('g', 
-                        transitionBind('q', KeyMapResolver.OMAP_NAME, getKeyMapsForMotions()),
-                        transitionBind('~', KeyMapResolver.OMAP_NAME, getKeyMapsForMotions())
-                    )),
-                getKeyMapsForMotions(),
+                        operatorKeyMap('q'),
+                        operatorKeyMap('~'))),
                 editorAdaptor.getPlatformSpecificStateProvider().getKeyMaps(NAME));
-        final State<String> countEater = new CountConsumingState<String>(state);
+        final State<String> countEater = new CountConsumingState<String>(KEYMAP_NAME, state);
         final State<String> registerKeymapState = new RegisterKeymapState(KEYMAP_NAME, countEater);
-        final State<String> outerCountEater = new CountConsumingState<String>(registerKeymapState);
+        final State<String> outerCountEater = new CountConsumingState<String>(KEYMAP_NAME, registerKeymapState);
         return new KeyMapResolver(outerCountEater, KEYMAP_NAME);
     }
 

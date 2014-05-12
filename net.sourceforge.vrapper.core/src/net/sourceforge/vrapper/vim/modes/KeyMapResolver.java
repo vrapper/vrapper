@@ -33,14 +33,13 @@ public final class KeyMapResolver {
             Transition<String> trans = currentState.press(key);
             if (trans != null) {
                 currentState = trans.getNextState();
-                lastValue = getValue(trans);
             }
+            lastValue = getValue(trans);
         }
     }
 
     private String getValue(Transition<String> trans) {
-        String value = trans.getValue();
-        return value != null ? value : lastValue;
+        return trans != null ? trans.getValue() : null;
     }
 
     public String getKeyMapName() {
