@@ -1,15 +1,14 @@
 package net.sourceforge.vrapper.core.tests.cases;
 
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.parseKeyStrokes;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import net.sourceforge.vrapper.core.tests.utils.CommandTestCase;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -50,15 +49,21 @@ public class RemappingTests extends CommandTestCase {
 
     @Test
     public void testOmap() {
-        // Sanity check
+        // Sanity checks
         checkCommand(forKeySeq("d$"),
                 "a", 'b', "c\ndef\nghi\njkl\nm",
                 "", 'a', "\ndef\nghi\njkl\nm");
+        checkCommand(forKeySeq("g~$"),
+                "a", 'b', "c\ndef\nghi\njkl\nm",
+                "aB", 'C', "\ndef\nghi\njkl\nm");
 
         type(parseKeyStrokes(":onoremap L $<CR>"));
         checkCommand(forKeySeq("dL"),
                 "a", 'b', "c\ndef\nghi\njkl\nm",
                 "", 'a', "\ndef\nghi\njkl\nm");
+        checkCommand(forKeySeq("g~L"),
+                "a", 'b', "c\ndef\nghi\njkl\nm",
+                "aB", 'C', "\ndef\nghi\njkl\nm");
     }
 
     @Test
@@ -67,6 +72,9 @@ public class RemappingTests extends CommandTestCase {
         checkCommand(forKeySeq("2\"_2d$"),
                 "a", 'b', "c\ndef\nghi\njkl\nm",
                 "", 'a', "\nm");
+        checkCommand(forKeySeq("2g~2$"),
+                "a", 'b', "c\ndef\nghi\njkl\nm",
+                "aBC\nDEF\nGHI\nJK", 'L', "\nm");
 
         type(parseKeyStrokes(":onoremap L $<CR>"));
         checkCommand(forKeySeq("2\"_2dL"),
@@ -78,6 +86,9 @@ public class RemappingTests extends CommandTestCase {
         checkCommand(forKeySeq("\"_d4L"),
                 "a", 'b', "c\ndef\nghi\njkl\nm",
                 "", 'a', "\nm");
+        checkCommand(forKeySeq("2g~2L"),
+                "a", 'b', "c\ndef\nghi\njkl\nm",
+                "aBC\nDEF\nGHI\nJK", 'L', "\nm");
     }
 
     @Test
@@ -127,9 +138,6 @@ public class RemappingTests extends CommandTestCase {
     }
 
     @Test
-    @Ignore
-    // [TODO] Needs some work in KeyStrokeTranslator and related code to do it nicely.
-    // Using :nnoremap / :nmap could be an acceptable workaround. See issue #415.
     public void testPrefixTextObject() {
         checkCommand(forKeySeq("di)"),
                 "(", 'a', "bc\ndef\ngh)\njkl",
@@ -216,5 +224,25 @@ public class RemappingTests extends CommandTestCase {
         checkCommand(forKeySeq("dams"),
                 "so old", ' ', "McDonnaLD had some $LLaz",
                 "", 'o', "me $LLaz");
+    }
+    
+    @Test
+    public void testPrefixCommandMap() {
+        // Sanity check
+        checkCommand(forKeySeq("gq2j"),
+                "    h", 'e', "ey\noldMcDonnaLD had some $\nia\nia\no",
+                "", ' ', "   heey oldMcDonnaLD had some $ ia\nia\no");
+
+        // 'q' mapping should only be invoked in operator mode or at start of command.
+        type(parseKeyStrokes(":noremap q 2j<CR>"));
+        checkCommand(forKeySeq("gq2j"),
+                "    h", 'e', "ey\noldMcDonnaLD had some $\nia\nia\no",
+                "", ' ', "   heey oldMcDonnaLD had some $ ia\nia\no");
+        checkCommand(forKeySeq("gqq"),
+                "    h", 'e', "ey\noldMcDonnaLD had some $\nia\nia\no",
+                "", ' ', "   heey oldMcDonnaLD had some $ ia\nia\no");
+        checkCommand(forKeySeq("q"),
+                "    h", 'e', "ey\noldMcDonnaLD had some $\nia\nia\no",
+                "    heey\noldMcDonnaLD had some $\ni", 'a', "\nia\no");
     }
 }
