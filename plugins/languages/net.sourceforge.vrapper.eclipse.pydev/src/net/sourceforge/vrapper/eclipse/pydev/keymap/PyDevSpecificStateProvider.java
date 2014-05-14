@@ -3,6 +3,7 @@ package net.sourceforge.vrapper.eclipse.pydev.keymap;
 import static net.sourceforge.vrapper.keymap.StateUtils.union;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafCtrlBind;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.operatorKeyMap;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.prefixedOperatorCmds;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
@@ -16,7 +17,6 @@ import net.sourceforge.vrapper.vim.commands.DeselectAllCommand;
 import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
 import net.sourceforge.vrapper.vim.commands.SetMarkCommand;
 import net.sourceforge.vrapper.vim.commands.TextObject;
-import net.sourceforge.vrapper.vim.modes.KeyMapResolver;
 
 public class PyDevSpecificStateProvider extends AbstractEclipseSpecificStateProvider {
 	
@@ -34,21 +34,21 @@ public class PyDevSpecificStateProvider extends AbstractEclipseSpecificStateProv
         State<TextObject> textObjects = textObjectProvider.textObjects();
         return union(
                 state(
-            		leafCtrlBind(']', gotoDecl()),
-	                transitionBind('g',
-	                        leafBind('d', gotoDecl()),
-	                        leafBind('D', gotoDecl()),
-	                        leafBind('R', (Command)new EclipseCommand("org.python.pydev.refactoring.ui.actions.RenameCommand")))
+                    leafCtrlBind(']', gotoDecl()),
+                    transitionBind('g',
+                            leafBind('d', gotoDecl()),
+                            leafBind('D', gotoDecl()),
+                            leafBind('R', (Command)new EclipseCommand("org.python.pydev.refactoring.ui.actions.RenameCommand")))
                 ),
                 prefixedOperatorCmds('g', 'c', actionAndDeselect("togglecomment"), textObjects)
                 );
     }
-    
+
     @SuppressWarnings("unchecked")
     @Override
     protected State<String> normalModeKeymap() {
         return state(
-                transitionBind('g', leafBind('c', KeyMapResolver.OMAP_NAME)));
+                transitionBind('g', operatorKeyMap('c')));
     }
 
     @Override

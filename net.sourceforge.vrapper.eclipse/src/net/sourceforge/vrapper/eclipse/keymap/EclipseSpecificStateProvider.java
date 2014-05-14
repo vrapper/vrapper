@@ -3,6 +3,7 @@ package net.sourceforge.vrapper.eclipse.keymap;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.convertKeyStroke;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafCtrlBind;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.operatorKeyMap;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.prefixedOperatorCmds;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
@@ -13,6 +14,7 @@ import net.sourceforge.vrapper.eclipse.commands.GoToMarkCommand;
 import net.sourceforge.vrapper.eclipse.commands.ListTabsCommand;
 import net.sourceforge.vrapper.eclipse.commands.TabNewCommand;
 import net.sourceforge.vrapper.eclipse.commands.ToggleFoldingCommand;
+import net.sourceforge.vrapper.keymap.EmptyState;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.StateUtils;
@@ -21,7 +23,6 @@ import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.DeselectAllCommand;
 import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
 import net.sourceforge.vrapper.vim.commands.TextObject;
-import net.sourceforge.vrapper.vim.modes.KeyMapResolver;
 
 /**
  * Provides eclipse-specific bindings for command based modes.
@@ -69,7 +70,7 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
 
     @Override
     protected State<String> visualModeKeymap() {
-        return state(leafBind('g', KeyMapResolver.NO_KEYMAP));
+        return EmptyState.getInstance();
     }
 
     @Override
@@ -109,12 +110,9 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
     @Override
     protected State<String> normalModeKeymap() {
         State<String> normalModeKeymap = state(
-                leafBind('z', KeyMapResolver.NO_KEYMAP),
                 transitionBind('g', 
-                        leafBind('t', KeyMapResolver.NO_KEYMAP),
-                        leafBind('T', KeyMapResolver.NO_KEYMAP),
-                        leafBind('u', KeyMapResolver.OMAP_NAME),
-                        leafBind('U', KeyMapResolver.OMAP_NAME)));
+                        operatorKeyMap('u'),
+                        operatorKeyMap('U')));
         return normalModeKeymap;
     }
 

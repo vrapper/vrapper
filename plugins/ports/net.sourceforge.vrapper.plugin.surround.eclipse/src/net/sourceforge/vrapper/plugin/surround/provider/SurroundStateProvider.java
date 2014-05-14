@@ -4,6 +4,7 @@ import static net.sourceforge.vrapper.keymap.StateUtils.union;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.operatorKeyMap;
 
 import java.util.Queue;
 
@@ -23,7 +24,6 @@ import net.sourceforge.vrapper.vim.commands.DelimitedText;
 import net.sourceforge.vrapper.vim.commands.InsertShiftWidth;
 import net.sourceforge.vrapper.vim.commands.SimpleDelimitedText;
 import net.sourceforge.vrapper.vim.commands.TextObject;
-import net.sourceforge.vrapper.vim.modes.KeyMapResolver;
 import net.sourceforge.vrapper.vim.modes.commandline.Evaluator;
 
 public class SurroundStateProvider extends AbstractEclipseSpecificStateProvider {
@@ -82,9 +82,9 @@ public class SurroundStateProvider extends AbstractEclipseSpecificStateProvider 
     @SuppressWarnings("unchecked")
     protected State<String> normalModeKeymap() {
         return state(
-                transitionBind('d', leafBind('s', KeyMapResolver.OMAP_NAME)),
-                transitionBind('c', leafBind('s', KeyMapResolver.OMAP_NAME)),
-                transitionBind('y', leafBind('s', KeyMapResolver.OMAP_NAME)));
+                transitionBind('d', operatorKeyMap('s')),
+                transitionBind('c', operatorKeyMap('s')),
+                transitionBind('y', operatorKeyMap('s')));
     }
 
     @Override

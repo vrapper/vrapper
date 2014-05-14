@@ -4,6 +4,7 @@ import static net.sourceforge.vrapper.keymap.StateUtils.union;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafState;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.operatorCmds;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.operatorKeyMap;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionState;
@@ -19,7 +20,6 @@ import net.sourceforge.vrapper.vim.commands.SelectionBasedTextOperationCommand;
 import net.sourceforge.vrapper.vim.commands.TextOperation;
 import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
 import net.sourceforge.vrapper.vim.commands.motions.LineEndMotion;
-import net.sourceforge.vrapper.vim.modes.KeyMapResolver;
 
 public class ExchangeProvider extends AbstractEclipseSpecificStateProvider {
     public static final PlatformSpecificStateProvider INSTANCE = new ExchangeProvider();
@@ -44,7 +44,7 @@ public class ExchangeProvider extends AbstractEclipseSpecificStateProvider {
     @SuppressWarnings("unchecked")
     public State<String> normalModeKeymap() {
         return state(
-                transitionBind('c', leafBind('x', KeyMapResolver.OMAP_NAME)));
+                transitionBind('c', operatorKeyMap('x')));
     }
 
     @SuppressWarnings("unchecked")

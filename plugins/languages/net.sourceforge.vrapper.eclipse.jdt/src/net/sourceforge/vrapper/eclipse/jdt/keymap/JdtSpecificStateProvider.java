@@ -4,6 +4,7 @@ import static net.sourceforge.vrapper.keymap.StateUtils.union;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafCtrlBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.operatorCmds;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.operatorKeyMap;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.prefixedOperatorCmds;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
@@ -17,7 +18,6 @@ import net.sourceforge.vrapper.vim.commands.DeselectAllCommand;
 import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
 import net.sourceforge.vrapper.vim.commands.SetMarkCommand;
 import net.sourceforge.vrapper.vim.commands.TextObject;
-import net.sourceforge.vrapper.vim.modes.KeyMapResolver;
 
 public class JdtSpecificStateProvider extends AbstractEclipseSpecificStateProvider {
 
@@ -30,11 +30,11 @@ public class JdtSpecificStateProvider extends AbstractEclipseSpecificStateProvid
 				leafBind('m', editJava("source.quickMenu")), // gs/gS should be taken by swap plug-in
 				leafBind('R', editJava("rename.element")));
 	}
-    
+
     public JdtSpecificStateProvider() {
         addFormatCommands(editJava("format"));
     }
-    
+
     @Override
     @SuppressWarnings("unchecked")
     protected State<Command> normalModeBindings() {
@@ -51,11 +51,11 @@ public class JdtSpecificStateProvider extends AbstractEclipseSpecificStateProvid
     protected State<String> normalModeKeymap() {
         @SuppressWarnings("unchecked")
         State<String> state = state(
-                transitionBind('g', leafBind('c', KeyMapResolver.OMAP_NAME)),
-                leafBind('=', KeyMapResolver.OMAP_NAME));
+                transitionBind('g', operatorKeyMap('c')),
+                operatorKeyMap('='));
         return state;
     }
-    
+
 	@Override
 	@SuppressWarnings("unchecked")
     protected State<Command> visualModeBindings() {
