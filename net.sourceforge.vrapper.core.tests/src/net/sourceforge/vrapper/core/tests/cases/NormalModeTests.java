@@ -907,6 +907,14 @@ public class NormalModeTests extends CommandTestCase {
         checkCommand(forKeySeq("dit"),
                 "<tag><tag>co",'n',"tent</tag></tag>",
                 "<tag><tag>",'<',"/tag></tag>");
+
+        checkCommand(forKeySeq("dit"),
+                "<tag><% jsp",' ',"%></tag>",
+                "<tag>",'<',"/tag>");
+
+        checkCommand(forKeySeq("dit"),
+                "<tag var=\"<%=jsp%>\"> ",' ',"foo</tag>",
+                "<tag var=\"<%=jsp%>\">",'<',"/tag>");
 	}
 	
 	@Test
