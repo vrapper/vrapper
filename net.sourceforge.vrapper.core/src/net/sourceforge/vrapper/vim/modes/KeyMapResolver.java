@@ -30,15 +30,14 @@ public final class KeyMapResolver {
     public void press(KeyStroke key) {
         if (currentState != null) {
             Transition<String> trans = currentState.press(key);
-            if (trans != null) {
+            if (trans == null) {
+                currentState = null;
+                lastValue = null;
+            } else {
                 currentState = trans.getNextState();
+                lastValue = trans.getValue();
             }
-            lastValue = getValue(trans);
         }
-    }
-
-    private String getValue(Transition<String> trans) {
-        return trans != null ? trans.getValue() : null;
     }
 
     public String getKeyMapName() {

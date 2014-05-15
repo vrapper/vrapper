@@ -224,6 +224,19 @@ public class RemappingTests extends CommandTestCase {
         checkCommand(forKeySeq("dams"),
                 "so old", ' ', "McDonnaLD had some $LLaz",
                 "", 'o', "me $LLaz");
+
+        // sanity check
+        checkCommand(forKeySeq("df0"),
+                "so old", ' ', "McD0nnaLD had some $LLaz",
+                "so old", 'n', "naLD had some $LLaz");
+
+        type(parseKeyStrokes(":onoremap 0 0x<CR>"));
+        checkCommand(forKeySeq("d0"),
+                "so old", ' ', "McD0nnaLD had some $LLaz",
+                "", 'M', "cD0nnaLD had some $LLaz");
+        checkCommand(forKeySeq("df0"),
+                "so old", ' ', "McD0nnaLD had some $LLaz",
+                "so old", 'n', "naLD had some $LLaz");
     }
     
     @Test
