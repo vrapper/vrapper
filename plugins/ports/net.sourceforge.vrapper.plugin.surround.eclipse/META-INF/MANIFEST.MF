@@ -2,8 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Vrapper Surround Plug-in Eclipse integration
 Bundle-SymbolicName: net.sourceforge.vrapper.plugin.surround.eclipse;singleton:=true
-Bundle-Version: 0.43.20140510
+Bundle-Version: 0.43.20140515
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: net.sourceforge.vrapper.plugin.surround.core;bundle-version="0.43.20140510";visibility:=reexport,
+Require-Bundle: net.sourceforge.vrapper.plugin.surround.core;bundle-version="0.43.20140515";visibility:=reexport,
  net.sourceforge.vrapper.eclipse
 Eclipse-BuddyPolicy: dependent
