@@ -21,9 +21,7 @@ public class SwapLinewiseSelectionSidesCommand extends CountIgnoringNonRepeatabl
         
         selection = new LineWiseSelection(editorAdaptor, to, from);
         
-        // This is more feature-rich in Vim: it actually remembers the sticky column
-        // for both ends of the selection. We always reset the column.
-        editorAdaptor.setPosition(to, StickyColumnPolicy.ON_CHANGE);
+        MotionCommand.gotoAndChangeViewPort(editorAdaptor, from, StickyColumnPolicy.ON_CHANGE);
         editorAdaptor.setSelection(selection);
     }
 

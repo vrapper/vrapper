@@ -19,7 +19,8 @@ public class SwapSelectionSidesCommand extends CountIgnoringNonRepeatableCommand
             // do nothing
             return;
         }
-        editorAdaptor.setPosition(selection.getEnd(), StickyColumnPolicy.ON_CHANGE);
+        MotionCommand.gotoAndChangeViewPort(editorAdaptor, selection.getStart(),
+                StickyColumnPolicy.ON_CHANGE);
         editorAdaptor.setSelection(new SimpleSelection(
                 new StartEndTextRange(selection.getEnd(), selection.getStart())));
         if (!isSelectionExclusive) {

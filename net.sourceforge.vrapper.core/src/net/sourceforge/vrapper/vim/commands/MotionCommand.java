@@ -50,7 +50,7 @@ public class MotionCommand extends CountAwareCommand {
      * if it is not inside the viewport.
      */
     public static void gotoAndChangeViewPort(EditorAdaptor editorAdaptor, Position pos, StickyColumnPolicy stickyColumnPolicy) {
-		if (pos.getViewOffset() < 0) {
+        if (pos.getViewOffset() < 0) {
             editorAdaptor.getViewportService().exposeModelPosition(pos);
         }
         TextContent viewContent = editorAdaptor.getViewContent();
