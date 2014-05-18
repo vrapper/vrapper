@@ -20,10 +20,16 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
  */
 public class XmlTagDelimitedText implements DelimitedText {
     
-    //regex usually stops at newlines but open tags might have
-    //multiple lines of attributes.  So, include newlines in search.
-	//Skip comments (<!-- foo -->), empty-element tags (<foo/>), and jsp (<% %>)
-    private static final String XML_TAG_REGEX = "<(?:(?!%|!))[^<]*?(?:(?<!%|/))>";
+    /**
+     * Don't stare too closely at this regex or it'll burn out your eyes.
+     * If you *must* know what's happening here, this is the breakdown:
+     * (?:  ) = Don't store any parentheses matches as matching groups
+     * <(?!%|!) = '<' *not* followed by '%' or '!' (skip JSP and comments)
+     * (<(?=%)|(?<=%)>|[^<]) = allow '<' followed by '%', or '>' preceded by '%', or any character *not* '<'
+     * {0,1000} = match up to 1,000 characters after '<' (prevent StackOverflow if not in XML)
+     * (?<!%|/)> = end regex with '>' character *not* preceded by '%' or '/' (skip JSP and empty tags)
+     */
+    private static final String XML_TAG_REGEX = "(?:(<(?!%|!)(<(?=%)|(?<=%)>|[^<]){0,1000}(?<!%|/)>))";
     private static final Pattern tagPattern = Pattern.compile(XML_TAG_REGEX, Pattern.DOTALL);
     
     private static final String XML_NAME_REGEX = "</?([^\\s]*).*?>";
