@@ -2,7 +2,7 @@ package net.sourceforge.vrapper.core.tests.utils;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.SelectionService;
 import net.sourceforge.vrapper.utils.Position;
@@ -58,45 +58,45 @@ public abstract class VisualTestCase extends CommandTestCase {
 
 
     private void assertCommandResult(String initialLine,
-            boolean inverted, String beforeSelection, String selected, String afterSelection) {
-            String expectedFinalContent = beforeSelection + selected + afterSelection;
-            String actualFinalContent = content.getText();
-            int actSelFrom;
-            int actSelTo;
-            TextRange selection = adaptor.getSelection();
-            if (selection != null) {
-                actSelFrom = selection.getStart().getModelOffset();
-                actSelTo = selection.getEnd().getModelOffset();
-            } else {
-                actSelFrom = actSelTo = adaptor.getCursorService().getPosition().getModelOffset();
-            }
-            int expSelTo, expSelFrom;
-            expSelFrom = expSelTo = beforeSelection.length();
-            if (!inverted) {
-                expSelTo += selected.length();
-            } else {
-                expSelFrom += selected.length();
-            }
-
-            String msg = "";
-            boolean selectionMishmash = false;
-            if (expSelFrom != actSelFrom || expSelTo != actSelTo) {
-                msg = "selection mishmash\n" + expSelFrom + " " + expSelTo + " but got " + actSelFrom + " " + actSelTo + "\n";
-                selectionMishmash = true;
-            }
-
-//            int offset = mockEditorAdaptor.getCaretOffset();
-            String expectedLine = formatLine(beforeSelection, selected, afterSelection) + "\n";// + cursorLine(expSelTo);
-            String   actualLine = formatLine(actualFinalContent,
-                    min(actSelFrom, actSelTo),
-                    max(actSelFrom, actSelTo)) + "\n";// + cursorLine(offset);
-
-            msg += String.format("STARTING FROM:\n%s\nEXPECTED:\n%s\nGOT:\n%s\n", initialLine, expectedLine, actualLine);
-            if (!actualFinalContent.equals(expectedFinalContent) || selectionMishmash) {
-                fail(msg);
-            }
+        boolean inverted, String beforeSelection, String selected, String afterSelection) {
+        String expectedFinalContent = beforeSelection + selected + afterSelection;
+        String actualFinalContent = content.getText();
+        int actSelFrom;
+        int actSelTo;
+        TextRange selection = adaptor.getSelection();
+        if (selection != null) {
+            actSelFrom = selection.getStart().getModelOffset();
+            actSelTo = selection.getEnd().getModelOffset();
+        } else {
+            actSelFrom = actSelTo = adaptor.getCursorService().getPosition().getModelOffset();
+        }
+        int expSelTo, expSelFrom;
+        expSelFrom = expSelTo = beforeSelection.length();
+        if (!inverted) {
+            expSelTo += selected.length();
+        } else {
+            expSelFrom += selected.length();
         }
 
+        String expectedLine = formatLine(beforeSelection, selected, afterSelection) + "\n";// + cursorLine(expSelTo);
+        String   actualLine = formatLine(actualFinalContent,
+                min(actSelFrom, actSelTo),
+                max(actSelFrom, actSelTo)) + "\n";// + cursorLine(offset);
+        String msg = String.format("STARTING FROM:\n%s\nEXPECTED:\n%s\nGOT:\n%s\n", initialLine, expectedLine, actualLine);
+
+        assertEquals(msg, expectedFinalContent, actualFinalContent);
+        
+        if (expSelFrom != actSelFrom || expSelTo != actSelTo) {
+            msg = "selection mishmash\n" + expSelFrom + " " + expSelTo + " but got " + actSelFrom + " " + actSelTo + "\n" + msg;
+        }
+        // First compare strings with selection markers. Eclipse JUnit runner has a nice
+        // visual compare for this.
+        assertEquals(msg, expectedLine, actualLine);
+        // Now check that start and end positions aren't off (selection might be
+        // reversed or content might contain '[' characters throwing off compare)
+        assertEquals(msg, expSelFrom, actSelFrom);
+        assertEquals(msg, expSelTo, actSelTo);
+    }
 
     protected void checkCommand(Command command,
             boolean inverted1, String beforeSelection1, String selected1, String afterSelection1,

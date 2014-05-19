@@ -60,7 +60,7 @@ public class CommandTestCase extends VimTestCase {
 
 		final String msg = String.format("STARTING FROM:\n%s\nEXPECTED:\n%s\nGOT:\n%s\n", initialLine, expectedLine, actualLine);
 		assertEquals(msg,  expectedFinalContent, actualFinalContent);
-		assertEquals(msg, expectedFinalOffset, actualFinalOffset);
+		assertEquals("Wrong cursor position!\n" + msg, expectedFinalOffset, actualFinalOffset);
     }
 
     protected static String formatLine(final String line, final int from, final int to) {
