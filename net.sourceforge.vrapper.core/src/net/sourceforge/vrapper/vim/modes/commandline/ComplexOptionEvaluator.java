@@ -37,6 +37,7 @@ public class ComplexOptionEvaluator implements Evaluator {
         }
         Option<String> strOpt;
         Option<Integer> intOpt;
+        Option<Boolean> boolOpt;
         try {
             if ((strOpt = find(Options.STRING_OPTIONS, optName)) != null) {
                 if(additive) { //append ( += )
@@ -53,6 +54,9 @@ public class ComplexOptionEvaluator implements Evaluator {
             }
             else if ((intOpt = find(Options.INT_OPTIONS, optName)) != null) {
                 set(vim, intOpt, Integer.valueOf(value));
+            }
+            else if ((boolOpt = find(Options.BOOLEAN_OPTIONS, optName)) != null) {
+                set(vim, boolOpt, Boolean.valueOf(value));
             }
             else {
                 noSuchOptionMessage(vim, optName);
