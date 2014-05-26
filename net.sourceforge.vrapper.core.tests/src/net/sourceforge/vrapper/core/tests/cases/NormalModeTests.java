@@ -2075,6 +2075,16 @@ public class NormalModeTests extends CommandTestCase {
 	            "a", 'j', "klm");
 	    assertEquals("Black hole register was not used!", "", defaultReg.getContent().getText());
 	}
+	
+	@Test
+	public void testSwitchRegister() {
+	    installSaneRegisterManager();
+		checkCommand(forKeySeq("Vj\"fddd"),
+				"",'1',"\n\n2\n\n3",
+				"",'\n',"3");
+	    assertEquals("F register had incorrect contents", "1\n\n", registerManager.getRegister("f").getContent().getText());
+	    assertEquals("Last edit register had incorrect contents", "2\n", registerManager.getRegister("\"").getContent().getText());
+	}
 
     private void installSaneRegisterManager() {
         registerManager = new DefaultRegisterManager();

@@ -248,8 +248,7 @@ public abstract class CommandBasedMode extends AbstractMode {
         command.execute(editorAdaptor);
         Command repetition = command.repetition();
         if (repetition != null) {
-            RegisterManager registerManager = editorAdaptor
-                    .getRegisterManager();
+            RegisterManager registerManager = editorAdaptor .getRegisterManager();
             if (!registerManager.isDefaultRegisterActive()) {
                 repetition = new VimCommandSequence(new SwitchRegisterCommand(
                         registerManager.getActiveRegister()), repetition);
@@ -257,6 +256,9 @@ public abstract class CommandBasedMode extends AbstractMode {
             registerManager.setLastEdit(repetition);
             editorAdaptor.getCursorService().setMark(
                     CursorService.LAST_EDIT_MARK, editorAdaptor.getPosition());
+            //restore default register if we just did a SwitchRegisterCommand
+            //(if we were already on default register, this is a no-op)
+            registerManager.activateDefaultRegister();
         }
     }
 
