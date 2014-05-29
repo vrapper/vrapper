@@ -1,24 +1,19 @@
 package net.sourceforge.vrapper.eclipse.interceptor;
 
 import net.sourceforge.vrapper.eclipse.activator.VrapperPlugin;
-import net.sourceforge.vrapper.eclipse.platform.OffsetConverter;
 import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.vim.DefaultEditorAdaptor;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
-import net.sourceforge.vrapper.vim.modes.CommandBasedMode;
 import net.sourceforge.vrapper.vim.modes.EditorMode;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 
 import org.eclipse.jface.text.ITextViewer;
-import org.eclipse.jface.text.ITextViewerExtension5;
 import org.eclipse.swt.custom.CaretEvent;
 import org.eclipse.swt.custom.CaretListener;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.Display;
 
 /**
  * Detects when a mouse click results in a caret move and optionally fixes the
@@ -28,13 +23,11 @@ public class CaretPositionHandler implements CaretListener, MouseListener {
     private boolean caretMoved;
     private ITextViewer textViewer;
     private DefaultEditorAdaptor editorAdaptor;
-    private ITextViewerExtension5 converter;
 
     public CaretPositionHandler(DefaultEditorAdaptor editorAdaptor,
             ITextViewer textViewer) {
         this.editorAdaptor = editorAdaptor;
         this.textViewer = textViewer;
-        this.converter = OffsetConverter.create(textViewer);
     }
 
     @Override
@@ -43,6 +36,34 @@ public class CaretPositionHandler implements CaretListener, MouseListener {
 
     @Override
     public void mouseDown(MouseEvent e) {
+        EditorMode mode = getCurrentMode(editorAdaptor);
+        if (!VrapperPlugin.isVrapperEnabled() || !caretMoved || ! (mode instanceof NormalMode)) {
+            return;
+        }
+        StyledText w = textViewer.getTextWidget();
+        w.setRedraw(false);
+        try {
+            int currentOffset = w.getCaretOffset();
+
+            // Find out what line we are in and what length it has.
+            int lineNo = w.getLineAtOffset(currentOffset);
+            int lineStartOffset = w.getOffsetAtLine(lineNo);
+            String lineContents = w.getLine(lineNo);
+            int lineEndOffset = lineStartOffset + lineContents.length();
+
+            // Detect if caret was moved after last character. It is possible that the caret is
+            // already at the right position because this mouse click might have dropped us out of
+            // visual mode. In that case NormalMode.placeCursor() did its magic already.
+            if (currentOffset == lineEndOffset) {
+                // Change caret until the user has let go of the mouse button.
+                // We can't move the caret here or we risk changing the user's selection for him.
+                editorAdaptor.getCursorService().setCaret(CaretType.LEFT_SHIFTED_RECTANGULAR);
+            }
+        } catch (RuntimeException ex) {
+            VrapperLog.error("CaretPositionHandler failed on mouse click.", ex);
+        } finally {
+            w.setRedraw(true);
+        }
     }
 
     @Override
