@@ -97,8 +97,11 @@ public class InputInterceptorManager implements IPartListener2 {
                 ITextViewer textViewer = (ITextViewer) viewer;
                 ITextViewerExtension textViewerExt = (ITextViewerExtension) viewer;
                 InputInterceptor interceptor = factory.createInterceptor(editor, textViewer);
+                CaretPositionHandler caretPositionHandler = interceptor.getCaretPositionHandler();
+
                 textViewerExt.prependVerifyKeyListener(interceptor);
-                textViewer.getTextWidget().addCaretListener(interceptor);
+                textViewer.getTextWidget().addMouseListener(caretPositionHandler);
+                textViewer.getTextWidget().addCaretListener(caretPositionHandler);
                 textViewer.getSelectionProvider().addSelectionChangedListener(interceptor);
                 interceptors.put(editor, interceptor);
                 VrapperPlugin.getDefault().registerEditor(editor, interceptor.getEditorAdaptor());
@@ -137,8 +140,10 @@ public class InputInterceptorManager implements IPartListener2 {
                 // test for needed interfaces
                 ITextViewer textViewer = (ITextViewer) viewer;
                 ITextViewerExtension textViewerExt = (ITextViewerExtension) viewer;
+                CaretPositionHandler caretPositionHandler = interceptor.getCaretPositionHandler();
                 textViewerExt.removeVerifyKeyListener(interceptor);
-                textViewer.getTextWidget().removeCaretListener(interceptor);
+                textViewer.getTextWidget().removeCaretListener(caretPositionHandler);
+                textViewer.getTextWidget().removeMouseListener(caretPositionHandler);
                 textViewer.getSelectionProvider().removeSelectionChangedListener(interceptor);
             } catch (Exception exception) {
                 VrapperLog.error("Exception during closing IWorkbenchPart",
