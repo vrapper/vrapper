@@ -47,10 +47,11 @@ public class CaretPositionHandler implements CaretListener, MouseListener {
 
     @Override
     public void mouseUp(MouseEvent e) {
+        EditorMode mode = getCurrentMode(editorAdaptor);
         int selectionLength = textViewer.getSelectedRange().y;
-        VrapperLog.info("Mouse up, selection length: " + selectionLength);
+
         if (!VrapperPlugin.isVrapperEnabled() || !caretMoved
-                || selectionLength > 0) {
+                || selectionLength > 0 || ! (mode instanceof NormalMode)) {
             // Always reset this flag.
             caretMoved = false;
             return;
@@ -58,26 +59,15 @@ public class CaretPositionHandler implements CaretListener, MouseListener {
         // First disable redraw so that the user doesn't see the cursor move
         // twice.
         textViewer.getTextWidget().setRedraw(false);
-
-        // Moving the cursor directly in this function triggers a cascade of
-        // caretMoved invokes.
-        // Do this asynchronously so that the cursor position has settled.
-        Display.getCurrent().asyncExec(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    EditorMode mode = getCurrentMode(editorAdaptor);
-                    VrapperLog.info("Handling mouse up, caret moved.");
-                    if (mode instanceof CommandBasedMode) {
-                        CommandBasedMode commandMode = (CommandBasedMode) mode;
-                        commandMode.placeCursor();
-                    }
-                } finally {
-                    textViewer.getTextWidget().setRedraw(true);
-                }
-            }
-        });
-        caretMoved = false;
+        try {
+            // Reset caret type, see mouseDown() above.
+            editorAdaptor.getCursorService().setCaret(CaretType.RECTANGULAR);
+            NormalMode normalMode = (NormalMode) mode;
+            normalMode.placeCursor();
+        } finally {
+            textViewer.getTextWidget().setRedraw(true);
+            caretMoved = false;
+        }
     }
 
     @Override
