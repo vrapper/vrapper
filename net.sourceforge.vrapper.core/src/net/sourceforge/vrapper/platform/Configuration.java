@@ -107,6 +107,10 @@ public interface Configuration {
             return new Option<String>(id, OptionScope.GLOBAL, defaultValue, legalValues, alias);
         }
 
+        public static final Option<String> globalStringNoConstraint(String id, String defaultValue, String... alias) {
+            return new Option<String>(id, OptionScope.GLOBAL, defaultValue, null, alias);
+        }
+
         public static final Option<String> stringNoConstraint(String id, String defaultValue, String... alias) {
             return new Option<String>(id, defaultValue, null, alias);
         }

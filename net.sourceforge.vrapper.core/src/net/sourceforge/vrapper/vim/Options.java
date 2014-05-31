@@ -2,10 +2,10 @@ package net.sourceforge.vrapper.vim;
 
 import static net.sourceforge.vrapper.platform.Configuration.Option.bool;
 import static net.sourceforge.vrapper.platform.Configuration.Option.localBool;
-import static net.sourceforge.vrapper.platform.Configuration.Option.globalBool;
 import static net.sourceforge.vrapper.platform.Configuration.Option.integer;
 import static net.sourceforge.vrapper.platform.Configuration.Option.string;
 import static net.sourceforge.vrapper.platform.Configuration.Option.globalString;
+import static net.sourceforge.vrapper.platform.Configuration.Option.globalStringNoConstraint;
 import static net.sourceforge.vrapper.platform.Configuration.Option.stringNoConstraint;
 import static net.sourceforge.vrapper.utils.VimUtils.set;
 
@@ -42,7 +42,6 @@ public interface Options {
 
     public static final Option<Boolean> MODIFIABLE            = localBool("modifiable", true, "ma");
 
-    public static final Option<Boolean> SYNC_MODIFIABLE            = globalBool("syncmodifiable", true, "syncma");
 
     @SuppressWarnings("unchecked")
     public static final Set<Option<Boolean>> BOOLEAN_OPTIONS = set(
@@ -50,17 +49,19 @@ public interface Options {
             SMART_CASE, SANE_CW, SANE_Y, SEARCH_HIGHLIGHT, SEARCH_REGEX,
             INCREMENTAL_SEARCH, LINE_NUMBERS, SHOW_WHITESPACE, IM_DISABLE,
             VISUAL_MOUSE, EXIT_LINK_MODE, CLEAN_INDENT, AUTO_CHDIR, HIGHLIGHT_CURSOR_LINE,
-            CONTENT_ASSIST_MODE, START_NORMAL_MODE, MODIFIABLE, SYNC_MODIFIABLE);
+            CONTENT_ASSIST_MODE, START_NORMAL_MODE, MODIFIABLE);
 
     // String options:
     public static final Option<String> CLIPBOARD = globalString("clipboard", "autoselect", "unnamed, autoselect", "cb");
+    public static final Option<String> SYNC_MODIFIABLE = globalStringNoConstraint("syncmodifiable", "matchreadonly", "syncma");
     public static final Option<String> SELECTION = string("selection", "inclusive", "old, inclusive, exclusive", "sel");
     public static final Option<String> PATH      = stringNoConstraint("path", ".", "pa");
     public static final Option<String> GVIM_PATH = stringNoConstraint("gvimpath", "/usr/bin/gvim", "gvp");
     public static final Option<String> GVIM_ARGS = stringNoConstraint("gvimargs", "");
     public static final Option<String> KEYWORDS  = stringNoConstraint("iskeyword", "a-zA-Z0-9_", "isk");
     @SuppressWarnings("unchecked")
-    public static final Set<Option<String>> STRING_OPTIONS = set(CLIPBOARD, SELECTION, PATH, GVIM_PATH, GVIM_ARGS, KEYWORDS);
+    public static final Set<Option<String>> STRING_OPTIONS = set(CLIPBOARD, SELECTION, PATH,
+            GVIM_PATH, GVIM_ARGS, KEYWORDS, SYNC_MODIFIABLE);
 
     // Int options:
     public static final Option<Integer> SCROLL_OFFSET = integer("scrolloff",   0, "so");

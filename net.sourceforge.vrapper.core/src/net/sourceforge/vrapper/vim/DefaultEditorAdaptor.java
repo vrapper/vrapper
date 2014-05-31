@@ -145,7 +145,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         readConfiguration();
 
         // Set 'modifiable' flag if not done so by an autocmnd in .vrapperc
-        if (configuration.get(Options.SYNC_MODIFIABLE).booleanValue()
+        if ("matchreadonly".equals(configuration.get(Options.SYNC_MODIFIABLE))
                 && ! configuration.isSet(Options.MODIFIABLE)) {
             configuration.set(Options.MODIFIABLE, ( ! fileService.isReadOnly()));
         }
