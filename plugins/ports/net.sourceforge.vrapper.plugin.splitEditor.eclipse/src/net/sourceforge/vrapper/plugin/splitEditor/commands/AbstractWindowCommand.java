@@ -17,6 +17,9 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartSashContainerElement;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
@@ -93,11 +96,25 @@ public abstract class AbstractWindowCommand extends CountIgnoringNonRepeatableCo
     }
 
     protected static MPart cloneEditor() throws PartInitException {
-    
         IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
         IEditorPart editor = page.getActiveEditor();
         IEditorPart newEditor = page.openEditor(editor.getEditorInput(),
                 editor.getSite().getId(), false, IWorkbenchPage.MATCH_NONE);
+        //
+        // Set the cursor and view position to match the cloned editor.
+        //
+        final Object ctl = editor.getAdapter(Control.class);
+        if (ctl instanceof StyledText) {
+            StyledText widget = (StyledText) ctl;
+            final Point pos = widget.getSelection();
+            final int topIndex = widget.getTopIndex();
+            final Object newCtl = newEditor.getAdapter(Control.class);
+            if (pos != null && newCtl instanceof StyledText) {
+                widget = (StyledText) newCtl;
+                widget.setTopIndex(topIndex);
+                widget.setSelection(pos);
+            }
+        }
         MPart newPart = (MPart) newEditor.getSite().getService(MPart.class);
         return newPart;
     }
