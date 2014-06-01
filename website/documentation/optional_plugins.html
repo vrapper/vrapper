@@ -1,11 +1,29 @@
 
-<h2>Optional Plugins</h2>
+<a name="top"><h2>Optional Plugins</h2></a>
 <p>In addition to the standard Vrapper plugin, we have a couple optional plugins
 that you can install to further enhance Vrapper's features.  These plugins either have
 extra dependencies which everyone might not have installed, or they provide behaviors
 which aren't found in Vim.</p>
 
-<h3>Split Editor Plugin</h3>
+<ol>
+   <li><a href="#split">Split Editor Plugin</a></li>
+   <li><a href="#programming">Programming Language Plugins</a></li>
+   <ol>
+      <li><a href="#cjavapy">CDT, JDT, and Pydev</a></li>
+      <li><a href="#clang">Clang-Format</a></li>
+   </ol>
+   <li><a href="#vimscript">Vimscript Ports</a></li>
+   <ol>
+      <li><a href="#ipmotion">Improved Paragraph Motion (ipmotion.vim)</a></li>
+      <li><a href="#argtext">Argument Text Object (argtextobj.vim)</a></li>
+      <li><a href="#methodtext">Method Text Object (methodtextobj.vim)</a></li>
+      <li><a href="#exchange">Exchange (exchange.vim)</a></li>
+      <li><a href="#surround">Surround (surround.vim)</a></li>
+   </ol>
+
+</ol>
+
+<a name="split"><h3>Split Editor Plugin</h3></a>
 <p>The Split Editor Plugin provides commands for splitting editors vertically or
 horizontally and managing those splits.  This is a standard Vim feature so it
 <i>should</i> be included in the core Vrapper plugin but our implementation
@@ -125,9 +143,9 @@ additional mappings to switch tabs only within the currently active split:
     nnoremap gT &lt;C-W&gt;gT
 </pre> 
 
-<h2>Programming Language Plugins</h3>
+<a name="programming"><h2>Programming Language Plugins</h3></a>
 
-<h3>CDT, JDT, and PyDev Plugins</h3>
+<a name="cjavapy"><h3>CDT, JDT, and PyDev Plugins</h3></a>
 <p>The CDT, JDT, and PyDev plugins access Eclipse features found only in the CDT package (C++ Development Tools)
 the JDT package (Java Development Tools), or PyDev package (Python Development).  If you do any C++ development in Eclipse, chances are
 you already have CDT installed.  Likewise with JDT for Java development.  The Vrapper CDT plugin has
@@ -159,7 +177,7 @@ Eclipse namespaces.  If there are any commands you'd like us to support,
 just file an <a href="https://github.com/vrapper/vrapper/issues">Issue</a> on our GitHub project.
 </p>
 
-<h3>Clang-Format Plugin</h3>
+<a name="clang"><h3>Clang-Format Plugin</h3></a>
 <p>This plugin formats your C/C++/Obj-C code with specific coding style using
 LLVM <code>clang-format</code> tool (<a href="http://clang.llvm.org/docs/ClangFormat.html">http://clang.llvm.org/docs/ClangFormat.html</a>).
 You must have the <code>clang-format</code> command in your <code>$PATH</code> for the plugin to work.
@@ -199,29 +217,28 @@ parameters, e.g.:
         </dd>
 </dl>
 
-<h2>Vimscript Ports</h2>
+<a name="vimscript"><h2>Vimscript Ports</h2></a>
     
-<h3>Improved Paragraph Motion (ipmotion.vim) Plugin</h3>
+<a name="ipmotion"><h3>Improved Paragraph Motion (ipmotion.vim) Plugin</h3></a>
 <p>Ipmotion.vim is a vim plugin defined here:<br>
 <a href="http://www.vim.org/scripts/script.php?script_id=3952">http://www.vim.org/scripts/script.php?script_id=3952</a><br/>
 This script modifies the behavior of <code>{</code> and <code>}</code> to be non-Vim compliant but more sensible.  Basically, a line with only whitespace
 is considered a paragraph boundary rather than requiring lines to be completely empty.  The script allows for any arbitrary
 regex to be used in determining paragraph boundaries; our port of this script does not currently include that behavior.</p>
 
-<h3>Argument Text Object (argtextobj.vim) Plugin</h3>
+<a name="argtext"><h3>Argument Text Object (argtextobj.vim) Plugin</h3></a>
 <p>Argtextobj.vim is a vim plugin defined here:<br>
 <a href="http://www.vim.org/scripts/script.php?script_id=2699">http://www.vim.org/scripts/script.php?script_id=2699</a><br/>
 This script defines a text object <code>a</code> (argument) to easily modify arguments within a method declaration.</p>
 
-<h3>Method Text Object (methodtextobj.vim) Plugin</h3>
+<a name="methodtext"><h3>Method Text Object (methodtextobj.vim) Plugin</h3></a>
 <p>Methodtextobj.vim is a vim plugin based loosely on:<br>
 <a href="http://www.vim.org/scripts/script.php?script_id=2619">http://www.vim.org/scripts/script.php?script_id=2619</a><br/>
 This script defines a text object <code>f</code> (function) to easily change and delete function contents.  It is defined as the 2nd-level
 of matching <code>{</code> and <code>}</code> in a file (where a class definition would be the 1st-level). Thus it is handy for Java and C++ source
 files or similarly formatted code.</p>
 
-<h3>Exchange (exchange.vim) Plugin</h3>
-
+<a name="exchange"><h3>Exchange (exchange.vim) Plugin</h3></a>
 <p>exchange.vim is a vim plugin defined here:<br>
 <a href="https://github.com/tommcdo/vim-exchange">https://github.com/tommcdo/vim-exchange</a><br/>
 <br/>
@@ -244,7 +261,7 @@ using the same motion again (e.g. exchanging two words using <code>cxiw</code>),
 
 <p>NOTE: Block-wise visual selection is not implemented.</p>
 
-<h3>Surround (surround.vim) Plugin</h3>
+<a name="surround"><h3>Surround (surround.vim) Plugin</h3></a>
 <p>Surround.vim is a vim plugin defined here:<br>
 <a href="http://www.vim.org/scripts/script.php?script_id=1697">http://www.vim.org/scripts/script.php?script_id=1697</a><br/>
 The Vrapper Surround plugin is a partial port of this script. The Vrapper Surround plugin
