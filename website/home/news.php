@@ -1,4 +1,37 @@
 <div class="newsbox">
+    <div class="date">2014-06-01</div>
+    <h4>0.44.0 Released</h4>
+    
+    <p>It seems we're still sticking with this 2-month release cycle.
+    0.44.0 has been released and is primarily a bug-fix release with a ton
+    of defects fixed.  In addition to last month's list of fixes, 0.44.0
+    includes the following changes:</p>
+    
+    <ul>
+        <li>Fixed XML tag 't' text object to ignore JSP tags</li>
+        <li>Fixed issue where accidentally using XML tag 't' text object in a non-XML file would cause StackOverflowError</li>
+        <li>Fixed issue with multi-character mappings affecting regular commands</li>
+        <li>Fixed issue to keep cursor visible when swapping visual selection sides</li>
+        <li>Fixed issue where named register was sometimes still active after an operation</li>
+        <li>Modified behavior of new "syncmodifiable" property</li>
+        <ul>
+          <li>Now a string rather than a boolean, valid values are 'matchreadonly' and 'nosync'</li>
+          <li>'matchreadonly' will set Vrapper's read-only flag to the state of Eclipse's read-only flag (this is the default)</li>
+          </ul>
+        <li>Other miscellaneous improvements of fixes made last month</li>
+    </ul>
+
+    <p>Split Editor Plugin changes:</p>
+    <ul>
+        <li>Added support for ':split' commands in detached windows</li>
+        <li>Fixed 'gt' behavior</li>
+        <ul>
+          <li>Added ':wincmd n/p' and '&lt;C-W&gt;gt/gT' (which can be mapped to 'gt/gT')</li>
+        </ul>
+        <li>Fixed issue where a cloned editor would place its cursor at the beginning of the file</li>
+    </ul>
+</div>
+<div class="newsbox">
     <div class="date">2014-05-04</div>
     <h4>Updates to unstable update site</h4>
 
