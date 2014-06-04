@@ -4,8 +4,9 @@ import static java.lang.String.format;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -230,7 +231,8 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         if(config.exists()) {
         	BufferedReader reader = null;
         	try {
-        		reader = new BufferedReader(new FileReader(config));
+        		reader = new BufferedReader(new InputStreamReader(
+        					new FileInputStream(config), "UTF-8"));
         		String line;
         		CommandLineMode cmdLineMode = (CommandLineMode) modeMap.get(CommandLineMode.NAME);
         		final CommandLineParser parser = cmdLineMode.createParser();
