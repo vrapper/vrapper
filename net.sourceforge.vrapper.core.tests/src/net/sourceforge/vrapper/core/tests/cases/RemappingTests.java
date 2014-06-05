@@ -258,4 +258,54 @@ public class RemappingTests extends CommandTestCase {
                 "    h", 'e', "ey\noldMcDonnaLD had some $\nia\nia\no",
                 "    heey\noldMcDonnaLD had some $\ni", 'a', "\nia\no");
     }
+    
+    @Test
+    public void testRemapZero() {
+        // Sanity checks
+        checkCommand(forKeySeq("d0"),
+                "    so old", ' ', "McD0nnaLD had some $LLaz",
+                "", ' ', "McD0nnaLD had some $LLaz");
+        checkCommand(forKeySeq("d^"),
+                "    so old", ' ', "McD0nnaLD had some $LLaz",
+                "    ", ' ', "McD0nnaLD had some $LLaz");
+
+        type(parseKeyStrokes(":map 0 ^<CR>"));
+        checkCommand(forKeySeq("d0"),
+                "so old", ' ', "McD0nnaLD had some $LLaz",
+                "", ' ', "McD0nnaLD had some $LLaz");
+        checkCommand(forKeySeq("d0"),
+                "    so old", ' ', "McD0nnaLD had some $LLaz",
+                "    ", ' ', "McD0nnaLD had some $LLaz");
+        checkCommand(forKeySeq("df0"),
+                "so old", ' ', "McD0nnaLD had some $LLaz",
+                "so old", 'n', "naLD had some $LLaz");
+        checkCommand(forKeySeq("d10l"),
+                "so old", ' ', "McD0nnaLD had some $LLaz",
+                "so old", ' ', "had some $LLaz");
+
+        /*
+         * Copied from NormalModeTests.testPercent
+         */
+        // Shouldn't do anything
+        checkCommand(forKeySeq("500%"),
+                "1\n",'2',"\n3\n4\n5\n6\n7\n8\n9\n10\n",
+                "1\n",'2',"\n3\n4\n5\n6\n7\n8\n9\n10\n");
+        checkCommand(forKeySeq("100%"),
+                "1\n",'2',"\n3\n4\n5\n6\n7\n8\n9\n10",
+                "1\n2\n3\n4\n5\n6\n7\n8\n9\n",'1',"0");
+        // Should go to first non-whitespace character
+        checkCommand(forKeySeq("100%"),
+                "1\n",'2',"\n3\n4\n5\n6\n7\n8\n9\n    10",
+                "1\n2\n3\n4\n5\n6\n7\n8\n9\n    ",'1',"0");
+        checkCommand(forKeySeq("%"),
+                "fun",'(',"call);",
+                "fun(call",')',";");
+        checkCommand(forKeySeq("%"),
+                "fun(call",')',";",
+                "fun",'(',"call);");
+
+        checkCommand(forKeySeq("df0"),
+                "so old", ' ', "McD0nnaLD had some $LLaz",
+                "so old", 'n', "naLD had some $LLaz");
+    }
 }
