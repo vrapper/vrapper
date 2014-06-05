@@ -282,9 +282,9 @@ public abstract class CommandBasedMode extends AbstractMode {
         if (transition == null && VimUtils.fixAltGrKey(keyStroke) != null) {
             KeyStroke key = VimUtils.fixAltGrKey(keyStroke);
             transition = currentState.press(key);
-            keyMapResolver.press(key);
+            keyMapResolver.storeKey(key);
         } else {
-            keyMapResolver.press(keyStroke);
+            keyMapResolver.storeKey(keyStroke);
         }
         commandBuffer.append(keyStroke.getCharacter());
         if (transition != null) {
@@ -346,7 +346,7 @@ public abstract class CommandBasedMode extends AbstractMode {
 
     @Override
     public String resolveKeyMap(KeyStroke stroke) {
-        return keyMapResolver.getKeyMapName();
+        return keyMapResolver.getKeyMapName(stroke);
     }
 
     public void leaveMode(ModeSwitchHint... hints) throws CommandExecutionException {

@@ -15,6 +15,7 @@ import net.sourceforge.vrapper.keymap.CovariantState;
 import net.sourceforge.vrapper.keymap.EmptyState;
 import net.sourceforge.vrapper.keymap.HashMapState;
 import net.sourceforge.vrapper.keymap.KeyBinding;
+import net.sourceforge.vrapper.keymap.KeyMapInfo;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SimpleKeyBinding;
 import net.sourceforge.vrapper.keymap.SimpleTransition;
@@ -301,19 +302,21 @@ public class ConstructorWrappers {
         return ChangeCaretShapeCommand.getInstance(caret);
     }
 
-    public static KeyBinding<String> operatorKeyMap(char key) {
-        String omap = KeyMapResolver.OMAP_NAME;
-        State<String> emptyState = EmptyState.<String>getInstance();
-        State<String> counteater = new CountConsumingState<String>(omap, emptyState);
-        return transitionBind(key, omap, counteater);
+    public static KeyBinding<KeyMapInfo> operatorKeyMap(char key) {
+        KeyMapInfo operatorInfo = new KeyMapInfo(KeyMapResolver.OMAP_NAME, "operator");
+        State<KeyMapInfo> empty = EmptyState.<KeyMapInfo>getInstance();
+        State<KeyMapInfo> counteater = new CountConsumingKeyMapState(
+                                            KeyMapResolver.OMAP_NAME, "operandcount", empty);
+        return transitionBind(key, operatorInfo, counteater);
     }
 
     @SuppressWarnings("unchecked")
-    public static State<String> prefixedOperatorKeyMap(char key1, char key2) {
-        String omap = KeyMapResolver.OMAP_NAME;
-        State<String> emptyState = EmptyState.<String>getInstance();
-        State<String> counteater = new CountConsumingState<String>(omap, emptyState);
-        return transitionState(key1, state(transitionBind(key2, omap, counteater)));
+    public static State<KeyMapInfo> prefixedOperatorKeyMap(char key1, char key2) {
+        KeyMapInfo operatorInfo = new KeyMapInfo(KeyMapResolver.OMAP_NAME, "operator");
+        State<KeyMapInfo> empty = EmptyState.<KeyMapInfo>getInstance();
+        State<KeyMapInfo> counteater = new CountConsumingKeyMapState(
+                                            KeyMapResolver.OMAP_NAME, "operandcount", empty);
+        return transitionState(key1, state(transitionBind(key2, operatorInfo, counteater)));
     }
 
     @SuppressWarnings("unchecked")

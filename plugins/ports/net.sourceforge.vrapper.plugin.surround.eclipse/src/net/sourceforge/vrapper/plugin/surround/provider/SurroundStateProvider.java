@@ -10,6 +10,7 @@ import java.util.Queue;
 
 import net.sourceforge.vrapper.eclipse.keymap.AbstractEclipseSpecificStateProvider;
 import net.sourceforge.vrapper.keymap.ConvertingState;
+import net.sourceforge.vrapper.keymap.KeyMapInfo;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.plugin.surround.commands.DeleteDelimitersCommand;
 import net.sourceforge.vrapper.plugin.surround.commands.FullLineTextObject;
@@ -80,7 +81,7 @@ public class SurroundStateProvider extends AbstractEclipseSpecificStateProvider 
     
     @Override
     @SuppressWarnings("unchecked")
-    protected State<String> normalModeKeymap() {
+    protected State<KeyMapInfo> normalModeKeymap() {
         return state(
                 transitionBind('d', operatorKeyMap('s')),
                 transitionBind('c', operatorKeyMap('s')),

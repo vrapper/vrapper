@@ -1,5 +1,6 @@
 package net.sourceforge.vrapper.platform;
 
+import net.sourceforge.vrapper.keymap.KeyMapInfo;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.vim.TextObjectProvider;
 import net.sourceforge.vrapper.vim.commands.Command;
@@ -33,7 +34,7 @@ public interface PlatformSpecificStateProvider {
      * @return a {@link State} containing key map bindings which will be
      *         integrated into the {@link KeyMapResolver} of the calling mode.
      */
-    State<String> getKeyMaps(String name);
+    State<KeyMapInfo> getKeyMaps(String name);
 
     /**
      * @return {@link EvaluatorMapping} containing platform-specific commands

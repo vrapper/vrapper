@@ -10,6 +10,7 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionB
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionState;
 import static net.sourceforge.vrapper.vim.commands.BorderPolicy.LINE_WISE;
 import net.sourceforge.vrapper.eclipse.keymap.AbstractEclipseSpecificStateProvider;
+import net.sourceforge.vrapper.keymap.KeyMapInfo;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.platform.PlatformSpecificStateProvider;
 import net.sourceforge.vrapper.plugin.exchange.commands.ClearExchangeRegionCommand;
@@ -42,7 +43,7 @@ public class ExchangeProvider extends AbstractEclipseSpecificStateProvider {
 
     @Override
     @SuppressWarnings("unchecked")
-    public State<String> normalModeKeymap() {
+    public State<KeyMapInfo> normalModeKeymap() {
         return state(
                 transitionBind('c', operatorKeyMap('x')));
     }

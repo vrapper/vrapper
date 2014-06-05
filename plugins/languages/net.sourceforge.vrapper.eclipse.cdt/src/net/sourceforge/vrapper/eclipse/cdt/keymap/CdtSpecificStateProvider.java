@@ -11,6 +11,7 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionB
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
 import net.sourceforge.vrapper.eclipse.commands.EclipseCommand;
 import net.sourceforge.vrapper.eclipse.keymap.AbstractEclipseSpecificStateProvider;
+import net.sourceforge.vrapper.keymap.KeyMapInfo;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.vim.commands.Command;
@@ -50,9 +51,9 @@ public class CdtSpecificStateProvider extends AbstractEclipseSpecificStateProvid
     }
 
     @Override
-    protected State<String> normalModeKeymap() {
+    protected State<KeyMapInfo> normalModeKeymap() {
         @SuppressWarnings("unchecked")
-        State<String> state = state(
+        State<KeyMapInfo> state = state(
                 transitionBind('g', operatorKeyMap('c')),
                 operatorKeyMap('='));
         return state;

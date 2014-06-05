@@ -13,9 +13,10 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.prefixedOpe
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
+import net.sourceforge.vrapper.keymap.KeyMapInfo;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.State;
-import net.sourceforge.vrapper.keymap.vim.CountConsumingState;
+import net.sourceforge.vrapper.keymap.vim.CountConsumingKeyMapState;
 import net.sourceforge.vrapper.keymap.vim.CountingState;
 import net.sourceforge.vrapper.keymap.vim.GoThereState;
 import net.sourceforge.vrapper.keymap.vim.RegisterState;
@@ -97,7 +98,7 @@ public class NormalMode extends CommandBasedMode {
     @Override
     @SuppressWarnings("unchecked")
     protected KeyMapResolver buildKeyMapResolver() {
-        final State<String> state = union(
+        final State<KeyMapInfo> state = union(
                 state(
                     operatorKeyMap('c'),
                     operatorKeyMap('d'),
@@ -109,9 +110,11 @@ public class NormalMode extends CommandBasedMode {
                         operatorKeyMap('q'),
                         operatorKeyMap('~'))),
                 editorAdaptor.getPlatformSpecificStateProvider().getKeyMaps(NAME));
-        final State<String> countEater = new CountConsumingState<String>(KEYMAP_NAME, state);
-        final State<String> registerKeymapState = new RegisterKeymapState(KEYMAP_NAME, countEater);
-        final State<String> outerCountEater = new CountConsumingState<String>(KEYMAP_NAME, registerKeymapState);
+        final State<KeyMapInfo> countEater = new CountConsumingKeyMapState(
+                                                        KEYMAP_NAME, "innercount", state);
+        final State<KeyMapInfo> registerKeymapState = new RegisterKeymapState(KEYMAP_NAME, countEater);
+        final State<KeyMapInfo> outerCountEater = new CountConsumingKeyMapState(
+                                                    KEYMAP_NAME, "outercount", registerKeymapState);
         return new KeyMapResolver(outerCountEater, KEYMAP_NAME);
     }
 

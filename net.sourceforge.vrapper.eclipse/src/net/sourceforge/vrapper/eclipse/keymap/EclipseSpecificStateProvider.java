@@ -15,6 +15,7 @@ import net.sourceforge.vrapper.eclipse.commands.ListTabsCommand;
 import net.sourceforge.vrapper.eclipse.commands.TabNewCommand;
 import net.sourceforge.vrapper.eclipse.commands.ToggleFoldingCommand;
 import net.sourceforge.vrapper.keymap.EmptyState;
+import net.sourceforge.vrapper.keymap.KeyMapInfo;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.StateUtils;
@@ -69,7 +70,7 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
     }
 
     @Override
-    protected State<String> visualModeKeymap() {
+    protected State<KeyMapInfo> visualModeKeymap() {
         return EmptyState.getInstance();
     }
 
@@ -108,8 +109,8 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
     }
     
     @Override
-    protected State<String> normalModeKeymap() {
-        State<String> normalModeKeymap = state(
+    protected State<KeyMapInfo> normalModeKeymap() {
+        State<KeyMapInfo> normalModeKeymap = state(
                 transitionBind('g', 
                         operatorKeyMap('u'),
                         operatorKeyMap('U')));

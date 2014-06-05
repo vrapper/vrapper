@@ -5,6 +5,7 @@ import java.util.Queue;
 
 import net.sourceforge.vrapper.eclipse.commands.EclipseCommand;
 import net.sourceforge.vrapper.keymap.EmptyState;
+import net.sourceforge.vrapper.keymap.KeyMapInfo;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.PlatformSpecificStateProvider;
@@ -29,7 +30,8 @@ public class AbstractEclipseSpecificStateProvider implements
         PlatformSpecificStateProvider, Comparable<AbstractEclipseSpecificStateProvider> {
 
     protected final HashMap<String, State<Command>> states = new HashMap<String, State<Command>>();
-    protected final HashMap<String, State<String>> keyMaps = new HashMap<String, State<String>>();
+    protected final HashMap<String, State<KeyMapInfo>> keyMaps =
+            new HashMap<String, State<KeyMapInfo>>();
     protected final EvaluatorMapping commands = new EvaluatorMapping();
     protected int priority = 1;
     protected String name;
@@ -65,7 +67,7 @@ public class AbstractEclipseSpecificStateProvider implements
         return EmptyState.getInstance();
     }
 
-    protected State<String> normalModeKeymap() {
+    protected State<KeyMapInfo> normalModeKeymap() {
         return EmptyState.getInstance();
     }
 
@@ -73,7 +75,7 @@ public class AbstractEclipseSpecificStateProvider implements
         return EmptyState.getInstance();
     }
 
-    protected State<String> visualModeKeymap() {
+    protected State<KeyMapInfo> visualModeKeymap() {
         return EmptyState.getInstance();
     }
     
@@ -140,7 +142,7 @@ public class AbstractEclipseSpecificStateProvider implements
         return states.get(modeName);
     }
 
-    public State<String> getKeyMaps(String name) {
+    public State<KeyMapInfo> getKeyMaps(String name) {
         return keyMaps.get(name);
     }
 
