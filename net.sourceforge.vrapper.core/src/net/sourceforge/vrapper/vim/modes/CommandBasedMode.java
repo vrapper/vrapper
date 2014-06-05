@@ -345,7 +345,7 @@ public abstract class CommandBasedMode extends AbstractMode {
     }
 
     @Override
-    public String resolveKeyMap() {
+    public String resolveKeyMap(KeyStroke stroke) {
         return keyMapResolver.getKeyMapName();
     }
 

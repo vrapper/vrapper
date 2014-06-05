@@ -522,7 +522,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     private boolean handleKey0(KeyStroke key) {
         if (currentMode != null) {
             KeyMap map = null;
-            String keyMapName = currentMode.resolveKeyMap();
+            String keyMapName = currentMode.resolveKeyMap(key);
             if (keyMapName != null) {
                 map = keyMapProvider.getKeyMap(keyMapName);
             }

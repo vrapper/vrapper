@@ -67,7 +67,7 @@ public class ContentAssistMode extends InsertMode {
     }
 
     @Override
-    public String resolveKeyMap() {
+    public String resolveKeyMap(KeyStroke stroke) {
         return KEYMAP_NAME;
     }
 }

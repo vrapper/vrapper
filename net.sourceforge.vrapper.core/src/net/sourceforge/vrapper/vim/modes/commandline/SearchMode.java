@@ -121,7 +121,7 @@ public class SearchMode extends AbstractCommandLineMode {
     }
 
     @Override
-    public String resolveKeyMap() {
+    public String resolveKeyMap(KeyStroke stroke) {
         return null;
     }
 

@@ -45,7 +45,8 @@ public class PasteRegisterMode extends AbstractMode {
         super(editorAdaptor);
     }
 
-    public String resolveKeyMap() {
+    @Override
+    public String resolveKeyMap(KeyStroke stroke) {
         return null;
     }
 

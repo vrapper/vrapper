@@ -62,7 +62,7 @@ public class MessageMode extends AbstractMode {
     }
 
     @Override
-    public String resolveKeyMap() {
+    public String resolveKeyMap(KeyStroke stroke) {
         return null;
     }
 

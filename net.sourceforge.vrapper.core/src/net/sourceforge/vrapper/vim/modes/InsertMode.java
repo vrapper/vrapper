@@ -517,7 +517,7 @@ public class InsertMode extends AbstractMode {
     }
 
     @Override
-    public String resolveKeyMap() {
+    public String resolveKeyMap(KeyStroke stroke) {
         return KEYMAP_NAME;
     }
 

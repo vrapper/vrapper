@@ -11,7 +11,7 @@ public interface EditorMode {
     /** Display name. Can be dynamic, so it is always called after {@link #enterMode(ModeSwitchHint...)}. */
     String getDisplayName();
     boolean handleKey(KeyStroke stroke);
-    String resolveKeyMap();
+    String resolveKeyMap(KeyStroke stroke);
     void addKeyToMapBuffer(KeyStroke stroke);
     void cleanMapBuffer(boolean mappingSucceeded);
 }

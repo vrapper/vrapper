@@ -1,5 +1,6 @@
 package net.sourceforge.vrapper.vim.modes.commandline;
 
+import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.Command;
 
@@ -38,7 +39,7 @@ public class CommandLineMode extends AbstractCommandLineMode {
     }
 
     @Override
-    public String resolveKeyMap() {
+    public String resolveKeyMap(KeyStroke stroke) {
         return KEYMAP_NAME;
     }
 
