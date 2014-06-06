@@ -109,18 +109,24 @@ public class ReplaceMode extends InsertMode {
     		}
     	}
     	else { //grab the current char before replacing it
-    		String toReplace = editorAdaptor.getModelContent().getText(cursorOffset, 1);
-    		
-    		//If inserting characters after a newline, there are no characters to
-    		//restore.  We don't want to grab the characters from the next line
-    		//(which is what the text at this offset would be).
-    		if(!afterNewline) {
-    			replacedChars.put(cursorOffset, toReplace);
-    		}
-    		
-    		if(VimUtils.isNewLine(toReplace)) {
-    			afterNewline = true;
-    		}
+    	    if(cursorOffset < editorAdaptor.getModelContent().getTextLength()) {
+    	        String toReplace = editorAdaptor.getModelContent().getText(cursorOffset, 1);
+
+    	        //If inserting characters after a newline, there are no characters to
+    	        //restore.  We don't want to grab the characters from the next line
+    	        //(which is what the text at this offset would be).
+    	        if(!afterNewline) {
+    	            replacedChars.put(cursorOffset, toReplace);
+    	        }
+
+    	        if(VimUtils.isNewLine(toReplace)) {
+    	            afterNewline = true;
+    	        }
+    	    }
+    	    else {
+    	        //after EOF actually
+    	        afterNewline = true;
+    	    }
     		
             return super.handleKey(stroke);
     	}
