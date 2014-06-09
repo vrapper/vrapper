@@ -3,7 +3,7 @@
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <title>Vrapper &mdash; Vim-like editing in Eclipse</title>
+    <title><?php if (empty($title)) { echo "Vrapper &mdash; Vim-like editing in Eclipse"; } else { echo "Vrapper &mdash; " . $title; } ?></title>
     <meta name="description" content="Vrapper is an eclipse plugin which
         acts as a wrapper for eclipse text editors to provide a Vim-like
         input scheme for moving around and editing text." />

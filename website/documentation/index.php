@@ -25,6 +25,7 @@ if (isset($_GET['page']) && $_GET['page'] > 0 && $_GET['page'] <= count($docs)) 
 } else {
     $subpageId = 0;
 }
+$title = "Documentation &mdash; " . ucwords(str_replace('_', ' ', $docs[$subpageId]));
 include("../includes/header.html");
 ?>
 <ol id="index">
