@@ -167,7 +167,18 @@ div.newsbox div.date {
     margin:10px;
     width:13ex;
 }
-#index li a {
+div.toc {
+    color:#004;
+    background:#ddd;
+    margin:10px;
+    width:50ex;
+}
+div.toc > ol {
+	padding-top:10px;
+	padding-bottom:10px;
+}
+#index li a,
+div.toc a {
     color:#226;
     text-transform:capitalize;
     text-decoration:none;
