@@ -2,6 +2,7 @@ package net.sourceforge.vrapper.plugin.splitEditor.commands;
 
 import java.io.ByteArrayInputStream;
 
+import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.CountIgnoringNonRepeatableCommand;
 
@@ -17,9 +18,11 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartSashContainerElement;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.jface.text.JFaceTextUtil;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
@@ -95,28 +98,58 @@ public abstract class AbstractWindowCommand extends CountIgnoringNonRepeatableCo
         return null;
     }
 
+    protected static void matchPositions(final StyledText original, final Point cursor, double relativeOfs, StyledText cloned) {
+        //
+        // When VIM splits it's window it adjusts the view to keep relative
+        // cursor offset
+        //
+        final int topIndex = original.getTopIndex();
+        final int cursorIndex = original.getLineAtOffset(cursor.x);
+        final int bottomIndex = JFaceTextUtil.getBottomIndex(original);
+        final int height = (bottomIndex - topIndex);
+        final int newTopIndex = (int) Math.round(cursorIndex - height * relativeOfs);
+        original.setTopIndex(newTopIndex);
+        original.setSelection(cursor);
+        cloned.setTopIndex(newTopIndex);
+        cloned.setSelection(cursor);
+    }
+
+    private static Display getDisplay() {
+        Display display = Display.getCurrent();
+        // may be null if outside the UI thread
+        if (display == null) {
+            display = Display.getDefault();
+        }
+        return display;
+    }
+
     protected static MPart cloneEditor() throws PartInitException {
-        IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-        IEditorPart editor = page.getActiveEditor();
-        IEditorPart newEditor = page.openEditor(editor.getEditorInput(),
+        final IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+        final IEditorPart editor = page.getActiveEditor();
+        final IEditorPart newEditor = page.openEditor(editor.getEditorInput(),
                 editor.getSite().getId(), false, IWorkbenchPage.MATCH_NONE);
         //
-        // Set the cursor and view position to match the cloned editor.
+        // Schedule position update onto the UI thread
         //
         final Object ctl = editor.getAdapter(Control.class);
-        if (ctl instanceof StyledText) {
-            StyledText widget = (StyledText) ctl;
-            final Point pos = widget.getSelection();
-            final int topIndex = widget.getTopIndex();
-            final Object newCtl = newEditor.getAdapter(Control.class);
-            if (pos != null && newCtl instanceof StyledText) {
-                widget = (StyledText) newCtl;
-                widget.setTopIndex(topIndex);
-                widget.setSelection(pos);
+        final Object newCtl = newEditor.getAdapter(Control.class);
+        if (ctl instanceof StyledText && newCtl instanceof StyledText) {
+            final StyledText styledText = (StyledText) ctl;
+            final Point cursor = styledText.getSelection();
+            if (cursor != null) {
+                //
+                // Calculate relative cursor offset from the top visible line
+                //
+                final int cursorLineIndex = styledText.getLineAtOffset(cursor.x);
+                final int topIndex = styledText.getTopIndex();
+                final int bottomIndex = JFaceTextUtil.getBottomIndex(styledText);
+                final double relativeOfs = (double)(cursorLineIndex - topIndex) / (double) (bottomIndex - topIndex);
+                getDisplay().asyncExec(new Runnable() { public void run() {
+                    matchPositions(styledText, cursor, relativeOfs, (StyledText) newCtl);
+                }});
             }
         }
-        MPart newPart = (MPart) newEditor.getSite().getService(MPart.class);
-        return newPart;
+        return (MPart) newEditor.getSite().getService(MPart.class);
     }
 
     protected static MPart openFileInEditor(String filename) throws CommandExecutionException {
