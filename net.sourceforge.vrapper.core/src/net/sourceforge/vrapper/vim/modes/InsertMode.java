@@ -463,6 +463,8 @@ public class InsertMode extends AbstractMode {
             String s;
             if (SpecialKey.RETURN.equals(stroke.getSpecialKey())) {
                 s = editorAdaptor.getConfiguration().getNewLine();
+            } else if (SpecialKey.TAB.equals(stroke.getSpecialKey())) {
+                s = "\t";
             } else {
                 s = String.valueOf(stroke.getCharacter());
             }
