@@ -65,6 +65,6 @@ public class VimConstants {
     private static Set<SpecialKey> createSpecialKeysAllowedForInsert() {
         return VimUtils.set(SpecialKey.BACKSPACE, SpecialKey.RETURN,
                 SpecialKey.ARROW_LEFT, SpecialKey.ARROW_RIGHT,
-                SpecialKey.ARROW_UP, SpecialKey.ARROW_DOWN);
+                SpecialKey.ARROW_UP, SpecialKey.ARROW_DOWN, SpecialKey.TAB);
     }
 }
