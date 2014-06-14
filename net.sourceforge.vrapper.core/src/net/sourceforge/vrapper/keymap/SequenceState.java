@@ -17,7 +17,14 @@ public abstract class SequenceState<T1, T2, T3> implements State<T1> {
         this.second = second;
     }
 
+    /**
+     * Returns a <tt>Function</tt> based on an object of type T2 which will then wrap an object
+     * of type T3 to a type T1.
+     */
     protected abstract Function<T1, T3> getConverter(T2 intermediate);
+    /**
+     * Creates a new intermediate state when State of type T2 takes multiple key presses.
+     */
     protected abstract SequenceState<T1, T2, T3> rewrap(State<T2> first);
 
     public Transition<T1> press(KeyStroke key) {

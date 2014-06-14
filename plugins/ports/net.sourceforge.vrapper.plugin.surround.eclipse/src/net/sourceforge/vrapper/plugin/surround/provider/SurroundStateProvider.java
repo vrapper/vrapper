@@ -18,6 +18,7 @@ import net.sourceforge.vrapper.plugin.surround.commands.SpacedDelimitedText;
 import net.sourceforge.vrapper.plugin.surround.state.AddDelimiterState;
 import net.sourceforge.vrapper.plugin.surround.state.AddVisualDelimiterState;
 import net.sourceforge.vrapper.plugin.surround.state.ChangeDelimiterState;
+import net.sourceforge.vrapper.plugin.surround.state.DelimiterState;
 import net.sourceforge.vrapper.plugin.surround.state.DelimiterValues;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.Command;
@@ -29,7 +30,7 @@ import net.sourceforge.vrapper.vim.modes.commandline.Evaluator;
 
 public class SurroundStateProvider extends AbstractEclipseSpecificStateProvider {
     
-    protected static class SurroundEvaluator implements Evaluator {
+    protected class SurroundEvaluator implements Evaluator {
 
         public Object evaluate(EditorAdaptor vim, Queue<String> command) {
             try {
@@ -41,7 +42,7 @@ public class SurroundStateProvider extends AbstractEclipseSpecificStateProvider 
                 if (surroundDef.length != 2) {
                     throw new IllegalArgumentException(":surround definition must contain '\\r'");
                 }
-                DelimiterValues.DELIMITER_REGISTRY.addDelimiterHolder(key.charAt(0), surroundDef[0], surroundDef[1]);
+                delimiterRegistry.addDelimiterHolder(key.charAt(0), surroundDef[0], surroundDef[1]);
             } catch (Exception e) {
                 vim.getUserInterfaceService().setErrorMessage(e.getMessage());
             }
@@ -49,8 +50,12 @@ public class SurroundStateProvider extends AbstractEclipseSpecificStateProvider 
         }
 
     }
+    
+    protected DelimiterState delimiterRegistry;
+    
     public SurroundStateProvider() {
         name = "Surround State Provider";
+        delimiterRegistry = DelimiterValues.createDelimiterState();
         commands.add("surround", new SurroundEvaluator());
     }
     
@@ -67,12 +72,12 @@ public class SurroundStateProvider extends AbstractEclipseSpecificStateProvider 
                 textObjectProvider.delimitedTexts()
         );
         State<Command> deleteDelimiterState = new ConvertingState<Command, DelimitedText>(DeleteDelimitersCommand.CONVERTER, delimitedTexts);
-        State<Command> changeDelimiterState = new ChangeDelimiterState(delimitedTexts);
+        State<Command> changeDelimiterState = new ChangeDelimiterState(delimitedTexts, delimiterRegistry);
         State<Command> addDelimiterState = new AddDelimiterState(
                 union(
                     state(leafBind('s', (TextObject) new FullLineTextObject())),
                     textObjectProvider.textObjects()
-                ));
+                ), delimiterRegistry);
         return state(
                 transitionBind('d', transitionBind('s', deleteDelimiterState)),
                 transitionBind('c', transitionBind('s', changeDelimiterState)),
@@ -93,8 +98,8 @@ public class SurroundStateProvider extends AbstractEclipseSpecificStateProvider 
     protected State<Command> visualModeBindings() {
         InsertShiftWidth shift = InsertShiftWidth.INSERT;
         return state(
-                transitionBind('S', new AddVisualDelimiterState(false, shift)),
-                transitionBind('g', transitionBind('S',  new AddVisualDelimiterState(true, shift)))
+                transitionBind('S', new AddVisualDelimiterState(false, shift, delimiterRegistry)),
+                transitionBind('g', transitionBind('S',  new AddVisualDelimiterState(true, shift, delimiterRegistry)))
                );
     }
 }

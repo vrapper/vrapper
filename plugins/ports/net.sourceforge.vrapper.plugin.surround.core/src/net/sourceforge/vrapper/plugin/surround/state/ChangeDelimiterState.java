@@ -9,13 +9,13 @@ import net.sourceforge.vrapper.vim.commands.DelimitedText;
 
 public class ChangeDelimiterState extends SequenceState<Command, DelimitedText, DelimiterHolder> {
 
-    public ChangeDelimiterState(State<DelimitedText> wrapped) {
-        super(wrapped, DelimiterValues.DELIMITER_HOLDER_STATE);
+    public ChangeDelimiterState(State<DelimitedText> wrapped, State<DelimiterHolder> targetDelimiters) {
+        super(wrapped, targetDelimiters);
     }
 
     @Override
     protected ChangeDelimiterState rewrap(State<DelimitedText> wrapped) {
-        return new ChangeDelimiterState(wrapped);
+        return new ChangeDelimiterState(wrapped, super.second);
     }
 
     @Override

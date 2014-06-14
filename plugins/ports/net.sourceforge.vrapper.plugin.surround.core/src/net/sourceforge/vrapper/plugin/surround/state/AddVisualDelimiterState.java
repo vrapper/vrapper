@@ -1,6 +1,7 @@
 package net.sourceforge.vrapper.plugin.surround.state;
 
 import net.sourceforge.vrapper.keymap.ConvertingState;
+import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.plugin.surround.commands.AddDelimiterToSelectionCommand;
 import net.sourceforge.vrapper.utils.Function;
 import net.sourceforge.vrapper.vim.commands.Command;
@@ -13,8 +14,9 @@ public class AddVisualDelimiterState extends ConvertingState<Command, DelimiterH
      * @param indentOperation a {@link TextOperation} instance which is applied in case the
      *     selection is line-wise. Can be null for no indentation.
      */
-    public AddVisualDelimiterState(boolean isGMode, TextOperation indentOperation) {
-        super(new Converter(isGMode, indentOperation), DelimiterValues.DELIMITER_HOLDER_STATE);
+    public AddVisualDelimiterState(boolean isGMode, TextOperation indentOperation,
+            State<DelimiterHolder> delimiters) {
+        super(new Converter(isGMode, indentOperation), delimiters);
     }
     
 
