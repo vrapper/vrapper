@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Vrapper - CDT-specific plugin
 Bundle-SymbolicName: net.sourceforge.vrapper.eclipse.cdt;singleton:=true
-Bundle-Version: 0.45.20140612
-Fragment-Host: net.sourceforge.vrapper.eclipse;bundle-version="0.45.20140612"
+Bundle-Version: 0.45.20140614
+Fragment-Host: net.sourceforge.vrapper.eclipse;bundle-version="0.45.20140614"
 Require-Bundle: org.eclipse.cdt.ui;bundle-version="5.1.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
