@@ -106,18 +106,8 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
             if (previousSel == null) {
                 VrapperLog.info("Previous selection was null, selection not recalled.");
             } else {
-                if (previousSel.isReversed()
-                        && editorAdaptor.getConfiguration().get(Options.SELECTION)
-                            .equals("inclusive")) {
-                    editorAdaptor.getCursorService().setCaret(CaretType.RECTANGULAR);
-                }
-                // Can happen during testing, as the testing cursor service won't understand marks.
-                if (start == null || end == null) {
-                    VrapperLog.info("Previous selection marks are null, selection might be wrong.");
-                    start = previousSel.getStartMark(editorAdaptor);
-                    end = previousSel.getEndMark(editorAdaptor);
-                }
-                editorAdaptor.setSelection(previousSel.selectMarks(editorAdaptor, start, end));
+                Selection updatedSel = updateSelection(previousSel, start, end);
+                editorAdaptor.setSelection(updatedSel);
             }
         } else if (!keepSelection) {
             editorAdaptor.setSelection(null);
@@ -129,6 +119,31 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
         if (onEnterCommand != null) {
             editorAdaptor.changeModeSafely(NormalMode.NAME, onEnterCommand);
         }
+    }
+
+    private Selection updateSelection(Selection previousSel, Position start,
+            Position end) {
+        if (previousSel.isReversed()
+                && editorAdaptor.getConfiguration().get(Options.SELECTION)
+                    .equals("inclusive")) {
+            editorAdaptor.getCursorService().setCaret(CaretType.RECTANGULAR);
+        }
+        // Can happen if the user deleted a piece of text containing the mark or indented.
+        // Also frequently happens during tests, as the stubbed mark service doesn't keep marks.
+        if (start == null && end == null) {
+            VrapperLog.info("Previous selection marks are null, selection might be wrong.");
+        } else if (start == null) {
+            VrapperLog.info("Previous selection start mark is null, selection might be wrong.");
+        } else if (end == null) {
+            VrapperLog.info("Previous selection end mark is null, selection might be wrong.");
+        }
+        if (start == null) {
+            start = previousSel.getStartMark(editorAdaptor);
+        }
+        if (end == null) {
+            end = previousSel.getEndMark(editorAdaptor);
+        }
+        return previousSel.selectMarks(editorAdaptor, start, end);
     }
 
     @Override
