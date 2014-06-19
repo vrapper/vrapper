@@ -1,11 +1,23 @@
-<h2>Configuration</h2>
+<a name="top"><h2>Configuration</h2></a>
 
-<h3>Settings</h3>
+<div class="toc">
+<ol>
+   <li><a href="#settings">Settings</a></li>
+   <ol>
+      <li><a href="#vim">Vim Settings</a></li>
+      <li><a href="#vrapper">Vrapper Settings</a></li>
+   </ol>
+   <li><a href="#mapping">Re-Mapping Keys</a></li>
+   <li><a href="#config">Configuration File</a></li>
+</ol>
+</div>
+
+<a name="settings"><h3>Settings</h3></a>
 <p>Vrapper's behaviour can be configured with command-line options.</p>
 <p>You can find the current value of a property with <code>:set &lt;property&gt;?</code></p>
 <p>You can also use <code>:setlocal</code> to make a setting only applicable to this file (Eclipse tab) instance.</p>
 
-<h3>Vim Settings</h3>
+<a name="vim"><h3>Vim Settings</h3></a>
 <p>These settings can be found in Vim and we've done our best to match the Vim behavior as closely as possible.</p>
 <table class="commands">
     <tr>
@@ -179,7 +191,7 @@
 </table>
 
 
-<h3>Vrapper Settings</h3>
+<a name="vrapper"><h3>Vrapper Settings</h3></a>
 <p>These settings are specific to Vrapper (not found in Vim).  They either help
 with managing Eclipse behavior or they were feature requests from our community
 which we implemented.</p>
@@ -302,8 +314,7 @@ which we implemented.</p>
 </table>
 
 
-<a name="remapping"/>
-<h3>Remapping Keys</h3>
+<a name="mapping"><h3>Remapping Keys</h3></a>
 <p>There are a lot of commands for defining different key mappings, but
    essentially four actions: create a mapping which is searched again for
    other mappings, create one which is not mapped again, clear a mapping,
@@ -423,7 +434,7 @@ which we implemented.</p>
    </dl>
 
 
-<h3>Collisions between Vrapper and Eclipse bindings</h3>
+<h4>Collisions between Vrapper and Eclipse bindings</h4>
 <p>If a key combination is already mapped by Eclipse (e.g. <code>Ctrl-P</code> on Windows and
 Linux based systems is mapped to print), Vrapper will not receive the keystroke,
 so mapping it to some Vrapper action will not work.</p>
@@ -432,7 +443,8 @@ binding causing the collision. Select it, then click the "Unbind Command"
 button. This should remove the binding in the "Binding" column. Click "Apply".
 Vrapper should now receive the keystrokes and your mapping should work
 correctly.</p>
-<h3>Configuration File</h3>
+
+<a name="config"><h3>Configuration File</h3></a>
 <p>The options described above only change the behaviour of the editor in which they are set.
 To change the default configuration, a file is used. When a new editor is opened, the plugin checks for a file called <b><code>.vrapperrc</code></b>
 in the user's home directory (or <b><code>_vrapperrc</code></b> to make it easier for Windows people). If found, the commands in the file are executed. You may use any
@@ -451,6 +463,9 @@ noremap s :
 noremap ` ^
 noremap k e
 noremap K E
+imap jj &lt;esc&gt;
+map L $
+map H ^
 set autoindent
 set ignorecase
 set smartcase

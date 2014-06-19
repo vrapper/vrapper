@@ -183,7 +183,8 @@ div.toc a {
     text-transform:capitalize;
     text-decoration:none;
 }
-#index li a:hover {
+#index li a:hover,
+.toc a:hover {
     text-transform:capitalize;
     text-decoration:underline;
 }
