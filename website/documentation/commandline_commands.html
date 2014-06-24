@@ -130,8 +130,14 @@ Commands may be chained with a <code>|</code> character between them. For exampl
         We don't currently support any other <code>:let</code> behavior.</td>
     </tr>
     <tr>
-        <td>:!&lt;command&gt;</td>
-        <td>Execute a shell command with the selected text as input.</td>
+        <td>:&lt;range&gt;!&lt;command&gt;</td>
+        <td>Execute a shell command with the text from the given range as input, replacing that text with the output.<br/>
+            Examples:
+            <ul>
+                <li><code>:%!xmllint --format -</code></li>
+                <li><code>:'&lt;,'&gt;!tr -d [:space:]</code></li>
+            </ul>
+            </td>
     </tr>
     <tr>
         <td>:r!&lt;command&gt;</td>
