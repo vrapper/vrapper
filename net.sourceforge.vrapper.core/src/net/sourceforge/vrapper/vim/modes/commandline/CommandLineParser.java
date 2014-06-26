@@ -24,6 +24,7 @@ import net.sourceforge.vrapper.vim.commands.FindFileCommand;
 import net.sourceforge.vrapper.vim.commands.LineRangeOperationCommand;
 import net.sourceforge.vrapper.vim.commands.ListMarksCommand;
 import net.sourceforge.vrapper.vim.commands.ListRegistersCommand;
+import net.sourceforge.vrapper.vim.commands.ListUserCommandsCommand;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.commands.OpenInGvimCommand;
 import net.sourceforge.vrapper.vim.commands.ReadExternalOperation;
@@ -40,6 +41,7 @@ import net.sourceforge.vrapper.vim.commands.SortOperation;
 import net.sourceforge.vrapper.vim.commands.SubstitutionOperation;
 import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
 import net.sourceforge.vrapper.vim.commands.UndoCommand;
+import net.sourceforge.vrapper.vim.commands.UserCommandCommand;
 import net.sourceforge.vrapper.vim.commands.VimCommandSequence;
 import net.sourceforge.vrapper.vim.commands.motions.GoToLineMotion;
 import net.sourceforge.vrapper.vim.commands.motions.MoveRight;
@@ -290,6 +292,42 @@ public class CommandLineParser extends AbstractCommandParser {
                 return null;
             }
         };
+        Evaluator userCommand = new Evaluator() {
+            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
+                if(command.isEmpty()) {
+                    try {
+                        new ListUserCommandsCommand().execute(vim);
+                    } catch (CommandExecutionException e) {
+                        vim.getUserInterfaceService().setErrorMessage(e.getMessage());
+                    }
+                    return null;
+                }
+
+                String name = command.poll();
+                if(Character.isLowerCase(name.charAt(0))) {
+                    vim.getUserInterfaceService().setErrorMessage("User defined commands must start with an uppercase letter");
+                    return null;
+                }
+                
+                if(command.isEmpty()) {
+                    try {
+                        new ListUserCommandsCommand(name).execute(vim);
+                    } catch (CommandExecutionException e) {
+                        vim.getUserInterfaceService().setErrorMessage(e.getMessage());
+                    }
+                    return null;
+                }
+
+                String args = "";
+                while(command.size() > 0)
+                    args += command.poll() + " ";
+
+                //add this command to the mappings for future use
+                vim.getPlatformSpecificStateProvider().getCommands().add(name, new UserCommandCommand(args));
+
+                return null;
+            }
+        };
         
         EvaluatorMapping mapping = new EvaluatorMapping();
         // options
@@ -313,6 +351,7 @@ public class CommandLineParser extends AbstractCommandParser {
         mapping.add("only", quitOthers);
         mapping.add("tabonly", quitOthers);
         // non-recursive mapping
+        mapping.add("command", userCommand);
         mapping.add("noremap", noremap);
         mapping.add("no", noremap);
         mapping.add("nnoremap", nnoremap);
@@ -505,7 +544,7 @@ public class CommandLineParser extends AbstractCommandParser {
                 command = command.substring(1);
             }
         }
-        if(command.indexOf(" | ") > -1) {
+        if(command.indexOf(" | ") > -1 && ! command.startsWith("com")) {
             String[] commands = command.split(" | ");
             editor.getHistory().beginCompoundChange();
             editor.getHistory().lock("chained-commands");

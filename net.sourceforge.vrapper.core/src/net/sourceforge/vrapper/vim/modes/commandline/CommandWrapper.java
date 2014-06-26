@@ -16,6 +16,10 @@ public class CommandWrapper implements Evaluator {
         super();
         this.action = action;
     }
+    
+    public Command getCommand() {
+        return action;
+    }
 
     public Object evaluate(EditorAdaptor vim, Queue<String> command) {
         try {

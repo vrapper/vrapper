@@ -7,10 +7,12 @@ import java.util.Queue;
 
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.Command;
+import net.sourceforge.vrapper.vim.commands.UserCommandCommand;
 
 public class EvaluatorMapping implements Evaluator {
 
     private final Map<String, Evaluator> actions = new HashMap<String, Evaluator>();
+    private final Map<String, String> userDefined = new HashMap<String, String>();
     private final Evaluator defaultCase;
 
     public EvaluatorMapping () {
@@ -40,10 +42,19 @@ public class EvaluatorMapping implements Evaluator {
     /** Adds a {@link Command} to the evaluator list by wrapping it. */
     public void add(String key, Command action) {
         actions.put(key, new CommandWrapper(action));
+        //This is a hack but I don't have a better way to track
+        //user-defined commands which may be listed with ":command"
+        if(Character.isUpperCase(key.charAt(0)) && action instanceof UserCommandCommand) {
+            userDefined.put(key, ((UserCommandCommand)action).getCommandString());
+        }
     }
 
     Evaluator get(String key) {
         return actions.get(key);
+    }
+    
+    public Map<String, String> getUserDefined() {
+        return userDefined;
     }
 
     public boolean contains(String key) {
