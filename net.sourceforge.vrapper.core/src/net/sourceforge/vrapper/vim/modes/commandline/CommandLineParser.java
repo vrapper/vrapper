@@ -41,7 +41,6 @@ import net.sourceforge.vrapper.vim.commands.SortOperation;
 import net.sourceforge.vrapper.vim.commands.SubstitutionOperation;
 import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
 import net.sourceforge.vrapper.vim.commands.UndoCommand;
-import net.sourceforge.vrapper.vim.commands.UserCommandCommand;
 import net.sourceforge.vrapper.vim.commands.VimCommandSequence;
 import net.sourceforge.vrapper.vim.commands.motions.GoToLineMotion;
 import net.sourceforge.vrapper.vim.commands.motions.MoveRight;
@@ -323,7 +322,7 @@ public class CommandLineParser extends AbstractCommandParser {
                     args += command.poll() + " ";
 
                 //add this command to the mappings for future use
-                vim.getPlatformSpecificStateProvider().getCommands().add(name, new UserCommandCommand(args));
+                vim.getPlatformSpecificStateProvider().getCommands().addUserDefined(name, args);
 
                 return null;
             }
