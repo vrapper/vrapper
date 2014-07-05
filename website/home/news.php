@@ -1,4 +1,36 @@
 <div class="newsbox">
+    <div class="date">2014-07-05</div>
+    <h4>Updates to Unstable update site</h4>
+    
+    <p>Another month, another status update for Vrapper.  In the past
+    month, we've made the following changes to the unstable update site:</p>
+    
+    <ul>
+        <li>Added support for ':command' to define custom user commands</li>
+        <li>Fixed issue where 'softtabstop' broke multi-character mappings (like 'imap jj &lt;esc&gt;')</li>
+        <li>Fixed issue where you couldn't use unicode characters in .vrapperrc</li>
+        <li>Fixed issue with mapping '0' to something then using counts for a command</li>
+        <li>Fixed issue with 'R' replace mode at the end of a file</li>
+        <li>Fixed issue with using &lt;TAB&gt; in a macro</li>
+        <li>Fixed issue where you couldn't use a space in the right-hand side of a mapping</li>
+        <li>Fixed issue preventing you from mapping '&lt;c-/&gt;' to anything</li>
+    </ul>
+
+    <p>Surround Plugin changes:</p>
+    <ul>
+    	<li>Added ability to define custom surrounds by editor type</li>
+    	<ul>
+            <li>au "Java" surround c /*\r*/</li>
+            <li>au "XML"  surround c &lt;!--\r--&gt;</li>
+    	</ul>
+    </ul>
+
+    <p>Split Editor Plugin changes:</p>
+    <ul>
+        <li>Fixed issue with cursor location in a new split </li>
+    </ul>
+</div>
+<div class="newsbox">
     <div class="date">2014-06-01</div>
     <h4>0.44.0 Released</h4>
     
@@ -270,186 +302,6 @@
         <li>Refactored &gt;&gt; and &lt;&lt; to use shiftwidth, tabstop, expandtab, and shiftround settings rather than using Eclipse's settings</li>
         <li>Enable regexsearch property by default.  This matches Vim behavior more closely.</li>
     </ul>
-</div>
-<div class="newsbox">
-    <div class="date">2013-10-05</div>
-    <h4>0.36.0 Released</h4>
-
-    <p>In keeping with our two-month release cycle, I have released Vrapper version 0.36.0.
-    There weren't too many changes from last month and they were almost entirely bug fixes.
-    The changes since the last status update (included in 0.36.0) are:</p>
-
-    <ul>
-        <li>Fixed repetition of delimited text</li>
-        <li>Fixed replace mode in macros</li>
-        <li>Fixed Ctrl-H (for backspace) in InsertMode</li>
-        <li>Fixed '\t' in substitution replace</li>
-        <li>Fixed numpad 'return' mapping to 'enter'</li>
-        <li>Fixed incsearch</li>
-        <li>Added support for C pre-processor conditionals with '%'</li>
-        <ul>
-            <li>#if, #ifdef, #else, #elif, #endif</li>
-        </ul>
-    </ul>
-    
-    <p>If you run into any issues with this release, please file an issue on our GitHub project:<br/>
-    <a href="https://github.com/vrapper/vrapper/issues">https://github.com/vrapper/vrapper/issues</a><br/>
-    I'm not sure how much testing our unstable update site really gets since we had to rush out a 0.34.1
-    with the last release.  I'm hoping that doesn't happen again but Vrapper just gets more features
-    and not everything is covered by our unit tests.  Fortunately we have a constantly growing userbase
-    that helps us find those obscure defects.  Thank you for all your support and keeping Vrapper alive!</p>
-    
-</div>
-<div class="newsbox">
-    <div class="date">2013-09-02</div>
-    <h4>Updates to unstable update site</h4>
-
-    <p>Time for another monthly status update on Vrapper.  Our last release
-    added a lot of new features so this last month has been mostly defect
-    fixing.  The occasional new feature or two has been added though.  The
-    unstable update site currently includes the following changes from
-    0.34.1:</p>
-
-    <ul>
-        <li>Fixed issue with 'S', 'cc', 'Vs', and 'Vc' on the last line of a file</li>
-        <li>Fixed issue where ':source' couldn't handle absolute paths</li>
-        <li>Fixed ':eclipseaction!'</li>
-        <li>Fixed Ctrl-R in command-line mode</li>
-        <li>Fixed issue where substitution 'c' confirm would match on a replace</li>
-        <li>Fixed issue with 'i_ctrl-o' followed by ':&lt;command&gt;'</li>
-        <li>Fixed visual block selection on the last line of a file</li>
-        <li>Fixed visual block selection with horizontally scrolled view</li>
-        <li>Added support for 'i_ctrl-t' and 'i_ctrl-d'</li>
-        <li>Added support for 'g~'</li>
-        <li>Added support for '!' in NormalMode</li>
-        <li>Added support for pipe '|' to chain commands</li>
-        <li>Added support for ':move' and ':copy' without a line range definition</li>
-        <li>Added support for `:split &lt;filename&gt;` in Split Editor plugin</li>
-        <li>Refactored sticky column handling</li>
-        <li>Refactored newline handling when pasting text</li>
-        <li>Refactored function keys (F1-F20) mapping</li>
-        <li>Refactored key handling of certain Ctrl keys</li>
-    </ul>
-    
-    <p>There are still plenty more defects and feature requests to address but
-    I'm constantly amazed by how much we get done each month.  I guess I'm just
-    shocked that a Vim plugin for Eclipse requires monthly status updates and a
-    2-month release cycle.  But, it seems we're doing something right, we've had
-    over 1,500 installs via the Eclipse Marketplace for two months in a row!</p>
-    
-</div>
-<div class="newsbox">
-    <div class="date">2013-08-10</div>
-    <h4>0.34.1 Released</h4>
-
-    <p>I released 0.34.0 last week and a number of people found defects.  One defect
-    in particular (where the cursor would disappear on Linux systems) was major
-    enough to warrant a new release.  I've released 0.34.1 with that defect fixed along
-    with a couple others.  Changes between 0.34.0 and 0.34.1 are:</p>
-
-    <ul>
-        <li>Fixed issue on Linux systems where cursor would disappear during horizontal movements</li>
-        <li>Fixed issue where &lt;C-[&gt; was ignored</li>
-        <li>Fixed issue where :sort was ignoring selections</li>
-        <li>Fixed 'last insert mark' at the end of a file</li>
-        <li>Fixed HOME and END behavior</li>
-    </ul>
-    
-    <p>I apologize to anyone that was frustrated by these defects after
-    upgrading to 0.34.0. It seems the unstable update site isn't being tested as
-    much as I'd hoped.  I may have to introduce some concept of a 'release
-    candidate update site' which isn't updated as often as unstable but provides
-    our users who don't want an "unstable" build to play with new builds before I
-    declare them "stable".</p>
-    
-</div>
-<div class="newsbox">
-    <div class="date">2013-08-04</div>
-    <h4>0.34.0 Released</h4>
-    <p>As I mentioned in my previous post, this is a big release for us.  This release
-    adds support for the three most-requested features in Vrapper:</p>
-    <ul>
-    	<li>Split Editor commands (:split, :vplit) via optional plugin</li>
-    	<li>Visual Block Mode</li>
-    	<li>Confirm 'c' flag in substitutions</li>
-    </ul>
-
-    <p>There are plenty of other feature requests we can work on but those are
-    the big three that I've heard from the most people.  Visual Block Mode still
-    has some quirks moving beyond line endings and dealing with tabs but it
-    should be usable at this point.  In addition to those three features,
-    here are the following changes since the last post (included in 0.34.0):</p>
-    
-	<ul>
-		<li>Added 'cleanindent' option to control whether auto-indent introduced with 'o'
-		should be cleaned up if no text is entered on the new line</li>
-		<li>Added support for '\=@<b>x</b>' in substitutions to replace with register contents</li>
-		<li>Added support for 'vS' and 'vgS' in Surround Plugin</li>
-		<li>Fixed behavior with AltGr on German keyboards</li>
-		<li>Fixed issue with using arrow keys in mappings</li>
-		<li>Other miscellaneous defect fixes</li>
-	</ul>
-	
-	<p>I hope everyone continues to enjoy Vrapper, thank you for all your support!</p>
-</div>
-<div class="newsbox">
-    <div class="date">2013-06-29</div>
-    <h4>Updates to unstable update site</h4>
-    <p>It's time for your monthly status update on Vrapper.  When I released
-    0.32.0 last month I mentioned that I received a lot of help from
-    contributors who really knew what they were doing (way more than I do). 
-    Those same contributors have been extremely productive this month to the
-    point that I feel like I've been relegated to a Project Manager position.
-    Just look at what they've accomplished in this last month:</p>
-    
-	<ul>
-		<li>Add support for 'gv' and 'gi' commands</li>
-		<li>Add support for marks: '< '> '[ '] '^</li>
-		<li>Add support for global marks (A-Z and 0-9)</li>
-		<li>Add support for Ctrl+O while in InsertMode</li>
-		<ul>
-			<li> Perform a single NormalMode command then return to InsertMode</li>
-		</ul>
-		<li>Add support for Ctrl+U in InsertMode</li>
-		<li>Add support for Ctrl+X-Ctrl+L sentence completion in InsertMode</li>
-		<li>Add support for Ctrl+U in CommandLineMode</li>
-		<li>Add support for Ctrl+Y in CommandLineMode</li>
-		<li>Add support for :! and :r! to execute a shell command</li>
-		<li>Add support for line ranges when using eclipseaction commands</li>
-		<li>Add support for parameters with eclipseaction commands</li>
-		<ul>
-			<li>eclipseaction sc org.eclipse.ui.views.showView(org.eclipse.ui.views.showView.viewId<br/>=org.eclipse.ui.console.ConsoleView)</li>
-		</ul>
-		<li>Add support for 'autocmd' in .vrapperrc for editor-specific bindings</li>
-		<ul>
-			<li>autocmd "C/C++ Editor" eclipseaction gv org.eclipse.cdt.ui.edit.text.c.select.last</li>
-			<li>au "CMake Editor" nnoremap &lt;CR&gt; gf</li>
-		</ul>
-		<li>Add support for pasting to CommandLineMode with Ctrl+V
-		<ul>
-			<li>(*without* unbinding Paste from Eclipse!)</li>
-		</ul>
-		<li>Add configurable option 'exitlinkmode' to disable Vrapper's attempt to exit to NormalMode after Eclipse performs certain text operations</li>
-		<li>Add support for custom surround definitions in our Surround Plugin</li>
-		<li>Introduce new Split Editor Plugin</li>
-		<ul>
-			<li>:split, :vsplit, :wincmd, Ctrl+w commands, etc.</li>
-			<li>Requires Eclipse 4 (sorry Eclipse 3.x users)</li>
-		</ul>
-		<li>Introduce new Plugin for port of argtextobj.vim</li>
-		<ul>
-			<li>Treats method arguments as text objects</li>
-			<li><a href="http://www.vim.org/scripts/script.php?script_id=2699">http://www.vim.org/scripts/script.php?script_id=2699</a></li>
-		</ul>
-		<li>Incremental improvements on cursor motion within our still-unstable VisualBlockMode</li>
-		<li>Whole mess of miscellaneous defect fixes</li>
-	</ul>
-    
-    <p>That's a lot of changes in a single month and I haven't been able to
-    spend time with each new feature. It may take some extra testing to make
-    sure nothing fell through the cracks. Anyway, if this next month is anything
-    like the last month then 0.34.0 is looking to be a HUGE release for us.</p>
-    
 </div>
 
 <a href="old_index.php">Older Posts &gt;&gt;</a><br/>
