@@ -29,13 +29,17 @@ public abstract class KeyMapper implements Evaluator {
 
         public Object evaluate(EditorAdaptor vim, Queue<String> command) {
             String lhs = command.poll();
-            String rhs = command.poll();
-            if (lhs != null && rhs != null) {
+            String rhs = "";
+            while( ! command.isEmpty()) {
+                //restore spaces between extra parameters
+                rhs += command.poll() + " ";
+            }
+            if (lhs != null && ! "".equals(rhs)) {
                 for (String name : keymaps) {
                     KeyMap map = vim.getKeyMapProvider().getKeyMap(name);
                     map.addMapping(
                             parseKeyStrokes(lhs),
-                            new SimpleRemapping(parseKeyStrokes(rhs), recursive));
+                            new SimpleRemapping(parseKeyStrokes(rhs.trim()), recursive));
                 }
             }
             return null;
