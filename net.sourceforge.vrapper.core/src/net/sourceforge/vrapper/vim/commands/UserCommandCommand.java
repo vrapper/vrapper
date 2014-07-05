@@ -27,8 +27,8 @@ public class UserCommandCommand extends CountIgnoringNonRepeatableCommand {
     public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
         editorAdaptor.changeModeSafely(CommandLineMode.NAME);
         CommandLineMode mode = (CommandLineMode)editorAdaptor.getMode(CommandLineMode.NAME);
-        CommandLineParser parser = (CommandLineParser)mode.getParser();
-        Command toRun = parser.parseAndExecute(":", command);
+        CommandLineParser parser = (CommandLineParser)mode.createParser();
+        Command toRun = parser.parseAndExecute(null, command);
         if(toRun != null) {
             toRun.execute(editorAdaptor);
         }

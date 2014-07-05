@@ -59,7 +59,7 @@ public abstract class AbstractCommandLineMode extends AbstractMode {
     /**
      * Returns the current parser, or <tt>null</tt> if command line mode is inactive.
      */
-    public AbstractCommandParser getParser() {
+    protected AbstractCommandParser getParser() {
         return parser;
     }
 }
