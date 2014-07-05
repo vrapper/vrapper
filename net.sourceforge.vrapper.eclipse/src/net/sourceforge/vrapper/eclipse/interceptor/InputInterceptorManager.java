@@ -98,11 +98,12 @@ public class InputInterceptorManager implements IPartListener2 {
                 ITextViewerExtension textViewerExt = (ITextViewerExtension) viewer;
                 InputInterceptor interceptor = factory.createInterceptor(editor, textViewer);
                 CaretPositionHandler caretPositionHandler = interceptor.getCaretPositionHandler();
+                SelectionVisualHandler visualHandler = interceptor.getSelectionVisualHandler();
 
                 textViewerExt.prependVerifyKeyListener(interceptor);
                 textViewer.getTextWidget().addMouseListener(caretPositionHandler);
                 textViewer.getTextWidget().addCaretListener(caretPositionHandler);
-                textViewer.getSelectionProvider().addSelectionChangedListener(interceptor);
+                textViewer.getSelectionProvider().addSelectionChangedListener(visualHandler);
                 interceptors.put(editor, interceptor);
                 VrapperPlugin.getDefault().registerEditor(editor, interceptor.getEditorAdaptor());
             }
@@ -141,10 +142,11 @@ public class InputInterceptorManager implements IPartListener2 {
                 ITextViewer textViewer = (ITextViewer) viewer;
                 ITextViewerExtension textViewerExt = (ITextViewerExtension) viewer;
                 CaretPositionHandler caretPositionHandler = interceptor.getCaretPositionHandler();
+                SelectionVisualHandler visualHandler = interceptor.getSelectionVisualHandler();
                 textViewerExt.removeVerifyKeyListener(interceptor);
                 textViewer.getTextWidget().removeCaretListener(caretPositionHandler);
                 textViewer.getTextWidget().removeMouseListener(caretPositionHandler);
-                textViewer.getSelectionProvider().removeSelectionChangedListener(interceptor);
+                textViewer.getSelectionProvider().removeSelectionChangedListener(visualHandler);
             } catch (Exception exception) {
                 VrapperLog.error("Exception during closing IWorkbenchPart",
                         exception);

@@ -149,6 +149,8 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
                 }
             }
         }
+        SelectionVisualHandler visualHandler = new SelectionVisualHandler(editorAdaptor);
+        interceptor.setSelectionVisualHandler(visualHandler);
         return interceptor;
     }
 
@@ -161,6 +163,7 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
         private final EditorAdaptor editorAdaptor;
         private LinkedModeHandler linkedModeHandler;
         private CaretPositionHandler caretPositionHandler;
+        private SelectionVisualHandler selectionVisualHandler;
 
         private VimInputInterceptor(EditorAdaptor editorAdaptor) {
             this.editorAdaptor = editorAdaptor;
@@ -191,44 +194,6 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
             return editorAdaptor;
         }
 
-        public void selectionChanged(SelectionChangedEvent event) {
-            if ( ! VrapperPlugin.isVrapperEnabled()
-                    || ! VrapperPlugin.isMouseDown()
-                    || ! (event.getSelection() instanceof TextSelection)
-                    || ! editorAdaptor.getConfiguration().get(Options.VISUAL_MOUSE))
-                return;
-
-            TextSelection selection = (TextSelection) event.getSelection();
-            // selection.isEmpty() is false even if length == 0, don't use it
-            if (selection instanceof TextSelection) {
-                if (selection.getLength() == 0) {
-                    EditorMode currentMode = editorAdaptor.getMode(editorAdaptor.getCurrentModeName());
-                    // User cleared selection or moved caret with mouse in a temporary mode.
-                    if(currentMode instanceof TemporaryMode) {
-                        editorAdaptor.changeModeSafely(InsertMode.NAME);
-                    } else if(currentMode instanceof AbstractVisualMode){
-                        editorAdaptor.changeModeSafely(NormalMode.NAME);
-                    }
-                } else if(selection.getLength() != 0) {
-                    // Fix caret type
-                    if (editorAdaptor.getConfiguration().get(Options.SELECTION).equals("inclusive")) {
-                        CaretType type = CaretType.LEFT_SHIFTED_RECTANGULAR;
-                        if (editorAdaptor.getSelection().isReversed()) {
-                            type = CaretType.RECTANGULAR;
-                        }
-                        editorAdaptor.getCursorService().setCaret(type);
-                    }
-                    if(NormalMode.NAME.equals(editorAdaptor.getCurrentModeName())) {
-                        editorAdaptor.changeModeSafely(VisualMode.NAME, AbstractVisualMode.KEEP_SELECTION_HINT);
-                    }
-                    else if (InsertMode.NAME.equals(editorAdaptor.getCurrentModeName())) {
-                        editorAdaptor.changeModeSafely(TempVisualMode.NAME,
-                                AbstractVisualMode.KEEP_SELECTION_HINT, InsertMode.DONT_MOVE_CURSOR);
-                    }
-                }
-            }
-        }
-
         @Override
         public LinkedModeHandler getLinkedModeHandler() {
             return linkedModeHandler;
@@ -247,6 +212,16 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
         @Override
         public void setCaretPositionHandler(CaretPositionHandler handler) {
             this.caretPositionHandler = handler;
+        }
+
+        @Override
+        public SelectionVisualHandler getSelectionVisualHandler() {
+            return selectionVisualHandler;
+        }
+
+        @Override
+        public void setSelectionVisualHandler(SelectionVisualHandler handler) {
+            selectionVisualHandler = handler;
         }
     }
 }
