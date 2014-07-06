@@ -27,6 +27,7 @@ import net.sourceforge.vrapper.vim.register.RegisterManager;
 
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.TextSelection;
+import org.eclipse.jface.text.TextViewer;
 import org.eclipse.jface.text.source.ContentAssistantFacade;
 import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -149,7 +150,7 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
                 }
             }
         }
-        SelectionVisualHandler visualHandler = new SelectionVisualHandler(editorAdaptor);
+        SelectionVisualHandler visualHandler = new SelectionVisualHandler(editorAdaptor, textViewer);
         interceptor.setSelectionVisualHandler(visualHandler);
         return interceptor;
     }
