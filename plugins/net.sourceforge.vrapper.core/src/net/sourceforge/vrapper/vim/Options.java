@@ -24,6 +24,7 @@ public interface Options {
     public static final Option<Boolean> INCREMENTAL_SEARCH    = bool("incsearch",      false, "is");
     public static final Option<Boolean> IM_DISABLE            = bool("imdisable",      false, "imd");
     public static final Option<Boolean> VISUAL_MOUSE          = bool("visualmouse",    true,  "vm");
+    public static final Option<Boolean> VISUAL_OTHER          = bool("visualother",  true,  "vo");
     public static final Option<Boolean> EXIT_LINK_MODE        = bool("exitlinkmode",   true,  "elm");
     public static final Option<Boolean> CLEAN_INDENT          = bool("cleanindent",    true);
     public static final Option<Boolean> AUTO_CHDIR            = bool("autochdir",      false, "acd");
@@ -49,7 +50,7 @@ public interface Options {
             EXPAND_TAB, SHIFT_ROUND, SMART_INDENT, AUTO_INDENT, ATOMIC_INSERT, IGNORE_CASE,
             FILE_IGNORE_CASE, SMART_CASE, SEARCH_HIGHLIGHT, SEARCH_REGEX,
             INCREMENTAL_SEARCH, LINE_NUMBERS, SHOW_WHITESPACE, IM_DISABLE,
-            VISUAL_MOUSE, EXIT_LINK_MODE, CLEAN_INDENT, AUTO_CHDIR, HIGHLIGHT_CURSOR_LINE,
+            VISUAL_MOUSE, VISUAL_OTHER, EXIT_LINK_MODE, CLEAN_INDENT, AUTO_CHDIR, HIGHLIGHT_CURSOR_LINE,
             CONTENT_ASSIST_MODE, START_NORMAL_MODE, UNDO_MOVES_CURSOR, DEBUGLOG, MODIFIABLE,
             GLOBAL_REGISTERS, WRAP_SCAN, SPELL);
 
