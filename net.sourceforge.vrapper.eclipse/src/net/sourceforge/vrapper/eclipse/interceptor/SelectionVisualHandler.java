@@ -4,6 +4,7 @@ import net.sourceforge.vrapper.eclipse.activator.VrapperPlugin;
 import net.sourceforge.vrapper.eclipse.platform.EclipseCursorAndSelection;
 import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.vim.DefaultEditorAdaptor;
+import net.sourceforge.vrapper.vim.LocalConfiguration;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
@@ -43,6 +44,7 @@ public class SelectionVisualHandler implements ISelectionChangedListener {
         }
 
         TextSelection selection = (TextSelection) event.getSelection();
+        LocalConfiguration config = editorAdaptor.getConfiguration();
         // selection.isEmpty() is false even if length == 0, don't use it
         if (selection.getLength() == 0) {
             // Explicitly reset selection. EclipseCursorAndSelection's SelectionChangeListener is
@@ -71,8 +73,8 @@ public class SelectionVisualHandler implements ISelectionChangedListener {
                 CommandBasedMode commandMode = (CommandBasedMode) currentMode;
                 commandMode.placeCursor(StickyColumnPolicy.RESET_EOL);
             }
-        } else if ( ! VrapperPlugin.isMouseDown()
-                || !editorAdaptor.getConfiguration().get(Options.VISUAL_MOUSE)) {
+        } else if ( ! (VrapperPlugin.isMouseDown() && config.get(Options.VISUAL_MOUSE))
+                && ! config.get(Options.VISUAL_OTHER)) {
             return;
         // Detect if a reverse selection got its last character chopped off.
         } else if (selectionResetOffset != -1
