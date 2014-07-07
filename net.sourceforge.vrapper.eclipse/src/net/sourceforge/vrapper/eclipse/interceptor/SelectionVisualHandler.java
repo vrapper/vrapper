@@ -1,6 +1,7 @@
 package net.sourceforge.vrapper.eclipse.interceptor;
 
 import net.sourceforge.vrapper.eclipse.activator.VrapperPlugin;
+import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.vim.DefaultEditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
@@ -12,6 +13,8 @@ import net.sourceforge.vrapper.vim.modes.TempVisualMode;
 import net.sourceforge.vrapper.vim.modes.TemporaryMode;
 import net.sourceforge.vrapper.vim.modes.VisualMode;
 
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -38,7 +41,18 @@ public class SelectionVisualHandler implements ISelectionChangedListener {
         // selection.isEmpty() is false even if length == 0, don't use it
         if (selection instanceof TextSelection) {
             if (selection.getLength() == 0) {
-                selectionResetOffset = selection.getOffset();
+                try {
+                    int offset = selection.getOffset();
+                    IRegion lineInfo = textViewer.getDocument().getLineInformationOfOffset(offset);
+                    // Checks if cursor is just before line end because Normalmode will move it.
+                    if (lineInfo.getOffset() + lineInfo.getLength() == offset) {
+                        selectionResetOffset = offset;
+                    } else {
+                        selectionResetOffset = -1;
+                    }
+                } catch (BadLocationException e) {
+                    VrapperLog.error("Received bad selection offset in selectionchange handler", e);
+                }
                 EditorMode currentMode = editorAdaptor.getMode(editorAdaptor.getCurrentModeName());
                 // User cleared selection or moved caret with mouse in a temporary mode.
                 if(currentMode instanceof TemporaryMode) {
@@ -46,7 +60,7 @@ public class SelectionVisualHandler implements ISelectionChangedListener {
                 } else if(currentMode instanceof AbstractVisualMode){
                     editorAdaptor.changeModeSafely(NormalMode.NAME);
                 }
-            // Detect one-off at reverse selection start due to zero-length selection event.
+            // Detect if a reverse selection got its last character chopped off.
             } else if (selectionResetOffset != -1
                     && (selection.getOffset() + selection.getLength() + 1) == selectionResetOffset) {
                 textViewer.setSelectedRange(selectionResetOffset, - (selection.getLength() + 1));
