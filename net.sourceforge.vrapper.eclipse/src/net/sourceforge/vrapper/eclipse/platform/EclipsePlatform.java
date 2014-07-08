@@ -13,7 +13,6 @@ import net.sourceforge.vrapper.eclipse.mode.AbstractEclipseSpecificModeProvider;
 import net.sourceforge.vrapper.eclipse.mode.UnionModeProvider;
 import net.sourceforge.vrapper.eclipse.utils.Utils;
 import net.sourceforge.vrapper.log.VrapperLog;
-import net.sourceforge.vrapper.platform.Configuration;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.FileService;
 import net.sourceforge.vrapper.platform.GlobalConfiguration;
@@ -24,7 +23,6 @@ import net.sourceforge.vrapper.platform.PlatformSpecificModeProvider;
 import net.sourceforge.vrapper.platform.PlatformSpecificStateProvider;
 import net.sourceforge.vrapper.platform.PlatformSpecificTextObjectProvider;
 import net.sourceforge.vrapper.platform.SearchAndReplaceService;
-import net.sourceforge.vrapper.platform.SelectionService;
 import net.sourceforge.vrapper.platform.ServiceProvider;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.platform.UnderlyingEditorSettings;
@@ -101,7 +99,7 @@ public class EclipsePlatform implements Platform {
     }
 
     @Override
-    public SelectionService getSelectionService() {
+    public EclipseCursorAndSelection getSelectionService() {
         return cursorAndSelection;
     }
 

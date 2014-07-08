@@ -66,6 +66,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     private boolean stickToEOL = false;
     private final ITextViewerExtension5 converter;
     private Selection selection;
+    private boolean selectionInProgress;
     private final SelectionChangeListener selectionChangeListener;
     private final StickyColumnUpdater caretListener;
     private final Map<String, org.eclipse.jface.text.Position> marks;
@@ -223,9 +224,14 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         final Position to =   new TextViewerPosition(textViewer, Space.MODEL, end);
         return new SimpleSelection(new StartEndTextRange(from, to));
     }
+    
+    public boolean isSelectionInProgress() {
+        return selectionInProgress;
+    }
 
     @Override
     public void setSelection(final Selection newSelection) {
+        selectionInProgress = true;
         if (newSelection == null) {
             final Point point = textViewer.getSelectedRange();
             textViewer.getTextWidget().setBlockSelection(false);
@@ -257,7 +263,6 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
                 }
             }
             selection = newSelection;
-            selectionChangeListener.disable();
             if (ContentType.TEXT_RECTANGLE.equals(newSelection.getContentType(configuration))) {
                 // block selection
                 final StyledText styled = textViewer.getTextWidget();
@@ -286,8 +291,8 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
                 textViewer.getTextWidget().setBlockSelection(false);
                 textViewer.setSelectedRange(from, length);
             }
-            selectionChangeListener.enable();
         }
+        selectionInProgress = false;
     }
 
     @Override
@@ -313,27 +318,18 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     }
 
     private final class SelectionChangeListener implements SelectionListener {
-        boolean enabled = true;
         @Override
         public void widgetDefaultSelected(final SelectionEvent arg0) {
-            if (enabled) {
+            if ( ! selectionInProgress) {
                 selection = null;
             }
         }
 
         @Override
         public void widgetSelected(final SelectionEvent arg0) {
-            if (enabled) {
+            if ( ! selectionInProgress) {
                 selection = null;
             }
-        }
-
-        public void enable() {
-            enabled = true;
-        }
-
-        public void disable() {
-            enabled = false;
         }
     }
 

@@ -150,7 +150,8 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
                 }
             }
         }
-        SelectionVisualHandler visualHandler = new SelectionVisualHandler(editorAdaptor, textViewer);
+        SelectionVisualHandler visualHandler = new SelectionVisualHandler(editorAdaptor,
+                platform.getSelectionService(), textViewer);
         interceptor.setSelectionVisualHandler(visualHandler);
         return interceptor;
     }

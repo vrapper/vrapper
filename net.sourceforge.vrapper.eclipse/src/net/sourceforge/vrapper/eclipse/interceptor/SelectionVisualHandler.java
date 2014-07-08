@@ -1,11 +1,13 @@
 package net.sourceforge.vrapper.eclipse.interceptor;
 
 import net.sourceforge.vrapper.eclipse.activator.VrapperPlugin;
+import net.sourceforge.vrapper.eclipse.platform.EclipseCursorAndSelection;
 import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.vim.DefaultEditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
+import net.sourceforge.vrapper.vim.modes.CommandBasedMode;
 import net.sourceforge.vrapper.vim.modes.EditorMode;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
@@ -23,19 +25,22 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 public class SelectionVisualHandler implements ISelectionChangedListener {
 
     private DefaultEditorAdaptor editorAdaptor;
+    private EclipseCursorAndSelection selectionService;
     private ITextViewer textViewer;
     private int selectionResetOffset = -1;
 
-    public SelectionVisualHandler(DefaultEditorAdaptor editorAdaptor, ITextViewer viewer) {
+    public SelectionVisualHandler(DefaultEditorAdaptor editorAdaptor,
+            EclipseCursorAndSelection selectionService, ITextViewer viewer) {
         this.editorAdaptor = editorAdaptor;
         this.textViewer = viewer;
+        this.selectionService = selectionService;
     }
 
     public void selectionChanged(SelectionChangedEvent event) {
-        if (!VrapperPlugin.isVrapperEnabled() || !VrapperPlugin.isMouseDown()
-                || !(event.getSelection() instanceof TextSelection)
-                || !editorAdaptor.getConfiguration().get(Options.VISUAL_MOUSE))
+        if (!VrapperPlugin.isVrapperEnabled() || !(event.getSelection() instanceof TextSelection)
+                || selectionService.isSelectionInProgress()) {
             return;
+        }
 
         TextSelection selection = (TextSelection) event.getSelection();
         // selection.isEmpty() is false even if length == 0, don't use it
@@ -58,7 +63,14 @@ public class SelectionVisualHandler implements ISelectionChangedListener {
                 editorAdaptor.changeModeSafely(InsertMode.NAME);
             } else if(currentMode instanceof AbstractVisualMode){
                 editorAdaptor.changeModeSafely(NormalMode.NAME);
+            // Cursor can be after the line if an Eclipse operation cleared the selection, e.g. undo
+            } else if (currentMode instanceof CommandBasedMode) {
+                CommandBasedMode commandMode = (CommandBasedMode) currentMode;
+                commandMode.placeCursor();
             }
+        } else if ( ! VrapperPlugin.isMouseDown()
+                || !editorAdaptor.getConfiguration().get(Options.VISUAL_MOUSE)) {
+            return;
         // Detect if a reverse selection got its last character chopped off.
         } else if (selectionResetOffset != -1
                 && (selection.getOffset() + selection.getLength() + 1) == selectionResetOffset) {
