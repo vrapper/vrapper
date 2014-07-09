@@ -2,6 +2,7 @@ package net.sourceforge.vrapper.vim.modes;
 
 import static net.sourceforge.vrapper.keymap.StateUtils.union;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafState;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
 import net.sourceforge.vrapper.keymap.State;
@@ -23,6 +24,8 @@ import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 import net.sourceforge.vrapper.vim.commands.SwapSelectionSidesCommand;
 import net.sourceforge.vrapper.vim.commands.VisualMotionCommand;
+import net.sourceforge.vrapper.vim.commands.motions.Motion;
+import net.sourceforge.vrapper.vim.commands.motions.MoveRightAcrossLines;
 import net.sourceforge.vrapper.vim.commands.motions.SearchResultMotion;
 
 
@@ -54,7 +57,11 @@ public class VisualMode extends AbstractVisualMode {
 
     @Override
     protected VisualMotionState getVisualMotionState() {
-        return new VisualMotionState(Motion2VMC.CHARWISE, motions());
+        @SuppressWarnings("unchecked")
+        State<Motion> motions = union(
+                leafState(' ', MoveRightAcrossLines.INSTANCE_BEHIND_CHAR),
+                motions());
+        return new VisualMotionState(Motion2VMC.CHARWISE, motions);
     }
 
     @Override

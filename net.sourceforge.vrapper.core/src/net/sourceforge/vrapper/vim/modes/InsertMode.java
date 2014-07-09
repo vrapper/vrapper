@@ -445,7 +445,7 @@ public class InsertMode extends AbstractMode {
             case ARROW_LEFT:
                 direction = MoveLeftAcrossLines.INSTANCE; break;
             case ARROW_RIGHT:
-               direction = MoveRightAcrossLines.INSTANCE_INSERT; break;
+               direction = MoveRightAcrossLines.INSTANCE_BEHIND_CHAR; break;
             case ARROW_UP:
                 direction = MoveUp.INSTANCE; break;
             case ARROW_DOWN:
