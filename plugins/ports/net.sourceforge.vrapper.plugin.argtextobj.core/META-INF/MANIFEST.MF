@@ -2,8 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Vrapper argtextobj Plug-in Core
 Bundle-SymbolicName: net.sourceforge.vrapper.plugin.argtextobj.core;singleton:=true
-Bundle-Version: 0.45.20140708
+Bundle-Version: 0.45.20140720
 Export-Package: net.sourceforge.vrapper.plugin.argtextobj.commands
-Require-Bundle: net.sourceforge.vrapper.core;bundle-version="0.45.20140708";visibility:=reexport
+Require-Bundle: net.sourceforge.vrapper.core;bundle-version="0.45.20140720";visibility:=reexport
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Eclipse-BuddyPolicy: dependent
