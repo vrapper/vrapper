@@ -1,6 +1,7 @@
 package net.sourceforge.vrapper.utils;
 
 import net.sourceforge.vrapper.platform.Configuration.Option;
+import net.sourceforge.vrapper.platform.FileService;
 import net.sourceforge.vrapper.platform.Platform;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.platform.UserInterfaceService;
@@ -15,15 +16,15 @@ import net.sourceforge.vrapper.vim.Options;
 public class UnmodifiableTextContentDecorator implements TextContent {
     
     private TextContent textContent;
-    private boolean editable;
     private boolean modifiable = true;
     private UserInterfaceService uiService;
+    private FileService fileService;
 
     public UnmodifiableTextContentDecorator(TextContent target, LocalConfiguration configuration,
             Platform platform) {
         this.textContent = target;
         this.uiService = platform.getUserInterfaceService();
-        this.editable = platform.getFileService().isEditable();
+        fileService = platform.getFileService();
         configuration.addListener(new ConfigurationListener() {
             @Override
             public <T> void optionChanged(Option<T> option, T oldValue, T newValue) {
@@ -91,6 +92,7 @@ public class UnmodifiableTextContentDecorator implements TextContent {
     }
 
     protected boolean allowChanges() {
+        boolean editable = fileService.isEditable();
         if (modifiable && editable) {
             return true;
         } else if ( ! editable) {
