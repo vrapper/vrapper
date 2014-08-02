@@ -30,7 +30,11 @@ public class InsertAdjacentCharacter extends CountIgnoringNonRepeatableCommand {
         CursorService cursorService = editorAdaptor.getCursorService();
         TextContent content = editorAdaptor.getViewContent();
         
-        int cursorOffset = cursorService.getPosition().getViewOffset();
+        Position cursor = cursorService.getPosition();
+        int cursorOffset = cursor.getViewOffset();
+        //don't "stick to EOL" when trying to find the adjacent position
+        cursorService.setPosition(cursor, StickyColumnPolicy.RESET_EOL);
+
         int currentLineNumber = content.getLineInformationOfOffset(cursorOffset).getNumber();
         LineInformation adjacentLine;
         if(above && currentLineNumber > 0) {
