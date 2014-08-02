@@ -333,6 +333,50 @@ public class NormalModeTests extends CommandTestCase {
 		assertYanked(ContentType.TEXT, "miewa ");
 	}
 
+	/**
+	@Test public void test_diw_whitespace() {
+		checkCommand(forKeySeq("diw"),
+				"before cursor  ",' ',"  after cursor",
+				"before cursor",'a',"fter cursor");
+
+		checkCommand(forKeySeq("diw"),
+				"before cursor",' ',"after cursor",
+				"before cursor",'a',"fter cursor");
+
+		checkCommand(forKeySeq("d2iw"),
+				"before cursor",' ',"after cursor",
+				"before cursor",' ',"cursor");
+
+		checkCommand(forKeySeq("d3iw"),
+				"before cursor  ",' ',"  after   after   cursor",
+				"before cursor",'a',"fter   cursor");
+
+		checkCommand(forKeySeq("diW"),
+				"before cursor  ",' ',"  after cursor",
+				"before cursor",'a',"fter cursor");
+
+		checkCommand(forKeySeq("diW"),
+				"before cursor",' ',"after cursor",
+				"before cursor",'a',"fter cursor");
+
+		checkCommand(forKeySeq("daw"),
+				"before cursor   ",' ',"   after cursor",
+				"before cursor",' ',"cursor");
+
+		checkCommand(forKeySeq("daw"),
+				"before cursor",' ',"after cursor",
+				"before cursor",' ',"cursor");
+
+		checkCommand(forKeySeq("daW"),
+				"before cursor   ",' ',"   after cursor",
+				"before cursor",' ',"cursor");
+
+		checkCommand(forKeySeq("daW"),
+				"before cursor",' ',"after cursor",
+				"before cursor",' ',"cursor");
+	}
+	**/
+
 	@Test public void test_p() {
 		defaultRegister.setContent(new StringRegisterContent(ContentType.TEXT, " czasami"));
 		checkCommand(forKeySeq("p"),
