@@ -333,7 +333,7 @@ public class NormalModeTests extends CommandTestCase {
 		assertYanked(ContentType.TEXT, "miewa ");
 	}
 
-	/**
+	@Ignore //ignored until we fix #474
 	@Test public void test_diw_whitespace() {
 		checkCommand(forKeySeq("diw"),
 				"before cursor  ",' ',"  after cursor",
@@ -375,7 +375,6 @@ public class NormalModeTests extends CommandTestCase {
 				"before cursor",' ',"after cursor",
 				"before cursor",' ',"cursor");
 	}
-	**/
 
 	@Test public void test_p() {
 		defaultRegister.setContent(new StringRegisterContent(ContentType.TEXT, " czasami"));
