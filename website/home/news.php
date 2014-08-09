@@ -1,4 +1,22 @@
 <div class="newsbox">
+    <div class="date">2014-08-08</div>
+    <h4>0.46.0 Released</h4>
+    
+    <p>If I was sticking closely to my two-month release cycle I would've released last week.
+    However, there weren't too many changes in this release.  I also had just fixed a defect
+    and I wanted to make sure my fix solved the problem.  Now, a week later, I'm releasing 0.46.0.
+    Here are the changes since the last news post (included in 0.46.0):</p>
+    
+    <ul>
+        <li>Changed 'syncmodifiable' to ignore Eclipse's readonly flag by default.  This should help some Perforce users.</li>
+        <li>Fixed issue where selecting from the end of the line backwards would skip the last character</li>
+        <li>Fixed issue where Vrapper would stay in VisualMode after Eclipse cleared the selection</li>
+        <li>Fixed issue where a visual selection could jump to the beginning of the next line</li>
+        <li>Fixed issue where Mac command key was ignored.  It is now treated as Ctrl.</li>
+        <li>Fixed issue with 'i_Ctrl-Y' after 'A'.</li>
+    </ul>
+</div>
+<div class="newsbox">
     <div class="date">2014-07-05</div>
     <h4>Updates to Unstable update site</h4>
     
