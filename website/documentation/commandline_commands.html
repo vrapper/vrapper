@@ -130,6 +130,16 @@ Commands may be chained with a <code>|</code> character between them. For exampl
         We don't currently support any other <code>:let</code> behavior.</td>
     </tr>
     <tr>
+        <td>:command &lt;name&gt; &lt;command&gt;</td>
+        <td>Defines a custom command-line command <code>&lt;name&gt;</code> which will execute the command <code>&lt;command&gt;</code>.
+        Note that <code>&lt;command&gt;</code> can use <code>|</code> to chain multiple commands to a single <code>&lt;name&gt;</code>.
+        <br/><br/>
+        Example:</br>
+        <code>:command MyReplace s/foo/bar/g | s/baz/bat/g</code><br/>
+		would be executed with <code>:MyReplace</code>
+        </td>
+    </tr>
+    <tr>
         <td>:&lt;range&gt;!&lt;command&gt;</td>
         <td>Execute a shell command with the text from the given range as input, replacing that text with the output.<br/>
             Examples:

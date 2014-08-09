@@ -297,18 +297,18 @@ which we implemented.</p>
     <tr>
         <td>:set&nbsp;syncmodifiable=&lt;sync&nbsp;type&gt;</td>
         <td>:set syncma=...</td>
-        <td>matchreadonly</td>
+        <td>nosync</td>
         <td>Vrapper can set its internal 'modifiable' flag based on the current editor's state.<br/>
             Currently these sync types are supported:
             <dl>
                 <dt>matchreadonly</dt>
                 <dd>Checks the editor's readonly flag.</dd>
                 <dt>nosync</dt>
-                <dd>Disables this feature completely. P4 plugin users might want to set this for now!</dd>
+                <dd>Disables this feature completely. Perforce plugin users might want to set this.</dd>
             </dl>
-            When set to <tt>nosync</tt>, a read-only file can be edited and Eclipse will ask if you want to save to another file.<br/>
+            When set to <code>nosync</code>, a read-only file can be edited and Eclipse will ask if you want to save to another file.<br/>
             This is a global setting, and any opened editor must be re-opened before this setting takes
-            effect. You might want to manually set <tt>modifiable</tt> if Vrapper gets it wrong.
+            effect. You might want to manually set <code>modifiable</code> if Vrapper gets it wrong.
         </td>
     </tr>
 </table>
