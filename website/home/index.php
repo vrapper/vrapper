@@ -31,7 +31,7 @@
                       <p>If you'd like to contribute to Vrapper but need some help, here are a couple Developer Wiki pages we've put together:<br/>
                       <a href="https://sourceforge.net/apps/trac/vrapper/wiki">Developer Wiki</a></p>
               </div>
-              <script type="text/javascript" src="http://www.ohloh.net/p/318170/widgets/project_basic_stats.js"></script>
+              <script type="text/javascript" src="http://www.openhub.net/p/318170/widgets/project_basic_stats.js"></script>
         </div>
         <div>
           <div id="left">
