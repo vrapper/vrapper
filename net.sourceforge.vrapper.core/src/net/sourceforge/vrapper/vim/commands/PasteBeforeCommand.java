@@ -52,7 +52,7 @@ public class PasteBeforeCommand extends CountAwareCommand {
 		            	
 				else {
 		        	position = offset;
-					position += text.length();
+					position += text.length() * count;
 					if (!placeCursorAfter)
 						position -= 1;
 				}
