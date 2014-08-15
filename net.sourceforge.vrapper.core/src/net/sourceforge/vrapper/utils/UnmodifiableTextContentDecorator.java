@@ -92,10 +92,12 @@ public class UnmodifiableTextContentDecorator implements TextContent {
     }
 
     protected boolean allowChanges() {
-        boolean editable = fileService.isEditable();
-        if (modifiable && editable) {
+        if (modifiable && fileService.isEditable() && fileService.checkModifiable()) {
             return true;
-        } else if ( ! editable) {
+            
+        // Note: the result from fileService.isEditable() should not be cached. fs.checkModifiable()
+        // can influence the return value of this function.
+        } else if ( ! fileService.isEditable()) {
             uiService.setErrorMessage("Cannot modify contents, file is not editable!");
         } else {
             uiService.setErrorMessage("Cannot modify contents, 'modifiable' is off!");

@@ -10,6 +10,12 @@ public interface FileService {
 
 	boolean isReadOnly();
 
+	/**
+	 * Checks if the current editor is modifiable according to Eclipse, if not it might run some
+	 * extra actions to make it modifiable.
+	 */
+	boolean checkModifiable();
+
 	boolean revertFile();
 	
 	boolean close(boolean force);

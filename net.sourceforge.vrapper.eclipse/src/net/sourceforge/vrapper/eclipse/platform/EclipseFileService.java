@@ -101,6 +101,11 @@ public class EclipseFileService implements FileService {
         return editor.isEditable();
     }
     
+    @Override
+    public boolean checkModifiable() {
+        return editor.validateEditorInputState();
+    }
+
     public boolean isReadOnly() {
         return editor.isEditorInputReadOnly();
     }
