@@ -72,6 +72,7 @@ public class VimTestCase {
     	    }
     	}
     	when(fileService.isEditable()).thenReturn(true);
+    	when(fileService.checkModifiable()).thenReturn(true);
         //let UIInterface mock print out error messages
     	Mockito.doAnswer(new Answer<Void>() {
 			@Override
