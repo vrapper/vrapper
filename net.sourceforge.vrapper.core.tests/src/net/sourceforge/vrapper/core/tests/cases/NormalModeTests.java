@@ -2135,6 +2135,22 @@ public class NormalModeTests extends CommandTestCase {
         checkCommand(forKeySeq("\"ayw2\"aP"),
                 "Ala ",'m', "a kota",
                 "Ala ma ma",' ', "ma kota");
+
+        checkCommand(forKeySeq("yw2P"),
+                "Ala ",'m', "a kota",
+                "Ala ma ma",' ', "ma kota");
+
+        checkCommand(forKeySeq("yw2p"),
+                "Ala ",'m', "a kota",
+                "Ala mma ma",' ', "a kota");
+
+        checkCommand(forKeySeq("yy2p"),
+                "Ala ",'m', "a kota",
+                "Ala ma kota\n",'A', "la ma kota\nAla ma kota");
+
+        checkCommand(forKeySeq("yy2P"),
+                "Ala ",'m', "a kota",
+                "",'A', "la ma kota\nAla ma kota\nAla ma kota");
     }
 
     private void installSaneRegisterManager() {
