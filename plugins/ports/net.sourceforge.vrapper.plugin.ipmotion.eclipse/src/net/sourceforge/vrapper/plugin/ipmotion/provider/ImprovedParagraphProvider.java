@@ -23,6 +23,6 @@ public class ImprovedParagraphProvider extends AbstractEclipseSpecificStateProvi
     
     @Override
     protected State<Command> visualModeBindings() {
-        return new VisualMotionState(Motion2VMC.CHARWISE, ImprovedParagraphMotion.PARAGRAPH_MOTIONS);
+        return new VisualMotionState(Motion2VMC.LINEWISE, ImprovedParagraphMotion.PARAGRAPH_MOTIONS);
     }
 }
