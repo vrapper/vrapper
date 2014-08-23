@@ -98,7 +98,7 @@ public class SearchCommandParser extends AbstractCommandParser {
 	public String getKeyWord() {
         String first = commandLine.getPrompt();
         String command = commandLine.getContents();
-        return command.split("(?<!\\\\)"+first)[0];
+        return command.split("(?<!\\\\)\\"+first)[0];
 	}
 
     private SearchOffset createSearchOffset(String keyword, String afterSearch) {
