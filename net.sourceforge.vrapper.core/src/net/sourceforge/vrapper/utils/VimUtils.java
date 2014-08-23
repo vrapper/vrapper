@@ -13,7 +13,9 @@ import net.sourceforge.vrapper.platform.SearchAndReplaceService;
 import net.sourceforge.vrapper.platform.SimpleConfiguration.NewLine;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.VimConstants;
+import net.sourceforge.vrapper.vim.commands.Utils;
 
 
 /**
@@ -94,6 +96,61 @@ public class VimUtils {
     public static String getWithoutIndent(final TextContent content, final LineInformation info) {
         final int offset = getFirstNonWhiteSpaceOffset(content, info);
         return content.getText(offset, info.getEndOffset() - offset);
+    }
+    
+    /**
+     * Grab the word currently under the cursor.
+     * If wholeWord, end at nearest whitespace.
+     * Otherwise, use Options.KEYWORDS values.
+     */
+    public static String getWordUnderCursor(final EditorAdaptor editorAdaptor, final boolean wholeWord) {
+        String word = "";
+        TextContent p = editorAdaptor.getViewContent();
+        int index = editorAdaptor.getCursorService().getPosition().getViewOffset();
+        LineInformation line = p.getLineInformationOfOffset(index);
+        int min = line.getBeginOffset();
+        int max = line.getEndOffset();
+        int first = -1;
+        int last = -1;
+        String s;
+        boolean found = false;
+        String keywords = wholeWord ? "\\S" : editorAdaptor.getConfiguration().get(Options.KEYWORDS);
+
+        if (index < max) {
+            s = p.getText(index, 1);
+            if (Utils.characterType(s.charAt(0), keywords) == Utils.WORD) {
+                found = true;
+                first = index;
+                last = index;
+            }
+        }
+        while (index < max-1) {
+            index += 1;
+            s = p.getText(index, 1);
+            if(Utils.characterType(s.charAt(0), keywords) == Utils.WORD) {
+                last = index;
+                if(!found) {
+                    first = index;
+                    found = true;
+                }
+            } else if(found) {
+                break;
+            }
+        }
+        if (found) {
+            index = first;
+            while (index > min) {
+                index -= 1;
+                s = p.getText(index, 1);
+                if(Utils.characterType(s.charAt(0), keywords) == Utils.WORD) {
+                    first = index;
+                } else {
+                    break;
+                }
+            }
+            word = p.getText(first, last-first+1);
+        }
+        return word;
     }
     
     public static boolean containsNewLine(final String s) {

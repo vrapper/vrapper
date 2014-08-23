@@ -34,6 +34,7 @@ public abstract class AbstractCommandParser {
     protected static final KeyStroke KEY_ESCAPE  = key(SpecialKey.ESC);
     protected static final KeyStroke KEY_CTRL_W  = ctrlKey('w');
     protected static final KeyStroke KEY_CTRL_R  = ctrlKey('r');
+    protected static final KeyStroke KEY_CTRL_A  = ctrlKey('a');
     protected static final KeyStroke KEY_CTRL_U  = ctrlKey('u');
     protected static final KeyStroke KEY_CTRL_V  = ctrlKey('v');
     protected static final KeyStroke KEY_CTRL_Y  = ctrlKey('y');
@@ -108,7 +109,19 @@ public abstract class AbstractCommandParser {
             commandLine.setPosition(commandLine.getEndPosition());
         }});
         editMap.put(KEY_CTRL_W, new KeyHandler() { public void handleKey() {
-            deleteWordBack();
+            if(pasteRegister) { //Ctrl+R mode
+                String word = VimUtils.getWordUnderCursor(editor, false);
+                commandLine.type(word);
+            }
+            else {
+                deleteWordBack();
+            }
+        }});
+        editMap.put(KEY_CTRL_A, new KeyHandler() { public void handleKey() {
+            if(pasteRegister) { //Ctrl+R mode
+                String word = VimUtils.getWordUnderCursor(editor, true);
+                commandLine.type(word);
+            }
         }});
         editMap.put(KEY_CTRL_U, new KeyHandler() { public void handleKey() {
             commandLine.replace(0, commandLine.getPosition(), "");
