@@ -1,6 +1,6 @@
 package net.sourceforge.vrapper.vim.commands;
 
-import net.sourceforge.vrapper.utils.LineInformation;
+import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 
@@ -29,7 +29,7 @@ public class FindFileCommand extends CountIgnoringNonRepeatableCommand {
 			throws CommandExecutionException {
 		
 		if(filename == null) {
-			filename = getFileUnderCursor(editorAdaptor);
+			filename = VimUtils.getWordUnderCursor(editorAdaptor, true);
 		}
 		
 		String[] paths = editorAdaptor.getConfiguration().get(Options.PATH).split(",");
@@ -41,38 +41,5 @@ public class FindFileCommand extends CountIgnoringNonRepeatableCommand {
         //reset filename since this instance is
         //reused when set to INSTANCE
         filename = null;
-	}
-	
-	//there has to be a better way to do this
-	//but I can't think of a clever regex to do what I need
-	private final String filenameChars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ/.-_+#$%~=";
-	
-	private String getFileUnderCursor(EditorAdaptor editorAdaptor) {
-		int cursor = editorAdaptor.getCursorService().getPosition().getModelOffset();
-		LineInformation line = editorAdaptor.getModelContent().getLineInformationOfOffset(cursor);
-		String beforeCursor = editorAdaptor.getModelContent().getText(line.getBeginOffset(), cursor - line.getBeginOffset());
-		String afterCursor = editorAdaptor.getModelContent().getText(cursor, line.getEndOffset() - cursor);
-		
-		StringBuffer filename = new StringBuffer();
-		for(int i=beforeCursor.length()-1; i >= 0; i--) {
-			if(filenameChars.contains(""+beforeCursor.charAt(i))) {
-				filename.insert(0, beforeCursor.charAt(i));
-			}
-			else {
-				//break on first non-filenameChar
-				break;
-			}
-		}
-		for(int i=0; i < afterCursor.length(); i++) {
-			if(filenameChars.contains(""+afterCursor.charAt(i))) {
-				filename.append(afterCursor.charAt(i));
-			}
-			else {
-				//break on first non-filenameChar
-				break;
-			}
-		}
-		
-		return filename.toString();
 	}
 }
