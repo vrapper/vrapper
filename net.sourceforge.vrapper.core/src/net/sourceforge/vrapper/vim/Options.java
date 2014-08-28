@@ -19,8 +19,6 @@ public interface Options {
     public static final Option<Boolean> ATOMIC_INSERT         = bool("atomicinsert", true,  "ati");
     public static final Option<Boolean> IGNORE_CASE           = bool("ignorecase",   false, "ic");
     public static final Option<Boolean> SMART_CASE            = bool("smartcase",    false, "scs");
-    public static final Option<Boolean> SANE_CW               = bool("sanecw",       false);
-    public static final Option<Boolean> SANE_Y                = bool("saney",        false);
     public static final Option<Boolean> SEARCH_HIGHLIGHT      = bool("hlsearch",     false, "hls");
     public static final Option<Boolean> SEARCH_REGEX          = bool("regexsearch",  true,  "rxs");
     public static final Option<Boolean> INCREMENTAL_SEARCH    = bool("incsearch",    false, "is");
@@ -45,7 +43,7 @@ public interface Options {
     @SuppressWarnings("unchecked")
     public static final Set<Option<Boolean>> BOOLEAN_OPTIONS = set(
             EXPAND_TAB, SHIFT_ROUND, SMART_INDENT, AUTO_INDENT, ATOMIC_INSERT, IGNORE_CASE,
-            SMART_CASE, SANE_CW, SANE_Y, SEARCH_HIGHLIGHT, SEARCH_REGEX,
+            SMART_CASE, SEARCH_HIGHLIGHT, SEARCH_REGEX,
             INCREMENTAL_SEARCH, LINE_NUMBERS, SHOW_WHITESPACE, IM_DISABLE,
             VISUAL_MOUSE, EXIT_LINK_MODE, CLEAN_INDENT, AUTO_CHDIR, HIGHLIGHT_CURSOR_LINE,
             CONTENT_ASSIST_MODE, START_NORMAL_MODE, MODIFIABLE);

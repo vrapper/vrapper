@@ -160,16 +160,7 @@ public class NormalModeTests extends CommandTestCase {
 		assertYanked(ContentType.TEXT, "ma;asdf");
 	}
 
-	@Test public void test_cw_sane() {
-	    when(configuration.get(Options.SANE_CW)).thenReturn(true);
-	    checkCommand(forKeySeq("cw"),
-			"Ala",' ',"ma kota",
-			"Ala",'m',"a kota");
-		assertYanked(ContentType.TEXT, " ");
-	}
-
 	@Test public void test_cw_compilant() {
-	    when(configuration.get(Options.SANE_CW)).thenReturn(false);
 		checkCommand(forKeySeq("cw"),
 			"Ala",' ',"ma kota",
 			"Ala",'m',"a kota");
