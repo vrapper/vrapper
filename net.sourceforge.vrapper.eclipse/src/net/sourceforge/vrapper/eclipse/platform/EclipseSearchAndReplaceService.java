@@ -54,7 +54,8 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
     	int start = line.getBeginOffset();
     	int end = line.getEndOffset();
     	final boolean replaceAll = flags.contains("g");
-        boolean caseSensitive = isCaseSensitive(toFind, flags);
+        final boolean reportMatches = flags.contains("n");
+        final boolean caseSensitive = isCaseSensitive(toFind, flags);
 
     	//each time we perform a replace,
     	//how many characters will be added/removed?
@@ -68,7 +69,10 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
     			if(result != null && result.getOffset() < end) {
     				match = result.getOffset();
     				numReplaces++;
-    				adapter.replace(replace, true);
+    				if(! reportMatches) {
+    					adapter.replace(replace, true);
+    				}
+
     				if(replaceAll) {
     					//don't match on the replacement string
     					//when we come around again

@@ -100,9 +100,10 @@ public class SubstitutionOperation extends SimpleTextOperation {
 			editorAdaptor.getUserInterfaceService().setErrorMessage("'"+subDef.find+"' not found");
 		}
 		else if(lineReplaceCount > 0) {
-			editorAdaptor.getUserInterfaceService().setInfoMessage(
-					numReplaces + " substitutions on " + lineReplaceCount + " lines"
-			);
+		    String message = numReplaces + " ";
+		    message += subDef.flags.contains("n") ? "matches" : "substitutions";
+		    message += " on " + lineReplaceCount + " lines";
+			editorAdaptor.getUserInterfaceService().setInfoMessage(message);
 		}
 		
 		//enable '&', 'g&', and ':s' features
