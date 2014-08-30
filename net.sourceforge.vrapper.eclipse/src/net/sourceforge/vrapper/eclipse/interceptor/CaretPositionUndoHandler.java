@@ -4,7 +4,10 @@ import static org.eclipse.core.commands.operations.OperationHistoryEvent.*;
 
 import java.util.WeakHashMap;
 
+import net.sourceforge.vrapper.eclipse.activator.VrapperPlugin;
 import net.sourceforge.vrapper.log.VrapperLog;
+import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.VrapperEventAdapter;
 import net.sourceforge.vrapper.vim.VrapperEventListener;
 import net.sourceforge.vrapper.vim.modes.EditorMode;
@@ -26,10 +29,12 @@ public class CaretPositionUndoHandler extends VrapperEventAdapter implements IOp
     }
 
     private ITextViewer textViewer;
+    private EditorAdaptor editorAdaptor;
     private WeakHashMap<IUndoableOperation, VrapperState> historyInfo;
     private int previousCaretOffset;
 
-    public CaretPositionUndoHandler(ITextViewer textViewer) {
+    public CaretPositionUndoHandler(EditorAdaptor editorAdaptor, ITextViewer textViewer) {
+        this.editorAdaptor = editorAdaptor;
         this.textViewer = textViewer;
         historyInfo = new WeakHashMap<IUndoableOperation, CaretPositionUndoHandler.VrapperState>();
     }
@@ -38,7 +43,9 @@ public class CaretPositionUndoHandler extends VrapperEventAdapter implements IOp
     public void historyNotification(OperationHistoryEvent event) {
         // Check that this event wasn't triggered in another editor.
         IUndoContext testContext = new ObjectUndoContext(textViewer.getDocument());
-        if (event.getOperation().hasContext(testContext)) {
+        boolean isHandlerEnabled = editorAdaptor.getConfiguration().get(Options.UNDO_MOVES_CURSOR);
+        if (VrapperPlugin.isVrapperEnabled() && isHandlerEnabled
+                && event.getOperation().hasContext(testContext)) {
             switch (event.getEventType()) {
             case ABOUT_TO_EXECUTE:
                 previousCaretOffset = textViewer.getSelectedRange().x;

@@ -124,7 +124,7 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
                 platform,
                 globalRegisterManager, VrapperPlugin.isVrapperEnabled());
         InputInterceptor interceptor = createInterceptor(editorAdaptor);
-        interceptor.setCaretPositionUndoHandler(new CaretPositionUndoHandler(textViewer));
+        interceptor.setCaretPositionUndoHandler(new CaretPositionUndoHandler(editorAdaptor, textViewer));
         interceptor.setCaretPositionHandler(new CaretPositionHandler(editorAdaptor, textViewer));
         if (editorAdaptor.getConfiguration().get(Options.EXIT_LINK_MODE)) {
             LinkedModeHandler linkedModeHandler = new LinkedModeHandler(editorAdaptor);
