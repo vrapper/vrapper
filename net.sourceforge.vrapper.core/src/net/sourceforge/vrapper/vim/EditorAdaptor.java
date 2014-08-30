@@ -71,5 +71,9 @@ public interface EditorAdaptor {
     Selection getLastActiveSelection();
 
     CommandLineUI getCommandLine();
+    
+    void addVrapperEventListener(VrapperEventListener listener);
+    void removeVrapperEventListener(VrapperEventListener listener);
+    VrapperEventListeners getListeners();
 }
 

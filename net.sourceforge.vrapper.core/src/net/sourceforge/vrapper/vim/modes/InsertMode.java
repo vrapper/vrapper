@@ -109,11 +109,11 @@ public class InsertMode extends AbstractMode {
     public void enterMode(final ModeSwitchHint... args) throws CommandExecutionException {
         boolean initMode = !resumeOnEnter;
         resumeOnEnter = false;
-    	boolean lockHistory = true;
+        boolean lockHistory = true;
         for (final ModeSwitchHint hint: args) {
-        	if(hint == DONT_LOCK_HISTORY) {
-        		lockHistory = false;
-        	}
+            if (hint == DONT_LOCK_HISTORY) {
+                lockHistory = false;
+            }
         }
         if (initMode && lockHistory && editorAdaptor.getConfiguration().get(Options.ATOMIC_INSERT)) {
             editorAdaptor.getHistory().beginCompoundChange();
@@ -139,7 +139,9 @@ public class InsertMode extends AbstractMode {
                     }
                     else { //onEnter, execute command now
                         Command command = ((ExecuteCommandHint) hint).getCommand();
+                        editorAdaptor.getListeners().fireCommandAboutToExecute();
                         command.execute(editorAdaptor);
+                        editorAdaptor.getListeners().fireCommandExecuted();
                         if(command instanceof InsertLineCommand && editorAdaptor.getConfiguration().get(Options.CLEAN_INDENT)) {
                             //entered insert mode via 'o' or 'O'
                             //cleanup auto-indent if nothing is entered
@@ -276,10 +278,17 @@ public class InsertMode extends AbstractMode {
         final Transition<Command> transition = currentState.press(stroke);
         if (transition != null && transition.getValue() != null) {
             try {
+                if ( ! editorAdaptor.getConfiguration().get(Options.ATOMIC_INSERT)) {
+                    editorAdaptor.getListeners().fireCommandAboutToExecute();
+                }
                 transition.getValue().execute(editorAdaptor);
+                if ( ! editorAdaptor.getConfiguration().get(Options.ATOMIC_INSERT)) {
+                    editorAdaptor.getListeners().fireCommandExecuted();
+                }
             } catch (final CommandExecutionException e) {
                 editorAdaptor.getUserInterfaceService().setErrorMessage(e.getMessage());
             }
+            editorAdaptor.getListeners().fireStateReset(true);
             return true;
         } else if (stroke.equals(ESC)) {
             editorAdaptor.changeModeSafely(NormalMode.NAME);
@@ -288,7 +297,9 @@ public class InsertMode extends AbstractMode {
             }
             if (mOnLeaveHint != null && stroke.equals(ESC)) {
                 try {
+                    editorAdaptor.getListeners().fireCommandAboutToExecute();
                     mOnLeaveHint.getCommand().execute(editorAdaptor);
+                    editorAdaptor.getListeners().fireCommandExecuted();
                 } catch (final CommandExecutionException e) {
                     editorAdaptor.getUserInterfaceService().setErrorMessage(e.getMessage());
                 }

@@ -72,7 +72,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
 
     private static final String CONFIG_FILE_NAME = ".vrapperrc";
     private static final String WINDOWS_CONFIG_FILE_NAME = "_vrapperrc";
-    private EditorMode currentMode;
+    protected EditorMode currentMode;
     private final Map<String, EditorMode> modeMap = new HashMap<String, EditorMode>();
     private final TextContent modelContent;
     private final TextContent viewContent;
@@ -98,6 +98,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     private MacroPlayer macroPlayer;
     private String lastModeName;
     private String editorType;
+    private VrapperEventListeners listeners;
     /** Previous selection, or null if editor is fresh. Must be editor-local. */
     private Selection lastSelection;
     private int cursorBeforeMapping = -1;
@@ -134,6 +135,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         macroRecorder = new MacroRecorder(registerManager, userInterfaceService);
         macroPlayer = null;
         this.editorType = editor.getEditorType();
+        listeners = new VrapperEventListeners(this);
 
         fileService = editor.getFileService();
         __set_modes(this);
@@ -326,6 +328,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
             }
         }
         if (currentMode != newMode) {
+            listeners.fireModeAboutToSwitch(newMode);
         	final EditorMode oldMode = currentMode;
             if (currentMode != null) {
                 currentMode.leaveMode(args);
@@ -336,6 +339,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
             	newMode.enterMode(args);
             	//EditorMode might have called changeMode again, so update UI with actual mode.
             	userInterfaceService.setEditorMode(currentMode.getDisplayName());
+            	listeners.fireModeSwitched(oldMode);
             }
             catch(final CommandExecutionException e) {
             	//failed to enter new mode, revert to previous mode
@@ -344,6 +348,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
             	oldMode.enterMode();
             	//EditorMode might have called changeMode again, so update UI with actual mode.
             	userInterfaceService.setEditorMode(currentMode.getDisplayName());
+            	listeners.fireModeSwitched(oldMode);
             	throw e;
             }
         }
@@ -604,6 +609,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
             changeModeSafely(InsertMode.NAME, InsertMode.DONT_MOVE_CURSOR, InsertMode.DONT_LOCK_HISTORY);
             userInterfaceService.setEditorMode(UserInterfaceService.VRAPPER_DISABLED);
         }
+        listeners.fireVrapperToggled(enabled);
     }
 
     @Override
@@ -636,6 +642,21 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
 
     public String getEditorType() {
         return editorType;
+    }
+    
+    @Override
+    public void addVrapperEventListener(VrapperEventListener listener) {
+        listeners.addEventListener(listener);
+    }
+
+    @Override
+    public void removeVrapperEventListener(VrapperEventListener listener) {
+        listeners.removeEventListener(listener);
+    }
+
+    @Override
+    public VrapperEventListeners getListeners() {
+        return listeners;
     }
 
     @Override

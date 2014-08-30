@@ -245,7 +245,9 @@ public abstract class CommandBasedMode extends AbstractMode {
 
     public void executeCommand(Command command)
             throws CommandExecutionException {
+        editorAdaptor.getListeners().fireCommandAboutToExecute();
         command.execute(editorAdaptor);
+        editorAdaptor.getListeners().fireCommandExecuted();
         Command repetition = command.repetition();
         if (repetition != null) {
             RegisterManager registerManager = editorAdaptor .getRegisterManager();
@@ -271,6 +273,7 @@ public abstract class CommandBasedMode extends AbstractMode {
             VrapperLog
                     .error("current state was null - this shouldn't have happened!");
             reset();
+            editorAdaptor.getListeners().fireStateReset(false);
         }
 
         Transition<Command> transition = currentState.press(keyStroke);
@@ -287,15 +290,18 @@ public abstract class CommandBasedMode extends AbstractMode {
             keyMapResolver.storeKey(keyStroke);
         }
         commandBuffer.append(keyStroke.getCharacter());
+        boolean recognized = false;
         if (transition != null) {
             Command command = transition.getValue();
             currentState = transition.getNextState();
             if (command != null) {
+                recognized = true;
                 try {
                     executeCommand(command);
                 } catch (CommandExecutionException e) {
                     setErrorMessage(e.getMessage());
                     reset();
+                    editorAdaptor.getListeners().fireStateReset(true);
                     commandDone();
                     isEnabled = true;
                 }
@@ -303,6 +309,7 @@ public abstract class CommandBasedMode extends AbstractMode {
         }
         if (transition == null || currentState == null) {
             reset();
+            editorAdaptor.getListeners().fireStateReset(recognized);
             if (isEnabled) {
                 commandDone();
             }

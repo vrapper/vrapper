@@ -47,14 +47,19 @@ public class ContentAssistMode extends InsertMode {
     @Override
     public boolean handleKey(KeyStroke keyStroke) {
         final Transition<Command> transition = currentState.press(keyStroke);
+        boolean commandRecognized = false;
         if (transition != null && transition.getValue() != null) {
+            commandRecognized = true;
             try {
+                editorAdaptor.getListeners().fireCommandAboutToExecute();
                 transition.getValue().execute(editorAdaptor);
+                editorAdaptor.getListeners().fireCommandExecuted();
                 return true;
             } catch (final CommandExecutionException e) {
                 editorAdaptor.getUserInterfaceService().setErrorMessage(e.getMessage());
             }
         }
+        editorAdaptor.getListeners().fireStateReset(commandRecognized);
         return super.handleKey(keyStroke);
     }
     
