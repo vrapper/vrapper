@@ -20,4 +20,7 @@ public interface InputInterceptor extends VerifyKeyListener {
     
     public SelectionVisualHandler getSelectionVisualHandler();
     public void setSelectionVisualHandler(SelectionVisualHandler handler);
+    
+    public CaretPositionUndoHandler getCaretPositionUndoHandler();
+    public void setCaretPositionUndoHandler(CaretPositionUndoHandler handler);
 }

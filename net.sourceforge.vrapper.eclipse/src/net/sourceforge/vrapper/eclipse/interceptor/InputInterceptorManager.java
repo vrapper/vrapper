@@ -14,6 +14,7 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 
+import org.eclipse.core.commands.operations.IOperationHistory;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
@@ -23,6 +24,7 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchPartReference;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.MultiEditor;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
@@ -98,12 +100,16 @@ public class InputInterceptorManager implements IPartListener2 {
                 ITextViewerExtension textViewerExt = (ITextViewerExtension) viewer;
                 InputInterceptor interceptor = factory.createInterceptor(editor, textViewer);
                 CaretPositionHandler caretPositionHandler = interceptor.getCaretPositionHandler();
+                CaretPositionUndoHandler caretPositionUndoHandler = interceptor.getCaretPositionUndoHandler();
                 SelectionVisualHandler visualHandler = interceptor.getSelectionVisualHandler();
+                interceptor.getEditorAdaptor().addVrapperEventListener(interceptor.getCaretPositionUndoHandler());
 
                 textViewerExt.prependVerifyKeyListener(interceptor);
                 textViewer.getTextWidget().addMouseListener(caretPositionHandler);
                 textViewer.getTextWidget().addCaretListener(caretPositionHandler);
                 textViewer.getSelectionProvider().addSelectionChangedListener(visualHandler);
+                IOperationHistory operationHistory = PlatformUI.getWorkbench().getOperationSupport().getOperationHistory();
+                operationHistory.addOperationHistoryListener(caretPositionUndoHandler);
                 interceptors.put(editor, interceptor);
                 VrapperPlugin.getDefault().registerEditor(editor, interceptor.getEditorAdaptor());
             }
@@ -142,11 +148,14 @@ public class InputInterceptorManager implements IPartListener2 {
                 ITextViewer textViewer = (ITextViewer) viewer;
                 ITextViewerExtension textViewerExt = (ITextViewerExtension) viewer;
                 CaretPositionHandler caretPositionHandler = interceptor.getCaretPositionHandler();
+                CaretPositionUndoHandler caretPositionUndoHandler = interceptor.getCaretPositionUndoHandler();
                 SelectionVisualHandler visualHandler = interceptor.getSelectionVisualHandler();
                 textViewerExt.removeVerifyKeyListener(interceptor);
                 textViewer.getTextWidget().removeCaretListener(caretPositionHandler);
                 textViewer.getTextWidget().removeMouseListener(caretPositionHandler);
                 textViewer.getSelectionProvider().removeSelectionChangedListener(visualHandler);
+                IOperationHistory operationHistory = PlatformUI.getWorkbench().getOperationSupport().getOperationHistory();
+                operationHistory.removeOperationHistoryListener(caretPositionUndoHandler);
             } catch (Exception exception) {
                 VrapperLog.error("Exception during closing IWorkbenchPart",
                         exception);

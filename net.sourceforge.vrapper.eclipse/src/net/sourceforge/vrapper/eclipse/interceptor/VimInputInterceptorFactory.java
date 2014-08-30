@@ -124,6 +124,7 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
                 platform,
                 globalRegisterManager, VrapperPlugin.isVrapperEnabled());
         InputInterceptor interceptor = createInterceptor(editorAdaptor);
+        interceptor.setCaretPositionUndoHandler(new CaretPositionUndoHandler(textViewer));
         interceptor.setCaretPositionHandler(new CaretPositionHandler(editorAdaptor, textViewer));
         if (editorAdaptor.getConfiguration().get(Options.EXIT_LINK_MODE)) {
             LinkedModeHandler linkedModeHandler = new LinkedModeHandler(editorAdaptor);
@@ -155,6 +156,7 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
         private LinkedModeHandler linkedModeHandler;
         private CaretPositionHandler caretPositionHandler;
         private SelectionVisualHandler selectionVisualHandler;
+        private CaretPositionUndoHandler caretPositionUndoHandler;
 
         private VimInputInterceptor(EditorAdaptor editorAdaptor) {
             this.editorAdaptor = editorAdaptor;
@@ -213,6 +215,16 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
         @Override
         public void setSelectionVisualHandler(SelectionVisualHandler handler) {
             selectionVisualHandler = handler;
+        }
+
+        @Override
+        public CaretPositionUndoHandler getCaretPositionUndoHandler() {
+            return caretPositionUndoHandler;
+        }
+
+        @Override
+        public void setCaretPositionUndoHandler(CaretPositionUndoHandler handler) {
+            this.caretPositionUndoHandler = handler;
         }
     }
 }
