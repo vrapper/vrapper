@@ -443,6 +443,11 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
 
         final org.eclipse.jface.text.Position p = marks.get(id);
         if (p == null || p.isDeleted) {
+        	if(id.equals(LAST_CHANGE_END)) {
+        		//if a change was deleted, '[ and '] are the same position
+        		//(for whatever reason, '[ has p.isDeleted = false)
+        		return getMark(LAST_CHANGE_START);
+        	}
         	//leave deleted entries in marks Map
         	//in case an 'undo' brings it back
             return null;
