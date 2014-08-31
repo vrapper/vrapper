@@ -6,6 +6,7 @@ import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.vim.DefaultEditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
+import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
 import net.sourceforge.vrapper.vim.modes.CommandBasedMode;
 import net.sourceforge.vrapper.vim.modes.EditorMode;
@@ -78,7 +79,7 @@ public class SelectionVisualHandler implements ISelectionChangedListener {
             selectionResetOffset = -1;
         } else if (selection.getLength() != 0) {
             // Fix caret type
-            if (editorAdaptor.getConfiguration().get(Options.SELECTION).equals("inclusive")) {
+            if (editorAdaptor.getConfiguration().get(Options.SELECTION).equals(Selection.INCLUSIVE)) {
                 CaretType type = CaretType.LEFT_SHIFTED_RECTANGULAR;
                 if (editorAdaptor.getSelection().isReversed()) {
                     type = CaretType.RECTANGULAR;

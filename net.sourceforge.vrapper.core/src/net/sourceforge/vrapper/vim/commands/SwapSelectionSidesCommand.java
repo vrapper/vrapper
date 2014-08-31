@@ -13,7 +13,8 @@ public class SwapSelectionSidesCommand extends CountIgnoringNonRepeatableCommand
     private SwapSelectionSidesCommand() { /* NOP */ }
 
     public void execute(EditorAdaptor editorAdaptor) {
-        boolean isSelectionExclusive = editorAdaptor.getConfiguration().get(Options.SELECTION).equals("exclusive");
+        String selectionOption = editorAdaptor.getConfiguration().get(Options.SELECTION);
+        boolean isSelectionExclusive = selectionOption.equals(Selection.EXCLUSIVE);
         Selection selection = editorAdaptor.getSelection();
         if (selection.getModelLength() == 1 && !isSelectionExclusive) {
             // do nothing

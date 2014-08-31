@@ -61,6 +61,7 @@ import net.sourceforge.vrapper.vim.commands.RepeatLastSubstitutionCommand;
 import net.sourceforge.vrapper.vim.commands.ReplaceCommand;
 import net.sourceforge.vrapper.vim.commands.RestoreSelectionCommand;
 import net.sourceforge.vrapper.vim.commands.SaveCommand;
+import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SetMarkCommand;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 import net.sourceforge.vrapper.vim.commands.SwapCaseCommand;
@@ -265,10 +266,10 @@ public class NormalMode extends CommandBasedMode {
         public void execute(EditorAdaptor editorAdaptor)
                 throws CommandExecutionException {
             String selectionVal = editorAdaptor.getConfiguration().get(Options.SELECTION);
-            if ("exclusive".equals(selectionVal)) {
+            if (Selection.EXCLUSIVE.equals(selectionVal)) {
                 final Position position = editorAdaptor.getPosition();
                 editorAdaptor.setSelection(new SimpleSelection(new StartEndTextRange(position, position)));
-            } else if ("inclusive".equals(selectionVal)) {
+            } else if (Selection.INCLUSIVE.equals(selectionVal)) {
                 new VisualMotionCommand(MoveRight.INSTANCE).execute(editorAdaptor);
             }
         }

@@ -125,7 +125,7 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
             Position end) {
         if (previousSel.isReversed()
                 && editorAdaptor.getConfiguration().get(Options.SELECTION)
-                    .equals("inclusive")) {
+                    .equals(Selection.INCLUSIVE)) {
             editorAdaptor.getCursorService().setCaret(CaretType.RECTANGULAR);
         }
         // Can happen if the user deleted a piece of text containing the mark or indented.

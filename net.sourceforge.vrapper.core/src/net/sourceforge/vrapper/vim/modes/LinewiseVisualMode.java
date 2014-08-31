@@ -35,7 +35,7 @@ public class LinewiseVisualMode extends AbstractVisualMode {
     @Override
     public void enterMode(ModeSwitchHint... args) throws CommandExecutionException {
         CaretType caret = CaretType.RECTANGULAR;
-        if (editorAdaptor.getConfiguration().get(Options.SELECTION).equals("exclusive"))
+        if (editorAdaptor.getConfiguration().get(Options.SELECTION).equals(Selection.EXCLUSIVE))
             caret = CaretType.VERTICAL_BAR;
         editorAdaptor.getCursorService().setCaret(caret);
         super.enterMode(args);
