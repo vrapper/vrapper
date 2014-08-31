@@ -11,6 +11,7 @@ import static net.sourceforge.vrapper.utils.VimUtils.set;
 import java.util.Set;
 
 import net.sourceforge.vrapper.platform.Configuration.Option;
+import net.sourceforge.vrapper.vim.commands.Selection;
 
 public interface Options {
     // Boolean options:
@@ -52,7 +53,7 @@ public interface Options {
     // String options:
     public static final Option<String> CLIPBOARD = globalString("clipboard", "autoselect", "unnamed, autoselect", "cb");
     public static final Option<String> SYNC_MODIFIABLE = globalString("syncmodifiable", "nosync", "nosync, matchreadonly", "syncma");
-    public static final Option<String> SELECTION = string("selection", "inclusive", "old, inclusive, exclusive", "sel");
+    public static final Option<String> SELECTION = string("selection", Selection.INCLUSIVE, Selection.SELECTION_OPTIONS, "sel");
     public static final Option<String> PATH      = stringNoConstraint("path", ".", "pa");
     public static final Option<String> GVIM_PATH = stringNoConstraint("gvimpath", "/usr/bin/gvim", "gvp");
     public static final Option<String> GVIM_ARGS = stringNoConstraint("gvimargs", "");

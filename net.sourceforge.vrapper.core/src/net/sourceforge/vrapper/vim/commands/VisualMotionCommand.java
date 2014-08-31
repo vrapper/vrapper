@@ -41,7 +41,7 @@ public class VisualMotionCommand extends AbstractVisualMotionCommand {
             newSelectionEnd = newSelectionEnd.addViewOffset(1);
 	    
 	    Selection newSelection;
-	    if (editorAdaptor.getConfiguration().get(Options.SELECTION).equals("exclusive")) {
+	    if (editorAdaptor.getConfiguration().get(Options.SELECTION).equals(Selection.EXCLUSIVE)) {
             newSelection = new SimpleSelection(
 	                new StartEndTextRange(oldSelection.getStart(), newSelectionEnd));
         } else {

@@ -5,6 +5,24 @@ import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 
 public interface Selection extends TextObject, TextRange {
+    
+    /** Config value of 'selection' option which allows a selection to exclude the cursor (i.e. it
+     * can be empty).
+     */
+    public static final String EXCLUSIVE = "exclusive";
+
+    /** Config value of 'selection' option which makes that a selection always needs to include the
+     * cursor (i.e. it must always be at least 1 character long).
+     */
+    public static final String INCLUSIVE = "inclusive";
+
+    /** Config value of 'selection' option which is allowed for compatiblity with Vim but is not
+     * supported.
+     */
+    public static final String OLD = "old";
+    
+    public static final String SELECTION_OPTIONS = OLD + ", " + INCLUSIVE + ", " + EXCLUSIVE;
+    
     /** Whether the selection is from bottom to top and / or right to left. */
     public boolean isReversed();
     /**

@@ -6,6 +6,7 @@ package net.sourceforge.vrapper.vim.commands;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.EditorMode;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
@@ -32,7 +33,8 @@ public class LeaveVisualModeCommand extends CountIgnoringNonRepeatableCommand {
         // Regular selection is 1 position longer on the right side to include last character.
         // Linewise visual mode on the other hand has a 'to' field which can be anywhere on the line
         // so don't move the cursor.
-        if ( ! selection.isReversed() && ! (selection instanceof LineWiseSelection)) {
+        if ( ! selection.isReversed() && ! (selection instanceof LineWiseSelection)
+                && Selection.INCLUSIVE.equals(editorAdaptor.getConfiguration().get(Options.SELECTION))) {
             exitPoint = VimUtils.safeAddModelOffset(editorAdaptor, selection.getTo(), -1, true);
         }
         editorAdaptor.setPosition(exitPoint, StickyColumnPolicy.ON_CHANGE);

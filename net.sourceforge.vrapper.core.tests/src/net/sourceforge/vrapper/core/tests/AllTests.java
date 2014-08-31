@@ -12,6 +12,8 @@ import net.sourceforge.vrapper.core.tests.cases.SimpleKeyStrokeTests;
 import net.sourceforge.vrapper.core.tests.cases.SnapshotTests;
 import net.sourceforge.vrapper.core.tests.cases.StateAndTransitionTests;
 import net.sourceforge.vrapper.core.tests.cases.VisualModeTests;
+import net.sourceforge.vrapper.core.tests.cases.VisualModeExclusiveTests;
+import net.sourceforge.vrapper.core.tests.cases.VisualModeInclusiveTests;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -30,6 +32,8 @@ import org.junit.runners.Suite;
 	SnapshotTests.class,
 	StateAndTransitionTests.class,
 	VisualModeTests.class,
+	VisualModeInclusiveTests.class,
+	VisualModeExclusiveTests.class,
 //	VrapperRCTests.class,
 //	TextObjectsUnitTests.class,
 //	CommandUnitTests.class,

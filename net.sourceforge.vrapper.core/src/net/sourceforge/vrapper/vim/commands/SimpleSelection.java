@@ -84,7 +84,7 @@ public class SimpleSelection implements Selection {
 
     @Override
     public Position getEndMark(EditorAdaptor defaultEditorAdaptor) {
-        if (defaultEditorAdaptor.getConfiguration().get(Options.SELECTION).equals("inclusive")) {
+        if (defaultEditorAdaptor.getConfiguration().get(Options.SELECTION).equals(Selection.INCLUSIVE)) {
             // Selection might include a newline. The end mark should be on the previous line.
             return VimUtils.safeAddModelOffset(defaultEditorAdaptor, range.getRightBound(), -1, true);
         } else {
@@ -102,7 +102,7 @@ public class SimpleSelection implements Selection {
         Position selStart;
         Position selEnd;
         // Make sure to add 1 to the end marker for inclusive mode, see getEndMark above.
-        if (adaptor.getConfiguration().get(Options.SELECTION).equals("inclusive")) {
+        if (adaptor.getConfiguration().get(Options.SELECTION).equals(Selection.INCLUSIVE)) {
             end = VimUtils.safeAddModelOffset(adaptor, end, 1, true);
         }
         if (isReversed()) {
