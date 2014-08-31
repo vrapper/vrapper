@@ -125,7 +125,17 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     		//Just put the cursor at offset 0.
     		viewOffset = 0;
     	}
-        textViewer.getTextWidget().setSelection(viewOffset);
+    	try {
+    	    textViewer.getTextWidget().setSelection(viewOffset);
+        } catch (IllegalArgumentException e) {
+            /**
+             * This exception should only happen if the cursor is on the
+             * end of a line and the newlines are multi-byte characters.
+             * Which is to say, Windows (\r\n).  If this happens, step
+             * back one character and try again.
+             */
+    	    textViewer.getTextWidget().setSelection(viewOffset - 1);
+        }
         if (columnPolicy == StickyColumnPolicy.RESET_EOL) {
             stickToEOL = false;
             updateStickyColumn(viewOffset);
