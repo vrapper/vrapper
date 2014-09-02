@@ -41,6 +41,7 @@ import net.sourceforge.vrapper.utils.UnmodifiableTextContentDecorator;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.Selection;
+import net.sourceforge.vrapper.vim.commands.SetLocalOptionCommand;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.BlockwiseVisualMode;
 import net.sourceforge.vrapper.vim.modes.ConfirmSubstitutionMode;
@@ -602,9 +603,16 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
 
     @Override
     public void onChangeEnabled(final boolean enabled) {
+        // switch mode for set-up/tear-down
         if (enabled) {
-            // switch mode for set-up/tear-down
-            changeModeSafely(NormalMode.NAME, InsertMode.DONT_MOVE_CURSOR);
+            // Check if selection is present, if so initialize to visual mode.
+            Selection eclipseSelection = getSelection();
+            if (eclipseSelection.getModelLength() > 0) {
+                rememberLastActiveSelection();
+                changeModeSafely(VisualMode.NAME, VisualMode.RECALL_SELECTION_HINT);
+            } else {
+                changeModeSafely(NormalMode.NAME, InsertMode.DONT_MOVE_CURSOR);
+            }
         } else {
             changeModeSafely(InsertMode.NAME, InsertMode.DONT_MOVE_CURSOR, InsertMode.DONT_LOCK_HISTORY);
             userInterfaceService.setEditorMode(UserInterfaceService.VRAPPER_DISABLED);
