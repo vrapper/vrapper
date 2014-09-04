@@ -52,8 +52,10 @@ public class PasteAfterCommand extends CountAwareCommand {
         case TEXT:
             offset = Math.min(line.getEndOffset(), offset + 1);
             position = offset + text.length() * count;
-            if (!placeCursorAfter || text.length() == 0)
-            	position -= 1;
+            // Move cursor back, unless we should be after the pasted text or if line is empty.
+            if ( ( ! placeCursorAfter || text.length() == 0) && line.getLength() > 0) {
+                position -= 1;
+            }
             break;
         case TEXT_RECTANGLE:
             BlockPasteHelper.execute(editorAdaptor, count, 1, placeCursorAfter);
