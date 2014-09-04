@@ -14,6 +14,7 @@ import net.sourceforge.vrapper.plugin.surround.provider.SurroundModesProvider;
 import net.sourceforge.vrapper.plugin.surround.provider.SurroundStateProvider;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.ContentType;
+import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.TextObjectProvider;
 import net.sourceforge.vrapper.vim.commands.Command;
@@ -400,6 +401,13 @@ public class NormalModeTests extends CommandTestCase {
 		checkCommand(forKeySeq("P"),
 				"Al", 'a', " ma kota",
 				"Al", 'a', " ma kota");
+		// Special case: cursor is on a new line, don't move.
+		checkCommand(forKeySeq("gP"),
+		        "Al a\n", '\n', "ma kota",
+		        "Al a\n", '\n', "ma kota");
+		checkCommand(forKeySeq("P"),
+				"Al a\n", '\n', "ma kota",
+				"Al a\n", '\n', "ma kota");
 	}
 
 	@Test public void test_p_empty_clipboard() {
@@ -407,6 +415,30 @@ public class NormalModeTests extends CommandTestCase {
 		checkCommand(forKeySeq("p"),
 				"Al",'a'," ma kota",
 				"Al",'a'," ma kota");
+		// Special case: cursor is on a new line, don't move.
+		checkCommand(forKeySeq("gp"),
+				"Al a\n", '\n', "ma kota",
+				"Al a\n", '\n', "ma kota");
+		checkCommand(forKeySeq("p"),
+		        "Al a\n", '\n', "ma kota",
+		        "Al a\n", '\n', "ma kota");
+	}
+
+	@Test public void test_o() {
+	    installSaneRegisterManager();
+		checkCommand(forKeySeq("omana<Esc>"),
+				"Al", ' ', "a\nma kota",
+				"Al a\nman", 'a', "\nma kota");
+		VimUtils.BREAKPOINT_TRIGGER++;
+		checkCommand(forKeySeq("o<Esc>"),
+				"Al", ' ', "a\nma kota",
+				"Al a\n", '\n', "ma kota");
+		// [FIXME] Counted use should insert multiple lines!
+		// Line is empty. Cursor should be before end of that new, empty line, not on previous line.
+		checkCommand(forKeySeq("2o<Esc>"),
+				"Al", ' ', "a\nma kota",
+				"Al a\n", '\n', "ma kota");
+		// [FIXME] Make test case for 5ohey<esc> and check if there are newlines in between.
 	}
 
 	@Test public void test_p_lines() {
