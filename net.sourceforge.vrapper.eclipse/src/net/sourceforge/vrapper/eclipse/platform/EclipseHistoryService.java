@@ -1,22 +1,22 @@
 package net.sourceforge.vrapper.eclipse.platform;
 
+import net.sourceforge.vrapper.eclipse.interceptor.CaretPositionUndoHandler;
 import net.sourceforge.vrapper.platform.HistoryService;
 
 import org.eclipse.core.commands.operations.IUndoContext;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.IUndoManager;
 import org.eclipse.jface.text.IUndoManagerExtension;
-import org.eclipse.swt.custom.StyledText;
 
 public class EclipseHistoryService implements IUndoManager, IUndoManagerExtension, HistoryService {
 
     private final IUndoManager delegate;
     private boolean locked;
     private String lockName = "";
-    private final StyledText textWidget;
+    private final ITextViewer textViewer;
 
-    public EclipseHistoryService(final StyledText textWidget, final IUndoManager delegate) {
-        this.textWidget = textWidget;
+    public EclipseHistoryService(final ITextViewer textViewer, final IUndoManager delegate) {
+        this.textViewer = textViewer;
         this.delegate = delegate;
     }
     
@@ -107,11 +107,14 @@ public class EclipseHistoryService implements IUndoManager, IUndoManagerExtensio
         delegate.setMaximalUndoLevel(arg0);
     }
 
+    /**
+     * Clears the Eclipse selection after doing an undo / redo action, Vim only shows a caret.
+     * @see CaretPositionUndoHandler See CaretPositionUndoHandler as the caret's location is handled
+     *  there - this function is just a fallback.
+     */
     private void deselectAll() {
-        // XXX: we acheive some degree of Vim compatibility by jumping
-        // to beginning of selection; this is hackish
-        final int caretOffset = textWidget.getSelection().x;
-        textWidget.setSelection(caretOffset);
+        final int caretOffset = textViewer.getSelectedRange().x;
+        textViewer.setSelectedRange(caretOffset, 0);
     }
 
 	@Override

@@ -18,6 +18,19 @@ import org.eclipse.core.commands.operations.ObjectUndoContext;
 import org.eclipse.core.commands.operations.OperationHistoryEvent;
 import org.eclipse.jface.text.ITextViewer;
 
+/**
+ * This handler keeps track of and moves the caret when operations happen on the current Eclipse
+ * document. Undoing or redoing an action will then allow us to move the caret back to where it was.
+ * <p>
+ * To given an example:
+ * <ul>
+ * <li>Enter <code>$dd</code>. The current line will be deleted.</li>
+ * <li>Enter <code>u</code>. The line will be restored and the caret will be placed at the end.</li>
+ * </ul>
+ * Compare this to Eclipse's own "Delete line" command (default Ctrl+D): the current line will be
+ * deleted and restored but "Undo" will simply restore and select the line without restoring the
+ * previous caret location.
+ */
 public class CaretPositionUndoHandler extends VrapperEventAdapter implements IOperationHistoryListener {
 
     protected static class VrapperState {
