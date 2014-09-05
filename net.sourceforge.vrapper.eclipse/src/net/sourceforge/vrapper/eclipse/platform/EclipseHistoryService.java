@@ -6,6 +6,7 @@ import org.eclipse.core.commands.operations.IUndoContext;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.IUndoManager;
 import org.eclipse.jface.text.IUndoManagerExtension;
+import org.eclipse.jface.text.TextViewer;
 import org.eclipse.swt.custom.StyledText;
 
 public class EclipseHistoryService implements IUndoManager, IUndoManagerExtension, HistoryService {
@@ -13,10 +14,10 @@ public class EclipseHistoryService implements IUndoManager, IUndoManagerExtensio
     private final IUndoManager delegate;
     private boolean locked;
     private String lockName = "";
-    private final StyledText textWidget;
+    private final ITextViewer textViewer;
 
-    public EclipseHistoryService(final StyledText textWidget, final IUndoManager delegate) {
-        this.textWidget = textWidget;
+    public EclipseHistoryService(final ITextViewer textViewer, final IUndoManager delegate) {
+        this.textViewer = textViewer;
         this.delegate = delegate;
     }
     
@@ -110,8 +111,8 @@ public class EclipseHistoryService implements IUndoManager, IUndoManagerExtensio
     private void deselectAll() {
         // XXX: we acheive some degree of Vim compatibility by jumping
         // to beginning of selection; this is hackish
-        final int caretOffset = textWidget.getSelection().x;
-        textWidget.setSelection(caretOffset);
+        final int caretOffset = textViewer.getSelectedRange().x;
+        textViewer.setSelectedRange(caretOffset, 0);
     }
 
 	@Override

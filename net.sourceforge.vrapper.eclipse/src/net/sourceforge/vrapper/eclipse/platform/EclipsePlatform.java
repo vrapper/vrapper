@@ -90,7 +90,7 @@ public class EclipsePlatform implements Platform {
             final IUndoManager delegate = ((ITextViewerExtension6) sourceViewer)
                     .getUndoManager();
             final EclipseHistoryService manager = new EclipseHistoryService(
-                    sourceViewer.getTextWidget(), delegate);
+                    sourceViewer, delegate);
             sourceViewer.setUndoManager(manager);
             this.historyService = manager;
         } else {
