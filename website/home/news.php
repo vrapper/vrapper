@@ -1,4 +1,59 @@
 <div class="newsbox">
+    <div class="date">2014-09-07</div>
+    <h4>Updates to unstable update site<br/>(plus a minor rant)</h4>
+    
+    <p>Time for another monthly status update on Vrapper.  For the last couple
+    years, our GitHub Issues page has hovered around 30 open defects/feature
+    requests. Defects have been filed and fixed and we always seemed to have
+    about 30 open at any given time.  This last month brought with it what I'm
+    going to call some "overzealous" new users.  We jumped from having ~30
+    defects to having over 50 in one month.  13 of those issues were filed by a
+    single person.  Now, I don't take this as a sign that Vrapper is unstable. I
+    may be overly optimistic here, but I think it's actually because Vrapper has
+    reached a point where we meet about 95% of most users' use cases.  We're
+    down to the esoteric features and nit-picking defects; which is to say, the
+    really hard stuff.  Just take a look at the current changes on our unstable
+    update site:</p>
+    
+    <ul>
+        <li>Added support for 'c_&lt;C-R&gt;_&lt;C-W&gt;' and 'c_&lt;C-R&gt;_&lt;C-A&gt;'</li>
+        <ul>
+        	<li>Insert word under cursor into command-line</li>
+        </ul>
+        <li>Added support for 'n' flag in substitutions</li>
+        <ul>
+         	<li>Count matches without performing substitution</li>
+        </ul>
+        <li>Fixed issue with using counts on a non-linewise paste</li>
+        <li>Fixed issue with '}' in visual mode with ipmotion.vim plugin</li>
+        <li>Fixed issue with 'incsearch' and '?' search mode</li>
+        <li>Fixed issue with cursor position after a 'u' undo</li>
+        <li>Fixed issue with ']' mark after deleting text</li>
+        <li>Fixed issue with cursor position in visual mode when using "selection=exclusive"</li>
+        <li>Fixed issue with performing multiple searches while in visual mode</li>
+        <li>Fixed issue with enabling Vrapper while a text selection was active</li>
+        <li>Fixed issue with pasting on an empty line with windows newlines</li>
+        <li>Fixed issues with Vrapper interacting with Perforce plugin</li>
+    </ul>
+
+    <p>There are very few items in that list that I think are generally
+    applicable or would affect a large number of users (and those are just the
+    items we were able to fix).  Hopefully this is a sign that the majority of
+    our users are happy with Vrapper.  Hopefully the majority of our users
+    aren't even running into most of the defects we're fixing at this point.</p>
+    
+    <p>
+    <b>**Changes in behavior**</b><br/>
+	One last thing.  I removed a couple configurable options which nobody should've
+	been using anyway.  We had support for <b>"saney"</b> and <b>"sanecw"</b> which would modify
+	the behavior of 'Y' and 'cw' to be more consistent with other Vim commands
+	(despite our 'Y' and 'cw' being consistent with Vim's 'Y' and 'cw').  I removed
+	these options because Vim's own documentation says to use ":map Y y$" and ":map
+	cw dwi" if you want that "sane" behavior.  I think our "saney" and "sanecw"
+	options were added before Vrapper had support for ":map" but they are no longer
+	necessary since we've had ":map" for a while now.</p>
+</div>
+<div class="newsbox">
     <div class="date">2014-08-08</div>
     <h4>0.46.0 Released</h4>
     
