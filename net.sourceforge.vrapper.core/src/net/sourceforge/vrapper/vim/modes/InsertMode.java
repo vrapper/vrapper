@@ -55,6 +55,7 @@ import net.sourceforge.vrapper.vim.modes.commandline.CommandLineMode;
 import net.sourceforge.vrapper.vim.modes.commandline.PasteRegisterMode;
 import net.sourceforge.vrapper.vim.register.Register;
 import net.sourceforge.vrapper.vim.register.RegisterContent;
+import net.sourceforge.vrapper.vim.register.RegisterManager;
 import net.sourceforge.vrapper.vim.register.StringRegisterContent;
 
 public class InsertMode extends AbstractMode {
@@ -269,7 +270,9 @@ public class InsertMode extends AbstractMode {
         return dontRepeat(seq(
                 repetition,
                 new SwitchRegisterCommand(lastEditRegister),
-                paste
+                paste,
+                //LastEdit register is an internal affair, don't keep the register active.
+                new SwitchRegisterCommand(SwitchRegisterCommand.DEFAULT_REGISTER)
                 ));
     }
 
