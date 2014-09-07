@@ -14,7 +14,6 @@ import net.sourceforge.vrapper.plugin.surround.provider.SurroundModesProvider;
 import net.sourceforge.vrapper.plugin.surround.provider.SurroundStateProvider;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.ContentType;
-import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.TextObjectProvider;
 import net.sourceforge.vrapper.vim.commands.Command;
@@ -430,20 +429,60 @@ public class NormalModeTests extends CommandTestCase {
 	}
 
 	@Test public void test_o() {
-	    installSaneRegisterManager();
+		installSaneRegisterManager();
 		checkCommand(forKeySeq("omana<Esc>"),
 				"Al", ' ', "a\nma kota",
 				"Al a\nman", 'a', "\nma kota");
-		VimUtils.BREAKPOINT_TRIGGER++;
 		checkCommand(forKeySeq("o<Esc>"),
 				"Al", ' ', "a\nma kota",
 				"Al a\n", '\n', "ma kota");
-		// [FIXME] Counted use should insert multiple lines!
 		// Line is empty. Cursor should be before end of that new, empty line, not on previous line.
-		checkCommand(forKeySeq("2o<Esc>"),
+		checkCommand(forKeySeq("3o<Esc>"),
 				"Al", ' ', "a\nma kota",
+				"Al a\n\n\n", '\n', "ma kota");
+		checkCommand(forKeySeq("5ohey<Esc>"),
+				"Al", ' ', "a\nma kota",
+				"Al a\nhey\nhey\nhey\nhey\nhe", 'y', "\nma kota");
+	}
+
+	@Test public void test_dot_on_o() {
+		installSaneRegisterManager();
+		checkCommand(forKeySeq("omana<Esc>."),
+				"Al", ' ', "a\nma kota",
+				"Al a\nmana\nman", 'a', "\nma kota");
+		checkCommand(forKeySeq("3oya<Esc>."),
+				"Al", ' ', "a\nma kota",
+				"Al a\nya\nya\nya\nya\nya\ny", 'a', "\nma kota");
+	}
+
+	@Test public void test_O() {
+		installSaneRegisterManager();
+		checkCommand(forKeySeq("Omana<Esc>"),
+				"Al a\nma", ' ', "kota",
+				"Al a\nman", 'a', "\nma kota");
+		checkCommand(forKeySeq("O<Esc>"),
+				"Al a\nma", ' ', "kota",
 				"Al a\n", '\n', "ma kota");
-		// [FIXME] Make test case for 5ohey<esc> and check if there are newlines in between.
+		// Line is empty. Cursor should be before end of that new, empty line, not on previous line.
+		checkCommand(forKeySeq("3O<Esc>"),
+				"Al a\nma", ' ', "kota",
+				"Al a\n\n\n", '\n', "ma kota");
+		checkCommand(forKeySeq("5Ohey<Esc>"),
+				"Al a\nma", ' ', "kota",
+				"Al a\nhey\nhey\nhey\nhey\nhe", 'y', "\nma kota");
+	}
+
+	@Test public void test_dot_on_O() {
+		installSaneRegisterManager();
+		checkCommand(forKeySeq("Oya<Esc>."),
+				"Al a\nma", ' ', "kota",
+				"Al a\ny", 'a', "\nya\nma kota");
+		checkCommand(forKeySeq("3Oya<Esc>."),
+				"Al a\nma", ' ', "kota",
+				"Al a\nya\nya\nya\nya\ny", 'a', "\nya\nma kota");
+		checkCommand(forKeySeq("3Oya<Esc>.."),
+				"Al a\nma", ' ', "kota",
+				"Al a\nya\nya\nya\nya\nya\nya\ny", 'a', "\nya\nya\nma kota");
 	}
 
 	@Test public void test_p_lines() {
