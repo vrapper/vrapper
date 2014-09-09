@@ -83,7 +83,7 @@ public class InsertMode extends AbstractMode {
     /**
      * Command to be used before insertion
      */
-    private Command command;
+    private Command repetitionCommand;
     private int count;
     private ExecuteCommandHint mOnLeaveHint;
 
@@ -122,7 +122,7 @@ public class InsertMode extends AbstractMode {
         }
 
         count = 1;
-        command = null;
+        repetitionCommand = null;
         mOnLeaveHint = null;
 
         try {
@@ -137,6 +137,8 @@ public class InsertMode extends AbstractMode {
                 if (hint instanceof ExecuteCommandHint) {
                     if (hint instanceof ExecuteCommandHint.OnLeave) {
                         mOnLeaveHint = (ExecuteCommandHint) hint;
+                    } else if (hint instanceof ExecuteCommandHint.OnRepeat) {
+                        repetitionCommand = ((ExecuteCommandHint) hint).getCommand();
                     }
                     else { //onEnter, execute command now
                         Command command = ((ExecuteCommandHint) hint).getCommand();
@@ -255,8 +257,8 @@ public class InsertMode extends AbstractMode {
 
     protected Command createRepetition(final Register lastEditRegister, final String text) {
         Command repetition = null;
-        if (command != null)
-            repetition = command.repetition();
+        if (repetitionCommand != null)
+            repetition = repetitionCommand.repetition();
 
         Command paste;
         if(count > 1) {

@@ -22,4 +22,8 @@ public abstract class ExecuteCommandHint implements ModeSwitchHint {
 		public OnLeave(Command command) { super(command); }
     }
 
+    public static class OnRepeat extends ExecuteCommandHint {
+        public OnRepeat(Command command) { super(command); }
+    }
+
 }
