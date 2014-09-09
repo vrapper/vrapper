@@ -6,6 +6,7 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.key;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafCtrlBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
+import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.repeat;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.dontRepeat;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
 import net.sourceforge.vrapper.keymap.EmptyState;
@@ -210,8 +211,8 @@ public class InsertMode extends AbstractMode {
     private void repeatInsert() {
         if (count > 1) {
             try {
-                editorAdaptor.getRegisterManager().getLastEdit().withCount(
-                        count - 1).execute(editorAdaptor);
+                repeat(count - 1, editorAdaptor.getRegisterManager().getLastInsertion())
+                    .execute(editorAdaptor);
             } catch (final CommandExecutionException e) {
                 editorAdaptor.getUserInterfaceService().setErrorMessage(
                         e.getMessage());
