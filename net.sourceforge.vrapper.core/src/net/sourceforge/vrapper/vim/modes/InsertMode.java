@@ -55,7 +55,6 @@ import net.sourceforge.vrapper.vim.modes.commandline.CommandLineMode;
 import net.sourceforge.vrapper.vim.modes.commandline.PasteRegisterMode;
 import net.sourceforge.vrapper.vim.register.Register;
 import net.sourceforge.vrapper.vim.register.RegisterContent;
-import net.sourceforge.vrapper.vim.register.RegisterManager;
 import net.sourceforge.vrapper.vim.register.StringRegisterContent;
 
 public class InsertMode extends AbstractMode {
@@ -250,12 +249,13 @@ public class InsertMode extends AbstractMode {
         final String text = content.getText(new StartEndTextRange(startEditPosition, position));
         final RegisterContent registerContent = new StringRegisterContent(ContentType.TEXT, text);
         lastEditRegister.setContent(registerContent);
-        final Command repetition = createRepetition(lastEditRegister, text);
+        final Command repetition = createRepetition(lastEditRegister, repetitionCommand, count);
         editorAdaptor.getRegisterManager().setLastInsertion(
                 count > 1 ? repetition.withCount(count) : repetition);
     }
 
-    protected Command createRepetition(final Register lastEditRegister, final String text) {
+    public static Command createRepetition(final Register lastEditRegister,
+            final Command repetitionCommand, final int count) {
         Command repetition = null;
         if (repetitionCommand != null)
             repetition = repetitionCommand.repetition();
