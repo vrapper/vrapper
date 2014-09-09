@@ -104,4 +104,8 @@ public class UnmodifiableTextContentDecorator implements TextContent {
         }
         return false;
     }
+    
+    public String toString() {
+        return "(UTD) {" + textContent.toString() + "}";
+    }
 }
