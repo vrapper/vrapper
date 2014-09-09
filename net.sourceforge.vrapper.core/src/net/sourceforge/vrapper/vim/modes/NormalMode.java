@@ -45,7 +45,9 @@ import net.sourceforge.vrapper.vim.commands.DotCommand;
 import net.sourceforge.vrapper.vim.commands.FindFileCommand;
 import net.sourceforge.vrapper.vim.commands.FormatOperation;
 import net.sourceforge.vrapper.vim.commands.IncrementDecrementCommand;
+import net.sourceforge.vrapper.vim.commands.InsertAndEditLineCommand;
 import net.sourceforge.vrapper.vim.commands.InsertLineCommand;
+import net.sourceforge.vrapper.vim.commands.InsertLineCommand.Type;
 import net.sourceforge.vrapper.vim.commands.InsertShiftWidth;
 import net.sourceforge.vrapper.vim.commands.JoinLinesCommand;
 import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
@@ -201,8 +203,8 @@ public class NormalMode extends CommandBasedMode {
                         leafBind('?', (Command) new ChangeToSearchModeCommand(true, nextResult)),
                         leafBind('/', (Command) new ChangeToSearchModeCommand(false, nextResult)),
                         leafBind('R', (Command) new ReplaceMode.ChangeToReplaceModeCommand()),
-                        leafBind('o', (Command) new ChangeToInsertModeCommand(InsertLineCommand.POST_CURSOR)),
-                        leafBind('O', (Command) new ChangeToInsertModeCommand(InsertLineCommand.PRE_CURSOR)),
+                        leafBind('o', (Command) InsertAndEditLineCommand.POST_CURSOR),
+                        leafBind('O', (Command) InsertAndEditLineCommand.PRE_CURSOR),
                         leafBind('v', seq(visualMode, AfterVisualEnterCommand.INSTANCE)),
                         leafBind('V', seq(linewiseVisualMode, AfterLinewiseVisualEnterCommand.INSTANCE)),
                         leafCtrlBind('v', seq(blockwiseVisualMode, AfterBlockwiseVisualEnterCommand.INSTANCE)),
