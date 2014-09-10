@@ -25,6 +25,10 @@ public class StringUtils {
         }
         return builder.toString();
     }
+    
+    public static int countNewlines(String lines) {
+        return lines.length() - lines.replace("\n", "").length();
+    }
 
     public static boolean containsUppercase(String keyword) {
         for (int i = 0; i < keyword.length(); i++) {

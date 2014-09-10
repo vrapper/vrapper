@@ -387,6 +387,11 @@ public class NormalModeTests extends CommandTestCase {
 		checkCommand(forKeySeq("gp"),
 				"Al",'a'," ma kota",
 				"Ala czasami",' ',"ma kota");
+
+		defaultRegister.setContent(new StringRegisterContent(ContentType.LINES, "1 2 3\n4 5 6\n"));
+		checkCommand(forKeySeq("gp"),
+				"1 2 ", '3', "\n4 5 6",
+				"1 2 3\n1 2 3\n4 5 6\n", '4', " 5 6");
 	}
 	
 	@Test public void test_gP() {

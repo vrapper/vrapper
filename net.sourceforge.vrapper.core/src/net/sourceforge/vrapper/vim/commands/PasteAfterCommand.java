@@ -66,7 +66,7 @@ public class PasteAfterCommand extends CountAwareCommand {
         try {
             editorAdaptor.getHistory().beginCompoundChange();
             content.replace(offset, 0, StringUtils.multiply(text, count));
-            int followingLine = lineNo + count;
+            int followingLine = lineNo + (StringUtils.countNewlines(text) * count);
             if (registerContent.getPayloadType() == ContentType.LINES && placeCursorAfter
 				&& followingLine < content.getNumberOfLines()) {
 	                position = content.getLineInformation(followingLine).getBeginOffset();
