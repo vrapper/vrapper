@@ -2089,9 +2089,26 @@ public class NormalModeTests extends CommandTestCase {
 	@Test
 	public void test_dot_on_i() {
         installSaneRegisterManager();
+	    checkCommand(forKeySeq("ideja-vu <Esc>l."),
+	            "This is ",'.',"",
+	            "This is deja-vu deja-vu",' ',".");
 	    checkCommand(forKeySeq("adeja-vu <Esc>."),
 	            "This is",' ',".",
 	            "This is deja-vu deja-vu",' ',".");
+	    // Sanity checks
+	    checkCommand(forKeySeq("2ideja-vu <Esc>"),
+	            "This is ",'.',"",
+	            "This is deja-vu deja-vu",' ',".");
+	    checkCommand(forKeySeq("2adeja-vu <Esc>"),
+	            "This is",' ',".",
+	            "This is deja-vu deja-vu",' ',".");
+	    // dot with count
+	    checkCommand(forKeySeq("2ideja-vu <Esc>."),
+	            "This is ",'.',"",
+	            "This is deja-vu deja-vu deja-vu deja-vu",' ',".");
+	    checkCommand(forKeySeq("2adeja-vu <Esc>."),
+	            "This is",' ',".",
+	            "This is deja-vu deja-vu deja-vu deja-vu",' ',".");
 	}
 
 	@Test
