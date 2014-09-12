@@ -57,12 +57,16 @@ public class ModeContributionItem extends ContributionItem {
     
     public void setText(String text) {
         mode = text;
-        super.getParent().update(true);
+        if (super.getParent() != null) {
+            super.getParent().update(true);
+        }
     }
 
     public void setRecording(boolean b, String m) {
         isRecording = b;
         recMacro = m;
-        super.getParent().update(true);
+        if (super.getParent() != null) {
+            super.getParent().update(true);
+        }
     }
 }
