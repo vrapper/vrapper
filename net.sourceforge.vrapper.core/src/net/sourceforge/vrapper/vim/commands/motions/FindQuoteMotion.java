@@ -1,9 +1,18 @@
 package net.sourceforge.vrapper.vim.commands.motions;
 
+import net.sourceforge.vrapper.keymap.vim.OuterTextObject;
+import net.sourceforge.vrapper.platform.Configuration;
 import net.sourceforge.vrapper.platform.TextContent;
+import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.LineInformation;
+import net.sourceforge.vrapper.utils.TextRange;
+import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.AbstractTextObject;
 import net.sourceforge.vrapper.vim.commands.BorderPolicy;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
+import net.sourceforge.vrapper.vim.commands.InnerTextObject;
+import net.sourceforge.vrapper.vim.commands.QuoteDelimitedText;
+import net.sourceforge.vrapper.vim.commands.TextObject;
 
 /**
  * Quote text objects must be on the same line, but the
@@ -117,4 +126,46 @@ public class FindQuoteMotion extends AbstractModelSideMotion {
         return findLeft ? BorderPolicy.EXCLUSIVE : BorderPolicy.INCLUSIVE;
 	}
 
+    public static class FindQuoteTextObject extends AbstractTextObject {
+
+        private TextObject inQuotes;
+        private TextObject includeQuotes;
+        private boolean defaultInner;
+
+        private FindQuoteTextObject(char delimiter, boolean defaultInner) {
+            QuoteDelimitedText quoteDelimitedText = new QuoteDelimitedText(delimiter);
+            if (defaultInner) {
+                inQuotes = new InnerTextObject(quoteDelimitedText);
+            }
+            includeQuotes = new OuterTextObject(quoteDelimitedText);
+            this.defaultInner = defaultInner;
+        }
+
+        public static TextObject inner(char delimiter) {
+            return new FindQuoteTextObject(delimiter, true);
+        }
+
+        public static TextObject outer(char delimiter) {
+            return new FindQuoteTextObject(delimiter, false);
+        }
+
+        @Override
+        public TextRange getRegion(EditorAdaptor editorAdaptor, int count)
+                throws CommandExecutionException {
+            if (count > 1 && defaultInner) {
+                return includeQuotes.getRegion(editorAdaptor, count);
+            } else if (defaultInner) {
+                return inQuotes.getRegion(editorAdaptor, count);
+            } else {
+                //FIXME Include whitespace (this wasn't the case before)
+                return includeQuotes.getRegion(editorAdaptor, count);
+            }
+        }
+
+        @Override
+        public ContentType getContentType(Configuration configuration) {
+            return ContentType.TEXT;
+        }
+
+    }
 }

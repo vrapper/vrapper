@@ -16,6 +16,7 @@ import net.sourceforge.vrapper.vim.commands.QuoteDelimitedText;
 import net.sourceforge.vrapper.vim.commands.SimpleDelimitedText;
 import net.sourceforge.vrapper.vim.commands.TextObject;
 import net.sourceforge.vrapper.vim.commands.XmlTagDelimitedText;
+import net.sourceforge.vrapper.vim.commands.motions.FindQuoteMotion.FindQuoteTextObject;
 import net.sourceforge.vrapper.vim.commands.motions.Motion;
 import net.sourceforge.vrapper.vim.commands.motions.MoveBigWORDEndRight;
 import net.sourceforge.vrapper.vim.commands.motions.MoveBigWORDLeft;
@@ -30,6 +31,7 @@ import net.sourceforge.vrapper.vim.modes.CommandBasedMode;
 public class DefaultTextObjectProvider implements TextObjectProvider {
     private static State<DelimitedText> coreDelimitedTexts;
     private static State<Motion> coreTextMotions;
+    private static State<TextObject> coreStaticTextObjects;
 
     private State<DelimitedText> delimitedTexts = coreDelimitedTexts;
     private State<TextObject> textObjects;
@@ -71,6 +73,34 @@ public class DefaultTextObjectProvider implements TextObjectProvider {
                             leafBind( 'W', MoveWordRightForUpdate.MOVE_BIG_WORD_RIGHT_INSTANCE)),
                             CommandBasedMode.motions());
         coreTextMotions = textMotions;
+
+        TextObject innerWord = new MotionPairTextObject(MoveWordLeft.BAILS_OFF, MoveWordEndRight.BAILS_OFF);
+        TextObject aWord = new MotionPairTextObject(MoveWordLeft.BAILS_OFF, MoveWordRight.BAILS_OFF);
+        TextObject innerWORD = new MotionPairTextObject(MoveBigWORDLeft.BAILS_OFF, MoveBigWORDEndRight.BAILS_OFF);
+        TextObject aWORD = new MotionPairTextObject(MoveBigWORDLeft.BAILS_OFF, MoveBigWORDRight.BAILS_OFF);
+        TextObject innerParagraph = new ParagraphTextObject(false);
+        TextObject aParagraph = new ParagraphTextObject(true);
+        @SuppressWarnings("unchecked")
+        State<TextObject> textObjects = state(
+                        transitionBind('i',
+                            state(
+                                leafBind('w', innerWord),
+                                leafBind('W', innerWORD),
+                                leafBind('p', innerParagraph),
+                                leafBind('`',  FindQuoteTextObject.inner('`')),
+                                leafBind('"',  FindQuoteTextObject.inner('"')),
+                                leafBind('\'', FindQuoteTextObject.inner('\''))
+                            )),
+                        transitionBind('a',
+                            state(
+                                leafBind('w', aWord),
+                                leafBind('W', aWORD),
+                                leafBind('p', aParagraph),
+                                leafBind('`',  FindQuoteTextObject.outer('`')),
+                                leafBind('"',  FindQuoteTextObject.outer('"')),
+                                leafBind('\'', FindQuoteTextObject.outer('\''))
+                                )));
+        coreStaticTextObjects = textObjects;
     }
     
     public DefaultTextObjectProvider() {
@@ -94,28 +124,14 @@ public class DefaultTextObjectProvider implements TextObjectProvider {
     
     @SuppressWarnings("unchecked")
     public void updateTextObjects(State<TextObject> platformTextObjects) {
-        final TextObject innerWord = new MotionPairTextObject(MoveWordLeft.BAILS_OFF, MoveWordEndRight.BAILS_OFF);
-        final TextObject aWord = new MotionPairTextObject(MoveWordLeft.BAILS_OFF, MoveWordRight.BAILS_OFF);
-        final TextObject innerWORD = new MotionPairTextObject(MoveBigWORDLeft.BAILS_OFF, MoveBigWORDEndRight.BAILS_OFF);
-        final TextObject aWORD = new MotionPairTextObject(MoveBigWORDLeft.BAILS_OFF, MoveBigWORDRight.BAILS_OFF);
-        final TextObject innerParagraph = new ParagraphTextObject(false);
-        final TextObject aParagraph = new ParagraphTextObject(true);
 
         textObjects = union(
                     platformTextObjects,
+                    coreStaticTextObjects,
                     state(
                         transitionBind('i', union(
-                                state(  leafBind('w', innerWord),
-                                        leafBind('W', innerWORD),
-                                        leafBind('p', innerParagraph)
-                                ),
                                 new DelimitedTextObjectState(delimitedTexts, DelimitedTextObjectState.INNER))),
                         transitionBind('a', union(
-                                state(
-                                        leafBind('w', aWord),
-                                        leafBind('W', aWORD),
-                                        leafBind('p', aParagraph)
-                                ),
                                 new DelimitedTextObjectState(delimitedTexts, DelimitedTextObjectState.OUTER)))),
                     new TextObjectState(coreTextMotions));
         textObjects = CountingState.wrap(textObjects);

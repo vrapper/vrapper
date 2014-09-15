@@ -131,6 +131,22 @@ public class VisualModeTests extends VisualTestCase {
         checkCommand(forKeySeq("iw"),
                 false,  "It's Some","th","ing interesting.",
                 false,  "It's ","Something"," interesting.");
+        checkCommand(forKeySeq("aw"),
+                false,  "It's Some","th","ing interesting.",
+                false,  "It's ","Something ","interesting.");
+        //FIXME Vim actually selects the next space as well
+        checkCommand(forKeySeq("a'"),
+                false,  "It's 'Some","th","ing' interesting.",
+                false,  "It's ","'Something'"," interesting.");
+        checkCommand(forKeySeq("i'"),
+                false,  "It's 'Some","th","ing' interesting.",
+                false,  "It's '","Something","' interesting.");
+        checkCommand(forKeySeq("2i'"),
+                false,  "It's 'Some","th","ing' interesting.",
+                false,  "It's ","'Something'"," interesting.");
+        checkCommand(forKeySeq("3i'"),
+                false,  "It's 'Some","th","ing' interesting.",
+                false,  "It's ","'Something'"," interesting.");
     }
 
     @Test
