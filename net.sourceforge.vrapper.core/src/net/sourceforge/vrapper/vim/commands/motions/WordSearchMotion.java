@@ -1,10 +1,13 @@
 package net.sourceforge.vrapper.vim.commands.motions;
 
+import java.util.Locale;
+
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Search;
 import net.sourceforge.vrapper.utils.SearchOffset;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.modes.commandline.CommandLineHistory;
 import net.sourceforge.vrapper.vim.modes.commandline.SearchCommandParser;
@@ -30,6 +33,10 @@ public class WordSearchMotion extends SearchResultMotion {
     public Position destination(EditorAdaptor editorAdaptor, int count)
             throws CommandExecutionException {
         String keyword = VimUtils.getWordUnderCursor(editorAdaptor, false);
+        if (editorAdaptor.getConfiguration().get(Options.IGNORE_CASE)) {
+            // SearchCommandParser may use 'smartcase', but we don't want that.
+            keyword = keyword.toLowerCase(Locale.ENGLISH);
+        }
         Search search = SearchCommandParser.createSearch(editorAdaptor, keyword, reverse, wholeWord,
                 SearchOffset.NONE);
         editorAdaptor.getRegisterManager().setSearch(search);
