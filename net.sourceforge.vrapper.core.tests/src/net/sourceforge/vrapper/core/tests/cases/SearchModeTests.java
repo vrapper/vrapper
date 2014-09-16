@@ -120,4 +120,50 @@ public class SearchModeTests extends CommandTestCase {
                 "I couldn't live without ", 't', "his\nfull-range three-linear variable.",
                 "I couldn't live without this\nfull-range ", 't', "hree-linear variable.");
     }
+
+    @Test
+    public void testFindCurrentWord() {
+        checkCommand(forKeySeq("*"),
+                "Ala ",'m', "a kota ma duo",
+                "Ala ma kota ",'m', "a duo");
+        // Word not found
+        checkCommand(forKeySeq("*"),
+                "Ala ",'m', "a kota",
+                "Ala ",'m', "a kota");
+    }
+
+    @Test
+    public void testFindCurrentWordBackwards() {
+        checkCommand(forKeySeq("#"),
+                "Ala ma kota ",'m', "a duo",
+                "Ala ",'m', "a kota ma duo");
+        // Word not found
+        checkCommand(forKeySeq("#"),
+                "Ala ",'m', "a kota",
+                "Ala ",'m', "a kota");
+    }
+
+    @Test
+    public void testFindCurrentWordSearchCase() {
+        when(configuration.get(Options.IGNORE_CASE)).thenReturn(false);
+        checkCommand(forKeySeq("*"),
+                "",'c', "amelCase CamelCase camelcase",
+                "",'c', "amelCase CamelCase camelcase");
+        checkCommand(forKeySeq("*"),
+                "",'c', "amelCase CamelCase camelcase camelCase",
+                "camelCase CamelCase camelcase ",'c', "amelCase");
+
+        when(configuration.get(Options.IGNORE_CASE)).thenReturn(true);
+
+        when (configuration.get(Options.SMART_CASE)).thenReturn(false);
+        checkCommand(forKeySeq("*"),
+                "",'c', "amelCase CamelCase camelcase",
+                "camelCase ",'C', "amelCase camelcase");
+
+        // This command should ignore smart case
+        when (configuration.get(Options.SMART_CASE)).thenReturn(true);
+        checkCommand(forKeySeq("*"),
+                "",'c', "amelCase CamelCase camelcase",
+                "camelCase ",'C', "amelCase camelcase");
+    }
 }
