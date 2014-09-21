@@ -31,16 +31,6 @@ public class SnapshotTests extends VimTestCase {
         Mockito.when(configuration.getNewLine()).thenReturn(VimConstants.REGISTER_NEWLINE);
         // we need no mock magic for register manager
         registerManager = new DefaultRegisterManager();
-        //let UIInterface mock print out error messages
-        Mockito.doAnswer(new Answer<Void>() {
-            @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable {
-                for (Object argument : invocation.getArguments()) {
-                    System.err.println(argument);
-                }
-                return null;
-            }
-        }).when(userInterfaceService).setErrorMessage(Mockito.anyString());
         reloadEditorAdaptor();
         adaptor.changeModeSafely(NormalMode.NAME);
     }
