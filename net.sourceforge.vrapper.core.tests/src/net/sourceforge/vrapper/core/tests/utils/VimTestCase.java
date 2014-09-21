@@ -57,54 +57,54 @@ public class VimTestCase {
     }
 
     public void initMocks() {
-    	DefaultEditorAdaptor.SHOULD_READ_RC_FILE = false;
-    	MockitoAnnotations.initMocks(this);
-    	cursorAndSelection = spy(new TestCursorAndSelection());
-    	content = spy(new TestTextContent(cursorAndSelection));
-    	cursorAndSelection.setContent(content);
-    	keyMapProvider = spy(new DefaultKeyMapProvider());
-    	configuration = spy(new SimpleGlobalConfiguration());
-    	when(configuration.getNewLine()).thenReturn("\n");
-    	for (Option<Boolean> o : Options.BOOLEAN_OPTIONS) {
-    	    // Use defaults for local options.
-    	    if (EnumSet.of(OptionScope.GLOBAL, OptionScope.DEFAULT).contains(o.getScope())) {
-    	        when(configuration.get(o)).thenReturn(Boolean.FALSE);
-    	    }
-    	}
-    	when(fileService.isEditable()).thenReturn(true);
-    	when(fileService.checkModifiable()).thenReturn(true);
+        DefaultEditorAdaptor.SHOULD_READ_RC_FILE = false;
+        MockitoAnnotations.initMocks(this);
+        cursorAndSelection = spy(new TestCursorAndSelection());
+        content = spy(new TestTextContent(cursorAndSelection));
+        cursorAndSelection.setContent(content);
+        keyMapProvider = spy(new DefaultKeyMapProvider());
+        configuration = spy(new SimpleGlobalConfiguration());
+        when(configuration.getNewLine()).thenReturn("\n");
+        for (Option<Boolean> o : Options.BOOLEAN_OPTIONS) {
+            // Use defaults for local options.
+            if (EnumSet.of(OptionScope.GLOBAL, OptionScope.DEFAULT).contains(o.getScope())) {
+                when(configuration.get(o)).thenReturn(Boolean.FALSE);
+            }
+        }
+        when(fileService.isEditable()).thenReturn(true);
+        when(fileService.checkModifiable()).thenReturn(true);
         //let UIInterface mock print out error messages
-    	Mockito.doAnswer(new Answer<Void>() {
-			@Override
-			public Void answer(InvocationOnMock invocation) throws Throwable {
-				for (Object argument : invocation.getArguments()) {
-					System.err.println(argument);
-				}
-				return null;
-			}
-		}).when(userInterfaceService).setErrorMessage(Mockito.anyString());
-    	when(userInterfaceService.getCommandLineUI(Mockito.any(EditorAdaptor.class))).thenReturn(new CommandLineUIStub());
-    	when(platform.getCursorService()).thenReturn(cursorAndSelection);
-    	when(platform.getSelectionService()).thenReturn(cursorAndSelection);
-    	when(platform.getModelContent()).thenReturn(content);
-    	when(platform.getViewContent()).thenReturn(content);
-    	when(platform.getViewportService()).thenReturn(viewportService);
-    	ViewPortInformation viewPortInfo = new ViewPortInformation(0, 10);
-    	when(viewportService.getViewPortInformation()).thenReturn(viewPortInfo);
-    	when(platform.getUserInterfaceService()).thenReturn(userInterfaceService);
-    	when(platform.getFileService()).thenReturn(fileService);
-    	when(platform.getHistoryService()).thenReturn(historyService);
-    	when(platform.getKeyMapProvider()).thenReturn(keyMapProvider);
-    	when(platform.getServiceProvider()).thenReturn(serviceProvider);
-    	when(platform.getConfiguration()).thenReturn(configuration);
-    	when(platform.getPlatformSpecificStateProvider(Mockito.<TextObjectProvider>any()))
-    	        .thenReturn(platformSpecificStateProvider);
-    	reloadEditorAdaptor();
-    	defaultRegister = spy(new SimpleRegister());
-    	lastEditRegister = spy(new SimpleRegister());
-		when(registerManager.getActiveRegister()).thenReturn(defaultRegister);
-		when(registerManager.getLastEditRegister()).thenReturn(lastEditRegister);
-		when(registerManager.getRegister(":")).thenReturn(defaultRegister);
+        Mockito.doAnswer(new Answer<Void>() {
+            @Override
+            public Void answer(InvocationOnMock invocation) throws Throwable {
+                for (Object argument : invocation.getArguments()) {
+                    System.err.println(argument);
+                }
+                return null;
+            }
+        }).when(userInterfaceService).setErrorMessage(Mockito.anyString());
+        when(userInterfaceService.getCommandLineUI(Mockito.any(EditorAdaptor.class))).thenReturn(new CommandLineUIStub());
+        when(platform.getCursorService()).thenReturn(cursorAndSelection);
+        when(platform.getSelectionService()).thenReturn(cursorAndSelection);
+        when(platform.getModelContent()).thenReturn(content);
+        when(platform.getViewContent()).thenReturn(content);
+        when(platform.getViewportService()).thenReturn(viewportService);
+        ViewPortInformation viewPortInfo = new ViewPortInformation(0, 10);
+        when(viewportService.getViewPortInformation()).thenReturn(viewPortInfo);
+        when(platform.getUserInterfaceService()).thenReturn(userInterfaceService);
+        when(platform.getFileService()).thenReturn(fileService);
+        when(platform.getHistoryService()).thenReturn(historyService);
+        when(platform.getKeyMapProvider()).thenReturn(keyMapProvider);
+        when(platform.getServiceProvider()).thenReturn(serviceProvider);
+        when(platform.getConfiguration()).thenReturn(configuration);
+        when(platform.getPlatformSpecificStateProvider(Mockito.<TextObjectProvider>any()))
+                .thenReturn(platformSpecificStateProvider);
+        reloadEditorAdaptor();
+        defaultRegister = spy(new SimpleRegister());
+        lastEditRegister = spy(new SimpleRegister());
+        when(registerManager.getActiveRegister()).thenReturn(defaultRegister);
+        when(registerManager.getLastEditRegister()).thenReturn(lastEditRegister);
+        when(registerManager.getRegister(":")).thenReturn(defaultRegister);
 
     }
 
