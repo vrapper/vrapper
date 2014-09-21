@@ -7,6 +7,7 @@ import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.vim.DefaultEditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.Selection;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
 import net.sourceforge.vrapper.vim.modes.CommandBasedMode;
 import net.sourceforge.vrapper.vim.modes.EditorMode;
@@ -67,7 +68,7 @@ public class SelectionVisualHandler implements ISelectionChangedListener {
             // Cursor can be after the line if an Eclipse operation cleared the selection, e.g. undo
             } else if (currentMode instanceof CommandBasedMode) {
                 CommandBasedMode commandMode = (CommandBasedMode) currentMode;
-                commandMode.placeCursor();
+                commandMode.placeCursor(StickyColumnPolicy.RESET_EOL);
             }
         } else if ( ! VrapperPlugin.isMouseDown()
                 || !editorAdaptor.getConfiguration().get(Options.VISUAL_MOUSE)) {

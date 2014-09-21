@@ -5,6 +5,7 @@ import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.vim.DefaultEditorAdaptor;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.EditorMode;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 
@@ -84,7 +85,7 @@ public class CaretPositionHandler implements CaretListener, MouseListener {
             // Reset caret type, see mouseDown() above.
             editorAdaptor.getCursorService().setCaret(CaretType.RECTANGULAR);
             NormalMode normalMode = (NormalMode) mode;
-            normalMode.placeCursor();
+            normalMode.placeCursor(StickyColumnPolicy.RESET_EOL);
         } finally {
             textViewer.getTextWidget().setRedraw(true);
             caretMoved = false;

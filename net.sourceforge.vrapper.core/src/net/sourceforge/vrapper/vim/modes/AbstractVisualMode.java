@@ -40,6 +40,7 @@ import net.sourceforge.vrapper.vim.commands.SetMarkCommand;
 import net.sourceforge.vrapper.vim.commands.SwapCaseCommand;
 import net.sourceforge.vrapper.vim.commands.VisualFindFileCommand;
 import net.sourceforge.vrapper.vim.commands.YankOperation;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.commandline.CommandLineMode;
 
 public abstract class AbstractVisualMode extends CommandBasedMode {
@@ -70,7 +71,7 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
     }
 
     @Override
-    public void placeCursor() {
+    public void placeCursor(StickyColumnPolicy stickyColumnPolicy) {
 //        if (!isEnabled) {
 //            Position leftSidePosition = editorAdaptor.getSelection().getLeftBound();
 //            editorAdaptor.setPosition(leftSidePosition, false);

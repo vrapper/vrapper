@@ -57,6 +57,7 @@ import net.sourceforge.vrapper.vim.commands.motions.PercentMotion;
 import net.sourceforge.vrapper.vim.commands.motions.SearchResultMotion;
 import net.sourceforge.vrapper.vim.commands.motions.SectionMotion;
 import net.sourceforge.vrapper.vim.commands.motions.SentenceMotion;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.commands.motions.ViewPortMotion;
 import net.sourceforge.vrapper.vim.commands.motions.WordSearchMotion;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
@@ -79,8 +80,9 @@ public abstract class CommandBasedMode extends AbstractMode {
         commandBuffer = new StringBuilder();
     }
 
-    /** Reset cursor position if it is at the end of the line and the current mode won't allow it. */
-    public abstract void placeCursor();
+    /** Reset cursor position if it is at the end of the line and the current mode won't allow it. 
+     * @param stickyColumnPolicy TODO*/
+    public abstract void placeCursor(StickyColumnPolicy stickyColumnPolicy);
     protected abstract State<Command> buildInitialState();
     protected abstract KeyMapResolver buildKeyMapResolver();
 
@@ -339,8 +341,7 @@ public abstract class CommandBasedMode extends AbstractMode {
             editorAdaptor.getUserInterfaceService().setInfoMessage(commandBuffer.toString());
         }
 
-        // FIXME: has some issues with sticky column
-        placeCursor();
+        placeCursor(StickyColumnPolicy.NEVER);
 
         return true;
     }

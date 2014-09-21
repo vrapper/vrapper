@@ -303,12 +303,12 @@ public class NormalMode extends CommandBasedMode {
      * Only changes the position if NormalMode is enabled.
      */
     @Override
-    public void placeCursor() {
+    public void placeCursor(StickyColumnPolicy stickyColumnPolicy) {
         final Position pos = editorAdaptor.getPosition();
         final int offset = pos.getViewOffset();
         final LineInformation line = editorAdaptor.getViewContent().getLineInformationOfOffset(offset);
         if (isEnabled && line.getEndOffset() == offset && line.getLength() > 0) {
-            editorAdaptor.setPosition(pos.addViewOffset(-1), StickyColumnPolicy.NEVER);
+            editorAdaptor.setPosition(pos.addViewOffset(-1), stickyColumnPolicy);
         }
     }
 
@@ -323,7 +323,7 @@ public class NormalMode extends CommandBasedMode {
     public void enterMode(final ModeSwitchHint... args) throws CommandExecutionException {
         editorAdaptor.getCursorService().setCaret(CaretType.RECTANGULAR);
         super.enterMode(args);
-        placeCursor();
+        placeCursor(StickyColumnPolicy.NEVER);
         if (args.length > 0) {
             if(args[0] instanceof ExecuteCommandHint) {
                 try {
