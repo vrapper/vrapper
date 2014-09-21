@@ -78,7 +78,9 @@ public class VimTestCase {
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable {
                 for (Object argument : invocation.getArguments()) {
-                    System.err.println(argument);
+                    if (argument != null) {
+                        System.err.println(argument);
+                    }
                 }
                 return null;
             }

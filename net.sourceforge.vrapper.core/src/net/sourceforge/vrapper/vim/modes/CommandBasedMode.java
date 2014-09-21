@@ -275,6 +275,9 @@ public abstract class CommandBasedMode extends AbstractMode {
             reset();
             editorAdaptor.getListeners().fireStateReset(false);
         }
+        if ( ! keyStroke.isVirtual()) {
+            editorAdaptor.getUserInterfaceService().setErrorMessage(null);
+        }
 
         Transition<Command> transition = currentState.press(keyStroke);
         
