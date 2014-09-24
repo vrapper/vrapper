@@ -60,7 +60,7 @@ public interface CursorService {
     Position getPositionByVisualOffset(int lineNo, int visualOffset);
 
     /**
-     * Calculates character length by viusal width.
+     * Calculates character length by visual width.
      */
     int visualWidthToChars(int visualWidth);
 
