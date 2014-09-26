@@ -676,5 +676,4 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
             stickToEOL = false;
         }
     }
-
 }
