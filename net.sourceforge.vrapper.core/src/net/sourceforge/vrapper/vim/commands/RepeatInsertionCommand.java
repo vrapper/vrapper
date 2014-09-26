@@ -16,7 +16,6 @@ public class RepeatInsertionCommand extends CountAwareCommand {
     public void execute(EditorAdaptor editorAdaptor, int count)
             throws CommandExecutionException {
         Command lastInsertion = editorAdaptor.getRegisterManager().getLastInsertion();
-        
         Command doIt = seq(command, lastInsertion);
         if (count == NO_COUNT_GIVEN)
             //if count isn't specified, use last count

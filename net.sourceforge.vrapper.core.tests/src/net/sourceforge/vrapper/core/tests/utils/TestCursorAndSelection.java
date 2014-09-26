@@ -138,5 +138,4 @@ public class TestCursorAndSelection implements CursorService, SelectionService {
 	public boolean isGlobalMark(String id) {
 		return false;
 	}
-
 }

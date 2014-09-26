@@ -100,5 +100,4 @@ public interface CursorService {
      */
     Position getNextChangeLocation(int count);
     Position getPrevChangeLocation(int count);
-
 }
