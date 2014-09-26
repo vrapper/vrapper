@@ -32,14 +32,17 @@ import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.CountIgnoringNonRepeatableCommand;
+import net.sourceforge.vrapper.vim.commands.DeleteOperation;
 import net.sourceforge.vrapper.vim.commands.InsertAdjacentCharacter;
 import net.sourceforge.vrapper.vim.commands.InsertLineCommand;
 import net.sourceforge.vrapper.vim.commands.InsertShiftWidth;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
+import net.sourceforge.vrapper.vim.commands.MotionTextObject;
 import net.sourceforge.vrapper.vim.commands.PasteAfterCommand;
 import net.sourceforge.vrapper.vim.commands.PasteBeforeCommand;
 import net.sourceforge.vrapper.vim.commands.PasteRegisterCommand;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
+import net.sourceforge.vrapper.vim.commands.SwapCaseCommand;
 import net.sourceforge.vrapper.vim.commands.SwitchRegisterCommand;
 import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
 import net.sourceforge.vrapper.vim.commands.VimCommandSequence;
@@ -77,6 +80,7 @@ public class InsertMode extends AbstractMode {
     protected State<Command> currentState = buildState();
 
     private Position startEditPosition;
+    private static int numCharsDeleted;
     private boolean cleanupIndent = false;
     private boolean resumeOnEnter = false;
 
@@ -165,6 +169,7 @@ public class InsertMode extends AbstractMode {
         editorAdaptor.getCursorService().setCaret(CaretType.VERTICAL_BAR);
         if(initMode) {
         	startEditPosition = editorAdaptor.getCursorService().getPosition();
+        	numCharsDeleted = 0;
         }
         super.enterMode(args);
     }
@@ -247,7 +252,7 @@ public class InsertMode extends AbstractMode {
         cur.setMark(CursorService.LAST_CHANGE_START, startEditPosition);
         cur.setMark(CursorService.LAST_CHANGE_END, position);
 
-        final String text = content.getText(new StartEndTextRange(startEditPosition, position));
+        final String text = content.getText(new StartEndTextRange(startEditPosition.addModelOffset(-numCharsDeleted), position));
         final RegisterContent registerContent = new StringRegisterContent(ContentType.TEXT, text);
         lastEditRegister.setContent(registerContent);
         final Command repetition = createRepetition(lastEditRegister, repetitionCommand, count);
@@ -270,17 +275,35 @@ public class InsertMode extends AbstractMode {
             //'.' command after insert
             paste = PasteBeforeCommand.CURSOR_ON_TEXT;
         }
-        return dontRepeat(seq(
-                repetition,
-                new SwitchRegisterCommand(lastEditRegister),
-                paste,
-                //LastEdit register is an internal affair, don't keep the register active.
-                new SwitchRegisterCommand(SwitchRegisterCommand.DEFAULT_REGISTER)
-                ));
+        
+        Command delete = new TextOperationTextObjectCommand(DeleteOperation.INSTANCE, new MotionTextObject(MoveLeft.INSTANCE)).withCount(numCharsDeleted);
+        if(numCharsDeleted > 0) {
+            return dontRepeat(seq(
+                    repetition,
+                    delete,
+                    new SwitchRegisterCommand(lastEditRegister),
+                    paste,
+                    //LastEdit register is an internal affair, don't keep the register active.
+                    new SwitchRegisterCommand(SwitchRegisterCommand.DEFAULT_REGISTER)
+                    ));
+        }
+        else {
+            return dontRepeat(seq(
+                    repetition,
+                    new SwitchRegisterCommand(lastEditRegister),
+                    paste,
+                    //LastEdit register is an internal affair, don't keep the register active.
+                    new SwitchRegisterCommand(SwitchRegisterCommand.DEFAULT_REGISTER)
+                    ));
+        }
+
     }
 
     @Override
     public boolean handleKey(final KeyStroke stroke) {
+        if(startEditPosition.getModelOffset() - editorAdaptor.getCursorService().getPosition().getModelOffset() > numCharsDeleted) {
+            numCharsDeleted = startEditPosition.getModelOffset() - editorAdaptor.getCursorService().getPosition().getModelOffset();
+        }
         final Transition<Command> transition = currentState.press(stroke);
         if (transition != null && transition.getValue() != null) {
             try {

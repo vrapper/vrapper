@@ -76,6 +76,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     private final EclipseTextContent textContent;
     private int averageCharWidth;
     private CaretType caretType = null;
+    private int numCharsDeletedInInsert;
 
 	public EclipseCursorAndSelection(final Configuration configuration,
 			final ITextViewer textViewer, final EclipseTextContent textContent) {
@@ -676,5 +677,12 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
             stickToEOL = false;
         }
     }
+    
+    public void setNumCharsDeletedInInsert(int num) {
+    	numCharsDeletedInInsert = num;
+    }
 
+    public int getNumCharsDeletedInInsert() {
+    	return numCharsDeletedInInsert;
+    }
 }
