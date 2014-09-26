@@ -139,12 +139,4 @@ public class TestCursorAndSelection implements CursorService, SelectionService {
 		return false;
 	}
 
-    public void setNumCharsDeletedInInsert(int num) {
-		// TODO Auto-generated method stub
-    }
-
-    public int getNumCharsDeletedInInsert() {
-		// TODO Auto-generated method stub
-		return 0;
-    }
 }

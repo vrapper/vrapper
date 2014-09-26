@@ -484,7 +484,7 @@ public class NormalModeTests extends CommandTestCase {
 				"Al a\nma", ' ', "kota",
 				"Al a\nya\nya\nya\nya\nya\nya\ny", 'a', "\nya\nya\nma kota");
 	}
-
+	
 	@Test public void test_p_lines() {
 		defaultRegister.setContent(new StringRegisterContent(ContentType.LINES, "As to pies Ali\n"));
 		checkCommand(forKeySeq("p"),

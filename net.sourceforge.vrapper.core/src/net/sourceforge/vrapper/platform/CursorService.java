@@ -101,6 +101,4 @@ public interface CursorService {
     Position getNextChangeLocation(int count);
     Position getPrevChangeLocation(int count);
 
-    void setNumCharsDeletedInInsert(int pos);
-    int getNumCharsDeletedInInsert();
 }

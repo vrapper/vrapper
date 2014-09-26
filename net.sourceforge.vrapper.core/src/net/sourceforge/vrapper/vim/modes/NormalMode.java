@@ -46,8 +46,6 @@ import net.sourceforge.vrapper.vim.commands.FindFileCommand;
 import net.sourceforge.vrapper.vim.commands.FormatOperation;
 import net.sourceforge.vrapper.vim.commands.IncrementDecrementCommand;
 import net.sourceforge.vrapper.vim.commands.InsertAndEditLineCommand;
-import net.sourceforge.vrapper.vim.commands.InsertLineCommand;
-import net.sourceforge.vrapper.vim.commands.InsertLineCommand.Type;
 import net.sourceforge.vrapper.vim.commands.InsertShiftWidth;
 import net.sourceforge.vrapper.vim.commands.JoinLinesCommand;
 import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
