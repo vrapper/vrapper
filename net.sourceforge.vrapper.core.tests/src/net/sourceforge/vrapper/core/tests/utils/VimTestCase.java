@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 import java.util.EnumSet;
 
 import net.sourceforge.vrapper.keymap.KeyStroke;
+import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.platform.Configuration.Option;
 import net.sourceforge.vrapper.platform.Configuration.OptionScope;
 import net.sourceforge.vrapper.platform.FileService;
@@ -18,12 +19,14 @@ import net.sourceforge.vrapper.platform.ServiceProvider;
 import net.sourceforge.vrapper.platform.UserInterfaceService;
 import net.sourceforge.vrapper.platform.ViewportService;
 import net.sourceforge.vrapper.utils.DefaultKeyMapProvider;
+import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.ViewPortInformation;
 import net.sourceforge.vrapper.vim.DefaultEditorAdaptor;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.SimpleGlobalConfiguration;
 import net.sourceforge.vrapper.vim.TextObjectProvider;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
 import net.sourceforge.vrapper.vim.register.SimpleRegister;
 
@@ -139,8 +142,24 @@ public class VimTestCase {
     }
 
     private void typeInUnderlyingEditor(KeyStroke stroke) {
-        int offset = cursorAndSelection.getPosition().getModelOffset();
-        content.replace(offset, 0, ""+stroke.getCharacter());
+        if (stroke.getCharacter() == KeyStroke.SPECIAL_KEY) {
+            if (stroke.getSpecialKey() == SpecialKey.BACKSPACE) {
+                int offset = cursorAndSelection.getPosition().getModelOffset();
+                if (offset > 0) {
+                    content.replace(offset - 1, 1, "");
+                    Position position = cursorAndSelection.newPositionForModelOffset(offset - 1);
+                    cursorAndSelection.setPosition(position, StickyColumnPolicy.ON_CHANGE);
+                }
+            } else if (stroke.getSpecialKey() == SpecialKey.DELETE) {
+                int offset = cursorAndSelection.getPosition().getModelOffset();
+                if (offset < content.getTextLength()) {
+                    content.replace(offset, 1, "");
+                }
+            }
+        } else {
+            int offset = cursorAndSelection.getPosition().getModelOffset();
+            content.replace(offset, 0, ""+stroke.getCharacter());
+        }
     }
 
 }
