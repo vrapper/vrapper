@@ -485,13 +485,12 @@ public class NormalModeTests extends CommandTestCase {
 				"Al a\nya\nya\nya\nya\nya\nya\ny", 'a', "\nya\nya\nma kota");
 	}
 
-	//TODO: This test SHOULD work, but it seems that <BS> doesn't register correctly in insert mode for unit tests
-//	@Test public void test_dot_on_insert_with_inital_backspace() {
-//		installSaneRegisterManager();
-//		checkCommand(forKeySeq("A<BS><BS>ah123<Esc>j."),
-//				"blah bl", 'a', "h bleh\nblah blah blxh",
-//				"blah blah blah123\nblah blah blah12", '3', "");
-//	}
+	@Test public void test_dot_on_insert_with_inital_backspace() {
+		installSaneRegisterManager();
+		checkCommand(forKeySeq("A<BS><BS>ah123<Esc>j."),
+				"blah bl", 'a', "h bleh\nblah blah blxh",
+				"blah blah blah123\nblah blah blah12", '3', "");
+	}
 	
 	@Test public void test_p_lines() {
 		defaultRegister.setContent(new StringRegisterContent(ContentType.LINES, "As to pies Ali\n"));
