@@ -134,10 +134,6 @@ public class VisualModeTests extends VisualTestCase {
         checkCommand(forKeySeq("aw"),
                 false,  "It's Some","th","ing interesting.",
                 false,  "It's ","Something ","interesting.");
-        //FIXME Vim actually selects the next space as well
-        checkCommand(forKeySeq("a'"),
-                false,  "It's 'Some","th","ing' interesting.",
-                false,  "It's ","'Something'"," interesting.");
         checkCommand(forKeySeq("i'"),
                 false,  "It's 'Some","th","ing' interesting.",
                 false,  "It's '","Something","' interesting.");
@@ -147,6 +143,24 @@ public class VisualModeTests extends VisualTestCase {
         checkCommand(forKeySeq("3i'"),
                 false,  "It's 'Some","th","ing' interesting.",
                 false,  "It's ","'Something'"," interesting.");
+        checkCommand(forKeySeq("a'"),
+                false,  "It's 'Some","th","ing' interesting.",
+                false,  "It's ","'Something' ","interesting.");
+        checkCommand(forKeySeq("a'"),
+                false,  "It's 'Some","th","ing'  interesting.",
+                false,  "It's ","'Something'  ","interesting.");
+        checkCommand(forKeySeq("a'"),
+                false,  "It's Something 'i","nt","eresting'\nisn't it?",
+                false,  "It's Something ","'interesting'","\nisn't it?");
+        checkCommand(forKeySeq("a'"),
+                false,  "It's Something 'i","nt","eresting'  \nisn't it?",
+                false,  "It's Something ","'interesting'  ","\nisn't it?");
+        checkCommand(forKeySeq("a'"),
+                false,  "It's Something 'i","nt","eresting'",
+                false,  "It's Something ","'interesting'","");
+        checkCommand(forKeySeq("3a'"),
+                false,  "It's Something 'i","nt","eresting'  isn't it?",
+                false,  "It's Something ","'interesting'  ","isn't it?");
     }
 
     @Test

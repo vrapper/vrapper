@@ -2,9 +2,12 @@ package net.sourceforge.vrapper.vim.commands.motions;
 
 import net.sourceforge.vrapper.keymap.vim.OuterTextObject;
 import net.sourceforge.vrapper.platform.Configuration;
+import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.LineInformation;
+import net.sourceforge.vrapper.utils.Position;
+import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.AbstractTextObject;
@@ -157,8 +160,21 @@ public class FindQuoteMotion extends AbstractModelSideMotion {
             } else if (defaultInner) {
                 return inQuotes.getRegion(editorAdaptor, count);
             } else {
-                //FIXME Include whitespace (this wasn't the case before)
-                return includeQuotes.getRegion(editorAdaptor, count);
+                TextRange region = includeQuotes.getRegion(editorAdaptor, count);
+                //Include whitespace up to next word or EOL
+                CursorService cursorService = editorAdaptor.getCursorService();
+                TextContent content = editorAdaptor.getModelContent();
+                int rightOffset = region.getRightBound().getModelOffset();
+
+                LineInformation lineInfo = content.getLineInformationOfOffset(rightOffset);
+
+                while (rightOffset < lineInfo.getEndOffset()
+                        && Character.isWhitespace(content.getText(rightOffset, 1).charAt(0))) {
+                    rightOffset++;
+                }
+                Position rightPos = cursorService.newPositionForModelOffset(rightOffset);
+                region = new StartEndTextRange(region.getLeftBound(), rightPos);
+                return region;
             }
         }
 

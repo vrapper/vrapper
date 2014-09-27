@@ -1226,16 +1226,16 @@ public class NormalModeTests extends CommandTestCase {
                 "before ",' ',"after");
         checkCommand(forKeySeq("da'"),
                 "before 'mi",'d',"d\\'le' after",
-                "before ",' ',"after");
+                "before ",'a',"fter");
         checkCommand(forKeySeq("di'"),
                 "'before mi",'d',"dle after'",
                 "'",'\'',"");
         checkCommand(forKeySeq("di'"),
                 "\\'before mi",'d',"dle after\\'",
                 "\\'before mi",'d',"dle after\\'");
-	}
-	
-	@Test
+    }
+
+    @Test
     public void test_dip() {
         checkCommand(forKeySeq("dip"),
                 "",'1',"ac\n\n3ac\n4ac\n\n  \n7ac\n\n  \n\n11ac\n12ac",
