@@ -6,8 +6,8 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.key;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafCtrlBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
-import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.repeat;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.dontRepeat;
+import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.repeat;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
 import net.sourceforge.vrapper.keymap.EmptyState;
 import net.sourceforge.vrapper.keymap.KeyStroke;
@@ -43,6 +43,7 @@ import net.sourceforge.vrapper.vim.commands.PasteBeforeCommand;
 import net.sourceforge.vrapper.vim.commands.PasteRegisterCommand;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 import net.sourceforge.vrapper.vim.commands.SwitchRegisterCommand;
+import net.sourceforge.vrapper.vim.commands.TextObject;
 import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
 import net.sourceforge.vrapper.vim.commands.VimCommandSequence;
 import net.sourceforge.vrapper.vim.commands.motions.LineStartMotion;
@@ -275,27 +276,19 @@ public class InsertMode extends AbstractMode {
             paste = PasteBeforeCommand.CURSOR_ON_TEXT;
         }
         
-        Command delete = new TextOperationTextObjectCommand(DeleteOperation.INSTANCE, new MotionTextObject(MoveLeft.INSTANCE)).withCount(numCharsDeleted);
-        if(numCharsDeleted > 0) {
-            return dontRepeat(seq(
-                    repetition,
-                    delete,
-                    new SwitchRegisterCommand(lastEditRegister),
-                    paste,
-                    //LastEdit register is an internal affair, don't keep the register active.
-                    new SwitchRegisterCommand(SwitchRegisterCommand.DEFAULT_REGISTER)
-                    ));
+        Command deleteCharsCmd = null;
+        if (numCharsDeleted > 0) {
+            TextObject toDelete = new MotionTextObject(MoveLeft.INSTANCE).withCount(numCharsDeleted);
+            deleteCharsCmd = new TextOperationTextObjectCommand(DeleteOperation.INSTANCE, toDelete);
         }
-        else {
-            return dontRepeat(seq(
-                    repetition,
-                    new SwitchRegisterCommand(lastEditRegister),
-                    paste,
-                    //LastEdit register is an internal affair, don't keep the register active.
-                    new SwitchRegisterCommand(SwitchRegisterCommand.DEFAULT_REGISTER)
-                    ));
-        }
-
+        return dontRepeat(seq(
+                repetition,
+                deleteCharsCmd,
+                new SwitchRegisterCommand(lastEditRegister),
+                paste,
+                //LastEdit register is an internal affair, don't keep the register active.
+                new SwitchRegisterCommand(SwitchRegisterCommand.DEFAULT_REGISTER)
+                ));
     }
 
     @Override
