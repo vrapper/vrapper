@@ -1,16 +1,18 @@
 package net.sourceforge.vrapper.core.tests.cases;
 
 import static org.mockito.Mockito.*;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.parseKeyStrokes;
+
 import org.junit.Before;
 import org.junit.Test;
 
-import net.sourceforge.vrapper.core.tests.utils.CommandTestCase;
 import net.sourceforge.vrapper.core.tests.utils.TestSearchService;
+import net.sourceforge.vrapper.core.tests.utils.VisualTestCase;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
 
-public class SearchModeTests extends CommandTestCase {
+public class SearchModeTests extends VisualTestCase {
 
     @Override
     public void setUp() {
@@ -42,6 +44,40 @@ public class SearchModeTests extends CommandTestCase {
         checkCommand(forKeySeq("N"),
                 "I couldn't live without ", 't', "his\nfull-range three-linear variable.",
                 "I couldn't live wi", 't', "hout this\nfull-range three-linear variable.");
+    }
+
+    @Test
+    public void testRepeatSearch() {
+        checkCommand(forKeySeq("/th<CR>"),
+                "I ", 'c', "ouldn't live without this\nfull-range three-linear variable.",
+                "I couldn't live wi", 't', "hout this\nfull-range three-linear variable.");
+        checkCommand(forKeySeq("/<CR>"),
+                "I couldn't live wi", 't', "hout this\nfull-range three-linear variable.",
+                "I couldn't live without ", 't', "his\nfull-range three-linear variable.");
+        checkCommand(forKeySeq("?<CR>"),
+                "I couldn't live without ", 't', "his\nfull-range three-linear variable.",
+                "I couldn't live wi", 't', "hout this\nfull-range three-linear variable.");
+    }
+
+    /**
+     * Test that the current selection is used if a new search is started, not the previous one.
+     * See issue <a href="https://github.com/vrapper/vrapper/issues/500">500</a>.
+     */
+    @Test
+    public void testVisualSearchRepeated() {
+        checkCommand(forKeySeq("/th<CR>"),
+                false, "I ", "c", "ouldn't live without this\nfull-range three-linear variable.",
+                false, "I ", "couldn't live wi", "thout this\nfull-range three-linear variable.");
+        // Don't use checkCommand again, it resets a lot of internal state, which is unwanted here.
+        type(parseKeyStrokes("<ESC>0fcv/th<CR>"));
+        assertVisualResult(content.getText(),
+                false, "I ", "couldn't live wi", "thout this\nfull-range three-linear variable.");
+        type(parseKeyStrokes("/<CR>"));
+        assertVisualResult(content.getText(),
+                false, "I ", "couldn't live without ", "this\nfull-range three-linear variable.");
+        type(parseKeyStrokes("/<CR>"));
+        assertVisualResult(content.getText(),
+                false, "I ", "couldn't live without this\nfull-range ", "three-linear variable.");
     }
 
     @Test

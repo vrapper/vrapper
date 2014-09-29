@@ -57,7 +57,7 @@ public abstract class VisualTestCase extends CommandTestCase {
     }
 
 
-    private void assertCommandResult(String initialLine,
+    public void assertVisualResult(String initialLine,
         boolean inverted, String beforeSelection, String selected, String afterSelection) {
         String expectedFinalContent = beforeSelection + selected + afterSelection;
         String actualFinalContent = content.getText();
@@ -106,7 +106,7 @@ public abstract class VisualTestCase extends CommandTestCase {
 
         prepareEditor(inverted1, beforeSelection1, selected1, afterSelection1);
         executeCommand(command);
-        assertCommandResult(initialLine, inverted2, beforeSelection2, selected2, afterSelection2);
+        assertVisualResult(initialLine, inverted2, beforeSelection2, selected2, afterSelection2);
     }
 
     protected void checkLeavingCommand(Command command,
