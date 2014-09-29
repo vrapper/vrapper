@@ -3,6 +3,7 @@ package net.sourceforge.vrapper.vim.modes.commandline;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.platform.CommandLineUI;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.modes.AbstractMode;
 import net.sourceforge.vrapper.vim.modes.InitialContentsHint;
 import net.sourceforge.vrapper.vim.modes.ModeSwitchHint;
@@ -24,7 +25,7 @@ public abstract class AbstractCommandLineMode extends AbstractMode {
     /**
      * @param args arguments for entering the mode
      */
-    public void enterMode(ModeSwitchHint... args) {
+    public void enterMode(ModeSwitchHint... args) throws CommandExecutionException {
         isEnabled = true;
         CommandLineUI commandLine = editorAdaptor.getCommandLine();
         commandLine.setPrompt(getPrompt());

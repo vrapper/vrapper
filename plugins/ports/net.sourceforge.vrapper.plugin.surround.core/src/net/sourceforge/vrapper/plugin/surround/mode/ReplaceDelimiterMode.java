@@ -56,7 +56,7 @@ public class ReplaceDelimiterMode extends AbstractCommandLineMode {
     }
 
     @Override
-    public void enterMode(ModeSwitchHint... args) {
+    public void enterMode(ModeSwitchHint... args) throws CommandExecutionException {
         if (args.length > 0 && args[0] instanceof DelimiterHint) {
             DelimiterHint hint = (DelimiterHint) args[0];
             toWrap = hint.toWrap;
@@ -64,7 +64,7 @@ public class ReplaceDelimiterMode extends AbstractCommandLineMode {
             leaveCommand = hint.command;
             listener = hint.listener;
         } else {
-            throw new IllegalStateException("No DelimiterHint passed!");
+            throw new CommandExecutionException("No DelimiterHint passed!");
         }
         super.enterMode(args);
     }

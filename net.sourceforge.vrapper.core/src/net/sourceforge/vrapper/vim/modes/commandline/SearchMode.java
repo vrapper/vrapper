@@ -12,6 +12,7 @@ import net.sourceforge.vrapper.vim.ConfigurationListener;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.Command;
+import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.ExecuteCommandHint;
@@ -56,7 +57,7 @@ public class SearchMode extends AbstractCommandLineMode {
     public static final String NAME = "search mode";
     public static final String DISPLAY_NAME = "SEARCH";
 
-    private boolean forward;
+    private Boolean forward;
     private Position startPos;
     private int originalTopLine;
     private Command command;
@@ -71,9 +72,19 @@ public class SearchMode extends AbstractCommandLineMode {
      * @param args {@link Direction} of the search
      */
     @Override
-    public void enterMode(ModeSwitchHint... args) {
-        forward = args[0].equals(Direction.FORWARD);
-        command = ((ExecuteCommandHint.OnLeave) args[1]).getCommand();
+    public void enterMode(ModeSwitchHint... args) throws CommandExecutionException {
+        forward = null;
+        command = null;
+        for (ModeSwitchHint hint : args) {
+            if (hint instanceof Direction) {
+                forward = hint.equals(Direction.FORWARD);
+            } else if (hint instanceof ExecuteCommandHint.OnLeave) {
+                command = ((ExecuteCommandHint.OnLeave) hint).getCommand();
+            }
+        }
+        if (forward == null || command == null) {
+            throw new CommandExecutionException("Wrong number of hints passed to search mode!");
+        }
         startPos = editorAdaptor.getCursorService().getPosition();
         originalTopLine = editorAdaptor.getViewportService().getViewPortInformation().getTopLine();
         searchParser = new SearchCommandParser(editorAdaptor, command);
