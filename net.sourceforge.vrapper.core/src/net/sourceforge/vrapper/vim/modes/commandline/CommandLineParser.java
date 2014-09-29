@@ -497,6 +497,15 @@ public class CommandLineParser extends AbstractCommandParser {
     }
 
     @Override
+    public void setFromVisual(boolean isFromVisual) {
+        super.setFromVisual(isFromVisual);
+        if (isFromVisual) {
+            //display '<,'> to represent visual selection
+            commandLine.resetContents("'<,'>");
+        }
+    }
+
+    @Override
     protected String completeArgument(String commandLineContents, KeyStroke e) {
         int cmdLen = 0;
         boolean paths = false;

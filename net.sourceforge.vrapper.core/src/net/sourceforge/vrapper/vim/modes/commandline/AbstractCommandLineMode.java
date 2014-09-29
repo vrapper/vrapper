@@ -32,16 +32,14 @@ public abstract class AbstractCommandLineMode extends AbstractMode {
         parser.setCommandLine(commandLine);
         commandLine.open();
         for(ModeSwitchHint hint : args) {
-        	if(hint == FROM_VISUAL) {
-        	    parser.setFromVisual(true);
-        		//display '<,'> to represent visual selection
-        	    commandLine.resetContents("'<,'>");
-        	    //set the '< and '> marks
-        	    editorAdaptor.rememberLastActiveSelection();
-        	}
-        	else if(hint instanceof InitialContentsHint) {
-        	    commandLine.resetContents( ((InitialContentsHint)hint).getContents() );
-        	}
+            if(hint == FROM_VISUAL) {
+                parser.setFromVisual(true);
+                //set the '< and '> marks
+                editorAdaptor.rememberLastActiveSelection();
+            }
+            else if(hint instanceof InitialContentsHint) {
+                commandLine.resetContents( ((InitialContentsHint)hint).getContents() );
+            }
         }
     }
 
