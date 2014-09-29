@@ -64,8 +64,8 @@ public class LinewiseVisualMode extends AbstractVisualMode {
                 leafBind('o', (Command) SwapLinewiseSelectionSidesCommand.INSTANCE),
                 leafBind('v', (Command) new ChangeModeCommand(VisualMode.NAME, FIX_SELECTION_HINT)),
                 leafBind('V', (Command) LeaveVisualModeCommand.INSTANCE),
-                leafBind('/', (Command) new ChangeToSearchModeCommand(false, exitSearchModeCommand)),
-                leafBind('?', (Command) new ChangeToSearchModeCommand(true, exitSearchModeCommand))
+                leafBind('/', (Command) new ChangeToSearchModeCommand(false, exitSearchModeCommand, true)),
+                leafBind('?', (Command) new ChangeToSearchModeCommand(true, exitSearchModeCommand, true))
                 );
         return union(getPlatformSpecificState(NAME), linewiseSpecific, super.buildInitialState());
     }

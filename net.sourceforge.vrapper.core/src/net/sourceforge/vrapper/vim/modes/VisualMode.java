@@ -76,8 +76,8 @@ public class VisualMode extends AbstractVisualMode {
                 leafBind('v', (Command) LeaveVisualModeCommand.INSTANCE)
                 );
 		State<Command> searchSpecific = CountingState.wrap(state(
-                leafBind('/',  (Command) new ChangeToSearchModeCommand(false, exitSearchModeCommand)),
-                leafBind('?',  (Command) new ChangeToSearchModeCommand(true, exitSearchModeCommand))
+                leafBind('/',  (Command) new ChangeToSearchModeCommand(false, exitSearchModeCommand, true)),
+                leafBind('?',  (Command) new ChangeToSearchModeCommand(true, exitSearchModeCommand, true))
 				));
         return union(getPlatformSpecificState(NAME), characterwiseSpecific, searchSpecific, super.buildInitialState());
     }
