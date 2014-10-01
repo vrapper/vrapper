@@ -28,6 +28,10 @@ public class UserCommandCommand extends CountIgnoringNonRepeatableCommand {
         editorAdaptor.changeModeSafely(CommandLineMode.NAME);
         CommandLineMode mode = (CommandLineMode)editorAdaptor.getMode(CommandLineMode.NAME);
         CommandLineParser parser = (CommandLineParser)mode.createParser();
+        if(command.startsWith(":")) {
+            //strip optional leading colon
+            command = command.substring(1);
+        }
         Command toRun = parser.parseAndExecute(null, command);
         if(toRun != null) {
             toRun.execute(editorAdaptor);

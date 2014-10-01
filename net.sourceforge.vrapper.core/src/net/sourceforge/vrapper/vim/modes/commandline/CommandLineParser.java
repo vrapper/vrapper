@@ -8,10 +8,12 @@ import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.platform.Configuration.Option;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.Search;
+import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
+import net.sourceforge.vrapper.vim.commands.AnonymousMacroOperation;
 import net.sourceforge.vrapper.vim.commands.AsciiCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeToInsertModeCommand;
 import net.sourceforge.vrapper.vim.commands.CloseCommand;
@@ -327,6 +329,22 @@ public class CommandLineParser extends AbstractCommandParser {
                 return null;
             }
         };
+        Evaluator normal = new Evaluator() {
+            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
+                try {
+                    String args = "";
+                    while(command.size() > 0)
+                        args += command.poll() + " ";
+
+                    StartEndTextRange range = new StartEndTextRange(vim.getPosition(), vim.getPosition());
+                    new AnonymousMacroOperation(args).execute(vim, range, ContentType.TEXT);
+				}
+                catch (CommandExecutionException e) {
+            		vim.getUserInterfaceService().setErrorMessage(e.getMessage());
+				}
+                return null;
+            }
+        };
         
         EvaluatorMapping mapping = new EvaluatorMapping();
         // options
@@ -419,6 +437,7 @@ public class CommandLineParser extends AbstractCommandParser {
         mapping.add("sort", sort);
         mapping.add("retab", retab);
     	mapping.add("ascii", ascii);
+    	mapping.add("normal", normal);
     	mapping.add("startinsert", startInsert);
     	mapping.add("registers", registers);
     	mapping.add("display", registers);
