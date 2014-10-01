@@ -71,6 +71,12 @@ public class PasteAfterCommand extends CountAwareCommand {
 				&& followingLine < content.getNumberOfLines()) {
 	                position = content.getLineInformation(followingLine).getBeginOffset();
             }
+
+            Position start = cursorService.getPosition().setModelOffset(offset);
+            Position end = cursorService.getPosition().setModelOffset(position);
+            cursorService.setMark(CursorService.LAST_CHANGE_START, start);
+            cursorService.setMark(CursorService.LAST_CHANGE_END, end);
+
             Position destination = cursorService.newPositionForModelOffset(position);
             editorAdaptor.setPosition(destination, StickyColumnPolicy.ON_CHANGE);
         } finally {

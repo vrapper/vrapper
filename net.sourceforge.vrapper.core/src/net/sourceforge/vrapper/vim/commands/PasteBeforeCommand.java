@@ -1,5 +1,6 @@
 package net.sourceforge.vrapper.vim.commands;
 
+import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.LineInformation;
@@ -56,6 +57,13 @@ public class PasteBeforeCommand extends CountAwareCommand {
 					if (!placeCursorAfter)
 						position -= 1;
 				}
+
+				CursorService cursorService = editorAdaptor.getCursorService();
+				Position start = cursorService.getPosition().setModelOffset(offset);
+				Position end = cursorService.getPosition().setModelOffset(position);
+				cursorService.setMark(CursorService.LAST_CHANGE_START, start);
+				cursorService.setMark(CursorService.LAST_CHANGE_END, end);
+
 				Position destination = editorAdaptor.getCursorService().newPositionForModelOffset(position);
 				editorAdaptor.setPosition(destination, StickyColumnPolicy.ON_CHANGE);
 			}
