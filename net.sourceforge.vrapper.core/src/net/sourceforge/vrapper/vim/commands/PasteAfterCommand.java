@@ -65,7 +65,8 @@ public class PasteAfterCommand extends CountAwareCommand {
         }
         try {
             editorAdaptor.getHistory().beginCompoundChange();
-            content.replace(offset, 0, StringUtils.multiply(text, count));
+            String multipliedText = StringUtils.multiply(text, count);
+            content.replace(offset, 0, multipliedText);
             int followingLine = lineNo + (StringUtils.countNewlines(text) * count);
             if (registerContent.getPayloadType() == ContentType.LINES && placeCursorAfter
 				&& followingLine < content.getNumberOfLines()) {
@@ -73,7 +74,7 @@ public class PasteAfterCommand extends CountAwareCommand {
             }
 
             Position start = cursorService.getPosition().setModelOffset(offset);
-            Position end = cursorService.getPosition().setModelOffset(position);
+            Position end = start.addModelOffset(multipliedText.length() -1);
             cursorService.setMark(CursorService.LAST_CHANGE_START, start);
             cursorService.setMark(CursorService.LAST_CHANGE_END, end);
 
