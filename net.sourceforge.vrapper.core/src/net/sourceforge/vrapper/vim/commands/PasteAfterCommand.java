@@ -74,7 +74,10 @@ public class PasteAfterCommand extends CountAwareCommand {
             }
 
             Position start = cursorService.getPosition().setModelOffset(offset);
-            Position end = start.addModelOffset(multipliedText.length() -1);
+            //if multipliedText ends with a windows newline (\r\n) step cursor back two characters
+            //otherwise, step cursor back one character
+            int tweak = Math.max(1, VimUtils.endsWithNewLine(multipliedText));
+            Position end = start.addModelOffset(multipliedText.length() - tweak);
             cursorService.setMark(CursorService.LAST_CHANGE_START, start);
             cursorService.setMark(CursorService.LAST_CHANGE_END, end);
 
