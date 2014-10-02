@@ -27,6 +27,12 @@ public class VisualModeExclusiveTests extends VisualTestCase {
                 false, "","Al","a ma kota",
                 false, "","Ala ","ma kota");
         checkCommand(forKeySeq("w"),
+                false, "","Ala"," ma kota",
+                false, "","Ala ","ma kota");
+        checkCommand(forKeySeq("w"),
+                false, "","Ala ","ma kota",
+                false, "","Ala ma ","kota");
+        checkCommand(forKeySeq("w"),
                 true,  "","Ala ma k","ota",
                 true, "Ala ","ma k","ota");
         checkCommand(forKeySeq("w"),
@@ -53,6 +59,19 @@ public class VisualModeExclusiveTests extends VisualTestCase {
         checkCommand(forKeySeq("l"),
                 false, " ktoto","t","aki ",
                 false, " ktoto","ta","ki ");
+        checkCommand(forKeySeq("llll"),
+                false, " k","t","ototaki ",
+                false, " k","totot","aki ");
+    }
+    
+    @Test
+    public void testMotionWordForwardBackward() {
+        checkCommand(forKeySeq("w"),
+                false, "Here we ","","go again.",
+                false, "Here we ","go ","again.");
+        executeCommand(forKeySeq("b"));
+        assertVisualResult(content.getText(),
+                false, "Here we ","","go again.");
     }
     
     @Test
@@ -127,5 +146,20 @@ public class VisualModeExclusiveTests extends VisualTestCase {
                 "test", "123test", "",
                 "test123tes", 't', "");
         assertEquals(NormalMode.NAME, adaptor.getCurrentModeName());
+    }
+
+    @Test
+    public void testExtendSelectionTextObject() {
+        checkCommand(forKeySeq("iw"),
+                false, "Al","","a ma kota",
+                false, "","Ala"," ma kota");
+        // FIXME Should only select whitespace, now wrongly selects first word!
+        checkCommand(forKeySeq("iw"),
+                false, "Ala",""," ma kota",
+                false, "","Ala"," ma kota");
+        // FIXME Should select 'ma', instead !
+        checkCommand(forKeySeq("iw"),
+                false, "Ala ","","ma kota",
+                false, "","Ala ma"," kota");
     }
 }

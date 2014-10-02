@@ -10,6 +10,7 @@ import net.sourceforge.vrapper.vim.modes.TempVisualMode;
 import net.sourceforge.vrapper.vim.register.StringRegisterContent;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class VisualModeInclusiveTests extends VisualTestCase {
@@ -21,6 +22,7 @@ public class VisualModeInclusiveTests extends VisualTestCase {
 
     @Test
     public void testMotionsInVisualMode() {
+        // FIXME Should always include the first character of the selection
         checkCommand(forKeySeq("w"),
                 false, "","Al","a ma kota",
                 false, "","Ala ","ma kota");
@@ -53,6 +55,20 @@ public class VisualModeInclusiveTests extends VisualTestCase {
         checkCommand(forKeySeq("l"),
                 false, " ktoto","t","aki ",
                 false, " ktoto","ta","ki ");
+        checkCommand(forKeySeq("llll"),
+                false, " k","t","ototaki ",
+                false, " k","totot","aki ");
+    }
+    
+    @Ignore // FIXME Bug in inclusive selection - 2 chars selected instead of single char.
+    @Test
+    public void testMotionWordForwardBackward() {
+        checkCommand(forKeySeq("w"),
+                false, "Here we ","g","o again.",
+                false, "Here we ","go ","again.");
+        executeCommand(forKeySeq("b"));
+        assertVisualResult(content.getText(),
+                false, "Here we ","g","o again.");
     }
     
     @Test
@@ -123,5 +139,19 @@ public class VisualModeInclusiveTests extends VisualTestCase {
         checkLeavingCommand(forKeySeq("<Esc>"), false,
                 "test", "1", "23test",
                 "test", '1', "23test");
+    }
+
+    @Test
+    public void testExtendSelectionTextObject() {
+        checkCommand(forKeySeq("iw"),
+                false, "","Al","a ma kota",
+                false, "","Ala"," ma kota");
+        checkCommand(forKeySeq("iw"),
+                false, "Al","a"," ma kota",
+                false, "","Ala"," ma kota");
+        // FIXME Should only select whitespace!
+        checkCommand(forKeySeq("iw"),
+                false, "Ala"," ","   ma kota",
+                false, "","Ala    ma"," kota");
     }
 }
