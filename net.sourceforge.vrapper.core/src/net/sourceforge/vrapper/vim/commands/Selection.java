@@ -35,15 +35,12 @@ public interface Selection extends TextObject, TextRange {
      */
     public Position getFrom();
     /**
-     * Returns the position of the "cursor" near the end of the selection. Vim allows to show this
-     * "cursor" in line-wise mode but Eclipse can't do it because the caret must always be at either
-     * end of the selection.
+     * Returns the position of the "cursor" within the selection. Compare this to "effective" end of
+     * the selection returned by {@link #getEnd()}.
      * 
-     * <p>The difference between {@link #getEnd()} is subtle to none. It can only be really seen
-     * when a {@link LineWiseSelection} is active. In that case, {@link #getTo()} returns
-     * the position of the "cursor" on the ending line, whereas {@link #getEnd()} will always return
-     * the first or last character on that line, depending on whether the selection is reversed or
-     * not.
+     * <p>This is a workaround for the fact that Eclipse must always have its caret at the end of a
+     * selection whereas Vim can have it on a character (visual mode and blockwise with
+     * "inclusive" selection) or somewhere else on the line (linewise).
      */
     public Position getTo();
     /** Returns the left- and top-most position included in the selection, even if reversed. */
