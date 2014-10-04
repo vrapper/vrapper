@@ -118,7 +118,7 @@ public class BlockwiseVisualModeTests extends CommandTestCase {
     				min(actSelFrom, actSelTo),
     				max(actSelFrom, actSelTo)) + "\n";// + cursorLine(offset);
 
-    		msg += String.format("STARTING FROM:\n%s\nEXPECTED:\n%s\nGOT:\n%s\n", initialLine, expectedLine, actualLine);
+    		msg += String.format("STARTING FROM:\n'%s'\nEXPECTED:\n'%s'\nGOT:\n'%s'\n", initialLine, expectedLine, actualLine);
     		if (!actualFinalContent.equals(expectedFinalContent) || selectionMishmash) {
                 fail(msg);
             }

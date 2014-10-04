@@ -58,7 +58,7 @@ public class CommandTestCase extends VimTestCase {
 		final String expectedLine = formatLine(beforeCursor, cursor, afterCursor);
 		final String actualLine = formatLine(actualFinalContent, actualFinalOffset, actualFinalOffset + 1);
 
-		final String msg = String.format("STARTING FROM:\n%s\nEXPECTED:\n%s\nGOT:\n%s\n", initialLine, expectedLine, actualLine);
+		final String msg = String.format("STARTING FROM:\n'%s'\nEXPECTED:\n'%s'\nGOT:\n'%s'\n", initialLine, expectedLine, actualLine);
 		assertEquals(msg,  expectedFinalContent, actualFinalContent);
 		assertEquals("Wrong cursor position!\n" + msg, expectedFinalOffset, actualFinalOffset);
     }
@@ -85,7 +85,7 @@ public class CommandTestCase extends VimTestCase {
     		    buf.append('\n');
 	    }
 	    
-	    return "'" + buf.toString() + "'";
+	    return buf.toString();
 	}
 
 	protected static String join(final String...strings) {

@@ -82,7 +82,7 @@ public abstract class VisualTestCase extends CommandTestCase {
         String   actualLine = formatLine(actualFinalContent,
                 min(actSelFrom, actSelTo),
                 max(actSelFrom, actSelTo)) + "\n";// + cursorLine(offset);
-        String msg = String.format("STARTING FROM:\n%s\nEXPECTED:\n%s\nGOT:\n%s\n", initialLine, expectedLine, actualLine);
+        String msg = String.format("STARTING FROM:\n'%s'\nEXPECTED:\n'%s'\nGOT:\n'%s'\n", initialLine, expectedLine, actualLine);
 
         assertEquals(msg, expectedFinalContent, actualFinalContent);
         
