@@ -77,8 +77,8 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     private int averageCharWidth;
     private CaretType caretType = null;
 
-	public EclipseCursorAndSelection(final Configuration configuration,
-			final ITextViewer textViewer, final EclipseTextContent textContent) {
+    public EclipseCursorAndSelection(final Configuration configuration,
+            final ITextViewer textViewer, final EclipseTextContent textContent) {
         this.configuration = configuration;
         this.textViewer = textViewer;
         this.textContent = textContent;
@@ -104,29 +104,29 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
 
     @Override
     public Position getPosition() {
-    	Point sel = textViewer.getSelectedRange();
-    	int carretOffset = textViewer.getTextWidget().getCaretOffset();
-    	int cursorPos = converter.widgetOffset2ModelOffset(carretOffset);
-    	if (sel.y > 0 && cursorPos == sel.x + sel.y) {
-    		--cursorPos;
-    	}
-    	return new TextViewerPosition(textViewer, Space.MODEL, cursorPos);
+        Point sel = textViewer.getSelectedRange();
+        int carretOffset = textViewer.getTextWidget().getCaretOffset();
+        int cursorPos = converter.widgetOffset2ModelOffset(carretOffset);
+        if (sel.y > 0 && cursorPos == sel.x + sel.y) {
+            --cursorPos;
+        }
+        return new TextViewerPosition(textViewer, Space.MODEL, cursorPos);
     }
 
     @Override
     public void setPosition(final Position position, final StickyColumnPolicy columnPolicy) {
-    	if (columnPolicy == StickyColumnPolicy.NEVER
-    	        || columnPolicy == StickyColumnPolicy.RESET_EOL) {
-	    	caretListener.disable();
-    	}
-    	int viewOffset = position.getViewOffset();
-    	if (viewOffset < 0) {
-    		//Something went screwy, avoid getting into a bad state.
-    		//Just put the cursor at offset 0.
-    		viewOffset = 0;
-    	}
-    	try {
-    	    textViewer.getTextWidget().setSelection(viewOffset);
+        if (columnPolicy == StickyColumnPolicy.NEVER
+                || columnPolicy == StickyColumnPolicy.RESET_EOL) {
+            caretListener.disable();
+        }
+        int viewOffset = position.getViewOffset();
+        if (viewOffset < 0) {
+            //Something went screwy, avoid getting into a bad state.
+            //Just put the cursor at offset 0.
+            viewOffset = 0;
+        }
+        try {
+            textViewer.getTextWidget().setSelection(viewOffset);
         } catch (IllegalArgumentException e) {
             /**
              * This exception should only happen if the cursor is on the
@@ -134,7 +134,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
              * Which is to say, Windows (\r\n).  If this happens, step
              * back one character and try again.
              */
-    	    textViewer.getTextWidget().setSelection(viewOffset - 1);
+            textViewer.getTextWidget().setSelection(viewOffset - 1);
         }
         if (columnPolicy == StickyColumnPolicy.RESET_EOL) {
             stickToEOL = false;
