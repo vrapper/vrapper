@@ -29,14 +29,6 @@ public class LeaveVisualModeCommand extends CountIgnoringNonRepeatableCommand {
         
         // Get last position of the cursor.
         Position exitPoint = selection.getTo();
-
-        // Regular selection is 1 position longer on the right side to include last character.
-        // Linewise visual mode on the other hand has a 'to' field which can be anywhere on the line
-        // so don't move the cursor.
-        if ( ! selection.isReversed() && ! (selection instanceof LineWiseSelection)
-                && Selection.INCLUSIVE.equals(editorAdaptor.getConfiguration().get(Options.SELECTION))) {
-            exitPoint = VimUtils.safeAddModelOffset(editorAdaptor, selection.getTo(), -1, true);
-        }
         editorAdaptor.setPosition(exitPoint, StickyColumnPolicy.ON_CHANGE);
 
         doIt(editorAdaptor);

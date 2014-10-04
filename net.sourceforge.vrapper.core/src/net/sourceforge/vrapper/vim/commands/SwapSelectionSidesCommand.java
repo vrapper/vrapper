@@ -21,7 +21,7 @@ public class SwapSelectionSidesCommand extends CountIgnoringNonRepeatableCommand
         }
         MotionCommand.gotoAndChangeViewPort(editorAdaptor, selection.getStart(),
                 StickyColumnPolicy.ON_CHANGE);
-        editorAdaptor.setSelection(new SimpleSelection(
+        editorAdaptor.setSelection(new SimpleSelection(selection.getTo(), selection.getFrom(),
                 new StartEndTextRange(selection.getEnd(), selection.getStart())));
     }
 

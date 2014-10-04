@@ -20,6 +20,7 @@ import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeToSearchModeCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
+import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
 import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
@@ -98,11 +99,13 @@ public class VisualMode extends AbstractVisualMode {
         Selection selection = editorAdaptor.getSelection();
         Position start = selection.getStart();
         Position end = selection.getEnd();
-        if (selection.isReversed())
-            start = VimUtils.safeAddModelOffset(editorAdaptor, start, -1, true);
-        else
-            end = VimUtils.safeAddModelOffset(editorAdaptor, end, -1, true);
-        editorAdaptor.setSelection(new SimpleSelection(new StartEndTextRange(start, end)));
+        boolean isInclusive = Selection.INCLUSIVE.equals(editorAdaptor.getConfiguration().get(Options.SELECTION));
+        try {
+            selection = new SimpleSelection(editorAdaptor.getCursorService(), isInclusive, selection.getRegion(editorAdaptor, 0));
+        } catch (CommandExecutionException e) {
+            throw new RuntimeException("failed to get selection range!", e);
+        }
+        editorAdaptor.setSelection(selection);
     }
 
 }

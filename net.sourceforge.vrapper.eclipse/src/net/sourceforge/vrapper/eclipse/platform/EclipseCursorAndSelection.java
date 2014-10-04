@@ -20,6 +20,7 @@ import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Space;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
+import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
@@ -105,11 +106,22 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
 
     @Override
     public Position getPosition() {
+        if (selection != null) {
+            // It should be rare that we get in this case. The code below assumes visual mode is
+            // active. Linewise visual mode has a completely different notion of caret position.
+            return selection.getTo();
+        }
         Point sel = textViewer.getSelectedRange();
         int carretOffset = textViewer.getTextWidget().getCaretOffset();
         int cursorPos = converter.widgetOffset2ModelOffset(carretOffset);
-        if (sel.y > 0 && cursorPos == sel.x + sel.y) {
-            --cursorPos;
+        // Workaround for inclusive selections (see EvilCaret) - only for length > 0 & left-to-right
+        if (sel.y > 0 && cursorPos == sel.x + sel.y
+                && Selection.INCLUSIVE.equals(configuration.get(Options.SELECTION))) {
+            try {
+                cursorPos = moveToLeft(cursorPos);
+            } catch (BadLocationException e) {
+                throw new RuntimeException("Failed to get cursor position for V" + carretOffset, e);
+            }
         }
         return new TextViewerPosition(textViewer, Space.MODEL, cursorPos);
     }
@@ -131,6 +143,8 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         } catch (IllegalArgumentException e) {
             throw new VrapperPlatformException("Cannot set caret position to V " + viewOffset, e);
         }
+        // Reset Vrapper selection
+        selection = null;
         if (columnPolicy == StickyColumnPolicy.RESET_EOL) {
             stickToEOL = false;
             updateStickyColumn(viewOffset);
@@ -216,8 +230,8 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         int start, end;
         start = end = sel.x;
         final int len = sel.y;
+        final int pos = converter.widgetOffset2ModelOffset(textViewer.getTextWidget().getCaretOffset());
         if (len > 0) {
-            final int pos = converter.widgetOffset2ModelOffset(textViewer.getTextWidget().getCaretOffset());
             if (sel.x == pos) {
                 //sel.x is left bound of UI selection and cursor is to the left,
                 //so start of the selection should be moved to the right (reversed selection).
@@ -227,9 +241,10 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
             }
         }
 
-        final Position from = new TextViewerPosition(textViewer, Space.MODEL, start);
-        final Position to =   new TextViewerPosition(textViewer, Space.MODEL, end);
-        return new SimpleSelection(new StartEndTextRange(from, to));
+        final Position startSel = new TextViewerPosition(textViewer, Space.MODEL, start);
+        final Position endSel =   new TextViewerPosition(textViewer, Space.MODEL, end);
+        boolean isInclusive = Selection.INCLUSIVE.equals(configuration.get(Options.SELECTION));
+        return new SimpleSelection(this, isInclusive, new StartEndTextRange(startSel, endSel));
     }
     
     public boolean isSelectionInProgress() {
@@ -682,6 +697,28 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     @Override
     public int visualWidthToChars(int visualWidth) {
         return visualWidth / averageCharWidth;
+    }
+
+    /**
+     * Helper method which returns a text offset which is 1 or more characters to the left of the
+     * old offset by skipping newlines. This should avoid {@link BadLocationException}s later on.
+     * @param oldMPos int offset in model coordinates which is to be decreased.
+     * @throws BadLocationException if Eclipse throws an exception despite our best efforts.
+     */
+    private int moveToLeft(int oldMPos) throws BadLocationException {
+        IRegion lineInfo = textViewer.getDocument().getLineInformationOfOffset(oldMPos);
+        int lineStart = lineInfo.getOffset();
+        oldMPos--;
+        // We might have moved into a Windows newline combo. Detect and fix.
+        if (oldMPos < 0) {
+            oldMPos = 0;
+        } else if (oldMPos <= lineStart) {
+            lineInfo = textViewer.getDocument().getLineInformationOfOffset(oldMPos);
+            if (oldMPos > (lineInfo.getOffset() + lineInfo.getLength())) {
+                oldMPos = lineInfo.getOffset() + lineInfo.getLength();
+            }
+        }
+        return oldMPos;
     }
 
     private void updateStickyColumn(final int offset) {

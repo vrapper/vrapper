@@ -26,9 +26,8 @@ public class TestCursorAndSelection implements CursorService, SelectionService {
     private int stickyColumnNo;
 
 	public Position getPosition() {
-		// FIXME Doesn't care about selection=inclusive/exclusive
-		if (selection != null && ! selection.isReversed()) {
-			return selection.getEnd().addModelOffset(-1);
+		if (selection != null) {
+			return selection.getTo();
 		}
 		return position;
 	}

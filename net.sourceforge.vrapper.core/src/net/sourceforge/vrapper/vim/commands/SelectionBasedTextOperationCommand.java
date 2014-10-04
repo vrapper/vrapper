@@ -217,10 +217,6 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
         	history.endCompoundChange();
         }
     }
-	
-	public static TextRange newRange(final Position ul, final int width) {
-	    return StartEndTextRange.inclusive(ul, ul.addModelOffset(width));
-	}
 
     @Override
     public CountAwareCommand repetition() {

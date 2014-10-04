@@ -27,7 +27,7 @@ public class MotionTextObject extends AbstractTextObject {
             Motion motion) {
         switch (motion.borderPolicy()) {
         case EXCLUSIVE: return StartEndTextRange.exclusive(from, to);
-        case INCLUSIVE: return StartEndTextRange.inclusive(from, to);
+        case INCLUSIVE: return StartEndTextRange.inclusive(editorMode.getCursorService(), from, to);
         case LINE_WISE: return StartEndTextRange.lines(editorMode, from, to);
         default:
             throw new RuntimeException("unsupported border policy: " + motion.borderPolicy());

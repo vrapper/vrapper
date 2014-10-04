@@ -25,6 +25,7 @@ import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
+import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.VimConstants;
@@ -70,7 +71,6 @@ import net.sourceforge.vrapper.vim.commands.TextOperation;
 import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
 import net.sourceforge.vrapper.vim.commands.UndoCommand;
 import net.sourceforge.vrapper.vim.commands.VimCommandSequence;
-import net.sourceforge.vrapper.vim.commands.VisualMotionCommand;
 import net.sourceforge.vrapper.vim.commands.YankOperation;
 import net.sourceforge.vrapper.vim.commands.motions.GoToMarkMotion;
 import net.sourceforge.vrapper.vim.commands.motions.LineEndMotion;
@@ -272,7 +272,11 @@ public class NormalMode extends CommandBasedMode {
                 final Position position = editorAdaptor.getPosition();
                 editorAdaptor.setSelection(new SimpleSelection(new StartEndTextRange(position, position)));
             } else if (Selection.INCLUSIVE.equals(selectionVal)) {
-                new VisualMotionCommand(MoveRight.INSTANCE).execute(editorAdaptor);
+                final Position position = editorAdaptor.getPosition();
+                Position otherpos = VimUtils.safeAddModelOffset(editorAdaptor, position, 1, true);
+                editorAdaptor.setSelection(new SimpleSelection(position, position,
+                        new StartEndTextRange(position, otherpos)));
+	            editorAdaptor.getCursorService().setCaret(CaretType.LEFT_SHIFTED_RECTANGULAR);
             }
         }
     }

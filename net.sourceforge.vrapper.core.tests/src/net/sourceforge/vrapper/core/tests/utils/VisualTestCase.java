@@ -8,8 +8,11 @@ import net.sourceforge.vrapper.platform.SelectionService;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
+import net.sourceforge.vrapper.utils.VimUtils;
+import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
+import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
 import net.sourceforge.vrapper.vim.modes.VisualMode;
@@ -48,11 +51,23 @@ public abstract class VisualTestCase extends CommandTestCase {
         SelectionService selectionService = platform.getSelectionService();
         Position from = cursorService.newPositionForModelOffset(selectFrom);
         if (selected.endsWith("\n")) {
+            // Test in linewise
             Position to = cursorService.newPositionForModelOffset(selectTo - 1);
             selectionService.setSelection(new LineWiseSelection(adaptor, from, to));
         } else {
+            // Plain visual
             Position to = cursorService.newPositionForModelOffset(selectTo);
-            selectionService.setSelection(new SimpleSelection(new StartEndTextRange(from, to)));
+            StartEndTextRange selectionRange = new StartEndTextRange(from, to);
+            boolean isSelectionInclusive = Selection.INCLUSIVE.equals(
+                    adaptor.getConfiguration().get(Options.SELECTION));
+
+            if (isSelectionInclusive && from.compareTo(to) == 0) {
+                throw new IllegalArgumentException("Error in test: Visual mode with inclusive "
+                        + "selection should always have at least one character selected!");
+            }
+            SimpleSelection selection;
+            selection = new SimpleSelection(cursorService, isSelectionInclusive, selectionRange);
+            selectionService.setSelection(selection);
         }
     }
 

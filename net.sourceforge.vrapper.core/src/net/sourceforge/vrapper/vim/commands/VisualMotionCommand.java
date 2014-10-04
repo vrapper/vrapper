@@ -3,6 +3,7 @@ package net.sourceforge.vrapper.vim.commands;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
+import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.motions.Motion;
@@ -32,34 +33,26 @@ public class VisualMotionCommand extends AbstractVisualMotionCommand {
 	@Override
 	protected void extendSelection(EditorAdaptor editorAdaptor, Selection oldSelection,
 	        int motionCount) {
-	    Position newSelectionStart = oldSelection.getStart();
-	    Position oldSelectionEnd = oldSelection.getEnd();
-	    Position newSelectionEnd = editorAdaptor.getPosition();
-	    // TODO: behaves saner than Vim when shrinking; option?
-	    if (getMotion(motionCount).borderPolicy() == BorderPolicy.INCLUSIVE)
-            newSelectionEnd = newSelectionEnd.addViewOffset(1);
-	    
+	    Position from = oldSelection.getFrom();
+	    Position newTo = editorAdaptor.getPosition();
+	    Position oldTo = oldSelection.getTo();
+	    boolean selReversed = from.compareTo(newTo) > 0;
+	    boolean selShiftsToRight = newTo.compareTo(oldTo) > 0;
+	    boolean selGrowsToRight = selShiftsToRight && ! selReversed;
+
+	    BorderPolicy motionBorderPolicy = getMotion(motionCount).borderPolicy();
 	    Selection newSelection;
+
 	    if (editorAdaptor.getConfiguration().get(Options.SELECTION).equals(Selection.EXCLUSIVE)) {
-            newSelection = new SimpleSelection(
-	                new StartEndTextRange(oldSelection.getStart(), newSelectionEnd));
-        } else {
-            if (newSelectionStart.getModelOffset()-newSelectionEnd.getModelOffset() == 1)
-                newSelectionEnd = newSelectionEnd.addModelOffset(1);
-	        // always keep the character at selection start selected
-	        int oldCmp = newSelectionStart.compareTo(oldSelectionEnd);
-	        int newCmp = newSelectionStart.compareTo(newSelectionEnd);
-	        if (newCmp == 0 || oldCmp != newCmp) {
-	            newSelectionStart = newSelectionStart.addModelOffset(-oldCmp);
-	            if (newCmp == 0 && oldCmp == -1) {
-	                newSelectionEnd = newSelectionEnd.addModelOffset(-1);
-	            }
+	        if (motionBorderPolicy == BorderPolicy.INCLUSIVE && selGrowsToRight) {
+	            newTo = VimUtils.safeAddModelOffset(editorAdaptor, newTo, 1, true);
 	        }
-	        newSelection = new SimpleSelection(
-	                new StartEndTextRange(newSelectionStart, newSelectionEnd));
+	        newSelection = new SimpleSelection(from, newTo, new StartEndTextRange(from, newTo));
+	    } else {
+	        newSelection = new SimpleSelection(from, newTo,
+	                StartEndTextRange.inclusive(editorAdaptor.getCursorService(), from, newTo));
 	    }
-        newSelection = checkForWindowsNewlines(newSelection, editorAdaptor);
-        editorAdaptor.setSelection(newSelection);
+	    editorAdaptor.setSelection(newSelection);
 	}
 	
 	/**
@@ -89,11 +82,11 @@ public class VisualMotionCommand extends AbstractVisualMotionCommand {
 		}
 		
 		if(selection.isReversed()) {
-			return new SimpleSelection(
+			return new SimpleSelection(selection.getFrom(), selection.getTo(),
 				new StartEndTextRange(end, start));
 		}
 		else {
-			return new SimpleSelection(
+			return new SimpleSelection(selection.getFrom(), selection.getTo(),
 				new StartEndTextRange(start, end));
 		}
 	}

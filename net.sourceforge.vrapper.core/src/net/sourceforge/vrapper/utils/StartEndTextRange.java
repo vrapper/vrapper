@@ -94,11 +94,15 @@ public class StartEndTextRange implements TextRange {
         return new StartEndTextRange(from, to);
     }
 
-    public static TextRange inclusive(Position from, Position to) {
-        if (from.getModelOffset() <= to.getModelOffset())
-            return new StartEndTextRange(from, to.addModelOffset(1));
+    public static TextRange inclusive(CursorService cursorService, Position from, Position to) {
+        int fromOffset = from.getModelOffset();
+        int toOffset = to.getModelOffset();
+        if (fromOffset <= toOffset)
+            return new StartEndTextRange(from,
+                    cursorService.shiftPositionForModelOffset(toOffset, 1, true));
         else
-            return new StartEndTextRange(from.addModelOffset(1), to);
+            return new StartEndTextRange(
+                    cursorService.shiftPositionForModelOffset(fromOffset, 1, true), to);
     }
 
 }

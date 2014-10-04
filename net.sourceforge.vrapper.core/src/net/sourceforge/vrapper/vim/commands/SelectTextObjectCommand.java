@@ -2,6 +2,7 @@ package net.sourceforge.vrapper.vim.commands;
 
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
 import net.sourceforge.vrapper.vim.modes.BlockwiseVisualMode;
 import net.sourceforge.vrapper.vim.modes.LinewiseVisualMode;
@@ -64,7 +65,9 @@ public class SelectTextObjectCommand extends CountAwareCommand {
             newMode = LinewiseVisualMode.NAME;
             break;
         case TEXT:
-            selection = new SimpleSelection(region);
+            String selectionOption = editorAdaptor.getConfiguration().get(Options.SELECTION);
+            boolean isInclusive = Selection.INCLUSIVE.equals(selectionOption);
+            selection = new SimpleSelection(editorAdaptor.getCursorService(), isInclusive, region);
             newMode = VisualMode.NAME;
             break;
         default: throw new CommandExecutionException("WTF");
