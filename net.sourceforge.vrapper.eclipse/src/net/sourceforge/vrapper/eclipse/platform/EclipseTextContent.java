@@ -1,6 +1,5 @@
 package net.sourceforge.vrapper.eclipse.platform;
 
-import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.platform.VrapperPlatformException;
 import net.sourceforge.vrapper.utils.LineInformation;
@@ -186,25 +185,40 @@ public class EclipseTextContent {
             int pos = textWidget.getCaretOffset();
             // move caret after insertion to preserve position
             if (pos < textWidget.getCharCount()) {
-            	try {
-            		textWidget.setCaretOffset(pos+1);
-	                textWidget.replaceTextRange(pos, 0, s);
-	                textWidget.setCaretOffset(textWidget.getCaretOffset()-1);
-            	}
-            	catch (IllegalArgumentException e) {
-            		/**
-            		 * This exception should only happen if the cursor is on the
-            		 * end of a line and the newlines are multi-byte characters.
-            		 * Which is to say, Windows (\r\n).  If this happens, step
-            		 * back one character and try again.
-            		 */
-            		textWidget.setCaretOffset(pos);
-	                textWidget.replaceTextRange(pos, 0, s);
-	                textWidget.setCaretOffset(textWidget.getCaretOffset()+1);
-				}
+                // check that we're not at the end of the line, in which case we might run into \r\n
+                int mOffset = converter.widgetOffset2ModelOffset(pos);
+                int nextLineStart, lineStart, lineEnd;
+                try {
+                    int mLine = textViewer.getDocument().getLineOfOffset(mOffset);
+                    int lineLenDelim = textViewer.getDocument().getLineLength(mLine);
+                    IRegion lineInfo = textViewer.getDocument().getLineInformation(mLine);
+                    lineStart = lineInfo.getOffset();
+                    lineEnd = lineStart + lineInfo.getLength();
+                    nextLineStart = lineStart + lineLenDelim;
+                } catch (BadLocationException e) {
+                    throw new VrapperPlatformException("Failed to get line info for M" + mOffset
+                            + "/V" + pos, e);
+                }
+                try {
+                    int jump = 1;
+                    if (mOffset + jump > lineEnd) {
+                        // park caret on next line so we don't jump into the middle of \r\n
+                        jump = nextLineStart - mOffset;
+                    }
+                    textWidget.setCaretOffset(pos + jump);
+                    textWidget.replaceTextRange(pos, 0, s);
+                    textWidget.setCaretOffset(textWidget.getCaretOffset() - jump);
+                } catch (IllegalArgumentException e) {
+                    throw new VrapperPlatformException("Failed to insert text"
+                            + " at M" + mOffset + "/V" + pos, e);
+                }
             } else {
-                textWidget.replaceTextRange(pos, 0, s);
-                textWidget.setCaretOffset(textWidget.getCharCount());
+                try {
+                    textWidget.replaceTextRange(pos, 0, s);
+                    textWidget.setCaretOffset(textWidget.getCharCount());
+                } catch (Exception e) {
+                    throw new VrapperPlatformException("Failed to insert text at V"+pos+" (EOF)",e);
+                }
             }
         }
 
