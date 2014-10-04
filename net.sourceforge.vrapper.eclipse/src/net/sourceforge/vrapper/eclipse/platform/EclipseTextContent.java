@@ -1,5 +1,6 @@
 package net.sourceforge.vrapper.eclipse.platform;
 
+import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.platform.VrapperPlatformException;
 import net.sourceforge.vrapper.utils.LineInformation;
@@ -169,11 +170,11 @@ public class EclipseTextContent {
                 throw new VrapperPlatformException("Failed to move caret to V" + index, e);
             }
             textWidget.insert(s);
-            if (oldIndex > 1 && textWidget.getTextRange(oldIndex-1, 2).equals("\r\n")) {
-                //can't put cursor between \r and \n of a Windows newline
-                oldIndex++;
-            }
             try {
+                if (oldIndex > index) {
+                    // Position got shifted due to our insert.
+                    oldIndex = oldIndex + s.length();
+                }
                 textWidget.setCaretOffset(oldIndex);
             } catch (IllegalArgumentException e) {
                 throw new VrapperPlatformException("Failed to move caret to V" + oldIndex, e);
