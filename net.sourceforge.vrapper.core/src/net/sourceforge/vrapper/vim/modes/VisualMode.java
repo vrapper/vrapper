@@ -5,7 +5,6 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionS
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafState;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
-import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionState;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.vim.CountingState;
@@ -14,13 +13,12 @@ import net.sourceforge.vrapper.keymap.vim.VisualMotionState.Motion2VMC;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
-import net.sourceforge.vrapper.utils.VimUtils;
+import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeToSearchModeCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
-import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
 import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
@@ -97,15 +95,15 @@ public class VisualMode extends AbstractVisualMode {
     @Override
     protected void fixSelection() {
         Selection selection = editorAdaptor.getSelection();
-        Position start = selection.getStart();
-        Position end = selection.getEnd();
-        boolean isInclusive = Selection.INCLUSIVE.equals(editorAdaptor.getConfiguration().get(Options.SELECTION));
-        try {
-            selection = new SimpleSelection(editorAdaptor.getCursorService(), isInclusive, selection.getRegion(editorAdaptor, 0));
-        } catch (CommandExecutionException e) {
-            throw new RuntimeException("failed to get selection range!", e);
+        Position start = selection.getFrom();
+        Position end = selection.getTo();
+        TextRange range;
+        if (Selection.INCLUSIVE.equals(editorAdaptor.getConfiguration().get(Options.SELECTION))) {
+            range = StartEndTextRange.inclusive(editorAdaptor.getCursorService(), start, end);
+        } else {
+            range = new StartEndTextRange(start, end);
         }
-        editorAdaptor.setSelection(selection);
+        editorAdaptor.setSelection(new SimpleSelection(start, end, range));
     }
 
 }

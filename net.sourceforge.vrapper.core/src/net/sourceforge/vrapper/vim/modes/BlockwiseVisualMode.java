@@ -297,12 +297,8 @@ public class BlockwiseVisualMode extends AbstractVisualMode {
     @Override
     protected void fixSelection() {
         final Selection selection = editorAdaptor.getSelection();
-        Position start = selection.getStart();
-        Position end = selection.getEnd();
-        if (selection.isReversed())
-            start = start.addModelOffset(-1);
-        else
-            end = end.addModelOffset(-1);
+        Position start = selection.getFrom();
+        Position end = selection.getTo();
         editorAdaptor.setSelection(new BlockWiseSelection(editorAdaptor, start, end));
     }
 
