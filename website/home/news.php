@@ -1,4 +1,23 @@
 <div class="newsbox">
+    <div class="date">2014-10-05</div>
+    <h4>0.48.0 Released</h4>
+    
+    <p>Vrapper version 0.48.0 has been released, back on schedule with our
+    two-month release cycle.  The only changes since the last news post were
+    more esoteric bug fixes. The following fixes are included in 0.48.0:</p>
+    
+    <ul>
+        <li>Fixed issue with cursor placement after multi-line 'gp'</li>
+        <li>Fixed issue using counts with 'o' command</li>
+        <li>Fixed behavior for 2di' and 2yi' around whitespace</li>
+        <li>Fixed issue with '*' and '#' when 'smartcase' is enabled</li>
+        <li>Fixed issue where red error text wouldn't disappear from status bar</li>
+        <li>Fixed issue with hitting backspace as soon as you enter insert mode then hitting '.' to repeat insertion</li>
+        <li>Fixed issue with performing multiple searches while in visual mode</li>
+        <li>Fixed issues with `[ and `] not updating after a delete or after 'p'</li>
+    </ul>
+</div>
+<div class="newsbox">
     <div class="date">2014-09-07</div>
     <h4>Updates to unstable update site<br/>(plus a minor rant)</h4>
     
