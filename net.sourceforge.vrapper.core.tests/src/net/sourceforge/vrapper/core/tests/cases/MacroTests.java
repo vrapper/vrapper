@@ -111,12 +111,12 @@ public class MacroTests extends CommandTestCase {
 		//overwrite some text with the contents of the "a" register
 		checkCommand(forKeySeq("vw\"ap"),
 				"",'A', "la ma kota",
-				"ma",' ', "ma kota");
+				"ma",' ', "a kota");
 		
 		//verify that the overwritten text was stored in the default register
 		checkCommand(forKeySeq("p"),
 				"Ala ",'m', "a kota",
-				"Ala mAla",' ', "a kota");
+				"Ala mAla ",'m', "a kota");
 		
 		//verify that the "a" register is unchanged
 		checkCommand(forKeySeq("\"ap"),

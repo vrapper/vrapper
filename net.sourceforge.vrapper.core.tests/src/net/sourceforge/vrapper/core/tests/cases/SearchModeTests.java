@@ -67,17 +67,17 @@ public class SearchModeTests extends VisualTestCase {
     public void testVisualSearchRepeated() {
         checkCommand(forKeySeq("/th<CR>"),
                 false, "I ", "c", "ouldn't live without this\nfull-range three-linear variable.",
-                false, "I ", "couldn't live wi", "thout this\nfull-range three-linear variable.");
+                false, "I ", "couldn't live wit", "hout this\nfull-range three-linear variable.");
         // Don't use checkCommand again, it resets a lot of internal state, which is unwanted here.
         type(parseKeyStrokes("<ESC>0fcv/th<CR>"));
         assertVisualResult(content.getText(),
-                false, "I ", "couldn't live wi", "thout this\nfull-range three-linear variable.");
+                false, "I ", "couldn't live wit", "hout this\nfull-range three-linear variable.");
         type(parseKeyStrokes("/<CR>"));
         assertVisualResult(content.getText(),
-                false, "I ", "couldn't live without ", "this\nfull-range three-linear variable.");
+                false, "I ", "couldn't live without t", "his\nfull-range three-linear variable.");
         type(parseKeyStrokes("/<CR>"));
         assertVisualResult(content.getText(),
-                false, "I ", "couldn't live without this\nfull-range ", "three-linear variable.");
+                false, "I ", "couldn't live without this\nfull-range t", "hree-linear variable.");
     }
 
     @Test

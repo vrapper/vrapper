@@ -15,6 +15,7 @@ import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.modes.VisualMode;
+import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
 import net.sourceforge.vrapper.vim.register.StringRegisterContent;
 
 import org.junit.Test;
@@ -173,12 +174,16 @@ public class VisualModeTests extends VisualTestCase {
     @Test
     public void test_tMotions() {
         // Check repeated use of t motion in visual mode.
-        // Oddly, this appears to fail in Vim 7.4
+        registerManager = new DefaultRegisterManager();
+        reloadEditorAdaptor();
 
         checkCommand(forKeySeq("t)"),
                 false,  "getText(","line.getEndOffset","() - line.getBeginOffset()));",
                 false,  "getText(","line.getEndOffset(",") - line.getBeginOffset()));");
         checkCommand(forKeySeq("t)"),
+                false,  "getText(","line.getEndOffset(",") - line.getBeginOffset()));",
+                false,  "getText(","line.getEndOffset(",") - line.getBeginOffset()));");
+        checkCommand(forKeySeq(";"),
                 false,  "getText(","line.getEndOffset(",") - line.getBeginOffset()));",
                 false,  "getText(","line.getEndOffset() - line.getBeginOffset(",")));");
     }
@@ -303,7 +308,7 @@ public class VisualModeTests extends VisualTestCase {
                 false, "'String'Quote'String' ","Al","ASim'Quote'String'",
                 false, "'String'Quote'String'"," AlASim","'Quote'String'");
         // There was a bug where repeatedly running i' would cause an endless loop.
-        // FIXME: Vim actually reacts differently.
+        // FIXME: Vim actually reacts differently - it might select the quotes as well.
         checkCommand(forKeySeq("i'i'"),
                 false, "'String'Quote'String' ","Al","ASim'Quote'String'",
                 false, "'String'Quote'String'"," AlASim","'Quote'String'");

@@ -153,13 +153,12 @@ public class VisualModeExclusiveTests extends VisualTestCase {
         checkCommand(forKeySeq("iw"),
                 false, "Al","","a ma kota",
                 false, "","Ala"," ma kota");
-        // FIXME Should only select whitespace, now wrongly selects first word!
+        // FIXME Should only select whitespace, now wrongly selects surrounding words!
         checkCommand(forKeySeq("iw"),
                 false, "Ala",""," ma kota",
-                false, "","Ala"," ma kota");
-        // FIXME Should select 'ma', instead !
+                false, "","Ala ma"," kota");
         checkCommand(forKeySeq("iw"),
                 false, "Ala ","","ma kota",
-                false, "","Ala ma"," kota");
+                false, "Ala ","ma"," kota");
     }
 }

@@ -191,7 +191,7 @@ public class RemappingTests extends CommandTestCase {
         type(parseKeyStrokes(":vnoremap l $<CR>"));
         checkCommand(forKeySeq("vld"),
                 "[", 'a', "bc\ndef\ngh]\njkl",
-                "", '[', "\ndef\ngh]\njkl");
+                "[", 'd', "ef\ngh]\njkl");
     }
 
     @Test

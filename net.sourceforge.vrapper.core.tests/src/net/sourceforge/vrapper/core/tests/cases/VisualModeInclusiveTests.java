@@ -25,13 +25,13 @@ public class VisualModeInclusiveTests extends VisualTestCase {
         // FIXME Should always include the first character of the selection
         checkCommand(forKeySeq("w"),
                 false, "","Al","a ma kota",
-                false, "","Ala ","ma kota");
+                false, "","Ala m","a kota");
         checkCommand(forKeySeq("w"),
                 true,  "","Ala ma k","ota",
                 true, "Ala ","ma k","ota");
         checkCommand(forKeySeq("w"),
                 true,  "A","lamak","ota i psa",
-                false, "Alama","kota ","i psa");
+                false, "Alama","kota i"," psa");
         checkCommand(forKeySeq("e"),
                 true,  "A","lamak","ota i psa",
                 false, "Alama","kota"," i psa");
@@ -60,15 +60,36 @@ public class VisualModeInclusiveTests extends VisualTestCase {
                 false, " k","totot","aki ");
     }
     
-    @Ignore // FIXME Bug in inclusive selection - 2 chars selected instead of single char.
     @Test
     public void testMotionWordForwardBackward() {
         checkCommand(forKeySeq("w"),
                 false, "Here we ","g","o again.",
-                false, "Here we ","go ","again.");
+                false, "Here we ","go a","gain.");
         executeCommand(forKeySeq("b"));
         assertVisualResult(content.getText(),
                 false, "Here we ","g","o again.");
+        executeCommand(forKeySeq("b"));
+        assertVisualResult(content.getText(),
+                true, "Here ","we g","o again.");
+        executeCommand(forKeySeq("b"));
+        assertVisualResult(content.getText(),
+                true, "","Here we g","o again.");
+        executeCommand(forKeySeq("w"));
+        assertVisualResult(content.getText(),
+                true, "Here ","we g","o again.");
+
+        checkCommand(forKeySeq("w"),
+                false, "Here we ","g","o again.",
+                false, "Here we ","go a","gain.");
+        executeCommand(forKeySeq("ge"));
+        assertVisualResult(content.getText(),
+                false, "Here we ","go"," again.");
+        executeCommand(forKeySeq("ge"));
+        assertVisualResult(content.getText(),
+                true, "Here w","e g","o again.");
+        executeCommand(forKeySeq("ge"));
+        assertVisualResult(content.getText(),
+                true, "Her","e we g","o again.");
     }
     
     @Test
