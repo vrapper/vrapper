@@ -12,6 +12,7 @@ import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.Configuration;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.SelectionService;
+import net.sourceforge.vrapper.platform.VrapperPlatformException;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.LineInformation;
@@ -158,15 +159,16 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
                 // fall through silently and return line end
             }
         }
+        final int line = converter.widgetLine2ModelLine(lineNo);
         try {
-            final int line = converter.widgetLine2ModelLine(lineNo);
             final int lineLen = textViewer.getDocument().getLineLength(line);
             final String nl = textViewer.getDocument().getLineDelimiter(line);
             final int nlLen = nl != null ? nl.length() : 0;
             final int offset = tw.getOffsetAtLine(lineNo) + lineLen - nlLen;
             return new TextViewerPosition(textViewer, Space.VIEW, offset);
         } catch (final BadLocationException e) {
-            throw new RuntimeException(e);
+            throw new VrapperPlatformException("Failed to get sticky column for VL" + lineNo
+                    + "/ML" + line, e);
         }
     }
 
@@ -190,7 +192,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
                 }
                 return new TextViewerPosition(textViewer, Space.MODEL, endOffset);
             } catch (final Exception e) {
-                throw new RuntimeException(e);
+                throw new VrapperPlatformException("Failed to get sticky column for ML" + lineNo, e);
             }
         } else {
             try {
@@ -204,7 +206,8 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
                     final int offset = line.getOffset() + Math.min(y, line.getLength());
                     return new TextViewerPosition(textViewer, Space.MODEL, offset);
                 } catch (final BadLocationException e1) {
-                    throw new RuntimeException(e1);
+                    throw new VrapperPlatformException("Failed to get sticky column for ML"
+                            + lineNo, e);
                 }
             }
         }
@@ -383,9 +386,10 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         				allMarks.add(name);
         			}
         		}
-        	} catch (Exception ex) {
-        		ex.printStackTrace();
-        	}
+            } catch (PartInitException ex) {
+            } catch (CoreException ex) {
+                VrapperLog.error("Couldn't get marks for editor " + e, ex);
+            }
         }
 
     	return allMarks;
@@ -399,12 +403,11 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         }
         final org.eclipse.jface.text.Position p = new org.eclipse.jface.text.Position(position.getModelOffset());
         try {
-        	//add listener so Position automatically updates as the document changes
-			textViewer.getDocument().addPosition(p);
-		} catch (final BadLocationException e) {
-			e.printStackTrace();
-			return;
-		}
+            //add listener so Position automatically updates as the document changes
+            textViewer.getDocument().addPosition(p);
+        } catch (final BadLocationException e) {
+            throw new VrapperPlatformException("Failed to set mark for " + position, e);
+        }
 
         if(id == LAST_EDIT_MARK) {
         	changeList.add(p);
@@ -483,6 +486,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
             }
         } catch (CoreException e) {
             // Ignore.
+            VrapperLog.error("Failed to find markers in resource " + resource, e);
         }
         return null;
     }
@@ -516,7 +520,10 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
                 MarkerUtilities.setCharStart(map, position.getModelOffset());
                 MarkerUtilities.setCharEnd(map, position.getModelOffset() + 1);
                 MarkerUtilities.createMarker(file, map, GLOBAL_MARK_TYPE);
-            } catch (Exception e) {
+            } catch (BadLocationException e) {
+                throw new VrapperPlatformException("Failed to set global mark for " + position, e);
+            } catch (CoreException e) {
+                VrapperLog.error("Failed to set marker in editor input " + editorInput, e);
             }
         }
     }
@@ -670,7 +677,13 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
 
     private void updateStickyColumn(final int offset) {
         StyledText textWidget = textViewer.getTextWidget();
-        stickyColumn = textWidget.getLocationAtOffset(offset).x + textWidget.getHorizontalPixel();
+        Point locationAtOffset;
+        try {
+            locationAtOffset = textWidget.getLocationAtOffset(offset);
+        } catch (IllegalArgumentException e) {
+            throw new VrapperPlatformException("Failed to get location info for V" + offset, e);
+        }
+        stickyColumn = locationAtOffset.x + textWidget.getHorizontalPixel();
         final LineInformation line = textContent.getViewContent().getLineInformationOfOffset(offset);
         if (stickToEOL && offset < line.getEndOffset()) {
             stickToEOL = false;

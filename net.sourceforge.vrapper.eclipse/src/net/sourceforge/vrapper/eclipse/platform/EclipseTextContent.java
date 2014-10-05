@@ -1,6 +1,7 @@
 package net.sourceforge.vrapper.eclipse.platform;
 
 import net.sourceforge.vrapper.platform.TextContent;
+import net.sourceforge.vrapper.platform.VrapperPlatformException;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Space;
 import net.sourceforge.vrapper.utils.TextRange;
@@ -46,7 +47,7 @@ public class EclipseTextContent {
                 return new LineInformation(line, region.getOffset(), region
                         .getLength());
             } catch (BadLocationException e) {
-                throw new RuntimeException(e);
+                throw new VrapperPlatformException("Failed to get line info for ML" + line, e);
             }
 
         }
@@ -56,7 +57,7 @@ public class EclipseTextContent {
             try {
                 line = textViewer.getDocument().getLineOfOffset(offset);
             } catch (BadLocationException e) {
-                throw new RuntimeException(e);
+                throw new VrapperPlatformException("Failed to get line info for M" + offset, e);
             }
             return getLineInformation(line);
         }
@@ -73,7 +74,8 @@ public class EclipseTextContent {
             try {
                 return textViewer.getDocument().get(index, length);
             } catch (BadLocationException e) {
-                throw new RuntimeException(e);
+                throw new VrapperPlatformException("Failed to get text M" + index
+                        + " (" + length + " chars)", e);
             }
         }
 
@@ -89,7 +91,8 @@ public class EclipseTextContent {
                 }
                 doc.replace(index, length, s);
             } catch (BadLocationException e) {
-                throw new RuntimeException(e);
+                throw new VrapperPlatformException("Failed to replace for M" + index
+                        + " (" + length + " chars)", e);
             }
         }
 
@@ -115,7 +118,7 @@ public class EclipseTextContent {
             try {
                 region = textViewer.getDocument().getLineInformation(line);
             } catch (BadLocationException e) {
-                throw new RuntimeException(e);
+                throw new VrapperPlatformException("Failed to get line info for VL" + line, e);
             }
             return new LineInformation(converter.modelLine2WidgetLine(line),
                     converter.modelOffset2WidgetOffset(region.getOffset()), region.getLength());
@@ -135,7 +138,12 @@ public class EclipseTextContent {
         }
 
         public String getText(int index, int length) {
-            return textViewer.getTextWidget().getText(index, index + length - 1);
+            try {
+                return textViewer.getTextWidget().getText(index, index + length - 1);
+            } catch (IllegalArgumentException e) {
+                throw new VrapperPlatformException("Failed to get text info for V" + index
+                        + " (" + length + " chars)", e);
+            }
         }
 
         public String getText(TextRange range) {
@@ -144,19 +152,32 @@ public class EclipseTextContent {
 
         public void replace(int index, int length, String text) {
             // XXX: it was illegal in Vrapper. Why?
-            textViewer.getTextWidget().replaceTextRange(index, length, text);
+            try {
+                textViewer.getTextWidget().replaceTextRange(index, length, text);
+            } catch (IllegalArgumentException e) {
+                throw new VrapperPlatformException("Failed to replace for V" + index
+                        + " (" + length + " chars)", e);
+            }
         }
 
         public void smartInsert(int index, String s) {
             StyledText textWidget = textViewer.getTextWidget();
             int oldIndex = textWidget.getCaretOffset();
-            textWidget.setCaretOffset(index);
-            textWidget.insert(s);
-            if(oldIndex > 1 && textWidget.getTextRange(oldIndex-1, 2).equals("\r\n")) {
-            	//can't put cursor between \r and \n of a Windows newline
-            	oldIndex++;
+            try {
+                textWidget.setCaretOffset(index);
+            } catch (IllegalArgumentException e) {
+                throw new VrapperPlatformException("Failed to move caret to V" + index, e);
             }
-            textWidget.setCaretOffset(oldIndex);
+            textWidget.insert(s);
+            if (oldIndex > 1 && textWidget.getTextRange(oldIndex-1, 2).equals("\r\n")) {
+                //can't put cursor between \r and \n of a Windows newline
+                oldIndex++;
+            }
+            try {
+                textWidget.setCaretOffset(oldIndex);
+            } catch (IllegalArgumentException e) {
+                throw new VrapperPlatformException("Failed to move caret to V" + oldIndex, e);
+            }
         }
 
         public void smartInsert(String s) {

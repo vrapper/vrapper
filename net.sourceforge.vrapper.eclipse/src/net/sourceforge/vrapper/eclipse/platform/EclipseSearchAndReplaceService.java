@@ -93,7 +93,7 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
     			}
     		}
         } catch (BadLocationException e) {
-        	//should we log something?
+            VrapperLog.error("Failed to replace for " + line, e);
         }
     	
     	return numReplaces;
@@ -120,6 +120,7 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
 				success = true;
 			}
 		} catch (BadLocationException e) {
+			VrapperLog.error("Failed to substitute starting from M" + start, e);
 		}
     	return success;
     }
