@@ -8,8 +8,6 @@ import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.vim.commands.BorderPolicy;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
-import net.sourceforge.vrapper.vim.commands.Selection;
-import net.sourceforge.vrapper.vim.modes.VisualMode;
 
 // TODO: can we use underlying eclipse to do extra-smart stuff
 // like matching XML tags, LaTeX \begin{paragraph}\end{paragraph},
@@ -34,14 +32,6 @@ public class ParenthesesMove extends AbstractModelSideMotion {
     }
     
     public static final ParenthesesMove INSTANCE = new ParenthesesMove();
-    private String mode;
-    private Selection sel;
-
-    @Override
-    protected void setCurrentState(String mode, Selection sel) {
-        this.mode = mode;
-        this.sel = sel;
-    }
 
     //default match algorithm, find match for character under cursor
     @Override
@@ -49,11 +39,6 @@ public class ParenthesesMove extends AbstractModelSideMotion {
         LineInformation info = content.getLineInformationOfOffset(offset);
         ParenthesesPair pair = null;
         int index;
-        if(VisualMode.NAME.equals(mode) ) {
-            //visual mode moves the selection forward one character
-            //move it back so we're on the character under the cursor
-            offset--;
-        }
         for(index=offset; index<info.getEndOffset(); index++) {
             String c = content.getText(index, 1);
             if (PARENTHESES.containsKey(c)) {
@@ -70,13 +55,7 @@ public class ParenthesesMove extends AbstractModelSideMotion {
             }
         }
 
-        int match = findMatch(index, pair, content, count);
-        // adjust for caret offset if the match is before the selection start
-        // (see EvilCaret.java for details)
-        if (VisualMode.NAME.equals(mode) && match < sel.getStart().getModelOffset()) {
-            match--;
-        }
-        return match;
+        return findMatch(index, pair, content, count);
     }
     
     public static final ParenthesesMove MATCH_OPEN_PAREN = new ParenthesesMove() {
