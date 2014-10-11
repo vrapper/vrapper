@@ -54,6 +54,44 @@ public class TestCursorAndSelection implements CursorService, SelectionService {
 		return new DumbPosition(offset);
 	}
 
+	@Override
+	public Position newPositionForModelOffset(int targetModelOffset, Position original,
+				boolean allowPastLastChar) {
+		int modelOffset = original.getModelOffset();
+		int delta = targetModelOffset - modelOffset;
+		return shiftPositionForModelOffset(modelOffset, delta, allowPastLastChar);
+	}
+
+	@Override
+	public Position shiftPositionForModelOffset(int offset, int delta, boolean allowPastLastChar) {
+		int targetOffset = offset + delta;
+		if (delta == 0) {
+			return new DumbPosition(offset);
+		} else if (targetOffset <= 0) {
+			return new DumbPosition(0);
+		} else if (targetOffset > content.getTextLength()) {
+			// Clip to text end, but 'onNewline' still might need corrections
+			targetOffset = content.getTextLength();
+		}
+		LineInformation lineInfo = content.getLineInformationOfOffset(targetOffset);
+		if (targetOffset == content.getTextLength()) {
+			// Fall through to 'onNewline' check.
+		} else if (delta > 0 && targetOffset > lineInfo.getEndOffset()) {
+			// Moving to right but we fall just outside the line. Skip to beginning of next line.
+			lineInfo = content.getLineInformation(lineInfo.getNumber() + 1);
+			targetOffset = lineInfo.getBeginOffset();
+		} else if (delta < 0 && targetOffset > lineInfo.getEndOffset()) {
+			// Moving to right but we fall just outside the line. Skip to end of line.
+			targetOffset = lineInfo.getEndOffset();
+		}
+		if ( ! allowPastLastChar && targetOffset == lineInfo.getEndOffset()
+				&& targetOffset > lineInfo.getBeginOffset()) {
+			// Past last character and the line isn't empty. Move one back.
+			targetOffset--;
+		}
+		return new DumbPosition(targetOffset);
+	}
+
 	public void setCaret(CaretType caretType) {
 		this.caretType = caretType;
 	}

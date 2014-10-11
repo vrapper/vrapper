@@ -407,54 +407,12 @@ public class VimUtils {
      *     All motions want to pass <tt>true</tt> so that a selection includes the last character,
      *     while low-level positioning logic can pass <tt>false</tt> to keep the cursor on the last
      *     character. If the line is empty, the first position of the line is returned.
+     *
      */
     public static Position safeAddModelOffset(EditorAdaptor adaptor, Position original, int delta,
             boolean allowPastLastChar) {
-        if (delta == 0) {
-            return original;
-        }
-        int originalOffset = original.getModelOffset();
-        TextContent modelContent = adaptor.getModelContent();
-        LineInformation origLine = modelContent.getLineInformationOfOffset(originalOffset);
-
-        int targetOffset = originalOffset + delta;
-        
-        LineInformation targetLine = origLine;
-        if (delta > 0 && targetOffset > origLine.getEndOffset()) {
-            // target goes past the current line
-            int offset = origLine.getEndOffset();
-            while (offset < targetOffset && offset + 1 < modelContent.getTextLength()) {
-                targetLine = modelContent.getLineInformation(targetLine.getNumber() + 1);
-                offset = targetLine.getEndOffset();
-            }
-            if (targetOffset < targetLine.getBeginOffset()) {
-                // targetOffset was in the middle of a newline sequence
-                targetOffset = targetLine.getBeginOffset();
-            } else if (offset < targetOffset) {
-                // targetLine loop reached end of text
-                targetOffset = targetLine.getEndOffset();
-            } // else the targetOffset position is legal.
-        } else if (delta < 0 && targetOffset < origLine.getBeginOffset()) {
-            // target goes into the previous line
-            int offset = origLine.getBeginOffset();
-            while (offset > targetOffset && offset > 0) {
-                targetLine = modelContent.getLineInformation(targetLine.getNumber() - 1);
-                offset = targetLine.getBeginOffset();
-            }
-            if (targetOffset > targetLine.getEndOffset()) {
-                // targetOffset was in the middle of a newline sequence
-                targetOffset = targetLine.getEndOffset();
-            } else if (offset == 0) {
-                // targetLine loop reached start of text
-                targetOffset = targetLine.getBeginOffset();
-            } // else the targetOffset position is legal.
-            
-        }
-        if ( ! allowPastLastChar && targetOffset == targetLine.getEndOffset()
-                && targetOffset > targetLine.getBeginOffset()) {
-            // Past last character and the line isn't empty. Move one back.
-            targetOffset--;
-        }
-        return adaptor.getCursorService().newPositionForModelOffset(targetOffset);
+        CursorService cursorService = adaptor.getCursorService();
+        int originalPos = original.getModelOffset();
+        return cursorService.shiftPositionForModelOffset(originalPos, delta, allowPastLastChar);
     }
 }

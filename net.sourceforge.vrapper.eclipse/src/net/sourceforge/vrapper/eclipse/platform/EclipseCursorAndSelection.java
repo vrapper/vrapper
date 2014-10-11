@@ -319,6 +319,21 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     }
 
     @Override
+    public Position newPositionForModelOffset(int targetModelOffset, Position original,
+            boolean allowPastLastChar) {
+        int modelOffset = original.getModelOffset();
+        int delta = targetModelOffset - modelOffset;
+        targetModelOffset = safeAddModelOffset(modelOffset, delta, allowPastLastChar);
+        return new TextViewerPosition(textViewer, Space.MODEL, targetModelOffset);
+    }
+
+    @Override
+    public Position shiftPositionForModelOffset(int offset, int delta, boolean allowPastLastChar) {
+        offset = safeAddModelOffset(offset, delta, allowPastLastChar);
+        return new TextViewerPosition(textViewer, Space.MODEL, offset);
+    }
+
+    @Override
     public void setCaret(final CaretType caretType) {
         if (this.caretType != caretType) {
             final StyledText styledText = textViewer.getTextWidget();
@@ -690,4 +705,52 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         }
     }
 
+    private int safeAddModelOffset(int modelOffset, int delta, boolean allowPastLastChar) {
+        int targetOffset = modelOffset + delta;
+        if (delta == 0) {
+            return modelOffset;
+        } else if (targetOffset <= 0) {
+            return 0;
+        }
+        int contentlength = textViewer.getDocument().getLength();
+        if (targetOffset > contentlength) {
+            // Clip to text end, but 'onNewline' still might need corrections
+            targetOffset = contentlength;
+        }
+        int line;
+        try {
+            line = textViewer.getDocument().getLineOfOffset(targetOffset);
+        } catch (BadLocationException e) {
+            throw new VrapperPlatformException("Failed to get line nr for M" + targetOffset, e);
+        }
+        int totalLineLength;
+        try {
+            totalLineLength = textViewer.getDocument().getLineLength(line);
+        } catch (BadLocationException e) {
+            throw new VrapperPlatformException("Failed to get line length for M" + targetOffset, e);
+        }
+        IRegion lineInfo;
+        try {
+            lineInfo = textViewer.getDocument().getLineInformation(line);
+        } catch (BadLocationException e) {
+            throw new VrapperPlatformException("Failed to get line info for M" + targetOffset, e);
+        }
+        int beginOffset = lineInfo.getOffset();
+        int endOffset = lineInfo.getOffset() + lineInfo.getLength();
+        if (targetOffset == contentlength) {
+            // Fall through to 'onNewline' check to see if cursor needs to move to the left.
+        } else if (delta > 0 && targetOffset > endOffset) {
+            // Moving to right but we fall just outside the line. Jump to beginning of next line.
+            targetOffset = beginOffset + totalLineLength;
+        } else if (delta < 0 && targetOffset > endOffset) {
+            // Moving to left but we fall just outside the line. Clip to end of line.
+            targetOffset = endOffset;
+        }
+        if ( ! allowPastLastChar && targetOffset == endOffset
+                && targetOffset > beginOffset) {
+            // Past last character and the line isn't empty. Move one back.
+            targetOffset--;
+        }
+        return targetOffset;
+    }
 }

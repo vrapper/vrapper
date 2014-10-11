@@ -34,12 +34,40 @@ public interface CursorService {
      * @param lineNo - number of line (in view space) which we're interested in
      * @return offset of sticky column in that line
      */
-	Position stickyColumnAtViewLine(int lineNo);
-	Position stickyColumnAtModelLine(int lineNo);
+    Position stickyColumnAtViewLine(int lineNo);
+    Position stickyColumnAtModelLine(int lineNo);
 
-	Position newPositionForViewOffset(int offset);
-	Position newPositionForModelOffset(int offset);
-	
+    Position newPositionForViewOffset(int offset);
+    Position newPositionForModelOffset(int offset);
+    /**
+     * Returns a new {@link Position} instance which never ends up in a newline combo.
+     * See {@link #shiftPosition(Position, int, boolean)} for details.
+     * <p>
+     * <b>NOTE</b>: Some invalid offsets might be silently ignored, e.g. end of file or a negative
+     * offsets. In that case the offset will be clipped to the content length or zero. Motions
+     * should check that such a boundary is hit if they want to report this to their caller!
+     * 
+     * @param offset int Offset for which a position needs to be returned.
+     * @param original Position from which you move away.
+     * @param allowPastLastChar if the cursor can be before a newline and must not be on a character.
+     */
+    Position newPositionForModelOffset(int offset, Position original, boolean allowPastLastChar);
+    /**
+     * Returns a new {@link Position} instance <code>delta</code> chars from <code>offset</code> and
+     * makes sure that it never ends up in a newline combo. If <code>delta</code> is positive,
+     * the returned position is after the newline. If it is negative, it can be before, but it is
+     * possible shifted to the left if <code>allowPastLastChar</code> is <code>false</code>.
+     * <p>
+     * <b>NOTE</b>:If the delta makes us move past the text content length boundary e.g. end of file
+     * or a negative offset, the position will be clipped to the content length or zero. Motions
+     * should check that such a boundary is hit if they want to report this to their caller!
+     * 
+     * @param offset int Offset where we are starting from.
+     * @param delta int number of characters to move. Can be zero or negative.
+     * @param allowPastLastChar if the cursor can be before a newline and must not be on a character.
+     */
+    Position shiftPositionForModelOffset(int offset, int delta, boolean allowPastLastChar);
+
     /**
      * Returns "visual" horizontal offset of the specified position. Visual
      * offset is constant regardless of character widths (think "tab"
