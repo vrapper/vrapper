@@ -121,7 +121,7 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
                 }
                 if (runStart != null) {
                     editorAdaptor.setPosition(runStart, StickyColumnPolicy.NEVER);
-                    final TextObject nextLine = new SimpleSelection(new StartEndTextRange(runStart, runEnd));
+                    final TextObject nextLine = new DummyTextObject(new StartEndTextRange(runStart, runEnd));
 
                     final RegisterContent content = lastEditRegister.getContent();
                     repetition.execute(editorAdaptor, count, nextLine);
@@ -196,7 +196,7 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
         } else {
             runEnd = runEnd.addModelOffset(1);
         }
-        final TextObject firstLine = new SimpleSelection(new StartEndTextRange(runStart, runEnd));
+        final TextObject firstLine = new DummyTextObject(new StartEndTextRange(runStart, runEnd));
 
         final HistoryService history = editorAdaptor.getHistory();
         final RegisterManager registerManager = editorAdaptor.getRegisterManager();
@@ -221,10 +221,6 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
 	public static TextRange newRange(final Position ul, final int width) {
 	    return StartEndTextRange.inclusive(ul, ul.addModelOffset(width));
 	}
-
-	public static TextObject newSelection(final Position ul, final int width) {
-	    return new SimpleSelection(newRange(ul, width));
-    }
 
     @Override
     public CountAwareCommand repetition() {

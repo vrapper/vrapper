@@ -20,6 +20,7 @@ import net.sourceforge.vrapper.vim.commands.CloseCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.ConfigCommand;
+import net.sourceforge.vrapper.vim.commands.DummyTextObject;
 import net.sourceforge.vrapper.vim.commands.EditFileCommand;
 import net.sourceforge.vrapper.vim.commands.ExCommandOperation;
 import net.sourceforge.vrapper.vim.commands.FindFileCommand;
@@ -38,7 +39,6 @@ import net.sourceforge.vrapper.vim.commands.SaveCommand;
 import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SetLocalOptionCommand;
 import net.sourceforge.vrapper.vim.commands.SetOptionCommand;
-import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 import net.sourceforge.vrapper.vim.commands.SortOperation;
 import net.sourceforge.vrapper.vim.commands.SubstitutionOperation;
 import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
@@ -677,7 +677,7 @@ public class CommandLineParser extends AbstractCommandParser {
         if(command.length() > 1 && (command.startsWith("g") || command.startsWith("v"))
         		&& VimUtils.isPatternDelimiter(""+command.charAt(1))) {
     		return new TextOperationTextObjectCommand(
-				new ExCommandOperation(command), new SimpleSelection(null)
+				new ExCommandOperation(command), new DummyTextObject(null)
     		);
         }
         
@@ -756,7 +756,7 @@ public class CommandLineParser extends AbstractCommandParser {
     	if(command.startsWith("s") && VimUtils.isPatternDelimiter(""+command.charAt(1))) {
     		//null TextRange is a special case for "current line"
     		return new TextOperationTextObjectCommand(
-				new SubstitutionOperation(command), new SimpleSelection(null)
+				new SubstitutionOperation(command), new DummyTextObject(null)
     		);
     	}
     	//not a substitution

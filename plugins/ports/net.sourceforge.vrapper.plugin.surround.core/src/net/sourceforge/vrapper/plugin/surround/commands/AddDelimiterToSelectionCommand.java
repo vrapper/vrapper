@@ -16,10 +16,10 @@ import net.sourceforge.vrapper.vim.commands.BlockWiseSelection;
 import net.sourceforge.vrapper.vim.commands.BlockWiseSelection.TextBlock;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
+import net.sourceforge.vrapper.vim.commands.DummyTextObject;
 import net.sourceforge.vrapper.vim.commands.InsertLineCommand;
 import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
 import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
-import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 import net.sourceforge.vrapper.vim.commands.TextObject;
 import net.sourceforge.vrapper.vim.commands.TextOperation;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
@@ -145,7 +145,7 @@ public class AddDelimiterToSelectionCommand implements Command, DelimiterChanged
         }
 
         //Create new selection, offsets might have shifted due to indentation.
-        selection = new SimpleSelection(
+        selection = new DummyTextObject(
                 new StartEndTextRange(cursor.getMark(CursorService.LAST_CHANGE_START),
                                       cursor.getMark(CursorService.LAST_CHANGE_END)));
         ChangeDelimiterCommand.doIt(editorAdaptor, 0, new NotYetDelimitedTextObject(selection),

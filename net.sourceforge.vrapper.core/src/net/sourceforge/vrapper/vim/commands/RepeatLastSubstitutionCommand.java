@@ -27,7 +27,7 @@ public class RepeatLastSubstitutionCommand extends CountAwareCommand {
 		if(currentLineOnly) {
 			//null TextRange is a special case for "current line"
 			command = new TextOperationTextObjectCommand(
-				substitution, new SimpleSelection(null)
+				substitution, new DummyTextObject(null)
 			);
 		}
 		else {
