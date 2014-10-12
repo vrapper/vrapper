@@ -166,9 +166,9 @@
     <tr>
         <td>:set&nbsp;iskeyword=&lt;regex of word characters&gt;</td>
         <td>:set isk=&lt;characters&gt;</td>
-        <td>iskeyword=a-zA-Z0-9_</td>
+        <td>iskeyword=a-zA-Z0-9_\u00C0-\u017F</td>
         <td>Regex of character-classes which should be treated as word
-        characters. This will be interpreted as the regex <code>[&lt;iskeyword value&gt;]</code>.  All contiguous characters matching this regex will be treated
+        characters. This will be interpreted as a regex character class (for example, <code>[a-zA-Z0-9_]</code>).  All contiguous characters matching this regex will be treated
         as one word for <code>w</code> and <code>*</code> commands.<br/>
         This property can also be modified with <code>+=</code> and <code>-=</code> (e.g., <code>:set isk+=.</code>)</td>
     </tr>

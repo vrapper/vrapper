@@ -444,6 +444,9 @@ public class MotionTests extends CommandTestCase {
 		checkMotion(moveWordRight,
 				"while(true) ++aw3rs0meness",';',"",
 				"while(true) ++aw3rs0meness;", EOF, "");
+		checkMotion(moveWordRight,
+				"this ",'n',"uméro one",
+				"this numéro ", 'o', "ne");
 	}
 
 	@Test

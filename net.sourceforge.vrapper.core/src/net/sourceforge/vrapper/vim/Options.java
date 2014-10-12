@@ -57,7 +57,7 @@ public interface Options {
     public static final Option<String> PATH      = stringNoConstraint("path", ".", "pa");
     public static final Option<String> GVIM_PATH = stringNoConstraint("gvimpath", "/usr/bin/gvim", "gvp");
     public static final Option<String> GVIM_ARGS = stringNoConstraint("gvimargs", "");
-    public static final Option<String> KEYWORDS  = stringNoConstraint("iskeyword", "a-zA-Z0-9_", "isk");
+    public static final Option<String> KEYWORDS  = stringNoConstraint("iskeyword", "a-zA-Z0-9_\u00C0-\u017F", "isk");
     @SuppressWarnings("unchecked")
     public static final Set<Option<String>> STRING_OPTIONS = set(CLIPBOARD, SELECTION, PATH,
             GVIM_PATH, GVIM_ARGS, KEYWORDS, SYNC_MODIFIABLE);
