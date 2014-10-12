@@ -30,16 +30,4 @@ public class BlockwiseVisualMotionCommand extends AbstractVisualMotionCommand {
         }
         editorAdaptor.setSelection(new BlockWiseSelection(editorAdaptor, from, to));
     }
-
-    @Override
-    protected Selection getSelection(final EditorAdaptor editorAdaptor) {
-		Selection oldSelection = editorAdaptor.getSelection();
-		if (oldSelection == null) {
-			final Position position = editorAdaptor.getPosition();
-			oldSelection = new BlockWiseSelection(editorAdaptor, position, position);
-			editorAdaptor.setSelection(oldSelection);
-		}
-		return oldSelection;
-    }
-
 }

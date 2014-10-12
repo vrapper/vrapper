@@ -22,16 +22,4 @@ public class LinewiseVisualMotionCommand extends AbstractVisualMotionCommand {
         Position to = editorAdaptor.getPosition();
 		editorAdaptor.setSelection(new LineWiseSelection(editorAdaptor, from, to));
     }
-
-    @Override
-    protected Selection getSelection(EditorAdaptor editorAdaptor) {
-		Selection oldSelection = editorAdaptor.getSelection();
-		if (oldSelection == null) {
-			Position position = editorAdaptor.getPosition();
-			oldSelection = new LineWiseSelection(editorAdaptor, position, position);
-			editorAdaptor.setSelection(oldSelection);
-		}
-		return oldSelection;
-    }
-
 }
