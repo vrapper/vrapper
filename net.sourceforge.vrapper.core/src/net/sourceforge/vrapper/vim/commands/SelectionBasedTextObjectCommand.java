@@ -4,6 +4,12 @@ import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 
+/**
+ * Temporarily changes the current selection to the range returned by a TextObject.
+ * <p>
+ * Currently used to run Eclipse commands on TextObjects. Native Eclipse commands can only check the
+ * editor selection, they know nothing about Vrapper's richer objects.
+ */
 public class SelectionBasedTextObjectCommand extends TextObjectCommand {
 	protected Command command;
 
@@ -17,6 +23,8 @@ public class SelectionBasedTextObjectCommand extends TextObjectCommand {
 		// TODO: move cursor - compatibility option
 		editorMode.setSelection(new SimpleSelection(range));
 		command.execute(editorMode);
+		// Eclipse commands already clear selection, but let's just be sure.
+		editorMode.setSelection(null);
 	}
 
 	@Override
