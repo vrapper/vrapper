@@ -130,6 +130,7 @@ public class NormalMode extends CommandBasedMode {
         final Motion moveRight = MoveRight.INSTANCE;
         final Motion wordEndRightForChange = MoveWordEndRightForChange.INSTANCE;
         final Motion bigWordEndRightForChange = MoveBigWORDEndRightForChange.INSTANCE;
+        final Motion col0 = LineStartMotion.COLUMN0;
         final Motion bol = LineStartMotion.NON_WHITESPACE;
         final Motion eol = new LineEndMotion(BorderPolicy.EXCLUSIVE);
         final Motion wholeLineEol = new LineEndMotion(BorderPolicy.LINE_WISE);
@@ -223,6 +224,7 @@ public class NormalMode extends CommandBasedMode {
                                 leafBind('f', findFile),
                                 leafBind('&', repeatSubGlobal),
                                 leafBind('i', resumeInsertMode),
+                                leafBind('I', (Command) new ChangeToInsertModeCommand(new MotionCommand(col0))),
                                 leafBind('J', joinLinesDumbWay),
                                 leafBind('p', pasteAfterWithG),
                                 leafBind('P', pasteBeforeWithG),
