@@ -9,7 +9,6 @@ import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.VrapperEventAdapter;
-import net.sourceforge.vrapper.vim.VrapperEventListener;
 import net.sourceforge.vrapper.vim.modes.EditorMode;
 
 import org.eclipse.core.commands.operations.IOperationHistoryListener;
