@@ -129,13 +129,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         try {
             textViewer.getTextWidget().setSelection(viewOffset);
         } catch (IllegalArgumentException e) {
-            /**
-             * This exception should only happen if the cursor is on the
-             * end of a line and the newlines are multi-byte characters.
-             * Which is to say, Windows (\r\n).  If this happens, step
-             * back one character and try again.
-             */
-            textViewer.getTextWidget().setSelection(viewOffset - 1);
+            throw new VrapperPlatformException("Cannot set caret position to V " + viewOffset, e);
         }
         if (columnPolicy == StickyColumnPolicy.RESET_EOL) {
             stickToEOL = false;
