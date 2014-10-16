@@ -1,7 +1,6 @@
 package net.sourceforge.vrapper.vim.commands;
 
 import net.sourceforge.vrapper.platform.TextContent;
-import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
@@ -55,9 +54,6 @@ public class VisualMotionCommand extends AbstractVisualMotionCommand {
 	            if (newCmp == 0 && oldCmp == -1) {
 	                newSelectionEnd = newSelectionEnd.addModelOffset(-1);
 	            }
-	            newCmp = newSelectionStart.compareTo(newSelectionEnd);
-	            CaretType type = newCmp == -1 ? CaretType.LEFT_SHIFTED_RECTANGULAR: CaretType.RECTANGULAR;
-	            editorAdaptor.getCursorService().setCaret(type);
 	        }
 	        newSelection = new SimpleSelection(
 	                new StartEndTextRange(newSelectionStart, newSelectionEnd));

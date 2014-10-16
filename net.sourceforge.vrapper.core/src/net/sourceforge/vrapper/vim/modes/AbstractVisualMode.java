@@ -20,7 +20,6 @@ import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
-import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.CenterLineCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
@@ -72,10 +71,10 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
 
     @Override
     public void placeCursor(StickyColumnPolicy stickyColumnPolicy) {
-//        if (!isEnabled) {
-//            Position leftSidePosition = editorAdaptor.getSelection().getLeftBound();
-//            editorAdaptor.setPosition(leftSidePosition, false);
-//        }
+        // Don't update caret after LeaveVisualCommand gets called.
+        if (super.isEnabled) {
+            fixCaret();
+        }
     }
 
     @Override
@@ -119,16 +118,12 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
         super.enterMode(hints);
         if (onEnterCommand != null) {
             editorAdaptor.changeModeSafely(NormalMode.NAME, onEnterCommand);
+        } else {
+            fixCaret();
         }
     }
 
-    private Selection updateSelection(Selection previousSel, Position start,
-            Position end) {
-        if (previousSel.isReversed()
-                && editorAdaptor.getConfiguration().get(Options.SELECTION)
-                    .equals(Selection.INCLUSIVE)) {
-            editorAdaptor.getCursorService().setCaret(CaretType.RECTANGULAR);
-        }
+    private Selection updateSelection(Selection previousSel, Position start, Position end) {
         // Can happen if the user deleted a piece of text containing the mark or indented.
         // Also frequently happens during tests, as the stubbed mark service doesn't keep marks.
         if (start == null && end == null) {
@@ -161,6 +156,11 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
      * lines if that weren't the case before.
      */
     protected abstract void fixSelection();
+
+    /**
+     * Set the caret to the right type for the current selection.
+     */
+    public abstract void fixCaret();
 
     @Override
     @SuppressWarnings("unchecked")

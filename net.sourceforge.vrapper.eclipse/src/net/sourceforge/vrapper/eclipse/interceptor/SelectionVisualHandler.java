@@ -3,10 +3,8 @@ package net.sourceforge.vrapper.eclipse.interceptor;
 import net.sourceforge.vrapper.eclipse.activator.VrapperPlugin;
 import net.sourceforge.vrapper.eclipse.platform.EclipseCursorAndSelection;
 import net.sourceforge.vrapper.log.VrapperLog;
-import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.vim.DefaultEditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
-import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
 import net.sourceforge.vrapper.vim.modes.CommandBasedMode;
@@ -79,14 +77,6 @@ public class SelectionVisualHandler implements ISelectionChangedListener {
             textViewer.setSelectedRange(selectionResetOffset, - (selection.getLength() + 1));
             selectionResetOffset = -1;
         } else if (selection.getLength() != 0) {
-            // Fix caret type
-            if (editorAdaptor.getConfiguration().get(Options.SELECTION).equals(Selection.INCLUSIVE)) {
-                CaretType type = CaretType.LEFT_SHIFTED_RECTANGULAR;
-                if (editorAdaptor.getSelection().isReversed()) {
-                    type = CaretType.RECTANGULAR;
-                }
-                editorAdaptor.getCursorService().setCaret(type);
-            }
             if(NormalMode.NAME.equals(editorAdaptor.getCurrentModeName())) {
                 editorAdaptor.changeModeSafely(VisualMode.NAME, AbstractVisualMode.KEEP_SELECTION_HINT);
             }
