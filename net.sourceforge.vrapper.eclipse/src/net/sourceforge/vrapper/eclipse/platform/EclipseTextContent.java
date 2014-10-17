@@ -11,6 +11,7 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.ITextViewerExtension5;
+import org.eclipse.jface.text.Region;
 import org.eclipse.swt.custom.StyledText;
 
 @SuppressWarnings("nls")
@@ -97,7 +98,17 @@ public class EclipseTextContent {
         }
 
         public void smartInsert(int index, String s) {
-            viewSide.smartInsert(converter.modelOffset2WidgetOffset(index), s);
+            int offset = converter.modelOffset2WidgetOffset(index);
+            // View might not have index exposed (it is in a fold or far away), check and correct.
+            if (offset == -1) {
+                boolean exposed = converter.exposeModelRange(new Region(index, 1));
+                if ( ! exposed) {
+                    throw new VrapperPlatformException("Failed to expose M " + index
+                            + ", cannot operate on view for this index.");
+                }
+                offset = converter.modelOffset2WidgetOffset(index);
+            }
+            viewSide.smartInsert(offset, s);
         }
 
         public void smartInsert(String s) {
