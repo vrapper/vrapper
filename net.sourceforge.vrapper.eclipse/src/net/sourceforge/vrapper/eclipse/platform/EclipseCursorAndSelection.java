@@ -117,11 +117,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         // Workaround for inclusive selections (see EvilCaret) - only for length > 0 & left-to-right
         if (sel.y > 0 && cursorPos == sel.x + sel.y
                 && Selection.INCLUSIVE.equals(configuration.get(Options.SELECTION))) {
-            try {
-                cursorPos = moveToLeft(cursorPos);
-            } catch (BadLocationException e) {
-                throw new RuntimeException("Failed to get cursor position for V" + carretOffset, e);
-            }
+            cursorPos = safeAddModelOffset(cursorPos, -1, true);
         }
         return new TextViewerPosition(textViewer, Space.MODEL, cursorPos);
     }
@@ -697,28 +693,6 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     @Override
     public int visualWidthToChars(int visualWidth) {
         return visualWidth / averageCharWidth;
-    }
-
-    /**
-     * Helper method which returns a text offset which is 1 or more characters to the left of the
-     * old offset by skipping newlines. This should avoid {@link BadLocationException}s later on.
-     * @param oldMPos int offset in model coordinates which is to be decreased.
-     * @throws BadLocationException if Eclipse throws an exception despite our best efforts.
-     */
-    private int moveToLeft(int oldMPos) throws BadLocationException {
-        IRegion lineInfo = textViewer.getDocument().getLineInformationOfOffset(oldMPos);
-        int lineStart = lineInfo.getOffset();
-        oldMPos--;
-        // We might have moved into a Windows newline combo. Detect and fix.
-        if (oldMPos < 0) {
-            oldMPos = 0;
-        } else if (oldMPos <= lineStart) {
-            lineInfo = textViewer.getDocument().getLineInformationOfOffset(oldMPos);
-            if (oldMPos > (lineInfo.getOffset() + lineInfo.getLength())) {
-                oldMPos = lineInfo.getOffset() + lineInfo.getLength();
-            }
-        }
-        return oldMPos;
     }
 
     private void updateStickyColumn(final int offset) {
