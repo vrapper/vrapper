@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="net.sourceforge.vrapper.eclipse.pstop">
+      <textobject-provider
+            id="net.sourceforge.vrapper.plugin.linetextobj.platform.LineTextObjectProvider"
+            name="Line TextObject Provider"
+            priority="20"
+            provider-class="net.sourceforge.vrapper.plugin.linetextobj.platform.LineTextObjectProvider">
+      </textobject-provider>
+   </extension>
+
+</plugin>
