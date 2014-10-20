@@ -3,6 +3,7 @@ package net.sourceforge.vrapper.vim.commands;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
 import net.sourceforge.vrapper.vim.modes.BlockwiseVisualMode;
 import net.sourceforge.vrapper.vim.modes.LinewiseVisualMode;
@@ -72,6 +73,8 @@ public class SelectTextObjectCommand extends CountAwareCommand {
             break;
         default: throw new CommandExecutionException("WTF");
         }
+        //Makes sure to update the sticky column.
+        editorAdaptor.setPosition(selection.getTo(), StickyColumnPolicy.ON_CHANGE);
         editorAdaptor.setSelection(selection);
         editorAdaptor.changeMode(newMode, AbstractVisualMode.FIX_SELECTION_HINT);
     }

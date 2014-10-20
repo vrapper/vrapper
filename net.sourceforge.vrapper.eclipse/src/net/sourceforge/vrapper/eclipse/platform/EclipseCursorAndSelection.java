@@ -306,8 +306,11 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
                 styled.setBlockSelectionBounds(blockRect);
                 caretListener.enable();
             } else {
+                //Only the caller can set the sticky column, e.g. in the case of an up/down motion.
+                caretListener.disable();
                 textViewer.getTextWidget().setBlockSelection(false);
                 textViewer.setSelectedRange(from, length);
+                caretListener.enable();
             }
         }
         selectionInProgress = false;
@@ -355,6 +358,8 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         public void widgetDefaultSelected(final SelectionEvent arg0) {
             if ( ! selectionInProgress) {
                 selection = null;
+                // getPosition() compensates for inclusive visual selection's caret offset.
+                updateStickyColumn(getPosition().getViewOffset());
             }
         }
 
@@ -362,6 +367,8 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         public void widgetSelected(final SelectionEvent arg0) {
             if ( ! selectionInProgress) {
                 selection = null;
+                // getPosition() compensates for inclusive visual selection's caret offset.
+                updateStickyColumn(getPosition().getViewOffset());
             }
         }
     }

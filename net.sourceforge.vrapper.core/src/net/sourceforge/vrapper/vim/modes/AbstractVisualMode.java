@@ -107,6 +107,8 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
                 VrapperLog.info("Previous selection was null, selection not recalled.");
             } else {
                 Selection updatedSel = updateSelection(previousSel, start, end);
+                //Makes sure to set the sticky column.
+                editorAdaptor.setPosition(updatedSel.getTo(), StickyColumnPolicy.ON_CHANGE);
                 editorAdaptor.setSelection(updatedSel);
             }
         } else if (!keepSelection) {
