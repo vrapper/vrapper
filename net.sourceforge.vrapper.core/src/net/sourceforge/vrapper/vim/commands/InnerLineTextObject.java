@@ -1,4 +1,4 @@
-package net.sourceforge.vrapper.plugin.surround.commands;
+package net.sourceforge.vrapper.vim.commands;
 
 import net.sourceforge.vrapper.platform.Configuration;
 import net.sourceforge.vrapper.platform.TextContent;
@@ -9,8 +9,6 @@ import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
-import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
-import net.sourceforge.vrapper.vim.commands.TextObject;
 
 /**
  * Special text object matching the current line from the first non-whitespace charactor to the
