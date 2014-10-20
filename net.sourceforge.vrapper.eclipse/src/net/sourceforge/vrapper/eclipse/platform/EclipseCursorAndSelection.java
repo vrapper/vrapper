@@ -377,12 +377,12 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
 
         boolean enabled = true;
 
-		@Override
+        @Override
         public void caretMoved(final CaretEvent e) {
-			if (enabled) {
+            if (enabled) {
                 updateStickyColumn(e.caretOffset);
-			}
-		}
+            }
+        }
 
         public void enable() {
             enabled = true;
