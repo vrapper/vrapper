@@ -13,7 +13,7 @@ import net.sourceforge.vrapper.keymap.ConvertingState;
 import net.sourceforge.vrapper.keymap.KeyMapInfo;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.plugin.surround.commands.DeleteDelimitersCommand;
-import net.sourceforge.vrapper.plugin.surround.commands.FullLineTextObject;
+import net.sourceforge.vrapper.plugin.surround.commands.InnerLineTextObject;
 import net.sourceforge.vrapper.plugin.surround.commands.SpacedDelimitedText;
 import net.sourceforge.vrapper.plugin.surround.state.AddDelimiterState;
 import net.sourceforge.vrapper.plugin.surround.state.AddVisualDelimiterState;
@@ -75,7 +75,7 @@ public class SurroundStateProvider extends AbstractEclipseSpecificStateProvider 
         State<Command> changeDelimiterState = new ChangeDelimiterState(delimitedTexts, delimiterRegistry);
         State<Command> addDelimiterState = new AddDelimiterState(
                 union(
-                    state(leafBind('s', (TextObject) new FullLineTextObject())),
+                    state(leafBind('s', (TextObject) new InnerLineTextObject())),
                     textObjectProvider.textObjects()
                 ), delimiterRegistry);
         return state(

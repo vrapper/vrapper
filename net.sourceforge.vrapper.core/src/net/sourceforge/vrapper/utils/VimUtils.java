@@ -76,6 +76,27 @@ public class VimUtils {
     }
 
     /**
+     * @param line
+     *            a line in the text.
+     * @return the offset of the last non-whitespace character.
+     */
+    public static int getLastNonWhiteSpaceOffset(final TextContent content, final LineInformation line) {
+        if (line.getLength() == 0) {
+            return line.getBeginOffset();
+        }
+        int index = line.getEndOffset() - 1;
+        final int begin = line.getBeginOffset();
+        while (index > begin) {
+            final String s = content.getText(index, 1);
+            if (!isWhiteSpace(s)) {
+                break;
+            }
+            index--;
+        }
+        return index;
+    }
+
+    /**
      * @param vim
      *            the vim emulator.
      * @param line
