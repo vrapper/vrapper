@@ -17,7 +17,7 @@ import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
 public class TempLinewiseVisualMode extends LinewiseVisualMode implements TemporaryMode {
 
     public static final String NAME = "temporary linewise visual mode";
-    public static final String DISPLAY_NAME = "VISUAL LINE (insert)";
+    public static final String DISPLAY_NAME = "(insert) VISUAL LINE";
 
     public TempLinewiseVisualMode(EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
