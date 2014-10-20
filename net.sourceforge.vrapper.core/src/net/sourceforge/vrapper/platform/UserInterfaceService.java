@@ -20,11 +20,6 @@ public interface UserInterfaceService {
     void setEditorMode(String modeName);
     
     /**
-     * Get editor mode value
-     */
-    String getCurrentEditorMode();
-    
-    /**
      * For the :ascii command - prints ASCII values of the char under the cursor
      */
     void setAsciiValues(String asciiValue, int decValue, String hexValue, String octalValue);

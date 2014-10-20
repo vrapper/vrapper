@@ -34,7 +34,6 @@ public class EclipseUserInterfaceService implements UserInterfaceService {
     private boolean infoSet;
     private String lastCommandResultValue = "";
 
-    private String currentMode;
     private String currentModeName;
 
     public EclipseUserInterfaceService(final IEditorPart editor, final ITextViewer textViewer) {
@@ -47,14 +46,8 @@ public class EclipseUserInterfaceService implements UserInterfaceService {
 
     @Override
     public void setEditorMode(final String modeName) {
-        currentModeName = modeName.toUpperCase();
-        currentMode = "-- " + modeName + " --";
-        vimInputModeItem.setText(currentMode);
-    }
-
-    @Override
-    public String getCurrentEditorMode() {
-        return currentMode;
+        currentModeName = modeName;
+        vimInputModeItem.setText(currentModeName);
     }
 
     // For :ascii command
@@ -112,6 +105,7 @@ public class EclipseUserInterfaceService implements UserInterfaceService {
             } catch (final IllegalArgumentException e) {
                 manager.add(item);
             }
+            item.setVisible(true);
             manager.update(true);
         }
         return item;
@@ -122,7 +116,7 @@ public class EclipseUserInterfaceService implements UserInterfaceService {
         @Override
         public void partActivated(final IWorkbenchPart arg0) {
             if (arg0 == editor) {
-                vimInputModeItem.setText(currentMode);
+                setEditorMode(currentModeName);
             }
         }
 
