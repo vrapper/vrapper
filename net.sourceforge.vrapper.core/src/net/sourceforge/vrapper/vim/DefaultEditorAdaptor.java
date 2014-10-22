@@ -40,6 +40,7 @@ import net.sourceforge.vrapper.utils.SelectionArea;
 import net.sourceforge.vrapper.utils.UnmodifiableTextContentDecorator;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
+import net.sourceforge.vrapper.vim.commands.RecordMacroMode;
 import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.BlockwiseVisualMode;
@@ -163,6 +164,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         modeMap.clear();
         final EditorMode[] modes = {
                 new NormalMode(self),
+                new RecordMacroMode(self),
                 new TempNormalMode(self),
                 new VisualMode(self),
                 new TempVisualMode(self),

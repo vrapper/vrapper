@@ -56,7 +56,7 @@ import net.sourceforge.vrapper.vim.commands.NormalLineRangeOperation;
 import net.sourceforge.vrapper.vim.commands.PasteAfterCommand;
 import net.sourceforge.vrapper.vim.commands.PasteBeforeCommand;
 import net.sourceforge.vrapper.vim.commands.PlaybackMacroCommand;
-import net.sourceforge.vrapper.vim.commands.RecordMacroState;
+import net.sourceforge.vrapper.vim.commands.RecordMacroMode;
 import net.sourceforge.vrapper.vim.commands.RedoCommand;
 import net.sourceforge.vrapper.vim.commands.RepeatLastSubstitutionCommand;
 import net.sourceforge.vrapper.vim.commands.ReplaceCommand;
@@ -182,11 +182,8 @@ public class NormalMode extends CommandBasedMode {
         final Command nextResult = motionCommands.press(key('n')).getValue();
 
         final State<Command> platformSpecificState = getPlatformSpecificState(NAME);
-        final State<Command> recordMacroState = new RecordMacroState('q',
-                editorAdaptor.getMacroRecorder(), VimConstants.PRINTABLE_KEYSTROKES);
         return CountingState.wrap(RegisterState.wrap(CountingState.wrap(union(
                 platformSpecificState,
-                recordMacroState,
                 operatorCmdsWithUpperCase('d', delete, toEol,     textObjects),
                 operatorCmdsWithUpperCase('y', yank,   toEolForY, textObjects),
                 operatorCmdsWithUpperCase('c', change, toEol,     textObjectsForChange),
@@ -223,7 +220,7 @@ public class NormalMode extends CommandBasedMode {
                         leafBind('J', joinLines),
                         leafBind('&', repeatSubLine),
                         transitionBind('g',
-                        		leafBind('a', (Command)AsciiCommand.INSTANCE),
+                                leafBind('a', (Command)AsciiCommand.INSTANCE),
                                 leafBind('f', findFile),
                                 leafBind('&', repeatSubGlobal),
                                 leafBind('i', resumeInsertMode),
@@ -232,6 +229,7 @@ public class NormalMode extends CommandBasedMode {
                                 leafBind('p', pasteAfterWithG),
                                 leafBind('P', pasteBeforeWithG),
                                 leafBind('v', RestoreSelectionCommand.INSTANCE)),
+                        leafBind(RecordMacroMode.TOGGLE_KEY, RecordMacroMode.TOGGLE_MACRO_RECORDING),
                         transitionBind('@',
                                 convertKeyStroke(
                                         PlaybackMacroCommand.KEYSTROKE_CONVERTER,
