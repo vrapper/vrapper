@@ -60,7 +60,7 @@ public class MacroRecorder {
             throw new IllegalStateException("not recording");
         }
         recording = false;
-        // small hack, last stroke (always 'q') ended the recording
+        // small hack, last stroke (either 'q' or a mapping) ended the recording
         strokes.remove(strokes.size()-1);
         String seq = ConstructorWrappers.keyStrokesToString(strokes);
         RegisterContent content = new StringRegisterContent(ContentType.KEY_SEQUENCE, seq);
