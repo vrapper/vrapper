@@ -17,6 +17,7 @@ which aren't found in Vim.</p>
    <ol>
       <li><a href="#ipmotion">Improved Paragraph Motion (ipmotion.vim)</a></li>
       <li><a href="#argtext">Argument Text Object (argtextobj.vim)</a></li>
+      <li><a href="#linetext">Line Text Object (textobj-line.vim)</a></li>
       <li><a href="#methodtext">Method Text Object (methodtextobj.vim)</a></li>
       <li><a href="#exchange">Exchange (exchange.vim)</a></li>
       <li><a href="#surround">Surround (surround.vim)</a></li>
@@ -232,8 +233,14 @@ regex to be used in determining paragraph boundaries; our port of this script do
 <a href="http://www.vim.org/scripts/script.php?script_id=2699">http://www.vim.org/scripts/script.php?script_id=2699</a><br/>
 This script defines a text object <code>a</code> (argument) to easily modify arguments within a method declaration.</p>
 
+<a name="linetext"><h3>Line Text Object (textobj-line.vim) Plugin</h3></a>
+<p>textobj-line.vim is a vim plugin defined here:<br>
+<a href="http://www.vim.org/scripts/script.php?script_id=3886">http://www.vim.org/scripts/script.php?script_id=3886</a><br/>
+This script defines a text object <code>l</code> (argument) to select everything within a line (minus the newline) or everything within the
+line without any trailing or starting whitespace.
+
 <a name="methodtext"><h3>Method Text Object (methodtextobj.vim) Plugin</h3></a>
-<p>Methodtextobj.vim is a vim plugin based loosely on:<br>
+<p>Methodtextobj is a plugin based loosely on:<br>
 <a href="http://www.vim.org/scripts/script.php?script_id=2619">http://www.vim.org/scripts/script.php?script_id=2619</a><br/>
 This script defines a text object <code>f</code> (function) to easily change and delete function contents.  It is defined as the 2nd-level
 of matching <code>{</code> and <code>}</code> in a file (where a class definition would be the 1st-level). Thus it is handy for Java and C++ source
