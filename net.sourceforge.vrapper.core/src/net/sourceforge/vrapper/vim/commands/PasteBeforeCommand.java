@@ -19,62 +19,65 @@ public class PasteBeforeCommand extends CountAwareCommand {
     private boolean placeCursorAfter;
     
     private PasteBeforeCommand(boolean placeCursorAfter) {
-    	this.placeCursorAfter = placeCursorAfter;
+        this.placeCursorAfter = placeCursorAfter;
     }
 
-	@Override
-	public void execute(EditorAdaptor editorAdaptor, int count) {
-		if (count == NO_COUNT_GIVEN) {
+    @Override
+    public void execute(EditorAdaptor editorAdaptor, int count) {
+        if (count == NO_COUNT_GIVEN) {
             count = 1;
         }
-		RegisterContent registerContent = editorAdaptor.getRegisterManager().getActiveRegister().getContent();
-		if (registerContent.getPayloadType() == ContentType.TEXT_RECTANGLE) {
-		    BlockPasteHelper.execute(editorAdaptor, count, 0, placeCursorAfter);
-		    return;
-		}
-		String text = registerContent.getText();
-		text = VimUtils.replaceNewLines(text, editorAdaptor.getConfiguration().getNewLine());
-		TextContent content = editorAdaptor.getModelContent();
-		boolean linewise = registerContent.getPayloadType() == ContentType.LINES;
-		int offset = editorAdaptor.getPosition().getModelOffset();
-        LineInformation line = content.getLineInformationOfOffset(offset);
-		if (linewise) {
-			offset = line.getBeginOffset();
+        RegisterContent registerContent = editorAdaptor.getRegisterManager().getActiveRegister().getContent();
+        if (registerContent.getPayloadType() == ContentType.TEXT_RECTANGLE) {
+            BlockPasteHelper.execute(editorAdaptor, count, 0, placeCursorAfter);
+            return;
         }
-		try {
-			editorAdaptor.getHistory().beginCompoundChange();
-			content.replace(offset, 0, StringUtils.multiply(text, count));
-			if (text.length() > 0) {
-				int position;
-				if (linewise)
-		            position = placeCursorAfter && line.getNumber() + count < content.getNumberOfLines()
-		            			? content.getLineInformation(line.getNumber() + count).getBeginOffset()
-		            			: offset;
-		            	
-				else {
-		        	position = offset;
-					position += text.length() * count;
-					if (!placeCursorAfter)
-						position -= 1;
-				}
+        String text = registerContent.getText();
+        text = VimUtils.replaceNewLines(text, editorAdaptor.getConfiguration().getNewLine());
+        TextContent content = editorAdaptor.getModelContent();
+        boolean linewise = registerContent.getPayloadType() == ContentType.LINES;
+        int offset = editorAdaptor.getPosition().getModelOffset();
+        LineInformation line = content.getLineInformationOfOffset(offset);
+        if (linewise) {
+            offset = line.getBeginOffset();
+        }
+        try {
+            editorAdaptor.getHistory().beginCompoundChange();
+            String toReplace = StringUtils.multiply(text, count);
+            content.replace(offset, 0, toReplace);
+            if(text.length() > 0) {
+                int position = offset;
+                int endOffset;
+                if (linewise) {
+                    int lineCount = StringUtils.countNewlines(toReplace);
+                    endOffset = content.getLineInformation(line.getNumber() + lineCount -1).getEndOffset();
+                    if (placeCursorAfter)
+                        position = content.getLineInformation(line.getNumber() + lineCount).getBeginOffset();
+                }
+                else {
+                    endOffset = offset + toReplace.length();
+                    position = endOffset;
+                    if (!placeCursorAfter)
+                        position -= 1;
+                }
 
-				CursorService cursorService = editorAdaptor.getCursorService();
-				Position start = cursorService.getPosition().setModelOffset(offset);
-				Position end = cursorService.getPosition().setModelOffset(position);
-				cursorService.setMark(CursorService.LAST_CHANGE_START, start);
-				cursorService.setMark(CursorService.LAST_CHANGE_END, end);
+                CursorService cursorService = editorAdaptor.getCursorService();
+                Position start = cursorService.getPosition().setModelOffset(offset);
+                Position end = cursorService.getPosition().setModelOffset(endOffset);
+                cursorService.setMark(CursorService.LAST_CHANGE_START, start);
+                cursorService.setMark(CursorService.LAST_CHANGE_END, end);
 
-				Position destination = editorAdaptor.getCursorService().newPositionForModelOffset(position);
-				editorAdaptor.setPosition(destination, StickyColumnPolicy.ON_CHANGE);
-			}
-		} finally {
-			editorAdaptor.getHistory().endCompoundChange();
-		}
-	}
+                Position destination = editorAdaptor.getCursorService().newPositionForModelOffset(position);
+                editorAdaptor.setPosition(destination, StickyColumnPolicy.ON_CHANGE);
+            }
+        } finally {
+            editorAdaptor.getHistory().endCompoundChange();
+        }
+    }
 
-	@Override
-	public CountAwareCommand repetition() {
-		return this;
-	}
+    @Override
+    public CountAwareCommand repetition() {
+        return this;
+    }
 
 }
