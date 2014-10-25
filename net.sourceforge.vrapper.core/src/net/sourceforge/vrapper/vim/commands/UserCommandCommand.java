@@ -1,7 +1,6 @@
 package net.sourceforge.vrapper.vim.commands;
 
 import net.sourceforge.vrapper.vim.EditorAdaptor;
-import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.modes.commandline.CommandLineMode;
 import net.sourceforge.vrapper.vim.modes.commandline.CommandLineParser;
 
@@ -25,7 +24,6 @@ public class UserCommandCommand extends CountIgnoringNonRepeatableCommand {
 
     @Override
     public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
-        editorAdaptor.changeModeSafely(CommandLineMode.NAME);
         CommandLineMode mode = (CommandLineMode)editorAdaptor.getMode(CommandLineMode.NAME);
         CommandLineParser parser = (CommandLineParser)mode.createParser();
         if(command.startsWith(":")) {
@@ -36,7 +34,6 @@ public class UserCommandCommand extends CountIgnoringNonRepeatableCommand {
         if(toRun != null) {
             toRun.execute(editorAdaptor);
         }
-        editorAdaptor.changeModeSafely(NormalMode.NAME);
     }
 
 }
