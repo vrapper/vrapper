@@ -173,8 +173,8 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
         final Command paste  = new SelectionBasedTextOperationCommand(PasteOperation.INSTANCE);
         final Command change = new SelectionBasedTextOperationCommand.DontChangeMode(ChangeOperation.INSTANCE);
         final Command format = new SelectionBasedTextOperationCommand(FormatOperation.INSTANCE);
-        final Command shiftLeft = new SelectionBasedTextOperationCommand(InsertShiftWidth.REMOVE);
-        final Command shiftRight = new SelectionBasedTextOperationCommand(InsertShiftWidth.INSERT);
+        final Command shiftLeft = new SelectionBasedTextOperationCommand(InsertShiftWidth.REMOVE_VISUAL);
+        final Command shiftRight = new SelectionBasedTextOperationCommand(InsertShiftWidth.INSERT_VISUAL);
         final Command swapCase = SwapCaseCommand.VISUAL_INSTANCE;
         final Command commandLineMode = new ChangeModeCommand(CommandLineMode.NAME, CommandLineMode.FROM_VISUAL);
         final Command centerLine = CenterLineCommand.CENTER;

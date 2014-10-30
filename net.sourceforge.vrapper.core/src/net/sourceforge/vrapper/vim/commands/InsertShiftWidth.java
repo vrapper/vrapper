@@ -1,7 +1,6 @@
 package net.sourceforge.vrapper.vim.commands;
 
 import net.sourceforge.vrapper.platform.TextContent;
-import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
@@ -14,36 +13,46 @@ import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
  * replace every <tabstop> spaces with a TAB character if <expandtab> is
  * disabled.
  */
-public class InsertShiftWidth extends SimpleTextOperation {
+public class InsertShiftWidth implements TextOperation {
 
-    public static final InsertShiftWidth INSERT = new InsertShiftWidth(true);
-    public static final InsertShiftWidth REMOVE = new InsertShiftWidth(false);
+    public static final InsertShiftWidth INSERT = new InsertShiftWidth(true, false);
+    public static final InsertShiftWidth REMOVE = new InsertShiftWidth(false, false);
+    public static final InsertShiftWidth INSERT_VISUAL = new InsertShiftWidth(true, true);
+    public static final InsertShiftWidth REMOVE_VISUAL = new InsertShiftWidth(false, true);
+
+    private final boolean shiftRight;
+    private final boolean visualMode;
     
-    private final boolean insert;
-    
-    private InsertShiftWidth(boolean insert) {
-        this.insert = insert;
+    private InsertShiftWidth(boolean shiftRight, boolean visualMode) {
+        this.shiftRight = shiftRight;
+        this.visualMode = visualMode;
     }
 
     @Override
-    public void execute(EditorAdaptor editorAdaptor, TextRange region, ContentType contentType) throws CommandExecutionException {
+    public void execute(EditorAdaptor editorAdaptor, int count, TextObject textObject) throws CommandExecutionException {
         int tabstop = editorAdaptor.getConfiguration().get(Options.TAB_STOP);
         tabstop = Math.max(1, tabstop);
         int shiftwidth = editorAdaptor.getConfiguration().get(Options.SHIFT_WIDTH);
         shiftwidth = Math.max(1, shiftwidth);
         boolean expandtab = editorAdaptor.getConfiguration().get(Options.EXPAND_TAB);
+        
+        TextRange region;
+        // Use count for number of widths to indent.
+        // In non-visual mode, a counted operator is used to calculate the region.
+        if (visualMode ) {
+            region = textObject.getRegion(editorAdaptor, Counted.NO_COUNT_GIVEN);
+            if (count != Counted.NO_COUNT_GIVEN) {
+                shiftwidth = shiftwidth * count;
+            }
+        } else {
+            region = textObject.getRegion(editorAdaptor, Math.abs(count));
+        }
+
+        // Fill string with number of spaces.
+        String replaceTab = new String(new char[tabstop]).replace('\0', ' ');
+        String replaceShiftWidth = new String(new char[shiftwidth]).replace('\0', ' ');
+
         TextContent model = editorAdaptor.getModelContent();
-
-        //I wish java could do (" " * tabstop)
-        String replaceTab = "";
-        while(replaceTab.length() < tabstop) {
-            replaceTab += " ";
-        }
-        String replaceShiftWidth = "";
-        while(replaceShiftWidth.length() < shiftwidth) {
-            replaceShiftWidth += " ";
-        }
-
         LineInformation line;
         if(region == null) { // i_ctr-t/-d, use current line
             line = model.getLineInformationOfOffset( editorAdaptor.getPosition().getModelOffset() );
@@ -122,7 +131,7 @@ public class InsertShiftWidth extends SimpleTextOperation {
         //expand all tab characters so we can recalculate tabstops
         indent = indent.replaceAll("\t", replaceTab);
 
-        if(insert) {
+        if(shiftRight) {
             //introduce new indent
             if( (!shiftround) || indent.length() % shiftwidth == 0) {
                 indent = replaceShiftWidth + indent;
@@ -135,7 +144,10 @@ public class InsertShiftWidth extends SimpleTextOperation {
         }
         else {
             //remove an indent
-            if(indent.length() >= shiftwidth && (!shiftround || indent.length() % shiftwidth == 0)) {
+            if (shiftwidth > indent.length()) {
+                indent = "";
+            }
+            else if(indent.length() >= shiftwidth && (!shiftround || indent.length() % shiftwidth == 0)) {
                 indent = indent.substring(shiftwidth);
             }
             else {
