@@ -69,7 +69,7 @@ public class VimTestCase {
         configuration = spy(new SimpleGlobalConfiguration());
         when(configuration.getNewLine()).thenReturn("\n");
         for (Option<Boolean> o : Options.BOOLEAN_OPTIONS) {
-            // Use defaults for local options.
+            // Use defaults only for local options.
             if (EnumSet.of(OptionScope.GLOBAL, OptionScope.DEFAULT).contains(o.getScope())) {
                 when(configuration.get(o)).thenReturn(Boolean.FALSE);
             }

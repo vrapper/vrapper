@@ -2024,7 +2024,199 @@ public class NormalModeTests extends CommandTestCase {
 	            "foo0xxa",'0',"f",
 	            "foo0xxa-",'1',"f");
 	}
-	
+
+	@Test
+	public void test_indent_default() throws Exception {
+	    when(configuration.get(Options.EXPAND_TAB)).thenReturn(true); // VimTestCase forced to false
+	    when(configuration.get(Options.SHIFT_ROUND)).thenReturn(false);
+	    checkCommand(forKeySeq(">>"),
+	            "Ok", 'a', "y\n\tThis\nShould be indented",
+	            "        ", 'O', "kay\n\tThis\nShould be indented");
+	    // Expand tab
+	    checkCommand(forKeySeq("3>>"),
+	            "Ok", 'a', "y\n\tThis\nShould be indented",
+	            "        ", 'O', "kay\n                This\n        Should be indented");
+	    checkCommand(forKeySeq(">>"),
+	            "        Ok", 'a', "y\n\tThis\nShould be indented",
+	            "                ", 'O', "kay\n\tThis\nShould be indented");
+	    checkCommand(forKeySeq(">>"),
+	            "Okay\n   Th", 'i', "s\nShould be indented",
+	            "Okay\n           ", 'T', "his\nShould be indented");
+	}
+
+	@Test
+	public void test_indent_shiftround() throws Exception {
+	    when(configuration.get(Options.EXPAND_TAB)).thenReturn(true); // VimTestCase forced to false
+	    when(configuration.get(Options.SHIFT_ROUND)).thenReturn(true);
+	    checkCommand(forKeySeq(">>"),
+	            "  Ok", 'a', "y\n\tThis\nShould be indented",
+	            "        ", 'O', "kay\n\tThis\nShould be indented");
+	    checkCommand(forKeySeq(">>"),
+	            "       Ok", 'a', "y\n\tThis\nShould be indented",
+	            "        ", 'O', "kay\n\tThis\nShould be indented");
+	    checkCommand(forKeySeq(">>"),
+	            "         Ok", 'a', "y\n\tThis\nShould be indented",
+	            "                ", 'O', "kay\n\tThis\nShould be indented");
+	    checkCommand(forKeySeq(">>"),
+	            "Okay\n\tTh", 'i', "s\nShould be indented",
+	            "Okay\n                ", 'T', "his\nShould be indented");
+	    checkCommand(forKeySeq(">>"),
+	            "Okay\n\t Th", 'i', "s\nShould be indented",
+	            "Okay\n                ", 'T', "his\nShould be indented");
+	    checkCommand(forKeySeq(">>"),
+	            "Okay\n\t       Th", 'i', "s\nShould be indented",
+	            "Okay\n                ", 'T', "his\nShould be indented");
+	    checkCommand(forKeySeq(">>"),
+	            "Okay\n\t         Th", 'i', "s\nShould be indented",
+	            "Okay\n                        ", 'T', "his\nShould be indented");
+	}
+
+	@Test
+	public void test_indent_expandtab() throws Exception {
+	    when(configuration.get(Options.EXPAND_TAB)).thenReturn(true);
+	    when(configuration.get(Options.SHIFT_ROUND)).thenReturn(false);
+	    checkCommand(forKeySeq("3>>"),
+	            "Ok", 'a', "y\n\tThis\nShould be indented",
+	            "        ", 'O', "kay\n                This\n        Should be indented");
+	    // Fix mixed tabs and spaces
+	    checkCommand(forKeySeq(">>"),
+	            "Okay\n\t        Th", 'i', "s\nShould be indented",
+	            "Okay\n                        ", 'T', "his\nShould be indented");
+
+	    when(configuration.get(Options.EXPAND_TAB)).thenReturn(false);
+	    checkCommand(forKeySeq("3>>"),
+	            "Ok", 'a', "y\n\tThis\nShould be indented",
+	            "\t", 'O', "kay\n\t\tThis\n\tShould be indented");
+	    // Fix mixed tabs and spaces, other way around
+	    checkCommand(forKeySeq(">>"),
+	            "Okay\n\t        Th", 'i', "s\nShould be indented",
+	            "Okay\n\t\t\t", 'T', "his\nShould be indented");
+	}
+
+	@Test
+	public void test_indent_shiftwidth() throws Exception {
+	    when(configuration.get(Options.EXPAND_TAB)).thenReturn(true);
+	    when(configuration.get(Options.SHIFT_ROUND)).thenReturn(false);
+	    when(configuration.get(Options.SHIFT_WIDTH)).thenReturn(2);
+	    checkCommand(forKeySeq("3>>"),
+	            "Ok", 'a', "y\n\tThis\nShould be indented",
+	            "  ", 'O', "kay\n          This\n  Should be indented");
+	    // Fix mixed tabs and spaces
+	    checkCommand(forKeySeq(">>"),
+	            "Okay\n\t        Th", 'i', "s\nShould be indented",
+	            "Okay\n                  ", 'T', "his\nShould be indented");
+	}
+
+	@Test
+	public void test_indent_tabstop() throws Exception {
+	    when(configuration.get(Options.EXPAND_TAB)).thenReturn(true);
+	    when(configuration.get(Options.SHIFT_ROUND)).thenReturn(false);
+	    when(configuration.get(Options.TAB_STOP)).thenReturn(4);
+	    checkCommand(forKeySeq("3>>"),
+	            "Ok", 'a', "y\n\tThis\nShould be indented",
+	            "        ", 'O', "kay\n            This\n        Should be indented");
+	    // Fix mixed tabs and spaces
+	    checkCommand(forKeySeq(">>"),
+	            "Okay\n\t        Th", 'i', "s\nShould be indented",
+	            "Okay\n                    ", 'T', "his\nShould be indented");
+	}
+
+	@Test
+	public void test_unindent_default() throws Exception {
+	    when(configuration.get(Options.EXPAND_TAB)).thenReturn(true); // VimTestCase forced to false
+	    when(configuration.get(Options.SHIFT_ROUND)).thenReturn(false);
+	    checkCommand(forKeySeq("<<"),
+	            "        Ok", 'a', "y\n\tThis\nShould be indented",
+	            "", 'O', "kay\n\tThis\nShould be indented");
+	    // Expand tab
+	    checkCommand(forKeySeq("3<<"),
+	            "        Ok", 'a', "y\n\t        This\n        Should be indented",
+	            "", 'O', "kay\n        This\nShould be indented");
+	    checkCommand(forKeySeq("<<"),
+	            "                Ok", 'a', "y\n\tThis\nShould be indented",
+	            "        ", 'O', "kay\n\tThis\nShould be indented");
+	    checkCommand(forKeySeq("<<"),
+	            "Okay\n           Th", 'i', "s\nShould be indented",
+	            "Okay\n   ", 'T', "his\nShould be indented");
+	}
+
+	@Test
+	public void test_unindent_shiftround() throws Exception {
+	    when(configuration.get(Options.EXPAND_TAB)).thenReturn(true); // VimTestCase forced to false
+	    when(configuration.get(Options.SHIFT_ROUND)).thenReturn(true);
+	    checkCommand(forKeySeq("<<"),
+	            "  Ok", 'a', "y\n\tThis\nShould be indented",
+	            "", 'O', "kay\n\tThis\nShould be indented");
+	    checkCommand(forKeySeq("<<"),
+	            "        Ok", 'a', "y\n\tThis\nShould be indented",
+	            "", 'O', "kay\n\tThis\nShould be indented");
+	    checkCommand(forKeySeq("<<"),
+	            "         Ok", 'a', "y\n\tThis\nShould be indented",
+	            "        ", 'O', "kay\n\tThis\nShould be indented");
+	    checkCommand(forKeySeq("<<"),
+	            "Okay\n\t       Th", 'i', "s\nShould be indented",
+	            "Okay\n        ", 'T', "his\nShould be indented");
+	    checkCommand(forKeySeq("<<"),
+	            "Okay\n\t         Th", 'i', "s\nShould be indented",
+	            "Okay\n                ", 'T', "his\nShould be indented");
+	    checkCommand(forKeySeq("<<"),
+	            "Okay\n\t       Th", 'i', "s\nShould be indented",
+	            "Okay\n        ", 'T', "his\nShould be indented");
+	    checkCommand(forKeySeq("<<"),
+	            "Okay\n\t         Th", 'i', "s\nShould be indented",
+	            "Okay\n                ", 'T', "his\nShould be indented");
+	}
+
+	@Test
+	public void test_unindent_expandtab() throws Exception {
+	    when(configuration.get(Options.EXPAND_TAB)).thenReturn(true);
+	    when(configuration.get(Options.SHIFT_ROUND)).thenReturn(false);
+	    checkCommand(forKeySeq("3<<"),
+	            "        Ok", 'a', "y\n\t        This\n        Should be indented",
+	            "", 'O', "kay\n        This\nShould be indented");
+	    // Fix mixed tabs and spaces
+	    checkCommand(forKeySeq("<<"),
+	            "Okay\n\t                Th", 'i', "s\nShould be indented",
+	            "Okay\n                ", 'T', "his\nShould be indented");
+
+	    when(configuration.get(Options.EXPAND_TAB)).thenReturn(false);
+	    checkCommand(forKeySeq("3<<"),
+	            "\t        Ok", 'a', "y\n\t\tThis\n\tShould be indented",
+	            "\t", 'O', "kay\n\tThis\nShould be indented");
+	    // Fix mixed tabs and spaces, other way around
+	    checkCommand(forKeySeq("<<"),
+	            "Okay\n\t        \tTh", 'i', "s\nShould be indented",
+	            "Okay\n\t\t", 'T', "his\nShould be indented");
+	}
+
+	@Test
+	public void test_unindent_shiftwidth() throws Exception {
+	    when(configuration.get(Options.EXPAND_TAB)).thenReturn(true);
+	    when(configuration.get(Options.SHIFT_ROUND)).thenReturn(false);
+	    when(configuration.get(Options.SHIFT_WIDTH)).thenReturn(2);
+	    checkCommand(forKeySeq("3<<"),
+	            "          Ok", 'a', "y\n\t  This\n          Should be indented",
+	            "        ", 'O', "kay\n        This\n        Should be indented");
+	    // Fix mixed tabs and spaces
+	    checkCommand(forKeySeq("<<"),
+	            "Okay\n\t            Th", 'i', "s\nShould be indented",
+	            "Okay\n                  ", 'T', "his\nShould be indented");
+	}
+
+	@Test
+	public void test_unindent_tabstop() throws Exception {
+	    when(configuration.get(Options.EXPAND_TAB)).thenReturn(true);
+	    when(configuration.get(Options.SHIFT_ROUND)).thenReturn(false);
+	    when(configuration.get(Options.TAB_STOP)).thenReturn(4);
+	    checkCommand(forKeySeq("3<<"),
+	            "        Ok", 'a', "y\n\t\t\tThis\n        Should be indented",
+	            "", 'O', "kay\n    This\nShould be indented");
+	    // Fix mixed tabs and spaces
+	    checkCommand(forKeySeq("<<"),
+	            "Okay\n\t                Th", 'i', "s\nShould be indented",
+	            "Okay\n            ", 'T', "his\nShould be indented");
+	}
+
 	@Test
 	public void test_sentenceMotion() throws Exception {
 	    checkCommand(forKeySeq(")"),
