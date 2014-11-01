@@ -333,4 +333,72 @@ public class VisualModeTests extends VisualTestCase {
                 false, "{String{Quote{String{ ","Al","ASim}Quote}String}There}",
                 false, "{String{Quote","{String{ AlASim}Quote}","String}There}");
     }
+
+    @Test
+    public void test_Indent() throws Exception {
+        // Expandtab is false by default in the tests.
+        checkLeavingCommand(forKeySeq(">"),
+                false, "Okay\n\t\tTh", "i", "s\nShould be indented",
+                "Okay\n\t\t\t", 'T', "his\nShould be indented");
+        checkLeavingCommand(forKeySeq("2>"),
+                false, "Okay\n\t\tTh", "i", "s\nShould be indented",
+                "Okay\n\t\t\t\t", 'T', "his\nShould be indented");
+        checkLeavingCommand(forKeySeq("4>"),
+                false, "Okay\n\t\tTh", "i", "s\nShould be indented",
+                "Okay\n\t\t\t\t\t\t", 'T', "his\nShould be indented");
+
+        checkLeavingCommand(forKeySeq(">"),
+                false, "Oka", "y\n\t\tThis\nShould b", "e indented",
+                "\t", 'O', "kay\n\t\t\tThis\n\tShould be indented");
+        checkLeavingCommand(forKeySeq("2>"),
+                false, "Oka", "y\n\t\tThis\nShould b", "e indented",
+                "\t\t", 'O', "kay\n\t\t\t\tThis\n\t\tShould be indented");
+        checkLeavingCommand(forKeySeq("4>"),
+                false, "Oka", "y\n\t\tThis\nShould b", "e indented",
+                "\t\t\t\t", 'O', "kay\n\t\t\t\t\t\tThis\n\t\t\t\tShould be indented");
+        
+        when(configuration.get(Options.EXPAND_TAB)).thenReturn(true);
+        when(configuration.get(Options.TAB_STOP)).thenReturn(4);
+        when(configuration.get(Options.SHIFT_WIDTH)).thenReturn(2);
+        checkLeavingCommand(forKeySeq(">"),
+                false, "Oka", "y\n\t\tThis\nShould b", "e indented",
+                "  ", 'O', "kay\n          This\n  Should be indented");
+        checkLeavingCommand(forKeySeq("2>"),
+                false, "Oka", "y\n\t\tThis\nShould b", "e indented",
+                "    ", 'O', "kay\n            This\n    Should be indented");
+    }
+
+    @Test
+    public void test_Unindent() throws Exception {
+        // Expandtab is false by default in the tests.
+        checkLeavingCommand(forKeySeq("<"),
+                false, "Okay\n\t\t\tTh", "i", "s\nShould be indented",
+                "Okay\n\t\t", 'T', "his\nShould be indented");
+        checkLeavingCommand(forKeySeq("2<"),
+                false, "Okay\n\t\t\t\tTh", "i", "s\nShould be indented",
+                "Okay\n\t\t", 'T', "his\nShould be indented");
+        checkLeavingCommand(forKeySeq("4<"),
+                false, "Okay\n\t\t\t\t\t\tTh", "i", "s\nShould be indented",
+                "Okay\n\t\t", 'T', "his\nShould be indented");
+
+        checkLeavingCommand(forKeySeq("<"),
+                false, "\tOka", "y\n\t\t\tThis\n\tShould b", "e indented",
+                "", 'O', "kay\n\t\tThis\nShould be indented");
+        checkLeavingCommand(forKeySeq("2<"),
+                false, "\t\tOka", "y\n\t\t\t\tThis\n\t\tShould b", "e indented",
+                "", 'O', "kay\n\t\tThis\nShould be indented");
+        checkLeavingCommand(forKeySeq("4<"),
+                false, "\t\t\t\tOka", "y\n\t\t\t\t\t\tThis\n\t\t\t\tShould b", "e indented",
+                "", 'O', "kay\n\t\tThis\nShould be indented");
+        
+        when(configuration.get(Options.EXPAND_TAB)).thenReturn(true);
+        when(configuration.get(Options.TAB_STOP)).thenReturn(4);
+        when(configuration.get(Options.SHIFT_WIDTH)).thenReturn(2);
+        checkLeavingCommand(forKeySeq("<"),
+                false, "  Oka", "y\n\t\tThis\n  Should b", "e indented",
+                "", 'O', "kay\n      This\nShould be indented");
+        checkLeavingCommand(forKeySeq("2<"),
+                false, "      Oka", "y\n\t\tThis\n      Should b", "e indented",
+                "  ", 'O', "kay\n    This\n  Should be indented");
+    }
 }
