@@ -12,6 +12,7 @@ import net.sourceforge.vrapper.keymap.vim.VisualMotionState.Motion2VMC;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.HistoryService;
 import net.sourceforge.vrapper.platform.TextContent;
+import net.sourceforge.vrapper.utils.BlockWiseSelectionArea;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.LineInformation;
@@ -109,12 +110,22 @@ public class BlockwiseVisualMode extends AbstractVisualMode {
                     executeInsertAtVOffset(editorAdaptor, insertion, block.startVisualOffset, line, mode);
                 }
 	        } else {
-	            final int vOffset = cursorService.getVisualOffset(newStart);
-	            LineInformation lineInfo = modelContent.getLineInformationOfOffset(newStart.getModelOffset());
-	            final int startLine = lineInfo.getNumber();
-	            final int endLine = Math.min(startLine + sel.getLinesSpanned(),  modelContent.getNumberOfLines());
-	            for (int line = startLine + 1; line < endLine; ++line) {
-	                executeInsertAtVOffset(editorAdaptor, insertion, vOffset, line, mode);
+                LineInformation lineInfo = modelContent.getLineInformationOfOffset(newStart.getModelOffset());
+                final int startLine = lineInfo.getNumber();
+                final int endLine = Math.min(startLine + sel.getLinesSpanned(),  modelContent.getNumberOfLines());
+	            final BlockWiseSelectionArea bsel = (BlockWiseSelectionArea) sel;
+	            if (bsel.isUntilEOL()) {
+	                for (int line = startLine + 1; line < endLine; ++line) {
+	                    lineInfo = modelContent.getLineInformation(line);
+                        final Position pos = cursorService.newPositionForModelOffset(lineInfo.getEndOffset());
+                        editorAdaptor.setPosition(pos, StickyColumnPolicy.NEVER);
+                        insertion.execute(editorAdaptor);
+	                }
+	            } else {
+	                final int vOffset = cursorService.getVisualOffset(newStart);
+	                for (int line = startLine + 1; line < endLine; ++line) {
+	                    executeInsertAtVOffset(editorAdaptor, insertion, vOffset, line, mode);
+	                }
 	            }
 	        }
 	        editorAdaptor.setPosition(newStart, StickyColumnPolicy.NEVER);

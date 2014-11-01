@@ -176,4 +176,9 @@ public class TestCursorAndSelection implements CursorService, SelectionService {
 	public boolean isGlobalMark(String id) {
 		return false;
 	}
+
+    @Override
+    public boolean shouldStickToEOL() {
+        return stickyColumnNo == Integer.MAX_VALUE;
+    }
 }
