@@ -256,6 +256,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
             textViewer.setSelectedRange(point.x, 0);
             selection = null;
         } else {
+            IDocument document = textViewer.getDocument();
             final int from = newSelection.getStart().getModelOffset();
             int length = !newSelection.isReversed() ? newSelection.getModelLength() : -newSelection.getModelLength();
             // linewise selection includes final newline, this means the cursor
@@ -263,7 +264,6 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
             // corrects that behaviour
             if (ContentType.LINES.equals(newSelection.getContentType(configuration))) {
                 int endOffset = newSelection.getEnd().getModelOffset();
-                IDocument document = textViewer.getDocument();
                 int documentLength = document.getLength();
                 if (endOffset == documentLength) {
                     try {
@@ -285,15 +285,48 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
                 // block selection
                 final StyledText styled = textViewer.getTextWidget();
                 styled.setBlockSelection(true);
-                final int starOfs = selection.getFrom().getViewOffset();
+                final int startOfs = selection.getFrom().getViewOffset();
                 final int endOfs = selection.getTo().getViewOffset();
                 if (endOfs == textViewer.getDocument().getLength()) {
                     // Don't change selection if the caret is after the last character.
                     return;
                 }
-                final Rectangle fromRect = styled.getTextBounds(starOfs, starOfs);
-                final Rectangle toRect = styled.getTextBounds(endOfs, endOfs);
-                final Rectangle blockRect = fromRect.union(toRect);
+                final Rectangle fromRect = styled.getTextBounds(startOfs, startOfs);
+                Rectangle blockRect;
+                if (stickToEOL) {
+                    if (startOfs <= endOfs) {
+                        //
+                        // endOfs is looking at the last character on the current line:
+                        //
+                        // startOfs -> o-------
+                        //             |
+                        //             +---------------------o <- endOfs
+                        //
+                        blockRect = styled.getTextBounds(startOfs, endOfs);
+                    } else {
+                        //
+                        // three "points" are needed to be considered to determine the
+                        // encompassing rectangle:
+                        //
+                        //             +-------o <-endOfs
+                        //             |
+                        // startOfs -> o---------------------o <- startEOL
+                        //
+                        try {
+                            final IRegion startLine = document.getLineInformationOfOffset(startOfs);
+                            blockRect = styled.getTextBounds(endOfs, startLine.getOffset() + startLine.getLength());
+                            blockRect = blockRect.union(styled.getTextBounds(endOfs, startOfs));
+                        } catch (BadLocationException e) {
+                            VrapperLog.error("Failed to get start line info", e);
+                            return;
+                        }
+                    }
+                } else {
+                    final Rectangle toRect = styled.getTextBounds(endOfs, endOfs);
+                    blockRect = fromRect.union(toRect);
+                }
+                blockRect.width -= fromRect.x - blockRect.x;
+                blockRect.x = fromRect.x;
                 //
                 // getTextBounds returns values relative to the top-left visible
                 // pixel, adjusting the block rectangle accordingly.
@@ -764,5 +797,10 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
             targetOffset--;
         }
         return targetOffset;
+    }
+
+    @Override
+    public boolean shouldStickToEOL() {
+        return stickToEOL;
     }
 }

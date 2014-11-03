@@ -133,6 +133,15 @@ public class BlockWiseSelection implements Selection {
             result.startVisualOffset = toVOffset;
             result.endVisualOffset = fromVOffset;
         }
+        if (cursorService.shouldStickToEOL()) {
+            result.endVisualOffset = result.startVisualOffset;
+            for (int i = result.startLine; i <= result.endLine; i++) {
+                final LineInformation line = textContent.getLineInformation(i);
+                final int lastOfs = cursorService.getVisualOffset(cursorService
+                        .shiftPositionForModelOffset(line.getEndOffset(), -1, false));
+                result.endVisualOffset = Math.max(result.endVisualOffset, lastOfs);
+            }
+        }
         return result;
     }
 

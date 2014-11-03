@@ -25,6 +25,11 @@ public interface CursorService {
     void setPosition(Position position, StickyColumnPolicy stickyColumnPolicy);
 
     /**
+     * @return true if the current sticky column policy is StickyColumnPolicy.TO_EOL.
+     */
+    boolean shouldStickToEOL();
+
+    /**
      * @return the current position in the text, i.e. where the caret is
      *         displayed.
      */

@@ -15,7 +15,11 @@ public class BlockWiseSelectionArea extends SelectionArea {
     public BlockWiseSelectionArea(final EditorAdaptor editorAdaptor,
             final BlockWiseSelection selection) {
         final TextBlock rect = BlockWiseSelection.getTextBlock(selection.getFrom(), selection.getTo(), editorAdaptor.getModelContent(), editorAdaptor.getCursorService());
-        visualWidth = rect.endVisualOffset - rect.startVisualOffset;
+        if (editorAdaptor.getCursorService().shouldStickToEOL()) {
+            visualWidth = Integer.MAX_VALUE;
+        } else {
+            visualWidth = rect.endVisualOffset - rect.startVisualOffset;
+        }
         linesSpanned = rect.endLine - rect.startLine + 1;
     }
 
@@ -36,7 +40,10 @@ public class BlockWiseSelectionArea extends SelectionArea {
                 && lastLineNo >= firstLine.getNumber()) {
             --lastLineNo;
         }
-        Position end = cursorService.getPositionByVisualOffset(lastLineNo, startVOffset + visualWidth);
+        Position end = null;
+        if (!isUntilEOL()) {
+            end = cursorService.getPositionByVisualOffset(lastLineNo, startVOffset + visualWidth);
+        }
         if (end == null) {
             // NOTE: Because the TextRange requires a valid start and end
             //       position, it's impossible represent a block of text for
@@ -53,6 +60,10 @@ public class BlockWiseSelectionArea extends SelectionArea {
     @Override
     public ContentType getContentType(final Configuration configuration) {
         return ContentType.TEXT_RECTANGLE;
+    }
+
+    public boolean isUntilEOL() {
+        return visualWidth == Integer.MAX_VALUE;
     }
 
 }
