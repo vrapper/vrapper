@@ -9,6 +9,8 @@ import net.sourceforge.vrapper.vim.modes.InitialContentsHint;
 import net.sourceforge.vrapper.vim.modes.ModeSwitchHint;
 
 public abstract class AbstractCommandLineMode extends AbstractMode {
+
+    public static final String COMMANDLINE_KEYMAP_NAME = "Command Mode Keymap";
     
     protected AbstractCommandParser parser;
 

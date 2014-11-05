@@ -133,7 +133,7 @@ public class SearchMode extends AbstractCommandLineMode {
 
     @Override
     public String resolveKeyMap(KeyStroke stroke) {
-        return null;
+        return COMMANDLINE_KEYMAP_NAME;
     }
 
         @Override

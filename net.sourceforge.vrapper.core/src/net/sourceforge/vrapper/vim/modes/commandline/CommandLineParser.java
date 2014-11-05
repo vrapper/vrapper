@@ -80,6 +80,8 @@ public class CommandLineParser extends AbstractCommandParser {
         Evaluator imap = new KeyMapper.Map(true, InsertMode.KEYMAP_NAME);
         Evaluator canoremap = new KeyMapper.Map(false, ContentAssistMode.KEYMAP_NAME);
         Evaluator camap = new KeyMapper.Map(true, ContentAssistMode.KEYMAP_NAME);
+        Evaluator cnoremap = new KeyMapper.Map(false, AbstractCommandLineMode.COMMANDLINE_KEYMAP_NAME);
+        Evaluator cmap = new KeyMapper.Map(true, AbstractCommandLineMode.COMMANDLINE_KEYMAP_NAME);
         Command ascii = AsciiCommand.INSTANCE;
         Command save = SaveCommand.INSTANCE;
         Command saveAll = SaveAllCommand.INSTANCE;
@@ -377,6 +379,8 @@ public class CommandLineParser extends AbstractCommandParser {
         mapping.add("ono", onoremap);
         mapping.add("inoremap", inoremap);
         mapping.add("ino", inoremap);
+        mapping.add("cno", cnoremap);
+        mapping.add("cnoremap", cnoremap);
         mapping.add("canoremap", canoremap);
         mapping.add("cano", canoremap);
         mapping.add("vnoremap", vnoremap);
@@ -389,6 +393,8 @@ public class CommandLineParser extends AbstractCommandParser {
         mapping.add("om", omap);
         mapping.add("imap", imap);
         mapping.add("im", imap);
+        mapping.add("cm", cmap);
+        mapping.add("cmap", cmap);
         mapping.add("camap", camap);
         mapping.add("cam", camap);
         mapping.add("vmap", vmap);

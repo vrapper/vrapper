@@ -11,7 +11,6 @@ public class CommandLineMode extends AbstractCommandLineMode {
 
     public static final String DISPLAY_NAME = "COMMAND LINE";
     public static final String NAME = "command mode";
-    public static final String KEYMAP_NAME = "Command Mode Keymap";
     private EvaluatorMapping commands;
 
     public CommandLineMode(EditorAdaptor editorAdaptor) {
@@ -40,7 +39,7 @@ public class CommandLineMode extends AbstractCommandLineMode {
 
     @Override
     public String resolveKeyMap(KeyStroke stroke) {
-        return KEYMAP_NAME;
+        return COMMANDLINE_KEYMAP_NAME;
     }
 
     public boolean addCommand(String commandName, Command command, boolean overwrite) {
