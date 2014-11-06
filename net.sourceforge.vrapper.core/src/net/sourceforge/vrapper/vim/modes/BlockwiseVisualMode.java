@@ -5,8 +5,10 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.changeCaret
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.convertKeyStroke;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.counted;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
 import net.sourceforge.vrapper.keymap.State;
+import net.sourceforge.vrapper.keymap.vim.CountingState;
 import net.sourceforge.vrapper.keymap.vim.VisualMotionState;
 import net.sourceforge.vrapper.keymap.vim.VisualMotionState.Motion2VMC;
 import net.sourceforge.vrapper.platform.CursorService;
@@ -25,6 +27,7 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.BlockWiseSelection;
 import net.sourceforge.vrapper.vim.commands.BlockWiseSelection.TextBlock;
+import net.sourceforge.vrapper.vim.commands.BlockwisePasteCommand;
 import net.sourceforge.vrapper.vim.commands.BlockwiseYankCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeToInsertModeCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
@@ -286,7 +289,9 @@ public class BlockwiseVisualMode extends AbstractVisualMode {
                         convertKeyStroke(
                                 ReplaceCommand.VisualBlock.VISUALBLOCK_KEYSTROKE,
                                 VimConstants.PRINTABLE_KEYSTROKES_WITH_NL))
-                ), parentState);
+                ),
+                CountingState.wrap(state(leafBind('p', (Command) BlockwisePasteCommand.INSTANCE))),
+                parentState);
     }
     
     @Override
