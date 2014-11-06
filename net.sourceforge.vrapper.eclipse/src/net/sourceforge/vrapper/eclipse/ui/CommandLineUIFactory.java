@@ -99,7 +99,9 @@ public class CommandLineUIFactory {
                     && (parent.getVerticalBar() == null
                         || verScroll == parent.getVerticalBar().getSelection())) {
                 commandLineText.setLocation(0, bottom - size.y);
-                commandLineText.redraw();
+                if (!"gtk".equals(SWT.getPlatform())) {
+                    commandLineText.redraw();
+                }
             } else {
                 parent.redraw();
                 horScroll = parent.getHorizontalBar().getSelection();
