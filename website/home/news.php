@@ -1,4 +1,33 @@
 <div class="newsbox">
+    <div class="date">2014-11-05</div>
+    <h4>Updates to unstable update site</h4>
+    
+    <p>It's been another month, time for your monthly status update with Vrapper.
+    We've made the following changes on the unstable update site:</p>
+    
+    <ul>
+        <li>Added new "line" text object plugin</li>
+            <ul>
+            <li>'al' for column 0 to end-of-line</li>
+            <li>'il' for first non-whitespace character to last non-whitespace character of a line</li>
+            <li>Port of <a href="http://www.vim.org/scripts/script.php?script_id=3886">http://www.vim.org/scripts/script.php?script_id=3886</a></li>
+            </ul>
+        <li>Added support for 'gI' (insert at column 0)</li>
+        <li>Added support for ':cmap'</li>
+        <li>Fixed issue where word text objects would stop at unicode characters</li>
+        <li>Fixed issue with 'O' on the line below a closed fold</li>
+        <li>Fixed issue where 'q' (record macro) couldn't be re-mapped</li>
+        <li>Fixed issue with 'A' in visual-block mode</li>
+        <li>Fixed issue with '>' indent command with counts in visual mode</li>
+        <li>Fixed issue which prevented a custom ':command' from using ':normal'</li>
+        <li>Fixed issue where '\t' in substituion text couldn't be escaped</li>
+        <li>Fixed styling issues in status bar</li>
+        <li>Fixed behavior when toggling between visual mode and visual-line mode</li>
+        <li>Changed 'ge', 'gE', and 'w' to be more vim-compliant in visual mode</li>
+        <li>Various refactoring of old defect fixes</li>
+    </ul>
+</div>
+<div class="newsbox">
     <div class="date">2014-10-05</div>
     <h4>0.48.0 Released</h4>
     
