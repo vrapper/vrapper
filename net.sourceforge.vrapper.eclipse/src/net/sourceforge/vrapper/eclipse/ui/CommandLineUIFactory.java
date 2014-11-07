@@ -79,7 +79,7 @@ public class CommandLineUIFactory {
             if (commandLineUI == null || ! commandLineUI.isOpen()) {
                 return;
             }
-            StyledText parent = (StyledText) e.widget;
+            final StyledText parent = (StyledText) e.widget;
             e.gc.setForeground(parent.getForeground());
             e.gc.setBackground(parent.getBackground());
             int bottom = parent.getBounds().height;
@@ -92,16 +92,41 @@ public class CommandLineUIFactory {
             commandLineUI.setWidth(right - 1);
             commandLineUI.setBottom(bottom);
             Point size = commandLineText.getSize();
-            // if the scrollbar changed, the whole component must be repainted
-            // if there is no scrollbar, paint anyway.
             if ((parent.getHorizontalBar() == null
                         || horScroll == parent.getHorizontalBar().getSelection())
                     && (parent.getVerticalBar() == null
                         || verScroll == parent.getVerticalBar().getSelection())) {
+                // Fix location
                 commandLineText.setLocation(0, bottom - size.y);
-                commandLineText.redraw();
+                // Paint command line if there is no scrollbar or if the scrollbar is the same.
+                // Run this outside the paint listener to let super class run its magic.
+                e.display.asyncExec(new Runnable() {
+                    
+                    @Override
+                    public void run() {
+                        // Make sure any outstanding redraw calls on the parent are executed FIRST.
+                        parent.update();
+                        commandLineText.setRedraw(true);
+                        commandLineText.redraw();
+                        // Immediately force our command line to be painted after calling redraw.
+                        commandLineText.update();
+                    }
+                });
             } else {
-                parent.redraw();
+                // The scrollbar offset changed. Retrigger this paint listener to draw the
+                // command line in its correct spot, but do it outside this paint listener.
+                e.display.asyncExec(new Runnable() {
+                    
+                    @Override
+                    public void run() {
+                        // Force complete redraw in case listener was called for partial redraw.
+                        parent.redraw();
+                        parent.update();
+                    }
+                });
+                // Don't trigger command line redraw until this paint listener is invoked again.
+                // This should prevent us from drawing too much artifacts.
+                commandLineText.setRedraw(false);
                 horScroll = parent.getHorizontalBar().getSelection();
                 verScroll = parent.getVerticalBar().getSelection();
             }
