@@ -7,6 +7,8 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.FocusAdapter;
@@ -47,6 +49,22 @@ public class CommandLineUIFactory {
         widget.addPaintListener(new BorderPaintListener());
         commandLineText = widget;
         
+        parent.addControlListener(new ControlAdapter() {
+            @Override
+            public void controlResized(ControlEvent e) {
+                e.display.asyncExec(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (commandLineUI == null || ! commandLineUI.isOpen()) {
+                            return;
+                        }
+                        parent.redraw();
+                        parent.update();
+                        commandLineUI.updateUISize();
+                    }
+                });
+            }
+        });
         parent.addPaintListener(new TextEditorPaintListener());
         parent.addFocusListener(new FocusAdapter() {
             @Override
