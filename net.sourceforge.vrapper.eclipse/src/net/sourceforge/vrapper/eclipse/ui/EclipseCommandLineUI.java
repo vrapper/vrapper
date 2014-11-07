@@ -115,7 +115,7 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener,
     }
 
     public boolean isOpen() {
-        return commandLineText.isVisible();
+        return ! commandLineText.isDisposed() && commandLineText.isVisible();
     }
 
     @Override
