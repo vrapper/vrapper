@@ -113,8 +113,8 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
             for (int line = block.startLine + 1; line <= endLine; ++line) {
                 final Position runStart = cursorService.getPositionByVisualOffset(line, block.startVisualOffset);
                 Position runEnd = cursorService.getPositionByVisualOffset(line, block.endVisualOffset);
-                if (runEnd == null) {
-                    final LineInformation lineInfo = textContent.getLineInformation(line);
+                final LineInformation lineInfo = textContent.getLineInformation(line);
+                if (runEnd == null || lineInfo.getLength() == 0) {
                     runEnd = cursorService.newPositionForModelOffset(lineInfo.getEndOffset());
                 } else {
                     runEnd = runEnd.addModelOffset(1);
@@ -177,7 +177,7 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
 			LeaveVisualModeCommand.doIt(editorAdaptor);
 	}
 
-    static private void doIt(final EditorAdaptor editorAdaptor,
+    static public void doIt(final EditorAdaptor editorAdaptor,
             final int count, TextOperation command,
             final TextContent textContent, final TextRange blockRange,
             boolean changeMode) throws CommandExecutionException {

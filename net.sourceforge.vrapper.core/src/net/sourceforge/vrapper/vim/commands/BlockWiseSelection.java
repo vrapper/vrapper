@@ -155,8 +155,9 @@ public class BlockWiseSelection implements Selection {
                 editorAdaptor.getModelContent(), cursorService);
         TextBlockRegisterContent blockContent = new TextBlockRegisterContent(textBlock.endVisualOffset - textBlock.startVisualOffset);
         for (int line = textBlock.startLine; line <= textBlock.endLine; ++line) {
+            final LineInformation lineInformation = textContent.getLineInformation(line);
             final Position start = cursorService.getPositionByVisualOffset(line, textBlock.startVisualOffset);
-            if (start == null) {
+            if (start == null || lineInformation.getLength() == 0) {
                 // no characters at the visual offset, yank empty line
                 blockContent.appendLine("");
                 continue;
@@ -166,7 +167,7 @@ public class BlockWiseSelection implements Selection {
             int endOfs;
             if (end == null) {
                 // the line is shorter that the end offset
-                endOfs = textContent.getLineInformation(line).getEndOffset();
+                endOfs = lineInformation.getEndOffset();
             } else {
                 endOfs = end.addModelOffset(1).getModelOffset();
             }
