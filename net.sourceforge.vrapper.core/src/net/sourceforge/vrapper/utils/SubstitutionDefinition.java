@@ -37,12 +37,12 @@ public class SubstitutionDefinition {
 
 			//Vim uses \r to represent a newline but Eclipse interprets that as a literal
 			//carriage-return.  Eclipse uses \R as a platform-independent newline
-			//replace "\r" with "\R", unless it is escaped with a backslash
-			replace = replace.replaceAll("(?<!\\\\)\\\\r", "\\\\R");
+			//replace "\r" with "\R", only if it is preceded by zero or an even number of backslashes
+			replace = replace.replaceAll("((^|[^\\\\])(\\\\\\\\)*)(\\\\r)", "$1\\\\R");
 
-			//replace "\t" with the tab character "\t", unless it is escaped with a backslash
+			//replace "\t" with the tab character "\t", only if it is preceded by zero or an even number of backslashes
 			//(otherwise it gets interpreted as \\t, which is two characters)
-			replace = replace.replaceAll("(?<!\\\\)\\\\t", "\t");
+			replace = replace.replaceAll("((^|[^\\\\])(\\\\\\\\)*)(\\\\t)", "$1\t");
 
 			//  '\=@x' means 'insert register x'
 			//but you can't include *anything* else in the replace string
