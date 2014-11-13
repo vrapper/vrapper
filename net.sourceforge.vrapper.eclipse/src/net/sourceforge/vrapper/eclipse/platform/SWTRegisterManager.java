@@ -8,17 +8,28 @@ import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
 import net.sourceforge.vrapper.vim.register.Register;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
 
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.widgets.Display;
 
 public class SWTRegisterManager extends DefaultRegisterManager {
 
     protected SWTClipboardRegister clipboardRegister;
+    protected SWTClipboardRegister selectionClipboardRegister;
 
     public SWTRegisterManager(Display d, GlobalConfiguration globalConfig) {
         super();
-        clipboardRegister = new SWTClipboardRegister(d);
+        clipboardRegister = new SWTClipboardRegister(d, DND.CLIPBOARD);
         registers.put(RegisterManager.REGISTER_NAME_CLIPBOARD, clipboardRegister);
-        registers.put(RegisterManager.REGISTER_NAME_SELECTION, clipboardRegister);
+
+        // Support for X11 selection register only enabled on Linux.
+        // Alias 'selection register' to the clipboard register for any other OS.
+        if (Platform.OS_LINUX.equals(Platform.getOS())) {
+            selectionClipboardRegister = new SWTClipboardRegister(d, DND.SELECTION_CLIPBOARD);
+            registers.put(RegisterManager.REGISTER_NAME_SELECTION, selectionClipboardRegister);
+        } else {
+            registers.put(RegisterManager.REGISTER_NAME_SELECTION, clipboardRegister);
+        }
 
         final ConfigurationListener listener = new ConfigurationListener() {
             @Override

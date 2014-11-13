@@ -27,11 +27,14 @@ class RegisterSelection extends ByteArrayTransfer {
     private static final String REGISTER = "text/vrapper-block-selection";
     private static final int TYPEID = registerType(REGISTER);
     private static RegisterSelection _instance = new RegisterSelection();
+
     public static RegisterSelection getInstance() {
         return _instance;
     }
+
     public void javaToNative(Object object, TransferData transferData) {
-        if (object == null || !(object instanceof TextBlockRegisterContent)) return;
+        if (object == null || !(object instanceof TextBlockRegisterContent))
+            return;
         if (isSupportedType(transferData)) {
             TextBlockRegisterContent registerContent = (TextBlockRegisterContent) object;
             try {
@@ -57,8 +60,9 @@ class RegisterSelection extends ByteArrayTransfer {
     public Object nativeToJava(TransferData transferData) {
         TextBlockRegisterContent registerContent = null;
         if (isSupportedType(transferData)) {
-            byte[] buffer = (byte[])super.nativeToJava(transferData);
-            if (buffer == null) return null;
+            byte[] buffer = (byte[]) super.nativeToJava(transferData);
+            if (buffer == null)
+                return null;
             try {
                 ByteArrayInputStream in = new ByteArrayInputStream(buffer);
                 DataInputStream readIn = new DataInputStream(in);
@@ -82,34 +86,40 @@ class RegisterSelection extends ByteArrayTransfer {
 
     @Override
     protected String[] getTypeNames() {
-        return new String[]{REGISTER};
+        return new String[] {REGISTER};
     }
+
     @Override
     protected int[] getTypeIds() {
-        return new int[]{TYPEID};
+        return new int[] {TYPEID};
     }
 }
 
 public class SWTClipboardRegister implements Register {
-	
-	private Clipboard clipboard;
-	
-	public SWTClipboardRegister(Display d) {
-		clipboard = new Clipboard(d);
-	}
+
+    private Clipboard clipboard;
+    private int clipboardId;
+
+    public SWTClipboardRegister(Display d, int clipboardId) {
+        this.clipboardId = clipboardId;
+        clipboard = new Clipboard(d);
+    }
 
     public RegisterContent getContent() {
-        TextBlockRegisterContent registerContent = (TextBlockRegisterContent) clipboard.getContents(RegisterSelection.getInstance());
+        TextBlockRegisterContent registerContent = (TextBlockRegisterContent) clipboard
+                .getContents(RegisterSelection.getInstance());
         if (registerContent != null) {
             return registerContent;
         }
-    	String s = (String) clipboard.getContents(TextTransfer.getInstance());
-    	if (s == null) {
-    		return RegisterContent.DEFAULT_CONTENT;
-    	}
-    	//don't assume copied text matches OS newline type
-        if (s.length() > 0 &&
-        		(VimUtils.isNewLine(""+s.charAt(0)) || VimUtils.isNewLine(""+s.charAt(s.length()-1)))) {
+        String s = (String) clipboard.getContents(TextTransfer.getInstance(), clipboardId);
+        if (s == null) {
+            return RegisterContent.DEFAULT_CONTENT;
+        }
+        // don't assume copied text matches OS newline type
+        if (s.length() > 0
+                &&
+                (VimUtils.isNewLine("" + s.charAt(0)) || VimUtils.isNewLine(""
+                        + s.charAt(s.length() - 1)))) {
             return new StringRegisterContent(ContentType.LINES, s);
         }
         return new StringRegisterContent(ContentType.TEXT, s);
@@ -118,10 +128,14 @@ public class SWTClipboardRegister implements Register {
     public void setContent(RegisterContent content) {
         ContentType contentType = content.getPayloadType();
         if (contentType == ContentType.TEXT_RECTANGLE) {
-            clipboard.setContents(new Object[] { content }, new Transfer[] { RegisterSelection.getInstance() });
+            clipboard.setContents(new Object[] {content},
+                    new Transfer[] {RegisterSelection.getInstance()},
+                    clipboardId);
         } else {
             String s = content.getText();
-            clipboard.setContents(new Object[] { s }, new Transfer[] { TextTransfer.getInstance() });
+            clipboard.setContents(new Object[] {s},
+                    new Transfer[] {TextTransfer.getInstance()},
+                    clipboardId);
         }
     }
 
