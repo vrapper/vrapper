@@ -2,6 +2,7 @@ package net.sourceforge.vrapper.vim;
 
 import static net.sourceforge.vrapper.platform.Configuration.Option.bool;
 import static net.sourceforge.vrapper.platform.Configuration.Option.globalString;
+import static net.sourceforge.vrapper.platform.Configuration.Option.globalStringSet;
 import static net.sourceforge.vrapper.platform.Configuration.Option.integer;
 import static net.sourceforge.vrapper.platform.Configuration.Option.localBool;
 import static net.sourceforge.vrapper.platform.Configuration.Option.string;
@@ -51,7 +52,6 @@ public interface Options {
             CONTENT_ASSIST_MODE, START_NORMAL_MODE, MODIFIABLE, UNDO_MOVES_CURSOR);
 
     // String options:
-    public static final Option<String> CLIPBOARD = globalString("clipboard", "autoselect", "unnamed, autoselect", "cb");
     public static final Option<String> SYNC_MODIFIABLE = globalString("syncmodifiable", "nosync", "nosync, matchreadonly", "syncma");
     public static final Option<String> SELECTION = string("selection", Selection.INCLUSIVE, Selection.SELECTION_OPTIONS, "sel");
     public static final Option<String> PATH      = stringNoConstraint("path", ".", "pa");
@@ -59,8 +59,13 @@ public interface Options {
     public static final Option<String> GVIM_ARGS = stringNoConstraint("gvimargs", "");
     public static final Option<String> KEYWORDS  = stringNoConstraint("iskeyword", "a-zA-Z0-9_\u00C0-\u017F", "isk");
     @SuppressWarnings("unchecked")
-    public static final Set<Option<String>> STRING_OPTIONS = set(CLIPBOARD, SELECTION, PATH,
+    public static final Set<Option<String>> STRING_OPTIONS = set(SELECTION, PATH,
             GVIM_PATH, GVIM_ARGS, KEYWORDS, SYNC_MODIFIABLE);
+
+    // String-set options:
+    public static final Option<Set<String>> CLIPBOARD = globalStringSet("clipboard", "", "unnamed, unnamedplus, autoselect, autoselectplus, exclude:", "cb");
+    @SuppressWarnings("unchecked")
+    public static final Set<Option<Set<String>>> STRINGSET_OPTIONS = set(CLIPBOARD);
 
     // Int options:
     public static final Option<Integer> SCROLL_OFFSET = integer("scrolloff",   0, "so");

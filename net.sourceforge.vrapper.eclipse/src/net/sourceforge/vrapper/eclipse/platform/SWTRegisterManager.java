@@ -1,5 +1,7 @@
 package net.sourceforge.vrapper.eclipse.platform;
 
+import java.util.Set;
+
 import net.sourceforge.vrapper.platform.Configuration.Option;
 import net.sourceforge.vrapper.platform.GlobalConfiguration;
 import net.sourceforge.vrapper.vim.ConfigurationListener;
@@ -26,18 +28,22 @@ public class SWTRegisterManager extends DefaultRegisterManager {
         // Alias 'selection register' to the clipboard register for any other OS.
         if (Platform.OS_LINUX.equals(Platform.getOS())) {
             selectionClipboardRegister = new SWTClipboardRegister(d, DND.SELECTION_CLIPBOARD);
-            registers.put(RegisterManager.REGISTER_NAME_SELECTION, selectionClipboardRegister);
         } else {
-            registers.put(RegisterManager.REGISTER_NAME_SELECTION, clipboardRegister);
+            selectionClipboardRegister = clipboardRegister;
         }
+        registers.put(RegisterManager.REGISTER_NAME_SELECTION, selectionClipboardRegister);
 
         final ConfigurationListener listener = new ConfigurationListener() {
             @Override
             public <T> void optionChanged(final Option<T> option, final T oldValue, final T newValue) {
                 if (Options.CLIPBOARD.equals(option)) {
+                    @SuppressWarnings("unchecked")
+                    Set<String> newValues = (Set<String>) newValue;
+                    @SuppressWarnings("unchecked")
+                    Set<String> oldValues = (Set<String>) oldValue;
                     Register oldDefault = defaultRegister;
-                    if ("unnamed".equals(newValue)) {
-                        defaultRegister = clipboardRegister;
+                    if (newValues.contains("unnamed")) {
+                        defaultRegister = selectionClipboardRegister;
                     } else {
                         defaultRegister = unnamedRegister;
                     }
