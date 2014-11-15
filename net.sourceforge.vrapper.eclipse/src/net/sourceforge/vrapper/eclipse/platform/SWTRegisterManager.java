@@ -39,10 +39,13 @@ public class SWTRegisterManager extends DefaultRegisterManager {
                 if (Options.CLIPBOARD.equals(option)) {
                     @SuppressWarnings("unchecked")
                     Set<String> newValues = (Set<String>) newValue;
-                    @SuppressWarnings("unchecked")
-                    Set<String> oldValues = (Set<String>) oldValue;
                     Register oldDefault = defaultRegister;
-                    if (newValues.contains("unnamed")) {
+
+                    // Introduced in Vim 7.3.074.
+                    // Using it together with unnamed is handled in YankOperation.
+                    if (newValues.contains(RegisterManager.CLIPBOARD_VALUE_UNNAMEDPLUS)) {
+                        defaultRegister = clipboardRegister;
+                    } else if (newValues.contains(RegisterManager.CLIPBOARD_VALUE_UNNAMED)) {
                         defaultRegister = selectionClipboardRegister;
                     } else {
                         defaultRegister = unnamedRegister;

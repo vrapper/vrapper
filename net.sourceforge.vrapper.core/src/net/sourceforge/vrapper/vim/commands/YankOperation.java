@@ -1,13 +1,17 @@
 package net.sourceforge.vrapper.vim.commands;
 
+import java.util.Set;
+
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
+import net.sourceforge.vrapper.vim.register.Register;
 import net.sourceforge.vrapper.vim.register.RegisterContent;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
 import net.sourceforge.vrapper.vim.register.StringRegisterContent;
@@ -30,11 +34,19 @@ public class YankOperation extends SimpleTextOperation {
 
     @Override
     public void execute(EditorAdaptor editorAdaptor, TextRange region, ContentType contentType) {
+        RegisterManager registerManager = editorAdaptor.getRegisterManager();
         if (register != null) {
-            RegisterManager registerManager = editorAdaptor.getRegisterManager();
             registerManager.setActiveRegister(register);
         }
         doIt(editorAdaptor, region, contentType, true, updateCursor);
+
+        //[NOTE] Normally the register manager makes sure to handle the 'clipboard' option, but when
+        // both "unnamed" and "unnamedplus" are enabled only yanking goes to both clipboards.
+        Set<String> clipboardOption = editorAdaptor.getConfiguration().get(Options.CLIPBOARD);
+        if (clipboardOption.contains(RegisterManager.CLIPBOARD_VALUE_UNNAMED)) {
+            Register selReg = registerManager.getRegister(RegisterManager.REGISTER_NAME_SELECTION);
+            selReg.setContent(registerManager.getActiveRegister().getContent());
+        }
     }
 
     public TextOperation repetition() {

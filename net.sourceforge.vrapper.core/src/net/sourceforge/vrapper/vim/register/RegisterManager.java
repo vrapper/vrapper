@@ -26,6 +26,8 @@ public interface RegisterManager {
     public static final String REGISTER_NAME_BLACKHOLE = "_";
     public static final String REGISTER_NAME_LAST      = "@";
     public static final String REGISTER_NAME_COMMAND   = ":";
+    public static final String CLIPBOARD_VALUE_UNNAMED = "unnamed";
+    public static final String CLIPBOARD_VALUE_UNNAMEDPLUS = "unnamedplus";
 
     Set<String> getRegisterNames();
     Register getRegister(String name);

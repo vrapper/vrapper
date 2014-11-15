@@ -13,6 +13,7 @@ import java.util.Set;
 
 import net.sourceforge.vrapper.platform.Configuration.Option;
 import net.sourceforge.vrapper.vim.commands.Selection;
+import net.sourceforge.vrapper.vim.register.RegisterManager;
 
 public interface Options {
     // Boolean options:
@@ -63,7 +64,11 @@ public interface Options {
             GVIM_PATH, GVIM_ARGS, KEYWORDS, SYNC_MODIFIABLE);
 
     // String-set options:
-    public static final Option<Set<String>> CLIPBOARD = globalStringSet("clipboard", "", "unnamed, unnamedplus, autoselect, autoselectplus, exclude:", "cb");
+    public static final Option<Set<String>> CLIPBOARD = globalStringSet("clipboard", "",
+            RegisterManager.CLIPBOARD_VALUE_UNNAMED + ","
+                + RegisterManager.CLIPBOARD_VALUE_UNNAMEDPLUS + ","
+                + "autoselect, autoselectplus, exclude:",
+            "cb");
     @SuppressWarnings("unchecked")
     public static final Set<Option<Set<String>>> STRINGSET_OPTIONS = set(CLIPBOARD);
 
