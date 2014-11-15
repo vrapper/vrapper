@@ -24,13 +24,10 @@ import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
-import net.sourceforge.vrapper.utils.StartEndTextRange;
-import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
-import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.AsciiCommand;
-import net.sourceforge.vrapper.vim.commands.BlockWiseSelection;
+import net.sourceforge.vrapper.vim.commands.BlockwiseVisualMotionCommand;
 import net.sourceforge.vrapper.vim.commands.BorderPolicy;
 import net.sourceforge.vrapper.vim.commands.CenterLineCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
@@ -49,7 +46,7 @@ import net.sourceforge.vrapper.vim.commands.IncrementDecrementCommand;
 import net.sourceforge.vrapper.vim.commands.InsertAndEditLineCommand;
 import net.sourceforge.vrapper.vim.commands.InsertShiftWidth;
 import net.sourceforge.vrapper.vim.commands.JoinLinesCommand;
-import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
+import net.sourceforge.vrapper.vim.commands.LinewiseVisualMotionCommand;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.commands.MotionTextObject;
 import net.sourceforge.vrapper.vim.commands.NormalLineRangeOperation;
@@ -62,16 +59,16 @@ import net.sourceforge.vrapper.vim.commands.RepeatLastSubstitutionCommand;
 import net.sourceforge.vrapper.vim.commands.ReplaceCommand;
 import net.sourceforge.vrapper.vim.commands.RestoreSelectionCommand;
 import net.sourceforge.vrapper.vim.commands.SaveCommand;
-import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SetMarkCommand;
-import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 import net.sourceforge.vrapper.vim.commands.SwapCaseCommand;
 import net.sourceforge.vrapper.vim.commands.TextObject;
 import net.sourceforge.vrapper.vim.commands.TextOperation;
 import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
 import net.sourceforge.vrapper.vim.commands.UndoCommand;
 import net.sourceforge.vrapper.vim.commands.VimCommandSequence;
+import net.sourceforge.vrapper.vim.commands.VisualMotionCommand;
 import net.sourceforge.vrapper.vim.commands.YankOperation;
+import net.sourceforge.vrapper.vim.commands.motions.DummyMotion;
 import net.sourceforge.vrapper.vim.commands.motions.GoToMarkMotion;
 import net.sourceforge.vrapper.vim.commands.motions.LineEndMotion;
 import net.sourceforge.vrapper.vim.commands.motions.LineStartMotion;
@@ -264,17 +261,8 @@ public class NormalMode extends CommandBasedMode {
         @Override
         public void execute(EditorAdaptor editorAdaptor)
                 throws CommandExecutionException {
-            String selectionVal = editorAdaptor.getConfiguration().get(Options.SELECTION);
-            if (Selection.EXCLUSIVE.equals(selectionVal)) {
-                final Position position = editorAdaptor.getPosition();
-                editorAdaptor.setSelection(new SimpleSelection(new StartEndTextRange(position, position)));
-            } else if (Selection.INCLUSIVE.equals(selectionVal)) {
-                final Position position = editorAdaptor.getPosition();
-                Position otherpos = VimUtils.safeAddModelOffset(editorAdaptor, position, 1, true);
-                editorAdaptor.setSelection(new SimpleSelection(position, position,
-                        new StartEndTextRange(position, otherpos)));
-	            editorAdaptor.getCursorService().setCaret(CaretType.LEFT_SHIFTED_RECTANGULAR);
-            }
+            // Fix selection for inclusive mode in VisualMotionCommand code.
+            new VisualMotionCommand(DummyMotion.INSTANCE).execute(editorAdaptor);
         }
     }
 
@@ -283,8 +271,7 @@ public class NormalMode extends CommandBasedMode {
         @Override
         public void execute(EditorAdaptor editorAdaptor)
                 throws CommandExecutionException {
-            final Position position = editorAdaptor.getPosition();
-            editorAdaptor.setSelection(new LineWiseSelection(editorAdaptor, position, position));
+            new LinewiseVisualMotionCommand(DummyMotion.INSTANCE).execute(editorAdaptor);
         }
     }
 
@@ -293,9 +280,7 @@ public class NormalMode extends CommandBasedMode {
         @Override
         public void execute(EditorAdaptor editorAdaptor)
                 throws CommandExecutionException {
-            final Position position = editorAdaptor.getPosition();
-//            final Position next = editorAdaptor.getCursorService().newPositionForModelOffset(position.getModelOffset()+1);
-            editorAdaptor.setSelection(new BlockWiseSelection(editorAdaptor, position, position));
+            new BlockwiseVisualMotionCommand(DummyMotion.INSTANCE).execute(editorAdaptor);
         }
     }
 
