@@ -7,9 +7,6 @@ public class ComplexLocalOptionEvaluator extends ComplexOptionEvaluator {
 
     @Override
     protected <T> void set(EditorAdaptor adaptor, Option<T> opt, T value) throws ValueException {
-        if (opt.getLegalValues() != null && !opt.getLegalValues().contains(value)) {
-            throw new ValueException();
-        }
         adaptor.getConfiguration().setLocal(opt, value);
     }
 

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import net.sourceforge.vrapper.platform.SimpleConfiguration.NewLine;
+import net.sourceforge.vrapper.utils.VimUtils;
 
 /**
  * Holds variables which influence the behaviour of different commands.
@@ -46,27 +47,23 @@ public interface Configuration {
     }
 
     public static class Option<T> {
+    
+    public final static String SET_DELIMITER = ",";
+    public final static String SET_VALUE_ITEM = ":";
 
         private final String id;
         private final String[] alias;
         private final T defaultValue;
         private final List<String> allNames;
-        private final Set<T> legalValues;
+        private final Set<String> legalValues;
         private final OptionScope scope;
 
-        private Option(String id, T defaultValue, Set<T> legalValues, String...alias) {
-            this.id = id;
-            this.defaultValue = defaultValue;
-            this.legalValues = legalValues;
-            this.alias = alias;
-            this.allNames = new ArrayList<String>();
-            allNames.add(id);
-            allNames.addAll(Arrays.asList(alias));
-            this.scope = OptionScope.DEFAULT;
+        private Option(String id, T defaultValue, Set<String> legalValues, String...alias) {
+            this(id, OptionScope.DEFAULT, defaultValue, legalValues, alias);
         }
 
         private Option(String id, OptionScope scope, T defaultValue,
-                Set<T> legalValues, String...alias) {
+                Set<String> legalValues, String...alias) {
             this.id = id;
             this.defaultValue = defaultValue;
             this.legalValues = legalValues;
@@ -106,6 +103,23 @@ public interface Configuration {
             assert legalValues.contains(defaultValue);
             return new Option<String>(id, OptionScope.GLOBAL, defaultValue, legalValues, alias);
         }
+        
+        public static final Option<Set<String>> globalStringSet(String id, String defaultValueStr, String csv, String... alias) {
+            Set<String> legalValues = new HashSet<String>();
+            for (String value: csv.split(", *"))
+                legalValues.add(value);
+            Set<String> defaultValues = new HashSet<String>();
+            for (String value : defaultValueStr.split(Option.SET_DELIMITER)) {
+                int valueDelimIndex = value.indexOf(SET_VALUE_ITEM);
+                if (valueDelimIndex != -1) {
+                    defaultValues.add(value.substring(0, valueDelimIndex + 1));
+                } else {
+                    defaultValues.add(value);
+                }
+            }
+            assert legalValues.containsAll(defaultValues);
+            return new Option<Set<String>>(id, OptionScope.GLOBAL, defaultValues, legalValues, alias);
+        }
 
         public static final Option<String> globalStringNoConstraint(String id, String defaultValue, String... alias) {
             return new Option<String>(id, OptionScope.GLOBAL, defaultValue, null, alias);
@@ -138,7 +152,7 @@ public interface Configuration {
         /**
          * @return set of all legal values or <code>null</code> if there are no constraints on values of this option
          */
-        public Set<T> getLegalValues() {
+        public Set<String> getLegalValues() {
             return legalValues;
         }
 

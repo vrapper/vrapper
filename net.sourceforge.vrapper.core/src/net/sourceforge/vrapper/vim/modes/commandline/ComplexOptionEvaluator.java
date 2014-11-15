@@ -1,5 +1,7 @@
 package net.sourceforge.vrapper.vim.modes.commandline;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Queue;
 import java.util.Set;
 
@@ -38,24 +40,37 @@ public class ComplexOptionEvaluator implements Evaluator {
         Option<String> strOpt;
         Option<Integer> intOpt;
         Option<Boolean> boolOpt;
+        Option<Set<String>> stringSetOpt;
         try {
             if ((strOpt = find(Options.STRING_OPTIONS, optName)) != null) {
                 if(additive) { //append ( += )
-                    String current = vim.getConfiguration().get(strOpt);
-                    set(vim, strOpt, current + value);
+                    String newValue = vim.getConfiguration().get(strOpt) + value;
+                    validate(strOpt, newValue);
+                    set(vim, strOpt, newValue);
                 }
                 else if(subtractive) { //remove ( -= )
-                    String current = vim.getConfiguration().get(strOpt);
-                    set(vim, strOpt, current.replace(value, ""));
+                    String newValue = vim.getConfiguration().get(strOpt).replace(value, "");
+                    validate(strOpt, newValue);
+                    set(vim, strOpt, newValue);
                 }
                 else {//normal set ( = )
+                    validate(strOpt, value);
                     set(vim, strOpt, value);
                 }
             }
+            else if ((stringSetOpt = find(Options.STRINGSET_OPTIONS, optName)) != null) {
+                String[] values = value.split(Option.SET_DELIMITER);
+                Set<String> newValue = new HashSet<String>();
+                newValue.addAll(Arrays.asList(values));
+                validateSet(stringSetOpt, newValue);
+                set(vim, stringSetOpt, newValue);
+            }
             else if ((intOpt = find(Options.INT_OPTIONS, optName)) != null) {
+                validate(intOpt, Integer.valueOf(value));
                 set(vim, intOpt, Integer.valueOf(value));
             }
             else if ((boolOpt = find(Options.BOOLEAN_OPTIONS, optName)) != null) {
+                validate(boolOpt, Boolean.valueOf(value));
                 set(vim, boolOpt, Boolean.valueOf(value));
             }
             else {
@@ -76,11 +91,29 @@ public class ComplexOptionEvaluator implements Evaluator {
     private void noSuchOptionMessage(EditorAdaptor vim, String name) {
         vim.getUserInterfaceService().setErrorMessage("Unknown option: " + name);
     }
-
-    protected <T> void set(EditorAdaptor adaptor, Option<T> opt, T value) throws ValueException {
+    
+    protected <T> void validate(Option<T> opt, T value) throws ValueException {
         if (opt.getLegalValues() != null && !opt.getLegalValues().contains(value)) {
             throw new ValueException();
         }
+    }
+
+    protected void validateSet(Option<Set<String>> opt, Set<String> values) throws ValueException {
+        Set<String> cleanedValues = new HashSet<String>();
+        for (String value : values) {
+            int valueDelimIndex = value.indexOf(Option.SET_VALUE_ITEM);
+            if (valueDelimIndex != -1) {
+                cleanedValues.add(value.substring(0, valueDelimIndex + 1));
+            } else {
+                cleanedValues.add(value);
+            }
+        }
+        if (opt.getLegalValues() == null || !opt.getLegalValues().containsAll(cleanedValues)) {
+            throw new ValueException();
+        }
+    }
+
+    protected <T> void set(EditorAdaptor adaptor, Option<T> opt, T value) throws ValueException {
         adaptor.getConfiguration().set(opt, value);
     }
 

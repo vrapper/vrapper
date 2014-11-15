@@ -2,6 +2,7 @@ package net.sourceforge.vrapper.vim.modes.commandline;
 
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import net.sourceforge.vrapper.keymap.KeyStroke;
@@ -489,6 +490,12 @@ public class CommandLineParser extends AbstractCommandParser {
         }
         for (Option<String> o : Options.STRING_OPTIONS) {
             ConfigCommand<String> status = new PrintOptionCommand<String>(o);
+            for (String alias: o.getAllNames()) {
+                config.add(alias+"?", status);
+            }
+        }
+        for (Option<Set<String>> o : Options.STRINGSET_OPTIONS) {
+            ConfigCommand<Set<String>> status = new PrintOptionCommand<Set<String>>(o);
             for (String alias: o.getAllNames()) {
                 config.add(alias+"?", status);
             }
