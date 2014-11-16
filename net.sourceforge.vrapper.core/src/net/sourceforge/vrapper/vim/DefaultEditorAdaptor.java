@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 
 import net.sourceforge.vrapper.keymap.KeyMap;
 import net.sourceforge.vrapper.keymap.KeyStroke;
@@ -34,15 +35,19 @@ import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.platform.UnderlyingEditorSettings;
 import net.sourceforge.vrapper.platform.UserInterfaceService;
 import net.sourceforge.vrapper.platform.ViewportService;
+import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.SelectionArea;
+import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.UnmodifiableTextContentDecorator;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.RecordMacroMode;
 import net.sourceforge.vrapper.vim.commands.Selection;
+import net.sourceforge.vrapper.vim.commands.YankOperation;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
+import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
 import net.sourceforge.vrapper.vim.modes.BlockwiseVisualMode;
 import net.sourceforge.vrapper.vim.modes.ConfirmSubstitutionMode;
 import net.sourceforge.vrapper.vim.modes.ContentAssistMode;
@@ -63,6 +68,7 @@ import net.sourceforge.vrapper.vim.modes.commandline.MessageMode;
 import net.sourceforge.vrapper.vim.modes.commandline.PasteRegisterMode;
 import net.sourceforge.vrapper.vim.modes.commandline.SearchMode;
 import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
+import net.sourceforge.vrapper.vim.register.Register;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
 
 public class DefaultEditorAdaptor implements EditorAdaptor {
@@ -402,6 +408,31 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
 
     @Override
     public void setSelection(final Selection selection) {
+        Set<String> cbOption = configuration.get(Options.CLIPBOARD);
+        if (selection != null && selection.getModelLength() > 0
+                && currentMode instanceof AbstractVisualMode) {
+            Register activeRegister = registerManager.getActiveRegister();
+            TextRange textRange;
+            ContentType contentType;
+            try {
+                textRange = selection.getRegion(this, 0);
+                contentType = selection.getContentType(configuration);
+            } catch (CommandExecutionException e) {
+                // Log and do nothing - this shouldn't happen, but one never knows.
+                VrapperLog.error("Failed to get properties of selection!", e);
+                return;
+            }
+            if (cbOption.contains(RegisterManager.CLIPBOARD_VALUE_AUTOSELECT)) {
+                registerManager.setActiveRegister(RegisterManager.REGISTER_NAME_SELECTION);
+                YankOperation.doIt(this, textRange, contentType, false, false);
+            }
+            if (cbOption.contains(RegisterManager.CLIPBOARD_VALUE_AUTOSELECTPLUS)) {
+                registerManager.setActiveRegister(RegisterManager.REGISTER_NAME_CLIPBOARD);
+                YankOperation.doIt(this, textRange, contentType, false, false);
+            }
+            registerManager.setActiveRegister(activeRegister);
+        }
+        
         selectionService.setSelection(selection);
     }
 

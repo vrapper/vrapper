@@ -65,9 +65,11 @@ public interface Options {
 
     // String-set options:
     public static final Option<Set<String>> CLIPBOARD = globalStringSet("clipboard", "",
-            RegisterManager.CLIPBOARD_VALUE_UNNAMED + ","
-                + RegisterManager.CLIPBOARD_VALUE_UNNAMEDPLUS + ","
-                + "autoselect, autoselectplus, exclude:",
+            RegisterManager.CLIPBOARD_VALUE_UNNAMED + ", "
+                + RegisterManager.CLIPBOARD_VALUE_UNNAMEDPLUS + ", "
+                + RegisterManager.CLIPBOARD_VALUE_AUTOSELECT + ", "
+                + RegisterManager.CLIPBOARD_VALUE_AUTOSELECTPLUS + ", "
+                + "exclude:", // Used by default in Vim on Linux, ignored by Vrapper.
             "cb");
     @SuppressWarnings("unchecked")
     public static final Set<Option<Set<String>>> STRINGSET_OPTIONS = set(CLIPBOARD);

@@ -28,6 +28,8 @@ public interface RegisterManager {
     public static final String REGISTER_NAME_COMMAND   = ":";
     public static final String CLIPBOARD_VALUE_UNNAMED = "unnamed";
     public static final String CLIPBOARD_VALUE_UNNAMEDPLUS = "unnamedplus";
+    public static final String CLIPBOARD_VALUE_AUTOSELECT = "autoselect";
+    public static final String CLIPBOARD_VALUE_AUTOSELECTPLUS = "autoselectplus";
 
     Set<String> getRegisterNames();
     Register getRegister(String name);
