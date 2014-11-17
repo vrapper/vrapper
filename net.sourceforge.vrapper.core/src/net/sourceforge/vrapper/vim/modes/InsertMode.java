@@ -80,7 +80,7 @@ public class InsertMode extends AbstractMode {
     protected State<Command> currentState = buildState();
 
     private Position startEditPosition;
-    private static int numCharsDeleted;
+    private int numCharsDeleted;
     private boolean cleanupIndent = false;
     private boolean resumeOnEnter = false;
 
@@ -252,16 +252,29 @@ public class InsertMode extends AbstractMode {
         cur.setMark(CursorService.LAST_CHANGE_START, startEditPosition);
         cur.setMark(CursorService.LAST_CHANGE_END, position);
 
-        final String text = content.getText(new StartEndTextRange(startEditPosition.addModelOffset(-numCharsDeleted), position));
+        Position editRangeStart = startEditPosition.addModelOffset(-numCharsDeleted);
+        // Sanity check: clip selected text to start of document.
+        if (editRangeStart.getModelOffset() < 0) {
+            editRangeStart = editRangeStart.setModelOffset(0);
+        }
+        final String text = content.getText(new StartEndTextRange(editRangeStart, position));
         final RegisterContent registerContent = new StringRegisterContent(ContentType.TEXT, text);
         lastEditRegister.setContent(registerContent);
-        final Command repetition = createRepetition(lastEditRegister, repetitionCommand, count);
+        final Command repetition = createRepetition(lastEditRegister, repetitionCommand, count, numCharsDeleted, 0);
         editorAdaptor.getRegisterManager().setLastInsertion(
                 count > 1 ? repetition.withCount(count) : repetition);
     }
 
-    public static Command createRepetition(final Register lastEditRegister,
-            final Command repetitionCommand, final int count) {
+    /** Create a Command which repeats the last editing operation.
+     * @param lastEditRegister Register which contains the last-edited span of text.
+     * @param repetitionCommand extra Command which needs to be executed before inserting text.
+     * @param count indication of how many times the caller wants to execute the resulting command.
+     *     This decides if the edit will happen before or after the cursor.
+     * @param deleteCharsToLeft how many characters to the left of the start position to delete.
+     * @param deleteCharsToRight how many characters to the right of the start position to delete.
+     */
+    public static Command createRepetition(Register lastEditRegister, Command repetitionCommand,
+            int count, int deleteCharsToLeft, int deleteCharsToRight) {
         Command repetition = null;
         if (repetitionCommand != null)
             repetition = repetitionCommand.repetition();
@@ -277,9 +290,14 @@ public class InsertMode extends AbstractMode {
         }
         
         Command deleteCharsCmd = null;
-        if (numCharsDeleted > 0) {
-            TextObject toDelete = new MotionTextObject(MoveLeft.INSTANCE).withCount(numCharsDeleted);
+        if (deleteCharsToLeft > 0) {
+            TextObject toDelete = new MotionTextObject(MoveLeft.INSTANCE).withCount(deleteCharsToLeft);
             deleteCharsCmd = new TextOperationTextObjectCommand(DeleteOperation.INSTANCE, toDelete);
+        }
+        if (deleteCharsToRight > 0) {
+            TextObject toDelete = new MotionTextObject(MoveLeft.INSTANCE).withCount(deleteCharsToRight);
+            deleteCharsCmd = seq(deleteCharsCmd,
+                    new TextOperationTextObjectCommand(DeleteOperation.INSTANCE, toDelete));
         }
         return dontRepeat(seq(
                 repetition,
@@ -371,6 +389,7 @@ public class InsertMode extends AbstractMode {
                 txt.replace(position, length, "");
                 if (position < startEditPos) {
                     startEditPosition = startEditPosition.setModelOffset(position);
+                    numCharsDeleted = 0;
                 }
             } catch (CommandExecutionException e) {
             }
@@ -386,6 +405,7 @@ public class InsertMode extends AbstractMode {
             return true;
         } else if (!allowed(stroke)) {
             startEditPosition = editorAdaptor.getCursorService().getPosition();
+            numCharsDeleted = 0;
             count = 1;
             if (editorAdaptor.getConfiguration().get(Options.ATOMIC_INSERT)) {
                 editorAdaptor.getHistory().unlock("insertmode");

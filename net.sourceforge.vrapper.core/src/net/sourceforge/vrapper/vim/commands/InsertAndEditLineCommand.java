@@ -23,10 +23,12 @@ class RepeatInsertAndEditLineCommand extends CountAwareCommand {
             count = 1;
         }
         InsertLineCommand insertLineCommand;
-        InsertMode.createRepetition(lastEditRegister, firstLineInsertion, count).execute(editorAdaptor);
+        InsertMode.createRepetition(lastEditRegister, firstLineInsertion, count, 0, 0)
+                    .execute(editorAdaptor);
         if (count > 1) {
             insertLineCommand = InsertLineCommand.POST_CURSOR;
-            repeat(count - 1, InsertMode.createRepetition(lastEditRegister, insertLineCommand, count))
+            repeat(count - 1,
+                    InsertMode.createRepetition(lastEditRegister, insertLineCommand, count, 0, 0))
                 .execute(editorAdaptor);
         }
     }
