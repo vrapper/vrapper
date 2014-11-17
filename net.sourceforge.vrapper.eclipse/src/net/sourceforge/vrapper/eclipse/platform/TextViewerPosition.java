@@ -1,5 +1,7 @@
 package net.sourceforge.vrapper.eclipse.platform;
 
+import java.util.Locale;
+
 import net.sourceforge.vrapper.utils.AbstractPosition;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Space;
@@ -61,6 +63,10 @@ public class TextViewerPosition extends AbstractPosition {
 
     @Override
     public String toString() {
-        return "TextViewerPosition(" + space + "-" + offset + ")";
+        String spaceId = "?";
+        if (space != null) {
+            spaceId = space.name().substring(0, 1).toUpperCase(Locale.ENGLISH);
+        }
+        return spaceId + ' ' + offset;
     }
 }
