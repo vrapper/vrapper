@@ -255,6 +255,8 @@ public class InsertMode extends AbstractMode {
         Position editRangeStart = startEditPosition.addModelOffset(-numCharsDeleted);
         // Sanity check: clip selected text to start of document.
         if (editRangeStart.getModelOffset() < 0) {
+            VrapperLog.error("NumCharsDeleted caused us to move out of bounds! Startposition: "
+                    + startEditPosition + ", numCharsDeleted: " + numCharsDeleted);
             editRangeStart = editRangeStart.setModelOffset(0);
         }
         final String text = content.getText(new StartEndTextRange(editRangeStart, position));
