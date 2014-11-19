@@ -7,6 +7,7 @@ import net.sourceforge.vrapper.vim.DefaultEditorAdaptor;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.EditorMode;
+import net.sourceforge.vrapper.vim.modes.InsertMode;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 
 import org.eclipse.jface.text.ITextViewer;
@@ -18,7 +19,7 @@ import org.eclipse.swt.events.MouseListener;
 
 /**
  * Detects when a mouse click results in a caret move and optionally fixes the
- * cursor position.
+ * cursor position for Normal mode, or executes a reset in case of Insert mode.
  */
 public class CaretPositionHandler implements CaretListener, MouseListener {
     private boolean caretMoved;
@@ -38,32 +39,42 @@ public class CaretPositionHandler implements CaretListener, MouseListener {
     @Override
     public void mouseDown(MouseEvent e) {
         EditorMode mode = getCurrentMode(editorAdaptor);
-        if (!VrapperPlugin.isVrapperEnabled() || !caretMoved || ! (mode instanceof NormalMode)) {
+        if (!VrapperPlugin.isVrapperEnabled() || !caretMoved
+                || ! (mode instanceof NormalMode || mode instanceof InsertMode)) {
             return;
         }
         StyledText w = textViewer.getTextWidget();
-        w.setRedraw(false);
-        try {
-            int currentOffset = w.getCaretOffset();
+        if (mode instanceof NormalMode) {
+            w.setRedraw(false);
+            try {
+                int currentOffset = w.getCaretOffset();
 
-            // Find out what line we are in and what length it has.
-            int lineNo = w.getLineAtOffset(currentOffset);
-            int lineStartOffset = w.getOffsetAtLine(lineNo);
-            String lineContents = w.getLine(lineNo);
-            int lineEndOffset = lineStartOffset + lineContents.length();
+                // Find out what line we are in and what length it has.
+                int lineNo = w.getLineAtOffset(currentOffset);
+                int lineStartOffset = w.getOffsetAtLine(lineNo);
+                String lineContents = w.getLine(lineNo);
+                int lineEndOffset = lineStartOffset + lineContents.length();
 
-            // Detect if caret was moved after last character. It is possible that the caret is
-            // already at the right position because this mouse click might have dropped us out of
-            // visual mode. In that case NormalMode.placeCursor() did its magic already.
-            if (currentOffset == lineEndOffset) {
-                // Change caret until the user has let go of the mouse button.
-                // We can't move the caret here or we risk changing the user's selection for him.
-                editorAdaptor.getCursorService().setCaret(CaretType.LEFT_SHIFTED_RECTANGULAR);
+                // Detect if caret was moved after last character. It is possible that the caret is
+                // already at the right position because this mouse click might have dropped us out
+                // of visual mode. In that case NormalMode.placeCursor() did its magic already.
+                if (currentOffset == lineEndOffset) {
+                    // Change caret until the user has let go of the mouse button.
+                    // We can't move the caret here or we risk changing the user's selection.
+                    editorAdaptor.getCursorService().setCaret(
+                            CaretType.LEFT_SHIFTED_RECTANGULAR);
+                }
+            } catch (RuntimeException ex) {
+                VrapperLog.error("CaretPositionHandler failed on mouse click.",
+                        ex);
+            } finally {
+                w.setRedraw(true);
             }
-        } catch (RuntimeException ex) {
-            VrapperLog.error("CaretPositionHandler failed on mouse click.", ex);
-        } finally {
-            w.setRedraw(true);
+        } else if (mode instanceof InsertMode) {
+            // User started clicking with the mouse in insert mode. If the mouse is dragged for a
+            // selection, resetting the mode is likely no harm as that would also invalidate the
+            // current edit session.
+            ((InsertMode) mode).resetEditingSession();
         }
     }
 
