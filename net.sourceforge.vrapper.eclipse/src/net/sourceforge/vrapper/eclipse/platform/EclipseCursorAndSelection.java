@@ -248,22 +248,25 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     }
 
     @Override
-    public void setSelection(final Selection newSelection) {
+    public void setSelection(final Selection newSel) {
         selectionInProgress = true;
-        if (newSelection == null) {
+        selection = newSel;
+        ContentType contentType = newSel == null ? null: newSel.getContentType(configuration);
+        if (newSel == null) {
             final Point point = textViewer.getSelectedRange();
             textViewer.getTextWidget().setBlockSelection(false);
             textViewer.setSelectedRange(point.x, 0);
-            selection = null;
+        } else if (ContentType.TEXT_RECTANGLE.equals(contentType)) {
+            setBlockSelection(newSel);
         } else {
             IDocument document = textViewer.getDocument();
-            final int from = newSelection.getStart().getModelOffset();
-            int length = !newSelection.isReversed() ? newSelection.getModelLength() : -newSelection.getModelLength();
+            final int from = newSel.getStart().getModelOffset();
+            int length = !newSel.isReversed() ? newSel.getModelLength() : -newSel.getModelLength();
             // linewise selection includes final newline, this means the cursor
             // is placed in the line below the selection by eclipse. this
             // corrects that behaviour
-            if (ContentType.LINES.equals(newSelection.getContentType(configuration))) {
-                int endOffset = newSelection.getEnd().getModelOffset();
+            if (ContentType.LINES.equals(contentType)) {
+                int endOffset = newSel.getEnd().getModelOffset();
                 int documentLength = document.getLength();
                 if (endOffset == documentLength) {
                     try {
@@ -276,77 +279,77 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
                         VrapperLog.error("Failed to get last line info", e);
                     }
                 // Only fix if selection isn't reversed, reverse selection ends at column 0.
-                } else if (!newSelection.isReversed()) {
+                } else if (!newSel.isReversed()) {
                     length--;
                 }
             }
-            selection = newSelection;
-            if (ContentType.TEXT_RECTANGLE.equals(newSelection.getContentType(configuration))) {
-                // block selection
-                final StyledText styled = textViewer.getTextWidget();
-                styled.setBlockSelection(true);
-                final int startOfs = selection.getFrom().getViewOffset();
-                final int endOfs = selection.getTo().getViewOffset();
-                if (endOfs == textViewer.getDocument().getLength()) {
-                    // Don't change selection if the caret is after the last character.
-                    return;
-                }
-                final Rectangle fromRect = styled.getTextBounds(startOfs, startOfs);
-                Rectangle blockRect;
-                if (stickToEOL) {
-                    if (startOfs <= endOfs) {
-                        //
-                        // endOfs is looking at the last character on the current line:
-                        //
-                        // startOfs -> o-------
-                        //             |
-                        //             +---------------------o <- endOfs
-                        //
-                        blockRect = styled.getTextBounds(startOfs, endOfs);
-                    } else {
-                        //
-                        // three "points" are needed to be considered to determine the
-                        // encompassing rectangle:
-                        //
-                        //             +-------o <-endOfs
-                        //             |
-                        // startOfs -> o---------------------o <- startEOL
-                        //
-                        try {
-                            final IRegion startLine = document.getLineInformationOfOffset(startOfs);
-                            blockRect = styled.getTextBounds(endOfs, startLine.getOffset() + startLine.getLength());
-                            blockRect = blockRect.union(styled.getTextBounds(endOfs, startOfs));
-                        } catch (BadLocationException e) {
-                            VrapperLog.error("Failed to get start line info", e);
-                            return;
-                        }
-                    }
-                } else {
-                    final Rectangle toRect = styled.getTextBounds(endOfs, endOfs);
-                    blockRect = fromRect.union(toRect);
-                }
-                blockRect.width -= fromRect.x - blockRect.x;
-                blockRect.x = fromRect.x;
-                //
-                // getTextBounds returns values relative to the top-left visible
-                // pixel, adjusting the block rectangle accordingly.
-                //
-                blockRect.x += styled.getHorizontalPixel();
-                blockRect.y += styled.getTopPixel();
-                // NOTE: setBlockSelectionBound temporary changes caret offset and
-                //       triggers incorrect sticky column recalculation.
-                caretListener.disable();
-                styled.setBlockSelectionBounds(blockRect);
-                caretListener.enable();
-            } else {
-                //Only the caller can set the sticky column, e.g. in the case of an up/down motion.
-                caretListener.disable();
-                textViewer.getTextWidget().setBlockSelection(false);
-                textViewer.setSelectedRange(from, length);
-                caretListener.enable();
-            }
+            //Only the caller can set the sticky column, e.g. in the case of an up/down motion.
+            caretListener.disable();
+            textViewer.getTextWidget().setBlockSelection(false);
+            textViewer.setSelectedRange(from, length);
+            caretListener.enable();
         }
         selectionInProgress = false;
+    }
+
+    private void setBlockSelection(Selection newSelection) {
+        IDocument document = textViewer.getDocument();
+        // block selection
+        final StyledText styled = textViewer.getTextWidget();
+        styled.setBlockSelection(true);
+        final int startOfs = selection.getFrom().getViewOffset();
+        final int endOfs = selection.getTo().getViewOffset();
+        if (endOfs == textViewer.getDocument().getLength()) {
+            // Don't change selection if the caret is after the last character.
+            return;
+        }
+        final Rectangle fromRect = styled.getTextBounds(startOfs, startOfs);
+        Rectangle blockRect;
+        if (stickToEOL) {
+            if (startOfs <= endOfs) {
+                //
+                // endOfs is looking at the last character on the current line:
+                //
+                // startOfs -> o-------
+                //             |
+                //             +---------------------o <- endOfs
+                //
+                blockRect = styled.getTextBounds(startOfs, endOfs);
+            } else {
+                //
+                // three "points" are needed to be considered to determine the
+                // encompassing rectangle:
+                //
+                //             +-------o <-endOfs
+                //             |
+                // startOfs -> o---------------------o <- startEOL
+                //
+                try {
+                    final IRegion startLine = document.getLineInformationOfOffset(startOfs);
+                    blockRect = styled.getTextBounds(endOfs, startLine.getOffset() + startLine.getLength());
+                    blockRect = blockRect.union(styled.getTextBounds(endOfs, startOfs));
+                } catch (BadLocationException e) {
+                    VrapperLog.error("Failed to get start line info", e);
+                    return;
+                }
+            }
+        } else {
+            final Rectangle toRect = styled.getTextBounds(endOfs, endOfs);
+            blockRect = fromRect.union(toRect);
+        }
+        blockRect.width -= fromRect.x - blockRect.x;
+        blockRect.x = fromRect.x;
+        //
+        // getTextBounds returns values relative to the top-left visible
+        // pixel, adjusting the block rectangle accordingly.
+        //
+        blockRect.x += styled.getHorizontalPixel();
+        blockRect.y += styled.getTopPixel();
+        // NOTE: setBlockSelectionBound temporary changes caret offset and
+        //       triggers incorrect sticky column recalculation.
+        caretListener.disable();
+        styled.setBlockSelectionBounds(blockRect);
+        caretListener.enable();
     }
 
     @Override
