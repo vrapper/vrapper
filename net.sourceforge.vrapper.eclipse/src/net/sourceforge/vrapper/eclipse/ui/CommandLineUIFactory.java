@@ -124,7 +124,6 @@ public class CommandLineUIFactory {
                     public void run() {
                         // Make sure any outstanding redraw calls on the parent are executed FIRST.
                         parent.update();
-                        commandLineText.setRedraw(true);
                         commandLineText.redraw();
                         // Immediately force our command line to be painted after calling redraw.
                         commandLineText.update();
@@ -142,9 +141,6 @@ public class CommandLineUIFactory {
                         parent.update();
                     }
                 });
-                // Don't trigger command line redraw until this paint listener is invoked again.
-                // This should prevent us from drawing too much artifacts.
-                commandLineText.setRedraw(false);
                 horScroll = parent.getHorizontalBar().getSelection();
                 verScroll = parent.getVerticalBar().getSelection();
             }
