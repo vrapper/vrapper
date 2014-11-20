@@ -11,6 +11,7 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.ITextViewerExtension5;
+import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.Region;
 import org.eclipse.swt.custom.StyledText;
 
@@ -174,20 +175,30 @@ public class EclipseTextContent {
         public void smartInsert(int index, String s) {
             StyledText textWidget = textViewer.getTextWidget();
             int oldIndex = textWidget.getCaretOffset();
+            Position oldposition = new Position(oldIndex);
             try {
-                textWidget.setCaretOffset(index);
-            } catch (IllegalArgumentException e) {
-                throw new VrapperPlatformException("Failed to move caret to V" + index, e);
-            }
-            textWidget.insert(s);
-            try {
-                if (oldIndex > index) {
-                    // Position got shifted due to our insert.
-                    oldIndex = oldIndex + s.length();
+                try {
+                    textViewer.getDocument().addPosition(oldposition);
+                } catch (BadLocationException e) {
+                    oldposition = null;
+                    throw new VrapperPlatformException("Caret is at invalid pos V" + index, e);
                 }
-                textWidget.setCaretOffset(oldIndex);
-            } catch (IllegalArgumentException e) {
-                throw new VrapperPlatformException("Failed to move caret to V" + oldIndex, e);
+                try {
+                    textWidget.setCaretOffset(index);
+                } catch (IllegalArgumentException e) {
+                    throw new VrapperPlatformException("Failed to move caret to V" + index, e);
+                }
+                textWidget.insert(s);
+                try {
+                    // Old position is automatically updated by JFace.
+                    textWidget.setCaretOffset(oldposition.offset);
+                } catch (IllegalArgumentException e) {
+                    throw new VrapperPlatformException("Failed to move caret to V" + oldIndex, e);
+                }
+            } finally {
+                if (oldposition != null) {
+                    textViewer.getDocument().removePosition(oldposition);
+                }
             }
         }
 
