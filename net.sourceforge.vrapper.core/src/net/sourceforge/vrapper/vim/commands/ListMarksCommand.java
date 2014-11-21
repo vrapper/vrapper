@@ -38,9 +38,7 @@ public class ListMarksCommand extends AbstractMessagesCommand {
         List<String> names;
         if(toDisplay.length() > 0) {
             toDisplay = toDisplay.replaceAll(" ", "");
-            names = Arrays.asList(toDisplay.split(""));
-            //when splitting by "", the first item is always ""
-            names = names.subList(1, names.size());
+            names = Arrays.asList(toDisplay.split("(?!^)"));
         }
         else {
             Set<String> allNames = cursor.getAllMarks();
