@@ -120,6 +120,8 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
         super.enterMode(hints);
         if (onEnterCommand != null) {
             editorAdaptor.changeModeSafely(NormalMode.NAME, onEnterCommand);
+            // Command is executed, clear selection now.
+            editorAdaptor.setSelection((Selection)null);
         } else {
             fixCaret();
         }
