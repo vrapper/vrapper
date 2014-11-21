@@ -260,29 +260,32 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
             setBlockSelection(newSel);
         } else {
             IDocument document = textViewer.getDocument();
-            final int from = newSel.getStart().getModelOffset();
+            int from = newSel.getStart().getModelOffset();
+            int to = newSel.getEnd().getModelOffset();
             int length = !newSel.isReversed() ? newSel.getModelLength() : -newSel.getModelLength();
-            // linewise selection includes final newline, this means the cursor
-            // is placed in the line below the selection by eclipse. this
-            // corrects that behaviour
+            int documentLength = document.getLength();
+            IRegion lastLineInfo;
+            try {
+                lastLineInfo = document.getLineInformationOfOffset(to);
+            } catch (BadLocationException e) { // Shouldn't really happen...
+                selectionInProgress = false;
+                throw new VrapperPlatformException("Failed to get line info for last line of sel, "
+                        + "M " + to, e);
+            }
+            // Linewise selection includes final newline and so Eclipse will put the caret in column
+            // 0 of the next line. We want a blinking caret at the end of the previous line instead,
+            // simply shrink the selection to the previous line.
             if (ContentType.LINES.equals(contentType)) {
-                int endOffset = newSel.getEnd().getModelOffset();
-                int documentLength = document.getLength();
-                if (endOffset == documentLength) {
-                    try {
-                        int lastLineLength = document.getLineInformationOfOffset(endOffset).getLength();
-                        // Only fix if the last line is empty or we won't select the last character.
-                        if (lastLineLength == 0) {
-                            length--;
-                        }
-                    } catch (BadLocationException e) { // Shouldn't really happen...
-                        VrapperLog.error("Failed to get last line info", e);
-                    }
-                // Only fix if selection isn't reversed, reverse selection ends at column 0.
-                } else if (!newSel.isReversed()) {
-                    length--;
+                // Special cases:
+                // - Last line of document may contain characters, don't alter selection
+                // - A reversed selection needs to show its caret in column 0, don't alter selection
+                if ((to == documentLength && lastLineInfo.getLength() == 0)
+                        || ! newSel.isReversed()) {
+                    to = safeAddModelOffset(to, -1, true);
+                    length = to - from;
                 }
             }
+            selection = newSel;
             //Only the caller can set the sticky column, e.g. in the case of an up/down motion.
             caretListener.disable();
             textViewer.getTextWidget().setBlockSelection(false);
