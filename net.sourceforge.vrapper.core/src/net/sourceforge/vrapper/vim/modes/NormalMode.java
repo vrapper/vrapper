@@ -25,6 +25,7 @@ import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.AsciiCommand;
 import net.sourceforge.vrapper.vim.commands.BlockwiseVisualMotionCommand;
@@ -59,6 +60,7 @@ import net.sourceforge.vrapper.vim.commands.RepeatLastSubstitutionCommand;
 import net.sourceforge.vrapper.vim.commands.ReplaceCommand;
 import net.sourceforge.vrapper.vim.commands.RestoreSelectionCommand;
 import net.sourceforge.vrapper.vim.commands.SaveCommand;
+import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SetMarkCommand;
 import net.sourceforge.vrapper.vim.commands.SwapCaseCommand;
 import net.sourceforge.vrapper.vim.commands.TextObject;
@@ -261,8 +263,18 @@ public class NormalMode extends CommandBasedMode {
         @Override
         public void execute(EditorAdaptor editorAdaptor)
                 throws CommandExecutionException {
-            // Fix selection for inclusive mode in VisualMotionCommand code.
+            CursorService cursorService = editorAdaptor.getCursorService();
+            int docLen = editorAdaptor.getModelContent().getTextLength();
+            // caret must be "on" the last character of the file, not behind it.
+            // The case for an empty file is handled in shiftPositionForModelOffset()
+            Position pos = cursorService.getPosition();
+            String selectionOptValue = editorAdaptor.getConfiguration().get(Options.SELECTION);
+            if (pos.getModelOffset() == docLen && Selection.INCLUSIVE.equals(selectionOptValue)) {
+                pos = cursorService.shiftPositionForModelOffset(pos.getModelOffset(), -1, true);
+                cursorService.setPosition(pos, StickyColumnPolicy.NEVER);
+            }
             new VisualMotionCommand(DummyMotion.INSTANCE).execute(editorAdaptor);
+            ((VisualMode)editorAdaptor.getMode(VisualMode.NAME)).fixCaret();
         }
     }
 
@@ -271,6 +283,15 @@ public class NormalMode extends CommandBasedMode {
         @Override
         public void execute(EditorAdaptor editorAdaptor)
                 throws CommandExecutionException {
+            CursorService cursorService = editorAdaptor.getCursorService();
+            int docLen = editorAdaptor.getModelContent().getTextLength();
+            // caret must be "on" the last character of the file, not behind it.
+            // The case for an empty file is handled in shiftPositionForModelOffset()
+            Position pos = cursorService.getPosition();
+            if (pos.getModelOffset() == docLen) {
+                pos = cursorService.shiftPositionForModelOffset(pos.getModelOffset(), -1, true);
+                cursorService.setPosition(pos, StickyColumnPolicy.NEVER);
+            }
             new LinewiseVisualMotionCommand(DummyMotion.INSTANCE).execute(editorAdaptor);
         }
     }

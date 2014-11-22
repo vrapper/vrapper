@@ -1,5 +1,7 @@
 package net.sourceforge.vrapper.vim.commands;
 
+import net.sourceforge.vrapper.log.VrapperLog;
+import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
@@ -26,14 +28,26 @@ public class VisualMotionCommand extends AbstractVisualMotionCommand {
 	    BorderPolicy motionBorderPolicy = getMotion(motionCount).borderPolicy();
 	    Selection newSelection;
 
-	    if (editorAdaptor.getConfiguration().get(Options.SELECTION).equals(Selection.EXCLUSIVE)) {
+	    String selectionMode = editorAdaptor.getConfiguration().get(Options.SELECTION);
+	    if (Selection.EXCLUSIVE.equals(selectionMode)) {
 	        if (motionBorderPolicy == BorderPolicy.INCLUSIVE && selGrowsToRight) {
 	            newTo = VimUtils.safeAddModelOffset(editorAdaptor, newTo, 1, true);
 	        }
 	        newSelection = new SimpleSelection(from, newTo, new StartEndTextRange(from, newTo));
-	    } else {
+	    } else if (Selection.INCLUSIVE.equals(selectionMode)) {
+	        CursorService cursorService = editorAdaptor.getCursorService();
+	        int docLen = editorAdaptor.getModelContent().getTextLength();
+	        // to must be "on" the last character of the file, not behind it.
+	        // The case for an empty file is handled in shiftPositionForModelOffset()
+	        if (newTo.getModelOffset() == docLen) {
+	            newTo = cursorService.shiftPositionForModelOffset(newTo.getModelOffset(), -1, true);
+	        }
 	        newSelection = new SimpleSelection(from, newTo,
-	                StartEndTextRange.inclusive(editorAdaptor.getCursorService(), from, newTo));
+	                StartEndTextRange.inclusive(cursorService, from, newTo));
+	    } else {
+	        VrapperLog.error("Unhandled 'selection' value " + selectionMode);
+	        // Shouldn't happen?
+	        newSelection = null;
 	    }
 	    editorAdaptor.setSelection(newSelection);
 	}
