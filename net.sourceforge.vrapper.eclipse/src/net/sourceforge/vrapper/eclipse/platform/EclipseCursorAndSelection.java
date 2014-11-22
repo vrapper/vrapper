@@ -260,17 +260,17 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
             setBlockSelection(newSel);
         } else {
             IDocument document = textViewer.getDocument();
-            int from = newSel.getStart().getModelOffset();
-            int to = newSel.getEnd().getModelOffset();
+            int start = newSel.getStart().getModelOffset();
+            int end = newSel.getEnd().getModelOffset();
             int length = !newSel.isReversed() ? newSel.getModelLength() : -newSel.getModelLength();
             int documentLength = document.getLength();
             IRegion lastLineInfo;
             try {
-                lastLineInfo = document.getLineInformationOfOffset(to);
+                lastLineInfo = document.getLineInformationOfOffset(end);
             } catch (BadLocationException e) { // Shouldn't really happen...
                 selectionInProgress = false;
                 throw new VrapperPlatformException("Failed to get line info for last line of sel, "
-                        + "M " + to, e);
+                        + "M " + end, e);
             }
             // Linewise selection includes final newline and so Eclipse will put the caret in column
             // 0 of the next line. We want a blinking caret at the end of the previous line instead,
@@ -279,17 +279,25 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
                 // Special cases:
                 // - Last line of document may contain characters, don't alter selection
                 // - A reversed selection needs to show its caret in column 0, don't alter selection
-                if ((to == documentLength && lastLineInfo.getLength() == 0)
+                if ((end == documentLength && lastLineInfo.getLength() == 0)
                         || ! newSel.isReversed()) {
-                    to = safeAddModelOffset(to, -1, true);
-                    length = to - from;
+                    end = safeAddModelOffset(end, -1, true);
+                    length = end - start;
+                }
+            } else if (ContentType.TEXT.equals(contentType)) {
+                boolean isInclusive = Selection.INCLUSIVE.equals(configuration.get(Options.SELECTION));
+                if (isInclusive && ! newSel.isReversed() && start != end && lastLineInfo.getOffset() == end) {
+                    // [NOTE] The caret must be updated as well, this is handled in 
+                    // VisualMode.fixCaret()
+                    end = safeAddModelOffset(end, -1, true);
+                    length = end - start;
                 }
             }
             selection = newSel;
             //Only the caller can set the sticky column, e.g. in the case of an up/down motion.
             caretListener.disable();
             textViewer.getTextWidget().setBlockSelection(false);
-            textViewer.setSelectedRange(from, length);
+            textViewer.setSelectedRange(start, length);
             caretListener.enable();
         }
         selectionInProgress = false;

@@ -10,7 +10,9 @@ import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.vim.CountingState;
 import net.sourceforge.vrapper.keymap.vim.VisualMotionState;
 import net.sourceforge.vrapper.keymap.vim.VisualMotionState.Motion2VMC;
+import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.CaretType;
+import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
@@ -52,9 +54,18 @@ public class VisualMode extends AbstractVisualMode {
         String selectionType = editorAdaptor.getConfiguration().get(Options.SELECTION);
         CaretType type;
         if (Selection.INCLUSIVE.equals(selectionType)) {
-            type = CaretType.LEFT_SHIFTED_RECTANGULAR;
             if (editorAdaptor.getSelection().isReversed()) {
                 type = CaretType.RECTANGULAR;
+            } else {
+                Selection selection = editorAdaptor.getSelection();
+                int to = selection.getTo().getModelOffset();
+                TextContent modelContent = editorAdaptor.getModelContent();
+                LineInformation li = modelContent.getLineInformationOfOffset(to);
+                if (to == li.getEndOffset() && to < modelContent.getTextLength()) {
+                    type = CaretType.RECTANGULAR;
+                } else {
+                    type = CaretType.LEFT_SHIFTED_RECTANGULAR;
+                }
             }
         } else if (Selection.EXCLUSIVE.equals(selectionType)) {
             type = CaretType.VERTICAL_BAR;
