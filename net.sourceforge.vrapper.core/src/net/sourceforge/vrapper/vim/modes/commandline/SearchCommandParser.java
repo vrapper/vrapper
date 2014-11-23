@@ -11,6 +11,8 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.Command;
+import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
+import net.sourceforge.vrapper.vim.modes.ExecuteCommandHint;
 
 /**
  * Mode for input of search parameters (keyword and offset).
@@ -39,7 +41,21 @@ public class SearchCommandParser extends AbstractCommandParser {
         editor.getSearchAndReplaceService().removeHighlighting();
         return commandToExecute;
     }
-    
+
+    @Override
+    protected void handleExit(Command parsedCommand, boolean forcedExit) {
+        if (forcedExit) {
+            editor.changeModeSafely(editor.getLastModeName(),
+                    // Keep selection if returning to one of the visual modes
+                    AbstractVisualMode.KEEP_SELECTION_HINT);
+        } else {
+            editor.changeModeSafely(editor.getLastModeName(),
+                    new ExecuteCommandHint.OnEnter(parsedCommand),
+                    // Keep selection if returning to one of the visual modes
+                    AbstractVisualMode.KEEP_SELECTION_HINT);
+        }
+    }
+
     /** Create a {@link Search} instance based on the given parameters and configuration.*/
     public static Search createSearch(EditorAdaptor editor, String keyword, boolean backward,
             boolean wholeWord, SearchOffset offset) {

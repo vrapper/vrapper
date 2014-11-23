@@ -17,7 +17,6 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
-import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
 import net.sourceforge.vrapper.vim.modes.ExecuteCommandHint;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
@@ -193,19 +192,7 @@ public abstract class AbstractCommandParser {
             pasteRegister = false;
             commandLine.setMode(CommandLineMode.DEFAULT);
         } else if (e.equals(KEY_RETURN) || e.equals(KEY_ESCAPE)) {
-            //Pressing return on an empty command line quits this mode rather than execute a command
-            if (c == null && isFromVisual) {
-                // Reset selection.
-                editor.changeModeSafely(NormalMode.NAME,
-                        new ExecuteCommandHint.OnEnter(LeaveVisualModeCommand.INSTANCE));
-            } else if (c == null) {
-                editor.changeModeSafely(NormalMode.NAME);
-            } else {
-                editor.changeModeSafely(editor.getLastModeName(), new ExecuteCommandHint.OnEnter(c),
-                        // If entered from visual mode, don't remove selection in case the 
-                        // command c expects it.
-                        AbstractVisualMode.KEEP_SELECTION_HINT);
-            }
+            handleExit(c, e.equals(KEY_ESCAPE));
         } else {
             if ( ! pasteRegister) {
                 commandLine.setMode(CommandLineMode.DEFAULT);
@@ -270,6 +257,29 @@ public abstract class AbstractCommandParser {
 	 * @return a command to be executed in normal mode.
 	 */
     public abstract Command parseAndExecute(String first, String command);
+
+    /**
+     * Runs all exit logic, like switching to normal mode and saving the selection.
+     * Implementors may override this function to do custom exit logic.
+     * @param parsedCommand If <code>forcedExit</code> is false, this parameter contains the result
+     *     of the {@link #parseAndExecute(String, String)} method. If it is true, this parameter is
+     *     null.
+     * @param forcedExit whether this mode was quit by pressing <code>&lt;Escape&gt;</code>.
+     */
+    protected void handleExit(Command parsedCommand, boolean forcedExit) {
+        //Pressing return on an empty command line quits most modes rather than execute a command
+        if (parsedCommand == null && isFromVisual) {
+            // Fix caret position, clear selection.
+            editor.changeModeSafely(NormalMode.NAME,
+                    new ExecuteCommandHint.OnEnter(LeaveVisualModeCommand.INSTANCE));
+        } else if (parsedCommand == null) {
+            editor.changeModeSafely(NormalMode.NAME);
+        } else {
+            editor.changeModeSafely(NormalMode.NAME, new ExecuteCommandHint.OnEnter(parsedCommand));
+            // Only do this AFTER changing the mode, Eclipse commands might still use the selection!
+            editor.setSelection(null);
+        }
+    }
 
     private Command parseAndExecute() {
         String first = commandLine.getPrompt();
