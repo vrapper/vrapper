@@ -60,7 +60,7 @@ public class LinewiseVisualMode extends AbstractVisualMode {
     protected State<Command> buildInitialState() {
 		Command exitSearchModeCommand = seq(
 				new ChangeModeCommand(LinewiseVisualMode.NAME, LinewiseVisualMode.RECALL_SELECTION_HINT),
-				new LinewiseVisualMotionCommand(SearchResultMotion.FORWARD));
+				new LinewiseVisualMotionCommand(SearchResultMotion.REPEAT));
         State<Command> linewiseSpecific = state(
                 leafBind('o', (Command) SwapLinewiseSelectionSidesCommand.INSTANCE),
                 leafBind('v', (Command) new ChangeModeCommand(VisualMode.NAME, FIX_SELECTION_HINT)),

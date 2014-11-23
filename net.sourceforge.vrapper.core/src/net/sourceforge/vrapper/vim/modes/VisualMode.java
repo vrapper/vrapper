@@ -90,7 +90,7 @@ public class VisualMode extends AbstractVisualMode {
     protected State<Command> buildInitialState() {
 		Command exitSearchModeCommand = seq(
 				new ChangeModeCommand(VisualMode.NAME, VisualMode.RECALL_SELECTION_HINT),
-				new VisualMotionCommand(SearchResultMotion.FORWARD));
+				new VisualMotionCommand(SearchResultMotion.REPEAT));
 		State<Command> characterwiseSpecific = state(
                 leafBind('o', (Command) SwapSelectionSidesCommand.INSTANCE),
                 leafBind('V', (Command) new ChangeModeCommand(LinewiseVisualMode.NAME, FIX_SELECTION_HINT)),

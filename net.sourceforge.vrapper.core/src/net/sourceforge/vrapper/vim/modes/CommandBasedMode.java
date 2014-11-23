@@ -108,8 +108,8 @@ public abstract class CommandBasedMode extends AbstractMode {
             final Motion moveDownLessOneNonWhitespace = MoveUpDownNonWhitespace.MOVE_DOWN_LESS_ONE;
             final Motion moveUpNonWhitespace = MoveUpDownNonWhitespace.MOVE_UP;
             final Motion moveToColumn = MoveToColumn.INSTANCE;
-            final Motion findNext = SearchResultMotion.FORWARD;
-            final Motion findPrevious = SearchResultMotion.BACKWARD;
+            final Motion findNext = SearchResultMotion.REPEAT;
+            final Motion findPrevious = SearchResultMotion.REPEAT_REVERSED;
             final Motion findWordNext = WordSearchMotion.FORWARD;
             final Motion findWordPrevious = WordSearchMotion.BACKWARD;
             final Motion findWordForwardLenient = WordSearchMotion.LENIENT_FORWARD;

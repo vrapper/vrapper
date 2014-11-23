@@ -370,8 +370,8 @@ public class ConstructorWrappers {
     @SuppressWarnings("unchecked")
     public static State<Command> operatorCmds(char key, TextOperation command, State<TextObject> textObjects) {
         State<Command> operatorCmds = union(
-                leafState('/', (Command) new ChangeToSearchModeCommand(false, new PerformOperationOnSearchResultCommand(command, SearchResultMotion.FORWARD))),
-                leafState('?', (Command) new ChangeToSearchModeCommand(true, new PerformOperationOnSearchResultCommand(command, SearchResultMotion.FORWARD))),
+                leafState('/', (Command) new ChangeToSearchModeCommand(false, new PerformOperationOnSearchResultCommand(command, SearchResultMotion.REPEAT))),
+                leafState('?', (Command) new ChangeToSearchModeCommand(true, new PerformOperationOnSearchResultCommand(command, SearchResultMotion.REPEAT))),
                 leafState(':', (Command) new ChangeModeCommand(CommandLineMode.NAME)),
                 new OperatorCommandState(command, operatorTextObjects(key, textObjects))
                 );
