@@ -30,6 +30,7 @@ import net.sourceforge.vrapper.vim.commands.motions.FindMotion;
 import net.sourceforge.vrapper.vim.commands.motions.GoToEditLocation;
 import net.sourceforge.vrapper.vim.commands.motions.GoToLineMotion;
 import net.sourceforge.vrapper.vim.commands.motions.GoToMarkMotion;
+import net.sourceforge.vrapper.vim.commands.motions.LastCharacterMotion;
 import net.sourceforge.vrapper.vim.commands.motions.LineEndMotion;
 import net.sourceforge.vrapper.vim.commands.motions.LineStartMotion;
 import net.sourceforge.vrapper.vim.commands.motions.MethodDeclarationMotion;
@@ -132,6 +133,7 @@ public abstract class CommandBasedMode extends AbstractMode {
                                                                  // INCLUSIVE;
                                                                  // bug in Vim
                                                                  // documentation
+            final Motion lastCharacter = LastCharacterMotion.INSTANCE;
             final Motion percentMotion = PercentMotion.INSTANCE;
             final Motion matchOpenParen = ParenthesesMove.MATCH_OPEN_PAREN;
             final Motion matchCloseParen = ParenthesesMove.MATCH_CLOSE_PAREN;
@@ -237,6 +239,7 @@ public abstract class CommandBasedMode extends AbstractMode {
                             leafBind('g', GoToLineMotion.FIRST_LINE),
                             leafBind('*', findWordForwardLenient),
                             leafBind('#', findWordBackwardLenient),
+                            leafBind('_', lastCharacter),
                             leafBind(';', GoToEditLocation.BACKWARDS),
                             leafBind(',', GoToEditLocation.FORWARD),
                             leafBind('e', wordEndLeft),
