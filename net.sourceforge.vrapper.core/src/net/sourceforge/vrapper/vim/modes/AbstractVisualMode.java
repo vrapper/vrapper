@@ -119,10 +119,9 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
         }
         super.enterMode(hints);
         if (onEnterCommand != null) {
-            editorAdaptor.changeModeSafely(NormalMode.NAME, onEnterCommand);
-        } else {
-            fixCaret();
+            super.executeCommand(onEnterCommand.getCommand());
         }
+        fixCaret();
     }
 
     private Selection updateSelection(Selection previousSel, Position start, Position end) {

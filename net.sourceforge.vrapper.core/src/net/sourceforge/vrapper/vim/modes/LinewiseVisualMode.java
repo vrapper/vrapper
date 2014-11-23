@@ -3,7 +3,6 @@ package net.sourceforge.vrapper.vim.modes;
 import static net.sourceforge.vrapper.keymap.StateUtils.union;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
-import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.vim.VisualMotionState;
 import net.sourceforge.vrapper.keymap.vim.VisualMotionState.Motion2VMC;
@@ -58,15 +57,13 @@ public class LinewiseVisualMode extends AbstractVisualMode {
     @Override
     @SuppressWarnings("unchecked")
     protected State<Command> buildInitialState() {
-		Command exitSearchModeCommand = seq(
-				new ChangeModeCommand(LinewiseVisualMode.NAME, LinewiseVisualMode.RECALL_SELECTION_HINT),
-				new LinewiseVisualMotionCommand(SearchResultMotion.REPEAT));
+        Command doSearchCommand = new LinewiseVisualMotionCommand(SearchResultMotion.REPEAT);
         State<Command> linewiseSpecific = state(
                 leafBind('o', (Command) SwapLinewiseSelectionSidesCommand.INSTANCE),
                 leafBind('v', (Command) new ChangeModeCommand(VisualMode.NAME, FIX_SELECTION_HINT)),
                 leafBind('V', (Command) LeaveVisualModeCommand.INSTANCE),
-                leafBind('/', (Command) new ChangeToSearchModeCommand(false, exitSearchModeCommand, true)),
-                leafBind('?', (Command) new ChangeToSearchModeCommand(true, exitSearchModeCommand, true))
+                leafBind('/', (Command) new ChangeToSearchModeCommand(false, doSearchCommand, true)),
+                leafBind('?', (Command) new ChangeToSearchModeCommand(true, doSearchCommand, true))
                 );
         return union(getPlatformSpecificState(NAME), linewiseSpecific, super.buildInitialState());
     }

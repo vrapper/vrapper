@@ -5,7 +5,6 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionS
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafState;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
-import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.vim.CountingState;
 import net.sourceforge.vrapper.keymap.vim.VisualMotionState;
@@ -88,18 +87,16 @@ public class VisualMode extends AbstractVisualMode {
     @Override
     @SuppressWarnings("unchecked")
     protected State<Command> buildInitialState() {
-		Command exitSearchModeCommand = seq(
-				new ChangeModeCommand(VisualMode.NAME, VisualMode.RECALL_SELECTION_HINT),
-				new VisualMotionCommand(SearchResultMotion.REPEAT));
-		State<Command> characterwiseSpecific = state(
+        Command doSearchCommand = new VisualMotionCommand(SearchResultMotion.REPEAT);
+        State<Command> characterwiseSpecific = state(
                 leafBind('o', (Command) SwapSelectionSidesCommand.INSTANCE),
                 leafBind('V', (Command) new ChangeModeCommand(LinewiseVisualMode.NAME, FIX_SELECTION_HINT)),
                 leafBind('v', (Command) LeaveVisualModeCommand.INSTANCE)
                 );
-		State<Command> searchSpecific = CountingState.wrap(state(
-                leafBind('/',  (Command) new ChangeToSearchModeCommand(false, exitSearchModeCommand, true)),
-                leafBind('?',  (Command) new ChangeToSearchModeCommand(true, exitSearchModeCommand, true))
-				));
+        State<Command> searchSpecific = CountingState.wrap(state(
+                leafBind('/',  (Command) new ChangeToSearchModeCommand(false, doSearchCommand, true)),
+                leafBind('?',  (Command) new ChangeToSearchModeCommand(true, doSearchCommand, true))
+                ));
         return union(getPlatformSpecificState(NAME), characterwiseSpecific, searchSpecific, super.buildInitialState());
     }
 

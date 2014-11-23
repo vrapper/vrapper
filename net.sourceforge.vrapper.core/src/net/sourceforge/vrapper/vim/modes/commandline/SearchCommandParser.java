@@ -46,13 +46,13 @@ public class SearchCommandParser extends AbstractCommandParser {
     protected void handleExit(Command parsedCommand, boolean forcedExit) {
         if (forcedExit) {
             editor.changeModeSafely(editor.getLastModeName(),
-                    // Keep selection if returning to one of the visual modes
-                    AbstractVisualMode.KEEP_SELECTION_HINT);
+                    // Recall selection if returning to one of the visual modes
+                    AbstractVisualMode.RECALL_SELECTION_HINT);
         } else {
             editor.changeModeSafely(editor.getLastModeName(),
                     new ExecuteCommandHint.OnEnter(parsedCommand),
-                    // Keep selection if returning to one of the visual modes
-                    AbstractVisualMode.KEEP_SELECTION_HINT);
+                    // Recall selection if returning to one of the visual modes
+                    AbstractVisualMode.RECALL_SELECTION_HINT);
         }
     }
 
