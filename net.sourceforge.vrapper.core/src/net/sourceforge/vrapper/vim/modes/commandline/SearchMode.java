@@ -2,6 +2,7 @@ package net.sourceforge.vrapper.vim.modes.commandline;
 
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.platform.Configuration.Option;
+import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.SearchAndReplaceService;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Search;
@@ -121,7 +122,10 @@ public class SearchMode extends AbstractCommandLineMode {
     private void doIncSearch() {
         String keyword = searchParser.getKeyWord();
         Search s = SearchCommandParser.createSearch(editorAdaptor, keyword, !forward, false, SearchOffset.NONE);
-        SearchResult res = VimUtils.wrapAroundSearch(editorAdaptor, s, startPos);
+        CursorService cursorService = editorAdaptor.getCursorService();
+        int fixedPos = startPos.getModelOffset() + (forward ? 1 : -1);
+        Position startSearchPos = cursorService.newPositionForModelOffset(fixedPos, startPos, true);
+        SearchResult res = VimUtils.wrapAroundSearch(editorAdaptor, s, startSearchPos);
         if (res.isFound()) {
             SearchAndReplaceService sars = editorAdaptor.getSearchAndReplaceService();
             sars.incSearchhighlight(res.getStart(), res.getModelLength());
