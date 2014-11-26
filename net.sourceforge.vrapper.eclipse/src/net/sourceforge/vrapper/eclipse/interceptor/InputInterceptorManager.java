@@ -56,11 +56,9 @@ public class InputInterceptorManager implements IPartListener2 {
 
     public void interceptWorkbenchPart(IWorkbenchPart part, Map<IWorkbenchPart, ?> parentEditors) {
         if (part == null) {
-            //VrapperLog.error("WTF: null part?!?");
             return;
         }
         parentEditors.put(part, null);
-//        VrapperLog.info(String.format("intercepting %s (%s)", part.getTitle(), part.getClass().getName()));
         if (part instanceof AbstractTextEditor) {
             AbstractTextEditor editor = (AbstractTextEditor) part;
             interceptAbstractTextEditor(editor);
@@ -74,18 +72,15 @@ public class InputInterceptorManager implements IPartListener2 {
                 interceptWorkbenchPart(subPart, parentEditors);
             }
         } else {
-//            VrapperLog.info("other kind of part opened, trying extensions");
             IExtensionRegistry registry = Platform.getExtensionRegistry();
             IConfigurationElement[] configurationElements = registry
                     .getConfigurationElementsFor("net.sourceforge.vrapper.eclipse.extractor");
             for (IConfigurationElement element: configurationElements) {
-//                VrapperLog.info("trying to use " + element.getAttribute("name"));
                 EditorExtractor extractor = (EditorExtractor) Utils
                         .createGizmoForElementConditionally(
                                 part, "part-must-subclass",
                                 element, "extractor-class");
                 if (extractor != null) {
-//                    VrapperLog.info("actually using it");
                     for (AbstractTextEditor ate: extractor.extractATEs(part))
                         interceptAbstractTextEditor(ate);
                 }
@@ -216,35 +211,35 @@ public class InputInterceptorManager implements IPartListener2 {
     }
 
     public void partActivated(IWorkbenchPart part, Map<IWorkbenchPart, ?> parentEditors) {
-    	InputInterceptor input = interceptors.get(part);
-    	if(input == null) {
-    		try {
-    			if (part instanceof MultiPageEditorPart) {
-    				MultiPageEditorPart mPart = (MultiPageEditorPart) part;
-    				int pageCount = ((Integer) METHOD_GET_PAGE_COUNT.invoke(part)).intValue();
-    				for (int i = 0; i < pageCount; i++) {
-    					IEditorPart subPart = (IEditorPart) METHOD_GET_EDITOR.invoke(mPart, i);
-    					partActivated(subPart, parentEditors);
-    				}
-    			}
-    			else if (part instanceof MultiEditor) {
-    				for (IEditorPart subPart : ((MultiEditor) part).getInnerEditors()) {
-    					partActivated(subPart, parentEditors);
-    				}
-    			}
-    		}
-    		catch (Exception exception) {
-    			VrapperLog.error("Exception activating MultiPageEditorPart", exception);
-    		}
-    	}
-    	else {
-    		//changing tab back to existing editor, should we return to NormalMode?
-    		EditorAdaptor editor = input.getEditorAdaptor();
-    		if(editor.getConfiguration().get(Options.START_NORMAL_MODE)) {
-    			editor.setSelection(null);
-    			editor.changeModeSafely(NormalMode.NAME);
-    		}
-    	}
+        InputInterceptor input = interceptors.get(part);
+        if(input == null) {
+            try {
+                if (part instanceof MultiPageEditorPart) {
+                    MultiPageEditorPart mPart = (MultiPageEditorPart) part;
+                    int pageCount = ((Integer) METHOD_GET_PAGE_COUNT.invoke(part)).intValue();
+                    for (int i = 0; i < pageCount; i++) {
+                        IEditorPart subPart = (IEditorPart) METHOD_GET_EDITOR.invoke(mPart, i);
+                        partActivated(subPart, parentEditors);
+                    }
+                }
+                else if (part instanceof MultiEditor) {
+                    for (IEditorPart subPart : ((MultiEditor) part).getInnerEditors()) {
+                        partActivated(subPart, parentEditors);
+                    }
+                }
+            }
+            catch (Exception exception) {
+                VrapperLog.error("Exception activating MultiPageEditorPart", exception);
+            }
+        }
+        else {
+            //changing tab back to existing editor, should we return to NormalMode?
+            EditorAdaptor editor = input.getEditorAdaptor();
+            if(editor.getConfiguration().get(Options.START_NORMAL_MODE)) {
+                editor.setSelection(null);
+                editor.changeModeSafely(NormalMode.NAME);
+            }
+        }
     }
 
     private static Method getMultiPartEditorMethod(String name,
