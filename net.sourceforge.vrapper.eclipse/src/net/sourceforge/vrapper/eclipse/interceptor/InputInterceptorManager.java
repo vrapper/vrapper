@@ -212,6 +212,9 @@ public class InputInterceptorManager implements IPartListener2 {
 
     public void partActivated(IWorkbenchPart part, Map<IWorkbenchPart, ?> parentEditors) {
         InputInterceptor input = interceptors.get(part);
+        if (part != null) {
+            parentEditors.put(part, null);
+        }
         if(input == null) {
             try {
                 if (part instanceof MultiPageEditorPart) {
@@ -219,11 +222,17 @@ public class InputInterceptorManager implements IPartListener2 {
                     int pageCount = ((Integer) METHOD_GET_PAGE_COUNT.invoke(part)).intValue();
                     for (int i = 0; i < pageCount; i++) {
                         IEditorPart subPart = (IEditorPart) METHOD_GET_EDITOR.invoke(mPart, i);
+                        if (parentEditors.containsKey(subPart)) {
+                            continue;
+                        }
                         partActivated(subPart, parentEditors);
                     }
                 }
                 else if (part instanceof MultiEditor) {
                     for (IEditorPart subPart : ((MultiEditor) part).getInnerEditors()) {
+                        if (parentEditors.containsKey(subPart)) {
+                            continue;
+                        }
                         partActivated(subPart, parentEditors);
                     }
                 }
