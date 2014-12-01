@@ -13,7 +13,7 @@ import net.sourceforge.vrapper.vim.modes.TemporaryMode;
 
 public class LeaveVisualModeCommand extends CountIgnoringNonRepeatableCommand {
 
-    public static final LeaveVisualModeCommand INSTANCE = new LeaveVisualModeCommand();
+    public static final Command INSTANCE = new LeaveVisualModeCommand();
 
     private LeaveVisualModeCommand() { /* NOP */ }
 
