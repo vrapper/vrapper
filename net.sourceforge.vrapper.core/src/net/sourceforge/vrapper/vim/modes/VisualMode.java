@@ -3,6 +3,7 @@ package net.sourceforge.vrapper.vim.modes;
 import static net.sourceforge.vrapper.keymap.StateUtils.union;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionState;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafCtrlBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafState;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import net.sourceforge.vrapper.keymap.State;
@@ -91,6 +92,8 @@ public class VisualMode extends AbstractVisualMode {
         State<Command> characterwiseSpecific = state(
                 leafBind('o', (Command) SwapSelectionSidesCommand.INSTANCE),
                 leafBind('V', (Command) new ChangeModeCommand(LinewiseVisualMode.NAME, FIX_SELECTION_HINT)),
+                leafCtrlBind('v', (Command) new ChangeModeCommand(BlockwiseVisualMode.NAME, FIX_SELECTION_HINT)),
+                leafCtrlBind('q', (Command) new ChangeModeCommand(BlockwiseVisualMode.NAME, FIX_SELECTION_HINT)),
                 leafBind('v', (Command) LeaveVisualModeCommand.INSTANCE)
                 );
         State<Command> searchSpecific = CountingState.wrap(state(

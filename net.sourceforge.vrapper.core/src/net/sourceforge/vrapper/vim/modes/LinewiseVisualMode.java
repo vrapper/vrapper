@@ -2,6 +2,7 @@ package net.sourceforge.vrapper.vim.modes;
 
 import static net.sourceforge.vrapper.keymap.StateUtils.union;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafCtrlBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.vim.VisualMotionState;
@@ -62,6 +63,8 @@ public class LinewiseVisualMode extends AbstractVisualMode {
                 leafBind('o', (Command) SwapLinewiseSelectionSidesCommand.INSTANCE),
                 leafBind('v', (Command) new ChangeModeCommand(VisualMode.NAME, FIX_SELECTION_HINT)),
                 leafBind('V', (Command) LeaveVisualModeCommand.INSTANCE),
+                leafCtrlBind('v', (Command) new ChangeModeCommand(BlockwiseVisualMode.NAME, FIX_SELECTION_HINT)),
+                leafCtrlBind('q', (Command) new ChangeModeCommand(BlockwiseVisualMode.NAME, FIX_SELECTION_HINT)),
                 leafBind('/', (Command) new ChangeToSearchModeCommand(false, doSearchCommand, true)),
                 leafBind('?', (Command) new ChangeToSearchModeCommand(true, doSearchCommand, true))
                 );

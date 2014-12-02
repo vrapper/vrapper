@@ -4,8 +4,8 @@ import static net.sourceforge.vrapper.keymap.StateUtils.union;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.changeCaret;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.convertKeyStroke;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafCtrlBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
-import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.counted;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.vim.CountingState;
@@ -29,10 +29,12 @@ import net.sourceforge.vrapper.vim.commands.BlockWiseSelection;
 import net.sourceforge.vrapper.vim.commands.BlockWiseSelection.TextBlock;
 import net.sourceforge.vrapper.vim.commands.BlockwisePasteCommand;
 import net.sourceforge.vrapper.vim.commands.BlockwiseYankCommand;
+import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeToInsertModeCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.CountAwareCommand;
+import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.commands.ReplaceCommand;
 import net.sourceforge.vrapper.vim.commands.Selection;
@@ -285,6 +287,10 @@ public class BlockwiseVisualMode extends AbstractVisualMode {
                 leafBind('A', (Command) new BlockwiseChangeToInsertModeCommand(new MotionCommand(eol), InsertModeType.APPEND)),
                 leafBind('~', swapCase),
                 leafBind('y', (Command) BlockwiseYankCommand.INSTANCE),
+                leafBind('v', (Command) new ChangeModeCommand(VisualMode.NAME, FIX_SELECTION_HINT)),
+                leafBind('V', (Command) new ChangeModeCommand(LinewiseVisualMode.NAME, FIX_SELECTION_HINT)),
+                leafCtrlBind('v', LeaveVisualModeCommand.INSTANCE),
+                leafCtrlBind('q', LeaveVisualModeCommand.INSTANCE),
                 transitionBind('r', changeCaret(CaretType.UNDERLINE),
                         convertKeyStroke(
                                 ReplaceCommand.VisualBlock.VISUALBLOCK_KEYSTROKE,
