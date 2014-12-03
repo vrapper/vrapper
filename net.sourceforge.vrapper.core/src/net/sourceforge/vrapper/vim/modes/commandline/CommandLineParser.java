@@ -144,7 +144,7 @@ public class CommandLineParser extends AbstractCommandParser {
         Evaluator editFile = new Evaluator() {
             public Object evaluate(EditorAdaptor vim, Queue<String> command) {
             	if(command.isEmpty()) {
-            		vim.getUserInterfaceService().setErrorMessage("No file name");
+            		vim.getFileService().refreshFile() ;
             		return null;
             	}
             	

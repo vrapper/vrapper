@@ -121,8 +121,12 @@ public class EclipseFileService implements FileService {
     	return true;
     }
     
+    public boolean refreshFile() {
+        return runCommand(IWorkbenchCommandConstants.FILE_REFRESH);
+    }
+    
     public boolean revertFile() {
-    	return runCommand(IWorkbenchCommandConstants.FILE_REVERT);
+        return runCommand(IWorkbenchCommandConstants.FILE_REVERT);
     }
 
     public boolean close(boolean force) {

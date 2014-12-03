@@ -16,6 +16,8 @@ public interface FileService {
 	 */
 	boolean checkModifiable();
 
+	public boolean refreshFile();
+
 	boolean revertFile();
 	
 	boolean close(boolean force);
