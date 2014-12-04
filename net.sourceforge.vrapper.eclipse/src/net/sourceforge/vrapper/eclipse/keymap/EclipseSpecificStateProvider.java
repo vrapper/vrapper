@@ -64,6 +64,8 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
         Command leaveVisual = LeaveVisualModeCommand.INSTANCE;
 
         return state(
+            leafBind('u', seq(editText("lowerCase"), leaveVisual)),
+            leafBind('U', seq(editText("upperCase"), leaveVisual)),
             transitionBind('g',
                     leafBind('U', seq(editText("upperCase"), leaveVisual)),
                     leafBind('u', seq(editText("lowerCase"), leaveVisual))));
