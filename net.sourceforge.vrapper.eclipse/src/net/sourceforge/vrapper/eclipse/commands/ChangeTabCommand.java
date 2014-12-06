@@ -40,7 +40,13 @@ public class ChangeTabCommand extends AbstractCommand {
     }
     
     public Command withCount(int count) {
-        return new ChangeTabCommand(count);
+        if (tabToRight) {
+            // gt accepts a count to jump to absolute tab number
+            return new ChangeTabCommand(count);
+        } else {
+            // gT is a different case: the count works relatively
+            return new ChangeTabCommand(-count);
+        }
     }
 
     public Command repetition() {
@@ -54,7 +60,9 @@ public class ChangeTabCommand extends AbstractCommand {
         
         int targetIndex;
         
-        if (count == NO_COUNT_GIVEN) {
+        if (count == LAST_EDITOR_INDEX) {
+            targetIndex = editorReferences.length - 1;
+        } else if (count == NO_COUNT_GIVEN || count < 0) {
             IEditorReference activeEditorRef = null;
             IEditorPart activeEditor = page.getActiveEditor();
             IEditorReference[] activeEditorDuplicates = page.findEditors(activeEditor.getEditorInput(),
@@ -73,25 +81,21 @@ public class ChangeTabCommand extends AbstractCommand {
             if (activeEditorIndex == -1) {
                 throw new CommandExecutionException("Current editor not found");
             }
-            if (tabToRight) {
+            if (count < 0) {
+                targetIndex += count;
+            } else if (tabToRight) {
                 targetIndex++;
             } else {
                 targetIndex--;
             }
-            if (targetIndex >= editorReferences.length) {
-                targetIndex = 0;
-            } else if (targetIndex < 0) {
-                targetIndex = editorReferences.length - 1;
+            // Bound editor number between -length and length
+            targetIndex %= editorReferences.length;
+            // Wrap around for negative indices
+            if (targetIndex < 0) {
+                targetIndex += editorReferences.length;
             }
-        } else if (count == LAST_EDITOR_INDEX) {
-            targetIndex = editorReferences.length - 1;
         } else {
-            if (count < 1) {
-                editorAdaptor.getUserInterfaceService().setInfoMessage(
-                        "Can't switch to tab number '" + count
-                        + "', expected a positive number.");
-                targetIndex = -1;
-            } else if (count > editorReferences.length) {
+            if (count > editorReferences.length) {
                 editorAdaptor.getUserInterfaceService().setInfoMessage(
                         "Can't switch to tab number '" + count
                         + "', only " + editorReferences.length + " tabs open.");
