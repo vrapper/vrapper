@@ -175,13 +175,17 @@
     <tr>
         <td>:set&nbsp;clipboard=&lt;name&gt;</td>
         <td>none</td>
-        <td>clipboard=autoselect</td>
-        <td><code>:set&nbsp;clipboard=unnamed</code> will use the system clipboard (also known as <code>"+</code>) for all <code>y</code> and <code>p</code> operations.<br/>
-            <code>:set&nbsp;clipboard=unnamedplus</code> like <code>unnamed</code> but on Linux it will... do something else.<br/>
-            <code>:set&nbsp;clipboard=autoselect</code> will use the standard <code>"*</code> clipboard.<br/>
-            <code>:set&nbsp;clipboard=autoselectplus</code> like <code>autoselect</code> but will also set <code>"+</code>.<br/>
-            <code>:set&nbsp;clipboard=exclude:</code> will do something...<br/>
-            </td>
+        <td>clipboard=</td>
+        <td>This setting is a multi-valued string setting. You can specify any of the following separated by a comma:
+            <ul>
+                <li><code>unnamed</code> will make Vrapper use the selection clipboard (also known as <code>"*</code>) for all <code>y</code> and <code>p</code> operations on Linux. On Windows and Mac the system clipboard (known as <code>"+</code>) will be used instead because they do not have a selection clipboard.</li>
+                <li><code>unnamedplus</code> will make Vrapper use the system clipboard (also known as <code>"+</code>) for all <code>y</code> and <code>p</code> operations.</li>
+                <li><code>autoselect</code> will copy selected text directly to the selection clipboard whenever the selection is changed inside Vrapper's visual modes. On Windows and Mac, the system clipboard will be used.</li>
+                <li><code>autoselectplus</code> will copy selected text directly to the system clipboard whenever the selection is changed inside Vrapper's visual modes.</li>
+                <li><code>exclude:</code> is a value which is only added for compatibility with Vim. It is silently ignored which means you can safely set it in any shared RC file. Vim expects some more text after the colon which is also ignored by Vrapper.</li> 
+            </ul>
+            Multiple values can be specified (e.g. <code>:set clipboard=unnamed,unnamedplus,exclude:console</code>). If so, both the system as well as the selection clipboard should get updated.
+        </td>
     </tr>
     <tr>
         <td>:set&nbsp;modifiable<br/>:set&nbsp;nomodifiable</td>
