@@ -1,4 +1,37 @@
 <div class="newsbox">
+    <div class="date">2014-12-07</div>
+    <h4>0.50.0 Released</h4>
+    
+    <p>0.50.0 has been released, continuing with our two-month release cycle. At
+    this point, I think I've been fully relegated to Project Manager status as
+    albertdev has stepped up and handled basically all development in this
+    release.  He's much better at this than I am and Vrapper is stronger for it.
+    I'll take credit for resurrecting this project when the original authors
+    abandoned it, but albertdev is the one who is able to fix the really
+    difficult defects and introduce tough new features.  Thank you albertdev for
+    your amazing work!</p>
+    
+    <p>The following changes are included in 0.50.0:</p>
+    
+    <ul>
+        <li>Added support for 'p'aste in visual block mode</li>
+        <li>Added support for "* as a separate register on Linux</li>
+        <li>Added support for the following 'clipboard' values: 'unnamedplus', 'autoselectplus', 'exclude:'</li>
+        <li>Added support for 'g_' motion</li>
+        <li>Added support for refreshing current file using ':e' with no arguments</li>
+        <li>Added support for 'u' and 'U' in visual mode</li>
+        <li>Fixed behavior of '{count}gT' to be more Vim-compliant</li>
+        <li>Fixed issue with rendering command-line while scrolling</li>
+        <li>Fixed issue with moving the cursor while in insert mode, then repeating</li>
+        <li>Fixed issue with 'S' while on an empty line with Windows line-endings</li>
+        <li>Fixed issue with eclipseaction in a vnoremap</li>
+        <li>Fixed issue with ':reg' and ':marks' in Java 8</li>
+        <li>Fixed issue with visual display of selecting a newline</li>
+        <li>Fixed issue with incremental search highlight when match is under the cursor</li>
+        <li>Fixed issue with editing certain configuration files in IBM's Rational Software Architect IDE</li>
+    </ul>
+</div>
+<div class="newsbox">
     <div class="date">2014-11-05</div>
     <h4>Updates to unstable update site</h4>
     
