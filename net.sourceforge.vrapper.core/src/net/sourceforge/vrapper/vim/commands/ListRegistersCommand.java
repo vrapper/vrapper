@@ -35,6 +35,7 @@ public class ListRegistersCommand extends AbstractMessagesCommand {
         List<String> names;
         if(toDisplay.length() > 0) {
             toDisplay = toDisplay.replaceAll(" ", "");
+            // Split into chars.
             names = Arrays.asList(toDisplay.split("(?!^)"));
         } else {
             Set<String> allNames = registers.getRegisterNames();
