@@ -40,23 +40,22 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
         commands.add("eclipseuiaction", new EclipseActionEvaluator(false, true));
         commands.add("eclipseuiaction!", new EclipseActionEvaluator(true, true));
 
-    	commands.add("ls",          dontRepeat(cmd("org.eclipse.ui.window.openEditorDropDown")));
-    	commands.add("buffers",     dontRepeat(cmd("org.eclipse.ui.window.openEditorDropDown")));
-    	commands.add("maximize",    dontRepeat(cmd("org.eclipse.ui.window.maximizePart")));
+        commands.add("files",       dontRepeat(cmd("org.eclipse.ui.window.openEditorDropDown")));
+        commands.add("maximize",    dontRepeat(cmd("org.eclipse.ui.window.maximizePart")));
 
-    	commands.add("tabnext",     (Command)ChangeTabCommand.NEXT_EDITOR);
-    	//have to define this or else 'tabn' is expanded to 'tabnew'
-    	commands.add("tabn",        (Command)ChangeTabCommand.NEXT_EDITOR);
-    	commands.add("bnext",       (Command)ChangeTabCommand.NEXT_EDITOR);
-    	commands.add("tabprevious", (Command)ChangeTabCommand.PREVIOUS_EDITOR);
-    	commands.add("bprevious",   (Command)ChangeTabCommand.PREVIOUS_EDITOR);
-    	commands.add("tabrewind",   (Command)ChangeTabCommand.FIRST_EDITOR);
-    	commands.add("tablast",     (Command)ChangeTabCommand.LAST_EDITOR);
+        commands.add("tabnext",     (Command)ChangeTabCommand.NEXT_EDITOR);
+        //have to define this or else 'tabn' is expanded to 'tabnew'
+        commands.add("tabn",        (Command)ChangeTabCommand.NEXT_EDITOR);
+        commands.add("bnext",       (Command)ChangeTabCommand.NEXT_EDITOR);
+        commands.add("tabprevious", (Command)ChangeTabCommand.PREVIOUS_EDITOR);
+        commands.add("bprevious",   (Command)ChangeTabCommand.PREVIOUS_EDITOR);
+        commands.add("tabrewind",   (Command)ChangeTabCommand.FIRST_EDITOR);
+        commands.add("tablast",     (Command)ChangeTabCommand.LAST_EDITOR);
 
-    	// Calls New Wizard dialogue
-    	commands.add("tabedit",     (Command)TabNewCommand.NEW_EDITOR);
-    	commands.add("tabnew",      (Command)TabNewCommand.NEW_EDITOR);
-    	commands.add("tabs",        (Command)ListTabsCommand.INSTANCE);
+        // Calls New Wizard dialogue
+        commands.add("tabedit",     (Command)TabNewCommand.NEW_EDITOR);
+        commands.add("tabnew",      (Command)TabNewCommand.NEW_EDITOR);
+        commands.add("tabs",        (Command)ListTabsCommand.INSTANCE);
     }
 
     @Override

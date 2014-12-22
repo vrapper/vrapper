@@ -26,6 +26,7 @@ import net.sourceforge.vrapper.vim.commands.EditFileCommand;
 import net.sourceforge.vrapper.vim.commands.ExCommandOperation;
 import net.sourceforge.vrapper.vim.commands.FindFileCommand;
 import net.sourceforge.vrapper.vim.commands.LineRangeOperationCommand;
+import net.sourceforge.vrapper.vim.commands.ListBuffersCommand;
 import net.sourceforge.vrapper.vim.commands.ListMarksCommand;
 import net.sourceforge.vrapper.vim.commands.ListRegistersCommand;
 import net.sourceforge.vrapper.vim.commands.ListUserCommandsCommand;
@@ -443,12 +444,14 @@ public class CommandLineParser extends AbstractCommandParser {
         mapping.add("cd", chDir);
         mapping.add("sort", sort);
         mapping.add("retab", retab);
-    	mapping.add("ascii", ascii);
-    	mapping.add("normal", normal);
-    	mapping.add("startinsert", startInsert);
-    	mapping.add("registers", registers);
-    	mapping.add("display", registers);
-    	mapping.add("marks", marks);
+        mapping.add("ascii", ascii);
+        mapping.add("normal", normal);
+        mapping.add("startinsert", startInsert);
+        mapping.add("registers", registers);
+        mapping.add("display", registers);
+        mapping.add("marks", marks);
+        mapping.add("ls", new CommandWrapper(ListBuffersCommand.INSTANCE));
+        mapping.add("buffers", new CommandWrapper(ListBuffersCommand.INSTANCE));
         return mapping;
     }
 
