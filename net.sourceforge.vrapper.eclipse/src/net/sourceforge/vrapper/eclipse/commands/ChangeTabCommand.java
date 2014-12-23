@@ -96,12 +96,10 @@ public class ChangeTabCommand extends AbstractCommand {
             }
         } else {
             if (count > editorReferences.length) {
-                editorAdaptor.getUserInterfaceService().setInfoMessage(
-                        "Can't switch to tab number '" + count
+                throw new CommandExecutionException("Can't switch to tab number '" + count
                         + "', only " + editorReferences.length + " tabs open.");
-                targetIndex = -1;
             }
-           targetIndex = count - 1; 
+            targetIndex = count - 1; 
         }
         
         if (targetIndex >= 0) {
