@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.regex.Matcher;
 
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.platform.Configuration.Option;
@@ -43,6 +44,7 @@ import net.sourceforge.vrapper.vim.commands.SetLocalOptionCommand;
 import net.sourceforge.vrapper.vim.commands.SetOptionCommand;
 import net.sourceforge.vrapper.vim.commands.SortOperation;
 import net.sourceforge.vrapper.vim.commands.SubstitutionOperation;
+import net.sourceforge.vrapper.vim.commands.SwitchBufferCommand;
 import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
 import net.sourceforge.vrapper.vim.commands.UndoCommand;
 import net.sourceforge.vrapper.vim.commands.VimCommandSequence;
@@ -728,7 +730,12 @@ public class CommandLineParser extends AbstractCommandParser {
         		tokens.add(1, "!");
         	}
         }
-        
+
+        Command switchBuffer = parseSwitchBufferCommand(tokens);
+        if (switchBuffer != null) {
+            return switchBuffer;
+        }
+
         //see if a command is defined for the first token
         if(platformCommands != null && platformCommands.contains(tokens.peek())) {
             return new ExCommandEvaluator(platformCommands, tokens);
@@ -778,7 +785,50 @@ public class CommandLineParser extends AbstractCommandParser {
     	//not a substitution
     	return null;
     }
-    
+
+    /**
+     * Parses the :b[uffer] command more or less like Vim would do. Vim accepts anything from
+     * <code>b</code> to <code>buffer</code> as a buffer switch command, and it is equally liberal
+     * with spaces after the command. For example, <code>:b1</code> or <code>:bu#</code> are just as
+     * valid as <code>:b 1</code> or <code>:buffer #</code>.
+     */
+    private Command parseSwitchBufferCommand(LinkedList<String> originalTokens) {
+        LinkedList<String> tokens = new LinkedList<String>(originalTokens);
+        // Ignore "!"
+        tokens.remove("!");
+        String cmdStr = tokens.peek();
+        Matcher bufferPrefixMatcher = SwitchBufferCommand.BUFFER_CMD_PATTERN.matcher(cmdStr);
+
+        if (bufferPrefixMatcher.lookingAt()) {
+            // Either we have a false positive (e.g. ':buffers') or a parameter is glued to :buffer.
+
+            if (bufferPrefixMatcher.end() < cmdStr.length()) {
+                String cmdRemaining = cmdStr.substring(bufferPrefixMatcher.end());
+                Matcher glued = SwitchBufferCommand.BUFFER_CMD_GLUED_ARG_PATTERN.matcher(cmdRemaining);
+
+                if (glued.matches()) {
+                    if (glued.groupCount() == 1 && glued.group(1) != null) {
+                        return new SwitchBufferCommand(glued.group(1));
+                    } else if (cmdRemaining.endsWith("#")) {
+                        return SwitchBufferCommand.INSTANCE;
+                    } else {
+                        return new SwitchBufferCommand("%");
+                    }
+                } else {
+                    // Likely the ':buffers' command
+                    return null;
+                }
+            } else if (tokens.size() <= 1) {
+                // No parameters specified, no-op.
+                return new SwitchBufferCommand("%");
+            } else {
+                return new SwitchBufferCommand(tokens.get(1));
+            }
+        } else {
+            return null;
+        }
+    }
+
     class LineRangeExCommandEvaluator implements Command {
         private LineRangeOperationCommand range = null;
         private Evaluator command = null;

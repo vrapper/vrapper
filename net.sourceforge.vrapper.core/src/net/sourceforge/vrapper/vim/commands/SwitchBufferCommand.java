@@ -1,6 +1,7 @@
 package net.sourceforge.vrapper.vim.commands;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 import net.sourceforge.vrapper.platform.Buffer;
 import net.sourceforge.vrapper.platform.BufferAndTabService;
@@ -10,6 +11,16 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 public class SwitchBufferCommand extends CountAwareCommand {
 
     public static final Command INSTANCE = new SwitchBufferCommand();
+    /**
+     * Pattern with which we can detect that at least a prefix of the ':buffer' command was given.
+     * Also matches ':buffers', so an extra check must be done to exclude such a command.
+     */
+    public static final Pattern BUFFER_CMD_PATTERN = Pattern.compile("(b(?:u(?:f(?:f(?:er?)?)?)?)?)");
+    /**
+     * Pattern which recognizes the arguments that can be glued to the ':buffer' command.
+     * Numbers are captured in a group.
+     */
+    public static final Pattern BUFFER_CMD_GLUED_ARG_PATTERN = Pattern.compile("^!?(?:%|#|([0-9]+))$");
 
     public String targetBuffer;
 
