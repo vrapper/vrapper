@@ -27,6 +27,9 @@ public class CountingState<T extends Counted<T>> implements State<Function<T, T>
 
     public Transition<Function<T, T>> press(KeyStroke key) {
         char character = key.getCharacter();
+        // Vim uses CTRL-6 as an alternative to Ctrl-^
+        if (key.withCtrlKey())
+            return null;
         if (!Character.isDigit(character))
             return null;
         int lastDigit = Integer.decode(Character.toString(character));
