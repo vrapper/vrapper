@@ -63,6 +63,7 @@ import net.sourceforge.vrapper.vim.commands.SaveCommand;
 import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SetMarkCommand;
 import net.sourceforge.vrapper.vim.commands.SwapCaseCommand;
+import net.sourceforge.vrapper.vim.commands.SwitchBufferCommand;
 import net.sourceforge.vrapper.vim.commands.TextObject;
 import net.sourceforge.vrapper.vim.commands.TextOperation;
 import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
@@ -217,6 +218,8 @@ public class NormalMode extends CommandBasedMode {
                         leafBind('S', substituteLine),
                         leafBind('s', substituteChar),
                         leafBind('J', joinLines),
+                        leafCtrlBind('6', SwitchBufferCommand.INSTANCE),
+                        leafCtrlBind('^', SwitchBufferCommand.INSTANCE),
                         leafBind('&', repeatSubLine),
                         transitionBind('g',
                                 leafBind('a', (Command)AsciiCommand.INSTANCE),
