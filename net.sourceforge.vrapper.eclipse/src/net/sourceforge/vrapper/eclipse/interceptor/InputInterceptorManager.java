@@ -1,8 +1,6 @@
 package net.sourceforge.vrapper.eclipse.interceptor;
 
-import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
-import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -46,12 +44,10 @@ public class InputInterceptorManager implements IPartListener2 {
 
     private final InputInterceptorFactory factory;
     private final Map<IWorkbenchPart, InputInterceptor> interceptors;
-    private final Map<IWorkbenchPart, Collection<WeakReference<IWorkbenchPart>>> watchedChildren;
 
     protected InputInterceptorManager(InputInterceptorFactory factory) {
         this.factory = factory;
         this.interceptors = new WeakHashMap<IWorkbenchPart, InputInterceptor>();
-        this.watchedChildren = new WeakHashMap<IWorkbenchPart, Collection<WeakReference<IWorkbenchPart>>>();
     }
 
     public void interceptWorkbenchPart(IWorkbenchPart part, Map<IWorkbenchPart, ?> parentEditors) {
@@ -181,13 +177,6 @@ public class InputInterceptorManager implements IPartListener2 {
                     continue;
                 }
                 partClosed(subPart, parentEditors);
-            }
-        }
-        if (watchedChildren.containsKey(part)) {
-            for (WeakReference<IWorkbenchPart> ref : watchedChildren.get(part)) {
-                IWorkbenchPart child = ref.get();
-                if (child != null && child != part)
-                    partClosed(child, parentEditors);
             }
         }
     }
