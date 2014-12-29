@@ -1,7 +1,6 @@
 package net.sourceforge.vrapper.eclipse.interceptor;
 
 import java.lang.reflect.Method;
-import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -50,22 +49,41 @@ public class InputInterceptorManager implements IPartListener2 {
         this.interceptors = new WeakHashMap<IWorkbenchPart, InputInterceptor>();
     }
 
-    public void interceptWorkbenchPart(IWorkbenchPart part, Map<IWorkbenchPart, ?> parentEditors) {
+    public void interceptWorkbenchPart(IWorkbenchPart part, NestedEditorPartInfo nestingInfo) {
         if (part == null) {
             return;
         }
-        parentEditors.put(part, null);
+        if (nestingInfo == null && part instanceof IEditorPart) {
+            nestingInfo = new NestedEditorPartInfo((IEditorPart) part);
+        } else if (part instanceof IEditorPart) {
+            nestingInfo.addChildEditor((IEditorPart) part);
+        }
         if (part instanceof AbstractTextEditor) {
             AbstractTextEditor editor = (AbstractTextEditor) part;
             interceptAbstractTextEditor(editor);
         } else if (part instanceof MultiPageEditorPart) {
-            multiPartOpened(part, parentEditors);
+            try {
+                MultiPageEditorPart mPart = (MultiPageEditorPart) part;
+                int pageCount = ((Integer) METHOD_GET_PAGE_COUNT.invoke(part)).intValue();
+                for (int i = 0; i < pageCount; i++) {
+                    IEditorPart subPart = (IEditorPart) METHOD_GET_EDITOR.invoke(mPart, i);
+                    if (nestingInfo.containedInTree(subPart)) {
+                        continue;
+                    }
+                    if (subPart != null) {
+                        interceptWorkbenchPart(subPart, nestingInfo);
+                    }
+                }
+            } catch (Exception exception) {
+                VrapperLog.error("Exception during opening of MultiPageEditorPart",
+                        exception);
+            }
         } else if (part instanceof MultiEditor) {
             for (IEditorPart subPart : ((MultiEditor) part).getInnerEditors()) {
-                if (parentEditors.containsKey(subPart)) {
+                if (nestingInfo.containedInTree(subPart)) {
                     continue;
                 }
-                interceptWorkbenchPart(subPart, parentEditors);
+                interceptWorkbenchPart(subPart, nestingInfo);
             }
         } else {
             IExtensionRegistry registry = Platform.getExtensionRegistry();
@@ -118,29 +136,12 @@ public class InputInterceptorManager implements IPartListener2 {
         }
     }
 
-    private void multiPartOpened(IWorkbenchPart part, Map<IWorkbenchPart, ?> parentEditors) {
-        try {
-            MultiPageEditorPart mPart = (MultiPageEditorPart) part;
-            int pageCount = ((Integer) METHOD_GET_PAGE_COUNT.invoke(part))
-                    .intValue();
-            for (int i = 0; i < pageCount; i++) {
-                IEditorPart subPart = (IEditorPart) METHOD_GET_EDITOR.invoke(
-                        mPart, i);
-                if (parentEditors.containsKey(subPart)) {
-                    continue;
-                }
-                interceptWorkbenchPart(subPart, parentEditors);
-            }
-        } catch (Exception exception) {
-            VrapperLog.error("Exception during opening of MultiPageEditorPart",
-                    exception);
-        }
-    }
-
-    public void partClosed(IWorkbenchPart part, Map<IWorkbenchPart, ?> parentEditors) {
+    public void partClosed(IWorkbenchPart part, NestedEditorPartInfo nestingInfo) {
         InputInterceptor interceptor = interceptors.remove(part);
-        if (part != null) {
-            parentEditors.put(part, null);
+        if (nestingInfo == null && part instanceof IEditorPart) {
+            nestingInfo = new NestedEditorPartInfo((IEditorPart) part);
+        } else if (part instanceof IEditorPart) {
+            nestingInfo.addChildEditor((IEditorPart) part);
         }
         // remove the listener in case the editor gets cached
         if (interceptor != null) {
@@ -170,39 +171,36 @@ public class InputInterceptorManager implements IPartListener2 {
             VrapperPlugin.getDefault().unregisterEditor((IEditorPart) part);
         }
         if (part instanceof MultiPageEditorPart) {
-            multiPartClosed(part, parentEditors);
+            try {
+                MultiPageEditorPart mPart = (MultiPageEditorPart) part;
+                int pageCount = ((Integer) METHOD_GET_PAGE_COUNT.invoke(part)).intValue();
+                for (int i = 0; i < pageCount; i++) {
+                    IEditorPart subPart = (IEditorPart) METHOD_GET_EDITOR.invoke(mPart, i);
+                    if (nestingInfo.containedInTree(subPart)) {
+                        continue;
+                    }
+                    partClosed(subPart, nestingInfo);
+                }
+            } catch (Exception exception) {
+                VrapperLog.error("Exception during closing MultiPageEditorPart",
+                        exception);
+            }
         } else if (part instanceof MultiEditor) {
             for (IEditorPart subPart : ((MultiEditor) part).getInnerEditors()) {
-                if (parentEditors.containsKey(subPart)) {
+                if (nestingInfo.containedInTree(subPart)) {
                     continue;
                 }
-                partClosed(subPart, parentEditors);
+                partClosed(subPart, nestingInfo);
             }
         }
     }
 
-    private void multiPartClosed(IWorkbenchPart part, Map<IWorkbenchPart, ?> parentEditors) {
-        try {
-            MultiPageEditorPart mPart = (MultiPageEditorPart) part;
-            int pageCount = ((Integer) METHOD_GET_PAGE_COUNT.invoke(part))
-                    .intValue();
-            for (int i = 0; i < pageCount; i++) {
-                IEditorPart subPart = (IEditorPart) METHOD_GET_EDITOR.invoke(mPart, i);
-                if (parentEditors.containsKey(subPart)) {
-                    continue;
-                }
-                partClosed(subPart, parentEditors);
-            }
-        } catch (Exception exception) {
-            VrapperLog.error("Exception during closing MultiPageEditorPart",
-                    exception);
-        }
-    }
-
-    public void partActivated(IWorkbenchPart part, Map<IWorkbenchPart, ?> parentEditors) {
+    public void partActivated(IWorkbenchPart part, NestedEditorPartInfo nestingInfo) {
         InputInterceptor input = interceptors.get(part);
-        if (part != null) {
-            parentEditors.put(part, null);
+        if (nestingInfo == null && part instanceof IEditorPart) {
+            nestingInfo = new NestedEditorPartInfo((IEditorPart) part);
+        } else if (part instanceof IEditorPart) {
+            nestingInfo.addChildEditor((IEditorPart) part);
         }
         if(input == null) {
             try {
@@ -211,18 +209,21 @@ public class InputInterceptorManager implements IPartListener2 {
                     int pageCount = ((Integer) METHOD_GET_PAGE_COUNT.invoke(part)).intValue();
                     for (int i = 0; i < pageCount; i++) {
                         IEditorPart subPart = (IEditorPart) METHOD_GET_EDITOR.invoke(mPart, i);
-                        if (parentEditors.containsKey(subPart)) {
+                        if (nestingInfo.containedInTree(subPart)) {
                             continue;
                         }
-                        partActivated(subPart, parentEditors);
+                        partActivated(subPart, nestingInfo);
                     }
                 }
                 else if (part instanceof MultiEditor) {
-                    for (IEditorPart subPart : ((MultiEditor) part).getInnerEditors()) {
-                        if (parentEditors.containsKey(subPart)) {
+                    MultiEditor mEditor = (MultiEditor) part;
+                    for (IEditorPart subPart : mEditor.getInnerEditors()) {
+                        if (nestingInfo.containedInTree(subPart)) {
                             continue;
                         }
-                        partActivated(subPart, parentEditors);
+                        if (subPart != null) {
+                            partActivated(subPart, nestingInfo);
+                        }
                     }
                 }
             }
@@ -259,7 +260,7 @@ public class InputInterceptorManager implements IPartListener2 {
 
     @Override
     public void partActivated(IWorkbenchPartReference partRef) {
-        partActivated(partRef.getPart(true), new IdentityHashMap<IWorkbenchPart, Void>());
+        partActivated(partRef.getPart(true), null);
     }
 
     @Override
@@ -268,7 +269,7 @@ public class InputInterceptorManager implements IPartListener2 {
 
     @Override
     public void partClosed(IWorkbenchPartReference partRef) {
-        partClosed(partRef.getPart(true), new IdentityHashMap<IWorkbenchPart, Void>());
+        partClosed(partRef.getPart(true), null);
     }
 
     @Override
@@ -277,7 +278,7 @@ public class InputInterceptorManager implements IPartListener2 {
 
     @Override
     public void partOpened(IWorkbenchPartReference partRef) {
-        interceptWorkbenchPart(partRef.getPart(true), new IdentityHashMap<IWorkbenchPart, Void>());
+        interceptWorkbenchPart(partRef.getPart(true), null);
     }
 
     @Override
@@ -293,8 +294,8 @@ public class InputInterceptorManager implements IPartListener2 {
         final IWorkbenchPart part = partRef.getPart(true);
         // The underlying editor has changed for the part -- reset Vrapper's
         // editor-related references.
-        partClosed(part, new IdentityHashMap<IWorkbenchPart, Void>());
-        interceptWorkbenchPart(part, new IdentityHashMap<IWorkbenchPart, Void>());
+        partClosed(part, null);
+        interceptWorkbenchPart(part, null);
     }
 
 }
