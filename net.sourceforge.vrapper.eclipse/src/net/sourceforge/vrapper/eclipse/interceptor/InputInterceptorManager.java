@@ -6,6 +6,7 @@ import java.util.WeakHashMap;
 
 import net.sourceforge.vrapper.eclipse.activator.VrapperPlugin;
 import net.sourceforge.vrapper.eclipse.extractor.EditorExtractor;
+import net.sourceforge.vrapper.eclipse.platform.EclipseBufferAndTabService;
 import net.sourceforge.vrapper.eclipse.utils.Utils;
 import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
@@ -42,10 +43,12 @@ public class InputInterceptorManager implements IPartListener2 {
             "getEditor", Integer.TYPE);
 
     private final InputInterceptorFactory factory;
+    private EclipseBufferAndTabService bufferAndTabService;
     private final Map<IWorkbenchPart, InputInterceptor> interceptors;
 
     protected InputInterceptorManager(InputInterceptorFactory factory) {
         this.factory = factory;
+        this.bufferAndTabService = new EclipseBufferAndTabService(BufferManager.INSTANCE);
         this.interceptors = new WeakHashMap<IWorkbenchPart, InputInterceptor>();
     }
 
@@ -120,7 +123,7 @@ public class InputInterceptorManager implements IPartListener2 {
                 // test for needed interfaces
                 ITextViewer textViewer = (ITextViewer) viewer;
                 ITextViewerExtension textViewerExt = (ITextViewerExtension) viewer;
-                InputInterceptor interceptor = factory.createInterceptor(editor, textViewer);
+                InputInterceptor interceptor = factory.createInterceptor(editor, textViewer, bufferAndTabService);
                 CaretPositionHandler caretPositionHandler = interceptor.getCaretPositionHandler();
                 CaretPositionUndoHandler caretPositionUndoHandler = interceptor.getCaretPositionUndoHandler();
                 SelectionVisualHandler visualHandler = interceptor.getSelectionVisualHandler();
@@ -211,6 +214,7 @@ public class InputInterceptorManager implements IPartListener2 {
             try {
                 if (part instanceof MultiPageEditorPart) {
                     MultiPageEditorPart mPart = (MultiPageEditorPart) part;
+                    int activePage = mPart.getActivePage();
                     int pageCount = ((Integer) METHOD_GET_PAGE_COUNT.invoke(part)).intValue();
                     for (int i = 0; i < pageCount; i++) {
                         IEditorPart subPart = (IEditorPart) METHOD_GET_EDITOR.invoke(mPart, i);
@@ -218,6 +222,12 @@ public class InputInterceptorManager implements IPartListener2 {
                             continue;
                         }
                         partActivated(subPart, nestingInfo);
+                    }
+                    if (activePage != -1) {
+                        IEditorPart activeEditor = (IEditorPart) METHOD_GET_EDITOR.invoke(mPart, activePage);
+                        if (activeEditor != null) {
+                            bufferAndTabService.setCurrentEditor(nestingInfo, activeEditor);
+                        }
                     }
                 }
                 else if (part instanceof MultiEditor) {
@@ -229,6 +239,9 @@ public class InputInterceptorManager implements IPartListener2 {
                         if (subPart != null) {
                             partActivated(subPart, nestingInfo);
                         }
+                    }
+                    if (mEditor.getActiveEditor() != null) {
+                        bufferAndTabService.setCurrentEditor(nestingInfo, mEditor.getActiveEditor());
                     }
                 }
             }
@@ -242,6 +255,10 @@ public class InputInterceptorManager implements IPartListener2 {
             if(editor.getConfiguration().get(Options.START_NORMAL_MODE)) {
                 editor.setSelection(null);
                 editor.changeModeSafely(NormalMode.NAME);
+            }
+            // Multi-page editors should set their active page at the end, see above.
+            if (nestingInfo.getParentEditor().equals(part)) {
+                bufferAndTabService.setCurrentEditor(nestingInfo, (IEditorPart) part);
             }
         }
     }

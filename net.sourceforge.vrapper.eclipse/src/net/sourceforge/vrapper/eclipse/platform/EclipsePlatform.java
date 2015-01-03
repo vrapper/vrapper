@@ -13,6 +13,7 @@ import net.sourceforge.vrapper.eclipse.mode.AbstractEclipseSpecificModeProvider;
 import net.sourceforge.vrapper.eclipse.mode.UnionModeProvider;
 import net.sourceforge.vrapper.eclipse.utils.Utils;
 import net.sourceforge.vrapper.log.VrapperLog;
+import net.sourceforge.vrapper.platform.BufferAndTabService;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.FileService;
 import net.sourceforge.vrapper.platform.GlobalConfiguration;
@@ -58,11 +59,14 @@ public class EclipsePlatform implements Platform {
     private static final Map<String, PlatformSpecificStateProvider> providerCache = new ConcurrentHashMap<String, PlatformSpecificStateProvider>();
     private static final AtomicReference<PlatformSpecificModeProvider> modeProviderCache= new AtomicReference<PlatformSpecificModeProvider>();
     private static final Map<String, PlatformSpecificTextObjectProvider> textObjProviderCache = new ConcurrentHashMap<String, PlatformSpecificTextObjectProvider>();
+    private BufferAndTabService bufferAndTabService;
 
     public EclipsePlatform(final AbstractTextEditor abstractTextEditor,
-            final ITextViewer textViewer, final GlobalConfiguration sharedConfiguration) {
+            final ITextViewer textViewer, final GlobalConfiguration sharedConfiguration,
+            BufferAndTabService bufferAndTabService) {
         underlyingEditor = abstractTextEditor;
         configuration = sharedConfiguration;
+        this.bufferAndTabService = bufferAndTabService;
         textContent = new EclipseTextContent(textViewer);
         cursorAndSelection = new EclipseCursorAndSelection(configuration,
                 textViewer, textContent);
@@ -111,6 +115,11 @@ public class EclipsePlatform implements Platform {
     @Override
     public FileService getFileService() {
         return fileService;
+    }
+
+    @Override
+    public BufferAndTabService getBufferAndTabService() {
+        return bufferAndTabService;
     }
 
     @Override

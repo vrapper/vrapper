@@ -1,6 +1,7 @@
 package net.sourceforge.vrapper.vim;
 
 import net.sourceforge.vrapper.keymap.KeyStroke;
+import net.sourceforge.vrapper.platform.BufferAndTabService;
 import net.sourceforge.vrapper.platform.CommandLineUI;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.FileService;
@@ -42,6 +43,7 @@ public interface EditorAdaptor {
 
     TextContent getModelContent();
     TextContent getViewContent();
+    BufferAndTabService getBufferAndTabService();
     CursorService getCursorService();
     FileService getFileService();
     ViewportService getViewportService();

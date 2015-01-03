@@ -18,6 +18,7 @@ import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.vim.SimpleKeyStroke;
 import net.sourceforge.vrapper.log.VrapperLog;
+import net.sourceforge.vrapper.platform.BufferAndTabService;
 import net.sourceforge.vrapper.platform.CommandLineUI;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.FileService;
@@ -86,6 +87,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     private final CursorService cursorService;
     private final SelectionService selectionService;
     private final FileService fileService;
+    private final BufferAndTabService bufferAndTabService;
     private RegisterManager registerManager;
     private final RegisterManager globalRegisterManager;
     private final ViewportService viewportService;
@@ -143,8 +145,9 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         macroPlayer = null;
         this.editorType = editor.getEditorType();
         listeners = new VrapperEventListeners(this);
-
         fileService = editor.getFileService();
+        bufferAndTabService = editor.getBufferAndTabService();
+
         __set_modes(this);
         setNewLineFromFirstLine();
         if (isActive) {
@@ -434,6 +437,11 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         }
         
         selectionService.setSelection(selection);
+    }
+
+    @Override
+    public BufferAndTabService getBufferAndTabService() {
+        return bufferAndTabService;
     }
 
     @Override

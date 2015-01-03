@@ -24,4 +24,5 @@ public interface Platform {
     SearchAndReplaceService getSearchAndReplaceService();
     HighlightingService getHighlightingService();
     String getEditorType();
+    BufferAndTabService getBufferAndTabService();
 }
