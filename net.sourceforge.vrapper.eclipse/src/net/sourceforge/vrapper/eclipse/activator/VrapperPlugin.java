@@ -3,6 +3,7 @@ package net.sourceforge.vrapper.eclipse.activator;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.sourceforge.vrapper.eclipse.interceptor.BufferManager;
 import net.sourceforge.vrapper.eclipse.interceptor.InputInterceptor;
 import net.sourceforge.vrapper.eclipse.interceptor.InputInterceptorManager;
 import net.sourceforge.vrapper.log.Log;
@@ -109,6 +110,7 @@ public class VrapperPlugin extends AbstractUIPlugin implements IStartup, Log {
         for (IWorkbenchWindow window: windows) {
             for (IWorkbenchPage page: window.getPages()) {
                 for (IEditorReference ref: page.getEditorReferences()) {
+                    BufferManager.INSTANCE.registerEditorRef(ref);
                     IEditorPart part = ref.getEditor(false);
                     if (part != null) {
                         InputInterceptorManager.INSTANCE.interceptWorkbenchPart(part, null);

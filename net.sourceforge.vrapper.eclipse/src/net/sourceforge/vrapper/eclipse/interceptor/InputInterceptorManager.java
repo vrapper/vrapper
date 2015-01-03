@@ -58,6 +58,9 @@ public class InputInterceptorManager implements IPartListener2 {
         } else if (part instanceof IEditorPart) {
             nestingInfo.addChildEditor((IEditorPart) part);
         }
+        if (part instanceof IEditorPart) {
+            BufferManager.INSTANCE.registerEditorPart(nestingInfo, (IEditorPart) part, false);
+        }
         if (part instanceof AbstractTextEditor) {
             AbstractTextEditor editor = (AbstractTextEditor) part;
             interceptAbstractTextEditor(editor);
@@ -95,8 +98,10 @@ public class InputInterceptorManager implements IPartListener2 {
                                 part, "part-must-subclass",
                                 element, "extractor-class");
                 if (extractor != null) {
-                    for (AbstractTextEditor ate: extractor.extractATEs(part))
+                    for (AbstractTextEditor ate: extractor.extractATEs(part)) {
                         interceptAbstractTextEditor(ate);
+                        BufferManager.INSTANCE.registerEditorPart(nestingInfo, ate, false);
+                    }
                 }
             }
         }
