@@ -1,4 +1,16 @@
 <div class="newsbox">
+    <div class="date">2015-01-04</div>
+    <h4>(Lack of) Status Update</h4>
+    <p>It's been a month since 0.50.0 was released so I figured I should stick
+    with my monthly status updates and tell you about the recent changes.
+    However, there is nothing to report. Since 0.50.0 was released there hasn't
+    been a single line of code changed and there hasn't been a single defect
+    filed.  December is usually a slow month for us anyway, but I'm surprised we
+    haven't had any defects filed either. I guess 0.50.0 must be a rock-solid
+    release (or you guys must all be busy during December too).</p>
+    <p>I hope you all enjoy Vrapper 0.50.0!</p>
+</div>
+<div class="newsbox">
     <div class="date">2014-12-07</div>
     <h4>0.50.0 Released</h4>
     
