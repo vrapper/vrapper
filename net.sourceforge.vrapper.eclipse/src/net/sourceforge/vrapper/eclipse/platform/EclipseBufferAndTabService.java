@@ -80,10 +80,13 @@ public class EclipseBufferAndTabService implements BufferAndTabService {
         }
         if (currentEditor == null) {
             previousEditor = activeEditor;
-        } else if ( ! currentEditor.equals(activeEditor)) {
+        } else if ( ! currentEditor.equals(activeEditor)
+                && ! currentEditor.getEditorInput().equals(activeEditor.getEditorInput())) {
+            // Only replace previous editor info when we switched to a different editor and input.
             previousEditor = currentEditor;
         }
         currentEditor = activeEditor;
+        // Update IEditorPart info.
         bufferIdManager.registerEditorPart(nestingInfo, activeEditor, true);
     }
 
