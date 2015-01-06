@@ -180,7 +180,7 @@ public class BufferManager {
                     throw new VrapperPlatformException("Failed to activate editor for reference "
                             + reference);
                 }
-                page.activate(editor);
+                reference.getPage().activate(editor);
             } else if (input != null && parentInput == null) {
                 try {
                     page.openEditor(input, editorType, true,
