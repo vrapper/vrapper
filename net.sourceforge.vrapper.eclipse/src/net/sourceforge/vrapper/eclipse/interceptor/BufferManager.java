@@ -183,7 +183,8 @@ public class BufferManager {
                 page.activate(editor);
             } else if (input != null && parentInput == null) {
                 try {
-                    page.openEditor(input, editorType);
+                    page.openEditor(input, editorType, true,
+                            IWorkbenchPage.MATCH_ID | IWorkbenchPage.MATCH_INPUT);
                 } catch (PartInitException e) {
                     throw new VrapperPlatformException("Failed to activate editor for input "
                         + input + ", type " + editorType, e);
@@ -191,7 +192,8 @@ public class BufferManager {
             } else if (input != null) {
                 IEditorPart parentEditor;
                 try {
-                    parentEditor = page.openEditor(parentInput, editorType);
+                    parentEditor = page.openEditor(parentInput, editorType, false,
+                            IWorkbenchPage.MATCH_ID | IWorkbenchPage.MATCH_INPUT);
                 } catch (PartInitException e) {
                     throw new VrapperPlatformException("Failed to activate editor for input "
                         + input + ", type " + editorType, e);
