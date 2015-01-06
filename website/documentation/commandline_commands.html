@@ -235,11 +235,13 @@ Vrapper allows abbreviated commands only when there are no conflicts (e.g. custo
         <li>Supports <code>x</code> flag for hex-numeric sort</li>
         <li>Supports <code>o</code> flag for octal-numeric sort</li>
         <li>Supports <code>u</code> flag for unique sort (remove duplicates)</li>
-        <li>Supports <code>/pattern/</code> to only sort lines (within the range) which include <code>/pattern/</code></li>
-        <ul>
-        <li>Strings only, no regex</li>
-        <li>Sort will compare the text at cursor position after the <code>/pattern/</code> match</li>
-        </ul>
+        <li>
+            Supports <code>/pattern/</code> to only sort lines (within the range) which include <code>/pattern/</code>
+            <ul>
+            <li>Strings only, no regex</li>
+            <li>Sort will compare the text at cursor position after the <code>/pattern/</code> match</li>
+            </ul>
+        </li>
         </ul>
         </td>
     </tr>
@@ -269,8 +271,6 @@ Vrapper allows abbreviated commands only when there are no conflicts (e.g. custo
                     This basically executes an anonymous macro on all lines that match (or don't match, for <code>:g!</code> and <code>:v</code>).
                     Special keys are defined like in mappings.  For example, <code>&lt;esc&gt;</code>
                 </li>
-            <ul>
-            </ul>
             </ul>
         </td>
     </tr>
