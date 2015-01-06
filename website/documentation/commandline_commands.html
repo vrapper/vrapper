@@ -24,13 +24,11 @@ Vrapper allows abbreviated commands only when there are no conflicts (e.g. custo
     </tr>
     <tr>
         <td>:q</td>
-        <td>Closes the editor if nothing was changed since the last
-            save.</td>
+        <td>Closes the editor if nothing was changed since the last save.</td>
     </tr>
     <tr>
         <td>:qall</td>
-        <td>Closes all editors if nothing was changed since the last
-            save.</td>
+        <td>Closes all editors if nothing was changed since the last save.</td>
     </tr>
     <tr>
         <td>:wq<br />:x</td>
@@ -54,9 +52,11 @@ Vrapper allows abbreviated commands only when there are no conflicts (e.g. custo
     </tr>
     <tr>
         <td>:fm<br />:format</td>
-        <td>Calls the formatter of the underlying editor if present.<br />
+        <td>
+            Calls the formatter of the underlying editor if present.<br />
             The formatter will be applied to the current selection
-            or the whole text if nothing is selected.</td>
+            or the whole text if nothing is selected.
+        </td>
     </tr>
     <tr>
         <td>:ascii</td>
@@ -68,8 +68,10 @@ Vrapper allows abbreviated commands only when there are no conflicts (e.g. custo
     </tr>
     <tr>
         <td>:e[dit] &lt;filename&gt;</td>
-        <td>Opens a file relative to the current working directory.<br/>
-            If <code>&lt;filename&gt;</code> doesn't exist, create a new file in the current working directory.</td>
+        <td>
+            Opens a file relative to the current working directory.<br/>
+            If <code>&lt;filename&gt;</code> doesn't exist, create a new file in the current working directory.
+        </td>
     </tr>
     <tr>
         <td>:e[dit]</td>
@@ -133,28 +135,32 @@ Vrapper allows abbreviated commands only when there are no conflicts (e.g. custo
     </tr>
     <tr>
         <td>:let @&lt;char&gt;=&lt;register contents&gt;</td>
-        <td>Programmatically set register contents for register <code>&lt;char&gt;</code>.  Register can then be executed as a macro.<br/><br/>
-        We don't currently support any other <code>:let</code> behavior.</td>
+        <td>
+            Programmatically set register contents for register <code>&lt;char&gt;</code>.  Register can then be executed as a macro.<br/><br/>
+            We don't currently support any other <code>:let</code> behavior.
+        </td>
     </tr>
     <tr>
         <td>:command &lt;name&gt; &lt;command&gt;</td>
-        <td>Defines a custom command-line command <code>&lt;name&gt;</code> which will execute the command <code>&lt;command&gt;</code>.
-        Note that <code>&lt;command&gt;</code> can use <code>|</code> to chain multiple commands to a single <code>&lt;name&gt;</code>.
-        <br/><br/>
-        Example:</br>
-        <code>:command MyReplace s/foo/bar/g | s/baz/bat/g</code><br/>
-		would be executed with <code>:MyReplace</code>
+        <td>
+            Defines a custom command-line command <code>&lt;name&gt;</code> which will execute the command <code>&lt;command&gt;</code>.
+            Note that <code>&lt;command&gt;</code> can use <code>|</code> to chain multiple commands to a single <code>&lt;name&gt;</code>.
+            <br/><br/>
+            Example:</br>
+            <code>:command MyReplace s/foo/bar/g | s/baz/bat/g</code><br/>
+            would be executed with <code>:MyReplace</code>
         </td>
     </tr>
     <tr>
         <td>:&lt;range&gt;!&lt;command&gt;</td>
-        <td>Execute a shell command with the text from the given range as input, replacing that text with the output.<br/>
+        <td>
+            Execute a shell command with the text from the given range as input, replacing that text with the output.<br/>
             Examples:
             <ul>
                 <li><code>:%!xmllint --format -</code></li>
                 <li><code>:'&lt;,'&gt;!tr -d [:space:]</code></li>
             </ul>
-            </td>
+        </td>
     </tr>
     <tr>
         <td>:r!&lt;command&gt;</td>
@@ -170,104 +176,116 @@ Vrapper allows abbreviated commands only when there are no conflicts (e.g. custo
     </tr>
     <tr>
         <td>:autocmd &lt;editor type&gt; &lt;command&gt;</td>
-        <td>Execute a .vrapperrc &lt;command&gt; only if the current editor is of Eclipse editor type &lt;editor&nbsp;type&gt;.
-        The &lt;editor&nbsp;type&gt; is the "registered name" of the Eclipse "part".<br/><br/>
-        For example:
-        <ul>
-            <li><code>autocmd "C/C++ Editor" eclipseaction gv org.eclipse.cdt.ui.edit.text.c.select.last</code></li>
-            <li><code>autocmd "CMake Editor" nnoremap &lt;CR&gt; gf</code></li>
-        </ul>
+        <td>
+            Execute a .vrapperrc &lt;command&gt; only if the current editor is of Eclipse editor type &lt;editor&nbsp;type&gt;.
+            The &lt;editor&nbsp;type&gt; is the "registered name" of the Eclipse "part".<br/><br/>
+            For example:
+            <ul>
+                <li><code>autocmd "C/C++ Editor" eclipseaction gv org.eclipse.cdt.ui.edit.text.c.select.last</code></li>
+                <li><code>autocmd "CMake Editor" nnoremap &lt;CR&gt; gf</code></li>
+            </ul>
         </td>
     </tr>
     <tr>
         <td><nobr>:[%]s/&lt;search&gt;/&lt;replace&gt;/[g|c|i|I]</nobr></td>
-        <td>The famous substitution feature.
-        <ul>
-        <li>Supports flags <code>g</code> for global (all matches), <code>c</code> for confirmation, <code>i</code> for case-insensitive</li>
-        <li>Supports <code>%</code> for performing substitution on all lines<br/>(e.g., <code>:%s/foo/bar/</code>)</li>
-        <li>Whatever non-alphanumeric character is after <code>:s</code> will be the delimiter<br/>(e.g., <code>:s_foo_bar_</code>)</li>
-        <li>Uses Eclipse's flavor of regex<br/>(e.g., <code>:s/foo(.+)foo/bar$1bar/</code>)</li>
-        </ul>
+        <td>
+            The famous substitution feature.
+            <ul>
+                <li>Supports flags <code>g</code> for global (all matches), <code>c</code> for confirmation, <code>i</code> for case-insensitive</li>
+                <li>Supports <code>%</code> for performing substitution on all lines<br/>(e.g., <code>:%s/foo/bar/</code>)</li>
+                <li>Whatever non-alphanumeric character is after <code>:s</code> will be the delimiter<br/>(e.g., <code>:s_foo_bar_</code>)</li>
+                <li>Uses Eclipse's flavor of regex<br/>(e.g., <code>:s/foo(.+)foo/bar$1bar/</code>)</li>
+            </ul>
         </td>
     </tr>
     <tr>
         <td>:&lt;range&gt;,&lt;range&gt;[y|d|s|c|t|m]</td>
-        <td>Perform either the yank (<code>y</code>), delete (<code>d</code>), substitution (<code>s</code>), copy (<code>c</code>, <code>t</code>), or move (<code>m</code>) operation on a range of lines.
-        <table>
-        <tr>
-        <td style="border:none">Supports:<br/>
-            <ul>
-            <li><code>number</code> for specific line number</li>
-            <li><code>.</code> for current line</li>
-            <li><code>$</code> for last line in the file</li>
-            <li><code>?&lt;pattern&gt;?</code> for first match above current line</li>
-            <li><code>/&lt;pattern&gt;/</code> for first match below current line</li>
-            <li><code>'&lt;a-x&gt;</code> for mark</li>
-            <li>You can also add modifiers <code>+</code>/<code>-</code></li>
-            </ul>
-        </td>
-        <td style="border:none">Examples:<br/>
-        	<ul>
-        	<li><code>:3,5d</code></li>
-			<li><code>:3,5y</code></li>
-			<li><code>:.,$y</code></li>
-			<li><code>:.+3,$-2y</code></li>
-            <li><code>:2,5s/foo/bar/g</code></li>
-            <li><code>:1,/foo/d</code></li>
-            <li><code>:'a,'bd</code></li>
-            <li><code>:?something?,+4y</code></li>
-            <li><code>:?something?,/foo/y</code></li>
-            <li><code>:10,20 copy 140</code></li>
-            <li><code>:15,35 move 110</code></li>
-            </ul>
-        </td>
-        </tr>
-        </table>
+        <td>
+            Perform either the yank (<code>y</code>), delete (<code>d</code>), substitution (<code>s</code>), copy (<code>c</code>, <code>t</code>), or move (<code>m</code>) operation on a range of lines.
+            <table>
+                <tr>
+                    <td style="border:none">
+                        Supports:<br/>
+                        <ul>
+                            <li><code>number</code> for specific line number</li>
+                            <li><code>.</code> for current line</li>
+                            <li><code>$</code> for last line in the file</li>
+                            <li><code>?&lt;pattern&gt;?</code> for first match above current line</li>
+                            <li><code>/&lt;pattern&gt;/</code> for first match below current line</li>
+                            <li><code>'&lt;a-x&gt;</code> for mark</li>
+                            <li>You can also add modifiers <code>+</code>/<code>-</code></li>
+                        </ul>
+                    </td>
+                    <td style="border:none">
+                        Examples:<br/>
+                        <ul>
+                            <li><code>:3,5d</code></li>
+                            <li><code>:3,5y</code></li>
+                            <li><code>:.,$y</code></li>
+                            <li><code>:.+3,$-2y</code></li>
+                            <li><code>:2,5s/foo/bar/g</code></li>
+                            <li><code>:1,/foo/d</code></li>
+                            <li><code>:'a,'bd</code></li>
+                            <li><code>:?something?,+4y</code></li>
+                            <li><code>:?something?,/foo/y</code></li>
+                            <li><code>:10,20 copy 140</code></li>
+                            <li><code>:15,35 move 110</code></li>
+                        </ul>
+                    </td>
+                </tr>
+            </table>
         </td>
     </tr>
     <tr>
         <td><nobr>:[range,range]sort[!] [/pattern/] [i|n|x|o|u]</nobr></td>
-        <td>Sort lines in entire file or over specified range.
-        <ul>
-        <li>Supports <code>!</code> flag for reverse sort</li>
-        <li>Supports <code>i</code> flag for case-insensitive sort</li>
-        <li>Supports <code>n</code> flag for numeric sort</li>
-        <li>Supports <code>x</code> flag for hex-numeric sort</li>
-        <li>Supports <code>o</code> flag for octal-numeric sort</li>
-        <li>Supports <code>u</code> flag for unique sort (remove duplicates)</li>
-        <li>
-            Supports <code>/pattern/</code> to only sort lines (within the range) which include <code>/pattern/</code>
+        <td>
+            Sort lines in entire file or over specified range.
             <ul>
-            <li>Strings only, no regex</li>
-            <li>Sort will compare the text at cursor position after the <code>/pattern/</code> match</li>
+                <li>Supports <code>!</code> flag for reverse sort</li>
+                <li>Supports <code>i</code> flag for case-insensitive sort</li>
+                <li>Supports <code>n</code> flag for numeric sort</li>
+                <li>Supports <code>x</code> flag for hex-numeric sort</li>
+                <li>Supports <code>o</code> flag for octal-numeric sort</li>
+                <li>Supports <code>u</code> flag for unique sort (remove duplicates)</li>
+                <li>
+                    Supports <code>/pattern/</code> to only sort lines (within the range) which include <code>/pattern/</code>
+                    <ul>
+                        <li>Strings only, no regex</li>
+                        <li>Sort will compare the text at cursor position after the <code>/pattern/</code> match</li>
+                    </ul>
+                </li>
             </ul>
-        </li>
-        </ul>
         </td>
     </tr>
     <tr>
         <td>:retab[!] [new_tabstop]</td>
-        <td>Replace all tabs with spaces (or spaces with tabs) within the file.
+        <td>
+            Replace all tabs with spaces (or spaces with tabs) within the file.
             <ul>
                 <li>If <code>!</code> is specified, replace all spaces with equivalent number of tabs</li>
-                <li>If <code>new_tabstop</code> is specified, replace each tab with the given number of
-                    spaces rather than the value stored in <code>tabstop</code> config property.</li>
+                <li>
+                    If <code>new_tabstop</code> is specified, replace each tab with the given number of
+                    spaces rather than the value stored in <code>tabstop</code> config property.
+                </li>
             </ul>
             If neither <code>!</code> nor <code>new_tabstop</code> is specified, the behavior is determined by the <code>expandtab</code> and <code>tabstop</code>
             config properties.
         </td>
     </tr>
     <tr>
-        <td>:g/&lt;pattern&gt;/[d|s|normal]<br/>
-        :g!/&lt;pattern&gt;/[d|s|normal]<br/>
-        :v/&lt;pattern&gt;/[d|s|normal]
+        <td>
+            :g/&lt;pattern&gt;/[d|s|normal]<br/>
+            :g!/&lt;pattern&gt;/[d|s|normal]<br/>
+            :v/&lt;pattern&gt;/[d|s|normal]
         </td>
-        <td>Perform an operation on all lines that match <code>pattern</code>.  Or, in the case of <code>:g!</code> and <code>:v</code>, all lines that <b>don't</b> match <code>pattern</code>.<br/>
-        Operations are:
+        <td>
+            Perform an operation on all lines that match <code>pattern</code>.  Or, in the case of <code>:g!</code> and <code>:v</code>, all lines that <b>don't</b> match <code>pattern</code>.<br/>
+            Operations are:
             <ul>
                 <li><code>d</code> to delete those lines<br/><code>:g/foo/d</code></li>
                 <li><code>s</code> to perform substitution on those lines<br/><code>:g/foo/s/something/else/g</code></li>
-                <li><code>normal</code> to perform (basic) normal-mode commands on those lines<br/><code>:g/foo/normal wwdw</code><br/>
+                <li>
+                    <code>normal</code> to perform (basic) normal-mode commands on those lines<br/><code>:g/foo/normal wwdw</code><br/>
                     This basically executes an anonymous macro on all lines that match (or don't match, for <code>:g!</code> and <code>:v</code>).
                     Special keys are defined like in mappings.  For example, <code>&lt;esc&gt;</code>
                 </li>
@@ -280,12 +298,13 @@ Vrapper allows abbreviated commands only when there are no conflicts (e.g. custo
     </tr>
     <tr>
         <td>:vim</td>
-        <td>The current active file in Eclipse is opened in a new gvim window.  Cursor is on the exact same line
-        and column as it was in Eclipse.  This allows you to perform any operation in gvim which Vrapper doesn't support.
-        After you save the file and exit gvim (<code>:wq</code>) Eclipse will reload the file with your changes.
-        <br/><br/>
-        Path to gvim is determined by <code>gvimpath</code> property (defaults to <code>/usr/bin/gvim</code>).<br/>
-        Arguments for gvim is determined by <code>gvimargs</code> property.<br/>
+        <td>
+            The current active file in Eclipse is opened in a new gvim window.  Cursor is on the exact same line
+            and column as it was in Eclipse.  This allows you to perform any operation in gvim which Vrapper doesn't support.
+            After you save the file and exit gvim (<code>:wq</code>) Eclipse will reload the file with your changes.
+            <br/><br/>
+            Path to gvim is determined by <code>gvimpath</code> property (defaults to <code>/usr/bin/gvim</code>).<br/>
+            Arguments for gvim is determined by <code>gvimargs</code> property.<br/>
         </td>
     </tr>
     <tr>
@@ -294,8 +313,8 @@ Vrapper allows abbreviated commands only when there are no conflicts (e.g. custo
     </tr>
     <tr>
         <td>:eclipseaction[!]&nbsp;&lt;name&gt;&nbsp;&lt;id&gt;</td>
-        <td>Binds the Eclipse action with the specified id to a 
-            (command line mode) command &lt;name&gt;.<br />
+        <td>
+            Binds the Eclipse action with the specified id to a (command line mode) command &lt;name&gt;.<br />
             There are lists with action ids for
             <a href="http://help.eclipse.org/help33/topic/org.eclipse.platform.doc.isv/reference/api/org/eclipse/ui/texteditor/IWorkbenchActionDefinitionIds.html">workbench</a>,
             <a href="http://help.eclipse.org/help33/topic/org.eclipse.platform.doc.isv/reference/api/org/eclipse/ui/texteditor/ITextEditorActionDefinitionIds.html">text editors</a>,

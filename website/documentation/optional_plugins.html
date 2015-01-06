@@ -1,141 +1,142 @@
-
 <a name="top"><h2>Optional Plugins</h2></a>
-<p>In addition to the standard Vrapper plugin, we have a couple optional plugins
-that you can install to further enhance Vrapper's features.  These plugins either have
-extra dependencies which everyone might not have installed, or they provide behaviors
-which aren't found in Vim.</p>
+<p>
+    In addition to the standard Vrapper plugin, we have a couple optional plugins
+    that you can install to further enhance Vrapper's features.  These plugins either have
+    extra dependencies which everyone might not have installed, or they provide behaviors
+    which aren't found in Vim.
+</p>
 
 <div class="toc">
-<ol>
-   <li><a href="#split">Split Editor Plugin</a></li>
-   <li><a href="#programming">Programming Language Plugins</a></li>
-   <ol>
-      <li><a href="#cjavapy">CDT, JDT, and Pydev</a></li>
-      <li><a href="#clang">Clang-Format</a></li>
-   </ol>
-   <li><a href="#vimscript">Vimscript Ports</a></li>
-   <ol>
-      <li><a href="#ipmotion">Improved Paragraph Motion (ipmotion.vim)</a></li>
-      <li><a href="#argtext">Argument Text Object (argtextobj.vim)</a></li>
-      <li><a href="#linetext">Line Text Object (textobj-line.vim)</a></li>
-      <li><a href="#methodtext">Method Text Object (methodtextobj.vim)</a></li>
-      <li><a href="#exchange">Exchange (exchange.vim)</a></li>
-      <li><a href="#surround">Surround (surround.vim)</a></li>
-   </ol>
-</ol>
+    <ol>
+        <li><a href="#split">Split Editor Plugin</a></li>
+        <li><a href="#programming">Programming Language Plugins</a></li>
+        <ol>
+            <li><a href="#cjavapy">CDT, JDT, and Pydev</a></li>
+            <li><a href="#clang">Clang-Format</a></li>
+        </ol>
+        <li><a href="#vimscript">Vimscript Ports</a></li>
+        <ol>
+            <li><a href="#ipmotion">Improved Paragraph Motion (ipmotion.vim)</a></li>
+            <li><a href="#argtext">Argument Text Object (argtextobj.vim)</a></li>
+            <li><a href="#linetext">Line Text Object (textobj-line.vim)</a></li>
+            <li><a href="#methodtext">Method Text Object (methodtextobj.vim)</a></li>
+            <li><a href="#exchange">Exchange (exchange.vim)</a></li>
+            <li><a href="#surround">Surround (surround.vim)</a></li>
+        </ol>
+    </ol>
 </div>
 
 <a name="split"><h3>Split Editor Plugin</h3></a>
-<p>The Split Editor Plugin provides commands for splitting editors vertically or
-horizontally and managing those splits.  This is a standard Vim feature so it
-<i>should</i> be included in the core Vrapper plugin but our implementation
-utilizes the Eclipse 4 API. Rather than forcing all of our users to upgrade to
-Eclipse 4.x we are providing these features in an optional plugin so the core
-Vrapper plugin can continue to function on Eclipse 3.x.</p>
+<p>
+    The Split Editor Plugin provides commands for splitting editors vertically or
+    horizontally and managing those splits.  This is a standard Vim feature so it
+    <i>should</i> be included in the core Vrapper plugin but our implementation
+    utilizes the Eclipse 4 API. Rather than forcing all of our users to upgrade to
+    Eclipse 4.x we are providing these features in an optional plugin so the core
+    Vrapper plugin can continue to function on Eclipse 3.x.
+</p>
 
 <p>The Split Editor Plugin supports the following commands:</p>
 <table>
-<tr>
-<td style="border:none">
-<table class="commands">
-	<tr>
-       <td>:split [filename]<br/>&lt;C-W&gt;&lt;C-S&gt;<br/>&lt;C-W&gt;s<br/>&lt;C-W&gt;S</td>
-       <td>Create Horizontal Split</td>
+    <tr>
+        <td style="border:none">
+            <table class="commands">
+                <tr>
+                    <td>:split [filename]<br/>&lt;C-W&gt;&lt;C-S&gt;<br/>&lt;C-W&gt;s<br/>&lt;C-W&gt;S</td>
+                    <td>Create Horizontal Split</td>
+                </tr>
+                <tr>
+                    <td>:vsplit [filename]<br/>&lt;C-W&gt;&lt;C-V&gt;<br/>&lt;C-W&gt;v</td>
+                    <td>Create Vertical Split</td>
+                </tr>
+                <tr>
+                    <td>:wincmd w<br/>&lt;C-W&gt;&lt;C-W&gt;<br/>&lt;C-W&gt;w</td>
+                    <td>Go to other split</td>
+                </tr>
+                <tr>
+                    <td>:wincmd o<br/>&lt;C-W&gt;&lt;C-O&gt;<br/>&lt;C-W&gt;o</td>
+                    <td>Close other splits</td>
+                </tr>
+                <tr>
+                    <td>:wincmd! H<br/>&lt;C-W&gt;ch<br/>&lt;C-W&gt;c&lt;LEFT&gt;</td>
+                    <td>Clone current split left</td>
+                </tr>
+                <tr>
+                    <td>:wincmd! L<br/>&lt;C-W&gt;cl<br/>&lt;C-W&gt;c&lt;RIGHT&gt;</td>
+                    <td>Clone current split right</td>
+                </tr>
+                <tr>
+                    <td>:wincmd! J<br/>&lt;C-W&gt;cj<br/>&lt;C-W&gt;c&lt;DOWN&gt;</td>
+                    <td>Clone current split down</td>
+                </tr>
+                <tr>
+                    <td>:wincmd! K<br/>&lt;C-W&gt;ck<br/>&lt;C-W&gt;c&lt;UP&gt;</td>
+                    <td>Clone current split up</td>
+                </tr>
+            </table>
+        </td>
+        <td style="border:none">
+            <table class="commands">
+                <tr>
+                    <td>:wincmd h<br/>&lt;C-W&gt;&lt;C-H&gt;<br/>&lt;C-W&gt;h<br/>&lt;C-W&gt;&lt;LEFT&gt;</td>
+                    <td>Move cursor to left split</td>
+                </tr>
+                <tr>
+                    <td>:wincmd l<br/>&lt;C-W&gt;&lt;C-L&gt;<br/>&lt;C-W&gt;l<br/>&lt;C-W&gt;&lt;RIGHT&gt;</td>
+                    <td>Move cursor to right split</td>
+                </tr>
+                <tr>
+                    <td>:wincmd j<br/>&lt;C-W&gt;&lt;C-J&gt;<br/>&lt;C-W&gt;j<br/>&lt;C-W&gt;&lt;DOWN&gt;</td>
+                    <td>Move cursor to split below</td>
+                </tr>
+                <tr>
+                    <td>:wincmd k<br/>&lt;C-W&gt;&lt;C-K&gt;<br/>&lt;C-W&gt;k<br/>&lt;C-W&gt;&lt;UP&gt;</td>
+                    <td>Move cursor to split above</td>
+                </tr>
+                <tr>
+                    <td>:wincmd H<br/>&lt;C-W&gt;H</td>
+                    <td>Move current split left</td>
+                </tr>
+                <tr>
+                    <td>:wincmd L<br/>&lt;C-W&gt;L</td>
+                    <td>Move current split right</td>
+                </tr>
+                <tr>
+                    <td>:wincmd J<br/>&lt;C-W&gt;J</td>
+                    <td>Move current split down</td>
+                </tr>
+                <tr>
+                    <td>:wincmd K<br/>&lt;C-W&gt;K</td>
+                    <td>Move current split up</td>
+                </tr>
+            </table>
+        </td>
     </tr>
-	<tr>
-       <td>:vsplit [filename]<br/>&lt;C-W&gt;&lt;C-V&gt;<br/>&lt;C-W&gt;v</td>
-       <td>Create Vertical Split</td>
-    </tr>
-	<tr>
-       <td>:wincmd w<br/>&lt;C-W&gt;&lt;C-W&gt;<br/>&lt;C-W&gt;w</td>
-       <td>Go to other split</td>
-    </tr>
-	<tr>
-       <td>:wincmd o<br/>&lt;C-W&gt;&lt;C-O&gt;<br/>&lt;C-W&gt;o</td>
-	   <td>Close other splits</td>
-	</tr>
-	<tr>
-	   <td>:wincmd! H<br/>&lt;C-W&gt;ch<br/>&lt;C-W&gt;c&lt;LEFT&gt;</td>
-	   <td>Clone current split left</td>
-	</tr>
-	<tr>
-	   <td>:wincmd! L<br/>&lt;C-W&gt;cl<br/>&lt;C-W&gt;c&lt;RIGHT&gt;</td>
-	   <td>Clone current split right</td>
-	</tr>
-	<tr>
-	   <td>:wincmd! J<br/>&lt;C-W&gt;cj<br/>&lt;C-W&gt;c&lt;DOWN&gt;</td>
-	   <td>Clone current split down</td>
-	</tr>
-	<tr>
-	   <td>:wincmd! K<br/>&lt;C-W&gt;ck<br/>&lt;C-W&gt;c&lt;UP&gt;</td>
-	   <td>Clone current split up</td>
-	</tr>
-</table>
-</td>
-
-
-<td style="border:none">
-<table class="commands">
-	<tr>
-	   <td>:wincmd h<br/>&lt;C-W&gt;&lt;C-H&gt;<br/>&lt;C-W&gt;h<br/>&lt;C-W&gt;&lt;LEFT&gt;</td>
-	   <td>Move cursor to left split</td>
-	</tr>
-	<tr>
-	   <td>:wincmd l<br/>&lt;C-W&gt;&lt;C-L&gt;<br/>&lt;C-W&gt;l<br/>&lt;C-W&gt;&lt;RIGHT&gt;</td>
-	   <td>Move cursor to right split</td>
-	</tr>
-	<tr>
-	   <td>:wincmd j<br/>&lt;C-W&gt;&lt;C-J&gt;<br/>&lt;C-W&gt;j<br/>&lt;C-W&gt;&lt;DOWN&gt;</td>
-	   <td>Move cursor to split below</td>
-	</tr>
-	<tr>
-	   <td>:wincmd k<br/>&lt;C-W&gt;&lt;C-K&gt;<br/>&lt;C-W&gt;k<br/>&lt;C-W&gt;&lt;UP&gt;</td>
-	   <td>Move cursor to split above</td>
-	</tr>
-	<tr>
-	   <td>:wincmd H<br/>&lt;C-W&gt;H</td>
-	   <td>Move current split left</td>
-	</tr>
-	<tr>
-	   <td>:wincmd L<br/>&lt;C-W&gt;L</td>
-	   <td>Move current split right</td>
-	</tr>
-	<tr>
-	   <td>:wincmd J<br/>&lt;C-W&gt;J</td>
-	   <td>Move current split down</td>
-	</tr>
-	<tr>
-	   <td>:wincmd K<br/>&lt;C-W&gt;K</td>
-	   <td>Move current split up</td>
-	</tr>
-</table>
-</td>
-</tr>
 </table>
 
 <h4>Eclipse style tab switching</h4>
 
 <p>
-By default <code>gt</code> and <code>gT</code> commands will switch between
-<b>all</b> open editors regardless of window splits. The plugin provides
-additional mappings to switch tabs only within the currently active split:
+    By default <code>gt</code> and <code>gT</code> commands will switch between
+    <b>all</b> open editors regardless of window splits. The plugin provides
+    additional mappings to switch tabs only within the currently active split:
 </p>
 
 <table>
-<tr>
-<td style="border:none">
-<table class="commands">
-	<tr>
-	   <td>:wincmd n<br/>&lt;C-W&gt;gt</td>
-	   <td>Switch to the <b>next</b> tab within the current split</td>
-	</tr>
-	<tr>
-	   <td>:wincmd p<br/>&lt;C-W&gt;gT</td>
-	   <td>Switch to the <b>previous</b> tab within the current split</td>
-	</tr>
-</table>
-</td>
-</tr>
+    <tr>
+        <td style="border:none">
+            <table class="commands">
+                <tr>
+                    <td>:wincmd n<br/>&lt;C-W&gt;gt</td>
+                    <td>Switch to the <b>next</b> tab within the current split</td>
+                </tr>
+                <tr>
+                    <td>:wincmd p<br/>&lt;C-W&gt;gT</td>
+                    <td>Switch to the <b>previous</b> tab within the current split</td>
+                </tr>
+            </table>
+        </td>
+    </tr>
 </table>
 
 <p>You can change the default behaviour of <code>gt</code> and <code>gT</code> using the following remapping:</p>
@@ -145,14 +146,16 @@ additional mappings to switch tabs only within the currently active split:
     nnoremap gT &lt;C-W&gt;gT
 </pre> 
 
-<a name="programming"><h2>Programming Language Plugins</h3></a>
+<a name="programming"><h3>Programming Language Plugins</h3></a>
 
 <a name="cjavapy"><h3>CDT, JDT, and PyDev Plugins</h3></a>
-<p>The CDT, JDT, and PyDev plugins access Eclipse features found only in the CDT package (C++ Development Tools)
-the JDT package (Java Development Tools), or PyDev package (Python Development).  If you do any C++ development in Eclipse, chances are
-you already have CDT installed.  Likewise with JDT for Java development.  The Vrapper CDT plugin has
-a dependency on the CDT package, the Vrapper JDT plugin has a dependency on the JDT package,
-and the Vrapper PyDev plugin has a dependency on the PyDev package.</p>
+<p>
+    The CDT, JDT, and PyDev plugins access Eclipse features found only in the CDT package (C++ Development Tools)
+    the JDT package (Java Development Tools), or PyDev package (Python Development).  If you do any C++ development in Eclipse, chances are
+    you already have CDT installed.  Likewise with JDT for Java development.  The Vrapper CDT plugin has
+    a dependency on the CDT package, the Vrapper JDT plugin has a dependency on the JDT package,
+    and the Vrapper PyDev plugin has a dependency on the PyDev package.
+</p>
 <p>Each of these plugins provide the following commands:</p>
 <table class="commands">
     <tr><td>gcc</td><td>comment/uncomment current line</td></tr>
@@ -165,6 +168,7 @@ and the Vrapper PyDev plugin has a dependency on the PyDev package.</p>
 </table>
 
 <br/>
+
 <p>In addition to this, the JDT plugin also provides these commands:</p>
 <table class="commands">
 	<tr><td>gr</td><td>activate Eclipse's 'refactor' menu</td></tr>
@@ -172,89 +176,101 @@ and the Vrapper PyDev plugin has a dependency on the PyDev package.</p>
 </table>
 
 <br/>
+
 <p>
-We are able to define a mapping for any Eclipse operation within
-the <code>org.eclipse.cdt.ui.edit.*</code> or <code>org.eclipse.jdt.ui.edit.text.java.*</code>
-Eclipse namespaces.  If there are any commands you'd like us to support,
-just file an <a href="https://github.com/vrapper/vrapper/issues">Issue</a> on our GitHub project.
+    We are able to define a mapping for any Eclipse operation within
+    the <code>org.eclipse.cdt.ui.edit.*</code> or <code>org.eclipse.jdt.ui.edit.text.java.*</code>
+    Eclipse namespaces.  If there are any commands you'd like us to support,
+    just file an <a href="https://github.com/vrapper/vrapper/issues">Issue</a> on our GitHub project.
 </p>
 
 <a name="clang"><h3>Clang-Format Plugin</h3></a>
-<p>This plugin formats your C/C++/Obj-C code with specific coding style using
-LLVM <code>clang-format</code> tool (<a href="http://clang.llvm.org/docs/ClangFormat.html">http://clang.llvm.org/docs/ClangFormat.html</a>).
-You must have the <code>clang-format</code> command in your <code>$PATH</code> for the plugin to work.
+<p>
+    This plugin formats your C/C++/Obj-C code with specific coding style using
+    LLVM <code>clang-format</code> tool (<a href="http://clang.llvm.org/docs/ClangFormat.html">http://clang.llvm.org/docs/ClangFormat.html</a>).
+    You must have the <code>clang-format</code> command in your <code>$PATH</code> for the plugin to work.
 </p>
 
 <p>
-The Clang-Format Plugin provides commands to invoke <code>clang-format</code> on
-a region of text and configure default formatting style options:
+    The Clang-Format Plugin provides commands to invoke <code>clang-format</code> on
+    a region of text and configure default formatting style options:
 </p>
 
 <dl>
     <dt><tt>:clang-format [&lt;style&gt;]</tt></dt>
-    <dd>With no region specified formats entire editor content using either
+    <dd>
+        With no region specified formats entire editor content using either
         default or the style given as the argument to the command. The command
         accepts any range specification including visual
         (<code>'&lt;,'&gt;</code>).  The style can be anything that is acceptable
         as the <code>-style</code> command line argument to
         <code>clang-format</code>, including <code>file</code>:
-        <blockquote><pre>
-Coding style, currently supports:
-LLVM, Google, Chromium, Mozilla, WebKit.
-Use <code>-style=file</code> to load style configuration from
-.clang-format file located in one of the parent
-directories of the source file (or current
-directory for stdin).
-Use <code>-style="{key: value, ...}"</code> to set specific
-parameters, e.g.:
-<code>-style="{BasedOnStyle: llvm, IndentWidth: 8}"</code>
-        </pre></blockquote>
+        <blockquote>
+            <pre>
+                Coding style, currently supports:
+                LLVM, Google, Chromium, Mozilla, WebKit.
+                Use <code>-style=file</code> to load style configuration from
+                .clang-format file located in one of the parent
+                directories of the source file (or current
+                directory for stdin).
+                Use <code>-style="{key: value, ...}"</code> to set specific
+                parameters, e.g.:
+                <code>-style="{BasedOnStyle: llvm, IndentWidth: 8}"</code>
+            </pre>
+        </blockquote>
     </dd>
-
     <dt><tt>:clang-format-default-style &lt;style&gt;</tt></dt>
-    <dd>Sets the style to be used for all editors when no style is given to <code>clang-format</code>.
-        </dd>
+    <dd>Sets the style to be used for all editors when no style is given to <code>clang-format</code>.</dd>
     <dt><tt>:clang-format-style &lt;style&gt;</tt></dt>
-    <dd>Sets the style to be used for this editor only when no style is given to <code>clang-format</code>.
-        </dd>
+    <dd>Sets the style to be used for this editor only when no style is given to <code>clang-format</code>.</dd>
 </dl>
 
 <a name="vimscript"><h2>Vimscript Ports</h2></a>
     
 <a name="ipmotion"><h3>Improved Paragraph Motion (ipmotion.vim) Plugin</h3></a>
-<p>Ipmotion.vim is a vim plugin defined here:<br>
-<a href="http://www.vim.org/scripts/script.php?script_id=3952">http://www.vim.org/scripts/script.php?script_id=3952</a><br/>
-This script modifies the behavior of <code>{</code> and <code>}</code> to be non-Vim compliant but more sensible.  Basically, a line with only whitespace
-is considered a paragraph boundary rather than requiring lines to be completely empty.  The script allows for any arbitrary
-regex to be used in determining paragraph boundaries; our port of this script does not currently include that behavior.</p>
+<p>
+    Ipmotion.vim is a vim plugin defined here:<br>
+    <a href="http://www.vim.org/scripts/script.php?script_id=3952">http://www.vim.org/scripts/script.php?script_id=3952</a><br/>
+    This script modifies the behavior of <code>{</code> and <code>}</code> to be non-Vim compliant but more sensible.  Basically, a line with only whitespace
+    is considered a paragraph boundary rather than requiring lines to be completely empty.  The script allows for any arbitrary
+    regex to be used in determining paragraph boundaries; our port of this script does not currently include that behavior.
+</p>
 
 <a name="argtext"><h3>Argument Text Object (argtextobj.vim) Plugin</h3></a>
-<p>Argtextobj.vim is a vim plugin defined here:<br>
-<a href="http://www.vim.org/scripts/script.php?script_id=2699">http://www.vim.org/scripts/script.php?script_id=2699</a><br/>
-This script defines a text object <code>a</code> (argument) to easily modify arguments within a method declaration.</p>
+<p>
+    Argtextobj.vim is a vim plugin defined here:<br>
+    <a href="http://www.vim.org/scripts/script.php?script_id=2699">http://www.vim.org/scripts/script.php?script_id=2699</a><br/>
+    This script defines a text object <code>a</code> (argument) to easily modify arguments within a method declaration.
+</p>
 
 <a name="linetext"><h3>Line Text Object (textobj-line.vim) Plugin</h3></a>
-<p>textobj-line.vim is a vim plugin defined here:<br>
-<a href="http://www.vim.org/scripts/script.php?script_id=3886">http://www.vim.org/scripts/script.php?script_id=3886</a><br/>
-This script defines a text object <code>l</code> (argument) to select everything within a line (minus the newline) or everything within the
-line without any trailing or starting whitespace.
+<p>
+    textobj-line.vim is a vim plugin defined here:<br>
+    <a href="http://www.vim.org/scripts/script.php?script_id=3886">http://www.vim.org/scripts/script.php?script_id=3886</a><br/>
+    This script defines a text object <code>l</code> (argument) to select everything within a line (minus the newline) or everything within the
+    line without any trailing or starting whitespace.
+</p>
 
 <a name="methodtext"><h3>Method Text Object (methodtextobj.vim) Plugin</h3></a>
-<p>Methodtextobj is a plugin based loosely on:<br>
-<a href="http://www.vim.org/scripts/script.php?script_id=2619">http://www.vim.org/scripts/script.php?script_id=2619</a><br/>
-This script defines a text object <code>f</code> (function) to easily change and delete function contents.  It is defined as the 2nd-level
-of matching <code>{</code> and <code>}</code> in a file (where a class definition would be the 1st-level). Thus it is handy for Java and C++ source
-files or similarly formatted code.</p>
+<p>
+    Methodtextobj is a plugin based loosely on:<br>
+    <a href="http://www.vim.org/scripts/script.php?script_id=2619">http://www.vim.org/scripts/script.php?script_id=2619</a><br/>
+    This script defines a text object <code>f</code> (function) to easily change and delete function contents.  It is defined as the 2nd-level
+    of matching <code>{</code> and <code>}</code> in a file (where a class definition would be the 1st-level). Thus it is handy for Java and C++ source
+    files or similarly formatted code.
+</p>
 
 <a name="exchange"><h3>Exchange (exchange.vim) Plugin</h3></a>
-<p>exchange.vim is a vim plugin defined here:<br>
-<a href="https://github.com/tommcdo/vim-exchange">https://github.com/tommcdo/vim-exchange</a><br/>
-<br/>
-Easy text exchange operator for Vim.  Perform <code>cx&lt;text object&gt;</code> once to
-highlight a text object.  Then perform <code>cx&lt;text object&gt;</code> again and the first
-(highlighted) text object will be swapped with the second text object. If you're
-using the same motion again (e.g. exchanging two words using <code>cxiw</code>), you can use
-<code>.</code> the second time.</p>
+<p>
+    exchange.vim is a vim plugin defined here:<br>
+    <a href="https://github.com/tommcdo/vim-exchange">https://github.com/tommcdo/vim-exchange</a><br/>
+    <br/>
+    Easy text exchange operator for Vim.  Perform <code>cx&lt;text object&gt;</code> once to
+    highlight a text object.  Then perform <code>cx&lt;text object&gt;</code> again and the first
+    (highlighted) text object will be swapped with the second text object. If you're
+    using the same motion again (e.g. exchanging two words using <code>cxiw</code>), you can use
+    <code>.</code> the second time.
+</p>
 <p>The plugin provides the following commands:</p>
 <table class="commands">
     <tr><th>Command</th><th>Mode</th><th>Description</th></tr>
@@ -264,63 +280,74 @@ using the same motion again (e.g. exchanging two words using <code>cxiw</code>),
     <tr><td>X</td><td>visual</td><td>highlight/exchange visual selection</td></tr>
 </table>
 
-<p>The colour of the exchange region is configured in <br/>
-<i>Windows</i> -&gt; <i>Preferences</i> -&gt; <i>General</i> -&gt; <i>Editors</i> -&gt; <i>Text Editors</i> -&gt; <i>Annotations</i> -&gt; <i>Vrapper Exchange Region</i></p>
+<p>
+    The colour of the exchange region is configured in <br/>
+    <i>Windows</i> -&gt; <i>Preferences</i> -&gt; <i>General</i> -&gt; <i>Editors</i> -&gt; <i>Text Editors</i> -&gt; <i>Annotations</i> -&gt; <i>Vrapper Exchange Region</i>
+</p>
 
 <p>NOTE: Block-wise visual selection is not implemented.</p>
 
 <a name="surround"><h3>Surround (surround.vim) Plugin</h3></a>
-<p>Surround.vim is a vim plugin defined here:<br>
-<a href="http://www.vim.org/scripts/script.php?script_id=1697">http://www.vim.org/scripts/script.php?script_id=1697</a><br/>
-The Vrapper Surround plugin is a partial port of this script. The Vrapper Surround plugin
-can be invoked as the <code>cs</code>, <code>ds</code> and <code>ys</code> commands in normal mode, or as <code>S</code> and <code>gS</code> in
-visual mode. For these commands, the following replacements are supported:
-<ul>
-	<li>b ( )</li>
-	<li>B { }</li>
-    <li>[ ]</li>
-	<li>'</li>
-	<li>"</li>
-	<li>`</li>
-	<li>a &gt; &nbsp;&nbsp;&nbsp; (<i>angle brackets, no whitespace</i>)</li>
-    <li>t &lt; &nbsp;&nbsp;&nbsp; (<i>XML tags, asks for input</i>)</li>
-</ul>
+<p>
+    Surround.vim is a vim plugin defined here:<br>
+    <a href="http://www.vim.org/scripts/script.php?script_id=1697">http://www.vim.org/scripts/script.php?script_id=1697</a><br/>
+    The Vrapper Surround plugin is a partial port of this script. The Vrapper Surround plugin
+    can be invoked as the <code>cs</code>, <code>ds</code> and <code>ys</code> commands in normal mode, or as <code>S</code> and <code>gS</code> in
+    visual mode. For these commands, the following replacements are supported:
+    <ul>
+        <li>b ( )</li>
+        <li>B { }</li>
+        <li>[ ]</li>
+        <li>'</li>
+        <li>"</li>
+        <li>`</li>
+        <li>a &gt; &nbsp;&nbsp;&nbsp; (<i>angle brackets, no whitespace</i>)</li>
+        <li>t &lt; &nbsp;&nbsp;&nbsp; (<i>XML tags, asks for input</i>)</li>
+    </ul>
 </p>
 
-<p>A few examples:
-<ol>
-    <li>Press <code>ysE"</code> to wrap all characters till the next space in double
-        quotes (text objects can also be used, e.g. <code>ysit"</code>).</li>
-    <li>Use <code>cs"}</code> to change those double quotes into curly brackets.</li>
-    <li>Pressing <code>ds}</code> will then remove the surrounding curly brackets.</li>
-</ol>
-Read the original script's documentation for more examples.</p>
+<p>
+    A few examples:
+    <ol>
+        <li>
+            Press <code>ysE"</code> to wrap all characters till the next space in double
+            quotes (text objects can also be used, e.g. <code>ysit"</code>).
+        </li>
+        <li>Use <code>cs"}</code> to change those double quotes into curly brackets.</li>
+        <li>Pressing <code>ds}</code> will then remove the surrounding curly brackets.</li>
+    </ol>
+    Read the original script's documentation for more examples.
+</p>
 
 <h4>Custom delimiters</h4>
-<p>Surround.vim allows to introduce custom delimiters using variables. Vrapper has no
-support for such variables, so the <code>surround</code> command was introduced instead.</p>
+<p>
+    Surround.vim allows to introduce custom delimiters using variables. Vrapper has no
+    support for such variables, so the <code>surround</code> command was introduced instead.
+</p>
 
-<p>A few examples:<br/>
+<p>A few examples:<br/></p>
 <dl>
     <dt><code>:surround - &lt;?php\r?&gt;</code></dt>
-    <dd>Introduces a new delimiter bound to <code>-</code>. The <code>\r</code> is a marker to know what the
-        left and right bound should be.</dd>
-
+    <dd>
+        Introduces a new delimiter bound to <code>-</code>. The <code>\r</code> is a marker to know what the
+        left and right bound should be.
+    </dd>
     <dt><code>:surround + &lt;?php&lt;SPACE&gt;\r&lt;SPACE&gt;?&gt;</code></dt>
-    <dd>Introduces a new delimiter bound to <code>+</code>, this time with extra spaces. Spaces MUST
+    <dd>
+        Introduces a new delimiter bound to <code>+</code>, this time with extra spaces. Spaces MUST
         be specified as <code>&lt;SPACE&gt;</code>, otherwise the command parser will fail.
         A later version might fix this and simply allow the use of double quotes.
     </dd>
 </dl>
 
-
 <h4>Surround with XML tags</h4>
-<p>The "surround with XML" feature asks for input to know which tags to place around
-the matched text. While this is similar with the original plugin, the Vrapper version
-has one custom feature, it allows to either ignore, add or override attributes.</p>
+<p>
+    The "surround with XML" feature asks for input to know which tags to place around
+    the matched text. While this is similar with the original plugin, the Vrapper version
+    has one custom feature, it allows to either ignore, add or override attributes.
+</p>
 
-<p> For the following examples, assume that we are inside a tag <code>&lt;div class="comments" id="div1"&gt;
-    ...&lt;/div&gt;</code>.</p>
+<p> For the following examples, assume that we are inside a tag <code>&lt;div class="comments" id="div1"&gt;...&lt;/div&gt;</code>.</p>
 
 <h5>Replace tag, keep attributes</h5>
 <ol>
