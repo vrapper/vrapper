@@ -2,56 +2,76 @@
 <h2>Macros</h2>
 
 <h3>Overview</h3>
-<p>Vrapper supports basic macro functionality. It is possible to record,
-edit, and execute different macros to speed up repetetive operations.</p>
-<p>Macros are limited to Vrapper commands and insert operations.
-Eclipse actions can not be recorded. This includes autocompletion and
-similar tools used during insert mode.</p>
+<p>
+    Vrapper supports basic macro functionality. It is possible to record,
+    edit, and execute different macros to speed up repetetive operations.
+</p>
+<p>
+    Macros are limited to Vrapper commands and insert operations.
+    Eclipse actions can not be recorded. This includes autocompletion and
+    similar tools used during insert mode.
+</p>
 
 <h3>Recording Macros</h3>
-<p>To record a macro, use <code>qx</code> where x is a character from a-z. All
-characters typed after x will be added to the macro x. To stop recording,
-press <code>q</code>. The macro is then written into register <code>x</code>.</p>
-<p>It is also possible to append to an existing macro by using <code>qX</code> where X
-is a character from A-Z.</p>
+<p>
+    To record a macro, use <code>qx</code> where x is a character from a-z. All
+    characters typed after x will be added to the macro x. To stop recording,
+    press <code>q</code>. The macro is then written into register <code>x</code>.
+</p>
+<p>
+    It is also possible to append to an existing macro by using <code>qX</code> where X
+    is a character from A-Z.
+</p>
 
 <h3>Executing Macros</h3>
 <p>To execute macro x, use <code>@x</code>.</p>
-<p>While executing a macro, some parts of Vrapper behave differently. See
-<a href="#issues">Possible Issues</a> for more information.</p>
-<p>Note that there is a special macro <code>@:</code>. This macro will run the last
-command line again, which might be useful for specific actions like <code>:tabnext</code>.</p>
+<p>
+    While executing a macro, some parts of Vrapper behave differently. See
+    <a href="#issues">Possible Issues</a> for more information.
+</p>
+<p>
+    Note that there is a special macro <code>@:</code>. This macro will run the last
+    command line again, which might be useful for specific actions like <code>:tabnext</code>.
+</p>
 
 <h3>Editing Macros</h3>
-<p>Macros are stored in named registers. This means it is possible
-to edit a macro by pasting it, making some changes and then yanking it
-back to the register.</p>
-<p>Special and control characters are stored as multi-char sequences. This
-is different from Vim's macros, where special characters are stored the
-same way as the other characters. The reason for this is that Eclipse
-editors are not intended to display control characters.</p>
+<p>
+    Macros are stored in named registers. This means it is possible
+    to edit a macro by pasting it, making some changes and then yanking it
+    back to the register.
+</p>
+<p>
+    Special and control characters are stored as multi-char sequences. This
+    is different from Vim's macros, where special characters are stored the
+    same way as the other characters. The reason for this is that Eclipse
+    editors are not intended to display control characters.
+</p>
 <p>The sequences are the same as for remapping keys; see the <a href="?page=6#remapping">configuration page</a>.</p>
-
 
 <a name="issues" />
 <h3>Possible Issues</h3>
 <ul>
-<li>Insert mode behaves different when executing macros. Normally insert mode does not 
-change the edited text, but only records what is typed for use with the dot
-operator etc. The keystrokes are passed to the underlying editor who then
-inserts the typed characters. During macro execution nothing can be passed
-to the underlying editor, because no events are generated. This means
-insert mode has to do the editing. Although insert mode tries to use
-the smart insert functionality of the underlying editor, this may still
-cause unexpected behaviour in some cases.</li>
-
-<li><code>Backspace</code> (during inserts) removes the character behind the cursor.
-When the underlying editor behaves differently, backspace should not be
-used in macros.</li>
-
-<li>Special keys other than <code>backspace</code> and <code>return</code> will be ignored in insert
-mode during macro execution.</li>
-
-<li>Calling a macro while defining it (e.g. <code>qa@aq</code>, then executing macro a)
-will result in an unlimited recursion.</li>
+    <li>
+        Insert mode behaves different when executing macros. Normally insert mode does not
+        change the edited text, but only records what is typed for use with the dot
+        operator etc. The keystrokes are passed to the underlying editor who then
+        inserts the typed characters. During macro execution nothing can be passed
+        to the underlying editor, because no events are generated. This means
+        insert mode has to do the editing. Although insert mode tries to use
+        the smart insert functionality of the underlying editor, this may still
+        cause unexpected behaviour in some cases.
+    </li>
+    <li>
+        <code>Backspace</code> (during inserts) removes the character behind the cursor.
+        When the underlying editor behaves differently, backspace should not be
+        used in macros.
+    </li>
+    <li>
+        Special keys other than <code>backspace</code> and <code>return</code> will be ignored in insert
+        mode during macro execution.
+    </li>
+    <li>
+        Calling a macro while defining it (e.g. <code>qa@aq</code>, then executing macro a)
+        will result in an unlimited recursion.
+    </li>
 </ul>
