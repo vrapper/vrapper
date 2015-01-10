@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import net.sourceforge.vrapper.eclipse.interceptor.BufferInfo;
 import net.sourceforge.vrapper.eclipse.interceptor.BufferManager;
-import net.sourceforge.vrapper.eclipse.interceptor.BufferManager.BufferInfo;
 import net.sourceforge.vrapper.eclipse.interceptor.NestedEditorPartInfo;
 import net.sourceforge.vrapper.platform.Buffer;
 import net.sourceforge.vrapper.platform.BufferAndTabService;
@@ -130,7 +130,7 @@ public class EclipseBufferAndTabService implements BufferAndTabService {
             throw new VrapperPlatformException("Received an unexpected kind of Buffer object!");
         }
         EclipseBuffer targetBuffer = (EclipseBuffer) buffer;
-        targetBuffer.bufferInfo.activate();
+        bufferIdManager.activate(targetBuffer.bufferInfo);
     }
 
     /* (non-Javadoc)

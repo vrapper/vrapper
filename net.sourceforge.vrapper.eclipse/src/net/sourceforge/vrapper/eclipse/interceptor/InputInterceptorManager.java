@@ -1,14 +1,21 @@
 package net.sourceforge.vrapper.eclipse.interceptor;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.WeakHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import net.sourceforge.vrapper.eclipse.activator.VrapperPlugin;
 import net.sourceforge.vrapper.eclipse.extractor.EditorExtractor;
 import net.sourceforge.vrapper.eclipse.platform.EclipseBufferAndTabService;
 import net.sourceforge.vrapper.eclipse.utils.Utils;
 import net.sourceforge.vrapper.log.VrapperLog;
+import net.sourceforge.vrapper.platform.VrapperPlatformException;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
@@ -19,10 +26,14 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.ITextViewerExtension;
+import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IPartListener2;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchPartReference;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.MultiEditor;
 import org.eclipse.ui.part.MultiPageEditorPart;
@@ -34,7 +45,7 @@ import org.eclipse.ui.texteditor.AbstractTextEditor;
  * 
  * @author Matthias Radig
  */
-public class InputInterceptorManager implements IPartListener2 {
+public class InputInterceptorManager implements IPartListener2, BufferManager {
 
     public static final InputInterceptorManager INSTANCE = new InputInterceptorManager(
             VimInputInterceptorFactory.INSTANCE);
@@ -46,9 +57,30 @@ public class InputInterceptorManager implements IPartListener2 {
     private EclipseBufferAndTabService bufferAndTabService;
     private final Map<IWorkbenchPart, InputInterceptor> interceptors;
 
+    /**
+     * Buffer ids for all top-level editor references.
+     * Note that some of these editor references might point to a MultiPageEditor, a fact which we
+     * can't detect at startup time without forcing all editor plugins to load (we prefer being
+     * wrong rather than slowing down Eclipse on startup due to forced loading of all plugins).
+     * As a result, we might assign a single id to a MultiPageEditor when that id will be
+     * invalidated later.
+     */
+    protected WeakHashMap<IEditorReference,BufferInfo> reservedBufferIdMapping =
+            new WeakHashMap<IEditorReference, BufferInfo>();
+
+    /**
+     * Buffer ids for all active editors. Editors which aren't active are not included in this list,
+     * whereas some active editors might be included in this list as well as the
+     * {@link #reservedBufferIdMapping}
+     */
+    protected WeakHashMap<IEditorInput,BufferInfo> activeBufferIdMapping =
+            new WeakHashMap<IEditorInput, BufferInfo>();
+
+    protected final static AtomicInteger BUFFER_ID_SEQ = new AtomicInteger();
+
     protected InputInterceptorManager(InputInterceptorFactory factory) {
         this.factory = factory;
-        this.bufferAndTabService = new EclipseBufferAndTabService(BufferManager.INSTANCE);
+        this.bufferAndTabService = new EclipseBufferAndTabService(this);
         this.interceptors = new WeakHashMap<IWorkbenchPart, InputInterceptor>();
     }
 
@@ -62,7 +94,7 @@ public class InputInterceptorManager implements IPartListener2 {
             nestingInfo.addChildEditor((IEditorPart) part);
         }
         if (part instanceof IEditorPart) {
-            BufferManager.INSTANCE.registerEditorPart(nestingInfo, (IEditorPart) part, false);
+            registerEditorPart(nestingInfo, (IEditorPart) part, false);
         }
         if (part instanceof AbstractTextEditor) {
             AbstractTextEditor editor = (AbstractTextEditor) part;
@@ -103,7 +135,7 @@ public class InputInterceptorManager implements IPartListener2 {
                 if (extractor != null) {
                     for (AbstractTextEditor ate: extractor.extractATEs(part)) {
                         interceptAbstractTextEditor(ate);
-                        BufferManager.INSTANCE.registerEditorPart(nestingInfo, ate, false);
+                        registerEditorPart(nestingInfo, ate, false);
                     }
                 }
             }
@@ -320,4 +352,133 @@ public class InputInterceptorManager implements IPartListener2 {
         interceptWorkbenchPart(part, null);
     }
 
+    /* Buffer ID managing code */
+
+    public void registerEditorRef(IEditorReference ref) {
+        if ( ! reservedBufferIdMapping.containsKey(ref)) {
+            int bufferId = BUFFER_ID_SEQ.incrementAndGet();
+            reservedBufferIdMapping.put(ref, new BufferInfo(bufferId, ref, ref.getId()));
+        }
+    }
+
+    public void registerEditorPart(NestedEditorPartInfo nestingInfo, IEditorPart editorPart,
+            boolean updateLastSeen) {
+        IEditorInput input = editorPart.getEditorInput();
+        IWorkbenchPage page = editorPart.getEditorSite().getPage();
+
+        IWorkbenchPartReference reference;
+        if (nestingInfo.getParentEditor().equals(editorPart)) {
+            reference = page.getReference(editorPart);
+        } else {
+            reference = page.getReference(nestingInfo.getParentEditor());
+        }
+        // Remove any lingering references in case input was opened in two different editors.
+        BufferInfo reservedBuffer = reservedBufferIdMapping.remove(reference);
+        if ( ! activeBufferIdMapping.containsKey(input)) {
+            int bufferId;
+            BufferInfo info;
+            String documentType;
+            if (nestingInfo.getParentEditor().equals(editorPart)) {
+                if (reservedBuffer == null) {
+                    bufferId = BUFFER_ID_SEQ.incrementAndGet();
+                } else {
+                    bufferId = reservedBuffer.bufferId;
+                }
+                documentType = editorPart.getEditorSite().getId();
+                info = new BufferInfo(bufferId, editorPart, input, documentType);
+            } else {
+                // Each child buffer gets its own id.
+                bufferId = BUFFER_ID_SEQ.incrementAndGet();
+                // Nested editors don't return reliable info, ask parent editor.
+                IEditorInput parentInput = nestingInfo.getParentEditor().getEditorInput();
+                documentType = nestingInfo.getParentEditor().getEditorSite().getId();
+                info = new BufferInfo(bufferId, editorPart, parentInput, documentType, input);
+            }
+            activeBufferIdMapping.put(input, info);
+        } else {
+            // Verify if editorinput is still being edited in the same editor. It's possible that
+            // a file is reopened in another editor, e.g. through "Open with" or a multipage editor.
+            BufferInfo bufferInfo = activeBufferIdMapping.get(input);
+            IEditorPart lastSeenEditor = null;
+            if (bufferInfo.lastSeenEditor == null) {
+                throw new VrapperPlatformException("LastSeenEditor weakref is null - this is a bug!");
+            }
+            lastSeenEditor = bufferInfo.lastSeenEditor.get();
+            if ( ! editorPart.equals(lastSeenEditor) && updateLastSeen) {
+                if (nestingInfo.getParentEditor().equals(editorPart)) {
+                    bufferInfo.editorType = editorPart.getEditorSite().getId();
+                    bufferInfo.parentInput = null;
+                } else {
+                    bufferInfo.editorType = nestingInfo.getParentEditor().getEditorSite().getId();
+                    bufferInfo.parentInput = nestingInfo.getParentEditor().getEditorInput();
+                }
+                bufferInfo.lastSeenEditor = new WeakReference<IEditorPart>(editorPart);
+            }
+        }
+    }
+
+    public BufferInfo getBuffer(IEditorInput editorInput) {
+        return activeBufferIdMapping.get(editorInput);
+    }
+
+    public List<BufferInfo> getBuffers() {
+        SortedMap<Integer, BufferInfo> bufferMap = new TreeMap<Integer, BufferInfo>();
+        for (BufferInfo refBuffer : reservedBufferIdMapping.values()) {
+            bufferMap.put(refBuffer.bufferId, refBuffer);
+        }
+        for (BufferInfo inputBuffer : activeBufferIdMapping.values()) {
+            bufferMap.put(inputBuffer.bufferId, inputBuffer);
+        }
+        return new ArrayList<BufferInfo>(bufferMap.values());
+    }
+    
+    public void activate(BufferInfo buffer) {
+        IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+        if (buffer.reference != null) {
+            IEditorPart editor = buffer.reference.getEditor(true);
+            if (editor == null) {
+                throw new VrapperPlatformException("Failed to activate editor for reference "
+                        + buffer.reference);
+            }
+            buffer.reference.getPage().activate(editor);
+        } else if (buffer.input != null && buffer.parentInput == null) {
+            try {
+                page.openEditor(buffer.input, buffer.editorType, true,
+                        IWorkbenchPage.MATCH_ID | IWorkbenchPage.MATCH_INPUT);
+            } catch (PartInitException e) {
+                throw new VrapperPlatformException("Failed to activate editor for input "
+                    + buffer.input + ", type " + buffer.editorType, e);
+            }
+        } else if (buffer.input != null) {
+            IEditorPart parentEditor;
+            try {
+                parentEditor = page.openEditor(buffer.parentInput, buffer.editorType, false,
+                        IWorkbenchPage.MATCH_ID | IWorkbenchPage.MATCH_INPUT);
+            } catch (PartInitException e) {
+                throw new VrapperPlatformException("Failed to activate editor for input "
+                    + buffer.input + ", type " + buffer.editorType, e);
+            }
+            if (parentEditor instanceof MultiPageEditorPart) {
+                MultiPageEditorPart multiPage = (MultiPageEditorPart) parentEditor;
+                IEditorPart[] foundEditors = multiPage.findEditors(buffer.input);
+                if (foundEditors.length > 0) {
+                    multiPage.setActiveEditor(foundEditors[0]);
+                }
+            } else if (parentEditor instanceof MultiEditor) {
+                MultiEditor editor = (MultiEditor) parentEditor;
+                IEditorPart[] innerEditors = editor.getInnerEditors();
+                int i = 0;
+                while (i < innerEditors.length
+                        && ! buffer.input.equals(innerEditors[i].getEditorInput())) {
+                    i++;
+                }
+                if (i < innerEditors.length) {
+                    editor.activateEditor(innerEditors[i]);
+                }
+            }
+        } else {
+            throw new VrapperPlatformException("Found bufferinfo object with no editor info!"
+                    + " This is most likely a bug.");
+        }
+    }
 }
