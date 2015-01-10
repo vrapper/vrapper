@@ -22,6 +22,12 @@ public class NestedEditorPartInfo {
         this.parent = parent;
     }
 
+    /** Short-hand for an editor nested inside another editor. */
+    public NestedEditorPartInfo(IEditorPart parentEditor, IEditorPart editor) {
+        this.parent = parentEditor;
+        childEditors.put(editor, null);
+    }
+
     public void addChildEditor(IEditorPart editorPart) {
         this.childEditors.put(editorPart, null);
     }

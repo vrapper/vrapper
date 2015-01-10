@@ -56,6 +56,7 @@ public class InputInterceptorManager implements IPartListener2, BufferManager {
     private final InputInterceptorFactory factory;
     private EclipseBufferAndTabService bufferAndTabService;
     private final Map<IWorkbenchPart, InputInterceptor> interceptors;
+    private boolean activationListenerEnabled = true;
 
     /**
      * Buffer ids for all top-level editor references.
@@ -314,6 +315,9 @@ public class InputInterceptorManager implements IPartListener2, BufferManager {
 
     @Override
     public void partActivated(IWorkbenchPartReference partRef) {
+        if ( ! activationListenerEnabled) {
+            return;
+        }
         partActivated(partRef.getPart(true), null);
     }
 
@@ -451,18 +455,27 @@ public class InputInterceptorManager implements IPartListener2, BufferManager {
             }
         } else if (buffer.input != null) {
             IEditorPart parentEditor;
+            // Disable listener - multi-page editors can start with any page active.
+            activationListenerEnabled = false;
             try {
                 parentEditor = page.openEditor(buffer.parentInput, buffer.editorType, false,
                         IWorkbenchPage.MATCH_ID | IWorkbenchPage.MATCH_INPUT);
             } catch (PartInitException e) {
                 throw new VrapperPlatformException("Failed to activate editor for input "
                     + buffer.input + ", type " + buffer.editorType, e);
+            } finally {
+                activationListenerEnabled = true;
             }
             if (parentEditor instanceof MultiPageEditorPart) {
                 MultiPageEditorPart multiPage = (MultiPageEditorPart) parentEditor;
                 IEditorPart[] foundEditors = multiPage.findEditors(buffer.input);
                 if (foundEditors.length > 0) {
-                    multiPage.setActiveEditor(foundEditors[0]);
+                    IEditorPart editor = foundEditors[0];
+                    multiPage.setActiveEditor(editor);
+                    // TODO - See if this is still necessary when multipage page listener is added.
+                    NestedEditorPartInfo info = new NestedEditorPartInfo(parentEditor, editor);
+                    partActivated(editor, info);
+                    bufferAndTabService.setCurrentEditor(info, editor);
                 }
             } else if (parentEditor instanceof MultiEditor) {
                 MultiEditor editor = (MultiEditor) parentEditor;
@@ -473,7 +486,12 @@ public class InputInterceptorManager implements IPartListener2, BufferManager {
                     i++;
                 }
                 if (i < innerEditors.length) {
-                    editor.activateEditor(innerEditors[i]);
+                    IEditorPart innerEditor = innerEditors[i];
+                    editor.activateEditor(innerEditor);
+                    // TODO - See if this is still necessary when multieditor page listener is added
+                    NestedEditorPartInfo info = new NestedEditorPartInfo(parentEditor, innerEditor);
+                    partActivated(innerEditor, info);
+                    bufferAndTabService.setCurrentEditor(info, innerEditor);
                 }
             }
         } else {
