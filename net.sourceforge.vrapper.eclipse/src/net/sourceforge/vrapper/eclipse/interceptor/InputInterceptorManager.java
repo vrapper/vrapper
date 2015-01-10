@@ -24,6 +24,8 @@ import org.eclipse.core.commands.operations.IOperationHistory;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.jface.dialogs.IPageChangedListener;
+import org.eclipse.jface.dialogs.PageChangedEvent;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.ITextViewerExtension;
 import org.eclipse.ui.IEditorInput;
@@ -45,7 +47,7 @@ import org.eclipse.ui.texteditor.AbstractTextEditor;
  * 
  * @author Matthias Radig
  */
-public class InputInterceptorManager implements IPartListener2, BufferManager {
+public class InputInterceptorManager implements IPartListener2, IPageChangedListener, BufferManager {
 
     public static final InputInterceptorManager INSTANCE = new InputInterceptorManager(
             VimInputInterceptorFactory.INSTANCE);
@@ -356,6 +358,21 @@ public class InputInterceptorManager implements IPartListener2, BufferManager {
         interceptWorkbenchPart(part, null);
     }
 
+    @Override
+    public void pageChanged(PageChangedEvent event) {
+        if ( ! activationListenerEnabled) {
+            return;
+        }
+        if (event.getPageChangeProvider() instanceof IEditorPart
+                && event.getSelectedPage() instanceof IEditorPart) {
+            IEditorPart parentEditor = (IEditorPart) event.getPageChangeProvider();
+            IEditorPart editor = (IEditorPart) event.getSelectedPage();
+            NestedEditorPartInfo info = new NestedEditorPartInfo(parentEditor, editor);
+            partActivated(editor, info);
+            bufferAndTabService.setCurrentEditor(info, editor);
+        }
+    }
+
     /* Buffer ID managing code */
 
     public void registerEditorRef(IEditorReference ref) {
@@ -471,11 +488,8 @@ public class InputInterceptorManager implements IPartListener2, BufferManager {
                 IEditorPart[] foundEditors = multiPage.findEditors(buffer.input);
                 if (foundEditors.length > 0) {
                     IEditorPart editor = foundEditors[0];
+                    // Current buffer info is set through page change listener.
                     multiPage.setActiveEditor(editor);
-                    // TODO - See if this is still necessary when multipage page listener is added.
-                    NestedEditorPartInfo info = new NestedEditorPartInfo(parentEditor, editor);
-                    partActivated(editor, info);
-                    bufferAndTabService.setCurrentEditor(info, editor);
                 }
             } else if (parentEditor instanceof MultiEditor) {
                 MultiEditor editor = (MultiEditor) parentEditor;
@@ -488,7 +502,7 @@ public class InputInterceptorManager implements IPartListener2, BufferManager {
                 if (i < innerEditors.length) {
                     IEditorPart innerEditor = innerEditors[i];
                     editor.activateEditor(innerEditor);
-                    // TODO - See if this is still necessary when multieditor page listener is added
+                    // Explicitly set active editor because we don't have a listener here
                     NestedEditorPartInfo info = new NestedEditorPartInfo(parentEditor, innerEditor);
                     partActivated(innerEditor, info);
                     bufferAndTabService.setCurrentEditor(info, innerEditor);
