@@ -14,13 +14,16 @@ import net.sourceforge.vrapper.platform.VrapperPlatformException;
 
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IWorkbenchWindow;
 
 public class EclipseBufferAndTabService implements BufferAndTabService {
     protected IEditorPart previousEditor;
     protected IEditorPart currentEditor;
     protected BufferManager bufferIdManager;
+    protected IWorkbenchWindow workbenchWindow;
     
-    public EclipseBufferAndTabService(BufferManager bufferIdManager) {
+    public EclipseBufferAndTabService(IWorkbenchWindow window, BufferManager bufferIdManager) {
+        this.workbenchWindow = window;
         this.bufferIdManager = bufferIdManager;
     }
 
@@ -146,6 +149,10 @@ public class EclipseBufferAndTabService implements BufferAndTabService {
         IEditorInput currentInput = currentEditor.getEditorInput();
         IEditorInput previousInput = previousEditor.getEditorInput();
         for (BufferInfo editorInfo : buffers) {
+            // Filter list so only buffers in current window are shown.
+            if ( ! editorInfo.seenWindows.containsKey(workbenchWindow)) {
+                continue;
+            }
             EclipseBuffer eclipseBuffer = new EclipseBuffer(editorInfo);
             if (currentInput.equals(editorInfo.input)) {
                 eclipseBuffer.markActive();

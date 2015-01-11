@@ -1,10 +1,12 @@
 package net.sourceforge.vrapper.eclipse.interceptor;
 
 import java.lang.ref.WeakReference;
+import java.util.WeakHashMap;
 
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.part.FileEditorInput;
 
 public class BufferInfo {
@@ -14,6 +16,7 @@ public class BufferInfo {
     public String editorType;
     public IEditorInput parentInput;
     public WeakReference<IEditorPart> lastSeenEditor;
+    public WeakHashMap<IWorkbenchWindow, Void> seenWindows = new WeakHashMap<IWorkbenchWindow, Void>();
 
     protected BufferInfo(int bufferId, IEditorPart editorPart, IEditorInput input, String documentType) {
         this(bufferId, editorPart, null, documentType, input);
@@ -27,6 +30,7 @@ public class BufferInfo {
         this.editorType = documentType;
         this.reference = null;
         this.lastSeenEditor = new WeakReference<IEditorPart>(editorPart);
+        this.seenWindows.put(editorPart.getEditorSite().getWorkbenchWindow(), null);
     }
 
     public BufferInfo(int bufferId, IEditorReference editorReference, String pluginId) {
@@ -35,6 +39,7 @@ public class BufferInfo {
         this.input = null;
         this.editorType = pluginId;
         this.reference = editorReference;
+        this.seenWindows.put(editorReference.getPage().getWorkbenchWindow(), null);
     }
 
     public String getDisplayName() {

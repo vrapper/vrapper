@@ -35,6 +35,7 @@ import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchPartReference;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.MultiEditor;
@@ -56,7 +57,7 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
             "getEditor", Integer.TYPE);
 
     private final InputInterceptorFactory factory;
-    private EclipseBufferAndTabService bufferAndTabService;
+    private Map<IWorkbenchWindow, EclipseBufferAndTabService> bufferAndTabServices;
     private final Map<IWorkbenchPart, InputInterceptor> interceptors;
     private boolean activationListenerEnabled = true;
 
@@ -83,8 +84,20 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
 
     protected InputInterceptorManager(InputInterceptorFactory factory) {
         this.factory = factory;
-        this.bufferAndTabService = new EclipseBufferAndTabService(this);
+        this.bufferAndTabServices = new WeakHashMap<IWorkbenchWindow, EclipseBufferAndTabService>();
         this.interceptors = new WeakHashMap<IWorkbenchPart, InputInterceptor>();
+    }
+
+    public EclipseBufferAndTabService ensureBufferService(IEditorPart editor) {
+        IWorkbenchWindow window = editor.getEditorSite().getWorkbenchWindow();
+        EclipseBufferAndTabService batservice;
+        if (bufferAndTabServices.containsKey(window)) {
+            batservice = bufferAndTabServices.get(window);
+        } else {
+            batservice = new EclipseBufferAndTabService(window, this);
+            bufferAndTabServices.put(window, batservice);
+        }
+        return batservice;
     }
 
     public void interceptWorkbenchPart(IWorkbenchPart part, NestedEditorPartInfo nestingInfo) {
@@ -158,7 +171,8 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
                 // test for needed interfaces
                 ITextViewer textViewer = (ITextViewer) viewer;
                 ITextViewerExtension textViewerExt = (ITextViewerExtension) viewer;
-                InputInterceptor interceptor = factory.createInterceptor(editor, textViewer, bufferAndTabService);
+                EclipseBufferAndTabService batService = ensureBufferService(editor);
+                InputInterceptor interceptor = factory.createInterceptor(editor, textViewer, batService);
                 CaretPositionHandler caretPositionHandler = interceptor.getCaretPositionHandler();
                 CaretPositionUndoHandler caretPositionUndoHandler = interceptor.getCaretPositionUndoHandler();
                 SelectionVisualHandler visualHandler = interceptor.getSelectionVisualHandler();
@@ -259,9 +273,9 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
                         partActivated(subPart, nestingInfo);
                     }
                     if (activePage != -1) {
-                        IEditorPart activeEditor = (IEditorPart) METHOD_GET_EDITOR.invoke(mPart, activePage);
-                        if (activeEditor != null) {
-                            bufferAndTabService.setCurrentEditor(nestingInfo, activeEditor);
+                        IEditorPart curEditor = (IEditorPart) METHOD_GET_EDITOR.invoke(mPart, activePage);
+                        if (curEditor != null) {
+                            ensureBufferService(mPart).setCurrentEditor(nestingInfo, curEditor);
                         }
                     }
                 }
@@ -275,8 +289,9 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
                             partActivated(subPart, nestingInfo);
                         }
                     }
-                    if (mEditor.getActiveEditor() != null) {
-                        bufferAndTabService.setCurrentEditor(nestingInfo, mEditor.getActiveEditor());
+                    IEditorPart curEditor = mEditor.getActiveEditor();
+                    if (curEditor != null) {
+                        ensureBufferService(mEditor).setCurrentEditor(nestingInfo, curEditor);
                     }
                 }
             }
@@ -286,14 +301,15 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
         }
         else {
             //changing tab back to existing editor, should we return to NormalMode?
-            EditorAdaptor editor = input.getEditorAdaptor();
-            if(editor.getConfiguration().get(Options.START_NORMAL_MODE)) {
-                editor.setSelection(null);
-                editor.changeModeSafely(NormalMode.NAME);
+            EditorAdaptor vim = input.getEditorAdaptor();
+            if(vim.getConfiguration().get(Options.START_NORMAL_MODE)) {
+                vim.setSelection(null);
+                vim.changeModeSafely(NormalMode.NAME);
             }
             // Multi-page editors should set their active page at the end, see above.
             if (nestingInfo.getParentEditor().equals(part)) {
-                bufferAndTabService.setCurrentEditor(nestingInfo, (IEditorPart) part);
+                IEditorPart editor = (IEditorPart) part;
+                ensureBufferService(editor).setCurrentEditor(nestingInfo, editor);
             }
         }
     }
@@ -369,7 +385,7 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
             IEditorPart editor = (IEditorPart) event.getSelectedPage();
             NestedEditorPartInfo info = new NestedEditorPartInfo(parentEditor, editor);
             partActivated(editor, info);
-            bufferAndTabService.setCurrentEditor(info, editor);
+            ensureBufferService(editor).setCurrentEditor(info, editor);
         }
     }
 
@@ -407,6 +423,9 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
                 }
                 documentType = editorPart.getEditorSite().getId();
                 info = new BufferInfo(bufferId, editorPart, input, documentType);
+                if (reservedBuffer != null) {
+                    info.seenWindows.putAll(reservedBuffer.seenWindows);
+                }
             } else {
                 // Each child buffer gets its own id.
                 bufferId = BUFFER_ID_SEQ.incrementAndGet();
@@ -414,6 +433,9 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
                 IEditorInput parentInput = nestingInfo.getParentEditor().getEditorInput();
                 documentType = nestingInfo.getParentEditor().getEditorSite().getId();
                 info = new BufferInfo(bufferId, editorPart, parentInput, documentType, input);
+                if (reservedBuffer != null) {
+                    info.seenWindows.putAll(reservedBuffer.seenWindows);
+                }
             }
             activeBufferIdMapping.put(input, info);
         } else {
@@ -435,6 +457,7 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
                 }
                 bufferInfo.lastSeenEditor = new WeakReference<IEditorPart>(editorPart);
             }
+            bufferInfo.seenWindows.put(editorPart.getEditorSite().getWorkbenchWindow(), null);
         }
     }
 
@@ -505,7 +528,7 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
                     // Explicitly set active editor because we don't have a listener here
                     NestedEditorPartInfo info = new NestedEditorPartInfo(parentEditor, innerEditor);
                     partActivated(innerEditor, info);
-                    bufferAndTabService.setCurrentEditor(info, innerEditor);
+                    ensureBufferService(editor).setCurrentEditor(info, innerEditor);
                 }
             }
         } else {
