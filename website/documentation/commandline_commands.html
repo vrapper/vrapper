@@ -110,6 +110,27 @@ Vrapper allows abbreviated commands only when there are no conflicts (e.g. custo
         <td>Move to last Eclipse editor (tab)</td>
     </tr>
     <tr>
+        <td>:files</td>
+        <td>
+            List all open files in the current block of editors in the Eclipse UI.
+            Editors which are open in another split are not listed.
+        </td>
+    </tr>
+    <tr>
+        <td>:buffers<br/>:ls</td>
+        <td>
+            List all recently-seen buffers and their ids. The currently active buffer is
+            marked with '%', the previously active buffer is marked with '#'.
+        </td>
+    </tr>
+    <tr>
+        <td>:b[uffer ]&lt;buffer id&gt;</td>
+        <td>
+            Switch to the buffer with the given id. The special '%' and '#' ids are also
+            allowed. See <code>:buffers</code> above.
+        </td>
+    </tr>
+    <tr>
         <td>:bd[elete]</td>
         <td>Close current editor (tab)</td>
     </tr>
@@ -124,10 +145,6 @@ Vrapper allows abbreviated commands only when there are no conflicts (e.g. custo
     <tr>
         <td>:tabs</td>
         <td>Display open files (tabs)</td>
-    </tr>
-    <tr>
-        <td>:ls</td>
-        <td>List all open editors</td>
     </tr>
     <tr>
         <td>:noh[lsearch]</td>
