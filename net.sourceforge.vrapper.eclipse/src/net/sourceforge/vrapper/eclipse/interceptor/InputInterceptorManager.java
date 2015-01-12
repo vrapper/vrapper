@@ -495,10 +495,11 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
             }
         } else if (buffer.input != null) {
             IEditorPart parentEditor;
-            // Disable listener - multi-page editors can start with any page active.
+            // Disable listener - multi-page editors can start with any page active so triggering
+            // partActivated listeners only clobbers the current editor status.
             activationListenerEnabled = false;
             try {
-                parentEditor = page.openEditor(buffer.parentInput, buffer.editorType, false,
+                parentEditor = page.openEditor(buffer.parentInput, buffer.editorType, true,
                         IWorkbenchPage.MATCH_ID | IWorkbenchPage.MATCH_INPUT);
             } catch (PartInitException e) {
                 throw new VrapperPlatformException("Failed to activate editor for input "
