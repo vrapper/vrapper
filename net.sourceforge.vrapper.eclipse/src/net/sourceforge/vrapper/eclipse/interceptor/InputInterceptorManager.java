@@ -499,42 +499,77 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
             // partActivated listeners only clobbers the current editor status.
             activationListenerEnabled = false;
             try {
-                parentEditor = page.openEditor(buffer.parentInput, buffer.editorType, true,
+                IEditorReference[] editors = page.findEditors(buffer.parentInput, buffer.editorType,
                         IWorkbenchPage.MATCH_ID | IWorkbenchPage.MATCH_INPUT);
+                // Directly activate existing editors as some editor implementations tend to reset
+                // the cursor when "re-opened".
+                if (editors.length > 0) {
+                    parentEditor = editors[0].getEditor(true);
+                    page.activate(parentEditor);
+                } else {
+                    parentEditor = page.openEditor(buffer.parentInput, buffer.editorType, true,
+                        IWorkbenchPage.MATCH_ID | IWorkbenchPage.MATCH_INPUT);
+                }
             } catch (PartInitException e) {
                 throw new VrapperPlatformException("Failed to activate editor for input "
                     + buffer.input + ", type " + buffer.editorType, e);
             } finally {
                 activationListenerEnabled = true;
             }
-            if (parentEditor instanceof MultiPageEditorPart) {
-                MultiPageEditorPart multiPage = (MultiPageEditorPart) parentEditor;
-                IEditorPart[] foundEditors = multiPage.findEditors(buffer.input);
-                if (foundEditors.length > 0) {
-                    IEditorPart editor = foundEditors[0];
-                    // Current buffer info is set through page change listener.
-                    multiPage.setActiveEditor(editor);
-                }
-            } else if (parentEditor instanceof MultiEditor) {
-                MultiEditor editor = (MultiEditor) parentEditor;
-                IEditorPart[] innerEditors = editor.getInnerEditors();
-                int i = 0;
-                while (i < innerEditors.length
-                        && ! buffer.input.equals(innerEditors[i].getEditorInput())) {
-                    i++;
-                }
-                if (i < innerEditors.length) {
-                    IEditorPart innerEditor = innerEditors[i];
-                    editor.activateEditor(innerEditor);
-                    // Explicitly set active editor because we don't have a listener here
-                    NestedEditorPartInfo info = new NestedEditorPartInfo(parentEditor, innerEditor);
-                    partActivated(innerEditor, info);
-                    ensureBufferService(editor).setCurrentEditor(info, innerEditor);
-                }
-            }
+            activateInnerEditor(buffer, parentEditor);
         } else {
             throw new VrapperPlatformException("Found bufferinfo object with no editor info!"
                     + " This is most likely a bug.");
+        }
+    }
+
+    protected void activateInnerEditor(BufferInfo buffer, IEditorPart parentEditor) {
+        if (parentEditor instanceof MultiPageEditorPart) {
+            MultiPageEditorPart multiPage = (MultiPageEditorPart) parentEditor;
+            IEditorPart[] foundEditors = multiPage.findEditors(buffer.input);
+            if (foundEditors.length < 1) {
+                throw new VrapperPlatformException("Failed to find inner editor for "
+                        + buffer.input + " in parent editor " + parentEditor);
+            }
+            IEditorPart editor = foundEditors[0];
+            int activePage = multiPage.getActivePage();
+            boolean activated = false;
+            if (activePage != -1) {
+                IEditorPart innerEditor;
+                try {
+                    innerEditor = (IEditorPart) METHOD_GET_EDITOR.invoke(multiPage, activePage);
+                } catch (Exception e) {
+                    throw new VrapperPlatformException("Failed to get active page of " + multiPage, e);
+                }
+                // The current page is matching our target page. Don't activate it again so that
+                // the editor won't reset cursor position (as seen in the XML editors)
+                if (innerEditor != null && innerEditor.getEditorInput().equals(buffer.input)) {
+                    NestedEditorPartInfo info = new NestedEditorPartInfo(parentEditor, innerEditor);
+                    // Update active editor info because no listener was called.
+                    ensureBufferService(multiPage).setCurrentEditor(info, innerEditor);
+                    activated = true;
+                }
+            }
+            if ( ! activated) {
+                // Current buffer info will be set through page change listener.
+                multiPage.setActiveEditor(editor);
+            }
+        } else if (parentEditor instanceof MultiEditor) {
+            MultiEditor editor = (MultiEditor) parentEditor;
+            IEditorPart[] innerEditors = editor.getInnerEditors();
+            int i = 0;
+            while (i < innerEditors.length
+                    && ! buffer.input.equals(innerEditors[i].getEditorInput())) {
+                i++;
+            }
+            if (i < innerEditors.length) {
+                IEditorPart innerEditor = innerEditors[i];
+                editor.activateEditor(innerEditor);
+                // Explicitly set active editor because we don't have a listener here
+                NestedEditorPartInfo info = new NestedEditorPartInfo(parentEditor, innerEditor);
+                partActivated(innerEditor, info);
+                ensureBufferService(editor).setCurrentEditor(info, innerEditor);
+            }
         }
     }
 }
