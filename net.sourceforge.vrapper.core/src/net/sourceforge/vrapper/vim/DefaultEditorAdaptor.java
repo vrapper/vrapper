@@ -688,6 +688,11 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
 		return currentMode != null ? currentMode.getName() : null;
 	}
 
+	@Override
+    public EditorMode getCurrentMode() {
+		return currentMode;
+	}
+
     public String getEditorType() {
         return editorType;
     }

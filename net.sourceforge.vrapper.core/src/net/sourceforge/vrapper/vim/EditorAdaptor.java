@@ -30,6 +30,7 @@ public interface EditorAdaptor {
     String getLastModeName();
     void onChangeEnabled(boolean enabled);
     EditorMode getMode(String name);
+    EditorMode getCurrentMode();
     public boolean handleKey(KeyStroke key);
     String getEditorType();
 
