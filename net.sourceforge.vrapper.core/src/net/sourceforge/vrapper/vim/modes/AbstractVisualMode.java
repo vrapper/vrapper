@@ -195,6 +195,7 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
                 leafBind('y', yank),
                 leafBind('s', change),
                 leafBind('c', change),
+                leafBind('C', change),
                 leafBind('d', delete),
                 leafBind('x', delete),
                 leafBind('X', delete),
