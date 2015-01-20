@@ -60,6 +60,7 @@ import net.sourceforge.vrapper.vim.commands.RepeatLastSubstitutionCommand;
 import net.sourceforge.vrapper.vim.commands.ReplaceCommand;
 import net.sourceforge.vrapper.vim.commands.RestoreSelectionCommand;
 import net.sourceforge.vrapper.vim.commands.SaveCommand;
+import net.sourceforge.vrapper.vim.commands.SelectTextObjectCommand;
 import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SetMarkCommand;
 import net.sourceforge.vrapper.vim.commands.SwapCaseCommand;
@@ -80,6 +81,7 @@ import net.sourceforge.vrapper.vim.commands.motions.MoveBigWORDEndRightForChange
 import net.sourceforge.vrapper.vim.commands.motions.MoveLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveRight;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordEndRightForChange;
+import net.sourceforge.vrapper.vim.commands.motions.SearchResultMotion;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.commandline.CommandLineMode;
 
@@ -180,6 +182,8 @@ public class NormalMode extends CommandBasedMode {
 
         final State<Command> motionCommands = new GoThereState(motions);
         final Command nextResult = motionCommands.press(key('n')).getValue();
+        final Command nextSearchResultVisual = new SelectTextObjectCommand(SearchResultMotion.SELECT_NEXT_MATCH);
+        final Command prevSearchResultVisual = new SelectTextObjectCommand(SearchResultMotion.SELECT_PREVIOUS_MATCH);
 
         final State<Command> platformSpecificState = getPlatformSpecificState(NAME);
         return CountingState.wrap(RegisterState.wrap(CountingState.wrap(union(
@@ -228,6 +232,8 @@ public class NormalMode extends CommandBasedMode {
                                 leafBind('i', resumeInsertMode),
                                 leafBind('I', (Command) new ChangeToInsertModeCommand(new MotionCommand(col0))),
                                 leafBind('J', joinLinesDumbWay),
+                                leafBind('n', nextSearchResultVisual),
+                                leafBind('N', prevSearchResultVisual),
                                 leafBind('p', pasteAfterWithG),
                                 leafBind('P', pasteBeforeWithG),
                                 leafBind('v', RestoreSelectionCommand.INSTANCE)),

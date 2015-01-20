@@ -26,6 +26,7 @@ import net.sourceforge.vrapper.vim.commands.motions.MoveWordLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordRight;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordRightForUpdate;
 import net.sourceforge.vrapper.vim.commands.motions.ParagraphMotion.ParagraphTextObject;
+import net.sourceforge.vrapper.vim.commands.motions.SearchResultMotion;
 import net.sourceforge.vrapper.vim.modes.CommandBasedMode;
 
 public class DefaultTextObjectProvider implements TextObjectProvider {
@@ -82,6 +83,10 @@ public class DefaultTextObjectProvider implements TextObjectProvider {
         TextObject aParagraph = new ParagraphTextObject(true);
         @SuppressWarnings("unchecked")
         State<TextObject> textObjects = state(
+                        transitionBind('g',
+                            state(
+                                leafBind('n', SearchResultMotion.SELECT_NEXT_MATCH),
+                                leafBind('N', SearchResultMotion.SELECT_PREVIOUS_MATCH))),
                         transitionBind('i',
                             state(
                                 leafBind('w', innerWord),

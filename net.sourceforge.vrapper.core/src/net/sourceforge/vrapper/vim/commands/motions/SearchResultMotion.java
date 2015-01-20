@@ -3,19 +3,30 @@ package net.sourceforge.vrapper.vim.commands.motions;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import net.sourceforge.vrapper.platform.Configuration;
+import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Search;
+import net.sourceforge.vrapper.utils.SearchResult;
+import net.sourceforge.vrapper.utils.StartEndTextRange;
+import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.SearchOffset.End;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
+import net.sourceforge.vrapper.vim.commands.AbstractTextObject;
 import net.sourceforge.vrapper.vim.commands.BorderPolicy;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
+import net.sourceforge.vrapper.vim.commands.TextObject;
 
 public class SearchResultMotion extends CountAwareMotion {
 
     public static final SearchResultMotion REPEAT = new SearchResultMotion(false);
     public static final SearchResultMotion REPEAT_REVERSED = new SearchResultMotion(true);
+
+    public static final TextObject SELECT_NEXT_MATCH = new SearchResultTextObject(false);
+    public static final TextObject SELECT_PREVIOUS_MATCH = new SearchResultTextObject(true);
+    
     private static final String NOT_FOUND_MESSAGE = "'%s' not found";
 
     protected final boolean reverse;
@@ -51,7 +62,7 @@ public class SearchResultMotion extends CountAwareMotion {
         Position position = search.getSearchOffset().unapply(
                 editorAdaptor, editorAdaptor.getPosition());
         for (int i = 0; i < count; i++) {
-            position = doSearch(search, editorAdaptor, position);
+            position = doSearch(search, reverse, editorAdaptor, position).getStart();
             if (position == null) {
                 editorAdaptor.getSearchAndReplaceService().removeHighlighting();
                 throw new CommandExecutionException(
@@ -78,7 +89,8 @@ public class SearchResultMotion extends CountAwareMotion {
         return StickyColumnPolicy.ON_CHANGE;
     }
 
-    private Position doSearch(Search search, EditorAdaptor vim, Position position) {
+    protected static SearchResult doSearch(Search search, boolean reverse, EditorAdaptor vim,
+            Position position) {
         if (reverse) {
             search = search.reverse();
         }
@@ -89,7 +101,7 @@ public class SearchResultMotion extends CountAwareMotion {
                 position = position.addModelOffset(-1);
             }
         }
-        return VimUtils.wrapAroundSearch(vim, search, position).getStart();
+        return VimUtils.wrapAroundSearch(vim, search, position);
     }
 
     @Override
@@ -97,4 +109,54 @@ public class SearchResultMotion extends CountAwareMotion {
         return true;
     }
 
+    public static class SearchResultTextObject extends AbstractTextObject {
+        
+        protected final boolean backwards;
+        
+        protected SearchResultTextObject(boolean backward) {
+            this.backwards = backward;
+        }
+
+        @Override
+        public TextRange getRegion(EditorAdaptor editorAdaptor, int count)
+                throws CommandExecutionException {
+            if (count == NO_COUNT_GIVEN) {
+                count = 1;
+            }
+            Search search = editorAdaptor.getRegisterManager().getSearch();
+            if (search == null) {
+                throw new CommandExecutionException("no search string given");
+            }
+            if (search.isBackward() != backwards) {
+                search = search.reverse();
+            }
+            Position position = editorAdaptor.getPosition();
+            SearchResult nextMatch = null;
+            for (int i = 0; i < count; i++) {
+                nextMatch = doSearch(search, false, editorAdaptor, position);
+                if ( ! nextMatch.isFound()) {
+                    editorAdaptor.getSearchAndReplaceService().removeHighlighting();
+                    throw new CommandExecutionException(
+                            String.format(NOT_FOUND_MESSAGE, search.getKeyword()));
+                }
+                position = nextMatch.getEnd();
+            }
+            Position start = nextMatch.getStart();
+            Position end = nextMatch.getEnd();
+            // Flip selection
+            if (backwards) {
+                start = nextMatch.getEnd();
+                end = nextMatch.getStart();
+            }
+            TextRange result;
+            result = new StartEndTextRange(start, end);
+            return result;
+        }
+
+        @Override
+        public ContentType getContentType(Configuration configuration) {
+            return ContentType.TEXT;
+        }
+        
+    }
 }
