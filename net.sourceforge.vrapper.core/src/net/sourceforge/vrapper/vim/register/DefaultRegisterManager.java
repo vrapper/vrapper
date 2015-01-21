@@ -7,6 +7,7 @@ import java.util.Set;
 
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.Search;
+import net.sourceforge.vrapper.utils.SearchResult;
 import net.sourceforge.vrapper.utils.SelectionArea;
 import net.sourceforge.vrapper.utils.StringUtils;
 import net.sourceforge.vrapper.utils.VimUtils;
@@ -29,6 +30,7 @@ public class DefaultRegisterManager implements RegisterManager {
     protected final Register unnamedRegister;
     private final Register lastEditRegister;
     private Search search;
+    private SearchResult searchResult;
     private Command lastEdit, lastInsertion;
     private TextOperation lastSubstitution;
     private FindMotion findMotion;
@@ -139,6 +141,17 @@ public class DefaultRegisterManager implements RegisterManager {
 
     public void setSearch(Search search) {
         this.search = search;
+        searchResult = null;
+    }
+
+    @Override
+    public SearchResult getLastSearchResult() {
+        return searchResult;
+    }
+
+    @Override
+    public void setLastSearchResult(SearchResult result) {
+        this.searchResult = result;
     }
 
     public Command getLastEdit() {
@@ -253,5 +266,4 @@ public class DefaultRegisterManager implements RegisterManager {
     public void setLastCommand(String macroString) {
         this.lastCommand = macroString;
     }
-
 }
