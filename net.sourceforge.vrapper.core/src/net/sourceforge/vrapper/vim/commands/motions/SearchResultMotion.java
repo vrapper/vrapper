@@ -59,20 +59,29 @@ public class SearchResultMotion extends CountAwareMotion {
 
         includesTarget = search.getSearchOffset() instanceof End;
         lineWise = search.getSearchOffset().lineWise();
-        Position position = search.getSearchOffset().unapply(
-                editorAdaptor, editorAdaptor.getPosition());
+
+        SearchResult result = editorAdaptor.getRegisterManager().getLastSearchResult();
+        Position position;
+        if (result == null || ! result.isFound()) {
+            position = editorAdaptor.getPosition();
+        } else {
+            position = search.getSearchOffset().unapply(
+                editorAdaptor.getModelContent(), editorAdaptor.getPosition(), result);
+        }
         for (int i = 0; i < count; i++) {
-            position = doSearch(search, reverse, editorAdaptor, position).getStart();
-            if (position == null) {
+            result = doSearch(search, reverse, editorAdaptor, position);
+            editorAdaptor.getRegisterManager().setLastSearchResult(result);
+            if (! result.isFound()) {
                 editorAdaptor.getSearchAndReplaceService().removeHighlighting();
                 throw new CommandExecutionException(
                         String.format(NOT_FOUND_MESSAGE, search.getKeyword()));
             }
+            position = result.getStart();
         }
         if (editorAdaptor.getConfiguration().get(Options.SEARCH_HIGHLIGHT)) {
             editorAdaptor.getSearchAndReplaceService().highlight(search);
         }
-        return search.getSearchOffset().apply(editorAdaptor, position);
+        return search.getSearchOffset().apply(editorAdaptor.getModelContent(), result);
     }
 
     public BorderPolicy borderPolicy() {

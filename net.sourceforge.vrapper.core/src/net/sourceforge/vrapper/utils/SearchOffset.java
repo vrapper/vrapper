@@ -1,7 +1,6 @@
 package net.sourceforge.vrapper.utils;
 
 import net.sourceforge.vrapper.platform.TextContent;
-import net.sourceforge.vrapper.vim.EditorAdaptor;
 
 public abstract class SearchOffset {
 
@@ -12,9 +11,9 @@ public abstract class SearchOffset {
         this.offset = offset;
     }
 
-    public abstract Position apply(EditorAdaptor vim, Position position);
+    public abstract Position apply(TextContent modelContent, SearchResult result);
 
-    public abstract Position unapply(EditorAdaptor vim, Position position);
+    public abstract Position unapply(TextContent modelContent, Position position, SearchResult result);
 
     public abstract boolean lineWise();
 
@@ -29,15 +28,16 @@ public abstract class SearchOffset {
         }
 
         @Override
-        public Position apply(EditorAdaptor vim, Position position) {
-            return position.setModelOffset(VimUtils.calculatePositionForOffset(
-                    vim.getModelContent(), position.getModelOffset(), getOffset()));
+        public Position apply(TextContent modelContent, SearchResult result) {
+            Position start = result.getLeftBound();
+            return start.setModelOffset(VimUtils.calculatePositionForOffset(
+                    modelContent, start.getModelOffset(), getOffset()));
         }
 
         @Override
-        public Position unapply(EditorAdaptor vim, Position position) {
+        public Position unapply(TextContent modelContent, Position position, SearchResult result) {
             return position.setModelOffset(VimUtils.calculatePositionForOffset(
-                    vim.getModelContent(), position.getModelOffset(), -getOffset()));
+                    modelContent, position.getModelOffset(), -getOffset()));
         }
 
         @Override
@@ -53,17 +53,16 @@ public abstract class SearchOffset {
         }
 
         @Override
-        public Position apply(EditorAdaptor vim, Position position) {
-            String keyword = vim.getRegisterManager().getSearch().getKeyword();
-            return position.setModelOffset(VimUtils.calculatePositionForOffset(
-                    vim.getModelContent(), position.getModelOffset(), getOffset()+keyword.length()-1));
+        public Position apply(TextContent modelContent, SearchResult result) {
+            Position end = result.getRightBound();
+            return end.setModelOffset(VimUtils.calculatePositionForOffset(
+                    modelContent, end.getModelOffset(), getOffset()-1)); //SearchResult is exclusive
         }
 
         @Override
-        public Position unapply(EditorAdaptor vim, Position position) {
-            String keyword = vim.getRegisterManager().getSearch().getKeyword();
+        public Position unapply(TextContent modelContent, Position position, SearchResult result) {
             return position.setModelOffset(VimUtils.calculatePositionForOffset(
-                    vim.getModelContent(), position.getModelOffset(), -getOffset()-keyword.length()+1));
+                    modelContent, position.getModelOffset(), -result.getModelLength()-getOffset()+1)); //SearchResult is exclusive
         }
 
         @Override
@@ -79,17 +78,18 @@ public abstract class SearchOffset {
         }
 
         @Override
-        public Position apply(EditorAdaptor vim, Position position) {
-            TextContent tc = vim.getModelContent();
-            LineInformation currLine = tc.getLineInformationOfOffset(position.getModelOffset());
+        public Position apply(TextContent modelContent, SearchResult result) {
+            TextContent tc = modelContent;
+            Position start = result.getLeftBound();
+            LineInformation currLine = tc.getLineInformationOfOffset(start.getModelOffset());
             int number = currLine.getNumber()+getOffset();
             number = Math.max(number, 0);
             number = Math.min(number, tc.getNumberOfLines()-1);
-            return position.setModelOffset(tc.getLineInformation(number).getBeginOffset());
+            return start.setModelOffset(tc.getLineInformation(number).getBeginOffset());
         }
 
         @Override
-        public Position unapply(EditorAdaptor vim, Position position) {
+        public Position unapply(TextContent modelContent, Position position, SearchResult result) {
             return position;
         }
 
