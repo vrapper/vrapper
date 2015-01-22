@@ -13,4 +13,15 @@ public class SearchResult extends StartEndTextRange {
     public boolean isFound() {
         return getStart() != null;
     }
+    
+    public String toString() {
+        Position start = getStart();
+        Position end = getEnd();
+        if (start == null || end == null) {
+            return "SearchResult(No match)";
+        } else {
+            return "SearchResult(M " + start.getModelOffset() + "/" + start.getViewOffset()
+                    + " V - M " + end.getModelOffset() + "/" + end.getViewOffset() + " V)";
+        }
+    }
 }
