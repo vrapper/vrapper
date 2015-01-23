@@ -4,13 +4,16 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import net.sourceforge.vrapper.platform.Configuration;
+import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Search;
+import net.sourceforge.vrapper.utils.SearchOffset.Begin;
+import net.sourceforge.vrapper.utils.SearchOffset.End;
+import net.sourceforge.vrapper.utils.SearchOffset;
 import net.sourceforge.vrapper.utils.SearchResult;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
-import net.sourceforge.vrapper.utils.SearchOffset.End;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
@@ -24,18 +27,29 @@ public class SearchResultMotion extends CountAwareMotion {
     public static final SearchResultMotion REPEAT = new SearchResultMotion(false);
     public static final SearchResultMotion REPEAT_REVERSED = new SearchResultMotion(true);
 
+    public static final Motion PREVIOUS_BEGIN = new SearchResultMotion(new Begin(0));
+    public static final Motion NEXT_END = new SearchResultMotion(new End(0));
+
     public static final TextObject SELECT_NEXT_MATCH = new SearchResultTextObject(false);
     public static final TextObject SELECT_PREVIOUS_MATCH = new SearchResultTextObject(true);
     
     private static final String NOT_FOUND_MESSAGE = "'%s' not found";
 
     protected final boolean reverse;
+    private Boolean forcedBackwards;
     private boolean includesTarget;
     private boolean lineWise;
+    private SearchOffset fixedOffset;
 
     protected SearchResultMotion(boolean reverse) {
         super();
         this.reverse = reverse;
+    }
+
+    public SearchResultMotion(SearchOffset offset) {
+        this.fixedOffset = offset;
+        this.forcedBackwards = (offset instanceof Begin);
+        reverse = false;
     }
 
     @Override
@@ -56,20 +70,26 @@ public class SearchResultMotion extends CountAwareMotion {
                 throw new CommandExecutionException("Invalid regex search string: " + search.getKeyword());
             }
         }
-
-        includesTarget = search.getSearchOffset() instanceof End;
-        lineWise = search.getSearchOffset().lineWise();
-
+        SearchOffset offset = (fixedOffset == null ? search.getSearchOffset() : fixedOffset);
         SearchResult result = editorAdaptor.getRegisterManager().getLastSearchResult();
+        TextContent modelContent = editorAdaptor.getModelContent();
+
+        boolean shouldReverse = reverse;
+        if (forcedBackwards != null) {
+            shouldReverse = (search.isBackward() != forcedBackwards);
+        }
+
+        includesTarget = offset instanceof End;
+        lineWise = offset.lineWise();
+
         Position position;
         if (result == null || ! result.isFound()) {
             position = editorAdaptor.getPosition();
         } else {
-            position = search.getSearchOffset().unapply(
-                editorAdaptor.getModelContent(), editorAdaptor.getPosition(), result);
+            position = offset.unapply(modelContent, editorAdaptor.getPosition(), result);
         }
         for (int i = 0; i < count; i++) {
-            result = doSearch(search, reverse, editorAdaptor, position);
+            result = doSearch(search, shouldReverse, editorAdaptor, position);
             editorAdaptor.getRegisterManager().setLastSearchResult(result);
             if (! result.isFound()) {
                 editorAdaptor.getSearchAndReplaceService().removeHighlighting();
@@ -81,7 +101,7 @@ public class SearchResultMotion extends CountAwareMotion {
         if (editorAdaptor.getConfiguration().get(Options.SEARCH_HIGHLIGHT)) {
             editorAdaptor.getSearchAndReplaceService().highlight(search);
         }
-        return search.getSearchOffset().apply(editorAdaptor.getModelContent(), result);
+        return offset.apply(modelContent, result);
     }
 
     public BorderPolicy borderPolicy() {

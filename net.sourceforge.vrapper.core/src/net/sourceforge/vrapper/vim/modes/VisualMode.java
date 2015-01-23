@@ -80,7 +80,11 @@ public class VisualMode extends AbstractVisualMode {
         @SuppressWarnings("unchecked")
         State<Motion> motions = union(
                 leafState(' ', MoveRightAcrossLines.INSTANCE_BEHIND_CHAR),
-                transitionState('g', leafState('e', MoveWordEndLeft.INSTANCE_VISUAL)),
+                transitionState('g',
+                        state(
+                            leafBind('e', MoveWordEndLeft.INSTANCE_VISUAL),
+                            leafBind('n', SearchResultMotion.NEXT_END),
+                            leafBind('N', SearchResultMotion.PREVIOUS_BEGIN))),
                 motions());
         return new VisualMotionState(Motion2VMC.CHARWISE, motions);
     }
