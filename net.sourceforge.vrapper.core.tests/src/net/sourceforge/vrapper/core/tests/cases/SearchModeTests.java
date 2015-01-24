@@ -202,4 +202,104 @@ public class SearchModeTests extends VisualTestCase {
                 "",'c', "amelCase CamelCase camelcase",
                 "camelCase ",'C', "amelCase camelcase");
     }
+
+    @Test
+    public void testGnTextObject() {
+        checkCommand(forKeySeq("/th<CR>"),
+                "I ", 'c', "ouldn't live without this\nfull-range three-linear variable.",
+                "I couldn't live wi", 't', "hout this\nfull-range three-linear variable.");
+        executeCommand(forKeySeq("gn"));
+        assertVisualResult(content.getText(),
+                false, "I couldn't live wi", "th", "out this\nfull-range three-linear variable.");
+        executeCommand(forKeySeq("gn"));
+        assertVisualResult(content.getText(),
+                false, "I couldn't live wi", "thout th", "is\nfull-range three-linear variable.");
+        executeCommand(forKeySeq("<ESC><ESC>"));
+
+        // Check that match is completely selected.
+        checkCommand(forKeySeq("/again<CR>"),
+                "Her", 'e', " again to go\nHere again to go\nHere again to go\nHere again to go",
+                "Here ", 'a', "gain to go\nHere again to go\nHere again to go\nHere again to go");
+        executeCommand(forKeySeq("gn"));
+        assertVisualResult(content.getText(),
+                false, "Here ", "again", " to go\nHere again to go\nHere again to go\nHere again to go");
+        // Check that entire match gets selected when in middle of 'again'
+        executeCommand(forKeySeq("<ESC>b2lgn"));
+        assertVisualResult(content.getText(),
+                false, "Here ", "again", " to go\nHere again to go\nHere again to go\nHere again to go");
+        // Select if cursor is before next match
+        executeCommand(forKeySeq("<ESC>2bgn"));
+        assertVisualResult(content.getText(),
+                false, "Here ", "again", " to go\nHere again to go\nHere again to go\nHere again to go");
+    }
+
+    @Test
+    public void testGnCountTextObject() {
+        checkCommand(forKeySeq("/th<CR>"),
+                "I ", 'c', "ouldn't live without this\nfull-range three-linear variable.",
+                "I couldn't live wi", 't', "hout this\nfull-range three-linear variable.");
+        checkCommand(forKeySeq("dgn"),
+                "I couldn't live wi", 't', "hout this\nfull-range three-linear variable.",
+                "I couldn't live wi", 'o', "ut this\nfull-range three-linear variable.");
+        checkCommand(forKeySeq("d2gn"),
+                "I couldn't live wi", 'o', "ut this\nfull-range three-linear variable.",
+                "I couldn't live wiout this\nfull-range ", 'r', "ee-linear variable.");
+        // Make sure that the match we're on is also counted
+        checkCommand(forKeySeq("d2gn"),
+                "I couldn't live wiout ", 't', "his\nfull-range three-linear variable.",
+                "I couldn't live wiout this\nfull-range ", 'r', "ee-linear variable.");
+        checkCommand(forKeySeq("d3gn"),
+                "I couldn't live wi", 't', "hout this\nfull-range three-linear variable.",
+                "I couldn't live without this\nfull-range ", 'r', "ee-linear variable.");
+    }
+
+    @Test
+    public void testGNTextObject() {
+        checkCommand(forKeySeq("/th<CR>"),
+                "I couldn't live without th", 'i', "s\nfull-range three-linear variable.",
+                "I couldn't live without this\nfull-range ", 't', "hree-linear variable.");
+        executeCommand(forKeySeq("gN"));
+        assertVisualResult(content.getText(),
+                true, "I couldn't live without this\nfull-range ", "th", "ree-linear variable.");
+        executeCommand(forKeySeq("gN"));
+        assertVisualResult(content.getText(),
+                true, "I couldn't live without ", "this\nfull-range th", "ree-linear variable.");
+        executeCommand(forKeySeq("<ESC><ESC>"));
+
+        // Check that match is completely selected.
+        checkCommand(forKeySeq("/again<CR>"),
+                "Her", 'e', " again to go\nHere again to go\nHere again to go\nHere again to go",
+                "Here ", 'a', "gain to go\nHere again to go\nHere again to go\nHere again to go");
+        executeCommand(forKeySeq("gN"));
+        assertVisualResult(content.getText(),
+                true, "Here ", "again", " to go\nHere again to go\nHere again to go\nHere again to go");
+        // Check that entire match gets selected when in middle of 'again'
+        executeCommand(forKeySeq("<ESC>2lgN"));
+        assertVisualResult(content.getText(),
+                true, "Here ", "again", " to go\nHere again to go\nHere again to go\nHere again to go");
+        // Select if cursor is after previous match
+        executeCommand(forKeySeq("<ESC>2wgN"));
+        assertVisualResult(content.getText(),
+                true, "Here ", "again", " to go\nHere again to go\nHere again to go\nHere again to go");
+    }
+
+    @Test
+    public void testGNCountTextObject() {
+        checkCommand(forKeySeq("/th<CR>"),
+                "I ", 'c', "ouldn't live without this\nfull-range three-linear variable.",
+                "I couldn't live wi", 't', "hout this\nfull-range three-linear variable.");
+        checkCommand(forKeySeq("dgN"),
+                "I couldn't live wi", 't', "hout this\nfull-range three-linear variable.",
+                "I couldn't live wi", 'o', "ut this\nfull-range three-linear variable.");
+        checkCommand(forKeySeq("d2gN"),
+                "I couldn't live wiout this\nfull-range three-linear variable", '.', "",
+                "I couldn't live wiout ", 'i', "s\nfull-range three-linear variable.");
+        // Make sure that the match we're on is also counted
+        checkCommand(forKeySeq("d2gN"),
+                "I couldn't live wiout this\nfull-range t", 'h', "ree-linear variable.",
+                "I couldn't live wiout ", 'i', "s\nfull-range three-linear variable.");
+        checkCommand(forKeySeq("d3gN"),
+                "I couldn't live without this\nfull-range t", 'h', "ree-linear variable.",
+                "I couldn't live wi", 'o', "ut this\nfull-range three-linear variable.");
+    }
 }
