@@ -3,11 +3,13 @@ package net.sourceforge.vrapper.eclipse.platform;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.PatternSyntaxException;
 
 import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.Configuration;
 import net.sourceforge.vrapper.platform.HighlightingService;
 import net.sourceforge.vrapper.platform.SearchAndReplaceService;
+import net.sourceforge.vrapper.platform.VrapperPlatformException;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Search;
@@ -47,6 +49,8 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
             return new SearchResult(resultPosition, endPosition);
         } catch (BadLocationException e) {
             return new SearchResult(null, null);
+        } catch (PatternSyntaxException e) {
+            throw new VrapperPlatformException("Regex uses bad format: " + e.getMessage(), e);
         }
     }
     

@@ -4,6 +4,7 @@ import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.platform.Configuration.Option;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.SearchAndReplaceService;
+import net.sourceforge.vrapper.platform.VrapperPlatformException;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Search;
 import net.sourceforge.vrapper.utils.SearchOffset;
@@ -125,7 +126,14 @@ public class SearchMode extends AbstractCommandLineMode {
         CursorService cursorService = editorAdaptor.getCursorService();
         int fixedPos = startPos.getModelOffset() + (forward ? 1 : -1);
         Position startSearchPos = cursorService.newPositionForModelOffset(fixedPos, startPos, true);
-        SearchResult res = VimUtils.wrapAroundSearch(editorAdaptor, s, startSearchPos);
+        SearchResult res;
+        try {
+            res = VimUtils.wrapAroundSearch(editorAdaptor, s, startSearchPos);
+        } catch (VrapperPlatformException e) {
+            // This might happen if the user is modifying a regex, making it invalid. Bail out.
+            resetIncSearch();
+            return;
+        }
         if (res.isFound()) {
             SearchAndReplaceService sars = editorAdaptor.getSearchAndReplaceService();
             sars.incSearchhighlight(res.getStart(), res.getModelLength());
