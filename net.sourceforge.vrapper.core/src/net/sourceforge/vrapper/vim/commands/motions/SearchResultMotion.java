@@ -4,6 +4,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import net.sourceforge.vrapper.platform.Configuration;
+import net.sourceforge.vrapper.platform.SearchAndReplaceService;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.Position;
@@ -159,8 +160,14 @@ public class SearchResultMotion extends CountAwareMotion {
             if (search.isBackward() != backwards) {
                 search = search.reverse();
             }
-            Position position = editorAdaptor.getPosition();
-            SearchResult nextMatch = null;
+            SearchResult nextMatch = getCurrentMatch(editorAdaptor, search);
+            Position position;
+            if (nextMatch == null) {
+                position = editorAdaptor.getPosition();
+            } else {
+                position = nextMatch.getLeftBound();
+                count--;
+            }
             for (int i = 0; i < count; i++) {
                 nextMatch = doSearch(search, false, editorAdaptor, position);
                 if ( ! nextMatch.isFound()) {
@@ -172,7 +179,7 @@ public class SearchResultMotion extends CountAwareMotion {
             }
             Position start = nextMatch.getStart();
             Position end = nextMatch.getEnd();
-            // Flip selection
+            // Flip selection, though this only matters when SelectTextObjectCommand is calling us.
             if (backwards) {
                 start = nextMatch.getEnd();
                 end = nextMatch.getStart();
@@ -180,6 +187,45 @@ public class SearchResultMotion extends CountAwareMotion {
             TextRange result;
             result = new StartEndTextRange(start, end);
             return result;
+        }
+
+        /**
+         * Checks if the cursor is inside a match in which case we should select this first.
+         */
+        protected SearchResult getCurrentMatch(EditorAdaptor editorAdaptor,
+                Search search) {
+            SearchResult currentMatch = null;
+            Search tempSearch = search;
+            if ( ! search.isBackward()) {
+                tempSearch = search.reverse();
+            }
+            // Search backwards but allow to hit the current position.
+            SearchAndReplaceService searchService = editorAdaptor.getSearchAndReplaceService();
+            Position position = editorAdaptor.getPosition();
+            SearchResult testMatch = searchService.find(tempSearch, position);
+            int currentOffset = position.getModelOffset();
+            if (testMatch.isFound()
+                    && testMatch.getLeftBound().getModelOffset() <= currentOffset
+                    && testMatch.getRightBound().getModelOffset() > currentOffset) {
+                currentMatch = testMatch;
+            } else {
+                // Sometimes the Search Service skips the current match if we're in the middle.
+                // Move 'position' to the left and search from there to the right this time.
+                tempSearch = tempSearch.reverse();
+                if (testMatch.isFound()
+                    && testMatch.getRightBound().getModelOffset() <= currentOffset) {
+                    position = testMatch.getRightBound();
+                } else {
+                    position = position.setModelOffset(0);
+                }
+                testMatch = searchService.find(tempSearch, position);
+                if (testMatch.isFound()
+                        && testMatch.getLeftBound().getModelOffset() <= currentOffset
+                        && testMatch.getRightBound().getModelOffset() > currentOffset) {
+                    currentMatch = testMatch;
+                }
+            }
+            return currentMatch;
         }
 
         @Override
