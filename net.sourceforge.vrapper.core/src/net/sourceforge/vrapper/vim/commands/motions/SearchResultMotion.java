@@ -175,7 +175,7 @@ public class SearchResultMotion extends CountAwareMotion {
                     throw new CommandExecutionException(
                             String.format(NOT_FOUND_MESSAGE, search.getKeyword()));
                 }
-                position = nextMatch.getEnd();
+                position = nextMatch.getLeftBound();
             }
             Position start = nextMatch.getStart();
             Position end = nextMatch.getEnd();
