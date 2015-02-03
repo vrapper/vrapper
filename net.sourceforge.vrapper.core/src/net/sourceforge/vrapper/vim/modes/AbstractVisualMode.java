@@ -119,7 +119,11 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
         }
         super.enterMode(hints);
         if (onEnterCommand != null) {
-            super.executeCommand(onEnterCommand.getCommand());
+            try {
+                super.executeCommand(onEnterCommand.getCommand());
+            } catch (final CommandExecutionException e) {
+                editorAdaptor.getUserInterfaceService().setErrorMessage(e.getMessage());
+            }
         }
         fixCaret();
     }
