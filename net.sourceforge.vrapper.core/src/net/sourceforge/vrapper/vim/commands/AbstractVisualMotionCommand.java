@@ -19,15 +19,18 @@ public abstract class AbstractVisualMotionCommand extends MotionCommand {
             throws CommandExecutionException {
         Object redrawLock = new Object();
         ViewportService viewportService = editorAdaptor.getViewportService();
+        Selection oldSelection = editorAdaptor.getSelection();
         try {
             viewportService.setRepaint(false);
             viewportService.lockRepaint(redrawLock);
 
-            Selection oldSelection = editorAdaptor.getSelection();
             editorAdaptor.setPosition(oldSelection.getTo(), StickyColumnPolicy.NEVER);
             super.execute(editorAdaptor, count);
             extendSelection(editorAdaptor, oldSelection, count);
 
+        } catch (CommandExecutionException e) {
+            editorAdaptor.setSelection(oldSelection);
+            throw e;
         } finally {
             viewportService.unlockRepaint(redrawLock);
             viewportService.setRepaint(true);
