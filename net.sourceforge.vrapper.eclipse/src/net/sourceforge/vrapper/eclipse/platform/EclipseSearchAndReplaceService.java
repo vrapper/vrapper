@@ -61,40 +61,31 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
         final boolean reportMatches = flags.contains("n");
         final boolean caseSensitive = isCaseSensitive(toFind, flags);
 
-        int replaceLength = reportMatches ? toFind.length() : replace.length();
-        //each time we perform a replace,
-        //how many characters will be added/removed?
-        int lengthDiff = replaceLength - toFind.length();
-        int match;
         int numReplaces = 0;
         toFind = convertRegexSearch(toFind);
+        IRegion result;
         try {
-            while(start < end) {
-                IRegion result = adapter.find(start, toFind, true, caseSensitive, false, true);
-                if(result != null && result.getOffset() < end) {
-                    match = result.getOffset();
-                    numReplaces++;
-                    if(! reportMatches) {
-                        adapter.replace(replace, true);
-                    }
-
-                    if(replaceAll) {
-                        //don't match on the replacement string
-                        //when we come around again
-                        // (s/foo/barfoo/g)
-                        start = match + replaceLength;
-                        //the offset for the end of this line has changed
-                        end += lengthDiff;
-                    }
-                    else {
-                        //if not global, we've performed our one replace
-                        break;
-                    }
+            result = adapter.find(start, toFind, true, caseSensitive, false, true);
+            if (result != null && result.getOffset() < end) {
+                numReplaces++;
+                if ( ! reportMatches) {
+                    IRegion replacedresult = adapter.replace(replace, true);
+                    // Fix end position when line gets longer or shorter
+                    end = end + (replacedresult.getLength() - result.getLength());
+                    result = replacedresult;
                 }
-                else {
-                    //no match found
-                    break;
+                result = adapter.find(result.getOffset() + result.getLength(),
+                        toFind, true, caseSensitive, false, true);
+            }
+            while (replaceAll && result != null && result.getOffset() < end) {
+                numReplaces++;
+                if ( ! reportMatches) {
+                    IRegion replacedresult = adapter.replace(replace, true);
+                    end = end + (replacedresult.getLength() - result.getLength());
+                    result = replacedresult;
                 }
+                result = adapter.find(result.getOffset() + result.getLength(),
+                        toFind, true, caseSensitive, false, true);
             }
         } catch (BadLocationException e) {
             VrapperLog.error("Failed to replace for " + line, e);
