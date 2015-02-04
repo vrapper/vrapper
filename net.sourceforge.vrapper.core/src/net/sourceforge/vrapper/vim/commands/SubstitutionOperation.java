@@ -96,13 +96,16 @@ public class SubstitutionOperation extends SimpleTextOperation {
 			editorAdaptor.getHistory().endCompoundChange();
 		}
 		
-		if(numReplaces == 0) {
+		if (numReplaces == 0) {
 			editorAdaptor.getUserInterfaceService().setErrorMessage("'"+subDef.find+"' not found");
-		}
-		else if(lineReplaceCount > 0) {
-		    String message = numReplaces + " ";
-		    message += subDef.flags.contains("n") ? "matches" : "substitutions";
-		    message += " on " + lineReplaceCount + " lines";
+		} else {
+			String message = numReplaces + " ";
+			message += subDef.flags.contains("n") ? "matches" : "substitutions";
+			if (lineReplaceCount > 1) {
+				message += " on " + lineReplaceCount + " lines";
+			} else {
+				message += " on 1 line";
+			}
 			editorAdaptor.getUserInterfaceService().setInfoMessage(message);
 		}
 		
