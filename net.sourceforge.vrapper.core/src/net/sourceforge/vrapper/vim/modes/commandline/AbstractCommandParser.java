@@ -78,14 +78,6 @@ public abstract class AbstractCommandParser {
             String next = history.getNext();
             setCommandFromHistory(next);
         }});
-        editMap.put(KEY_BACKSP, new KeyHandler() { public void handleKey() {
-            if (commandLine.getContents().length() == 0) {
-                editor.changeModeSafely(NormalMode.NAME);
-            } else {
-                commandLine.erase();
-            }
-            modified = true;
-        }});
         editMap.put(KEY_LEFT, new KeyHandler() { public void handleKey() {
             commandLine.addOffsetToPosition(-1);
         }});
@@ -191,6 +183,13 @@ public abstract class AbstractCommandParser {
         } else if (pasteRegister && ! e.equals(KEY_CTRL_R)) {
             pasteRegister = false;
             commandLine.setMode(CommandLineMode.DEFAULT);
+        } else if (e.equals(KEY_BACKSP)) {
+            if (commandLine.getContents().length() == 0) {
+                handleExit(null, true);
+            } else {
+                commandLine.erase();
+            }
+            modified = true;
         } else if (e.equals(KEY_RETURN) || e.equals(KEY_ESCAPE)) {
             handleExit(c, e.equals(KEY_ESCAPE));
         } else {
