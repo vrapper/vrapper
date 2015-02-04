@@ -210,7 +210,6 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener,
 
     @Override
     public void close() {
-        commandLineText.setVisible(false);
         commandLineText.setEditable(true);
         registerModeSelection = null;
         prompt = "";
@@ -223,6 +222,16 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener,
         copyItem.setEnabled(false);
         cutItem.setEnabled(false);
         pasteItem.setEnabled(true);
+
+        // Workaround for #508: "Cancelling search from visual mode won't return to visual mode"
+        // If we set this widget invisible in the context of e.g. an <ESC> keypress, GTK+ will think
+        // the widget is not interested and send a second <ESC> keypress event to Vrapper,
+        // effectively quitting visual mode. Running this as an asynchronous job keeps GTK+ unaware.
+        Display.getCurrent().asyncExec(new Runnable() {
+            public void run() {
+                commandLineText.setVisible(false);
+            }
+        });
     }
 
     @Override
