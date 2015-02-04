@@ -185,13 +185,13 @@ public abstract class AbstractCommandParser {
             commandLine.setMode(CommandLineMode.DEFAULT);
         } else if (e.equals(KEY_BACKSP)) {
             if (commandLine.getContents().length() == 0) {
-                handleExit(null, true);
+                handleExit(null);
             } else {
                 commandLine.erase();
             }
             modified = true;
         } else if (e.equals(KEY_RETURN) || e.equals(KEY_ESCAPE)) {
-            handleExit(c, e.equals(KEY_ESCAPE));
+            handleExit(c);
         } else {
             if ( ! pasteRegister) {
                 commandLine.setMode(CommandLineMode.DEFAULT);
@@ -260,12 +260,11 @@ public abstract class AbstractCommandParser {
     /**
      * Runs all exit logic, like switching to normal mode and saving the selection.
      * Implementors may override this function to do custom exit logic.
-     * @param parsedCommand If <code>forcedExit</code> is false, this parameter contains the result
-     *     of the {@link #parseAndExecute(String, String)} method. If it is true, this parameter is
-     *     null.
-     * @param forcedExit whether this mode was quit by pressing <code>&lt;Escape&gt;</code>.
+     * @param parsedCommand this parameter contains the result of the
+     *     {@link #parseAndExecute(String, String)} method if <code>&lt;Return&gt;</code> was
+     *     pressed. In all other cases it is null.
      */
-    protected void handleExit(Command parsedCommand, boolean forcedExit) {
+    protected void handleExit(Command parsedCommand) {
         //Pressing return on an empty command line quits most modes rather than execute a command
         if (parsedCommand == null && isFromVisual) {
             // Fix caret position, clear selection.
