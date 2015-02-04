@@ -55,84 +55,84 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
     }
     
     public int replace(LineInformation line, String toFind, String replace, String flags) {
-    	int start = line.getBeginOffset();
-    	int end = line.getEndOffset();
-    	final boolean replaceAll = flags.contains("g");
+        int start = line.getBeginOffset();
+        int end = line.getEndOffset();
+        final boolean replaceAll = flags.contains("g");
         final boolean reportMatches = flags.contains("n");
         final boolean caseSensitive = isCaseSensitive(toFind, flags);
 
-    	int replaceLength = reportMatches ? toFind.length() : replace.length();
-    	//each time we perform a replace,
-    	//how many characters will be added/removed?
-    	int lengthDiff = replaceLength - toFind.length();
-    	int match;
-    	int numReplaces = 0;
-    	toFind = convertRegexSearch(toFind);
-    	try {
-    		while(start < end) {
-    			IRegion result = adapter.find(start, toFind, true, caseSensitive, false, true);
-    			if(result != null && result.getOffset() < end) {
-    				match = result.getOffset();
-    				numReplaces++;
-    				if(! reportMatches) {
-    					adapter.replace(replace, true);
-    				}
+        int replaceLength = reportMatches ? toFind.length() : replace.length();
+        //each time we perform a replace,
+        //how many characters will be added/removed?
+        int lengthDiff = replaceLength - toFind.length();
+        int match;
+        int numReplaces = 0;
+        toFind = convertRegexSearch(toFind);
+        try {
+            while(start < end) {
+                IRegion result = adapter.find(start, toFind, true, caseSensitive, false, true);
+                if(result != null && result.getOffset() < end) {
+                    match = result.getOffset();
+                    numReplaces++;
+                    if(! reportMatches) {
+                        adapter.replace(replace, true);
+                    }
 
-    				if(replaceAll) {
-    					//don't match on the replacement string
-    					//when we come around again
-    					// (s/foo/barfoo/g)
-    					start = match + replaceLength;
-    					//the offset for the end of this line has changed
-    					end += lengthDiff;
-    				}
-    				else {
-    					//if not global, we've performed our one replace
-    					break;
-    				}
-    			}
-    			else {
-    				//no match found
-    				break;
-    			}
-    		}
+                    if(replaceAll) {
+                        //don't match on the replacement string
+                        //when we come around again
+                        // (s/foo/barfoo/g)
+                        start = match + replaceLength;
+                        //the offset for the end of this line has changed
+                        end += lengthDiff;
+                    }
+                    else {
+                        //if not global, we've performed our one replace
+                        break;
+                    }
+                }
+                else {
+                    //no match found
+                    break;
+                }
+            }
         } catch (BadLocationException e) {
             VrapperLog.error("Failed to replace for " + line, e);
         }
-    	
-    	return numReplaces;
+        
+        return numReplaces;
     }
 
-	public boolean isCaseSensitive(String toFind, String flags) {
-		boolean caseSensitive = !sharedConfiguration.get(Options.IGNORE_CASE)
+    public boolean isCaseSensitive(String toFind, String flags) {
+        boolean caseSensitive = !sharedConfiguration.get(Options.IGNORE_CASE)
             || (sharedConfiguration.get(Options.SMART_CASE)
                 && StringUtils.containsUppercase(toFind));
         if (flags.contains("i"))
             caseSensitive = false;
         if (flags.contains("I"))
             caseSensitive = true;
-		return caseSensitive;
-	}
+        return caseSensitive;
+    }
     
     public boolean substitute(int start, String toFind, String flags, String toReplace) {
-    	boolean success = false;
-    	try {
-    		toFind = convertRegexSearch(toFind);
-			IRegion result = adapter.find(start, toFind, true, isCaseSensitive(toFind, flags), false, true);
-			if(result != null) {
-				adapter.replace(toReplace, true);
-				success = true;
-			}
-		} catch (BadLocationException e) {
-			VrapperLog.error("Failed to substitute starting from M" + start, e);
-		}
-    	return success;
+        boolean success = false;
+        try {
+            toFind = convertRegexSearch(toFind);
+            IRegion result = adapter.find(start, toFind, true, isCaseSensitive(toFind, flags), false, true);
+            if(result != null) {
+                adapter.replace(toReplace, true);
+                success = true;
+            }
+        } catch (BadLocationException e) {
+            VrapperLog.error("Failed to substitute starting from M" + start, e);
+        }
+        return success;
     }
 
     private IRegion find(Search search, int begin) throws BadLocationException {
-    	if(search.isRegExSearch()) {
-    		search = convertRegexSearch(search);
-    	}
+        if(search.isRegExSearch()) {
+            search = convertRegexSearch(search);
+        }
         IRegion result = adapter.find(
                     begin, search.getKeyword(),
                     !search.isBackward(), search.isCaseSensitive(),
@@ -148,15 +148,15 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
      * (Feature pending... add support for 'magic' and 'very magic')
      */
     private Search convertRegexSearch(Search search) {
-    	String keyword = search.getKeyword();
-    	keyword = convertRegexSearch(keyword);
-    	return new Search(keyword, search.isBackward(), search.isWholeWord(),
+        String keyword = search.getKeyword();
+        keyword = convertRegexSearch(keyword);
+        return new Search(keyword, search.isBackward(), search.isWholeWord(),
             search.isCaseSensitive(), search.getSearchOffset(), search.isRegExSearch());
     }
     private String convertRegexSearch(String keyword) {
-    	//in Vim, '\<' and '\>' are word boundaries
-    	//in Eclipse, '\b' is word boundaries
-    	return keyword.replaceAll("\\\\<|\\\\>", "\\\\b");
+        //in Vim, '\<' and '\>' are word boundaries
+        //in Eclipse, '\b' is word boundaries
+        return keyword.replaceAll("\\\\<|\\\\>", "\\\\b");
     }
 
     public void removeHighlighting() {
