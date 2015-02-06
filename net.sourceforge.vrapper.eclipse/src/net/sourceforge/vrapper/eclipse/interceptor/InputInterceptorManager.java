@@ -302,7 +302,8 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
         else {
             //changing tab back to existing editor, should we return to NormalMode?
             EditorAdaptor vim = input.getEditorAdaptor();
-            if(vim.getConfiguration().get(Options.START_NORMAL_MODE)) {
+            if (VrapperPlugin.isVrapperEnabled()
+                    && vim.getConfiguration().get(Options.START_NORMAL_MODE)) {
                 vim.setSelection(null);
                 vim.changeModeSafely(NormalMode.NAME);
             }
