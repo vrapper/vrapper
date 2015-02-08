@@ -39,6 +39,8 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener,
     private MenuItem copyItem;
     private MenuItem pasteItem;
     private MenuItem selectAllItem;
+    /** Whether the command line should be shown. Only to be read/modified from the UI thread! */
+    private boolean isOpen;
     
     /**
      * Signals that a "register mode marker" was inserted at the start of the selection if set.
@@ -179,6 +181,7 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener,
     }
 
     public void open() {
+        isOpen = true;
         commandLineText.setVisible(true);
         commandLineText.getParent().redraw();
         //The expected size of the command line is only known when the parent is drawn, paint async
@@ -210,6 +213,7 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener,
 
     @Override
     public void close() {
+        isOpen = false;
         commandLineText.setEditable(true);
         registerModeSelection = null;
         prompt = "";
@@ -229,7 +233,11 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener,
         // effectively quitting visual mode. Running this as an asynchronous job keeps GTK+ unaware.
         Display.getCurrent().asyncExec(new Runnable() {
             public void run() {
-                commandLineText.setVisible(false);
+                // It's possible that we switched between command line modes. In that case we
+                // receive a close and open event within the same UI job, so keep the widget open.
+                if ( ! isOpen) {
+                    commandLineText.setVisible(false);
+                }
             }
         });
     }
