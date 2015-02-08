@@ -1,4 +1,22 @@
 <div class="newsbox">
+    <div class="date">2015-02-08</div>
+    <h4>0.52.0 Released</h4>
+    <p>While December was extremely slow for us, we did have some code changes
+    in January so I'm sticking with our two-month release cycle and releasing
+    0.52.0 today.  The following changes are in 0.52.0:</p>
+
+    <ul>
+        <li>Added support for 'gn' and 'gN'</li>
+        <li>Added support for ':buffer#' command and Ctrl-^</li>
+        <li>Added support for 'C' in visual mode (alias for 'c' or 's')</li>
+        <li>Changed ':ls' command to be ':files'</li>
+        <li>Changed ':buffers' and ':ls' to be more vim-like</li>
+        <li>Fixed issue where '/e' in search didn't work with regex</li>
+        <li>Fixed issue where '&lt;c-=&gt;' couldn't be used in a mapping</li>
+        <li>Fixed issue where canceling a search would also clear the visual selection</li>
+    </ul>
+</div>
+<div class="newsbox">
     <div class="date">2015-01-04</div>
     <h4>(Lack of) Status Update</h4>
     <p>It's been a month since 0.50.0 was released so I figured I should stick
