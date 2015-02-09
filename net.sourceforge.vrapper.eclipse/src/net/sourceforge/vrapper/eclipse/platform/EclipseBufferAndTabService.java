@@ -3,14 +3,17 @@ package net.sourceforge.vrapper.eclipse.platform;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Queue;
 
 import net.sourceforge.vrapper.eclipse.interceptor.BufferInfo;
 import net.sourceforge.vrapper.eclipse.interceptor.BufferManager;
 import net.sourceforge.vrapper.eclipse.interceptor.NestedEditorPartInfo;
 import net.sourceforge.vrapper.platform.Buffer;
 import net.sourceforge.vrapper.platform.BufferAndTabService;
+import net.sourceforge.vrapper.platform.BufferDoException;
 import net.sourceforge.vrapper.platform.Tab;
 import net.sourceforge.vrapper.platform.VrapperPlatformException;
+import net.sourceforge.vrapper.vim.modes.commandline.Evaluator;
 
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
@@ -162,6 +165,14 @@ public class EclipseBufferAndTabService implements BufferAndTabService {
             result.add(eclipseBuffer);
         }
         return result;
+    }
+
+    /* (non-Javadoc)
+     * @see net.sourceforge.vrapper.eclipse.platform.BufferAndTabService#doInBuffers(..)
+     */
+    @Override
+    public List<Object> doInBuffers(boolean initialize, Queue<String> command, Evaluator code) throws BufferDoException {
+        return null;
     }
 
     /* (non-Javadoc)
