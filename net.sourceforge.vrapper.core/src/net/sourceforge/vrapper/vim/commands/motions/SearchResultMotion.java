@@ -41,16 +41,20 @@ public class SearchResultMotion extends CountAwareMotion {
     private boolean includesTarget;
     private boolean lineWise;
     private SearchOffset fixedOffset;
+    private final boolean restoreHighlighting;
 
     protected SearchResultMotion(boolean reverse) {
         super();
         this.reverse = reverse;
+        // It might be cleaner if this setting were a constructor parameter, but it doesn't matter.
+        restoreHighlighting = true;
     }
 
-    public SearchResultMotion(SearchOffset offset) {
+    protected SearchResultMotion(SearchOffset offset) {
         this.fixedOffset = offset;
         this.forcedBackwards = (offset instanceof Begin);
         reverse = false;
+        restoreHighlighting = false;
     }
 
     @Override
@@ -99,7 +103,7 @@ public class SearchResultMotion extends CountAwareMotion {
             }
             position = result.getStart();
         }
-        if (editorAdaptor.getConfiguration().get(Options.SEARCH_HIGHLIGHT)) {
+        if (restoreHighlighting && editorAdaptor.getConfiguration().get(Options.SEARCH_HIGHLIGHT)) {
             editorAdaptor.getSearchAndReplaceService().highlight(search);
         }
         return offset.apply(modelContent, result);
@@ -192,8 +196,7 @@ public class SearchResultMotion extends CountAwareMotion {
         /**
          * Checks if the cursor is inside a match in which case we should select this first.
          */
-        protected SearchResult getCurrentMatch(EditorAdaptor editorAdaptor,
-                Search search) {
+        protected SearchResult getCurrentMatch(EditorAdaptor editorAdaptor, Search search) {
             SearchResult currentMatch = null;
             Search tempSearch = search;
             if ( ! search.isBackward()) {
