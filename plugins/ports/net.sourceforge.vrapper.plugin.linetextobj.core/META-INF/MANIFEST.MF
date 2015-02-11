@@ -2,9 +2,9 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Vrapper linetextobj Plug-in Core
 Bundle-SymbolicName: net.sourceforge.vrapper.plugin.linetextobj.core;singleton:=true
-Bundle-Version: 0.52.0
+Bundle-Version: 0.52.1
 Export-Package: net.sourceforge.vrapper.plugin.linetextobj.commands,
  net.sourceforge.vrapper.plugin.linetextobj.platform
-Require-Bundle: net.sourceforge.vrapper.core;bundle-version="0.52.0";visibility:=reexport
+Require-Bundle: net.sourceforge.vrapper.core;bundle-version="0.52.1";visibility:=reexport
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Eclipse-BuddyPolicy: dependent
