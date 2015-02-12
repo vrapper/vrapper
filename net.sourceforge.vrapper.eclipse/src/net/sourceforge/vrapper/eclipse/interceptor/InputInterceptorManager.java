@@ -403,6 +403,10 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
             boolean updateLastSeen) {
         IEditorInput input = editorPart.getEditorInput();
         IWorkbenchPage page = editorPart.getEditorSite().getPage();
+        // Spotted in the wild, some child editors of a multi-page editor don't have an input.
+        if (input == null) {
+            return;
+        }
 
         IWorkbenchPartReference reference;
         if (nestingInfo.getParentEditor().equals(editorPart)) {

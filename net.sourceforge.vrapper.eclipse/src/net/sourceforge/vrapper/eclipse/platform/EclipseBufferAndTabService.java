@@ -78,7 +78,7 @@ public class EclipseBufferAndTabService implements BufferAndTabService {
     }
 
     public void setCurrentEditor(NestedEditorPartInfo nestingInfo, IEditorPart activeEditor) {
-        if (activeEditor == null) {
+        if (activeEditor == null || activeEditor.getEditorInput() == null) {
             return;
         }
         if (currentEditor == null) {
