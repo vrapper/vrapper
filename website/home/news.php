@@ -1,4 +1,21 @@
 <div class="newsbox">
+    <div class="date">2015-02-11</div>
+    <h4>0.52.1 Released</h4>
+    <p>I just released 0.52.0 a couple days ago but a number of people quickly
+    hit the same problem.  Certain command-line commands (such as :w and any
+    mappings to an :eclipseaction) caused the editor to lose focus.  This meant
+    you had to click your mouse within the editor to regain focus.  As Vim
+    users, we all know how frustrating it is when your hands have to leave the
+    keyboard to use the mouse.  So we fixed this issue and released 0.52.1 as
+    quickly as we could. We apologize for any inconvenience.</p>
+    
+    <p>The only difference between 0.52.0 and 0.52.1 is that single defect fix:</p>
+
+    <ul>
+        <li>Fixed issue where some command-line commands would cause the editor to lose focus</li>
+    </ul>
+</div>
+<div class="newsbox">
     <div class="date">2015-02-08</div>
     <h4>0.52.0 Released</h4>
     <p>While December was extremely slow for us, we did have some code changes
