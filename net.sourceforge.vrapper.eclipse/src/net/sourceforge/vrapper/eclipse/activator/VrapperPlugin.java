@@ -1,5 +1,6 @@
 package net.sourceforge.vrapper.eclipse.activator;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -80,6 +81,11 @@ public class VrapperPlugin extends AbstractUIPlugin implements IStartup, Log {
 
     public void unregisterEditor(IEditorPart part) {
         editorMap.remove(part);
+    }
+
+    /** Retrieve a read-only Map with all known editors. Don't cache this in a member variable! */
+    public Map<IEditorPart, EditorAdaptor> getKnownEditors() {
+        return Collections.unmodifiableMap(editorMap);
     }
 
     @Override

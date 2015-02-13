@@ -3,8 +3,10 @@ package net.sourceforge.vrapper.eclipse.platform;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 
+import net.sourceforge.vrapper.eclipse.activator.VrapperPlugin;
 import net.sourceforge.vrapper.eclipse.interceptor.BufferInfo;
 import net.sourceforge.vrapper.eclipse.interceptor.BufferManager;
 import net.sourceforge.vrapper.eclipse.interceptor.NestedEditorPartInfo;
@@ -13,10 +15,12 @@ import net.sourceforge.vrapper.platform.BufferAndTabService;
 import net.sourceforge.vrapper.platform.BufferDoException;
 import net.sourceforge.vrapper.platform.Tab;
 import net.sourceforge.vrapper.platform.VrapperPlatformException;
+import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.modes.commandline.Evaluator;
 
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IWorkbenchWindow;
 
 public class EclipseBufferAndTabService implements BufferAndTabService {
@@ -172,7 +176,27 @@ public class EclipseBufferAndTabService implements BufferAndTabService {
      */
     @Override
     public List<Object> doInBuffers(boolean initialize, Queue<String> command, Evaluator code) throws BufferDoException {
-        return null;
+        if (initialize) {
+            // NOTE: This is can be costly operation if you have 10+ files open from last session.
+            // Since all editors will be initialized, all Vrapper instances will be in buffer list.
+            IEditorReference[] references = workbenchWindow.getActivePage().getEditorReferences();
+            for (IEditorReference ref : references) {
+                ref.getEditor(true);
+            }
+        }
+        List<Object> result = new ArrayList<Object>();
+        Map<IEditorPart, EditorAdaptor> knownEditors = VrapperPlugin.getDefault().getKnownEditors();
+        for (Map.Entry<IEditorPart, EditorAdaptor> editorInfo : knownEditors.entrySet()) {
+            IEditorPart editor = editorInfo.getKey();
+            // Global list contains editors from other windows as well; filter those.
+            if (editor == null || editor.getSite() == null
+                    || ! workbenchWindow.equals(editor.getSite().getWorkbenchWindow())) {
+                continue;
+            }
+            EditorAdaptor editorAdaptor = editorInfo.getValue();
+            result.add(code.evaluate(editorAdaptor, command));
+        }
+        return result;
     }
 
     /* (non-Javadoc)
