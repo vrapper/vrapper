@@ -136,7 +136,7 @@ public class CommandLineParser extends AbstractCommandParser {
             }
         };
         Evaluator chDir = new Evaluator() {
-            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
+            public Object evaluate(EditorAdaptor vim, Queue<String> command) throws CommandExecutionException {
             	String dir = command.isEmpty() ? "/" : command.poll();
             	vim.getRegisterManager().setCurrentWorkingDirectory(dir);
             	//immediately perform a pwd to show new dir
@@ -988,7 +988,7 @@ public class CommandLineParser extends AbstractCommandParser {
             this.onFalse = onFalse;
         }
 
-        public Object evaluate(EditorAdaptor vim, Queue<String> command) {
+        public Object evaluate(EditorAdaptor vim, Queue<String> command) throws CommandExecutionException {
             return vim.getConfiguration().get(option)
                  ? onTrue.evaluate(vim, command)
                  : onFalse.evaluate(vim, command);

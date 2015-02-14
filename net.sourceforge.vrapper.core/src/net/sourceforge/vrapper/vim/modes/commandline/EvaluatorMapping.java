@@ -7,6 +7,7 @@ import java.util.Queue;
 
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.Command;
+import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.UserCommandCommand;
 
 public class EvaluatorMapping implements Evaluator {
@@ -24,7 +25,7 @@ public class EvaluatorMapping implements Evaluator {
         this.defaultCase = defaultCase;
     }
 
-    public Object evaluate(EditorAdaptor vim, Queue<String> command) {
+    public Object evaluate(EditorAdaptor vim, Queue<String> command) throws CommandExecutionException {
         if (!command.isEmpty()) {
             Evaluator a = actions.get(command.peek());
             if (a != null) {
