@@ -16,6 +16,7 @@ import net.sourceforge.vrapper.platform.BufferDoException;
 import net.sourceforge.vrapper.platform.Tab;
 import net.sourceforge.vrapper.platform.VrapperPlatformException;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.modes.commandline.Evaluator;
 
 import org.eclipse.ui.IEditorInput;
@@ -194,7 +195,20 @@ public class EclipseBufferAndTabService implements BufferAndTabService {
                 continue;
             }
             EditorAdaptor editorAdaptor = editorInfo.getValue();
-            result.add(code.evaluate(editorAdaptor, command));
+            try {
+                result.add(code.evaluate(editorAdaptor, command));
+            } catch (CommandExecutionException e) {
+                // This might be problematic with duplicate editors as only one is in buffer list.
+                if (editor.getEditorInput() != null) {
+                    BufferInfo info = bufferIdManager.getBuffer(editor.getEditorInput());
+                    if (info != null && editor.equals(info.lastSeenEditor.get())) {
+                        bufferIdManager.activate(info);
+                        EclipseBuffer buffer = new EclipseBuffer(info);
+                        throw new BufferDoException(result, editorAdaptor, buffer, e);
+                    }
+                }
+                throw new BufferDoException(result, editorAdaptor, e);
+            }
         }
         return result;
     }
