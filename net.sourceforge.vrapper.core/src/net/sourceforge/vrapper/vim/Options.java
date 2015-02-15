@@ -1,6 +1,7 @@
 package net.sourceforge.vrapper.vim;
 
 import static net.sourceforge.vrapper.platform.Configuration.Option.bool;
+import static net.sourceforge.vrapper.platform.Configuration.Option.globalBool;
 import static net.sourceforge.vrapper.platform.Configuration.Option.globalString;
 import static net.sourceforge.vrapper.platform.Configuration.Option.globalStringSet;
 import static net.sourceforge.vrapper.platform.Configuration.Option.integer;
@@ -22,7 +23,7 @@ public interface Options {
     public static final Option<Boolean> ATOMIC_INSERT         = bool("atomicinsert", true,  "ati");
     public static final Option<Boolean> IGNORE_CASE           = bool("ignorecase",   false, "ic");
     public static final Option<Boolean> SMART_CASE            = bool("smartcase",    false, "scs");
-    public static final Option<Boolean> SEARCH_HIGHLIGHT      = bool("hlsearch",     false, "hls");
+    public static final Option<Boolean> SEARCH_HIGHLIGHT= globalBool("hlsearch",     false, "hls");
     public static final Option<Boolean> SEARCH_REGEX          = bool("regexsearch",  true,  "rxs");
     public static final Option<Boolean> INCREMENTAL_SEARCH    = bool("incsearch",    false, "is");
     public static final Option<Boolean> LINE_NUMBERS          = bool("number",       false, "nu");
