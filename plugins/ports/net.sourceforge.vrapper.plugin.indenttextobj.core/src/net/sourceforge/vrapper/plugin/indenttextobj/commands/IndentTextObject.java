@@ -37,9 +37,20 @@ public class IndentTextObject extends AbstractTextObject {
     public TextRange getRegion(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
     	TextContent model = editorAdaptor.getModelContent();
     	LineInformation cursorLine = model.getLineInformationOfOffset(editorAdaptor.getPosition().getModelOffset());
-    	int indentLength = VimUtils.getIndent(model, cursorLine).length();
+    	
+    	if(cursorLine.getLength() == 0) {
+    		//if cursor is on an empty line,
+    		//find the adjacent line (above or below)
+    		//with the most indentation
+    		LineInformation prev = model.getLineInformation(cursorLine.getNumber() -1);
+    		LineInformation next = model.getLineInformation(cursorLine.getNumber() +1);
+            int prevIndent = VimUtils.getIndent(model, prev).length();
+            int nextIndent = VimUtils.getIndent(model, next).length();
+    		cursorLine = prevIndent > nextIndent ? prev : next;
+    	}
 
     	//if no other lines match, default to current line
+    	int indentLength = VimUtils.getIndent(model, cursorLine).length();
     	int start = cursorLine.getBeginOffset();
     	int end = cursorLine.getEndOffset();
 
