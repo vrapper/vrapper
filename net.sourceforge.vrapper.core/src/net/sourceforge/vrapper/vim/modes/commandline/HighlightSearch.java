@@ -14,6 +14,13 @@ import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
  */
 public class HighlightSearch {
 
+    /** Highlighting happens for every active editor, clearing as well. */
+    public static final String SEARCH_HL_SCOPE_GLOBAL = "global";
+    /** Highlighting and clearing is always local to the current editor. */
+    public static final String SEARCH_HL_SCOPE_LOCAL = "local";
+    /** Only one editor can have active highlighting, clear is global. */
+    public static final String SEARCH_HL_SCOPE_CLEAR = "clear";
+
     /** Clears highlighting in one or more editors depending on the 'globalregisters' setting. */
     public static final Evaluator CLEAR_HIGHLIGHT = new ClearHighlightingEvaluator();
 
@@ -26,8 +33,9 @@ public class HighlightSearch {
         public Object evaluate(EditorAdaptor vim, Queue<String> command)
                 throws CommandExecutionException {
             LocalConfiguration configuration = vim.getConfiguration();
-            boolean useglobalregs  = configuration.get(Options.GLOBAL_REGISTERS);
-            if (useglobalregs) {
+            String hlScope  = configuration.get(Options.SEARCH_HL_SCOPE);
+            if (hlScope.equalsIgnoreCase(SEARCH_HL_SCOPE_CLEAR)
+                    || hlScope.equalsIgnoreCase(SEARCH_HL_SCOPE_GLOBAL)) {
                 try {
                     vim.getBufferAndTabService().doInBuffers(false, command, CLEAR_LOCAL_HL);
                 } catch (BufferDoException e) {

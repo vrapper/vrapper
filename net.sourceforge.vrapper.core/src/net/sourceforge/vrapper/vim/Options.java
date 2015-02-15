@@ -54,13 +54,14 @@ public interface Options {
 
     // String options:
     public static final Option<String> SYNC_MODIFIABLE = globalString("syncmodifiable", "nosync", "nosync, matchreadonly", "syncma");
-    public static final Option<String> SELECTION = string("selection", Selection.INCLUSIVE, Selection.SELECTION_OPTIONS, "sel");
+    public static final Option<String> SEARCH_HL_SCOPE = globalString("hlscope", "clear", "local,clear,global");
+    public static final Option<String> SELECTION =             string("selection", Selection.INCLUSIVE, Selection.SELECTION_OPTIONS, "sel");
     public static final Option<String> PATH      = stringNoConstraint("path", ".", "pa");
     public static final Option<String> GVIM_PATH = stringNoConstraint("gvimpath", "/usr/bin/gvim", "gvp");
     public static final Option<String> GVIM_ARGS = stringNoConstraint("gvimargs", "");
     public static final Option<String> KEYWORDS  = stringNoConstraint("iskeyword", "a-zA-Z0-9_\u00C0-\u017F", "isk");
     @SuppressWarnings("unchecked")
-    public static final Set<Option<String>> STRING_OPTIONS = set(SELECTION, PATH,
+    public static final Set<Option<String>> STRING_OPTIONS = set(SELECTION, SEARCH_HL_SCOPE, PATH,
             GVIM_PATH, GVIM_ARGS, KEYWORDS, SYNC_MODIFIABLE);
 
     // String-set options:
