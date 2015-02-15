@@ -108,20 +108,7 @@ public class CommandLineParser extends AbstractCommandParser {
         Evaluator vclear = new KeyMapper.Clear(AbstractVisualMode.KEYMAP_NAME);
         Evaluator iclear = new KeyMapper.Clear(InsertMode.KEYMAP_NAME);
         Command gotoEOF = new MotionCommand(GoToLineMotion.LAST_LINE);
-        Evaluator nohlsearch = new Evaluator() {
-            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
-                vim.getSearchAndReplaceService().removeHighlighting();
-                return null;
-            }
-        };
-        Evaluator hlsearch = new Evaluator() {
-            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
-                Search search = vim.getRegisterManager().getSearch();
-                if (search != null)
-                    vim.getSearchAndReplaceService().highlight(search);
-                return null;
-            }
-        };
+        Evaluator nohlsearch = HighlightSearch.CLEAR_HIGHLIGHT;
         final Evaluator printWorkingDir = new Evaluator() {
             public Object evaluate(EditorAdaptor vim, Queue<String> command) {
             	String dir;
@@ -435,8 +422,6 @@ public class CommandLineParser extends AbstractCommandParser {
         mapping.add("nohlsearch", nohlsearch);
         mapping.add("nohls", nohlsearch);
         mapping.add("noh", nohlsearch);
-        mapping.add("hlsearch", hlsearch);
-        mapping.add("hls", hlsearch);
         mapping.add("pwd", printWorkingDir);
         mapping.add("edit", editFile);
         mapping.add("new", editFile);
