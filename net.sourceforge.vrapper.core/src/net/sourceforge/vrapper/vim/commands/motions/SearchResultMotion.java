@@ -1,5 +1,6 @@
 package net.sourceforge.vrapper.vim.commands.motions;
 
+import java.util.LinkedList;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -22,6 +23,7 @@ import net.sourceforge.vrapper.vim.commands.AbstractTextObject;
 import net.sourceforge.vrapper.vim.commands.BorderPolicy;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.TextObject;
+import net.sourceforge.vrapper.vim.modes.commandline.HighlightSearch;
 
 public class SearchResultMotion extends CountAwareMotion {
 
@@ -93,6 +95,9 @@ public class SearchResultMotion extends CountAwareMotion {
         } else {
             position = offset.unapply(modelContent, editorAdaptor.getPosition(), result);
         }
+        if (restoreHighlighting && editorAdaptor.getConfiguration().get(Options.SEARCH_HIGHLIGHT)) {
+            HighlightSearch.HIGHLIGHT.evaluate(editorAdaptor, new LinkedList<String>());
+        }
         for (int i = 0; i < count; i++) {
             result = doSearch(search, shouldReverse, editorAdaptor, position);
             editorAdaptor.getRegisterManager().setLastSearchResult(result);
@@ -102,9 +107,6 @@ public class SearchResultMotion extends CountAwareMotion {
                         String.format(NOT_FOUND_MESSAGE, search.getKeyword()));
             }
             position = result.getStart();
-        }
-        if (restoreHighlighting && editorAdaptor.getConfiguration().get(Options.SEARCH_HIGHLIGHT)) {
-            editorAdaptor.getSearchAndReplaceService().highlight(search);
         }
         return offset.apply(modelContent, result);
     }

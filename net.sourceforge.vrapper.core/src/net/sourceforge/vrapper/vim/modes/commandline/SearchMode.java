@@ -1,5 +1,7 @@
 package net.sourceforge.vrapper.vim.modes.commandline;
 
+import java.util.LinkedList;
+
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.platform.Configuration.Option;
 import net.sourceforge.vrapper.platform.CursorService;
@@ -42,16 +44,24 @@ public class SearchMode extends AbstractCommandLineMode {
                     lastSearch = SearchCommandParser.createSearch(vim, lastSearch.getKeyword(),
                             lastSearch.isBackward(), lastSearch.isWholeWord(),
                             lastSearch.getSearchOffset());
+                    vim.getRegisterManager().setSearch(lastSearch);
                     
                     if (Options.SEARCH_HIGHLIGHT.equals(option) && Boolean.FALSE.equals(newValue)) {
-                        vim.getSearchAndReplaceService().removeHighlighting();
-                        
+                        try {
+                            HighlightSearch.CLEAR_HIGHLIGHT.evaluate(vim, new LinkedList<String>());
+                        } catch (CommandExecutionException e) {
+                            vim.getUserInterfaceService().setErrorMessage(e.getMessage());
+                        }
+
                     // Update highlights when enabled, as search might now match more things
                     } else if (vim.getConfiguration().get(Options.SEARCH_HIGHLIGHT)) {
-                        vim.getSearchAndReplaceService().highlight(lastSearch);
+                        try {
+                            HighlightSearch.HIGHLIGHT.evaluate(vim, new LinkedList<String>());
+                        } catch (CommandExecutionException e) {
+                            vim.getUserInterfaceService().setErrorMessage(e.getMessage());
+                        }
                     }
                 }
-                vim.getRegisterManager().setSearch(lastSearch);
             }
         }
     }
