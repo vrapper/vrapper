@@ -45,12 +45,13 @@ public interface SearchAndReplaceService {
 	boolean isCaseSensitive(String toFind, String flags);
 
 	/**
-	 * Highlights all matches of the given search.
+	 * Highlights all matches of the given search and removes previous highlights (for the current
+	 * editor).
 	 */
 	void highlight(Search search);
 
 	/**
-	 * Removes all decoration from the search results.
+	 * Removes all decoration from the search results (for the current editor).
 	 */
 	void removeHighlighting();
 
