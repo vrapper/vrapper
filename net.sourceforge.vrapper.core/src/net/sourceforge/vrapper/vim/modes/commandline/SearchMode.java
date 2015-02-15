@@ -37,6 +37,7 @@ public class SearchMode extends AbstractCommandLineMode {
             if (option.equals(Options.SMART_CASE)
                     || option.equals(Options.IGNORE_CASE)
                     || option.equals(Options.SEARCH_HIGHLIGHT)
+                    || option.equals(Options.SEARCH_HL_SCOPE)
                     || option.equals(Options.SEARCH_REGEX)) {
                 Search lastSearch = vim.getRegisterManager().getSearch();
                 // Update the search settings for the last/active search.
