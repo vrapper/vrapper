@@ -39,10 +39,10 @@ public interface Options {
     public static final Option<Boolean> SHIFT_ROUND           = bool("shiftround",   false, "sr");
     public static final Option<Boolean> CONTENT_ASSIST_MODE   = bool("contentassistmode", false, "cam");
     public static final Option<Boolean> START_NORMAL_MODE     = bool("startnormalmode",   false, "snm");
-    public static final Option<Boolean> UNDO_MOVES_CURSOR      = bool("undomovescursor",  true,  "umvc");
+    public static final Option<Boolean> UNDO_MOVES_CURSOR     = bool("undomovescursor",  true,  "umvc");
 
-    public static final Option<Boolean> MODIFIABLE            = localBool("modifiable", true, "ma");
-
+    public static final Option<Boolean> MODIFIABLE       = localBool("modifiable", true, "ma");
+    public static final Option<Boolean> GLOBAL_REGISTERS = localBool("globalregisters", true);
 
     @SuppressWarnings("unchecked")
     public static final Set<Option<Boolean>> BOOLEAN_OPTIONS = set(
@@ -50,7 +50,7 @@ public interface Options {
             SMART_CASE, SEARCH_HIGHLIGHT, SEARCH_REGEX,
             INCREMENTAL_SEARCH, LINE_NUMBERS, SHOW_WHITESPACE, IM_DISABLE,
             VISUAL_MOUSE, EXIT_LINK_MODE, CLEAN_INDENT, AUTO_CHDIR, HIGHLIGHT_CURSOR_LINE,
-            CONTENT_ASSIST_MODE, START_NORMAL_MODE, MODIFIABLE, UNDO_MOVES_CURSOR);
+            CONTENT_ASSIST_MODE, START_NORMAL_MODE, MODIFIABLE, UNDO_MOVES_CURSOR, GLOBAL_REGISTERS);
 
     // String options:
     public static final Option<String> SYNC_MODIFIABLE = globalString("syncmodifiable", "nosync", "nosync, matchreadonly", "syncma");

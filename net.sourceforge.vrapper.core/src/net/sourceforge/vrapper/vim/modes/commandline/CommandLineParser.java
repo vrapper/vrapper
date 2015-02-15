@@ -505,11 +505,7 @@ public class CommandLineParser extends AbstractCommandParser {
                 config.add(alias+"?", status);
             }
         }
-        // overwrites hlsearch/nohlsearch commands
-        config.add("globalregisters", ConfigAction.GLOBAL_REGISTERS);
-        config.add("noglobalregisters", ConfigAction.NO_GLOBAL_REGISTERS);
-        config.add("localregisters", ConfigAction.NO_GLOBAL_REGISTERS);
-        config.add("nolocalregisters", ConfigAction.GLOBAL_REGISTERS);
+        addActionsToBooleanOption(config, Options.GLOBAL_REGISTERS, ConfigAction.GLOBAL_REGISTERS, ConfigAction.NO_GLOBAL_REGISTERS);
         addActionsToBooleanOption(config, Options.LINE_NUMBERS, ConfigAction.LINE_NUMBERS, ConfigAction.NO_LINE_NUMBERS);
         addActionsToBooleanOption(config, Options.SHOW_WHITESPACE, ConfigAction.SHOW_WHITESPACE, ConfigAction.NO_SHOW_WHITESPACE);
         addActionsToBooleanOption(config, Options.HIGHLIGHT_CURSOR_LINE, ConfigAction.HIGHLIGHT_CURSOR_LINE, ConfigAction.NO_HIGHLIGHT_CURSOR_LINE);
@@ -896,12 +892,14 @@ public class CommandLineParser extends AbstractCommandParser {
 
         GLOBAL_REGISTERS {
             public Object evaluate(EditorAdaptor vim, Queue<String> command) {
+                vim.getConfiguration().set(Options.GLOBAL_REGISTERS, Boolean.TRUE);
                 vim.useGlobalRegisters();
                 return null;
             }
         },
         NO_GLOBAL_REGISTERS {
             public Object evaluate(EditorAdaptor vim, Queue<String> command) {
+                vim.getConfiguration().set(Options.GLOBAL_REGISTERS, Boolean.FALSE);
                 vim.useLocalRegisters();
                 return null;
             }
