@@ -41,9 +41,37 @@ public class IndentTextObject extends AbstractTextObject {
     	if(cursorLine.getLength() == 0) {
     		//if cursor is on an empty line,
     		//find the adjacent line (above or below)
-    		//with the most indentation
-    		LineInformation prev = model.getLineInformation(cursorLine.getNumber() -1);
-    		LineInformation next = model.getLineInformation(cursorLine.getNumber() +1);
+    		//with the most indentation (skipping other empty lines)
+    		int prevNum = cursorLine.getNumber() - 1;
+    		LineInformation prev;
+    		try {
+    			while(prevNum > 0) {
+    				if(model.getLineInformation(prevNum).getLength() > 0) {
+    					break;
+    				}
+    				prevNum--;
+    			}
+    			prev = model.getLineInformation(prevNum);
+    		}
+    		catch(Exception e) {
+    			prev = cursorLine;
+    		}
+
+    		int nextNum = cursorLine.getNumber() + 1;
+    		LineInformation next;
+    		try {
+    			while(nextNum < model.getNumberOfLines()) {
+    				if(model.getLineInformation(nextNum).getLength() > 0) {
+    					break;
+    				}
+    				nextNum++;
+    			}
+    			next = model.getLineInformation(nextNum);
+    		}
+    		catch(Exception e) {
+    			next = cursorLine;
+    		}
+
             int prevIndent = VimUtils.getIndent(model, prev).length();
             int nextIndent = VimUtils.getIndent(model, next).length();
     		cursorLine = prevIndent > nextIndent ? prev : next;
