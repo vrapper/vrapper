@@ -14,6 +14,7 @@ import java.util.Set;
 
 import net.sourceforge.vrapper.platform.Configuration.Option;
 import net.sourceforge.vrapper.vim.commands.Selection;
+import net.sourceforge.vrapper.vim.modes.commandline.HighlightSearch;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
 
 public interface Options {
@@ -55,7 +56,7 @@ public interface Options {
 
     // String options:
     public static final Option<String> SYNC_MODIFIABLE = globalString("syncmodifiable", "nosync", "nosync, matchreadonly", "syncma");
-    public static final Option<String> SEARCH_HL_SCOPE = globalString("hlscope", "clear", "local,clear,global");
+    public static final Option<String> SEARCH_HL_SCOPE = globalString("hlscope", HighlightSearch.SEARCH_HL_SCOPE_CLEAR, HighlightSearch.SEARCH_HL_OPTIONS);
     public static final Option<String> SELECTION =             string("selection", Selection.INCLUSIVE, Selection.SELECTION_OPTIONS, "sel");
     public static final Option<String> PATH      = stringNoConstraint("path", ".", "pa");
     public static final Option<String> GVIM_PATH = stringNoConstraint("gvimpath", "/usr/bin/gvim", "gvp");
