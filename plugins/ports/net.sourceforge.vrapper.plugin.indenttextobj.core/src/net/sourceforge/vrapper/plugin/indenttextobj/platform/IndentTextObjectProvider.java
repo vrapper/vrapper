@@ -27,10 +27,15 @@ public class IndentTextObjectProvider extends
     @SuppressWarnings("unchecked")
     public State<TextObject> textObjects() {
         return state(
-                transitionBind('i', leafBind('i', IndentTextObject.INNER_INNER)),
-                transitionBind('a', leafBind('i', IndentTextObject.OUTER_INNER)),
-                transitionBind('i', leafBind('I', IndentTextObject.INNER_OUTER)),
-                transitionBind('a', leafBind('I', IndentTextObject.OUTER_OUTER)));
+        transitionBind('i',
+            state(
+                leafBind('i', IndentTextObject.INNER_INNER),
+                leafBind('I', IndentTextObject.INNER_INNER))),
+        transitionBind('a',
+            state(
+                leafBind('i', IndentTextObject.OUTER_INNER),
+                leafBind('I', IndentTextObject.OUTER_OUTER)))
+        );
     }
 
 }

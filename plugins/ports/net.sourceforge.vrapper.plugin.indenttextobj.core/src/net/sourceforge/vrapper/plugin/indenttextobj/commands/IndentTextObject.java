@@ -18,8 +18,8 @@ public class IndentTextObject extends AbstractTextObject {
 
     public static final TextObject INNER_INNER = new IndentTextObject(false, false);
     public static final TextObject OUTER_INNER = new IndentTextObject(true, false);
-    public static final TextObject INNER_OUTER = new IndentTextObject(false, true);
     public static final TextObject OUTER_OUTER = new IndentTextObject(true, true);
+    //INNER_OUTER is an alias to INNER_INNER
 
     private final boolean includeFirstLine;
     private final boolean includeLastLine;
