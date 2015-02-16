@@ -35,11 +35,18 @@ public abstract class KeyMapper implements Evaluator {
                 rhs += command.poll() + " ";
             }
             if (lhs != null && ! "".equals(rhs)) {
+                boolean useRecursive = recursive;
+                // Simple prefix maps are non-recursive, e.g. nmap n nzz - Vim detects this as well.
+                if (recursive && rhs.startsWith(lhs)) {
+                    useRecursive = false;
+                    vim.getUserInterfaceService().setInfoMessage("Changing recursive remap '" + lhs
+                            + "' to non-recursive.");
+                }
                 for (String name : keymaps) {
                     KeyMap map = vim.getKeyMapProvider().getKeyMap(name);
                     map.addMapping(
                             parseKeyStrokes(lhs),
-                            new SimpleRemapping(parseKeyStrokes(rhs.trim()), recursive));
+                            new SimpleRemapping(parseKeyStrokes(rhs.trim()), useRecursive));
                 }
             }
             return null;
