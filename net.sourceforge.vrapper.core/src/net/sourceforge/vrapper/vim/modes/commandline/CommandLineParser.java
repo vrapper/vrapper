@@ -57,6 +57,7 @@ import net.sourceforge.vrapper.vim.modes.KeyMapResolver;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.modes.VisualMode;
 import net.sourceforge.vrapper.vim.register.RegisterContent;
+import net.sourceforge.vrapper.vim.register.RegisterManager;
 import net.sourceforge.vrapper.vim.register.StringRegisterContent;
 
 /**
@@ -257,7 +258,7 @@ public class CommandLineParser extends AbstractCommandParser {
             }
         };
         Evaluator let = new Evaluator() {
-            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
+            public Object evaluate(EditorAdaptor vim, Queue<String> command) throws CommandExecutionException {
                 if(command.isEmpty()) {
                     vim.getUserInterfaceService().setErrorMessage("Argument required");
                     return null;
@@ -277,12 +278,39 @@ public class CommandLineParser extends AbstractCommandParser {
                     vim.getUserInterfaceService().setErrorMessage("Could not parse " + args);
                     return null;
                 }
+                if(expr[0].length() < 2) {
+                    vim.getUserInterfaceService().setErrorMessage("No register name given.");
+                    return null;
+                }
+                String registerName = expr[0].substring(1, 2);
+                String textContent = expr[1];
                 if(expr[1].startsWith("'") && expr[1].endsWith("'") || 
                        expr[1].startsWith("\"") && expr[1].endsWith("\"")) {
-                    expr[1] = expr[1].substring(1, expr[1].length() - 1);
+                    textContent = expr[1].substring(1, expr[1].length() - 1);
                 }
-                RegisterContent content = new StringRegisterContent(ContentType.TEXT, expr[1]);
-                vim.getRegisterManager().getRegister( expr[0].substring(1, 2) ).setContent(content);
+                RegisterContent content = new StringRegisterContent(ContentType.TEXT, textContent);
+                RegisterManager registerManager = vim.getRegisterManager();
+                if (registerName.equals(RegisterManager.REGISTER_NAME_SEARCH)) {
+                    Search lastSearch = registerManager.getSearch();
+                    if (textContent.length() == 0) {
+                        registerManager.setSearch(null);
+                        HighlightSearch.CLEAR_HIGHLIGHT.evaluate(vim, new LinkedList<String>());
+                    } else {
+                        Search newSearch;
+                        if (lastSearch == null) {
+                            newSearch = SearchCommandParser.createSearch(vim, textContent, false,
+                                    false, null);
+                        } else {
+                            newSearch = SearchCommandParser.createSearch(vim, textContent,
+                                    lastSearch.isBackward(), lastSearch.isWholeWord(),
+                                    lastSearch.getSearchOffset());
+                        }
+                        registerManager.setSearch(newSearch);
+                        HighlightSearch.HIGHLIGHT.evaluate(vim, new LinkedList<String>());
+                    }
+                } else {
+                    registerManager.getRegister(registerName).setContent(content);
+                }
                 return null;
             }
         };
