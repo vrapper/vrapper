@@ -114,7 +114,7 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
         }
         if (part instanceof AbstractTextEditor) {
             AbstractTextEditor editor = (AbstractTextEditor) part;
-            interceptAbstractTextEditor(editor);
+            interceptAbstractTextEditor(editor, nestingInfo);
         } else if (part instanceof MultiPageEditorPart) {
             try {
                 MultiPageEditorPart mPart = (MultiPageEditorPart) part;
@@ -150,7 +150,7 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
                                 element, "extractor-class");
                 if (extractor != null) {
                     for (AbstractTextEditor ate: extractor.extractATEs(part)) {
-                        interceptAbstractTextEditor(ate);
+                        interceptAbstractTextEditor(ate, nestingInfo);
                         registerEditorPart(nestingInfo, ate, false);
                     }
                 }
@@ -158,7 +158,7 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
         }
     }
 
-    private void interceptAbstractTextEditor(AbstractTextEditor editor) {
+    private void interceptAbstractTextEditor(AbstractTextEditor editor, NestedEditorPartInfo partInfo) {
         if (interceptors.containsKey(editor)) {
             return;
         }
@@ -172,7 +172,8 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
                 ITextViewer textViewer = (ITextViewer) viewer;
                 ITextViewerExtension textViewerExt = (ITextViewerExtension) viewer;
                 EclipseBufferAndTabService batService = ensureBufferService(editor);
-                InputInterceptor interceptor = factory.createInterceptor(editor, textViewer, batService);
+                InputInterceptor interceptor = factory.createInterceptor(editor, textViewer,
+                        partInfo, batService);
                 CaretPositionHandler caretPositionHandler = interceptor.getCaretPositionHandler();
                 CaretPositionUndoHandler caretPositionUndoHandler = interceptor.getCaretPositionUndoHandler();
                 SelectionVisualHandler visualHandler = interceptor.getSelectionVisualHandler();

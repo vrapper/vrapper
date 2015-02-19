@@ -14,6 +14,6 @@ import org.eclipse.ui.texteditor.AbstractTextEditor;
 public interface InputInterceptorFactory {
 
     InputInterceptor createInterceptor(AbstractTextEditor part, ITextViewer textViewer,
-            BufferAndTabService bufferAndTabService);
+            NestedEditorPartInfo partInfo, BufferAndTabService bufferAndTabService);
     InputInterceptor createInterceptor(EditorAdaptor editorAdaptor);
 }

@@ -12,6 +12,9 @@ import org.eclipse.swt.custom.VerifyKeyListener;
 public interface InputInterceptor extends VerifyKeyListener {
     public EditorAdaptor getEditorAdaptor();
 
+    public NestedEditorPartInfo getNestedEditorPartInfo();
+    void setNestedEditorPartInfo(NestedEditorPartInfo partInfo);
+
     public LinkedModeHandler getLinkedModeHandler();
     public void setLinkedModeHandler(LinkedModeHandler handler);
     
