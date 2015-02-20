@@ -52,13 +52,27 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
 
     public static final InputInterceptorManager INSTANCE = new InputInterceptorManager(
             VimInputInterceptorFactory.INSTANCE);
+
     private static final Method METHOD_GET_PAGE_COUNT = getMultiPartEditorMethod("getPageCount");
     private static final Method METHOD_GET_EDITOR = getMultiPartEditorMethod(
             "getEditor", Integer.TYPE);
 
+    /** Helper class which initializes the Vrapper machinery for each given editor. */
     private final InputInterceptorFactory factory;
+    
+    /**
+     * Map of BufferAndTabServices, one per workbench window. This allows to have a buffer list
+     * and "current editor" specific to each window.
+     */
     private Map<IWorkbenchWindow, EclipseBufferAndTabService> bufferAndTabServices;
+    
+    /** Map holding all currently active editors and their associated Vrapper machinery. */
     private final Map<IWorkbenchPart, InputInterceptor> interceptors;
+
+    /**
+     * Flag which (temporarily) suspends the partActivated method when we know the activated part
+     * will immediately change.
+     */
     private boolean activationListenerEnabled = true;
 
     /**
@@ -73,13 +87,13 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
             new WeakHashMap<IEditorReference, BufferInfo>();
 
     /**
-     * Buffer ids for all active editors. Editors which aren't active are not included in this list,
-     * whereas some active editors might be included in this list as well as the
-     * {@link #reservedBufferIdMapping}
+     * Buffer ids for all files which have been opened once in an active editor.
+     * <p>This Map can contain buffer information for files which are no longer open.
      */
     protected WeakHashMap<IEditorInput,BufferInfo> activeBufferIdMapping =
             new WeakHashMap<IEditorInput, BufferInfo>();
 
+    /** Buffer ID generator. */
     protected final static AtomicInteger BUFFER_ID_SEQ = new AtomicInteger();
 
     protected InputInterceptorManager(InputInterceptorFactory factory) {
