@@ -15,6 +15,13 @@ public class BufferInfo {
     public final IEditorReference reference;
     public String editorType;
     public IEditorInput parentInput;
+    /**
+     * Editor in which this buffer was last seen. This is only used to know if the editor could have
+     * changed to a multi-page editor, in which case we need to do additional checks.
+     * <p>
+     * This assumes the user doesn't frequently switches windows from the same Eclipse session and
+     * that he doesn't frequently switch between duplicated editors.
+     */
     public WeakReference<IEditorPart> lastSeenEditor;
     public WeakHashMap<IWorkbenchWindow, Void> seenWindows = new WeakHashMap<IWorkbenchWindow, Void>();
 
