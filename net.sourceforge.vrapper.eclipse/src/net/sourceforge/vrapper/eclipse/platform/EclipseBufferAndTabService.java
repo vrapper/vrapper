@@ -9,7 +9,7 @@ import java.util.Queue;
 import net.sourceforge.vrapper.eclipse.activator.VrapperPlugin;
 import net.sourceforge.vrapper.eclipse.interceptor.BufferInfo;
 import net.sourceforge.vrapper.eclipse.interceptor.BufferManager;
-import net.sourceforge.vrapper.eclipse.interceptor.NestedEditorPartInfo;
+import net.sourceforge.vrapper.eclipse.interceptor.EditorInfo;
 import net.sourceforge.vrapper.platform.Buffer;
 import net.sourceforge.vrapper.platform.BufferAndTabService;
 import net.sourceforge.vrapper.platform.BufferDoException;
@@ -85,7 +85,7 @@ public class EclipseBufferAndTabService implements BufferAndTabService {
         }
     }
 
-    public void setCurrentEditor(NestedEditorPartInfo nestingInfo, IEditorPart activeEditor) {
+    public void setCurrentEditor(EditorInfo nestingInfo, IEditorPart activeEditor) {
         if (activeEditor == null || activeEditor.getEditorInput() == null) {
             return;
         }

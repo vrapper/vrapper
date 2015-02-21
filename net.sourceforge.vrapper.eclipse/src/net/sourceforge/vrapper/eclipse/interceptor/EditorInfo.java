@@ -19,45 +19,45 @@ import org.eclipse.ui.IEditorPart;
  * <b>Note</b>: this keeps hard references to Editors, instances of this class are not meant to be
  * stored over a long period of time unless the lifetime is tied to the editor parts themselves.
  */
-public class NestedEditorPartInfo {
+public class EditorInfo {
 
-    protected Map<IEditorPart, NestedEditorPartInfo> childEditors = new IdentityHashMap<IEditorPart, NestedEditorPartInfo>();
-    protected NestedEditorPartInfo parent;
+    protected Map<IEditorPart, EditorInfo> childEditors = new IdentityHashMap<IEditorPart, EditorInfo>();
+    protected EditorInfo parent;
     protected IEditorPart current;
 
-    protected NestedEditorPartInfo(IEditorPart current) {
+    protected EditorInfo(IEditorPart current) {
         this.current = current;
     }
 
-    protected NestedEditorPartInfo(NestedEditorPartInfo parent, IEditorPart current) {
+    protected EditorInfo(EditorInfo parent, IEditorPart current) {
         this.parent = parent;
         this.current = current;
     }
 
     /** Stores information about the child and returns the NestedEditorpartInfo for the child. */
-    public NestedEditorPartInfo createChildInfo(IEditorPart editorPart) {
+    public EditorInfo createChildInfo(IEditorPart editorPart) {
         if (editorPart == null) {
             throw new VrapperPlatformException("Child editor cannot be null! Error while"
                     + " traversing " + current);
         }
-        NestedEditorPartInfo child = new NestedEditorPartInfo(this, editorPart);
+        EditorInfo child = new EditorInfo(this, editorPart);
         this.childEditors.put(editorPart, child);
         return child;
     }
 
-    public Map<IEditorPart, NestedEditorPartInfo> getChildEditors() {
+    public Map<IEditorPart, EditorInfo> getChildEditors() {
         return Collections.unmodifiableMap(childEditors);
     }
 
     public void setChildEditors(Set<IEditorPart> childEditors) {
-        this.childEditors = new IdentityHashMap<IEditorPart, NestedEditorPartInfo>();
+        this.childEditors = new IdentityHashMap<IEditorPart, EditorInfo>();
         for (IEditorPart editor : childEditors) {
-            this.childEditors.put(editor, new NestedEditorPartInfo(editor));
+            this.childEditors.put(editor, new EditorInfo(editor));
         }
     }
 
-    public NestedEditorPartInfo getChild(IEditorPart subPart) {
-        NestedEditorPartInfo childInfo = childEditors.get(subPart);
+    public EditorInfo getChild(IEditorPart subPart) {
+        EditorInfo childInfo = childEditors.get(subPart);
         if (childInfo == null) {
             throw new VrapperPlatformException("Corrupt editor info structure found for editor "
                     + current);
@@ -82,7 +82,7 @@ public class NestedEditorPartInfo {
         }
     }
 
-    public NestedEditorPartInfo getParentInfo() {
+    public EditorInfo getParentInfo() {
         return parent;
     }
 

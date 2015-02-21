@@ -120,14 +120,14 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
             PlatformUI.getWorkbench().getDisplay(), sharedConfiguration);
 
     public InputInterceptor createInterceptor(AbstractTextEditor abstractTextEditor,
-            ITextViewer textViewer, NestedEditorPartInfo partInfo, BufferAndTabService bufferAndTabService) {
+            ITextViewer textViewer, EditorInfo partInfo, BufferAndTabService bufferAndTabService) {
         EclipsePlatform platform = new EclipsePlatform(abstractTextEditor, textViewer, sharedConfiguration,
                 bufferAndTabService);
         DefaultEditorAdaptor editorAdaptor = new DefaultEditorAdaptor(
                 platform,
                 globalRegisterManager, VrapperPlugin.isVrapperEnabled());
         InputInterceptor interceptor = createInterceptor(editorAdaptor);
-        interceptor.setNestedEditorPartInfo(partInfo);
+        interceptor.setEditorInfo(partInfo);
         interceptor.setCaretPositionUndoHandler(new CaretPositionUndoHandler(editorAdaptor, textViewer));
         interceptor.setCaretPositionHandler(new CaretPositionHandler(editorAdaptor, textViewer));
         if (editorAdaptor.getConfiguration().get(Options.EXIT_LINK_MODE)) {
@@ -157,7 +157,7 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
     private static final class VimInputInterceptor implements InputInterceptor {
 
         private final EditorAdaptor editorAdaptor;
-        private NestedEditorPartInfo nestedEditorPartInfo;
+        private EditorInfo editorInfo;
         private LinkedModeHandler linkedModeHandler;
         private CaretPositionHandler caretPositionHandler;
         private SelectionVisualHandler selectionVisualHandler;
@@ -193,13 +193,13 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
         }
 
         @Override
-        public NestedEditorPartInfo getNestedEditorPartInfo() {
-            return nestedEditorPartInfo;
+        public EditorInfo getEditorInfo() {
+            return editorInfo;
         }
 
         @Override
-        public void setNestedEditorPartInfo(NestedEditorPartInfo partInfo) {
-            this.nestedEditorPartInfo = partInfo;
+        public void setEditorInfo(EditorInfo partInfo) {
+            this.editorInfo = partInfo;
         }
 
         @Override
