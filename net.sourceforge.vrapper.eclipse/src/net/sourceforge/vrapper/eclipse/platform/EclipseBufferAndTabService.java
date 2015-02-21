@@ -85,7 +85,8 @@ public class EclipseBufferAndTabService implements BufferAndTabService {
         }
     }
 
-    public void setCurrentEditor(EditorInfo nestingInfo, IEditorPart activeEditor) {
+    public void setCurrentEditor(EditorInfo editorInfo) {
+        IEditorPart activeEditor = editorInfo.getCurrent();
         if (activeEditor == null || activeEditor.getEditorInput() == null) {
             return;
         }
@@ -98,7 +99,7 @@ public class EclipseBufferAndTabService implements BufferAndTabService {
         }
         currentEditor = activeEditor;
         // Update IEditorPart info.
-        bufferIdManager.registerEditorPart(nestingInfo, activeEditor, true);
+        bufferIdManager.registerEditorPart(editorInfo, true);
     }
 
     /* (non-Javadoc)

@@ -21,8 +21,7 @@ public interface BufferManager {
      * any registered {@link IEditorReference}. If the editor is a multi-page editor, buffer ids are
      * reserved for those inner editors.
      */
-    public void registerEditorPart(EditorInfo nestingInfo, IEditorPart editorPart,
-            boolean updateLastSeen);
+    public void registerEditorPart(EditorInfo editorInfo, boolean updateLastSeen);
 
     /** Find buffer information about the last editor which has shown given file input. */
     public BufferInfo getBuffer(IEditorInput editorInput);

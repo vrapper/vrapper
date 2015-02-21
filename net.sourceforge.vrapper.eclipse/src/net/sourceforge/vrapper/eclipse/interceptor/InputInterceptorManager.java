@@ -121,11 +121,11 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
         return batservice;
     }
 
-    public void interceptWorkbenchPart(IEditorPart part, EditorInfo nestingInfo,
-            ProcessedInfo processedInfo) {
+    public void interceptWorkbenchPart(EditorInfo nestingInfo, ProcessedInfo processedInfo) {
 
-        registerEditorPart(nestingInfo, part, false);
+        registerEditorPart(nestingInfo, false);
 
+        IEditorPart part = nestingInfo.getCurrent();
         if (part instanceof AbstractTextEditor) {
             AbstractTextEditor editor = (AbstractTextEditor) part;
             interceptAbstractTextEditor(editor, nestingInfo);
@@ -139,7 +139,8 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
                         continue;
                     }
                     if (subPart != null) {
-                        interceptWorkbenchPart(subPart, nestingInfo.createChildInfo(subPart), processedInfo.markPart(subPart));
+                        interceptWorkbenchPart(nestingInfo.createChildInfo(subPart),
+                                processedInfo.markPart(subPart));
                     }
                 }
             } catch (Exception exception) {
@@ -151,7 +152,8 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
                 if (subPart == null || processedInfo.isProcessed(subPart)) {
                     continue;
                 }
-                interceptWorkbenchPart(subPart, nestingInfo.createChildInfo(subPart), processedInfo.markPart(subPart));
+                interceptWorkbenchPart(nestingInfo.createChildInfo(subPart),
+                        processedInfo.markPart(subPart));
             }
         } else {
             IExtensionRegistry registry = Platform.getExtensionRegistry();
@@ -165,7 +167,7 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
                 if (extractor != null) {
                     for (AbstractTextEditor ate: extractor.extractATEs(nestingInfo)) {
                         interceptAbstractTextEditor(ate, nestingInfo);
-                        registerEditorPart(nestingInfo, ate, false);
+                        registerEditorPart(nestingInfo, false);
                     }
                 }
             }
@@ -207,8 +209,9 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
         }
     }
 
-    public void partClosed(IEditorPart part, EditorInfo nestingInfo, ProcessedInfo processedInfo) {
+    public void partClosed(EditorInfo nestingInfo, ProcessedInfo processedInfo) {
 
+        IEditorPart part = nestingInfo.getCurrent();
         InputInterceptor interceptor = interceptors.remove(part);
         // remove the listener in case the editor gets cached
         if (interceptor != null) {
@@ -245,7 +248,7 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
                     if (subPart == null || processedInfo.isProcessed(subPart)) {
                         continue;
                     }
-                    partClosed(subPart, nestingInfo.getChild(subPart), processedInfo.markPart(subPart));
+                    partClosed(nestingInfo.getChild(subPart), processedInfo.markPart(subPart));
                 }
             } catch (Exception exception) {
                 VrapperLog.error("Exception during closing MultiPageEditorPart",
@@ -256,13 +259,14 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
                 if (subPart == null || processedInfo.isProcessed(subPart)) {
                     continue;
                 }
-                partClosed(subPart, nestingInfo.createChildInfo(subPart), processedInfo.markPart(subPart));
+                partClosed(nestingInfo.createChildInfo(subPart), processedInfo.markPart(subPart));
             }
         }
     }
 
-    public void partActivated(IWorkbenchPart part, EditorInfo nestingInfo, ProcessedInfo processedInfo) {
+    public void partActivated(EditorInfo editorInfo, ProcessedInfo processedInfo) {
 
+        IEditorPart part = editorInfo.getCurrent();
         InputInterceptor input = interceptors.get(part);
 
         if (input == null) {
@@ -276,12 +280,12 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
                         if (subPart == null || processedInfo.isProcessed(subPart)) {
                             continue;
                         }
-                        partActivated(subPart, nestingInfo.getChild(subPart), processedInfo.markPart(subPart));
+                        partActivated(editorInfo.getChild(subPart), processedInfo.markPart(subPart));
                     }
                     if (activePage != -1) {
                         IEditorPart curEditor = (IEditorPart) METHOD_GET_EDITOR.invoke(mPart, activePage);
                         if (curEditor != null) {
-                            ensureBufferService(mPart).setCurrentEditor(nestingInfo.getChild(curEditor), curEditor);
+                            ensureBufferService(mPart).setCurrentEditor(editorInfo.getChild(curEditor));
                         }
                     }
                 }
@@ -291,11 +295,11 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
                         if (subPart == null || processedInfo.isProcessed(subPart)) {
                             continue;
                         }
-                        partActivated(subPart, nestingInfo.getChild(subPart), processedInfo.markPart(subPart));
+                        partActivated(editorInfo.getChild(subPart), processedInfo.markPart(subPart));
                     }
                     IEditorPart curEditor = mEditor.getActiveEditor();
                     if (curEditor != null) {
-                        ensureBufferService(mEditor).setCurrentEditor(nestingInfo.getChild(curEditor), curEditor);
+                        ensureBufferService(mEditor).setCurrentEditor(editorInfo.getChild(curEditor));
                     }
                 }
             }
@@ -313,9 +317,9 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
             }
             // Simple editors are marked as active here. Multi-page editors should set their
             // current editor once after calling recursively (see above).
-            if (nestingInfo.isSimpleEditor()) {
+            if (editorInfo.isSimpleEditor()) {
                 IEditorPart editor = (IEditorPart) part;
-                ensureBufferService(editor).setCurrentEditor(nestingInfo, editor);
+                ensureBufferService(editor).setCurrentEditor(editorInfo);
             }
         }
     }
@@ -345,8 +349,8 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
         IWorkbenchPart part = partRef.getPart(false);
         if (part instanceof IEditorPart) {
             IEditorPart editor = (IEditorPart) part;
-            EditorInfo nestedInfo = toplevelEditorInfo.get(editor);
-            partActivated(editor, nestedInfo, new ProcessedInfo(editor));
+            EditorInfo editorInfo = toplevelEditorInfo.get(editor);
+            partActivated(editorInfo, new ProcessedInfo(editor));
         }
     }
 
@@ -360,7 +364,7 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
         if (part instanceof IEditorPart) {
             IEditorPart editor = (IEditorPart) part;
             EditorInfo nestedInfo = toplevelEditorInfo.get(editor);
-            partClosed(editor, nestedInfo, new ProcessedInfo(editor));
+            partClosed(nestedInfo, new ProcessedInfo(editor));
             toplevelEditorInfo.remove(editor);
         }
     }
@@ -376,7 +380,7 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
             IEditorPart editor = (IEditorPart) part;
             EditorInfo nestedInfo = new EditorInfo(editor);
             toplevelEditorInfo.put(editor, nestedInfo);
-            interceptWorkbenchPart(editor, nestedInfo, new ProcessedInfo(editor));
+            interceptWorkbenchPart(nestedInfo, new ProcessedInfo(editor));
         }
     }
 
@@ -397,9 +401,9 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
             IEditorPart editor = (IEditorPart) part;
             EditorInfo editorInfo = toplevelEditorInfo.get(editor);
             if (editorInfo != null) {
-                partClosed(editor, editorInfo, new ProcessedInfo(editor));
+                partClosed(editorInfo, new ProcessedInfo(editor));
             }
-            interceptWorkbenchPart(editor, editorInfo, new ProcessedInfo(editor));
+            interceptWorkbenchPart(editorInfo, new ProcessedInfo(editor));
         }
     }
 
@@ -414,8 +418,8 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
             InputInterceptor interceptor = interceptors.get(editor);
             if (interceptor != null) {
                 EditorInfo info = interceptor.getEditorInfo();
-                partActivated(editor, info, new ProcessedInfo(editor));
-                ensureBufferService(editor).setCurrentEditor(info, editor);
+                partActivated(info, new ProcessedInfo(editor));
+                ensureBufferService(editor).setCurrentEditor(info);
             }
         }
     }
@@ -429,8 +433,8 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
         }
     }
 
-    public void registerEditorPart(EditorInfo nestingInfo, IEditorPart editorPart,
-            boolean updateLastSeen) {
+    public void registerEditorPart(EditorInfo editorInfo, boolean updateLastSeen) {
+        IEditorPart editorPart = editorInfo.getCurrent();
         IEditorInput input = editorPart.getEditorInput();
 
         // Spotted in the wild, some child editors of a multi-page editor don't have an input.
@@ -441,12 +445,12 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
         IWorkbenchPage page = editorPart.getEditorSite().getPage();
         // Remove any lingering references in case input was opened in two different editors.
         BufferInfo reservedBuffer = reservedBufferIdMapping.remove(
-                page.getReference(nestingInfo.getTopLevelEditor())); // TODO cache reference
+                page.getReference(editorInfo.getTopLevelEditor())); // TODO cache reference
 
         if ( ! activeBufferIdMapping.containsKey(input)) {
             IEditorInput parentInput = null; // Not needed in case of simple editor
             int id;
-            if (nestingInfo.isSimpleEditor()) {
+            if (editorInfo.isSimpleEditor()) {
                 // Always use existing id if present.
                 if (reservedBuffer == null) {
                     id = BUFFER_ID_SEQ.incrementAndGet();
@@ -457,9 +461,9 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
                 // Each child buffer gets its own id.
                 id = BUFFER_ID_SEQ.incrementAndGet();
                 // Nested editors don't return reliable info, ask parent editor.
-                parentInput = nestingInfo.getTopLevelEditor().getEditorInput();
+                parentInput = editorInfo.getTopLevelEditor().getEditorInput();
             }
-            String parentType = nestingInfo.getTopLevelEditor().getEditorSite().getId();
+            String parentType = editorInfo.getTopLevelEditor().getEditorSite().getId();
             BufferInfo bufferInfo = new BufferInfo(id, editorPart, parentInput, parentType, input);
             if (reservedBuffer != null) {
                 bufferInfo.seenWindows.putAll(reservedBuffer.seenWindows);
@@ -472,12 +476,12 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
             IEditorPart lastSeenEditor = bufferInfo.lastSeenEditor.get();
 
             if ( ! editorPart.equals(lastSeenEditor) && updateLastSeen) {
-                if (nestingInfo.isSimpleEditor()) {
+                if (editorInfo.isSimpleEditor()) {
                     bufferInfo.parentInput = null;
                 } else {
-                    bufferInfo.parentInput = nestingInfo.getParentInfo().getCurrent().getEditorInput();
+                    bufferInfo.parentInput = editorInfo.getParentInfo().getCurrent().getEditorInput();
                 }
-                bufferInfo.editorType = nestingInfo.getTopLevelEditor().getEditorSite().getId();
+                bufferInfo.editorType = editorInfo.getTopLevelEditor().getEditorSite().getId();
                 bufferInfo.lastSeenEditor = new WeakReference<IEditorPart>(editorPart);
             }
             bufferInfo.seenWindows.put(editorPart.getEditorSite().getWorkbenchWindow(), null);
@@ -542,15 +546,15 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
                 activationListenerEnabled = true;
             }
             EditorInfo parentEditorInfo = toplevelEditorInfo.get(parentEditor);
-            activateInnerEditor(buffer, parentEditor, parentEditorInfo);
+            activateInnerEditor(buffer, parentEditorInfo);
         } else {
             throw new VrapperPlatformException("Found bufferinfo object with no editor input info!"
                     + " This is most likely a bug.");
         }
     }
 
-    protected void activateInnerEditor(BufferInfo buffer, IEditorPart parentEditor,
-            EditorInfo parentEditorInfo) {
+    protected void activateInnerEditor(BufferInfo buffer, EditorInfo parentEditorInfo) {
+        IEditorPart parentEditor = parentEditorInfo.getCurrent();
         if (parentEditor instanceof MultiPageEditorPart) {
             MultiPageEditorPart multiPage = (MultiPageEditorPart) parentEditor;
             IEditorPart[] foundEditors = multiPage.findEditors(buffer.input);
@@ -571,9 +575,9 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
                     throw new VrapperPlatformException("Failed to get active page of " + multiPage, e);
                 }
                 if (innerEditor != null && innerEditor.getEditorInput().equals(buffer.input)) {
-                    EditorInfo info = parentEditorInfo.getChild(innerEditor);
+                    EditorInfo innerInfo = parentEditorInfo.getChild(innerEditor);
                     // Update active editor info because no listener was called.
-                    ensureBufferService(multiPage).setCurrentEditor(info, innerEditor);
+                    ensureBufferService(multiPage).setCurrentEditor(innerInfo);
                     activated = true;
                 }
             }
@@ -593,9 +597,9 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
                 IEditorPart innerEditor = innerEditors[i];
                 editor.activateEditor(innerEditor);
                 // Explicitly set active editor because we don't have a listener here
-                EditorInfo editorInfo = parentEditorInfo.getChild(innerEditor);
-                partActivated(innerEditor, editorInfo, new ProcessedInfo(innerEditor));
-                ensureBufferService(editor).setCurrentEditor(editorInfo, innerEditor);
+                EditorInfo innerInfo = parentEditorInfo.getChild(innerEditor);
+                partActivated(innerInfo, new ProcessedInfo(innerEditor));
+                ensureBufferService(editor).setCurrentEditor(innerInfo);
             }
         }
     }
