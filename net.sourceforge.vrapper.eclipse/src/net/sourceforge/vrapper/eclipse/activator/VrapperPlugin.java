@@ -26,6 +26,7 @@ import org.eclipse.ui.IWindowListener;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchListener;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -116,14 +117,12 @@ public class VrapperPlugin extends AbstractUIPlugin implements IStartup, Log {
             for (IWorkbenchPage page: window.getPages()) {
                 for (IEditorReference ref: page.getEditorReferences()) {
                     InputInterceptorManager.INSTANCE.registerEditorRef(ref);
-                    IEditorPart part = ref.getEditor(false);
-                    if (part != null) {
-                        InputInterceptorManager.INSTANCE.interceptWorkbenchPart(part, null);
-                    }
+                    // Let the manager deal with any uninitialized editors.
+                    InputInterceptorManager.INSTANCE.partOpened(ref);
                 }
                 if (page.getActiveEditor() != null) {
-                    IEditorPart activeEditor = page.getActiveEditor();
-                    InputInterceptorManager.INSTANCE.partActivated(activeEditor, null);
+                    IWorkbenchPartReference partReference = page.getReference(page.getActiveEditor());
+                    InputInterceptorManager.INSTANCE.partActivated(partReference);
                 }
             }
         }
