@@ -25,10 +25,6 @@ public class BufferInfo {
     public WeakReference<IEditorPart> lastSeenEditor;
     public WeakHashMap<IWorkbenchWindow, Void> seenWindows = new WeakHashMap<IWorkbenchWindow, Void>();
 
-    protected BufferInfo(int bufferId, IEditorPart editorPart, IEditorInput input, String documentType) {
-        this(bufferId, editorPart, null, documentType, input);
-    }
-
     public BufferInfo(int bufferId, IEditorPart editorPart, IEditorInput parentInput,
             String documentType, IEditorInput subResourceInput) {
         this.bufferId = bufferId;
