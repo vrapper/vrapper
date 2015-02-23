@@ -1,10 +1,13 @@
 package net.sourceforge.vrapper.eclipse.interceptor;
 
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPart;
 
 /**
  * The implementation will assign each editor a unique id. The ids for active editors should remain
@@ -38,4 +41,14 @@ public interface BufferManager {
      * in the currently active window.
      */
     public void activate(BufferInfo buffer);
+
+    /**
+     * Gets a read-only map of all {@link IWorkbenchPart}s for which an {@link InputInterceptor}
+     * exists. This map includes editors for <b>all</b> windows.
+     * <p>
+     * Users must be aware that some of these {@link IWorkbenchPart} keys might come from
+     * a MultiPageEditorPart and as a result might be not completely functional. It's best not to
+     * interact with them.
+     */
+    public Map<IWorkbenchPart, InputInterceptor> getInterceptors();
 }

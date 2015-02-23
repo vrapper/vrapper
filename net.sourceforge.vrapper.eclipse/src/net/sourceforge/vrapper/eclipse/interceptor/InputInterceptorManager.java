@@ -3,6 +3,7 @@ package net.sourceforge.vrapper.eclipse.interceptor;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
@@ -337,10 +338,6 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
         return null;
     }
 
-    public Iterable<InputInterceptor> getInterceptors() {
-        return interceptors.values();
-    }
-
     @Override
     public void partActivated(IWorkbenchPartReference partRef) {
         if ( ! activationListenerEnabled) {
@@ -602,5 +599,10 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
                 ensureBufferService(editor).setCurrentEditor(innerInfo);
             }
         }
+    }
+
+    @Override
+    public Map<IWorkbenchPart, InputInterceptor> getInterceptors() {
+        return Collections.unmodifiableMap(interceptors);
     }
 }

@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
-import net.sourceforge.vrapper.eclipse.activator.VrapperPlugin;
 import net.sourceforge.vrapper.eclipse.interceptor.BufferInfo;
 import net.sourceforge.vrapper.eclipse.interceptor.BufferManager;
 import net.sourceforge.vrapper.eclipse.interceptor.EditorInfo;
+import net.sourceforge.vrapper.eclipse.interceptor.InputInterceptor;
 import net.sourceforge.vrapper.platform.Buffer;
 import net.sourceforge.vrapper.platform.BufferAndTabService;
 import net.sourceforge.vrapper.platform.BufferDoException;
@@ -22,6 +22,7 @@ import net.sourceforge.vrapper.vim.modes.commandline.Evaluator;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 
 public class EclipseBufferAndTabService implements BufferAndTabService {
@@ -187,21 +188,22 @@ public class EclipseBufferAndTabService implements BufferAndTabService {
             }
         }
         List<Object> result = new ArrayList<Object>();
-        Map<IEditorPart, EditorAdaptor> knownEditors = VrapperPlugin.getDefault().getKnownEditors();
-        for (Map.Entry<IEditorPart, EditorAdaptor> editorInfo : knownEditors.entrySet()) {
-            IEditorPart editor = editorInfo.getKey();
+        Map<IWorkbenchPart, InputInterceptor> editors = bufferIdManager.getInterceptors();
+        for (Map.Entry<IWorkbenchPart, InputInterceptor> editorInfo : editors.entrySet()) {
+            IWorkbenchPart editor = editorInfo.getKey();
             // Global list contains editors from other windows as well; filter those.
             if (editor == null || editor.getSite() == null
                     || ! workbenchWindow.equals(editor.getSite().getWorkbenchWindow())) {
                 continue;
             }
-            EditorAdaptor editorAdaptor = editorInfo.getValue();
+            InputInterceptor interceptor = editorInfo.getValue();
+            EditorAdaptor editorAdaptor = interceptor.getEditorAdaptor();
             try {
                 result.add(code.evaluate(editorAdaptor, command));
             } catch (CommandExecutionException e) {
                 // This might be problematic with duplicate editors as only one is in buffer list.
-                if (editor.getEditorInput() != null) {
-                    BufferInfo info = bufferIdManager.getBuffer(editor.getEditorInput());
+                if (editor instanceof IEditorPart && ((IEditorPart) editor).getEditorInput() != null) {
+                    BufferInfo info = bufferIdManager.getBuffer(((IEditorPart) editor).getEditorInput());
                     if (info != null && editor.equals(info.lastSeenEditor.get())) {
                         bufferIdManager.activate(info);
                         EclipseBuffer buffer = new EclipseBuffer(info);

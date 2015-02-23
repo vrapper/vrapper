@@ -84,11 +84,6 @@ public class VrapperPlugin extends AbstractUIPlugin implements IStartup, Log {
         editorMap.remove(part);
     }
 
-    /** Retrieve a read-only Map with all known editors. Don't cache this in a member variable! */
-    public Map<IEditorPart, EditorAdaptor> getKnownEditors() {
-        return Collections.unmodifiableMap(editorMap);
-    }
-
     @Override
     public void start(BundleContext context) throws Exception {
         super.start(context);
@@ -213,10 +208,11 @@ public class VrapperPlugin extends AbstractUIPlugin implements IStartup, Log {
 
     public static void setVrapperEnabled(boolean enabled) {
         vrapperEnabled = enabled;
-        for (InputInterceptor interceptor: InputInterceptorManager.INSTANCE.getInterceptors()) {
+        for (InputInterceptor interceptor: InputInterceptorManager.INSTANCE.getInterceptors().values()) {
             EditorAdaptor adaptor = interceptor.getEditorAdaptor();
-            if (adaptor != null)
+            if (adaptor != null) {
                 adaptor.onChangeEnabled(enabled);
+            }
         }
     }
     
