@@ -51,4 +51,7 @@ public interface BufferManager {
      * interact with them.
      */
     public Map<IWorkbenchPart, InputInterceptor> getInterceptors();
+    
+    /** Activate the editor for which this {@link InputInterceptor} was created. */
+    public void activate(InputInterceptor inputInterceptor);
 }

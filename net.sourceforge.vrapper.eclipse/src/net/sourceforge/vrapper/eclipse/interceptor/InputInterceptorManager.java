@@ -605,4 +605,21 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
     public Map<IWorkbenchPart, InputInterceptor> getInterceptors() {
         return Collections.unmodifiableMap(interceptors);
     }
+    
+    @Override
+    public void activate(InputInterceptor interceptor) {
+        EditorInfo editorInfo = interceptor.getEditorInfo();
+
+        // We could do a lookup in the mapped buffer list, but it's possibly wrong if there are
+        // duplicate editors. Also, activate(BufferInfo) doesn't care about the id.
+        BufferInfo dummyBuffer;
+        IEditorInput parentInput = null;
+        if ( ! editorInfo.isSimpleEditor()) {
+            parentInput = editorInfo.getTopLevelEditor().getEditorInput();
+        }
+        dummyBuffer = new BufferInfo(-1, editorInfo.getCurrent(), parentInput,
+                editorInfo.getTopLevelEditor().getEditorSite().getId(),
+                editorInfo.getCurrent().getEditorInput());
+        activate(dummyBuffer);
+    }
 }

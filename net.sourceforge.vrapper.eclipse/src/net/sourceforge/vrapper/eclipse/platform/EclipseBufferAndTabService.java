@@ -10,6 +10,7 @@ import net.sourceforge.vrapper.eclipse.interceptor.BufferInfo;
 import net.sourceforge.vrapper.eclipse.interceptor.BufferManager;
 import net.sourceforge.vrapper.eclipse.interceptor.EditorInfo;
 import net.sourceforge.vrapper.eclipse.interceptor.InputInterceptor;
+import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.Buffer;
 import net.sourceforge.vrapper.platform.BufferAndTabService;
 import net.sourceforge.vrapper.platform.BufferDoException;
@@ -201,14 +202,10 @@ public class EclipseBufferAndTabService implements BufferAndTabService {
             try {
                 result.add(code.evaluate(editorAdaptor, command));
             } catch (CommandExecutionException e) {
-                // This might be problematic with duplicate editors as only one is in buffer list.
-                if (editor instanceof IEditorPart && ((IEditorPart) editor).getEditorInput() != null) {
-                    BufferInfo info = bufferIdManager.getBuffer(((IEditorPart) editor).getEditorInput());
-                    if (info != null && editor.equals(info.lastSeenEditor.get())) {
-                        bufferIdManager.activate(info);
-                        EclipseBuffer buffer = new EclipseBuffer(info);
-                        throw new BufferDoException(result, editorAdaptor, buffer, e);
-                    }
+                try {
+                    bufferIdManager.activate(interceptor);
+                } catch (RuntimeException re) {
+                    VrapperLog.error("Failed to activate interceptor " + interceptor, re);
                 }
                 throw new BufferDoException(result, editorAdaptor, e);
             }
