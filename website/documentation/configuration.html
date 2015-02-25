@@ -332,6 +332,42 @@
             effect. You might want to manually set <code>modifiable</code> if Vrapper gets it wrong.
         </td>
     </tr>
+    <tr>
+        <td>:set&nbsp;hlscope=&lt;highlight&nbsp;mode&gt;</td>
+        <td>N/A</td>
+        <td>clear</td>
+        <td>
+            This setting changes the behavior of the <code>hlsearch</code>
+            setting to restrict it to a number of editors.  Whereas Vim will
+            always quickly highlight the current search across all windows and
+            tabs, in Vrapper this might take quite some time and resources.
+            To tune the performance, the following values are supported:
+            <dl>
+                <dt>clear</dt>
+                <dd>
+                    Only one editor can have active highlighting. Switching
+                    might change the highlighting if an editor gets reloaded,
+                    but normally the highlighting only changes if running a
+                    search in the current active editor.
+                </dd>
+                <dt>local</dt>
+                <dd>
+                    Each editor gets its own highlighting, Vrapper will not
+                    clear or update it if doing anything in another editor.
+                </dd>
+                <dt>window</dt>
+                <dd>
+                    All editors in the current window will use the same
+                    highlighting except for those which have
+                    <code>noglobalregisters</code> set (those use a local
+                    search register).
+                </dd>
+            </dl>
+            Note that the above might behave weirdly if you open fresh editors
+            or switch to an editor from your last session. This is a known
+            issue and will be improved in due time.
+        </td>
+    </tr>
 </table>
 
 
