@@ -157,8 +157,21 @@ Vrapper allows abbreviated commands only when there are no conflicts (e.g. custo
     <tr>
         <td>:let @&lt;char&gt;=&lt;register contents&gt;</td>
         <td>
-            Programmatically set register contents for register <code>&lt;char&gt;</code>.  Register can then be executed as a macro.<br/><br/>
-            We don't currently support any other <code>:let</code> behavior.
+            <p>
+                Programmatically set register contents for register
+                <code>&lt;char&gt;</code>.  Register can then be executed as a
+                macro.<br/><br/> We don't currently support any other
+                <code>:let</code> variants like e.g. swapping contents in
+                registers.
+            </p>
+            <p>
+                Note that the search register is special: setting it to an empty
+                string will clear search highlighting, setting it to a given value
+                will activate a search query for the given string with defaults
+                (forward, any part of a word, ...) or use settings from the
+                last given search query after which the highlighting will be
+                updated (at least when enabled with <code>hlsearch</code>).
+            </p>
         </td>
     </tr>
     <tr>
