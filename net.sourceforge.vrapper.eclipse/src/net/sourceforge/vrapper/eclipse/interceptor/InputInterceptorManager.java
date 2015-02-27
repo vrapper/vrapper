@@ -605,6 +605,41 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
     public Map<IWorkbenchPart, InputInterceptor> getInterceptors() {
         return Collections.unmodifiableMap(interceptors);
     }
+
+    public InputInterceptor findActiveInterceptor(IWorkbenchPart toplevelEditor) {
+        EditorInfo editorInfo = toplevelEditorInfo.get(toplevelEditor);
+        if (editorInfo == null) {
+            throw new VrapperPlatformException("No editor info found for editor " + toplevelEditor
+                    + ". This might not be a top-level editor.");
+        }
+        return findActiveInterceptor(editorInfo, new ProcessedInfo(toplevelEditor));
+    }
+    
+    protected InputInterceptor findActiveInterceptor(EditorInfo editorInfo,
+            ProcessedInfo processedInfo) {
+        IWorkbenchPart part = editorInfo.getCurrent();
+        InputInterceptor result;
+        if (part instanceof MultiPageEditorPart) {
+            MultiPageEditorPart mPart = (MultiPageEditorPart) part;
+            int activePage = mPart.getActivePage();
+            try {
+                IEditorPart subPart = (IEditorPart) METHOD_GET_EDITOR.invoke(mPart, activePage);
+                result = interceptors.get(subPart);
+            } catch (Exception e) {
+                throw new VrapperPlatformException("Failed to get active input interceptor for "
+                        + editorInfo.getTopLevelEditor(), e);
+            }
+        } else if (part instanceof MultiEditor) {
+            MultiEditor multiEditor = (MultiEditor) part;
+            result = interceptors.get(multiEditor.getActiveEditor());
+        } else if (part instanceof AbstractTextEditor) {
+            result = interceptors.get(part);
+        } else {
+            throw new VrapperPlatformException("Cannot find active input interceptor for editor "
+                    + editorInfo.getTopLevelEditor() + ". Unknown sub-editor type " + part);
+        }
+        return result;
+    }
     
     @Override
     public void activate(InputInterceptor interceptor) {

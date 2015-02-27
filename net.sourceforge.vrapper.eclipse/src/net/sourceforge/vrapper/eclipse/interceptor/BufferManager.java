@@ -43,6 +43,13 @@ public interface BufferManager {
     public void activate(BufferInfo buffer);
 
     /**
+     * Finds the {@link InputInterceptor} for the activated page or sub-editor within a top-level
+     * editor (see {@link IWorkbenchPage#getActiveEditor()}). For simple editors, this is just the
+     * assocatiated {@link InputInterceptor} but for MultiPageEditorPart we do a recursive search.
+     */
+    public InputInterceptor findActiveInterceptor(IWorkbenchPart toplevelPart);
+
+    /**
      * Gets a read-only map of all {@link IWorkbenchPart}s for which an {@link InputInterceptor}
      * exists. This map includes editors for <b>all</b> windows.
      * <p>
