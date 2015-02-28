@@ -1,6 +1,7 @@
 package net.sourceforge.vrapper.eclipse.commands;
 
 import net.sourceforge.vrapper.eclipse.activator.VrapperPlugin;
+import net.sourceforge.vrapper.eclipse.interceptor.InputInterceptor;
 import net.sourceforge.vrapper.eclipse.platform.EclipseCursorAndSelection;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.utils.Function;
@@ -94,7 +95,12 @@ public class GoToMarkCommand extends CountIgnoringNonRepeatableCommand {
 	    //
 	    // Lookup Vrapper's EditorAdapter associated with the Eclipse editor.
 	    //
-	    return VrapperPlugin.getDefault().findEditor(editor);
+	    InputInterceptor interceptor = VrapperPlugin.getDefault().findActiveInterceptor(editor);
+	    if (interceptor == null) {
+	        return null;
+	    } else {
+	        return interceptor.getEditorAdaptor();
+	    }
 	}
 
 	public void execute(EditorAdaptor editorAdaptor)

@@ -1,9 +1,5 @@
 package net.sourceforge.vrapper.eclipse.activator;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import net.sourceforge.vrapper.eclipse.interceptor.InputInterceptor;
 import net.sourceforge.vrapper.eclipse.interceptor.InputInterceptorManager;
 import net.sourceforge.vrapper.log.Log;
@@ -63,25 +59,14 @@ public class VrapperPlugin extends AbstractUIPlugin implements IStartup, Log {
 
 	private static MouseButtonListener mouseButton = new MouseButtonListener();
 
-    private static final Map<IEditorPart, EditorAdaptor> editorMap =
-            new HashMap<IEditorPart, EditorAdaptor>();
     /**
      * The constructor
      */
     public VrapperPlugin() {
     }
 
-    public void registerEditor(IEditorPart part, EditorAdaptor editorAdaptor) {
-        editorMap.put(part, editorAdaptor);
-    }
-    
-    public EditorAdaptor findEditor(IEditorPart part)
-    {
-        return editorMap.get(part);
-    }
-
-    public void unregisterEditor(IEditorPart part) {
-        editorMap.remove(part);
+    public InputInterceptor findActiveInterceptor(IEditorPart toplevelEditor) {
+        return InputInterceptorManager.INSTANCE.findActiveInterceptor(toplevelEditor);
     }
 
     @Override

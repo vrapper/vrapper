@@ -202,7 +202,6 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
                 IOperationHistory operationHistory = PlatformUI.getWorkbench().getOperationSupport().getOperationHistory();
                 operationHistory.addOperationHistoryListener(caretPositionUndoHandler);
                 interceptors.put(editor, interceptor);
-                VrapperPlugin.getDefault().registerEditor(editor, interceptor.getEditorAdaptor());
             }
         } catch (Exception exception) {
             VrapperLog.error("Exception when intercepting AbstractTextEditor",
@@ -236,9 +235,6 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
                 VrapperLog.error("Exception during closing IWorkbenchPart",
                         exception);
             }
-        }
-        if (part instanceof IEditorPart) {
-            VrapperPlugin.getDefault().unregisterEditor((IEditorPart) part);
         }
         if (part instanceof MultiPageEditorPart) {
             try {
