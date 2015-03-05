@@ -100,20 +100,23 @@ public class CommandLineUIFactory {
             final StyledText parent = (StyledText) e.widget;
             e.gc.setForeground(parent.getForeground());
             e.gc.setBackground(parent.getBackground());
+            int newHScroll = 0;
+            int newVScroll = 0;
             int bottom = parent.getBounds().height;
-            if (parent.getHorizontalBar() != null)
+            if (parent.getHorizontalBar() != null) {
                 bottom -= parent.getHorizontalBar().getSize().y;
+                newHScroll = parent.getHorizontalBar().getSelection();
+            }
             int right = parent.getBounds().width;
-            if (parent.getVerticalBar() != null)
+            if (parent.getVerticalBar() != null) {
                 right -= parent.getVerticalBar().getSize().x;
+                newVScroll = parent.getVerticalBar().getSelection();
+            }
             commandLineUI.setMaxHeight(parent.getBounds().height / 2);
             commandLineUI.setWidth(right - 1);
             commandLineUI.setBottom(bottom);
             Point size = commandLineText.getSize();
-            if ((parent.getHorizontalBar() == null
-                        || horScroll == parent.getHorizontalBar().getSelection())
-                    && (parent.getVerticalBar() == null
-                        || verScroll == parent.getVerticalBar().getSelection())) {
+            if ((horScroll == newHScroll) && (verScroll == newVScroll)) {
                 // Fix location
                 commandLineText.setLocation(0, bottom - size.y);
                 // Paint command line if there is no scrollbar or if the scrollbar is the same.
@@ -141,8 +144,8 @@ public class CommandLineUIFactory {
                         parent.update();
                     }
                 });
-                horScroll = parent.getHorizontalBar().getSelection();
-                verScroll = parent.getVerticalBar().getSelection();
+                horScroll = newHScroll;
+                verScroll = newVScroll;
             }
         }
     }
