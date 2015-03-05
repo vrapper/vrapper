@@ -27,6 +27,7 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.BlockWiseSelection;
 import net.sourceforge.vrapper.vim.commands.BlockWiseSelection.TextBlock;
+import net.sourceforge.vrapper.vim.commands.BlockwiseChangeOperation;
 import net.sourceforge.vrapper.vim.commands.BlockwisePasteCommand;
 import net.sourceforge.vrapper.vim.commands.BlockwiseYankCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
@@ -38,6 +39,7 @@ import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.commands.ReplaceCommand;
 import net.sourceforge.vrapper.vim.commands.Selection;
+import net.sourceforge.vrapper.vim.commands.SelectionBasedTextOperationCommand;
 import net.sourceforge.vrapper.vim.commands.SwapCaseCommand;
 import net.sourceforge.vrapper.vim.commands.motions.BlockSelectionMotion;
 import net.sourceforge.vrapper.vim.commands.motions.Motion;
@@ -280,9 +282,13 @@ public class BlockwiseVisualMode extends AbstractVisualMode {
         final Motion eol = BlockSelectionMotion.COLUMN_END;
         
         final Command swapCase = SwapCaseCommand.VISUALBLOCK_INSTANCE;
+        final Command change = new SelectionBasedTextOperationCommand.DontChangeMode(BlockwiseChangeOperation.INSTANCE);
         
         final State<Command> parentState = super.buildInitialState();
         return union(state(
+                leafBind('c', change),
+                leafBind('C', change),
+                leafBind('s', change),
                 leafBind('I', (Command) new BlockwiseChangeToInsertModeCommand(new MotionCommand(bol), InsertModeType.INSERT)),
                 leafBind('A', (Command) new BlockwiseChangeToInsertModeCommand(new MotionCommand(eol), InsertModeType.APPEND)),
                 leafBind('~', swapCase),
