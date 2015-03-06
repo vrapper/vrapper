@@ -285,4 +285,19 @@ public class BlockwiseVisualModeTests extends CommandTestCase {
 		assertEquals(NormalMode.NAME, adaptor.getCurrentModeName());
 	}
 
+	@Test
+	public void test_c() {
+		prepareEditor(false, block(
+				"Sta", "rt by making", "a block",
+				"The", "n continue a", "nd select it",
+				"Fin", "ally stop",    ""
+				));
+		String initial = content.getText();
+		executeCommand(forKeySeq("cedit<ESC>"));
+		assertEquals(NormalMode.NAME, adaptor.getCurrentModeName());
+		assertCommandResult(initial,
+			    "Staedi", 't', "a block\n"
+			  + "Theeditnd select it\n"
+			  + "Finedit");
+	}
 }
