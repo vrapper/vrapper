@@ -2,6 +2,125 @@
 <a href="index.php">&lt;&lt; Newer Posts</a><br/>
 
 <div class="newsbox">
+    <div class="date">2014-03-02</div>
+    <h4>Updates to unstable update site</h4>
+
+    <p>It's been another slow month but I might as well give an update with
+    the changes to the unstable update site since 0.40.0 released:</p>
+    
+    <ul>
+        <li>Added support for '@:' to repeat last command-line command</li>
+        <li>Added support for ':marks' command</li>
+        <li>Added support for ':reg[isters]' command</li>
+        <li>Fixed issue with 'gv' after modifying lines</li>
+        <li>Fixed issue with visual mode editing at the end of a file</li>
+    </ul>
+    
+</div>
+<div class="newsbox">
+    <div class="date">2014-02-08</div>
+    <h4>0.40.0 Released</h4>
+
+    <p>0.40.0 has been released.  This release is smaller than most but I'm
+    keeping with my two-month release cycle one more time.  The following changes
+    were added since the last status update and are included in 0.40.0:</p>
+
+    <ul>
+        <li>Created new optional plugin for clang-format</li>
+        <li>Added support for ':y[ank] [x]' to yank into register</li>
+        <li>Added support for 'iskeyword' property</li>
+        <li>Added support for ':xa[ll]'</li>
+        <li>Added support for 'startnormalmode' property</li>
+        <ul>
+            <li>When true, always start in NormalMode after changing tabs</li>
+        </ul>
+        <li>Fixed issue with ';' after 'T'</li>
+        <li>Fixed \c and \C in substitution definitions</li>
+        <li>Fixed issue where &lt;S-Space&gt; wasn't being recognized</li>
+    </ul>
+    
+    <p>I'd like to thank all the contributors who continue keeping this project
+    going even when I'm too busy to spend time with it myself.  Your dedication
+    helps keep this project alive!</p>
+</div>
+<div class="newsbox">
+    <div class="date">2014-01-05</div>
+    <h4>Updates to unstable update site</h4>
+
+    <p>As I mentioned in my last post, real life has been getting in the way of
+    me spending time with Vrapper.  The holidays certainly didn't help things
+    either. This was a slow month for Vrapper but here's your monthly status
+    update.  The following changes have been made to the unstable update
+    site:</p>
+
+    <ul>
+        <li>Added support for 'omap' commands</li>
+        <li>Added support for :tabs command</li>
+        <li>Added support for '[[', ']]', '[]', and ']['</li>
+        <li>Fixed issue with 'O' near a blank line with Windows line-endings</li>
+        <li>Fixed issue using counts with mapped keys</li>
+    </ul>
+    
+    <p>I'll probably still release 0.40.0 in a month but after that I might relax my
+    two-month release cycle to be whenever a release is worthwhile.</p>
+</div>
+<div class="newsbox">
+    <div class="date">2013-12-08</div>
+    <h4>0.38.0 Released</h4>
+
+    <p>Still sticking with our two-month release cycle, 0.38.0 is now released.
+    Changes since the last status update (included in 0.38.0) are:</p>
+
+    <ul>
+        <li>Added :set contentassistmode</li>
+        <ul>
+            <li>Enables &lt;c-n&gt; and &lt;c-p&gt; in content-assist dropdown</li>
+            <li>Use camap to map &lt;c-n&gt; or &lt;c-p&gt; to other keys</li>
+        </ul>
+        <li>Added :startinsert command</li>
+        <li>Added 'method text object' optional plugin</li>
+        <li>Fixed issue with chaining vi{i{i{</li>
+        <li>Fixed autocmd when changing tabs</li>
+        <li>Fixed v%</li>
+        <li>Fixed 'dw' on last word of a line with Windows line endings</li>
+        <li>Fixed Alt key handling on keyboards with AltGr</li>
+        <li>Fixed issue with newlines when pasting text</li>
+    </ul>
+    
+    <p>Real life has been getting in the way recently, preventing me from
+    spending time with Vrapper.  I'll do my best to stay on top of defects and
+    feature requests but I'm afraid I might not be able to continue releasing
+    every two months.  Or at least, the amount of changes in a given two-month
+    period might not be enough to justify a release.  We'll see how it goes.</p>
+</div>
+<div class="newsbox">
+    <div class="date">2013-11-04</div>
+    <h4>Updates to unstable update site</h4>
+
+    <p>It's time for your monthly status update on Vrapper.  Here are the
+    current changes on the unstable update site.  Please feel free to install
+    the latest build on the unstable update site and let us know if you find any
+    defects.</p>
+
+    <ul>
+        <li>Fixed issue where escaped characters were being skipped with t/f motions</li>
+        <li>Fixed issue with visual block mode starting on an empty line</li>
+        <li>Fixed autocmd on multi-page editors (like XML Editor)</li>
+        <li>Fixed Ctrl+I in NormalMode (and added TAB in NormalMode for the same operation)</li>
+        <li>Added eclipseuiaction for mapping any Eclipse operation that pops up a dialog</li>
+        <li>Added support for [m, ]m, [M, and ]M</li>
+        <li>Added support for :setlocal command</li>
+        <li>Added support for shiftround setting</li>
+    </ul>
+
+    <b>**Changes in behavior**</b><br/>
+    The following changes modify existing behavior from previous versions of Vrapper:
+    <ul>
+        <li>Refactored &gt;&gt; and &lt;&lt; to use shiftwidth, tabstop, expandtab, and shiftround settings rather than using Eclipse's settings</li>
+        <li>Enable regexsearch property by default.  This matches Vim behavior more closely.</li>
+    </ul>
+</div>
+<div class="newsbox">
     <div class="date">2013-10-05</div>
     <h4>0.36.0 Released</h4>
 
