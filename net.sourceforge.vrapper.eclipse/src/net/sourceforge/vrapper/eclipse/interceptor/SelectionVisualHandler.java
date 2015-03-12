@@ -45,6 +45,9 @@ public class SelectionVisualHandler implements ISelectionChangedListener {
         TextSelection selection = (TextSelection) event.getSelection();
         // selection.isEmpty() is false even if length == 0, don't use it
         if (selection.getLength() == 0) {
+            // Explicitly reset selection. EclipseCursorAndSelection's SelectionChangeListener is
+            // only fired after this listener, returning a stale selection during a mode switch.
+            selectionService.setSelection(null);
             try {
                 int offset = selection.getOffset();
                 IRegion lineInfo = textViewer.getDocument().getLineInformationOfOffset(offset);
