@@ -33,6 +33,7 @@ import net.sourceforge.vrapper.vim.commands.BorderPolicy;
 import net.sourceforge.vrapper.vim.commands.CenterLineCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeOperation;
+import net.sourceforge.vrapper.vim.commands.ChangeToCommandLineCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeToInsertModeCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeToSearchModeCommand;
 import net.sourceforge.vrapper.vim.commands.CloseCommand;
@@ -202,7 +203,7 @@ public class NormalMode extends CommandBasedMode {
                         leafBind('a', (Command) new ChangeToInsertModeCommand(new MotionCommand(moveRight))),
                         leafBind('I', (Command) new ChangeToInsertModeCommand(new MotionCommand(bol))),
                         leafBind('A', (Command) new ChangeToInsertModeCommand(new MotionCommand(eol))),
-                        leafBind(':', (Command) new ChangeModeCommand(CommandLineMode.NAME)),
+                        leafBind(':', ChangeToCommandLineCommand.INSTANCE),
                         leafBind('?', (Command) new ChangeToSearchModeCommand(true, nextResult)),
                         leafBind('/', (Command) new ChangeToSearchModeCommand(false, nextResult)),
                         leafBind('R', (Command) new ReplaceMode.ChangeToReplaceModeCommand()),
