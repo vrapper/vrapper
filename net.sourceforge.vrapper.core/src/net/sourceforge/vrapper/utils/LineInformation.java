@@ -30,14 +30,17 @@ public class LineInformation {
         return number;
     }
 
+    /** Offset of the first character on the line. */
     public int getBeginOffset() {
         return beginOffset;
     }
 
+    /** Length of this line, <em>excluding</em> the newline delimiter. **/
     public int getLength() {
         return length;
     }
 
+    /** Offset of the newline delimiter or possibly the last position in the editor. **/
     public int getEndOffset() {
         return beginOffset+length;
     }
