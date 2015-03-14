@@ -28,6 +28,7 @@ import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.BlockWiseSelection;
 import net.sourceforge.vrapper.vim.commands.BlockWiseSelection.TextBlock;
 import net.sourceforge.vrapper.vim.commands.BlockwiseChangeOperation;
+import net.sourceforge.vrapper.vim.commands.BlockwiseInsertShiftWidth;
 import net.sourceforge.vrapper.vim.commands.BlockwisePasteCommand;
 import net.sourceforge.vrapper.vim.commands.BlockwiseYankCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
@@ -302,7 +303,10 @@ public class BlockwiseVisualMode extends AbstractVisualMode {
                                 ReplaceCommand.VisualBlock.VISUALBLOCK_KEYSTROKE,
                                 VimConstants.PRINTABLE_KEYSTROKES_WITH_NL))
                 ),
-                CountingState.wrap(state(leafBind('p', (Command) BlockwisePasteCommand.INSTANCE))),
+                CountingState.wrap(state(
+                    leafBind('>', (Command) new SelectionBasedTextOperationCommand(BlockwiseInsertShiftWidth.INSERT)),
+                    leafBind('<', (Command) new SelectionBasedTextOperationCommand(BlockwiseInsertShiftWidth.REMOVE)),
+                    leafBind('p', (Command) BlockwisePasteCommand.INSTANCE))),
                 parentState);
     }
     
