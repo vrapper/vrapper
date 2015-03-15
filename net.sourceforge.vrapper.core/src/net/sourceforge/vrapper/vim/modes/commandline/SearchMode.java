@@ -11,6 +11,7 @@ import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Search;
 import net.sourceforge.vrapper.utils.SearchOffset;
 import net.sourceforge.vrapper.utils.SearchResult;
+import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.ConfigurationListener;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
@@ -18,6 +19,7 @@ import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
+import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.ExecuteCommandHint;
 import net.sourceforge.vrapper.vim.modes.ModeSwitchHint;
@@ -149,8 +151,11 @@ public class SearchMode extends AbstractCommandLineMode {
             SearchAndReplaceService sars = editorAdaptor.getSearchAndReplaceService();
             sars.incSearchhighlight(res.getStart(), res.getModelLength());
             MotionCommand.gotoAndChangeViewPort(editorAdaptor, res.getStart(), StickyColumnPolicy.NEVER);
+            Position start = editorAdaptor.getLastActiveSelection().getStart();
+            editorAdaptor.setSelection(new SimpleSelection(new StartEndTextRange(start, res.getStart())));
         } else {
             resetIncSearch();
+            editorAdaptor.setSelection(editorAdaptor.getLastActiveSelection());
         }
     }
 
