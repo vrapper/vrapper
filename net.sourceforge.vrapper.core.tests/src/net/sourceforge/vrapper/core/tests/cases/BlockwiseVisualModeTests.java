@@ -11,13 +11,18 @@ import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.SelectionService;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.TextRange;
+import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.BlockWiseSelection;
+import net.sourceforge.vrapper.vim.commands.BlockwiseInsertShiftWidth;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.BlockwiseVisualMode;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
+import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
 
+import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 // FIXME: needs testing with different values of 'selection' variable
 // (it affects most of the tests)
@@ -27,6 +32,8 @@ public class BlockwiseVisualModeTests extends CommandTestCase {
     @Override
 	public void setUp() {
 		super.setUp();
+		registerManager = new DefaultRegisterManager();
+		reloadEditorAdaptor();
 	};
 
 	private void prepareEditor(final boolean inverted,
@@ -288,16 +295,215 @@ public class BlockwiseVisualModeTests extends CommandTestCase {
 	@Test
 	public void test_c() {
 		prepareEditor(false, block(
-				"Sta", "rt by making", "a block",
+				"Sta", "rt by making", " a block",
 				"The", "n continue a", "nd select it",
-				"Fin", "ally stop",    ""
+				"Fin", "ally stop at", " that."
 				));
 		String initial = content.getText();
 		executeCommand(forKeySeq("cedit<ESC>"));
 		assertEquals(NormalMode.NAME, adaptor.getCurrentModeName());
+		// [FIXME] Cursor position should be on 't'
 		assertCommandResult(initial,
-			    "Staedi", 't', "a block\n"
+			    "Sta", 'e', "dit a block\n"
 			  + "Theeditnd select it\n"
-			  + "Finedit");
+			  + "Finedit that.");
+	}
+
+	@Test
+	public void test_insertShiftWidth() {
+		Mockito.when(configuration.get(Options.SHIFT_WIDTH)).thenReturn(4);
+
+		prepareEditor(false, block(
+				"Sta", "rt by making", " a block",
+				"The", "n continue a", "nd select it",
+				"Fin", "ally stop at", " that."
+				));
+		String initial = content.getText();
+		executeCommand(forKeySeq(">"));
+		assertCommandResult(initial,
+				"Sta", ' ', "   rt by making a block\n"
+			+ "The    n continue and select it\n"
+			+ "Fin    ally stop at that.");
+
+		prepareEditor(false, block(
+				"Sta   ", " rt by making", " a block",
+				"The   ", " n continue a", "nd select it",
+				"Fin   ", " ally stop at", " that."
+				));
+		executeCommand(forKeySeq(">"));
+		assertCommandResult(initial,
+				"Sta\t  ", ' ', "rt by making a block\n"
+			+ "The\t   n continue and select it\n"
+			+ "Fin\t   ally stop at that.");
+
+		prepareEditor(false, block(
+				"Sta   ", " rt by making", " a block"
+				));
+		executeCommand(forKeySeq("3>"));
+		assertCommandResult(initial,
+				"Sta\t\t ", ' ', " rt by making a block");
+
+		prepareEditor(false, block(
+				"Sta   ", " rt by making", " a block",
+				"The   ", " n continue a", "nd select it",
+				"Fin   ", " ally stop at", " that."
+				));
+		executeCommand(forKeySeq("3>"));
+		assertCommandResult(initial,
+				"Sta\t\t ", ' ', " rt by making a block\n"
+				+ "The\t\t   n continue and select it\n"
+				+ "Fin\t\t   ally stop at that.");
+
+		prepareEditor(false, block(
+				"Sta  \t", " rt by making", " a block",
+				"The  \t", " n continue a", "nd select it",
+				"Fin  \t", " ally stop at", " that."
+				));
+		executeCommand(forKeySeq("3>"));
+		assertCommandResult(initial,
+				"Sta\t\t ", ' ', "   rt by making a block\n"
+				+ "The\t\t     n continue and select it\n"
+				+ "Fin\t\t     ally stop at that.");
+	}
+
+	@Test
+	public void test_insertShiftWidthExpandTab() {
+		Mockito.when(configuration.get(Options.SHIFT_WIDTH)).thenReturn(4);
+		Mockito.when(configuration.get(Options.EXPAND_TAB)).thenReturn(true);
+
+		prepareEditor(false, block(
+				"Sta", "rt by making", " a block",
+				"The", "n continue a", "nd select it",
+				"Fin", "ally stop at", " that."
+				));
+		String initial = content.getText();
+		executeCommand(forKeySeq(">"));
+		assertCommandResult(initial,
+				"Sta", ' ', "   rt by making a block\n"
+			+ "The    n continue and select it\n"
+			+ "Fin    ally stop at that.");
+
+		prepareEditor(false, block(
+				"Sta   ", " rt by making", " a block",
+				"The   ", " n continue a", "nd select it",
+				"Fin   ", " ally stop at", " that."
+				));
+		executeCommand(forKeySeq(">"));
+		assertCommandResult(initial,
+				"Sta   ", ' ', "    rt by making a block\n"
+			+ "The        n continue and select it\n"
+			+ "Fin        ally stop at that.");
+
+		prepareEditor(false, block(
+				"Sta   ", " rt by making", " a block"
+				));
+		executeCommand(forKeySeq("3>"));
+		assertCommandResult(initial,
+				"Sta   ", ' ', "            rt by making a block");
+
+		prepareEditor(false, block(
+				"Sta   ", " rt by making", " a block",
+				"The   ", " n continue a", "nd select it",
+				"Fin   ", " ally stop at", " that."
+				));
+		executeCommand(forKeySeq("3>"));
+		assertCommandResult(initial,
+				"Sta   ", ' ', "            rt by making a block\n"
+				+ "The                n continue and select it\n"
+				+ "Fin                ally stop at that.");
+
+		prepareEditor(false, block(
+				"Sta  \t", " rt by making", " a block",
+				"The  \t", " n continue a", "nd select it",
+				"Fin  \t", " ally stop at", " that."
+				));
+		executeCommand(forKeySeq("3>"));
+		assertCommandResult(initial,
+				"Sta   ", ' ', "              rt by making a block\n"
+				+ "The                  n continue and select it\n"
+				+ "Fin                  ally stop at that.");
+	}
+
+	@Test
+	public void test_removeShiftWidth() {
+		Mockito.when(configuration.get(Options.SHIFT_WIDTH)).thenReturn(4);
+		String initial;
+
+		prepareEditor(false, block(
+				"\t aha\t\t    ", "\t      p", "atterna baz4"));
+		initial = content.getText();
+		executeCommand(forKeySeq("<"));
+		assertCommandResult(initial,
+				"\t aha\t\t    ", '\t', "  patterna baz4");
+
+		prepareEditor(false, block(
+				"\t aha\t\t    ", "\t  p", "atterna baz4"));
+		initial = content.getText();
+		executeCommand(forKeySeq("<"));
+		assertCommandResult(initial,
+				"\t aha\t\t    ", ' ', " patterna baz4");
+
+		// Removing indent doesn't change whitespace before block
+		prepareEditor(false, block(
+				"\t aha\t\t    ", "\t  p", "atterna baz4"));
+		initial = content.getText();
+		executeCommand(forKeySeq("3<"));
+		assertCommandResult(initial,
+				"\t aha\t\t    ", 'p', "atterna baz4");
+
+		// Removing indent doesn't change whitespace before block
+		prepareEditor(false, block(
+				"\t aha\t\t    ", "p", "atterna baz4"));
+		initial = content.getText();
+		executeCommand(forKeySeq("3<"));
+		assertCommandResult(initial,
+				"\t aha\t\t    ", 'p', "atterna baz4");
+
+		// Removing indent doesn't change whitespace before block
+		prepareEditor(false, block(
+				"\t aha  \t\t ", "  p", "atterna baz4"));
+		initial = content.getText();
+		executeCommand(forKeySeq("3<"));
+		assertCommandResult(initial,
+				"\t aha  \t\t ", 'p', "atterna baz4");
+	}
+
+	@Test
+	public void testBlockwiseIndentVisualOffsets() {
+		String test;
+		int[] result;
+		final int TABSTOP = 8;
+
+		// Rendered as "         aha                      patterna baz4"
+		test = "\t aha\t\t    \t  patterna baz4";
+		result = BlockwiseInsertShiftWidth.calculateVisualOffsets(test, test.length(), TABSTOP);
+		Assert.assertArrayEquals(
+				new int[] {
+						0,
+						/* space and chars */ 8, 9, 10, 11,
+						/* tabs and spaces */ 12, 16, 24, 25, 26, 27, 28, 32, 33,
+						/* text */ 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47}, result);
+
+		// First tab shrinks to just 1 character width
+		// Rendered as "1234567  aha                      patterna baz4"
+		test = "1234567\t aha\t\t    \t  patterna baz4";
+		result = BlockwiseInsertShiftWidth.calculateVisualOffsets(test, test.length(), TABSTOP);
+		Assert.assertArrayEquals(
+				new int[] {
+						0, 1, 2, 3, 4, 5, 6, 7,
+						/* space and chars */ 8, 9, 10, 11,
+						/* tabs and spaces */ 12, 16, 24, 25, 26, 27, 28, 32, 33,
+						/* text */ 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47}, result);
+
+		// First tab suddenly shifts everything with 8 character widths
+		// Rendered as "12345678         aha                      patterna baz4"
+		test = "12345678\t aha\t\t    \t  patterna baz4";
+		result = BlockwiseInsertShiftWidth.calculateVisualOffsets(test, test.length(), TABSTOP);
+		Assert.assertArrayEquals(
+				new int[] {
+						0, 1, 2, 3, 4, 5, 6, 7, 8,
+						/* space and chars */ 16, 17, 18, 19,
+						/* tabs and spaces */ 20, 24, 32, 33, 34, 35, 36, 40, 41,
+						/* text */ 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55}, result);
 	}
 }
