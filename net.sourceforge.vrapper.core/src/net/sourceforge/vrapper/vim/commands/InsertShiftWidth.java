@@ -9,8 +9,8 @@ import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 
 /**
- * Insert (or remove) <shiftwidth> spaces at the beginning of the line. Then
- * replace every <tabstop> spaces with a TAB character if <expandtab> is
+ * Insert (or remove) &lt;shiftwidth&gt; spaces at the beginning of the line. Then
+ * replace every &lt;tabstop&gt; spaces with a TAB character if &lt;expandtab&gt; is
  * disabled.
  */
 public class InsertShiftWidth implements TextOperation {
