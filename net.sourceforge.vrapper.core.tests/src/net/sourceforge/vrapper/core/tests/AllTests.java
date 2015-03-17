@@ -1,5 +1,6 @@
 package net.sourceforge.vrapper.core.tests;
 
+import net.sourceforge.vrapper.core.tests.cases.BlockwiseVisualModeTests;
 import net.sourceforge.vrapper.core.tests.cases.CommandLineTests;
 import net.sourceforge.vrapper.core.tests.cases.InsertModeTests;
 import net.sourceforge.vrapper.core.tests.cases.KeyMapTests;
@@ -34,6 +35,7 @@ import org.junit.runners.Suite;
 	VisualModeTests.class,
 	VisualModeInclusiveTests.class,
 	VisualModeExclusiveTests.class,
+	BlockwiseVisualModeTests.class,
 //	VrapperRCTests.class,
 //	TextObjectsUnitTests.class,
 //	CommandUnitTests.class,
