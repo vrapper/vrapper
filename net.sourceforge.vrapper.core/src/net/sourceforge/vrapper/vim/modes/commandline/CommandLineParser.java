@@ -282,14 +282,19 @@ public class CommandLineParser extends AbstractCommandParser {
                     vim.getUserInterfaceService().setErrorMessage("No register name given.");
                     return null;
                 }
+
+                RegisterManager registerManager = vim.getRegisterManager();
+
                 String registerName = expr[0].substring(1, 2);
                 String textContent = expr[1];
                 if(expr[1].startsWith("'") && expr[1].endsWith("'") || 
                        expr[1].startsWith("\"") && expr[1].endsWith("\"")) {
                     textContent = expr[1].substring(1, expr[1].length() - 1);
                 }
+                else if(textContent.startsWith("@") && textContent.length() > 1) {
+                	textContent = registerManager.getRegister(textContent.substring(1, 2)).getContent().getText();
+                }
                 RegisterContent content = new StringRegisterContent(ContentType.TEXT, textContent);
-                RegisterManager registerManager = vim.getRegisterManager();
                 if (registerName.equals(RegisterManager.REGISTER_NAME_SEARCH)) {
                     Search lastSearch = registerManager.getSearch();
                     if (textContent.length() == 0) {
