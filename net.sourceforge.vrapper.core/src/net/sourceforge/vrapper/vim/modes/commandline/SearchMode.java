@@ -18,11 +18,15 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
+import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
+import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.ExecuteCommandHint;
+import net.sourceforge.vrapper.vim.modes.LinewiseVisualMode;
 import net.sourceforge.vrapper.vim.modes.ModeSwitchHint;
+import net.sourceforge.vrapper.vim.modes.VisualMode;
 
 public class SearchMode extends AbstractCommandLineMode {
 
@@ -151,8 +155,18 @@ public class SearchMode extends AbstractCommandLineMode {
             SearchAndReplaceService sars = editorAdaptor.getSearchAndReplaceService();
             sars.incSearchhighlight(res.getStart(), res.getModelLength());
             MotionCommand.gotoAndChangeViewPort(editorAdaptor, res.getStart(), StickyColumnPolicy.NEVER);
-            Position start = editorAdaptor.getLastActiveSelection().getStart();
-            editorAdaptor.setSelection(new SimpleSelection(new StartEndTextRange(start, res.getStart())));
+
+            String lastModeName = editorAdaptor.getLastModeName();
+            if (LinewiseVisualMode.NAME.equals(lastModeName) || VisualMode.NAME.equals(lastModeName)) {
+                Selection lastActiveSelection = editorAdaptor.getLastActiveSelection();
+                Position start = lastActiveSelection.getStart();
+                StartEndTextRange range = new StartEndTextRange(start, res.getStart());
+                if (LinewiseVisualMode.NAME.equals(lastModeName)) {
+                    editorAdaptor.setSelection(new LineWiseSelection(editorAdaptor, range.getStart(), range.getEnd()));
+                } else if (VisualMode.NAME.equals(lastModeName)) {
+                    editorAdaptor.setSelection(new SimpleSelection(range));
+                }
+            }
         } else {
             resetIncSearch();
             editorAdaptor.setSelection(editorAdaptor.getLastActiveSelection());
