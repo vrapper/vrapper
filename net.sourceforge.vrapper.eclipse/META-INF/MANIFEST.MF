@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Vrapper
 Bundle-SymbolicName: net.sourceforge.vrapper.eclipse;singleton:=true
-Bundle-Version: 0.53.20150307
+Bundle-Version: 0.53.20150318
 Bundle-Activator: net.sourceforge.vrapper.eclipse.activator.VrapperPlugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
@@ -10,7 +10,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.editors,
  org.eclipse.ui.ide,
  org.eclipse.core.resources,
- net.sourceforge.vrapper.core;bundle-version="0.53.20150307";visibility:=reexport
+ net.sourceforge.vrapper.core;bundle-version="0.53.20150318";visibility:=reexport
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: net.sourceforge.vrapper.eclipse.commands;
   uses:="net.sourceforge.vrapper.vim.commands.motions,
