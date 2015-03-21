@@ -237,7 +237,12 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         File config = new File(filename);
         if( ! config.isAbsolute()) {
             final File homeDir = new File(System.getProperty("user.home"));
-            config = new File(homeDir, filename);
+            // Ignore '~' character at the front - we resolve relative to home anyway.
+            if (filename.startsWith("~/") || filename.startsWith("~\\")) {
+                config = new File(homeDir, filename.substring(2));
+            } else {
+                config = new File(homeDir, filename);
+            }
         }
 
         int lineNr = 0;
