@@ -19,9 +19,9 @@ import net.sourceforge.vrapper.vim.register.StringRegisterContent;
 
 public class SelectionBasedTextOperationCommand extends CountAwareCommand {
 
-	public static class BlockwiseRepeatCommand implements Command {
-	    
-	    private final TextOperation command;
+    public static class BlockwiseRepeatCommand implements Command {
+
+        private final TextOperation command;
         private final int count;
         private final boolean doesInsert;
         private final boolean commitHistory;
@@ -30,12 +30,12 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
         public BlockwiseRepeatCommand(final TextOperation command, final int count, 
                 final boolean doesInsert, final boolean commitHistory,
                 final RegisterContent yankContent) {
-	        this.command = command;
-	        this.count = count;
-	        this.doesInsert = doesInsert;
-	        this.commitHistory = commitHistory;
-	        this.yankContent = yankContent;
-	    }
+            this.command = command;
+            this.count = count;
+            this.doesInsert = doesInsert;
+            this.commitHistory = commitHistory;
+            this.yankContent = yankContent;
+        }
 
         @Override
         public Command repetition() {
@@ -55,56 +55,54 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
         @Override
         public void execute(final EditorAdaptor editorAdaptor)
                 throws CommandExecutionException {
-            
-		    boolean legal = true;
-		    final RegisterManager registerManager = editorAdaptor.getRegisterManager();
-		    if (doesInsert) {
-		        final Register lastEdit = registerManager.getLastEditRegister();
-    	        final RegisterContent content = lastEdit.getContent();
-    	        if (!(content instanceof StringRegisterContent)) {
-    	            legal = false;
-    	        } else {
-        
-            	         
-        	        final StringRegisterContent stringInsert = (StringRegisterContent) content;
-        	        final String string = stringInsert.getText();
-        	        if (VimUtils.containsNewLine(string)) {
-        	            legal = false;
-        	        } else {
-            	        
-            	        // re-position to beginning of insert
-            	        final Position newStart = editorAdaptor.getPosition().addModelOffset(-string.length() + 1);
-            	        editorAdaptor.setPosition(newStart, StickyColumnPolicy.NEVER);
-        	        }
-    	        }
-		    }
-		    
-		    if (legal) {
+
+            boolean legal = true;
+            final RegisterManager registerManager = editorAdaptor.getRegisterManager();
+            if (doesInsert) {
+                final Register lastEdit = registerManager.getLastEditRegister();
+                final RegisterContent content = lastEdit.getContent();
+                if (!(content instanceof StringRegisterContent)) {
+                    legal = false;
+                } else {
+                    final StringRegisterContent stringInsert = (StringRegisterContent) content;
+                    final String string = stringInsert.getText();
+                    if (VimUtils.containsNewLine(string)) {
+                        legal = false;
+                    } else {
+
+                        // re-position to beginning of insert
+                        final Position newStart = editorAdaptor.getPosition().addModelOffset(-string.length() + 1);
+                        editorAdaptor.setPosition(newStart, StickyColumnPolicy.NEVER);
+                    }
+                }
+            }
+
+            if (legal) {
                 final TextObject blockSelection = registerManager.getLastActiveSelectionArea();
                 final TextRange blockRange = blockSelection.getRegion(editorAdaptor, NO_COUNT_GIVEN);
                 final TextBlock textBlock = BlockWiseSelection.getTextBlock( blockRange.getStart(), blockRange.getEnd(),
                         editorAdaptor.getModelContent(), editorAdaptor.getCursorService());
-    		    
+
                 doIt(editorAdaptor, command, getCount(), textBlock);
                 registerManager.getActiveRegister().setContent(yankContent);
-		    }
-            
+            }
+
             if (commitHistory) {
                 final HistoryService history = editorAdaptor.getHistory();
                 history.unlock("block-action");
                 history.endCompoundChange();
             }
         }
-        
+
         public static void doIt(final EditorAdaptor editorAdaptor, final TextOperation command, final int count, final TextBlock block) 
                 throws CommandExecutionException {
-            
+
             final RegisterManager registers = editorAdaptor.getRegisterManager();
             final Register lastActiveRegister = registers.getActiveRegister();
             final Register lastEditRegister = registers.getLastEditRegister();
             final CursorService cursorService = editorAdaptor.getCursorService();
             final TextContent textContent = editorAdaptor.getModelContent();
-            
+
             TextOperation repetition = command.repetition();
             if (repetition == null) {
                 repetition = command;
@@ -133,7 +131,7 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
                         repetition = repetition.repetition();
                     }
                 }
-		    }
+            }
             Position newPos = cursorService.getPositionByVisualOffset(block.startLine, block.startVisualOffset);
             if (newPos == null) {
                 // Position may have been deleted -- place caret on the last
@@ -150,32 +148,32 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
     }
 
     protected final TextOperation command;
-	protected final boolean changeMode;
+    protected final boolean changeMode;
 
     public SelectionBasedTextOperationCommand(final TextOperation command) {
-    	this(command, true);
+        this(command, true);
     }
 
-	protected SelectionBasedTextOperationCommand(final TextOperation command, final boolean leavesVisualMode) {
-		this.command = command;
-		this.changeMode = leavesVisualMode;
-	}
+    protected SelectionBasedTextOperationCommand(final TextOperation command, final boolean leavesVisualMode) {
+        this.command = command;
+        this.changeMode = leavesVisualMode;
+    }
 
-	@Override
-	public void execute(final EditorAdaptor editorAdaptor, final int count)
-			throws CommandExecutionException {
-		editorAdaptor.rememberLastActiveSelection();
-		final TextContent textContent = editorAdaptor.getModelContent();
-		final TextObject selection = editorAdaptor.getSelection();
-		if (selection.getContentType(editorAdaptor.getConfiguration()) == ContentType.TEXT_RECTANGLE) {
-		    final TextRange blockRange = selection.getRegion(editorAdaptor, NO_COUNT_GIVEN);
-		    doIt(editorAdaptor, count, command, textContent, blockRange, changeMode);
-		} else {
-    		command.execute(editorAdaptor, count, selection);
-		}
-		if (changeMode)
-			LeaveVisualModeCommand.doIt(editorAdaptor);
-	}
+    @Override
+    public void execute(final EditorAdaptor editorAdaptor, final int count)
+            throws CommandExecutionException {
+        editorAdaptor.rememberLastActiveSelection();
+        final TextContent textContent = editorAdaptor.getModelContent();
+        final TextObject selection = editorAdaptor.getSelection();
+        if (selection.getContentType(editorAdaptor.getConfiguration()) == ContentType.TEXT_RECTANGLE) {
+            final TextRange blockRange = selection.getRegion(editorAdaptor, NO_COUNT_GIVEN);
+            doIt(editorAdaptor, count, command, textContent, blockRange, changeMode);
+        } else {
+            command.execute(editorAdaptor, count, selection);
+        }
+        if (changeMode)
+            LeaveVisualModeCommand.doIt(editorAdaptor);
+    }
 
     static public void doIt(final EditorAdaptor editorAdaptor,
             final int count, TextOperation command,
@@ -183,7 +181,7 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
             boolean changeMode) throws CommandExecutionException {
         final CursorService cursorService = editorAdaptor.getCursorService();
         final TextBlock textBlock = BlockWiseSelection.getTextBlock(blockRange.getStart(), blockRange.getEnd(),
-                    editorAdaptor.getModelContent(), cursorService);
+                editorAdaptor.getModelContent(), cursorService);
         Position runStart = cursorService.getPositionByVisualOffset(textBlock.startLine, textBlock.startVisualOffset);
         final LineInformation lineInfo = textContent.getLineInformation(textBlock.startLine);
         if (runStart == null) {
@@ -214,7 +212,7 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
             BlockwiseRepeatCommand.doIt(editorAdaptor, command, count, textBlock);
             activeRegister.setContent(yankContent);
             history.unlock("block-action");
-        	history.endCompoundChange();
+            history.endCompoundChange();
         }
     }
 
@@ -226,47 +224,44 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
         }
         return null;
     }
-	
-	/** A variant of SelectionBasedTextOperation that doesn't change mode. */
-	public static class DontChangeMode extends SelectionBasedTextOperationCommand {
-		public DontChangeMode(final TextOperation command) {
-			super(command, false);
-		}
-	}
-	
-	/** Repetition of SelectionBasedTextOperation */
-	static public class Repetition extends CountAwareCommand {
-		
-		private final TextOperation repetition;
-		protected final boolean changeMode;
-		
-		public Repetition(final TextOperation repeat, boolean changeMode) {
-			this.repetition = repeat;
-			this.changeMode = changeMode;
-		}
 
-		@Override
-		public void execute(final EditorAdaptor editorAdaptor, final int count)
-				throws CommandExecutionException {
-		    final TextObject lastSelection = editorAdaptor.getLastActiveSelectionArea();
-		    if (lastSelection.getContentType(editorAdaptor.getConfiguration()) == ContentType.TEXT_RECTANGLE) {
-		        final TextContent modelContent = editorAdaptor.getModelContent();
-		        final TextRange region = lastSelection.getRegion(editorAdaptor, count);
-		        doIt(editorAdaptor, count, repetition, modelContent, region, true);
-		    } else {
-		        repetition.execute(editorAdaptor, count, lastSelection);
-		    }
-			if (changeMode)
-				LeaveVisualModeCommand.doIt(editorAdaptor);
-		}
+    /** A variant of SelectionBasedTextOperation that doesn't change mode. */
+    public static class DontChangeMode extends SelectionBasedTextOperationCommand {
+        public DontChangeMode(final TextOperation command) {
+            super(command, false);
+        }
+    }
 
-		@Override
-		public CountAwareCommand repetition() {
-			return this;
-		}
+    /** Repetition of SelectionBasedTextOperation */
+    static public class Repetition extends CountAwareCommand {
 
-	}
+        private final TextOperation repetition;
+        protected final boolean changeMode;
 
+        public Repetition(final TextOperation repeat, boolean changeMode) {
+            this.repetition = repeat;
+            this.changeMode = changeMode;
+        }
 
+        @Override
+        public void execute(final EditorAdaptor editorAdaptor, final int count)
+                throws CommandExecutionException {
+            final TextObject lastSelection = editorAdaptor.getLastActiveSelectionArea();
+            if (lastSelection.getContentType(editorAdaptor.getConfiguration()) == ContentType.TEXT_RECTANGLE) {
+                final TextContent modelContent = editorAdaptor.getModelContent();
+                final TextRange region = lastSelection.getRegion(editorAdaptor, count);
+                doIt(editorAdaptor, count, repetition, modelContent, region, true);
+            } else {
+                repetition.execute(editorAdaptor, count, lastSelection);
+            }
+            if (changeMode)
+                LeaveVisualModeCommand.doIt(editorAdaptor);
+        }
 
+        @Override
+        public CountAwareCommand repetition() {
+            return this;
+    }
+
+    }
 }
