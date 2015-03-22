@@ -8,6 +8,7 @@ import java.io.IOException;
 
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.VimUtils;
+import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.register.Register;
 import net.sourceforge.vrapper.vim.register.RegisterContent;
 import net.sourceforge.vrapper.vim.register.StringRegisterContent;
@@ -69,7 +70,7 @@ class RegisterSelection extends ByteArrayTransfer {
                 ContentType ct = ContentType.values()[readIn.readInt()];
                 int vOffset = readIn.readInt();
                 int lines = readIn.readInt();
-                registerContent = new TextBlockRegisterContent(vOffset);
+                registerContent = new TextBlockRegisterContent(vOffset, VimConstants.REGISTER_NEWLINE);
                 for (int i = 0; i < lines; ++i) {
                     int len = readIn.readInt();
                     byte[] line = new byte[len];
@@ -128,8 +129,8 @@ public class SWTClipboardRegister implements Register {
     public void setContent(RegisterContent content) {
         ContentType contentType = content.getPayloadType();
         if (contentType == ContentType.TEXT_RECTANGLE) {
-            clipboard.setContents(new Object[] {content},
-                    new Transfer[] {RegisterSelection.getInstance()},
+            clipboard.setContents(new Object[] {content, content.getText()},
+                    new Transfer[] {RegisterSelection.getInstance(), TextTransfer.getInstance()},
                     clipboardId);
         } else {
             String s = content.getText();

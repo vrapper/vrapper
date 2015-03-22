@@ -9,6 +9,7 @@ import net.sourceforge.vrapper.utils.StringUtils;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.BlockWiseSelection.TextBlock;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.register.RegisterContent;
@@ -55,7 +56,7 @@ public class BlockwisePasteCommand extends CountAwareCommand {
                 // Create a fake text block of equal line count with the text
                 // replicated on every line and multiplied by count.
                 //
-                final TextBlockRegisterContent repl = new TextBlockRegisterContent(0);
+                final TextBlockRegisterContent repl = new TextBlockRegisterContent(0, VimConstants.REGISTER_NEWLINE);
                 final String text = StringUtils.multiply(
                     VimUtils.replaceNewLines(registerContent.getText(), ""), count);
                 for (int l = rect.startLine; l <= rect.endLine; ++l) {

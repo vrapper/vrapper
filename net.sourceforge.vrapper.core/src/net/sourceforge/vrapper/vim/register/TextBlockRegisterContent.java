@@ -13,8 +13,11 @@ public class TextBlockRegisterContent implements RegisterContent {
 
     private final List<String> payload = new ArrayList<String>();
     private final int visualWidth;
-    public TextBlockRegisterContent(int visualWidth) {
+    private String newLine;
+
+    public TextBlockRegisterContent(int visualWidth, String newLine) {
         this.visualWidth = visualWidth;
+        this.newLine = newLine;
     }
 
     public ContentType getPayloadType() {
@@ -26,7 +29,8 @@ public class TextBlockRegisterContent implements RegisterContent {
     }
 
     public String getText() {
-        return StringUtils.join("", payload);
+        // Vim includes newlines for each line in the block
+        return StringUtils.join(newLine, payload).concat(newLine);
     }
 
     public int getVisualWidth() {

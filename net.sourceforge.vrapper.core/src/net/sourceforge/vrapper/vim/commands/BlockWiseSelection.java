@@ -153,7 +153,9 @@ public class BlockWiseSelection implements Selection {
         final CursorService cursorService = editorAdaptor.getCursorService();
         final TextBlock textBlock = BlockWiseSelection.getTextBlock(range.getStart(), range.getEnd(),
                 editorAdaptor.getModelContent(), cursorService);
-        TextBlockRegisterContent blockContent = new TextBlockRegisterContent(textBlock.endVisualOffset - textBlock.startVisualOffset);
+        TextBlockRegisterContent blockContent = new TextBlockRegisterContent(
+                textBlock.endVisualOffset - textBlock.startVisualOffset,
+                editorAdaptor.getConfiguration().getNewLine());
         for (int line = textBlock.startLine; line <= textBlock.endLine; ++line) {
             final LineInformation lineInformation = textContent.getLineInformation(line);
             final Position start = cursorService.getPositionByVisualOffset(line, textBlock.startVisualOffset);
