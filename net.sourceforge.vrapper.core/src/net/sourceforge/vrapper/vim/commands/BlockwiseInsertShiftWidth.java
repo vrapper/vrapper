@@ -54,14 +54,21 @@ public class BlockwiseInsertShiftWidth implements TextOperation {
 					+ region.getLeftBound() + " with " + line + " but end is at "
 					+ region.getRightBound());
 			throw new CommandExecutionException("Failed to shift block, bad line found.");
-		} else if (region.getModelLength() < 1) {
-			VrapperLog.error("Received incorrect shiftwidth segment! Start is at "
-					+ region.getLeftBound() + " and segment length is 0!");
-			throw new CommandExecutionException("Failed to shift block, bad line found.");
-		}
 
-		doIt(editorAdaptor, model, region, line, tabstop, shiftwidth, expandtab, replaceTab,
+		} else if (region.getModelLength() == 0 && line.getLength() == 0) {
+			// Block includes an empty line. This might crash the code in doIt, handle sepearately.
+			if (shiftRight) {
+				StringBuilder indent = new StringBuilder(replaceShiftWidth);
+				if ( ! expandtab) {
+					coalesceTabs("", indent, tabstop, 0, new int[]{ 0 });
+				}
+				model.replace(line.getBeginOffset(), 0, indent.toString());
+			} // else: we have nothing to do for shift left, line is empty.
+
+		} else {
+			doIt(editorAdaptor, model, region, line, tabstop, shiftwidth, expandtab, replaceTab,
 				replaceShiftWidth);
+		}
 	}
 
 	private void doIt(EditorAdaptor editorAdaptor, TextContent model, TextRange region,
