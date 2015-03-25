@@ -166,12 +166,12 @@ public class BlockwiseInsertShiftWidth implements TextOperation {
 		// Check if we have enough spaces available to reach the next tab stop.
 		int tabstopDiff = nextTabstopOff - beginIndentVOff;
 		int index = 0;
-		if (indent.length() >= tabstopDiff) {
+		if (tabstopDiff > 0 && indent.length() >= tabstopDiff) {
 			indent.replace(0, tabstopDiff, "\t");
 			index = 1;
 		}
 		// Now we can be sure that our tabs are aligned. Start replacing them like we usually do.
-		while ((indent.length() - index) > tabstop) {
+		while ((indent.length() - index) >= tabstop) {
 			indent.replace(index, index + tabstop, "\t");
 			index++;
 		}
