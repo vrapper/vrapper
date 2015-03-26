@@ -64,4 +64,35 @@ public class StringUtils {
         return ' ' <= chr && chr <= '\u007e';
     }
 
+    /**
+     * Utility method to calculate the visual offset of each character in a string starting from the
+     * beginning of the string and taking the variable width of a tab in account. The newline chars
+     * are ignored, but one extra offset is added to know where the line ends visually.
+     * @return an array which is maxIndex + 1 long and which contains the visual offset of each
+     * character offset in the string.
+     */
+    public static int[] calculateVisualOffsets(String contents, int maxIndex, int tabstop) {
+        if (maxIndex > contents.length()) {
+            maxIndex = contents.length();
+        }
+        int[] result = new int[maxIndex + 1];
+        int nextTabstopOff = 0;
+        int visualOffset = 0;
+        int i = 0;
+        while (i < maxIndex) {
+            result[i] = visualOffset;
+            if (visualOffset % tabstop == 0) {
+                nextTabstopOff += tabstop;
+            }
+            if (contents.charAt(i) == '\t') {
+                visualOffset = nextTabstopOff;
+            } else if ( ! Character.isHighSurrogate(contents.charAt(i))) {
+                visualOffset++;
+            }
+            i++;
+        }
+        result[i] = visualOffset;
+        return result;
+    }
+    
 }

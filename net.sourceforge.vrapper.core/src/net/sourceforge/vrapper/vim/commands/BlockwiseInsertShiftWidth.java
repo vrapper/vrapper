@@ -5,6 +5,7 @@ import java.util.Arrays;
 import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.LineInformation;
+import net.sourceforge.vrapper.utils.StringUtils;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
@@ -82,7 +83,7 @@ public class BlockwiseInsertShiftWidth implements TextOperation {
 				&& VimUtils.isWhiteSpace(contents.substring(endIndent, endIndent + 1))) {
 			endIndent++;
 		}
-		int[] visualOffsets = calculateVisualOffsets(contents, endIndent, tabstop);
+		int[] visualOffsets = StringUtils.calculateVisualOffsets(contents, endIndent, tabstop);
 
 		int indentLength;
 		if (shiftRight) {
@@ -182,33 +183,6 @@ public class BlockwiseInsertShiftWidth implements TextOperation {
 			indent.replace(index, index + tabstop, "\t");
 			index++;
 		}
-	}
-
-	/**
-	 * Utility method to calculate the visual offset of each character in a string, taking the
-	 * variable width of a tab in account. Only public + static for testing.
-	 * @return an array which is maxIndex + 1 which contains the visual offset of each character
-	 * offset in the string.
-	 */
-	public static int[] calculateVisualOffsets(String contents, int maxIndex, int tabstop) {
-		int[] result = new int[maxIndex + 1];
-		int nextTabstopOff = 0;
-		int visualOffset = 0;
-		int i = 0;
-		while (i < maxIndex && i < contents.length()) {
-			result[i] = visualOffset;
-			if (visualOffset % tabstop == 0) {
-				nextTabstopOff += tabstop;
-			}
-			if (contents.charAt(i) == '\t') {
-				visualOffset = nextTabstopOff;
-			} else if ( ! Character.isHighSurrogate(contents.charAt(i))) {
-				visualOffset++;
-			}
-			i++;
-		}
-		result[i] = visualOffset;
-		return result;
 	}
 
 	@Override
