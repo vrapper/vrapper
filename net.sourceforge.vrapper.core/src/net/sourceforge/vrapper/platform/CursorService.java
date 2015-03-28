@@ -15,6 +15,15 @@ public interface CursorService {
     public static final String LAST_SELECTION_END_MARK = ">";
     public static final String LAST_CHANGE_START = "[";
     public static final String LAST_CHANGE_END = "]";
+    /**
+     * Vrapper stores some of its internal state as marks. Any mark starting with this prefix should
+     * not be shown to the user.
+     */
+    public static final String INTERNAL_MARK_PREFIX = "x-vrapper-";
+    /** Stores a selection's "To" position as a mark. */
+    public static final String INTERNAL_LAST_SELECT_TO_MARK = INTERNAL_MARK_PREFIX + "sel-to";
+    /** Stores a selection's "From" position as a mark. */
+    public static final String INTERNAL_LAST_SELECT_FROM_MARK = INTERNAL_MARK_PREFIX + "sel-from";
 
     /**
      * Set the current position in the text, i.e. where the caret is displayed.

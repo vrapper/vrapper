@@ -56,7 +56,10 @@ public class ListMarksCommand extends AbstractMessagesCommand {
         for(String name : names) {
             mark = cursor.getMark(name);
 
-            if(cursor.isGlobalMark(name)) {
+            if (name.startsWith(CursorService.INTERNAL_MARK_PREFIX)) {
+                continue;
+            }
+            else if (cursor.isGlobalMark(name)) {
                 filename = files.getFileNameOfGlobalMark(name);
                 if(filename.equals(files.getCurrentFileName())) {
                     //The mark is global, but it's for this file.

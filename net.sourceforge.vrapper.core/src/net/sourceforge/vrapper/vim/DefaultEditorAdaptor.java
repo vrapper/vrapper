@@ -668,13 +668,16 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     @Override
     public void rememberLastActiveSelection() {
         Selection selection = selectionService.getSelection();
-        if(selection.getRightBound().getModelOffset() > getModelContent().getTextLength()) {
+        if (selection.getRightBound().getModelOffset() > getModelContent().getTextLength()) {
+            VrapperLog.info("Selection was outside of bounds of document. Fixing...");
             Position end = selection.getRightBound().setModelOffset(getModelContent().getTextLength());
             selection = selection.selectMarks(this, selection.getLeftBound(), end);
         }
         registerManager.setLastActiveSelection(SelectionArea.getInstance(this, selection));
         cursorService.setMark(CursorService.LAST_SELECTION_START_MARK, selection.getStartMark(this));
         cursorService.setMark(CursorService.LAST_SELECTION_END_MARK, selection.getEndMark(this));
+        cursorService.setMark(CursorService.INTERNAL_LAST_SELECT_FROM_MARK, selection.getFrom());
+        cursorService.setMark(CursorService.INTERNAL_LAST_SELECT_TO_MARK, selection.getTo());
         lastSelection = selection;
     }
 
