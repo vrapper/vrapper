@@ -11,7 +11,7 @@ import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.modes.LinewiseVisualMode;
 
-public class LineWiseSelection implements Selection {
+public class LineWiseSelection extends AbstractSelection {
 
     private final Position from;
     private final Position to;
@@ -102,7 +102,7 @@ public class LineWiseSelection implements Selection {
     }
 
     @Override
-    public Selection selectMarks(EditorAdaptor adaptor, Position from, Position to) {
+    public Selection doReset(EditorAdaptor adaptor, Position from, Position to) {
         return new LineWiseSelection(adaptor, from, to);
     }
 }

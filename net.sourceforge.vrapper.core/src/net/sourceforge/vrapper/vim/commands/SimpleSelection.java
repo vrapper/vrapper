@@ -10,7 +10,7 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.modes.VisualMode;
 
-public class SimpleSelection implements Selection {
+public class SimpleSelection extends AbstractSelection {
 
     private final TextRange range;
     private Position from;
@@ -150,7 +150,7 @@ public class SimpleSelection implements Selection {
     }
 
     @Override
-    public Selection selectMarks(EditorAdaptor adaptor, Position from, Position to) {
+    public Selection doReset(EditorAdaptor adaptor, Position from, Position to) {
         boolean isSelectionInclusive = Selection.INCLUSIVE.equals(
                 adaptor.getConfiguration().get(Options.SELECTION));
 

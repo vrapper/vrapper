@@ -20,7 +20,6 @@ import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
-import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.CenterLineCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
@@ -146,25 +145,7 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
         if (to == null) {
             to = previousSel.getTo();
         }
-
-        boolean isSelectionInclusive = Selection.INCLUSIVE.equals(
-                editorAdaptor.getConfiguration().get(Options.SELECTION));
-        int docLength = editorAdaptor.getModelContent().getTextLength();
-        CursorService cursorService = editorAdaptor.getCursorService();
-
-        // Check that 'to' and 'from' are not out of bounds.
-        // The case for an empty file is handled in shiftPositionForModelOffset()
-        if (from.getModelOffset() >= docLength && isSelectionInclusive) {
-            from = cursorService.shiftPositionForModelOffset(docLength, -1, true);
-        } else if (from.getModelOffset() > docLength) {
-            from = cursorService.newPositionForModelOffset(docLength);
-        }
-        if (to.getModelOffset() >= docLength && isSelectionInclusive) {
-            to = cursorService.shiftPositionForModelOffset(docLength, -1, true);
-        } else if (to.getModelOffset() > docLength) {
-            to = cursorService.newPositionForModelOffset(docLength);
-        }
-        return previousSel.selectMarks(editorAdaptor, from, to);
+        return previousSel.reset(editorAdaptor, from, to);
     }
 
     @Override

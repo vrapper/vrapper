@@ -52,9 +52,11 @@ public interface Selection extends TextObject, TextRange {
     public Position getEndMark(EditorAdaptor defaultEditorAdaptor);
     /** Returns the name of the mode in which this selection was made. */
     public String getModeName();
-    /** Returns a <b>new</b> Selection object of the same type as the current one.
-     * This uses the from and to positions corrected for changes in the surrounding text.
+    /**
+     * Returns a <b>new</b> Selection object of the same type as the current one but using the from
+     * and to positions corrected for changes in the surrounding text. Exclusive / inclusive mode is
+     * handled automatically
      * <p>The caller is responsible for making the selection visible.
      */
-    public Selection selectMarks(EditorAdaptor adaptor, Position from, Position to);
+    public Selection reset(EditorAdaptor adaptor, Position from, Position to);
 }

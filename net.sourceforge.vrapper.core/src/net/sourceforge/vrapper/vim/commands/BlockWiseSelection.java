@@ -12,7 +12,7 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.modes.BlockwiseVisualMode;
 import net.sourceforge.vrapper.vim.register.TextBlockRegisterContent;
 
-public class BlockWiseSelection implements Selection {
+public class BlockWiseSelection extends AbstractSelection {
     
     private final Position from;
     private final Position to;
@@ -190,7 +190,7 @@ public class BlockWiseSelection implements Selection {
     }
 
     @Override
-    public Selection selectMarks(EditorAdaptor adaptor, Position from, Position to) {
+    public Selection doReset(EditorAdaptor adaptor, Position from, Position to) {
         return new BlockWiseSelection(adaptor, from, to);
     }
 }
