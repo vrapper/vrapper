@@ -190,8 +190,7 @@ public class BlockWiseSelection implements Selection {
     }
 
     @Override
-    public Selection selectMarks(EditorAdaptor adaptor, Position start,
-            Position end) {
-        return new BlockWiseSelection(adaptor, start, end);
+    public Selection selectMarks(EditorAdaptor adaptor, Position from, Position to) {
+        return new BlockWiseSelection(adaptor, from, to);
     }
 }

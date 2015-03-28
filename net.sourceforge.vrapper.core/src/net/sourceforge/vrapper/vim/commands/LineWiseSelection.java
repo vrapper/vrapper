@@ -102,11 +102,7 @@ public class LineWiseSelection implements Selection {
     }
 
     @Override
-    public Selection selectMarks(EditorAdaptor adaptor, Position start, Position end) {
-        if (isReversed()) {
-            return new LineWiseSelection(adaptor, end, start);
-        } else {
-            return new LineWiseSelection(adaptor, start, end);
-        }
+    public Selection selectMarks(EditorAdaptor adaptor, Position from, Position to) {
+        return new LineWiseSelection(adaptor, from, to);
     }
 }

@@ -6,7 +6,6 @@ import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
-import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.modes.VisualMode;
@@ -28,7 +27,7 @@ public class SimpleSelection implements Selection {
         this.to = selectionEndCaretPos;
         this.range = range;
     }
-    
+
     /** Converts a {@link TextRange} into a proper selection with from / to corrected in case of
      * "inclusive" selection.
      */
@@ -51,7 +50,7 @@ public class SimpleSelection implements Selection {
             }
         }
     }
-    
+
     /**
      * Selection with caret position after the selection or on first character. Should only be used
      * for an exclusive selection!
@@ -64,7 +63,7 @@ public class SimpleSelection implements Selection {
             to = range.getEnd();
         }
     }
-    
+
     @Override
     public String getModeName() {
         return VisualMode.NAME;
@@ -151,27 +150,15 @@ public class SimpleSelection implements Selection {
     }
 
     @Override
-    public Selection selectMarks(EditorAdaptor adaptor, Position startMark, Position endMark) {
+    public Selection selectMarks(EditorAdaptor adaptor, Position from, Position to) {
         boolean isSelectionInclusive = Selection.INCLUSIVE.equals(
                 adaptor.getConfiguration().get(Options.SELECTION));
-        Position selLeft = startMark;
-        Position selRight = endMark;
-        // The selection is always longer on the right in inclusive mode!
+
         if (isSelectionInclusive) {
-            selRight = VimUtils.safeAddModelOffset(adaptor, endMark, 1, true);
-        }
-        Position from;
-        Position to;
-        TextRange selectionRange;
-        if (isReversed()) {
-            from = endMark;
-            to = startMark;
-            selectionRange = new StartEndTextRange(selRight, selLeft);
+            return new SimpleSelection(from, to,
+                    StartEndTextRange.inclusive(adaptor.getCursorService(), from, to));
         } else {
-            selectionRange = new StartEndTextRange(selLeft, selRight);
-            from = startMark;
-            to = endMark;
+            return new SimpleSelection(from, to, StartEndTextRange.exclusive(from, to));
         }
-        return new SimpleSelection(from, to, selectionRange);
     }
 }
