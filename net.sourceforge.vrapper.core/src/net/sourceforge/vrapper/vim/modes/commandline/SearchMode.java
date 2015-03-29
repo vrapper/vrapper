@@ -12,6 +12,7 @@ import net.sourceforge.vrapper.utils.Search;
 import net.sourceforge.vrapper.utils.SearchOffset;
 import net.sourceforge.vrapper.utils.SearchResult;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
+import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.ConfigurationListener;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
@@ -159,8 +160,14 @@ public class SearchMode extends AbstractCommandLineMode {
 
             if (LinewiseVisualMode.NAME.equals(lastModeName) || VisualMode.NAME.equals(lastModeName)) {
                 Selection lastActiveSelection = editorAdaptor.getLastActiveSelection();
-                Position start = lastActiveSelection.getStart();
-                StartEndTextRange range = new StartEndTextRange(start, res.getStart());
+                Position from = lastActiveSelection.getFrom();
+                boolean isSelectionInclusive = Selection.INCLUSIVE.equals(editorAdaptor.getConfiguration().get(Options.SELECTION));
+                TextRange range;
+                if (isSelectionInclusive) {
+                    range = StartEndTextRange.inclusive(editorAdaptor.getCursorService(), from, res.getStart());
+                } else {
+                    range = StartEndTextRange.exclusive(from, res.getStart());
+                }
                 if (LinewiseVisualMode.NAME.equals(lastModeName)) {
                     editorAdaptor.setSelection(new LineWiseSelection(editorAdaptor, range.getStart(), range.getEnd()));
                 } else if (VisualMode.NAME.equals(lastModeName)) {
