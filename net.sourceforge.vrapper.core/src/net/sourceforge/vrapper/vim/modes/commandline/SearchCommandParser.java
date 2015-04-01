@@ -38,6 +38,7 @@ public class SearchCommandParser extends AbstractCommandParser {
     public Command parseAndExecute(String first, String command) {
         Search search = parseSearchCommand(first, command);
         editor.getRegisterManager().setSearch(search);
+        editor.setLastSearchResult(null);
         editor.getSearchAndReplaceService().removeHighlighting();
         return commandToExecute;
     }

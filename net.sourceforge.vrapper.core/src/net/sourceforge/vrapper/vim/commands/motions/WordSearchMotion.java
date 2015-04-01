@@ -40,6 +40,7 @@ public class WordSearchMotion extends SearchResultMotion {
         Search search = SearchCommandParser.createSearch(editorAdaptor, keyword, reverse, wholeWord,
                 SearchOffset.NONE);
         editorAdaptor.getRegisterManager().setSearch(search);
+        editorAdaptor.setLastSearchResult(null);
         //add '*' and '#' searches to command-line history for search mode
         CommandLineHistory history = CommandLineHistory.INSTANCE;
         history.setMode(SearchMode.NAME);

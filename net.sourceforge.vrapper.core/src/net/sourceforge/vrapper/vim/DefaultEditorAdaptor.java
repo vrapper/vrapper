@@ -39,6 +39,7 @@ import net.sourceforge.vrapper.platform.ViewportService;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
+import net.sourceforge.vrapper.utils.SearchResult;
 import net.sourceforge.vrapper.utils.SelectionArea;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.UnmodifiableTextContentDecorator;
@@ -110,6 +111,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     private VrapperEventListeners listeners;
     /** Previous selection, or null if editor is fresh. Must be editor-local. */
     private Selection lastSelection;
+    private SearchResult searchResult;
     private int cursorBeforeMapping = -1;
 
 
@@ -689,6 +691,16 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     @Override
     public Selection getLastActiveSelection() {
         return lastSelection;
+    }
+
+    @Override
+    public SearchResult getLastSearchResult() {
+        return searchResult;
+    }
+
+    @Override
+    public void setLastSearchResult(SearchResult result) {
+        this.searchResult = result;
     }
 
 	@Override

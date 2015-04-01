@@ -15,6 +15,7 @@ import net.sourceforge.vrapper.platform.UnderlyingEditorSettings;
 import net.sourceforge.vrapper.platform.UserInterfaceService;
 import net.sourceforge.vrapper.platform.ViewportService;
 import net.sourceforge.vrapper.utils.Position;
+import net.sourceforge.vrapper.utils.SearchResult;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.TextObject;
@@ -72,6 +73,13 @@ public interface EditorAdaptor {
 	void rememberLastActiveSelection();
 	TextObject getLastActiveSelectionArea();
     Selection getLastActiveSelection();
+    /**
+     * Return information about the last search match.
+     * @return either an instance of SearchResult (possibly one for which `isFound` returns false!)
+     *  or <code>null</code> if no search query has been executed yet.
+     */
+    SearchResult getLastSearchResult();
+    void setLastSearchResult(SearchResult result);
 
     CommandLineUI getCommandLine();
     

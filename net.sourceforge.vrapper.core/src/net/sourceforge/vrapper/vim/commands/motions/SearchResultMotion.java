@@ -78,7 +78,7 @@ public class SearchResultMotion extends CountAwareMotion {
             }
         }
         SearchOffset offset = (fixedOffset == null ? search.getSearchOffset() : fixedOffset);
-        SearchResult result = editorAdaptor.getRegisterManager().getLastSearchResult();
+        SearchResult result = editorAdaptor.getLastSearchResult();
         TextContent modelContent = editorAdaptor.getModelContent();
 
         boolean shouldReverse = reverse;
@@ -100,7 +100,7 @@ public class SearchResultMotion extends CountAwareMotion {
         }
         for (int i = 0; i < count; i++) {
             result = doSearch(search, shouldReverse, editorAdaptor, position);
-            editorAdaptor.getRegisterManager().setLastSearchResult(result);
+            editorAdaptor.setLastSearchResult(result);
             if (! result.isFound()) {
                 editorAdaptor.getSearchAndReplaceService().removeHighlighting();
                 throw new CommandExecutionException(

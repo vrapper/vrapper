@@ -60,11 +60,4 @@ public interface RegisterManager {
     public void setCurrentWorkingDirectory(String cwd);
     public String getCurrentWorkingDirectory();
     public void setLastCommand(String macroString);
-    /**
-     * Return information about the last search match.
-     * @return either an instance of SearchResult (possibly one for which `isFound` returns false!)
-     *  or <code>null</code> if no search query has been executed yet.
-     */
-    public SearchResult getLastSearchResult();
-    void setLastSearchResult(SearchResult result);
 }

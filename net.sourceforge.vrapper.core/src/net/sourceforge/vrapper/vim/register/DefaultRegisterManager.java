@@ -30,7 +30,6 @@ public class DefaultRegisterManager implements RegisterManager {
     protected final Register unnamedRegister;
     private final Register lastEditRegister;
     private Search search;
-    private SearchResult searchResult;
     private Command lastEdit, lastInsertion;
     private TextOperation lastSubstitution;
     private FindMotion findMotion;
@@ -141,17 +140,6 @@ public class DefaultRegisterManager implements RegisterManager {
 
     public void setSearch(Search search) {
         this.search = search;
-        searchResult = null;
-    }
-
-    @Override
-    public SearchResult getLastSearchResult() {
-        return searchResult;
-    }
-
-    @Override
-    public void setLastSearchResult(SearchResult result) {
-        this.searchResult = result;
     }
 
     public Command getLastEdit() {
