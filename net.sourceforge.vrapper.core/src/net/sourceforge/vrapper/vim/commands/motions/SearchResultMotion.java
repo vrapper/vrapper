@@ -35,7 +35,7 @@ public class SearchResultMotion extends CountAwareMotion {
 
     public static final TextObject SELECT_NEXT_MATCH = new SearchResultTextObject(false);
     public static final TextObject SELECT_PREVIOUS_MATCH = new SearchResultTextObject(true);
-    
+
     private static final String NOT_FOUND_MESSAGE = "'%s' not found";
 
     protected final boolean reverse;
@@ -130,12 +130,11 @@ public class SearchResultMotion extends CountAwareMotion {
         if (reverse) {
             search = search.reverse();
         }
-        if (!search.isBackward()) {
+        // Move position so we don't hit current match again.
+        if (search.isBackward()) {
+            position = position.addModelOffset(-1);
+        } else {
             position = position.addModelOffset(1);
-        } else if (search.getKeyword().length() == 1) {
-            if (position.getModelOffset() > 0) {
-                position = position.addModelOffset(-1);
-            }
         }
         return VimUtils.wrapAroundSearch(vim, search, position);
     }
@@ -146,9 +145,9 @@ public class SearchResultMotion extends CountAwareMotion {
     }
 
     public static class SearchResultTextObject extends AbstractTextObject {
-        
+
         protected final boolean backwards;
-        
+
         protected SearchResultTextObject(boolean backward) {
             this.backwards = backward;
         }
@@ -237,6 +236,6 @@ public class SearchResultMotion extends CountAwareMotion {
         public ContentType getContentType(Configuration configuration) {
             return ContentType.TEXT;
         }
-        
+
     }
 }
