@@ -17,6 +17,7 @@ public class SimpleLocalConfiguration implements LocalConfiguration {
     
     protected List<ConfigurationListener> listeners =
             new CopyOnWriteArrayList<ConfigurationListener>();
+    private boolean listenersEnabled;
 
     public SimpleLocalConfiguration(Configuration configuration) {
         sharedConfiguration = configuration;
@@ -47,8 +48,10 @@ public class SimpleLocalConfiguration implements LocalConfiguration {
             oldValue = localConfiguration.get(key);
             localConfiguration.set(key, value);
         }
-        for (ConfigurationListener listener : listeners) {
-            listener.optionChanged(key, oldValue, value);
+        if (listenersEnabled) {
+            for (ConfigurationListener listener : listeners) {
+                listener.optionChanged(key, oldValue, value);
+            }
         }
     }
 
@@ -62,8 +65,10 @@ public class SimpleLocalConfiguration implements LocalConfiguration {
                 oldValue = sharedConfiguration.get(key);
             }
             localConfiguration.set(key, value);
-            for (ConfigurationListener listener : listeners) {
-                listener.optionChanged(key, oldValue, value);
+            if (listenersEnabled) {
+                for (ConfigurationListener listener : listeners) {
+                    listener.optionChanged(key, oldValue, value);
+                }
             }
         }
     }
@@ -79,6 +84,10 @@ public class SimpleLocalConfiguration implements LocalConfiguration {
     @Override
     public <T> boolean isSet(Option<T> key) {
         return localConfiguration.isSet(key);
+    }
+    
+    public void setListenersEnabled(boolean enabled) {
+        listenersEnabled = enabled;
     }
     
     public void addListener(ConfigurationListener listener) {

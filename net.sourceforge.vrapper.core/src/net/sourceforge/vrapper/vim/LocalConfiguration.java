@@ -11,4 +11,5 @@ public interface LocalConfiguration extends Configuration {
     /** Listener which is called if a setting changes in the current editor. */
     public void addListener(ConfigurationListener listener);
 
+    public void setListenersEnabled(boolean enabled);
 }
