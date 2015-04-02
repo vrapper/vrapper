@@ -36,9 +36,11 @@ import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.platform.UnderlyingEditorSettings;
 import net.sourceforge.vrapper.platform.UserInterfaceService;
 import net.sourceforge.vrapper.platform.ViewportService;
+import net.sourceforge.vrapper.platform.VrapperPlatformException;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
+import net.sourceforge.vrapper.utils.Search;
 import net.sourceforge.vrapper.utils.SearchResult;
 import net.sourceforge.vrapper.utils.SelectionArea;
 import net.sourceforge.vrapper.utils.TextRange;
@@ -66,6 +68,7 @@ import net.sourceforge.vrapper.vim.modes.TempVisualMode;
 import net.sourceforge.vrapper.vim.modes.VisualMode;
 import net.sourceforge.vrapper.vim.modes.commandline.CommandLineMode;
 import net.sourceforge.vrapper.vim.modes.commandline.CommandLineParser;
+import net.sourceforge.vrapper.vim.modes.commandline.HighlightSearch;
 import net.sourceforge.vrapper.vim.modes.commandline.MessageMode;
 import net.sourceforge.vrapper.vim.modes.commandline.PasteRegisterMode;
 import net.sourceforge.vrapper.vim.modes.commandline.SearchMode;
@@ -164,6 +167,19 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
                 && ! configuration.isSet(Options.MODIFIABLE)) {
             configuration.set(Options.MODIFIABLE, ( ! fileService.isReadOnly()));
         }
+        // Check if this fresh editor needs immediate highlighting.
+        String highlightScope = configuration.get(Options.SEARCH_HL_SCOPE);
+        if (configuration.get(Options.SEARCH_HIGHLIGHT)
+                && HighlightSearch.SEARCH_HL_SCOPE_WINDOW.equals(highlightScope)) {
+            try {
+                Search lastSearch = registerManager.getSearch();
+                if (lastSearch != null) {
+                    searchAndReplaceService.highlight(lastSearch);
+                }
+            } catch (VrapperPlatformException e) {
+                VrapperLog.error("Failed to initialize highlighting in editor", e);
+            }
+        }
     }
 
     public String getLastModeName() {
@@ -221,16 +237,21 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         if (!SHOULD_READ_RC_FILE) {
             return;
         }
-        String filename = CONFIG_FILE_NAME;
-        final File homeDir = new File(System.getProperty("user.home"));
-        File config = new File(homeDir, filename);
-        if( ! config.exists()) { //if no .vrapperrc, look for _vrapperrc
-        	filename = WINDOWS_CONFIG_FILE_NAME;
-        	config =  new File(homeDir, filename);
-        }
+        try {
+            configuration.setListenersEnabled(false);
+            String filename = CONFIG_FILE_NAME;
+            final File homeDir = new File(System.getProperty("user.home"));
+            File config = new File(homeDir, filename);
+            if( ! config.exists()) { //if no .vrapperrc, look for _vrapperrc
+                filename = WINDOWS_CONFIG_FILE_NAME;
+                config =  new File(homeDir, filename);
+            }
 
-        if(config.exists()) {
-        	sourceConfigurationFile(filename);
+            if (config.exists()) {
+                sourceConfigurationFile(filename);
+            }
+        } finally {
+            configuration.setListenersEnabled(true);
         }
     }
 
