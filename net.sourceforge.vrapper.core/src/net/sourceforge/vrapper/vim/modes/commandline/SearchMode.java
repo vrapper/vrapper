@@ -152,12 +152,12 @@ public class SearchMode extends AbstractCommandLineMode {
             resetIncSearch();
             return;
         }
+        String lastModeName = editorAdaptor.getLastModeName();
         if (res.isFound()) {
             SearchAndReplaceService sars = editorAdaptor.getSearchAndReplaceService();
             sars.incSearchhighlight(res.getStart(), res.getModelLength());
             MotionCommand.gotoAndChangeViewPort(editorAdaptor, res.getStart(), StickyColumnPolicy.NEVER);
 
-            String lastModeName = editorAdaptor.getLastModeName();
             if (LinewiseVisualMode.NAME.equals(lastModeName) || VisualMode.NAME.equals(lastModeName)) {
                 Selection lastActiveSelection = editorAdaptor.getLastActiveSelection();
                 Position from = lastActiveSelection.getFrom();
@@ -176,7 +176,9 @@ public class SearchMode extends AbstractCommandLineMode {
             }
         } else {
             resetIncSearch();
-            editorAdaptor.setSelection(editorAdaptor.getLastActiveSelection());
+            if (LinewiseVisualMode.NAME.equals(lastModeName) || VisualMode.NAME.equals(lastModeName)) {
+                editorAdaptor.setSelection(editorAdaptor.getLastActiveSelection());
+            }
         }
     }
 
