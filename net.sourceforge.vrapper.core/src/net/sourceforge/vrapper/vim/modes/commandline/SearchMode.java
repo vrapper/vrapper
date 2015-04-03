@@ -11,16 +11,23 @@ import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Search;
 import net.sourceforge.vrapper.utils.SearchOffset;
 import net.sourceforge.vrapper.utils.SearchResult;
+import net.sourceforge.vrapper.utils.StartEndTextRange;
+import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.ConfigurationListener;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
+import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
+import net.sourceforge.vrapper.vim.commands.Selection;
+import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.ExecuteCommandHint;
+import net.sourceforge.vrapper.vim.modes.LinewiseVisualMode;
 import net.sourceforge.vrapper.vim.modes.ModeSwitchHint;
+import net.sourceforge.vrapper.vim.modes.VisualMode;
 
 public class SearchMode extends AbstractCommandLineMode {
 
@@ -145,12 +152,33 @@ public class SearchMode extends AbstractCommandLineMode {
             resetIncSearch();
             return;
         }
+        String lastModeName = editorAdaptor.getLastModeName();
         if (res.isFound()) {
             SearchAndReplaceService sars = editorAdaptor.getSearchAndReplaceService();
             sars.incSearchhighlight(res.getStart(), res.getModelLength());
             MotionCommand.gotoAndChangeViewPort(editorAdaptor, res.getStart(), StickyColumnPolicy.NEVER);
+
+            if (LinewiseVisualMode.NAME.equals(lastModeName) || VisualMode.NAME.equals(lastModeName)) {
+                Selection lastActiveSelection = editorAdaptor.getLastActiveSelection();
+                Position from = lastActiveSelection.getFrom();
+                boolean isSelectionInclusive = Selection.INCLUSIVE.equals(editorAdaptor.getConfiguration().get(Options.SELECTION));
+                TextRange range;
+                if (isSelectionInclusive) {
+                    range = StartEndTextRange.inclusive(editorAdaptor.getCursorService(), from, res.getStart());
+                } else {
+                    range = StartEndTextRange.exclusive(from, res.getStart());
+                }
+                if (LinewiseVisualMode.NAME.equals(lastModeName)) {
+                    editorAdaptor.setSelection(new LineWiseSelection(editorAdaptor, range.getStart(), range.getEnd()));
+                } else if (VisualMode.NAME.equals(lastModeName)) {
+                    editorAdaptor.setSelection(new SimpleSelection(range));
+                }
+            }
         } else {
             resetIncSearch();
+            if (LinewiseVisualMode.NAME.equals(lastModeName) || VisualMode.NAME.equals(lastModeName)) {
+                editorAdaptor.setSelection(editorAdaptor.getLastActiveSelection());
+            }
         }
     }
 
