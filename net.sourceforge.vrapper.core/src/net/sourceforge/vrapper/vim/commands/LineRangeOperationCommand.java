@@ -33,7 +33,7 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
 	private static final Pattern START_AND_STOP = Pattern.compile(START_SEL_RE + END_SEL_RE + "(\\D.*)");
 	private static final Pattern JUST_START = Pattern.compile(START_SEL_RE + "(\\D.*)");
 	private static final Pattern JUST_STOP = Pattern.compile("^" + END_SEL_RE + "(\\D.*)");
-	private static final Pattern COPY_MOVE = Pattern.compile("^(t|co(p(y)?)?|m(o(v(e?)?)?)?)\\s+.*");
+	private static final Pattern COPY_MOVE = Pattern.compile("^(t|co(p(y)?)?|m(o(v(e?)?)?)?)(\\s+|\\+).*");
 	private String definition;
     private String startStr = "";
     private String stopStr = "";
