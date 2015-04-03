@@ -377,6 +377,7 @@ public class CommandLineParser extends AbstractCommandParser {
         // options
         mapping.add("set", buildConfigEvaluator(/*local=*/false));
         mapping.add("setlocal", buildConfigEvaluator(/*local=*/true));
+        mapping.add("so", sourceConfigFile);
         mapping.add("source", sourceConfigFile);
         mapping.add("let", let);
         // save, close
