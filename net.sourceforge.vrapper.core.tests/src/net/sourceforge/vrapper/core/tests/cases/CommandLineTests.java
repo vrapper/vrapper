@@ -105,6 +105,50 @@ public class CommandLineTests extends VimTestCase {
     	command = parser.parseAndExecute(":", "?foo?,/bar/d");
     	assertNotNull(command);
     	assertTrue(command instanceof LineRangeOperationCommand);
+
+    	command = parser.parseAndExecute(":", "m +1");
+    	assertNotNull(command);
+    	assertTrue(command instanceof LineRangeOperationCommand);
+
+    	command = parser.parseAndExecute(":", "m+2");
+    	assertNotNull(command);
+    	assertTrue(command instanceof LineRangeOperationCommand);
+
+    	command = parser.parseAndExecute(":", "mov +2");
+    	assertNotNull(command);
+    	assertTrue(command instanceof LineRangeOperationCommand);
+
+    	command = parser.parseAndExecute(":", "mo+2");
+    	assertNotNull(command);
+    	assertTrue(command instanceof LineRangeOperationCommand);
+
+    	command = parser.parseAndExecute(":", "move+1");
+    	assertNotNull(command);
+    	assertTrue(command instanceof LineRangeOperationCommand);
+
+    	command = parser.parseAndExecute(":", "copy +1");
+    	assertNotNull(command);
+    	assertTrue(command instanceof LineRangeOperationCommand);
+
+    	command = parser.parseAndExecute(":", "copy+2");
+    	assertNotNull(command);
+    	assertTrue(command instanceof LineRangeOperationCommand);
+
+    	command = parser.parseAndExecute(":", "co +1");
+    	assertNotNull(command);
+    	assertTrue(command instanceof LineRangeOperationCommand);
+
+    	command = parser.parseAndExecute(":", "co+2");
+    	assertNotNull(command);
+    	assertTrue(command instanceof LineRangeOperationCommand);
+
+    	command = parser.parseAndExecute(":", "t +1");
+    	assertNotNull(command);
+    	assertTrue(command instanceof LineRangeOperationCommand);
+
+    	command = parser.parseAndExecute(":", "t+2");
+    	assertNotNull(command);
+    	assertTrue(command instanceof LineRangeOperationCommand);
     }
     
     @Test
