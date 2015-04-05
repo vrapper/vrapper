@@ -20,6 +20,7 @@
             <li><a href="#argtext">Argument Text Object (argtextobj.vim)</a></li>
             <li><a href="#linetext">Line Text Object (textobj-line.vim)</a></li>
             <li><a href="#methodtext">Method Text Object (methodtextobj.vim)</a></li>
+            <li><a href="#indenttext">Indent Text Object (vim-indent-object.vim)</a></li>
             <li><a href="#exchange">Exchange (exchange.vim)</a></li>
             <li><a href="#surround">Surround (surround.vim)</a></li>
         </ol>
@@ -258,6 +259,29 @@
     This script defines a text object <code>f</code> (function) to easily change and delete function contents.  It is defined as the 2nd-level
     of matching <code>{</code> and <code>}</code> in a file (where a class definition would be the 1st-level). Thus it is handy for Java and C++ source
     files or similarly formatted code.
+</p>
+
+<a name="indenttext"><h3>Indent Text Object (vim-indent-object.vim) Plugin</h3></a>
+<p>
+    vim-indent-object.vim is a vim plugin defined here:<br>
+    <a href="http://www.vim.org/scripts/script.php?script_id=3037">http://www.vim.org/scripts/script.php?script_id=3037</a><br/>
+    This script defines text objects <code>i</code> and <code>I</code> (indent) to easily change and delete indentation blocks of code.
+    It is useful for whitespace-delimited languages like Python and other non-bracket-based languages.
+</p>
+<p>
+    The <code>ii</code> text object will select all code at the current level of
+    indentation.  The <code>ai</code> text object will select all code at the
+    current level of indentation <i>plus</i> the line above it.  For example, in
+    Python, this would be like selecting the <code>if</code> statement which
+    declared the indentation block.
+</p>
+<p>
+    The <code>iI</code> text object will select all code at the current level of
+    indentation (just like <code>ii</code>).  The <code>aI</code> text object
+    will select all code at the current level of indentation <i>plus</i> the
+    line above it <i>plus</i> the line below it.  For example, in shell
+    scripting, this would be like selecting the <code>if</code> statement which
+    declared the indentation block and the closing <code>endif</code> line.
 </p>
 
 <a name="exchange"><h3>Exchange (exchange.vim) Plugin</h3></a>

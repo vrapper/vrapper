@@ -160,9 +160,8 @@ Vrapper allows abbreviated commands only when there are no conflicts (e.g. custo
             <p>
                 Programmatically set register contents for register
                 <code>&lt;char&gt;</code>.  Register can then be executed as a
-                macro.<br/><br/> We don't currently support any other
-                <code>:let</code> variants like e.g. swapping contents in
-                registers.
+                macro.<br/><br/>You can also set the contents of one register
+                to the contents of another with @&lt;char&gt;=@&lt;char&gt;.
             </p>
             <p>
                 Note that the search register is special: setting it to an empty
@@ -170,7 +169,7 @@ Vrapper allows abbreviated commands only when there are no conflicts (e.g. custo
                 will activate a search query for the given string with defaults
                 (forward, any part of a word, ...) or use settings from the
                 last given search query after which the highlighting will be
-                updated (at least when enabled with <code>hlsearch</code>).
+                updated (when <code>hlsearch</code> is enabled).
             </p>
         </td>
     </tr>
