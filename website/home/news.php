@@ -1,4 +1,43 @@
 <div class="newsbox">
+    <div class="date">2015-04-05</div>
+    <h4>0.54.0 Released</h4>
+
+    <p>Another two months, another Vrapper release.  We've now received over
+    50,000 installs via the Eclipse Marketplace, which puts us at number 42 out
+    of all 1,800+ plugins available in the Marketplace.  Thank you everyone who
+    continues to use and support Vrapper!</p>
+
+    <p>We now have over 60 issues on our GitHub repository but I noticed
+    something recently: there are only 11 defects.  Of course, since I'm the one
+    who labels these items there are another 10 "annoyances", which are items
+    that don't really prevent you from doing anything but would be nice to have.
+    The reason I bring this up is because we have 35 feature requests.  Once
+    again, it seems like Vrapper is at the point where we can meet the majority
+    of user's use cases and we're down to the really obscure and difficult
+    features that only power users even know exist.  Also, I don't think we have
+    any feature requests which have a "me too!" comment in them; I think all of
+    our feature requests each have one person waiting on them.  I may be a
+    little biased, but I think Vrapper is one of the best Vim emulation plugins
+    for any text editor. I'm not aware of any other Vim emulator that has
+    support for additional (ported) vimscript plugins.  I think we're doing
+    pretty good!</p>
+    
+    <p>Anyway, down to business.  0.54.0 includes the following changes since my
+    last status update:</p>
+
+    <ul>
+        <li>Added support for counts before an ex command (4:s/foo/bar/g)</li>
+        <li>Added support for setting a register to the contents of another register (:let @*=@3)</li>
+        <li>Fixed issue where indenting a block selection indented the beginning of the line</li>
+        <li>Fixed issue with potential off-by-one when indenting a block selection</li>
+        <li>Fixed issue with ':source' not interpreting '~' as '$HOME'</li>
+        <li>Fixed issue with copying a block selection to the clipboard</li>
+        <li>Fixed issue with restoring selection after toggling between visual mode and linewise visual mode</li>
+        <li>Fixed issue with reverse search of a single character</li>
+        <li>Fixed issue with stale selections potentially throwing an exception</li>
+    </ul>
+</div>
+<div class="newsbox">
     <div class="date">2015-03-09</div>
     <h4>Updates to unstable update site</h4>
     <p>I'm still sticking with our monthly status updates.
