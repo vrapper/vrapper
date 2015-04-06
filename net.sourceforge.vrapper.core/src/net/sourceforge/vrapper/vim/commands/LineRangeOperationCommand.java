@@ -33,7 +33,15 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
 	private static final Pattern START_AND_STOP = Pattern.compile(START_SEL_RE + END_SEL_RE + "(\\D.*)");
 	private static final Pattern JUST_START = Pattern.compile(START_SEL_RE + "(\\D.*)");
 	private static final Pattern JUST_STOP = Pattern.compile("^" + END_SEL_RE + "(\\D.*)");
-	private static final Pattern COPY_MOVE = Pattern.compile("^(t|co(p(y)?)?|m(o(v(e?)?)?)?)(\\s+|\\+).*");
+	private static final Pattern CURRENT_LINE_COMMAND = Pattern.compile(
+			"^("
+				+ "(t"
+				+ "|co(p(y)?)?"
+				+ "|m(o(v(e?)?)?)?"
+				+ ")(\\s+|\\+).*"
+			+ "|d(e(l(e(t(e?)?)?)?)?)?(\\s.*|$)"
+			+ "|y(a(n(k?)?)?)?(\\s.*|$)"
+			+ ")");
 	private String definition;
     private String startStr = "";
     private String stopStr = "";
@@ -53,8 +61,8 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
 	    return JUST_START.matcher(command).matches() || JUST_STOP.matcher(command).matches();
 	}
 	
-	public static boolean isCurrentLineCopyMove(String command) {
-	    return COPY_MOVE.matcher(command).matches();
+	public static boolean isCurrentLineOperation(String command) {
+	    return CURRENT_LINE_COMMAND.matcher(command).matches();
 	}
 	
 	public String getOperationStr() {

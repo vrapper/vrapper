@@ -670,8 +670,8 @@ public class CommandLineParser extends AbstractCommandParser {
                 return AutoCmdParser.INSTANCE;
             }
         }
-        // copy/move operation without range to copy/move the current line
-        if (LineRangeOperationCommand.isCurrentLineCopyMove(command)) {
+        // Certain ex commands can be entered without a line range, in that case "." is implied.
+        if (LineRangeOperationCommand.isCurrentLineOperation(command)) {
             return new LineRangeOperationCommand("." + command);
         }
         
