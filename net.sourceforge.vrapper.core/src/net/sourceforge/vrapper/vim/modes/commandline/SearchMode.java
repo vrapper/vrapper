@@ -154,8 +154,6 @@ public class SearchMode extends AbstractCommandLineMode {
         }
         String lastModeName = editorAdaptor.getLastModeName();
         if (res.isFound()) {
-            SearchAndReplaceService sars = editorAdaptor.getSearchAndReplaceService();
-            sars.incSearchhighlight(res.getStart(), res.getModelLength());
             MotionCommand.gotoAndChangeViewPort(editorAdaptor, res.getStart(), StickyColumnPolicy.NEVER);
 
             if (LinewiseVisualMode.NAME.equals(lastModeName) || VisualMode.NAME.equals(lastModeName)) {
@@ -173,6 +171,9 @@ public class SearchMode extends AbstractCommandLineMode {
                 } else if (VisualMode.NAME.equals(lastModeName)) {
                     editorAdaptor.setSelection(new SimpleSelection(range));
                 }
+            } else {
+                SearchAndReplaceService sars = editorAdaptor.getSearchAndReplaceService();
+                sars.incSearchhighlight(res.getStart(), res.getModelLength());
             }
         } else {
             resetIncSearch();
@@ -187,7 +188,7 @@ public class SearchMode extends AbstractCommandLineMode {
         return COMMANDLINE_KEYMAP_NAME;
     }
 
-        @Override
+    @Override
     protected String getPrompt() {
         return forward ? "/" : "?";
     }
