@@ -152,32 +152,21 @@ public class SearchMode extends AbstractCommandLineMode {
             resetIncSearch();
             return;
         }
-        String lastModeName = editorAdaptor.getLastModeName();
+        boolean fromVisual = parser.isFromVisual();
         if (res.isFound()) {
             MotionCommand.gotoAndChangeViewPort(editorAdaptor, res.getStart(), StickyColumnPolicy.NEVER);
 
-            if (LinewiseVisualMode.NAME.equals(lastModeName) || VisualMode.NAME.equals(lastModeName)) {
-                Selection lastActiveSelection = editorAdaptor.getLastActiveSelection();
-                Position from = lastActiveSelection.getFrom();
-                boolean isSelectionInclusive = Selection.INCLUSIVE.equals(editorAdaptor.getConfiguration().get(Options.SELECTION));
-                TextRange range;
-                if (isSelectionInclusive) {
-                    range = StartEndTextRange.inclusive(editorAdaptor.getCursorService(), from, res.getStart());
-                } else {
-                    range = StartEndTextRange.exclusive(from, res.getStart());
-                }
-                if (LinewiseVisualMode.NAME.equals(lastModeName)) {
-                    editorAdaptor.setSelection(new LineWiseSelection(editorAdaptor, range.getStart(), range.getEnd()));
-                } else if (VisualMode.NAME.equals(lastModeName)) {
-                    editorAdaptor.setSelection(new SimpleSelection(range));
-                }
+            if (fromVisual) {
+                Selection lastSel = editorAdaptor.getLastActiveSelection();
+                Selection updated = lastSel.reset(editorAdaptor, lastSel.getFrom(), res.getStart());
+                editorAdaptor.setSelection(updated);
             } else {
                 SearchAndReplaceService sars = editorAdaptor.getSearchAndReplaceService();
                 sars.incSearchhighlight(res.getStart(), res.getModelLength());
             }
         } else {
             resetIncSearch();
-            if (LinewiseVisualMode.NAME.equals(lastModeName) || VisualMode.NAME.equals(lastModeName)) {
+            if (fromVisual) {
                 editorAdaptor.setSelection(editorAdaptor.getLastActiveSelection());
             }
         }
