@@ -149,6 +149,30 @@ public class CommandLineTests extends VimTestCase {
     	command = parser.parseAndExecute(":", "t+2");
     	assertNotNull(command);
     	assertTrue(command instanceof LineRangeOperationCommand);
+
+    	command = parser.parseAndExecute(":", "d");
+    	assertNotNull(command);
+    	assertTrue(command instanceof LineRangeOperationCommand);
+
+    	command = parser.parseAndExecute(":", "delete");
+    	assertNotNull(command);
+    	assertTrue(command instanceof LineRangeOperationCommand);
+
+    	command = parser.parseAndExecute(":", "d A");
+    	assertNotNull(command);
+    	assertTrue(command instanceof LineRangeOperationCommand);
+
+    	command = parser.parseAndExecute(":", "y");
+    	assertNotNull(command);
+    	assertTrue(command instanceof LineRangeOperationCommand);
+
+    	command = parser.parseAndExecute(":", "y A");
+    	assertNotNull(command);
+    	assertTrue(command instanceof LineRangeOperationCommand);
+
+    	command = parser.parseAndExecute(":", "yank A");
+    	assertNotNull(command);
+    	assertTrue(command instanceof LineRangeOperationCommand);
     }
     
     @Test
