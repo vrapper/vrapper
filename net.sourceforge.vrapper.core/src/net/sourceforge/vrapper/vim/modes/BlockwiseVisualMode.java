@@ -246,6 +246,8 @@ public class BlockwiseVisualMode extends AbstractVisualMode {
                 throw new CommandExecutionException("Illegal state; command must not be null!");
             
             editorAdaptor.rememberLastActiveSelection();
+            // Makes sure to switch back to normal editor after activating block mode.
+            editorAdaptor.setSelection(null);
     
 		    final HistoryService history = editorAdaptor.getHistory();
 		    history.beginCompoundChange();
@@ -318,14 +320,6 @@ public class BlockwiseVisualMode extends AbstractVisualMode {
         editorAdaptor.getCursorService().setCaret(caret);
     }
     
-    @Override
-    public void leaveMode(final ModeSwitchHint... hints)
-            throws CommandExecutionException {
-        editorAdaptor.setSelection(null);
-        super.leaveMode(hints);
-    }
-
-
     @Override
     protected void fixSelection() {
         final Selection selection = editorAdaptor.getSelection();

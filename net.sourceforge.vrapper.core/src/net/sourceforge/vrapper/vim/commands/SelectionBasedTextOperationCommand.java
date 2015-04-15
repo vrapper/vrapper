@@ -172,6 +172,8 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
         try {
             if (selection.getContentType(editorAdaptor.getConfiguration()) == ContentType.TEXT_RECTANGLE) {
                 final TextRange blockRange = selection.getRegion(editorAdaptor, NO_COUNT_GIVEN);
+                // Makes sure to switch back to normal editor after activating block mode.
+                editorAdaptor.setSelection(null);
                 doIt(editorAdaptor, count, command, textContent, blockRange, changeMode);
             } else {
                 command.execute(editorAdaptor, count, selection);
@@ -187,6 +189,7 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
             final int count, TextOperation command,
             final TextContent textContent, final TextRange blockRange,
             boolean changeMode) throws CommandExecutionException {
+        
         final CursorService cursorService = editorAdaptor.getCursorService();
         final TextBlock textBlock = BlockWiseSelection.getTextBlock(blockRange.getStart(), blockRange.getEnd(),
                 editorAdaptor.getModelContent(), cursorService);

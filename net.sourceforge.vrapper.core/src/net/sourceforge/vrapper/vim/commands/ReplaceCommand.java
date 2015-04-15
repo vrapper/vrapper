@@ -106,6 +106,8 @@ public abstract class ReplaceCommand extends AbstractModelSideCommand {
             final Position selectionEnd = selection.getTo();
             final CursorService cursorService = editorAdaptor.getCursorService();
             
+            // Makes sure to switch back to normal editor after activating block mode.
+            editorAdaptor.setSelection(null);
             TextBlock textBlock = BlockWiseSelection.getTextBlock(selectionStart, selectionEnd, textContent, cursorService);
             for (int line = textBlock.startLine; line <= textBlock.endLine; ++line) {
                 final Position start = cursorService.getPositionByVisualOffset(line, textBlock.startVisualOffset);
