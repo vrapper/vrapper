@@ -226,7 +226,7 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
                 transitionBind('r', changeCaret(CaretType.UNDERLINE),
                         convertKeyStroke(
                                 ReplaceCommand.Visual.VISUAL_KEYSTROKE,
-                                VimConstants.PRINTABLE_KEYSTROKES_WITH_NL)),
+                                VimConstants.PRINTABLE_KEYSTROKES)),
                 transitionBind('m',
                         convertKeyStroke(
                                 SetMarkCommand.KEYSTROKE_CONVERTER,
