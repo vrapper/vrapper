@@ -344,12 +344,14 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
                     return;
                 }
             }
+            // getTextBounds makes a spanning block for the characters at the start of all lines.
+            // Clip and move it.
+            blockRect.width -= fromRect.x - blockRect.x;
+            blockRect.x = fromRect.x;
         } else {
             final Rectangle toRect = styled.getTextBounds(endOfs, endOfs);
             blockRect = fromRect.union(toRect);
         }
-        blockRect.width -= fromRect.x - blockRect.x;
-        blockRect.x = fromRect.x;
         //
         // getTextBounds returns values relative to the top-left visible
         // pixel, adjusting the block rectangle accordingly.
