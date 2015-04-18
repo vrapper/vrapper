@@ -54,12 +54,12 @@ public class ConstructorWrappers {
     static final Map<SpecialKey, String> specialKeyNames = Collections.unmodifiableMap(new HashMap<SpecialKey, String>() {{
         for (SpecialKey key: SpecialKey.values()) {
             String keyName = key.toString();
-            put(key, "<"+keyName+">");
+            put(key, keyName);
         }
-        put(SpecialKey.ARROW_LEFT,  "<LEFT>");
-        put(SpecialKey.ARROW_RIGHT, "<RIGHT>");
-        put(SpecialKey.ARROW_UP,    "<UP>");
-        put(SpecialKey.ARROW_DOWN,  "<DOWN>");
+        put(SpecialKey.ARROW_LEFT,  "LEFT");
+        put(SpecialKey.ARROW_RIGHT, "RIGHT");
+        put(SpecialKey.ARROW_UP,    "UP");
+        put(SpecialKey.ARROW_DOWN,  "DOWN");
     }});
 
     //    private static final Pattern pattern = Pattern.compile("<(.+)>");
@@ -179,23 +179,41 @@ public class ConstructorWrappers {
     }
 
     public static String keyStrokeToString(KeyStroke stroke) {
+        StringBuilder keyName = new StringBuilder();
+        boolean suppressAngleBrackets = false;
         if (stroke.getSpecialKey() == null) {
-            String key = String.valueOf(stroke.getCharacter());
-            if (stroke.getCharacter() >= ' ') {
-                switch (stroke.getCharacter()) {
-                case '<':
-                    return "<LT>";
-                case '>':
-                    return "<GT>";
-                case ' ':
-                    return "<SPACE>";
-                default:
-                    return key;
-                }
+            // Handle special cases
+            if (stroke.getCharacter() == '<') {
+                keyName.append("LT");
+            } else if (stroke.getCharacter() == '>') {
+                keyName.append("GT");
+            } else if (stroke.getCharacter() == ' ') {
+                keyName.append("SPACE");
+            } else {
+                keyName.append(stroke.getCharacter());
+                suppressAngleBrackets = true;
             }
-            return "<C-"+key+">";
+        } else {
+            keyName.append(specialKeyNames.get(stroke.getSpecialKey()));
         }
-        return specialKeyNames.get(stroke.getSpecialKey());
+        // Normal printable characters are already changed due to shift, ignore shift modifier.
+        if ((stroke.getSpecialKey() != null || stroke.getCharacter() == ' ')
+                && stroke.withShiftKey()) {
+            keyName.insert(0, "S-");
+            suppressAngleBrackets = false;
+        }
+        if (stroke.withAltKey()) {
+            keyName.insert(0, "A-");
+            suppressAngleBrackets = false;
+        }
+        if (stroke.withCtrlKey()) {
+            keyName.insert(0, "C-");
+            suppressAngleBrackets = false;
+        }
+        if ( ! suppressAngleBrackets) {
+            keyName.insert(0, '<').append('>');
+        }
+        return keyName.toString();
     }
 
     public static KeyStroke key(char key) {
