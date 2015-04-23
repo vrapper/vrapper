@@ -208,9 +208,9 @@ public class IncrementDecrementCommand extends CountAwareCommand {
 	 * @return - return a String similar to numStr but incremented/decremented by 'count'
 	 */
 	private String modifyNumber(String numStr, int count, int radix) {
-	 	int numVal;
+	 	long numVal;
 	 	try {
-	 		numVal = Integer.parseInt(numStr, radix);
+	 		numVal = Long.parseLong(numStr, radix);
 	 	}
 	 	catch(NumberFormatException e) {
 	 		//it wasn't a number after all
@@ -225,7 +225,7 @@ public class IncrementDecrementCommand extends CountAwareCommand {
 	 	}
 	 	
 	 	//convert back to string
-	 	return Integer.toString(numVal, radix);
+	 	return Long.toString(numVal, radix);
 	}
 	
 	/**
