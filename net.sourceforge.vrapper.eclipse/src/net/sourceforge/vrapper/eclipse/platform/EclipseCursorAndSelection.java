@@ -37,6 +37,8 @@ import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.ITextViewerExtension5;
 import org.eclipse.jface.text.source.IAnnotationModel;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.custom.CaretEvent;
 import org.eclipse.swt.custom.CaretListener;
 import org.eclipse.swt.custom.StyledText;
@@ -101,6 +103,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         changeList = new ArrayList<org.eclipse.jface.text.Position>();
         textViewer.getTextWidget().addSelectionListener(selectionChangeListener);
         textViewer.getTextWidget().addCaretListener(caretListener);
+        textViewer.getSelectionProvider().addSelectionChangedListener(selectionChangeListener);
         textViewer.getDocument().addPositionCategory(POSITION_CATEGORY_NAME);
     }
 
@@ -402,9 +405,20 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         }
     }
 
-    private final class SelectionChangeListener implements SelectionListener {
+    /**
+     * Resets Vrapper's internal cached selection when Eclipse changes the TextViewer selection.
+     * <p>Note that {@link SelectionListener} is only triggered for specific cases, JFace commands
+     * don't seem to do it. That's why the extra {@link ISelectionChangedListener} monitors those
+     * changes.
+     */
+    private final class SelectionChangeListener implements SelectionListener, ISelectionChangedListener {
         @Override
         public void widgetDefaultSelected(final SelectionEvent arg0) {
+            // The StyledText javadoc claims that this is never called.
+        }
+
+        @Override
+        public void widgetSelected(final SelectionEvent arg0) {
             if ( ! selectionInProgress) {
                 selection = null;
                 // getPosition() compensates for inclusive visual selection's caret offset.
@@ -413,7 +427,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         }
 
         @Override
-        public void widgetSelected(final SelectionEvent arg0) {
+        public void selectionChanged(SelectionChangedEvent event) {
             if ( ! selectionInProgress) {
                 selection = null;
                 // getPosition() compensates for inclusive visual selection's caret offset.
