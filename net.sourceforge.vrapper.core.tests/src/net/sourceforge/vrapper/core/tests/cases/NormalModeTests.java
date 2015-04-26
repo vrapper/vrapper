@@ -1792,8 +1792,17 @@ public class NormalModeTests extends CommandTestCase {
 	    checkCommand(forKeySeq("<C-a>"),
 	            "xx",'x',"xx34xx0x234",
 	            "xxxxx3",'5',"xx0x234");
+	    
+	    // Check that rollover doesn't happen at 2^31 (Java int is signed)
+	    checkCommand(forKeySeq("<C-a>"),
+	            "0", 'x', "7FFFFFFF",
+	            "0x8000000", '0', "");
+	    
+	    checkCommand(forKeySeq("256<C-a>"),
+	            "0", 'x', "7FFFFFFF",
+	            "0x800000F", 'F', "");
 	}
-	
+
 	@Test
 	public void test_decrementDecimal() throws Exception {
 	    checkCommand(forKeySeq("<C-x>"),
