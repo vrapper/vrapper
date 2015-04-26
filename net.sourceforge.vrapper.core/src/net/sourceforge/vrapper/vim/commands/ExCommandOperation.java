@@ -79,8 +79,16 @@ public class ExCommandOperation extends SimpleTextOperation {
 		//grab text between delimiters
 		String pattern = definition.substring(1, patternEnd);
 		
-		if(definition.length() <= patternEnd) {
-			//pattern was defined, but no command
+		if (pattern.length() == 0) {
+			// if no pattern defined, use last search
+			pattern = editorAdaptor.getRegisterManager().getRegister("/").getContent().getText();
+			if (pattern.length() == 0) {
+				return;
+			}
+		}
+
+		if (definition.length() <= patternEnd) {
+			// pattern was defined, but no command
 			return;
 		}
 		
