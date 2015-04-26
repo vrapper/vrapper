@@ -1,5 +1,6 @@
 package net.sourceforge.vrapper.vim.commands;
 
+import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
@@ -41,7 +42,8 @@ public class ExCommandOperation extends SimpleTextOperation {
 		}
 	}
 
-    public void execute(EditorAdaptor editorAdaptor, TextRange region, ContentType contentType) {
+    public void execute(EditorAdaptor editorAdaptor, TextRange region, ContentType contentType)
+            throws CommandExecutionException {
     	boolean findMatch = true;
     	//leave 'originalDefinition' untouched so repetition can use it again
     	//we'll be modifying 'definition' to make parsing easier
@@ -62,7 +64,8 @@ public class ExCommandOperation extends SimpleTextOperation {
 			definition = definition.substring(1);
 		}
 		else { //doesn't start with a 'g' or 'v'?  How'd we get here?
-			return;
+			VrapperLog.error("Expected a g or v instruction but got [" + originalDefinition + "]");
+			throw new CommandExecutionException("Parsing error");
 		}
 		
 		//a search pattern must be defined but it doesn't have to be '/'
@@ -73,23 +76,24 @@ public class ExCommandOperation extends SimpleTextOperation {
 		int patternEnd = definition.indexOf(delimiter, 1);
 		if(patternEnd == -1) {
 			//pattern didn't end
-			return;
+			throw new CommandExecutionException("Missing separator!");
 		}
 		
 		//grab text between delimiters
 		String pattern = definition.substring(1, patternEnd);
 		
 		if (pattern.length() == 0) {
-			// if no pattern defined, use last search
+			// If no pattern defined, use last search.
+			// Register manager guarantees that the register content is not null here.
 			pattern = editorAdaptor.getRegisterManager().getRegister("/").getContent().getText();
 			if (pattern.length() == 0) {
-				return;
+				throw new CommandExecutionException("No search pattern given and no active search!");
 			}
 		}
 
-		if (definition.length() <= patternEnd) {
+		if (definition.length() <= patternEnd + 1) {
 			// pattern was defined, but no command
-			return;
+			throw new CommandExecutionException("No ex command to execute on pattern match!");
 		}
 		
 		//chop off pattern (+delimiter), all that should be left is command
