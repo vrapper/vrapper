@@ -359,6 +359,7 @@ public class VrapperPlugin extends AbstractUIPlugin implements /*IStartup,*/ Log
     public static class CommandExecutionListener implements IExecutionListenerWithChecks {
     
         protected boolean needsCleanup;
+        protected Selection lastSelection;
 
         @Override
         public void notHandled(String commandId, NotHandledException exception) {
@@ -396,21 +397,40 @@ public class VrapperPlugin extends AbstractUIPlugin implements /*IStartup,*/ Log
             EditorAdaptor adaptor = interceptor.getEditorAdaptor();
             // [TODO] Record that command was executed when recording a macro.
             if ("org.eclipse.jdt.ui.edit.text.java.select.enclosing".equals(commandId)
-                    || "org.eclipse.jdt.ui.edit.text.java.select.last".equals(commandId)) {
+                    || "org.eclipse.jdt.ui.edit.text.java.select.last".equals(commandId)
+                    || "org.eclipse.jdt.ui.edit.text.java.select.next".equals(commandId)
+                    || "org.eclipse.jdt.ui.edit.text.java.select.previous".equals(commandId)
+                    || "org.eclipse.ui.edit.selectAll".equals(commandId)
+                    || "org.eclipse.ui.edit.text.moveLineUp".equals(commandId)
+                    || "org.eclipse.ui.edit.text.moveLineDown".equals(commandId)
+                    || "org.eclipse.ui.edit.text.select.wordPrevious".equals(commandId)
+                    || "org.eclipse.ui.edit.text.select.wordNext".equals(commandId)
+                ) {
                 // Only works for Eclipse text objects, Eclipse motions need some different logic
                 TextRange nativeSelection = interceptor.getPlatform().getSelectionService().getNativeSelection();
-                // [FIXME] What if there was no selection before the command (hence remember
-                // selection is not called) but DefaultEditorAdaptor still remembers a previous
-                // Vrapper selection? --> Store remembered selection in command listener and create
-                // a new one if there was no selection!
-                if (nativeSelection.getModelLength() > 0) {
-                    Selection selection = adaptor.getLastActiveSelection();
-                    if (selection == null) {
-                        selection = new SimpleSelection(nativeSelection);
+                // Vrapper selection might be still active if command did not modify selection state
+                if (nativeSelection.getModelLength() > 0
+                        && nativeSelection != SelectionService.VRAPPER_SELECTION_ACTIVE) {
+                    if (lastSelection == null) {
+                        lastSelection = new SimpleSelection(nativeSelection);
                     }
-                    selection = selection.wrap(adaptor, nativeSelection);
-                    adaptor.setSelection(selection);
-                    adaptor.changeModeSafely(selection.getModeName(), AbstractVisualMode.KEEP_SELECTION_HINT);
+                    lastSelection = lastSelection.wrap(adaptor, nativeSelection);
+                    adaptor.setSelection(lastSelection);
+                    // Should not pose any problems if we are still in the same visual mode.
+                    adaptor.changeModeSafely(lastSelection.getModeName(), AbstractVisualMode.KEEP_SELECTION_HINT);
+                }
+            } else if ("org.eclipse.ui.edit.text.goto.lineStart".equals(commandId)
+                    || "org.eclipse.ui.edit.text.goto.lineEnd".equals(commandId)
+                    || "org.eclipse.ui.edit.text.goto.wordPrevious".equals(commandId)
+                    || "org.eclipse.ui.edit.text.goto.wordNext".equals(commandId)
+                    || "org.eclipse.jdt.ui.edit.text.java.goto.matching.bracket".equals(commandId)
+                    ) {
+                if (lastSelection != null) {
+                    // [TODO] Check for inclusive / exclusive!
+                    lastSelection = lastSelection.reset(adaptor, lastSelection.getFrom(), adaptor.getPosition());
+                    adaptor.setSelection(lastSelection);
+                    // Should not pose any problems if we are still in the same visual mode.
+                    adaptor.changeModeSafely(lastSelection.getModeName(), AbstractVisualMode.KEEP_SELECTION_HINT);
                 }
             }
             needsCleanup = false;
@@ -422,6 +442,8 @@ public class VrapperPlugin extends AbstractUIPlugin implements /*IStartup,*/ Log
             IWorkbenchPart activePart = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActivePart();
             VrapperLog.info("PRE command: " + commandId + " in " + activePart + ". Event: " + event);
             needsCleanup = true;
+            // Always reset this
+            lastSelection = null;
             if ( ! VrapperPlugin.isVrapperEnabled()) {
                 return;
             }
@@ -430,7 +452,7 @@ public class VrapperPlugin extends AbstractUIPlugin implements /*IStartup,*/ Log
             // Chop off that last character if selection is left-to-right and command is a motion.
             IEditorPart activeEditor = HandlerUtil.getActiveEditor(event);
             if (activeEditor == null) {
-                VrapperLog.debug("No active editor info in event!");
+                VrapperLog.info("No active editor info in event!");
                 activeEditor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
             }
             InputInterceptor interceptor;
@@ -447,9 +469,13 @@ public class VrapperPlugin extends AbstractUIPlugin implements /*IStartup,*/ Log
             TextRange selRange = interceptor.getPlatform().getSelectionService().getNativeSelection();
             if (selRange.getModelLength() > 0 || selRange == SelectionService.VRAPPER_SELECTION_ACTIVE) {
                 if (selRange == SelectionService.VRAPPER_SELECTION_ACTIVE) {
+                    // This is the generic part: store Vrapper selection so that 'gv' works.
                     interceptor.getEditorAdaptor().rememberLastActiveSelection();
-                    VrapperLog.info("Stored selection");
+                    VrapperLog.info("Stored Vrapper selection");
                 }
+                // Store current selection so that postExecuteSuccess can update it.
+                lastSelection = interceptor.getEditorAdaptor().getSelection();
+                VrapperLog.info("Grabbed selection");
             }
             Display.getCurrent().asyncExec(new Runnable() {
                 @Override
