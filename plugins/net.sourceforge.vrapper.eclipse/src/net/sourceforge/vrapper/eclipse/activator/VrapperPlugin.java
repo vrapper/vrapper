@@ -383,6 +383,10 @@ public class VrapperPlugin extends AbstractUIPlugin implements /*IStartup,*/ Log
                 return;
             }
             IEditorPart activeEditor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+            if (activeEditor == null) {
+                // No editor active, e.g. on a fresh start.
+                return;
+            }
             InputInterceptor interceptor;
             try {
                 interceptor = VrapperPlugin.getDefault().findActiveInterceptor(activeEditor);
@@ -454,6 +458,10 @@ public class VrapperPlugin extends AbstractUIPlugin implements /*IStartup,*/ Log
             if (activeEditor == null) {
                 VrapperLog.info("No active editor info in event!");
                 activeEditor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+            }
+            if (activeEditor == null) {
+                // No editor active, e.g. on a fresh start.
+                return;
             }
             InputInterceptor interceptor;
             try {
