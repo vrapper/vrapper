@@ -2,12 +2,14 @@ package net.sourceforge.vrapper.plugin.surround.state;
 
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
+import net.sourceforge.vrapper.keymap.DynamicState;
+import net.sourceforge.vrapper.keymap.vim.PlugKeyStroke;
 
 public class DelimiterValues {
 
     @SuppressWarnings("unchecked")
-    public static DelimiterState createDelimiterState() {
-        return new DelimiterState(
+    public static DynamicState<DelimiterHolder> createDelimiterState() {
+        return new DynamicState<DelimiterHolder>(
                 leafBind('b', (DelimiterHolder) new SimpleDelimiterHolder("(",")")),
                 leafBind('(', (DelimiterHolder) new SimpleDelimiterHolder("( "," )")),
                 leafBind(')', (DelimiterHolder) new SimpleDelimiterHolder("(",")")),

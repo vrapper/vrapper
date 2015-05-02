@@ -10,6 +10,7 @@ import java.util.Queue;
 
 import net.sourceforge.vrapper.eclipse.keymap.AbstractEclipseSpecificStateProvider;
 import net.sourceforge.vrapper.keymap.ConvertingState;
+import net.sourceforge.vrapper.keymap.DynamicState;
 import net.sourceforge.vrapper.keymap.KeyMapInfo;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.plugin.surround.commands.DeleteDelimitersCommand;
@@ -17,8 +18,9 @@ import net.sourceforge.vrapper.plugin.surround.commands.SpacedDelimitedText;
 import net.sourceforge.vrapper.plugin.surround.state.AddDelimiterState;
 import net.sourceforge.vrapper.plugin.surround.state.AddVisualDelimiterState;
 import net.sourceforge.vrapper.plugin.surround.state.ChangeDelimiterState;
-import net.sourceforge.vrapper.plugin.surround.state.DelimiterState;
+import net.sourceforge.vrapper.plugin.surround.state.DelimiterHolder;
 import net.sourceforge.vrapper.plugin.surround.state.DelimiterValues;
+import net.sourceforge.vrapper.plugin.surround.state.SimpleDelimiterHolder;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.DelimitedText;
@@ -42,7 +44,11 @@ public class SurroundStateProvider extends AbstractEclipseSpecificStateProvider 
                 if (surroundDef.length != 2) {
                     throw new IllegalArgumentException(":surround definition must contain '\\r'");
                 }
-                delimiterRegistry.addDelimiterHolder(key.charAt(0), surroundDef[0], surroundDef[1]);
+                char keyChar = key.charAt(0);
+                String left = surroundDef[0];
+                String right = surroundDef[1];
+                delimiterRegistry.addBinding(
+                        leafBind(keyChar, (DelimiterHolder) new SimpleDelimiterHolder(left, right)));
             } catch (Exception e) {
                 vim.getUserInterfaceService().setErrorMessage(e.getMessage());
             }
@@ -51,7 +57,7 @@ public class SurroundStateProvider extends AbstractEclipseSpecificStateProvider 
 
     }
     
-    protected DelimiterState delimiterRegistry;
+    protected DynamicState<DelimiterHolder> delimiterRegistry;
     
     public SurroundStateProvider() {
         name = "Surround State Provider";
