@@ -40,8 +40,7 @@ public class AbstractEclipseSpecificStateProvider implements
     protected AbstractEclipseSpecificStateProvider() {
     }
 
-    public void setInitializationData(IConfigurationElement config,
-            String propertyName, Object data) throws CoreException {
+    public void configure(IConfigurationElement config) {
         try {
             String stringValue = config.getAttribute("priority");
             name = config.getAttribute("name");

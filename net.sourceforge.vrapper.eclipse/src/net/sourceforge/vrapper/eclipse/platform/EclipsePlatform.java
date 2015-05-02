@@ -199,13 +199,18 @@ public class EclipsePlatform implements Platform {
                 .getConfigurationElementsFor("net.sourceforge.vrapper.eclipse.pssp");
         final List<AbstractEclipseSpecificStateProvider> matched = new ArrayList<AbstractEclipseSpecificStateProvider>();
         for (final IConfigurationElement element : elements) {
-            final AbstractEclipseSpecificStateProvider provider = (AbstractEclipseSpecificStateProvider) Utils
-                    .createGizmoForElementConditionally(
-                            underlyingEditor, "editor-must-subclass",
-                            element, "provider-class");
-            if (provider != null) {
-                provider.initializeProvider(textObjectProvider);
-                matched.add(provider);
+            try {
+                final AbstractEclipseSpecificStateProvider provider = (AbstractEclipseSpecificStateProvider) Utils
+                        .createGizmoForElementConditionally(
+                                underlyingEditor, "editor-must-subclass",
+                                element, "provider-class");
+                if (provider != null) {
+                    provider.configure(element);
+                    provider.initializeProvider(textObjectProvider);
+                    matched.add(provider);
+                }
+            } catch (Exception e) {
+                VrapperLog.error("Failed to initialize state provider " + element, e);
             }
         }
         Collections.sort(matched);
