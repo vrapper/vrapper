@@ -86,4 +86,7 @@ public class EclipseCommand extends AbstractCommand {
         return new MultipleExecutionCommand(count, this);
     }
 
+    public String toString() {
+        return "eclipseCmd(" + action + ")";
+    }
 }
