@@ -39,7 +39,9 @@ public class HashMapState<T> implements State<T> {
 
 	public State<T> union(State<T> other) {
         HashMapState<T> result = new HashMapState<T>(new HashMap<KeyStroke, Transition<T>>(map));
-        if (other instanceof HashMapState<?>) {
+        if (other instanceof EmptyState<?>) {
+            return this;
+        } else if (other instanceof HashMapState<?>) {
             HashMapState<T> otherHMS = (HashMapState<T>) other;
             result.map.putAll(map);
             result.map.putAll(otherHMS.map);
