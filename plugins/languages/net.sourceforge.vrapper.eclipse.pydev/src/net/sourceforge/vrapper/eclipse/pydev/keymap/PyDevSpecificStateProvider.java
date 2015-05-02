@@ -1,5 +1,6 @@
 package net.sourceforge.vrapper.eclipse.pydev.keymap;
 
+import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.dontRepeat;
 import static net.sourceforge.vrapper.keymap.StateUtils.union;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafCtrlBind;
@@ -9,6 +10,7 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
 import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
 import net.sourceforge.vrapper.eclipse.commands.EclipseCommand;
+import net.sourceforge.vrapper.eclipse.commands.ToggleFoldingCommand;
 import net.sourceforge.vrapper.eclipse.keymap.AbstractEclipseSpecificStateProvider;
 import net.sourceforge.vrapper.keymap.KeyMapInfo;
 import net.sourceforge.vrapper.keymap.State;
@@ -33,8 +35,18 @@ public class PyDevSpecificStateProvider extends AbstractEclipseSpecificStateProv
     @SuppressWarnings("unchecked")
     protected State<Command> normalModeBindings() {
         State<TextObject> textObjects = textObjectProvider.textObjects();
+        Command toggleCommand = new ToggleFoldingCommand(
+                "org.python.pydev.editor.actions.navigation.pyUnCollapse",
+                "org.python.pydev.editor.actions.navigation.pyCollapse");
+
         return union(
                 state(
+                    transitionBind('z',
+                            leafBind('a', toggleCommand),
+                            leafBind('o', dontRepeat(action("navigation.pyUnCollapse"))),
+                            leafBind('R', dontRepeat(action("navigation.pyUnCollapseAll"))),
+                            leafBind('c', dontRepeat(action("navigation.pyCollapse"))),
+                            leafBind('M', dontRepeat(action("navigation.pyCollapseAll")))),
                     leafCtrlBind(']', gotoDecl()),
                     transitionBind('g',
                             leafBind('d', gotoDecl()),

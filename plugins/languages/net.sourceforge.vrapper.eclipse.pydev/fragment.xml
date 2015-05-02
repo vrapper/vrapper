@@ -7,6 +7,7 @@
             editor-must-subclass="org.python.pydev.editor.PyEdit"
             id="net.sourceforge.vrapper.eclipse.pydev.keymap.PyDevSpecificStateProvider"
             name="PyDev-specific provider"
+            priority="10"
             provider-class="net.sourceforge.vrapper.eclipse.pydev.keymap.PyDevSpecificStateProvider">
       </keymap-provider>
    </extension>
