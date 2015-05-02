@@ -86,14 +86,30 @@ public class ConstructorWrappers {
                 if (input == '>' && sb.length() > 1) {
                     KeyStroke stroke = null;
                     String key = sb.substring(1).toUpperCase();
-                    if (key.length() > 0) { 
-                        stroke = parseSpecialKey(key);
-                    }
-                    if (stroke == null) {
-                        VrapperLog.info("Key code <" + key + "> in mapping '" + s + "' is unknown."
-                                + " Ignoring.");
+                    if (key.length() > 0 && key.equals("PLUG")) {
+                        if ( ! s.substring(i + 1).startsWith("(")) {
+                            VrapperLog.info("Bad <Plug> found, plug not followed by '(' in "
+                                    + "mapping '"+ s + "' !");
+                            break;
+                        }
+                        int terminator = s.indexOf(')', i);
+                        if (terminator == -1) {
+                            VrapperLog.info("Bad <Plug> found, could not locate end ')' in "
+                                    + "mapping '"+ s + "' !");
+                            break;
+                        }
+                        result.add(new PlugKeyStroke(s.substring(i + 1, terminator + 1)));
+                        i = terminator;
                     } else {
-                        result.add(stroke);
+                        if (key.length() > 0) { 
+                            stroke = parseSpecialKey(key);
+                        }
+                        if (stroke == null) {
+                            VrapperLog.info("Key code <" + key + "> in mapping '" + s + "' is unknown."
+                                    + " Ignoring.");
+                        } else {
+                            result.add(stroke);
+                        }
                     }
                 } else {
                     for (char c : sb.toString().toCharArray()) {
@@ -181,7 +197,12 @@ public class ConstructorWrappers {
     public static String keyStrokeToString(KeyStroke stroke) {
         StringBuilder keyName = new StringBuilder();
         boolean suppressAngleBrackets = false;
-        if (stroke.getSpecialKey() == null) {
+        if (stroke instanceof PlugKeyStroke) {
+            PlugKeyStroke plug = (PlugKeyStroke) stroke;
+            keyName.append("<Plug>").append(plug.getId());
+            // Keyname already has angle brackets, see above
+            suppressAngleBrackets = true;
+        } else if (stroke.getSpecialKey() == null) {
             // Handle special cases
             if (stroke.getCharacter() == '<') {
                 keyName.append("LT");

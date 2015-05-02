@@ -9,8 +9,13 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.parseKeyStr
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
+import java.util.Collections;
+
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SpecialKey;
+import net.sourceforge.vrapper.keymap.vim.ConstructorWrappers;
+import net.sourceforge.vrapper.keymap.vim.PlugKeyStroke;
 import net.sourceforge.vrapper.keymap.vim.SimpleKeyStroke;
 
 import org.junit.Test;
@@ -48,6 +53,16 @@ public class SimpleKeyStrokeTests {
 
 	static void assertToStringReturns(String expected, Object obj) {
 		assertEquals(expected, obj.toString());
+	}
+	
+	@Test
+	public void testKeyStrokeToString() {
+	    assertEquals("<C-[><C-r>", ConstructorWrappers.keyStrokesToString(
+	            asList(ctrlKey('['), ctrlKey('r'))));
+	    assertEquals("<DOWN>", ConstructorWrappers.keyStrokesToString(
+	            asList(key(SpecialKey.ARROW_DOWN))));
+	    assertEquals("<Plug>(vrapper.window.moveUp)", ConstructorWrappers.keyStrokesToString(
+	            asList((KeyStroke) new PlugKeyStroke("(vrapper.window.moveUp)"))));
 	}
 
 	@Test
@@ -118,17 +133,36 @@ public class SimpleKeyStrokeTests {
                 parseKeyStrokes("<ESC>'<m`O<Esc>``gv"));
         // Make sure all special characters are handled.
         assertEquals(asList(new SimpleKeyStroke(']', false, false, true)),
-                 parseKeyStrokes("<C-]>"));
+                parseKeyStrokes("<C-]>"));
         assertEquals(asList(new SimpleKeyStroke('[', false, false, true)),
-                 parseKeyStrokes("<C-[>"));
+                parseKeyStrokes("<C-[>"));
         assertEquals(asList(new SimpleKeyStroke('@', false, false, true)),
-                 parseKeyStrokes("<C-@>"));
+                parseKeyStrokes("<C-@>"));
         assertEquals(asList(new SimpleKeyStroke('\\', false, false, true)),
-                 parseKeyStrokes("<C-\\>"));
+                parseKeyStrokes("<C-\\>"));
         assertEquals(asList(new SimpleKeyStroke('^', false, false, true)),
-                 parseKeyStrokes("<C-^>"));
+                parseKeyStrokes("<C-^>"));
         assertEquals(asList(new SimpleKeyStroke('_', false, false, true)),
-                 parseKeyStrokes("<C-_>"));
+                parseKeyStrokes("<C-_>"));
+        // Test what happens in case of missing / mismatching parentheses.
+        assertEquals(Collections.emptyList(),
+                parseKeyStrokes("<Plug>vrapper.window.moveUp"));
+        assertEquals(Collections.emptyList(),
+                parseKeyStrokes("<Plug>(vrapper.window.moveUp"));
+        assertEquals(Collections.emptyList(),
+                parseKeyStrokes("<Plug>vrapper.window.moveUp)"));
+        // Test that plug can be followed by other keys
+        assertEquals(asList(new PlugKeyStroke("(vrapper.window.moveUp)"), new SimpleKeyStroke('G')),
+                parseKeyStrokes("<Plug>(vrapper.window.moveUp)G"));
+        assertEquals(asList(new SimpleKeyStroke('g'), new SimpleKeyStroke('g'),
+                new PlugKeyStroke("(vrapper.window.moveUp)"), new SimpleKeyStroke('G')),
+                parseKeyStrokes("gg<Plug>(vrapper.window.moveUp)G"));
+        // Test lower- and upper-case.
+        assertEquals(asList(new SimpleKeyStroke('g'), new SimpleKeyStroke('g'),
+                new PlugKeyStroke("(vrapper.window.moveUp)"), new SimpleKeyStroke('G')),
+                parseKeyStrokes("gg<plug>(vrapper.window.moveUp)G"));
+        assertEquals(asList(new SimpleKeyStroke('g'), new SimpleKeyStroke('g'),
+                new PlugKeyStroke("(vrapper.window.moveUp)"), new SimpleKeyStroke('G')),
+                parseKeyStrokes("gg<PLUG>(vrapper.window.moveUp)G"));
     }
-
 }
