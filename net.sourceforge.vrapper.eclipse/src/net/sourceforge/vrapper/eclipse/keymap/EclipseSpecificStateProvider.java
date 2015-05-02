@@ -81,7 +81,7 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
         State<Command> normalModeBindings = StateUtils.union(
             state(
                 transitionBind('z',
-                        leafBind('a', ToggleFoldingCommand.INSTANCE),
+                        leafBind('a', ToggleFoldingCommand.DEFAULTINSTANCE),
                         leafBind('o', dontRepeat(editText("folding.expand"))),
                         leafBind('R', dontRepeat(editText("folding.expand_all"))),
                         leafBind('c', dontRepeat(editText("folding.collapse"))),
