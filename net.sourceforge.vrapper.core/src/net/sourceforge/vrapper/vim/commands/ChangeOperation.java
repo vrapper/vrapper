@@ -1,6 +1,6 @@
 package net.sourceforge.vrapper.vim.commands;
 
-import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
+import static net.sourceforge.vrapper.vim.commands.CommandWrappers.seq;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.TextRange;

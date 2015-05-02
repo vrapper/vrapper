@@ -8,7 +8,7 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.prefixedOpe
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.operatorKeyMap;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
-import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
+import static net.sourceforge.vrapper.vim.commands.CommandWrappers.seq;
 import net.sourceforge.vrapper.eclipse.commands.EclipseCommand;
 import net.sourceforge.vrapper.eclipse.keymap.AbstractEclipseSpecificStateProvider;
 import net.sourceforge.vrapper.keymap.KeyMapInfo;

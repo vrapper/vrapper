@@ -1,6 +1,6 @@
 package net.sourceforge.vrapper.vim.modes;
 
-import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
+import static net.sourceforge.vrapper.vim.commands.CommandWrappers.seq;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.keymap.StateUtils.union;

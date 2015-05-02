@@ -12,7 +12,7 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.operatorKey
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.prefixedOperatorCmds;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
-import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
+import static net.sourceforge.vrapper.vim.commands.CommandWrappers.seq;
 import net.sourceforge.vrapper.keymap.KeyMapInfo;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.State;

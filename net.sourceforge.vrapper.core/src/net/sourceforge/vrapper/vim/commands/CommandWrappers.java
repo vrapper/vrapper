@@ -8,7 +8,7 @@ import net.sourceforge.vrapper.vim.commands.motions.Motion;
  * These Java-ugliness-hiding static methods are intended to be statically imported.
  * @author Krzysiek Goj
  */
-public class ConstructorWrappers {
+public class CommandWrappers {
 
     public static Command seq(Command... commands) {
         return new VimCommandSequence(commands);

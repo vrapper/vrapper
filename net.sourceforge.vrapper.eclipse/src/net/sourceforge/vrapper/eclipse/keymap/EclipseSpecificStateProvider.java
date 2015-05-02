@@ -7,8 +7,8 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.operatorKey
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.prefixedOperatorCmds;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
-import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.dontRepeat;
-import static net.sourceforge.vrapper.vim.commands.ConstructorWrappers.seq;
+import static net.sourceforge.vrapper.vim.commands.CommandWrappers.dontRepeat;
+import static net.sourceforge.vrapper.vim.commands.CommandWrappers.seq;
 import net.sourceforge.vrapper.eclipse.commands.ChangeTabCommand;
 import net.sourceforge.vrapper.eclipse.commands.GoToMarkCommand;
 import net.sourceforge.vrapper.eclipse.commands.ListTabsCommand;
