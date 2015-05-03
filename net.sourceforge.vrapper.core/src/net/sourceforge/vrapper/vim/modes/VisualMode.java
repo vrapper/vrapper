@@ -9,7 +9,6 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.vim.CountingState;
 import net.sourceforge.vrapper.keymap.vim.VisualMotionState;
-import net.sourceforge.vrapper.keymap.vim.VisualMotionState.Motion2VMC;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.LineInformation;
@@ -86,7 +85,7 @@ public class VisualMode extends AbstractVisualMode {
                             leafBind('n', SearchResultMotion.NEXT_END),
                             leafBind('N', SearchResultMotion.PREVIOUS_BEGIN))),
                 motions());
-        return new VisualMotionState(Motion2VMC.CHARWISE, motions);
+        return new VisualMotionState(motions);
     }
 
     @Override

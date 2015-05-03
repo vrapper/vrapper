@@ -1,9 +1,9 @@
 package net.sourceforge.vrapper.vim.modes;
 
-import static net.sourceforge.vrapper.vim.commands.CommandWrappers.seq;
+import static net.sourceforge.vrapper.keymap.StateUtils.union;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
-import static net.sourceforge.vrapper.keymap.StateUtils.union;
+import static net.sourceforge.vrapper.vim.commands.CommandWrappers.seq;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.utils.Position;
@@ -69,7 +69,7 @@ public class TempNormalMode extends NormalMode implements TemporaryMode {
     protected State<Command> buildInitialState() {
         State<Command> switchTempModes = state(
                 leafBind('V', seq(new ChangeModeCommand(TempLinewiseVisualMode.NAME),
-                                  AfterLinewiseVisualEnterCommand.INSTANCE)),
+                                  AfterVisualEnterCommand.INSTANCE)),
                 leafBind('v', seq(new ChangeModeCommand(TempVisualMode.NAME),
                                   AfterVisualEnterCommand.INSTANCE))
                 );

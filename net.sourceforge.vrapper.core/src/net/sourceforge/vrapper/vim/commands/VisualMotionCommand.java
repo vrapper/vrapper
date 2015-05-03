@@ -33,17 +33,9 @@ public class VisualMotionCommand extends AbstractVisualMotionCommand {
 	        if (motionBorderPolicy == BorderPolicy.INCLUSIVE && selGrowsToRight) {
 	            newTo = VimUtils.safeAddModelOffset(editorAdaptor, newTo, 1, true);
 	        }
-	        newSelection = new SimpleSelection(from, newTo, new StartEndTextRange(from, newTo));
+	        newSelection = oldSelection.reset(editorAdaptor, from, newTo);
 	    } else if (Selection.INCLUSIVE.equals(selectionMode)) {
-	        CursorService cursorService = editorAdaptor.getCursorService();
-	        int docLen = editorAdaptor.getModelContent().getTextLength();
-	        // to must be "on" the last character of the file, not behind it.
-	        // The case for an empty file is handled in shiftPositionForModelOffset()
-	        if (newTo.getModelOffset() == docLen) {
-	            newTo = cursorService.shiftPositionForModelOffset(newTo.getModelOffset(), -1, true);
-	        }
-	        newSelection = new SimpleSelection(from, newTo,
-	                StartEndTextRange.inclusive(cursorService, from, newTo));
+	        newSelection = oldSelection.reset(editorAdaptor, from, newTo);
 	    } else {
 	        VrapperLog.error("Unhandled 'selection' value " + selectionMode);
 	        // Shouldn't happen?

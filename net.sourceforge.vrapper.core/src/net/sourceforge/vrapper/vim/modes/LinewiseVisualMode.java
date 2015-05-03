@@ -6,7 +6,6 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafCtrlBin
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.vim.VisualMotionState;
-import net.sourceforge.vrapper.keymap.vim.VisualMotionState.Motion2VMC;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.Position;
@@ -17,9 +16,9 @@ import net.sourceforge.vrapper.vim.commands.ChangeToSearchModeCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
 import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
-import net.sourceforge.vrapper.vim.commands.LinewiseVisualMotionCommand;
 import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SwapLinewiseSelectionSidesCommand;
+import net.sourceforge.vrapper.vim.commands.VisualMotionCommand;
 import net.sourceforge.vrapper.vim.commands.motions.SearchResultMotion;
 
 public class LinewiseVisualMode extends AbstractVisualMode {
@@ -44,7 +43,7 @@ public class LinewiseVisualMode extends AbstractVisualMode {
 
     @Override
     protected VisualMotionState getVisualMotionState() {
-        return new VisualMotionState(Motion2VMC.LINEWISE, motions());
+        return new VisualMotionState(motions());
     }
 
     public String getName() {
@@ -58,7 +57,7 @@ public class LinewiseVisualMode extends AbstractVisualMode {
     @Override
     @SuppressWarnings("unchecked")
     protected State<Command> buildInitialState() {
-        Command doSearchCommand = new LinewiseVisualMotionCommand(SearchResultMotion.REPEAT);
+        Command doSearchCommand = new VisualMotionCommand(SearchResultMotion.REPEAT);
         State<Command> linewiseSpecific = state(
                 leafBind('o', (Command) SwapLinewiseSelectionSidesCommand.INSTANCE),
                 leafBind('v', (Command) new ChangeModeCommand(VisualMode.NAME, FIX_SELECTION_HINT)),

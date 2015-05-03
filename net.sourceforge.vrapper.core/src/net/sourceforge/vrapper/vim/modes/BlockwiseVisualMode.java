@@ -10,7 +10,6 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionB
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.vim.CountingState;
 import net.sourceforge.vrapper.keymap.vim.VisualMotionState;
-import net.sourceforge.vrapper.keymap.vim.VisualMotionState.Motion2VMC;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.HistoryService;
 import net.sourceforge.vrapper.platform.TextContent;
@@ -330,7 +329,7 @@ public class BlockwiseVisualMode extends AbstractVisualMode {
 
     @Override
     protected VisualMotionState getVisualMotionState() {
-        return new VisualMotionState(Motion2VMC.BLOCKWISE, motions());
+        return new VisualMotionState(motions());
     }
 
 }

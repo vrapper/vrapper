@@ -25,10 +25,8 @@ import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
-import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.AsciiCommand;
-import net.sourceforge.vrapper.vim.commands.BlockwiseVisualMotionCommand;
 import net.sourceforge.vrapper.vim.commands.BorderPolicy;
 import net.sourceforge.vrapper.vim.commands.CenterLineCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
@@ -48,7 +46,6 @@ import net.sourceforge.vrapper.vim.commands.IncrementDecrementCommand;
 import net.sourceforge.vrapper.vim.commands.InsertAndEditLineCommand;
 import net.sourceforge.vrapper.vim.commands.InsertShiftWidth;
 import net.sourceforge.vrapper.vim.commands.JoinLinesCommand;
-import net.sourceforge.vrapper.vim.commands.LinewiseVisualMotionCommand;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.commands.MotionTextObject;
 import net.sourceforge.vrapper.vim.commands.NormalLineRangeOperation;
@@ -62,7 +59,6 @@ import net.sourceforge.vrapper.vim.commands.ReplaceCommand;
 import net.sourceforge.vrapper.vim.commands.RestoreSelectionCommand;
 import net.sourceforge.vrapper.vim.commands.SaveCommand;
 import net.sourceforge.vrapper.vim.commands.SelectTextObjectCommand;
-import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SetMarkCommand;
 import net.sourceforge.vrapper.vim.commands.SwapCaseCommand;
 import net.sourceforge.vrapper.vim.commands.SwitchBufferCommand;
@@ -71,9 +67,7 @@ import net.sourceforge.vrapper.vim.commands.TextOperation;
 import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
 import net.sourceforge.vrapper.vim.commands.UndoCommand;
 import net.sourceforge.vrapper.vim.commands.VimCommandSequence;
-import net.sourceforge.vrapper.vim.commands.VisualMotionCommand;
 import net.sourceforge.vrapper.vim.commands.YankOperation;
-import net.sourceforge.vrapper.vim.commands.motions.DummyMotion;
 import net.sourceforge.vrapper.vim.commands.motions.GoToMarkMotion;
 import net.sourceforge.vrapper.vim.commands.motions.LineEndMotion;
 import net.sourceforge.vrapper.vim.commands.motions.LineStartMotion;
@@ -84,7 +78,6 @@ import net.sourceforge.vrapper.vim.commands.motions.MoveRight;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordEndRightForChange;
 import net.sourceforge.vrapper.vim.commands.motions.SearchResultMotion;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
-import net.sourceforge.vrapper.vim.modes.commandline.CommandLineMode;
 
 public class NormalMode extends CommandBasedMode {
 
@@ -210,9 +203,9 @@ public class NormalMode extends CommandBasedMode {
                         leafBind('o', (Command) InsertAndEditLineCommand.POST_CURSOR),
                         leafBind('O', (Command) InsertAndEditLineCommand.PRE_CURSOR),
                         leafBind('v', seq(visualMode, AfterVisualEnterCommand.INSTANCE)),
-                        leafBind('V', seq(linewiseVisualMode, AfterLinewiseVisualEnterCommand.INSTANCE)),
-                        leafCtrlBind('v', seq(blockwiseVisualMode, AfterBlockwiseVisualEnterCommand.INSTANCE)),
-                        leafCtrlBind('q', seq(blockwiseVisualMode, AfterBlockwiseVisualEnterCommand.INSTANCE)),
+                        leafBind('V', seq(linewiseVisualMode, AfterVisualEnterCommand.INSTANCE)),
+                        leafCtrlBind('v', seq(blockwiseVisualMode, AfterVisualEnterCommand.INSTANCE)),
+                        leafCtrlBind('q', seq(blockwiseVisualMode, AfterVisualEnterCommand.INSTANCE)),
                         leafBind('p', pasteAfter),
                         leafBind('.', repeatLastOne),
                         leafBind('P', pasteBefore),
@@ -273,48 +266,11 @@ public class NormalMode extends CommandBasedMode {
         @Override
         public void execute(EditorAdaptor editorAdaptor)
                 throws CommandExecutionException {
-            CursorService cursorService = editorAdaptor.getCursorService();
-            int docLen = editorAdaptor.getModelContent().getTextLength();
-            // caret must be "on" the last character of the file, not behind it.
-            // The case for an empty file is handled in shiftPositionForModelOffset()
-            Position pos = cursorService.getPosition();
-            String selectionOptValue = editorAdaptor.getConfiguration().get(Options.SELECTION);
-            if (pos.getModelOffset() == docLen && Selection.INCLUSIVE.equals(selectionOptValue)) {
-                pos = cursorService.shiftPositionForModelOffset(pos.getModelOffset(), -1, true);
-                cursorService.setPosition(pos, StickyColumnPolicy.NEVER);
-            }
-            new VisualMotionCommand(DummyMotion.INSTANCE).execute(editorAdaptor);
-            ((VisualMode)editorAdaptor.getMode(VisualMode.NAME)).fixCaret();
+            AbstractVisualMode visualMode = (AbstractVisualMode) editorAdaptor.getCurrentMode();
+            visualMode.fixSelection();
+            visualMode.fixCaret();
         }
     }
-
-    protected static class AfterLinewiseVisualEnterCommand extends CountIgnoringNonRepeatableCommand {
-        public static final Command INSTANCE = new AfterLinewiseVisualEnterCommand();
-        @Override
-        public void execute(EditorAdaptor editorAdaptor)
-                throws CommandExecutionException {
-            CursorService cursorService = editorAdaptor.getCursorService();
-            int docLen = editorAdaptor.getModelContent().getTextLength();
-            // caret must be "on" the last character of the file, not behind it.
-            // The case for an empty file is handled in shiftPositionForModelOffset()
-            Position pos = cursorService.getPosition();
-            if (pos.getModelOffset() == docLen) {
-                pos = cursorService.shiftPositionForModelOffset(pos.getModelOffset(), -1, true);
-                cursorService.setPosition(pos, StickyColumnPolicy.NEVER);
-            }
-            new LinewiseVisualMotionCommand(DummyMotion.INSTANCE).execute(editorAdaptor);
-        }
-    }
-
-    protected static class AfterBlockwiseVisualEnterCommand extends CountIgnoringNonRepeatableCommand {
-        public static final Command INSTANCE = new AfterBlockwiseVisualEnterCommand();
-        @Override
-        public void execute(EditorAdaptor editorAdaptor)
-                throws CommandExecutionException {
-            new BlockwiseVisualMotionCommand(DummyMotion.INSTANCE).execute(editorAdaptor);
-        }
-    }
-
     /**
      * Fix the cursor position so that our rectangle caret doesn't go past the last character.
      * Only changes the position if NormalMode is enabled.

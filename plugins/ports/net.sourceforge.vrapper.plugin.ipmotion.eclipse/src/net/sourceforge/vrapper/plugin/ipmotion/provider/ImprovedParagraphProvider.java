@@ -4,7 +4,6 @@ import net.sourceforge.vrapper.eclipse.keymap.AbstractEclipseSpecificStateProvid
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.vim.GoThereState;
 import net.sourceforge.vrapper.keymap.vim.VisualMotionState;
-import net.sourceforge.vrapper.keymap.vim.VisualMotionState.Motion2VMC;
 import net.sourceforge.vrapper.platform.PlatformSpecificStateProvider;
 import net.sourceforge.vrapper.plugin.ipmotion.commands.motions.ImprovedParagraphMotion;
 import net.sourceforge.vrapper.vim.commands.Command;
@@ -23,6 +22,6 @@ public class ImprovedParagraphProvider extends AbstractEclipseSpecificStateProvi
     
     @Override
     protected State<Command> visualModeBindings() {
-        return new VisualMotionState(Motion2VMC.LINEWISE, ImprovedParagraphMotion.PARAGRAPH_MOTIONS);
+        return new VisualMotionState(ImprovedParagraphMotion.PARAGRAPH_MOTIONS);
     }
 }
