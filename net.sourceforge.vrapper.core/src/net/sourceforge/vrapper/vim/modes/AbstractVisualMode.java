@@ -24,6 +24,7 @@ import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.CenterLineCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeOperation;
+import net.sourceforge.vrapper.vim.commands.ChangeToVisualModeCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.DeleteOperation;
@@ -38,7 +39,9 @@ import net.sourceforge.vrapper.vim.commands.SelectionBasedTextOperationCommand;
 import net.sourceforge.vrapper.vim.commands.SetMarkCommand;
 import net.sourceforge.vrapper.vim.commands.SwapCaseCommand;
 import net.sourceforge.vrapper.vim.commands.VisualFindFileCommand;
+import net.sourceforge.vrapper.vim.commands.VisualMotionCommand;
 import net.sourceforge.vrapper.vim.commands.YankOperation;
+import net.sourceforge.vrapper.vim.commands.motions.SearchResultMotion;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.commandline.CommandLineMode;
 
@@ -212,6 +215,11 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
                 leafBind('>', shiftRight),
                 leafBind('<', shiftLeft),
                 transitionBind('g',
+                        // Always switch back to visual mode to show these text objects
+                        leafBind('n', (Command) new ChangeToVisualModeCommand(VisualMode.NAME,
+                                new VisualMotionCommand(SearchResultMotion.NEXT_END))),
+                        leafBind('N', (Command) new ChangeToVisualModeCommand(VisualMode.NAME,
+                                 new VisualMotionCommand(SearchResultMotion.PREVIOUS_BEGIN))),
                         leafBind('f', findFile),
                         leafBind('J', joinLinesDumbWay),
                         leafBind('q', format)),

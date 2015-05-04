@@ -81,9 +81,7 @@ public class VisualMode extends AbstractVisualMode {
                 leafState(' ', MoveRightAcrossLines.INSTANCE_BEHIND_CHAR),
                 transitionState('g',
                         state(
-                            leafBind('e', MoveWordEndLeft.INSTANCE_VISUAL),
-                            leafBind('n', SearchResultMotion.NEXT_END),
-                            leafBind('N', SearchResultMotion.PREVIOUS_BEGIN))),
+                            leafBind('e', MoveWordEndLeft.INSTANCE_VISUAL))),
                 motions());
         return new VisualMotionState(motions);
     }
