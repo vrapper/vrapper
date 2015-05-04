@@ -33,10 +33,13 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.resource.JFaceColors;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
+import org.eclipse.jface.text.ITextViewerExtension2;
 import org.eclipse.jface.text.ITextViewerExtension5;
 import org.eclipse.jface.text.source.IAnnotationModel;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -44,6 +47,8 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.custom.CaretEvent;
 import org.eclipse.swt.custom.CaretListener;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.GC;
@@ -86,6 +91,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     private int averageCharWidth;
     private CaretType caretType = null;
     private Point caretCachedSize;
+    private FakeCaretPainter fakeCaretPainter;
 
     public EclipseCursorAndSelection(final Configuration configuration,
             EditorInfo editorInfo, final ITextViewer textViewer, final EclipseTextContent textContent) {
@@ -108,8 +114,10 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         caretListener = new StickyColumnUpdater();
         marks = new HashMap<String, org.eclipse.jface.text.Position>();
         changeList = new ArrayList<org.eclipse.jface.text.Position>();
+        fakeCaretPainter = new FakeCaretPainter();
         textViewer.getTextWidget().addSelectionListener(selectionChangeListener);
         textViewer.getTextWidget().addCaretListener(caretListener);
+        textViewer.getTextWidget().addPaintListener(fakeCaretPainter);
         textViewer.getSelectionProvider().addSelectionChangedListener(selectionChangeListener);
         textViewer.getDocument().addPositionCategory(POSITION_CATEGORY_NAME);
     }
@@ -524,6 +532,36 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
             enabled = false;
         }
 
+    }
+
+    private final class FakeCaretPainter implements PaintListener {
+
+        @Override
+        public void paintControl(PaintEvent e) {
+            // This painter only works for Vrapper selections.
+            if (selection == null) {
+                return;
+            }
+            GC gc = e.gc;
+            StyledText text = textViewer.getTextWidget();
+//            text.getCaret().
+//            gc.getDevice().getSystemColor(SWT.)
+            gc.setForeground(text.getForeground());
+            Position to = selection.getTo();
+            boolean isInclusive = Selection.INCLUSIVE.equals(configuration.get(Options.SELECTION));
+            int offset = to.getViewOffset();
+            if (textViewer.getDocument().getLength() == to.getModelOffset() && isInclusive) {
+                offset--;
+            }
+            Rectangle caretBounds;
+            if (isInclusive) {
+                caretBounds = text.getTextBounds(offset, offset);
+            } else {
+                Point visualOffset = text.getLocationAtOffset(offset);
+                caretBounds = new Rectangle(visualOffset.x, visualOffset.y, 1, text.getLineHeight(offset));
+            }
+            gc.drawRectangle(caretBounds);
+        }
     }
 
     @Override
