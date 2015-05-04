@@ -3,7 +3,6 @@ package net.sourceforge.vrapper.plugin.surround.state;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
 import net.sourceforge.vrapper.keymap.DynamicState;
-import net.sourceforge.vrapper.keymap.vim.PlugKeyStroke;
 
 public class DelimiterValues {
 

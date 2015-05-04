@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Set;
 
 import net.sourceforge.vrapper.platform.SimpleConfiguration.NewLine;
-import net.sourceforge.vrapper.utils.VimUtils;
 
 /**
  * Holds variables which influence the behaviour of different commands.

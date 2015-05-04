@@ -3,7 +3,6 @@ package net.sourceforge.vrapper.vim.register;
 import java.util.Set;
 
 import net.sourceforge.vrapper.utils.Search;
-import net.sourceforge.vrapper.utils.SearchResult;
 import net.sourceforge.vrapper.utils.SelectionArea;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.TextOperation;

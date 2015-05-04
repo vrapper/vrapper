@@ -14,8 +14,6 @@ import net.sourceforge.vrapper.vim.register.StringRegisterContent;
 
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 /**
  * Run a number of commands on a test buffer and compare the contents of the buffer with a

@@ -5,7 +5,6 @@ import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.BlockWiseSelectionArea;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
-import net.sourceforge.vrapper.utils.SelectionArea;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.BlockWiseSelection;

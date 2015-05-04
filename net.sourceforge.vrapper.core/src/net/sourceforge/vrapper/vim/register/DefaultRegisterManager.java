@@ -7,7 +7,6 @@ import java.util.Set;
 
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.Search;
-import net.sourceforge.vrapper.utils.SearchResult;
 import net.sourceforge.vrapper.utils.SelectionArea;
 import net.sourceforge.vrapper.utils.StringUtils;
 import net.sourceforge.vrapper.utils.VimUtils;

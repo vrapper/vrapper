@@ -20,7 +20,6 @@ import net.sourceforge.vrapper.vim.modes.commandline.CommandLineMode;
 import net.sourceforge.vrapper.vim.modes.commandline.Evaluator;
 import net.sourceforge.vrapper.vim.modes.commandline.EvaluatorMapping;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 
 /**

@@ -1,9 +1,7 @@
 package net.sourceforge.vrapper.vim.commands;
 
 import net.sourceforge.vrapper.log.VrapperLog;
-import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.utils.Position;
-import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;

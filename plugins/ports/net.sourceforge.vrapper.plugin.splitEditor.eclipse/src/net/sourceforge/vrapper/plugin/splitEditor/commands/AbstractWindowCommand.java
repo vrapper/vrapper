@@ -2,7 +2,6 @@ package net.sourceforge.vrapper.plugin.splitEditor.commands;
 
 import java.io.ByteArrayInputStream;
 
-import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.CountIgnoringNonRepeatableCommand;
 

@@ -11,23 +11,17 @@ import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Search;
 import net.sourceforge.vrapper.utils.SearchOffset;
 import net.sourceforge.vrapper.utils.SearchResult;
-import net.sourceforge.vrapper.utils.StartEndTextRange;
-import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.ConfigurationListener;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
-import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.commands.Selection;
-import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.ExecuteCommandHint;
-import net.sourceforge.vrapper.vim.modes.LinewiseVisualMode;
 import net.sourceforge.vrapper.vim.modes.ModeSwitchHint;
-import net.sourceforge.vrapper.vim.modes.VisualMode;
 
 public class SearchMode extends AbstractCommandLineMode {
 

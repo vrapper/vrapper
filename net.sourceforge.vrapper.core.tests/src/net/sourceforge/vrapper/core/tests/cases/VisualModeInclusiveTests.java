@@ -10,7 +10,6 @@ import net.sourceforge.vrapper.vim.modes.TempVisualMode;
 import net.sourceforge.vrapper.vim.register.StringRegisterContent;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class VisualModeInclusiveTests extends VisualTestCase {

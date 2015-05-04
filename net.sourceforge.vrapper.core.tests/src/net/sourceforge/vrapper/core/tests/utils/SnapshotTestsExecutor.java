@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.vim.VimConstants;

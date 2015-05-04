@@ -8,7 +8,6 @@ import net.sourceforge.vrapper.platform.SelectionService;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
-import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
