@@ -7,9 +7,7 @@ import net.sourceforge.vrapper.vim.commands.PasteOperation;
 import net.sourceforge.vrapper.vim.commands.SelectionBasedTextOperationCommand;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
-import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
-import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
 
 /**
  * When selecting text from InsertMode, move to VisualMode for a single
@@ -47,10 +45,7 @@ public class TempVisualMode extends VisualMode implements TemporaryMode {
         return union(super.getPlatformSpecificState(VisualMode.NAME),
                 state(
                         leafBind('p', pasteTempVisual),
-                        leafBind('P', pasteTempVisual),
-                        leafBind('V', (Command) new ChangeModeCommand(TempLinewiseVisualMode.NAME,
-                                                                    FIX_SELECTION_HINT)),
-                        leafBind('v', (Command) LeaveVisualModeCommand.INSTANCE)),
+                        leafBind('P', pasteTempVisual)),
                 super.buildInitialState());
     }
 }

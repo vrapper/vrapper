@@ -30,8 +30,8 @@ import net.sourceforge.vrapper.vim.commands.BlockwiseChangeOperation;
 import net.sourceforge.vrapper.vim.commands.BlockwiseInsertShiftWidth;
 import net.sourceforge.vrapper.vim.commands.BlockwisePasteCommand;
 import net.sourceforge.vrapper.vim.commands.BlockwiseYankCommand;
-import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeToInsertModeCommand;
+import net.sourceforge.vrapper.vim.commands.ChangeToVisualModeCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.CountAwareCommand;
@@ -295,8 +295,8 @@ public class BlockwiseVisualMode extends AbstractVisualMode {
                 leafBind('A', (Command) new BlockwiseChangeToInsertModeCommand(new MotionCommand(eol), InsertModeType.APPEND)),
                 leafBind('~', swapCase),
                 leafBind('y', (Command) BlockwiseYankCommand.INSTANCE),
-                leafBind('v', (Command) new ChangeModeCommand(VisualMode.NAME, FIX_SELECTION_HINT)),
-                leafBind('V', (Command) new ChangeModeCommand(LinewiseVisualMode.NAME, FIX_SELECTION_HINT)),
+                leafBind('v', (Command) new ChangeToVisualModeCommand(VisualMode.NAME)),
+                leafBind('V', (Command) new ChangeToVisualModeCommand(LinewiseVisualMode.NAME)),
                 leafCtrlBind('v', LeaveVisualModeCommand.INSTANCE),
                 leafCtrlBind('q', LeaveVisualModeCommand.INSTANCE),
                 transitionBind('r', changeCaret(CaretType.UNDERLINE),

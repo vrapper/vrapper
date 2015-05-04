@@ -12,7 +12,6 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.operatorKey
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.prefixedOperatorCmds;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
-import static net.sourceforge.vrapper.vim.commands.CommandWrappers.seq;
 import net.sourceforge.vrapper.keymap.KeyMapInfo;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.State;
@@ -29,15 +28,14 @@ import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.AsciiCommand;
 import net.sourceforge.vrapper.vim.commands.BorderPolicy;
 import net.sourceforge.vrapper.vim.commands.CenterLineCommand;
-import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeOperation;
 import net.sourceforge.vrapper.vim.commands.ChangeToCommandLineCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeToInsertModeCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeToSearchModeCommand;
+import net.sourceforge.vrapper.vim.commands.ChangeToVisualModeCommand;
 import net.sourceforge.vrapper.vim.commands.CloseCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
-import net.sourceforge.vrapper.vim.commands.CountIgnoringNonRepeatableCommand;
 import net.sourceforge.vrapper.vim.commands.DeleteOperation;
 import net.sourceforge.vrapper.vim.commands.DotCommand;
 import net.sourceforge.vrapper.vim.commands.FindFileCommand;
@@ -118,9 +116,9 @@ public class NormalMode extends CommandBasedMode {
         final Command resumeInsertMode = new ChangeToInsertModeCommand(
                 new MotionCommand(new GoToMarkMotion(false, CursorService.LAST_INSERT_MARK)));
         
-        final Command visualMode = new ChangeModeCommand(VisualMode.NAME);
-        final Command linewiseVisualMode = new ChangeModeCommand(LinewiseVisualMode.NAME);
-        final Command blockwiseVisualMode = new ChangeModeCommand(BlockwiseVisualMode.NAME);
+        final Command visualMode = new ChangeToVisualModeCommand(VisualMode.NAME);
+        final Command linewiseVisualMode = new ChangeToVisualModeCommand(LinewiseVisualMode.NAME);
+        final Command blockwiseVisualMode = new ChangeToVisualModeCommand(BlockwiseVisualMode.NAME);
 
         final Motion moveLeft = MoveLeft.INSTANCE;
         final Motion moveRight = MoveRight.INSTANCE;
@@ -202,10 +200,10 @@ public class NormalMode extends CommandBasedMode {
                         leafBind('R', (Command) new ReplaceMode.ChangeToReplaceModeCommand()),
                         leafBind('o', (Command) InsertAndEditLineCommand.POST_CURSOR),
                         leafBind('O', (Command) InsertAndEditLineCommand.PRE_CURSOR),
-                        leafBind('v', seq(visualMode, AfterVisualEnterCommand.INSTANCE)),
-                        leafBind('V', seq(linewiseVisualMode, AfterVisualEnterCommand.INSTANCE)),
-                        leafCtrlBind('v', seq(blockwiseVisualMode, AfterVisualEnterCommand.INSTANCE)),
-                        leafCtrlBind('q', seq(blockwiseVisualMode, AfterVisualEnterCommand.INSTANCE)),
+                        leafBind('v', visualMode),
+                        leafBind('V', linewiseVisualMode),
+                        leafCtrlBind('v', blockwiseVisualMode),
+                        leafCtrlBind('q', blockwiseVisualMode),
                         leafBind('p', pasteAfter),
                         leafBind('.', repeatLastOne),
                         leafBind('P', pasteBefore),
@@ -261,16 +259,6 @@ public class NormalMode extends CommandBasedMode {
                         ))))));
     }
 
-    protected static class AfterVisualEnterCommand extends CountIgnoringNonRepeatableCommand {
-        public static final Command INSTANCE = new AfterVisualEnterCommand();
-        @Override
-        public void execute(EditorAdaptor editorAdaptor)
-                throws CommandExecutionException {
-            AbstractVisualMode visualMode = (AbstractVisualMode) editorAdaptor.getCurrentMode();
-            visualMode.fixSelection();
-            visualMode.fixCaret();
-        }
-    }
     /**
      * Fix the cursor position so that our rectangle caret doesn't go past the last character.
      * Only changes the position if NormalMode is enabled.

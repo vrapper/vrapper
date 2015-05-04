@@ -17,8 +17,8 @@ import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
-import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeToSearchModeCommand;
+import net.sourceforge.vrapper.vim.commands.ChangeToVisualModeCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
 import net.sourceforge.vrapper.vim.commands.Selection;
@@ -94,9 +94,9 @@ public class VisualMode extends AbstractVisualMode {
         Command doSearchCommand = new VisualMotionCommand(SearchResultMotion.REPEAT);
         State<Command> characterwiseSpecific = state(
                 leafBind('o', (Command) SwapSelectionSidesCommand.INSTANCE),
-                leafBind('V', (Command) new ChangeModeCommand(LinewiseVisualMode.NAME, FIX_SELECTION_HINT)),
-                leafCtrlBind('v', (Command) new ChangeModeCommand(BlockwiseVisualMode.NAME, FIX_SELECTION_HINT)),
-                leafCtrlBind('q', (Command) new ChangeModeCommand(BlockwiseVisualMode.NAME, FIX_SELECTION_HINT)),
+                leafBind('V', (Command) new ChangeToVisualModeCommand(LinewiseVisualMode.NAME)),
+                leafCtrlBind('v', (Command) new ChangeToVisualModeCommand(BlockwiseVisualMode.NAME)),
+                leafCtrlBind('q', (Command) new ChangeToVisualModeCommand(BlockwiseVisualMode.NAME)),
                 leafBind('v', (Command) LeaveVisualModeCommand.INSTANCE)
                 );
         State<Command> searchSpecific = CountingState.wrap(state(

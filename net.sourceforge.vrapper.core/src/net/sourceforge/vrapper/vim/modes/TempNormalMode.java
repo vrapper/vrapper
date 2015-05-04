@@ -3,12 +3,11 @@ package net.sourceforge.vrapper.vim.modes;
 import static net.sourceforge.vrapper.keymap.StateUtils.union;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
-import static net.sourceforge.vrapper.vim.commands.CommandWrappers.seq;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
-import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
+import net.sourceforge.vrapper.vim.commands.ChangeToVisualModeCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
@@ -68,10 +67,8 @@ public class TempNormalMode extends NormalMode implements TemporaryMode {
     @Override
     protected State<Command> buildInitialState() {
         State<Command> switchTempModes = state(
-                leafBind('V', seq(new ChangeModeCommand(TempLinewiseVisualMode.NAME),
-                                  AfterVisualEnterCommand.INSTANCE)),
-                leafBind('v', seq(new ChangeModeCommand(TempVisualMode.NAME),
-                                  AfterVisualEnterCommand.INSTANCE))
+                leafBind('V', (Command) new ChangeToVisualModeCommand(TempLinewiseVisualMode.NAME)),
+                leafBind('v', (Command) new ChangeToVisualModeCommand(TempVisualMode.NAME))
                 );
         return union(switchTempModes, super.buildInitialState());
     }
