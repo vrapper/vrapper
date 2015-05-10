@@ -2,10 +2,10 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Vrapper Surround Plug-in Core
 Bundle-SymbolicName: net.sourceforge.vrapper.plugin.surround.core;singleton:=true
-Bundle-Version: 0.55.20150503
+Bundle-Version: 0.55.20150510
 Export-Package: net.sourceforge.vrapper.plugin.surround.commands,
  net.sourceforge.vrapper.plugin.surround.mode,
  net.sourceforge.vrapper.plugin.surround.state
-Require-Bundle: net.sourceforge.vrapper.core;bundle-version="0.55.20150503";visibility:=reexport
+Require-Bundle: net.sourceforge.vrapper.core;bundle-version="0.55.20150510";visibility:=reexport
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Eclipse-BuddyPolicy: dependent
