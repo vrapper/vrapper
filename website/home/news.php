@@ -1,4 +1,23 @@
 <div class="newsbox">
+    <div class="date">2015-05-10</div>
+    <h4>Updates to unstable update site</h4>
+
+    <p>Here's your monthly status update on recent changes to Vrapper's
+    unstable update site:</p>
+    
+    <ul>
+        <li>Added support for fold commands (za, zo, zc, zR, zM) in optional PyDev plugin</li>
+        <li>Fixed issue so ex commands will reuse last search if no pattern is provided</li>
+        <li>Fixed issue with Ctrl- keys when replaying a macro</li>
+        <li>Fixed issue where switching visual modes reset selection</li>
+        <li>Fixed issue with switching to search mode from a visual mode</li>
+        <li>Fixed issue which required whitespace when defining a :move range</li>
+        <li>Fixed issue with :d, :y, and :retab requiring line ranges</li>
+        <li>Fixed issue with Ctrl-A incrementing numbers larger than 32-bits</li>
+        <li>Other various refactoring (not tied to any specific defect)</li>
+    </ul>
+</div>
+<div class="newsbox">
     <div class="date">2015-04-05</div>
     <h4>0.54.0 Released</h4>
 
