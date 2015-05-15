@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
+import net.sourceforge.vrapper.eclipse.interceptor.EditorInfo;
 import net.sourceforge.vrapper.eclipse.keymap.AbstractEclipseSpecificStateProvider;
 import net.sourceforge.vrapper.eclipse.keymap.UnionStateProvider;
 import net.sourceforge.vrapper.eclipse.mode.AbstractEclipseSpecificModeProvider;
@@ -61,15 +62,14 @@ public class EclipsePlatform implements Platform {
     private static final Map<String, PlatformSpecificTextObjectProvider> textObjProviderCache = new ConcurrentHashMap<String, PlatformSpecificTextObjectProvider>();
     private BufferAndTabService bufferAndTabService;
 
-    public EclipsePlatform(final AbstractTextEditor abstractTextEditor,
+    public EclipsePlatform(EditorInfo partInfo, final AbstractTextEditor abstractTextEditor,
             final ITextViewer textViewer, final GlobalConfiguration sharedConfiguration,
             BufferAndTabService bufferAndTabService) {
         underlyingEditor = abstractTextEditor;
         configuration = sharedConfiguration;
         this.bufferAndTabService = bufferAndTabService;
         textContent = new EclipseTextContent(textViewer);
-        cursorAndSelection = new EclipseCursorAndSelection(configuration,
-                textViewer, textContent);
+        cursorAndSelection = new EclipseCursorAndSelection(configuration, partInfo, textViewer, textContent);
         fileService = new EclipseFileService(abstractTextEditor);
         viewportService = new EclipseViewportService(textViewer);
         serviceProvider = new EclipseServiceProvider(abstractTextEditor);
@@ -260,7 +260,7 @@ public class EclipsePlatform implements Platform {
     	if(site instanceof MultiPageEditorSite) {
     		site = ((MultiPageEditorSite)site).getMultiPageEditor().getSite();
     	}
-    		
+
         return site.getRegisteredName();
     }
 

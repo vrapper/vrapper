@@ -181,4 +181,10 @@ public class TestCursorAndSelection implements CursorService, SelectionService {
     public boolean shouldStickToEOL() {
         return stickyColumnNo == Integer.MAX_VALUE;
     }
+
+    @Override
+    public void markCurrentPosition() {}
+
+    @Override
+    public void updateLastPosition() {}
 }

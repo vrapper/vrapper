@@ -36,14 +36,19 @@ public class MotionCommand extends CountAwareCommand {
         return motion.getCount();
     }
 
-	public static void doIt(EditorAdaptor editorAdaptor, Motion motion) throws CommandExecutionException {
-		final Position destination = motion.destination(editorAdaptor);
+    public static void doIt(EditorAdaptor editorAdaptor, Motion motion) throws CommandExecutionException {
+        CursorService cursorService = editorAdaptor.getCursorService();
         Position previousPosition = editorAdaptor.getPosition();
+        if (motion.isJump()) {
+            cursorService.updateLastPosition();
+        }
+        final Position destination = motion.destination(editorAdaptor);
         gotoAndChangeViewPort(editorAdaptor, destination, motion.stickyColumnPolicy());
-	    if (motion.isJump()) {
-            editorAdaptor.getCursorService().setMark(CursorService.LAST_JUMP_MARK, previousPosition);
-	    }
-	}
+        if (motion.isJump()) {
+            cursorService.markCurrentPosition();
+            cursorService.setMark(CursorService.LAST_JUMP_MARK, previousPosition);
+        }
+    }
 
     /**
      * Moves the cursor to the given position and centers the cursor line

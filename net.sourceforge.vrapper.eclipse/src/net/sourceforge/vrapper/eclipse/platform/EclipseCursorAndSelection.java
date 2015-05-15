@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.sourceforge.vrapper.eclipse.interceptor.EditorInfo;
 import net.sourceforge.vrapper.eclipse.ui.CaretUtils;
 import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.Configuration;
@@ -52,6 +53,8 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.INavigationHistory;
+import org.eclipse.ui.INavigationLocation;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.internal.WorkbenchPage;
@@ -65,6 +68,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     public static final String POSITION_CATEGORY_NAME = "net.sourceforge.vrapper.position";
     /// Marker type for global (A-Z0-9) marks. Use IMarker.MARKER to make them invisible.
     public static final String GLOBAL_MARK_TYPE = IMarker.BOOKMARK;
+    private final EditorInfo editorInfo;
     private final ITextViewer textViewer;
     private int stickyColumn;
     private boolean stickToEOL = false;
@@ -82,8 +86,9 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     private CaretType caretType = null;
 
     public EclipseCursorAndSelection(final Configuration configuration,
-            final ITextViewer textViewer, final EclipseTextContent textContent) {
+            EditorInfo editorInfo, final ITextViewer textViewer, final EclipseTextContent textContent) {
         this.configuration = configuration;
+        this.editorInfo = editorInfo;
         this.textViewer = textViewer;
         this.textContent = textContent;
         StyledText tw = textViewer.getTextWidget();
@@ -456,7 +461,23 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         }
 
     }
-    
+
+    @Override
+    public void updateLastPosition() {
+        INavigationHistory history = editorInfo.getCurrent().getSite().getPage().getNavigationHistory();
+        INavigationLocation currentLocation = history.getCurrentLocation();
+        if (currentLocation != null) {
+            currentLocation.update();
+        }
+    }
+
+    @Override
+    public void markCurrentPosition() {
+        IEditorPart editorPart = editorInfo.getCurrent();
+        // Store current location in Eclipse
+        editorPart.getSite().getPage().getNavigationHistory().markLocation(editorPart);
+    }
+
     @Override
     public Set<String> getAllMarks() {
     	//the easy part, get all local marks
@@ -499,7 +520,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
             throw new VrapperPlatformException("Failed to set mark for " + position, e);
         }
 
-        if(id == LAST_EDIT_MARK) {
+        if (id == LAST_EDIT_MARK) {
         	changeList.add(p);
         	if(changeList.size() > 100) {
         		//remove (and stop tracking changes for) old positions

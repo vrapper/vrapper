@@ -60,7 +60,7 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
         specialKeys.put( (int)SWT.ESC,           SpecialKey.ESC);
         specialKeys.put( (int)SWT.CR,            SpecialKey.RETURN);
         specialKeys.put( SWT.KEYPAD_CR,          SpecialKey.RETURN);
-        
+
         SpecialKey[] values = SpecialKey.values();
         int swtStart = SWT.F1;
         int skStart = SpecialKey.F1.ordinal();
@@ -121,8 +121,8 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
 
     public InputInterceptor createInterceptor(AbstractTextEditor abstractTextEditor,
             ITextViewer textViewer, EditorInfo partInfo, BufferAndTabService bufferAndTabService) {
-        EclipsePlatform platform = new EclipsePlatform(abstractTextEditor, textViewer, sharedConfiguration,
-                bufferAndTabService);
+        EclipsePlatform platform = new EclipsePlatform(partInfo, abstractTextEditor, textViewer,
+                sharedConfiguration, bufferAndTabService);
         DefaultEditorAdaptor editorAdaptor = new DefaultEditorAdaptor(
                 platform,
                 globalRegisterManager, VrapperPlugin.isVrapperEnabled());

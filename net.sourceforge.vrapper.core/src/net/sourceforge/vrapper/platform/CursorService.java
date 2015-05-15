@@ -60,7 +60,7 @@ public interface CursorService {
      * <b>NOTE</b>: Some invalid offsets might be silently ignored, e.g. end of file or a negative
      * offsets. In that case the offset will be clipped to the content length or zero. Motions
      * should check that such a boundary is hit if they want to report this to their caller!
-     * 
+     *
      * @param offset int Offset for which a position needs to be returned.
      * @param original Position from which you move away.
      * @param allowPastLastChar if the cursor can be before a newline and must not be on a character.
@@ -75,7 +75,7 @@ public interface CursorService {
      * <b>NOTE</b>:If the delta makes us move past the text content length boundary e.g. end of file
      * or a negative offset, the position will be clipped to the content length or zero. Motions
      * should check that such a boundary is hit if they want to report this to their caller!
-     * 
+     *
      * @param offset int Offset where we are starting from.
      * @param delta int number of characters to move. Can be zero or negative.
      * @param allowPastLastChar if the cursor can be before a newline and must not be on a character.
@@ -142,4 +142,15 @@ public interface CursorService {
      */
     Position getNextChangeLocation(int count);
     Position getPrevChangeLocation(int count);
+
+    /**
+     * Registers the current location in the jump list.
+     */
+    void markCurrentPosition();
+
+    /**
+     * Updates the current location in the jump list just before jumping to a new location so that
+     * we can return to it.
+     */
+    void updateLastPosition();
 }
