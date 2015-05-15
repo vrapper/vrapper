@@ -250,7 +250,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         boolean isInclusive = Selection.INCLUSIVE.equals(configuration.get(Options.SELECTION));
         return new SimpleSelection(this, isInclusive, new StartEndTextRange(startSel, endSel));
     }
-    
+
     public boolean isSelectionInProgress() {
         return selectionInProgress;
     }
@@ -295,7 +295,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
             } else if (ContentType.TEXT.equals(contentType)) {
                 boolean isInclusive = Selection.INCLUSIVE.equals(configuration.get(Options.SELECTION));
                 if (isInclusive && ! newSel.isReversed() && start != end && lastLineInfo.getOffset() == end) {
-                    // [NOTE] The caret must be updated as well, this is handled in 
+                    // [NOTE] The caret must be updated as well, this is handled in
                     // VisualMode.fixCaret()
                     end = safeAddModelOffset(end, -1, true);
                     length = end - start;
@@ -529,7 +529,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         	//new edit, restart index position
         	changeListIndex = changeList.size();
         }
-        else if(marks.containsKey(id)) {
+        else if (marks.containsKey(id)) {
         	//we're about to overwrite an old position
         	//no need to track its changes anymore
         	textViewer.getDocument().removePosition( marks.get(id) );
