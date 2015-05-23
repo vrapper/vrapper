@@ -20,7 +20,7 @@ public class SubstitutionDefinition {
 		//whatever character is after 's' is our delimiter
 		String delim = "" + def.charAt( def.indexOf('s') + 1);
 		//split on the delimiter, unless that delimiter is escaped with a backslash (:s/\/\///)
-		String[] fields = def.split("(?<!\\\\)"+delim);
+		String[] fields = def.split("(?<!\\\\)"+delim, -1);
 		find = "";
 		replace = "";
 		flags = "";
