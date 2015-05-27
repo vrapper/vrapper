@@ -35,6 +35,10 @@ public class IndentTextObject extends AbstractTextObject {
 
     @Override
     public TextRange getRegion(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
+        if (count == NO_COUNT_GIVEN) {
+            count = 1;
+        }
+
     	TextContent model = editorAdaptor.getModelContent();
     	LineInformation cursorLine = model.getLineInformationOfOffset(editorAdaptor.getPosition().getModelOffset());
     	
@@ -91,8 +95,14 @@ public class IndentTextObject extends AbstractTextObject {
     		line = model.getLineInformation(lineNo);
     		if( (! VimUtils.isLineBlank(model, lineNo)) &&
     				VimUtils.getIndent(model, line).length() < indentLength) {
-    			start = includeFirstLine ? line.getBeginOffset() : previousLine.getBeginOffset();
-    			break;
+    			if(count == 1) {
+    				start = includeFirstLine ? line.getBeginOffset() : previousLine.getBeginOffset();
+    				break;
+    			}
+    			else {
+    				indentLength = VimUtils.getIndent(model, line).length();
+    				count--;
+    			}
     		}
     		previousLine = line;
     		lineNo--;
