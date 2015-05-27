@@ -59,10 +59,12 @@ public class ComplexOptionEvaluator implements Evaluator {
                 }
             }
             else if ((stringSetOpt = find(Options.STRINGSET_OPTIONS, optName)) != null) {
-                String[] values = value.split(Option.SET_DELIMITER);
                 Set<String> newValue = new HashSet<String>();
-                newValue.addAll(Arrays.asList(values));
-                validateSet(stringSetOpt, newValue);
+                if (value.trim().length() > 0) {
+                    String[] values = value.split(Option.SET_DELIMITER);
+                    newValue.addAll(Arrays.asList(values));
+                    validateSet(stringSetOpt, newValue);
+                }
                 set(vim, stringSetOpt, newValue);
             }
             else if ((intOpt = find(Options.INT_OPTIONS, optName)) != null) {
