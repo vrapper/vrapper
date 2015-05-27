@@ -1,14 +1,17 @@
 package net.sourceforge.vrapper.core.tests.cases;
 
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.parseKeyStrokes;
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Set;
 
 import net.sourceforge.vrapper.core.tests.utils.DumbPosition;
 import net.sourceforge.vrapper.core.tests.utils.VimTestCase;
@@ -30,6 +33,7 @@ import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.modes.commandline.CommandLineMode;
 import net.sourceforge.vrapper.vim.modes.commandline.CommandLineParser;
 import net.sourceforge.vrapper.vim.modes.commandline.ComplexOptionEvaluator;
+import net.sourceforge.vrapper.vim.register.RegisterManager;
 
 import org.junit.Test;
 
@@ -42,6 +46,21 @@ public class CommandLineTests extends VimTestCase {
         assertSetOption(Options.SELECTION, "blbllb", Options.SELECTION.getLegalValues().toArray(new String[0]));
         assertSetOption(Options.SCROLL_JUMP, "bbshh", 1, 0, -20);
         assertSetOption(Options.SCROLL_OFFSET, "bbshh", 1, 0, -20);
+
+        // Test string-set option
+        Set<String> actual;
+        actual = doSetOption(Options.CLIPBOARD, "clipboard",
+                RegisterManager.CLIPBOARD_VALUE_AUTOSELECT);
+        assertThat(actual, hasItems(RegisterManager.CLIPBOARD_VALUE_AUTOSELECT));
+
+        actual = doSetOption(Options.CLIPBOARD, "clipboard", "");
+        assertTrue("Setting string-set option to empty string didn't clear it!", actual.isEmpty());
+
+        actual = doSetOption(Options.CLIPBOARD, "clipboard",
+                RegisterManager.CLIPBOARD_VALUE_AUTOSELECT + ','
+                    + RegisterManager.CLIPBOARD_VALUE_UNNAMED);
+        assertThat(actual, hasItems(RegisterManager.CLIPBOARD_VALUE_AUTOSELECT,
+                RegisterManager.CLIPBOARD_VALUE_UNNAMED));
     }
     
     @Test
@@ -409,24 +428,21 @@ public class CommandLineTests extends VimTestCase {
 
         for (String name : o.getAllNames()) {
             for (T value : values) {
-                testSetOption(o, name, value, value);
+                T actual = doSetOption(o, name, value.toString());
+                assertEquals(value, actual);
             }
             T value = adaptor.getConfiguration().get(o);
             if (invalid != null) {
-                testSetOption(o, name, invalid, value);
+                T actual = doSetOption(o, name, invalid);
+                assertEquals(value, actual);
             }
         }
     }
 
-    private <T> void testSetOption(Option<T> o, String name, T setValue, T resultValue) {
-        testSetOption(o, name, setValue.toString(), resultValue);
-    }
-
-    private <T> void testSetOption(Option<T> o, String name, String setValue, T resultValue) {
+    private <T> T doSetOption(Option<T> o, String name, String setValue) {
         Queue<String> cmd = new LinkedList<String>();
         cmd.add(name + "=" + setValue.toString());
         ev.evaluate(adaptor, cmd);
-        assertEquals(resultValue, adaptor.getConfiguration().get(o));
+        return adaptor.getConfiguration().get(o);
     }
-    
 }
