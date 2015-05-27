@@ -109,11 +109,13 @@ public interface Configuration {
                 legalValues.add(value);
             Set<String> defaultValues = new HashSet<String>();
             for (String value : defaultValueStr.split(Option.SET_DELIMITER)) {
-                int valueDelimIndex = value.indexOf(SET_VALUE_ITEM);
-                if (valueDelimIndex != -1) {
-                    defaultValues.add(value.substring(0, valueDelimIndex + 1));
-                } else {
-                    defaultValues.add(value);
+                if (value.length() > 0) {
+                    int valueDelimIndex = value.indexOf(SET_VALUE_ITEM);
+                    if (valueDelimIndex != -1) {
+                        defaultValues.add(value.substring(0, valueDelimIndex + 1));
+                    } else {
+                        defaultValues.add(value);
+                    }
                 }
             }
             assert legalValues.containsAll(defaultValues);
@@ -155,7 +157,7 @@ public interface Configuration {
             return legalValues;
         }
 
-        /** Whether the option is local, default or global scope. */ 
+        /** Whether the option is local, default or global scope. */
         public OptionScope getScope() {
             return scope;
         }
