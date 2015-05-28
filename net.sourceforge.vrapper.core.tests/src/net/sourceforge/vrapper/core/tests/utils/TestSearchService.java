@@ -3,18 +3,23 @@ package net.sourceforge.vrapper.core.tests.utils;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.sourceforge.vrapper.platform.GlobalConfiguration;
 import net.sourceforge.vrapper.platform.SearchAndReplaceService;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Search;
 import net.sourceforge.vrapper.utils.SearchResult;
+import net.sourceforge.vrapper.utils.StringUtils;
+import net.sourceforge.vrapper.vim.Options;
 
 public class TestSearchService implements SearchAndReplaceService {
     
     private final TestTextContent content;
+    private GlobalConfiguration sharedConfiguration;
 
-    public TestSearchService(TestTextContent content) {
+    public TestSearchService(TestTextContent content, GlobalConfiguration sharedConfiguration) {
         this.content = content;
+        this.sharedConfiguration = sharedConfiguration;
     }
 
     /** Case-sensitive search only. */
@@ -48,24 +53,52 @@ public class TestSearchService implements SearchAndReplaceService {
         return result;
     }
 
-    /** Regex replace, case-sensitive. */
+    /**
+     * Test replace stub.
+     */
     public int replace(LineInformation line, String toFind, String replace, String flags) {
-//        String stack = content.getText().substring(line.getBeginOffset(), line.getLength());
-//        if (stack.contains(toFind)) {
-//            if (flags.contains("g")) {
-//                stack = stack.replaceAll(toFind, replace);
-//            } else {
-//                stack = stack.replaceFirst(toFind, replace);
-//            }
-//            content.replace(line.getBeginOffset(), line.getLength(), stack);
-//            return true;
-//        }
-//        return false;
-        throw new UnsupportedOperationException();
+        int nMatches = 0;
+
+        StringBuilder result = new StringBuilder();
+        String lineContent = content.getText().substring(line.getBeginOffset(), line.getLength());
+        int patternFlags = 0;
+        boolean doReplace = ! flags.contains("n");
+        boolean allMatches = flags.contains("g");
+        if ( ! isCaseSensitive(toFind, flags)) {
+            patternFlags |= Pattern.CASE_INSENSITIVE;
+        }
+        Pattern pattern = Pattern.compile(toFind, patternFlags);
+        Matcher matcher = pattern.matcher(lineContent);
+
+        int lastMatchEnd = 0;
+        if (matcher.find()) {
+            nMatches++;
+            result.append(lineContent.substring(lastMatchEnd, matcher.start()));
+            result.append(replace);
+            lastMatchEnd = matcher.end();
+        }
+        while (allMatches && matcher.find()) {
+            nMatches++;
+            result.append(lineContent.substring(lastMatchEnd, matcher.start()));
+            result.append(replace);
+            lastMatchEnd = matcher.end();
+        }
+        result.append(lineContent.substring(lastMatchEnd, lineContent.length()));
+        if (doReplace) {
+            content.replace(line.getBeginOffset(), line.getLength(), result.toString());
+        }
+        return nMatches;
     }
 
 	public boolean isCaseSensitive(String toFind, String flags) {
-		return false;
+        boolean caseSensitive = !sharedConfiguration.get(Options.IGNORE_CASE)
+            || (sharedConfiguration.get(Options.SMART_CASE)
+                && StringUtils.containsUppercase(toFind));
+        if (flags.contains("i"))
+            caseSensitive = false;
+        if (flags.contains("I"))
+            caseSensitive = true;
+        return caseSensitive;
 	}
 
     /** Does nothing. */

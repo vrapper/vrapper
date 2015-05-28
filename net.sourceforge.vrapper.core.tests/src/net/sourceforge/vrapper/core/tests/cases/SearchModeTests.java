@@ -18,7 +18,7 @@ public class SearchModeTests extends VisualTestCase {
     public void setUp() {
         super.setUp();
         registerManager = new DefaultRegisterManager();
-        when(platform.getSearchAndReplaceService()).thenReturn(new TestSearchService(content));
+        when(platform.getSearchAndReplaceService()).thenReturn(new TestSearchService(content, configuration));
         reloadEditorAdaptor();
     }
 
