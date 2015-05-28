@@ -14,10 +14,12 @@ import java.util.Queue;
 import java.util.Set;
 
 import net.sourceforge.vrapper.core.tests.utils.DumbPosition;
+import net.sourceforge.vrapper.core.tests.utils.TestSearchService;
 import net.sourceforge.vrapper.core.tests.utils.VimTestCase;
 import net.sourceforge.vrapper.platform.Configuration.Option;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.Position;
+import net.sourceforge.vrapper.utils.Search;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.Command;
@@ -28,11 +30,13 @@ import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.commands.RetabOperation;
 import net.sourceforge.vrapper.vim.commands.SimpleTextOperation;
 import net.sourceforge.vrapper.vim.commands.SortOperation;
+import net.sourceforge.vrapper.vim.commands.SubstitutionOperation;
 import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.modes.commandline.CommandLineMode;
 import net.sourceforge.vrapper.vim.modes.commandline.CommandLineParser;
 import net.sourceforge.vrapper.vim.modes.commandline.ComplexOptionEvaluator;
+import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
 
 import org.junit.Test;
@@ -62,7 +66,53 @@ public class CommandLineTests extends VimTestCase {
         assertThat(actual, hasItems(RegisterManager.CLIPBOARD_VALUE_AUTOSELECT,
                 RegisterManager.CLIPBOARD_VALUE_UNNAMED));
     }
-    
+
+    @Test
+    public void testSubstitution() throws CommandExecutionException {
+        registerManager = new DefaultRegisterManager();
+        when(platform.getSearchAndReplaceService()).thenReturn(new TestSearchService(content, configuration));
+        reloadEditorAdaptor();
+
+        registerManager.setSearch(new Search("two", false, false, false));
+
+        content.setText("one Two three two but two and Two");
+        new SubstitutionOperation("s/one/four/Ig").execute(adaptor, null, ContentType.LINES);
+        assertEquals("four Two three two but two and Two", content.getText());
+
+        content.setText("one Two three two but two and Two");
+        new SubstitutionOperation("s!one!four!Ig").execute(adaptor, null, ContentType.LINES);
+        assertEquals("four Two three two but two and Two", content.getText());
+
+        content.setText("one Two three two but two and Two");
+        // Replace with contents of (search) register
+        new SubstitutionOperation("s!one!\\=@/!Ig").execute(adaptor, null, ContentType.LINES);
+        assertEquals("two Two three two but two and Two", content.getText());
+
+        registerManager.setSearch(new Search("two", false, false, false));
+
+        content.setText("one Two three two");
+        // Do last search again, replace with empty string, minding case.
+        new SubstitutionOperation("s///I").execute(adaptor, null, ContentType.LINES);
+        assertEquals("one Two three ", content.getText());
+
+        content.setText("one Two three two");
+        // Do last search again, replace with empty string, without minding case.
+        new SubstitutionOperation("s///ig").execute(adaptor, null, ContentType.LINES);
+        assertEquals("one  three ", content.getText());
+
+        content.setText("one Two three two but two and Two");
+        // Do last search again, replace with empty string, without minding case.
+        new SubstitutionOperation("s///Ig").execute(adaptor, null, ContentType.LINES);
+        assertEquals("one Two three  but  and Two", content.getText());
+
+        registerManager.setSearch(new Search("Two", false, false, false));
+
+        content.setText("one Two three two");
+        // Special case: do last search again, replace with empty string
+        new SubstitutionOperation("s//").execute(adaptor, null, ContentType.LINES);
+        assertEquals("one  three two", content.getText());
+    }
+
     @Test
     public void testCommandLineParser() {
     	CommandLineMode commandLineMode = new CommandLineMode(adaptor);
