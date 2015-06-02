@@ -2,7 +2,7 @@
 <feature
       id="net.sourceforge.vrapper.plugin.argtextobj"
       label="Vrapper - argtextobj.vim Plugin (Optional)"
-      version="0.55.20150526"
+      version="0.55.20150601"
       provider-name="Vrapper Team">
 
    <description url="http://vrapper.sourceforge.net/documentation/">
@@ -861,8 +861,8 @@ Public License instead of this License.  But first, please read
    </license>
 
    <requires>
-      <import plugin="net.sourceforge.vrapper.eclipse" version="0.55.20150526" match="greaterOrEqual"/>
-      <import feature="net.sourceforge.vrapper" version="0.55.20150526"/>
+      <import plugin="net.sourceforge.vrapper.eclipse" version="0.55.20150601" match="greaterOrEqual"/>
+      <import feature="net.sourceforge.vrapper" version="0.55.20150601"/>
    </requires>
 
    <plugin
