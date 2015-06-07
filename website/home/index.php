@@ -6,8 +6,8 @@
                     <p>
                       Stable: <a href="http://vrapper.sourceforge.net/update-site/stable">http://vrapper.sourceforge.net/update-site/stable</a><br />
                       Unstable: <a href="http://vrapper.sourceforge.net/update-site/unstable">http://vrapper.sourceforge.net/update-site/unstable</a><br />
-                      <a href='http://marketplace.eclipse.org/marketplace-client-intro?mpc_install=881' title='Drag and drop into a running Eclipse workspace to install Vrapper'> 
-                         <img src='http://marketplace.eclipse.org/misc/installbutton.png'/>
+                      <a href="http://marketplace.eclipse.org/marketplace-client-intro?mpc_install=881" class="drag" title="Drag to your running Eclipse workspace to install Vrapper (Vim)">
+                      	<img src="http://marketplace.eclipse.org/sites/all/themes/solstice/_themes/solstice_marketplace/public/images/btn-install.png" alt="Drag to your running Eclipse workspace to install Vrapper (Vim)" />
                       </a>
                     </p>
                       <h4>File Releases</h4>
