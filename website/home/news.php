@@ -1,4 +1,18 @@
 <div class="newsbox">
+    <div class="date">2015-06-07</div>
+    <h4>0.56.0 Released</h4>
+
+    <p>It's been a bit of a slow month for us.  There weren't many changes
+    but it's been two months so I might as well do another release.
+    Here are the changes since my last update</p>
+    
+    <ul>
+        <li>Fixed issue where some jumps weren't added to Eclipse history and &lt;C-O&gt;/&lt;C-I&gt;</li>
+        <li>Fixed issue where setting a string option to "" wouldn't clear the value</li>
+        <li>Fixed issue where `:s//` wouldn't clear previous search</li>
+    </ul>
+</div>
+<div class="newsbox">
     <div class="date">2015-05-10</div>
     <h4>Updates to unstable update site</h4>
 
