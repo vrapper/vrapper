@@ -2,8 +2,10 @@ package net.sourceforge.vrapper.eclipse.activator;
 
 import net.sourceforge.vrapper.eclipse.interceptor.InputInterceptor;
 import net.sourceforge.vrapper.eclipse.interceptor.InputInterceptorManager;
+import net.sourceforge.vrapper.eclipse.interceptor.UnknownEditorException;
 import net.sourceforge.vrapper.log.Log;
 import net.sourceforge.vrapper.log.VrapperLog;
+import net.sourceforge.vrapper.platform.VrapperPlatformException;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 
 import org.eclipse.core.runtime.IStatus;
@@ -65,7 +67,8 @@ public class VrapperPlugin extends AbstractUIPlugin implements IStartup, Log {
     public VrapperPlugin() {
     }
 
-    public InputInterceptor findActiveInterceptor(IEditorPart toplevelEditor) {
+    public InputInterceptor findActiveInterceptor(IEditorPart toplevelEditor)
+            throws VrapperPlatformException, UnknownEditorException {
         return InputInterceptorManager.INSTANCE.findActiveInterceptor(toplevelEditor);
     }
 

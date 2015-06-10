@@ -602,17 +602,18 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
         return Collections.unmodifiableMap(interceptors);
     }
 
-    public InputInterceptor findActiveInterceptor(IWorkbenchPart toplevelEditor) {
+    public InputInterceptor findActiveInterceptor(IWorkbenchPart toplevelEditor)
+            throws UnknownEditorException, VrapperPlatformException {
         EditorInfo editorInfo = toplevelEditorInfo.get(toplevelEditor);
         if (editorInfo == null) {
-            throw new VrapperPlatformException("No editor info found for editor " + toplevelEditor
+            throw new UnknownEditorException("No editor info found for editor " + toplevelEditor
                     + ". This might not be a top-level editor.");
         }
         return findActiveInterceptor(editorInfo, new ProcessedInfo(toplevelEditor));
     }
     
     protected InputInterceptor findActiveInterceptor(EditorInfo editorInfo,
-            ProcessedInfo processedInfo) {
+            ProcessedInfo processedInfo) throws UnknownEditorException, VrapperPlatformException {
         IWorkbenchPart part = editorInfo.getCurrent();
         InputInterceptor result;
         if (part instanceof MultiPageEditorPart) {
@@ -631,8 +632,12 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
         } else if (part instanceof AbstractTextEditor) {
             result = interceptors.get(part);
         } else {
-            throw new VrapperPlatformException("Cannot find active input interceptor for editor "
+            throw new UnknownEditorException("Cannot find active input interceptor for editor "
                     + editorInfo.getTopLevelEditor() + ". Unknown sub-editor type " + part);
+        }
+        if (result == null) {
+            throw new UnknownEditorException("Cannot find active input interceptor for editor "
+                    + editorInfo.getTopLevelEditor() + ". Possibly on an unsupported tab.");
         }
         return result;
     }

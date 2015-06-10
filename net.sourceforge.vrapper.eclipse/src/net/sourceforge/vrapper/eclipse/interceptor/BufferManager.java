@@ -3,6 +3,8 @@ package net.sourceforge.vrapper.eclipse.interceptor;
 import java.util.List;
 import java.util.Map;
 
+import net.sourceforge.vrapper.platform.VrapperPlatformException;
+
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
@@ -46,8 +48,11 @@ public interface BufferManager {
      * Finds the {@link InputInterceptor} for the activated page or sub-editor within a top-level
      * editor (see {@link IWorkbenchPage#getActiveEditor()}). For simple editors, this is just the
      * assocatiated {@link InputInterceptor} but for MultiPageEditorPart we do a recursive search.
+     * @throws UnknownEditorException when the IWorkbenchPart is not known to Vrapper, either
+     *      because it is not an editor at all or because it has no known types.
      */
-    public InputInterceptor findActiveInterceptor(IWorkbenchPart toplevelPart);
+    public InputInterceptor findActiveInterceptor(IWorkbenchPart toplevelPart)
+            throws UnknownEditorException, VrapperPlatformException;
 
     /**
      * Gets a read-only map of all {@link IWorkbenchPart}s for which an {@link InputInterceptor}

@@ -2,8 +2,11 @@ package net.sourceforge.vrapper.eclipse.commands;
 
 import net.sourceforge.vrapper.eclipse.activator.VrapperPlugin;
 import net.sourceforge.vrapper.eclipse.interceptor.InputInterceptor;
+import net.sourceforge.vrapper.eclipse.interceptor.UnknownEditorException;
 import net.sourceforge.vrapper.eclipse.platform.EclipseCursorAndSelection;
 import net.sourceforge.vrapper.keymap.KeyStroke;
+import net.sourceforge.vrapper.log.VrapperLog;
+import net.sourceforge.vrapper.platform.VrapperPlatformException;
 import net.sourceforge.vrapper.utils.Function;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.Command;
@@ -95,7 +98,14 @@ public class GoToMarkCommand extends CountIgnoringNonRepeatableCommand {
 	    //
 	    // Lookup Vrapper's EditorAdapter associated with the Eclipse editor.
 	    //
-	    InputInterceptor interceptor = VrapperPlugin.getDefault().findActiveInterceptor(editor);
+	    InputInterceptor interceptor = null;
+        try {
+            interceptor = VrapperPlugin.getDefault().findActiveInterceptor(editor);
+        } catch (VrapperPlatformException e) {
+            VrapperLog.error("Failed to activate editor for mark " + id + ".", e);
+        } catch (UnknownEditorException e) {
+            VrapperLog.info("Failed to activate editor for mark " + id + ". Error: " + e);
+        }
 	    if (interceptor == null) {
 	        return null;
 	    } else {
