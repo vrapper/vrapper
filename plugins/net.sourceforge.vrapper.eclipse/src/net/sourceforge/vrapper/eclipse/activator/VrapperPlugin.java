@@ -74,21 +74,21 @@ public class VrapperPlugin extends AbstractUIPlugin implements /*IStartup,*/ Log
     private static final String KEY_VRAPPER_ENABLED = "vrapperEnabled";
 
     private static final String COMMAND_TOGGLE_VRAPPER = "net.sourceforge.vrapper.eclipse.commands.toggle";
-    
+
     private static final IPreferencesService PREFERENCES_SERVICE = Platform.getPreferencesService();
     // private static final IEclipsePreferences PLUGIN_PREFERENCES = InstanceScope.INSTANCE.getNode(PLUGIN_ID);
-    /* XXX: The "new way" of creating InstanceScope was introduced in Eclipse Juno (4.2) so moving to the new way 
-     * 		would actually break all backwards compatibility with the 3.x series of Eclipse. I'd rather not do 
-     * 		that just yet. There are other solutions based on Eclipse (e.g., Aptana and Flash Builder) which are 
-     *	    still on a 3.x version of Eclipse and I don't want to break Vrapper for all of those users until I 
-     *      have to. I want to give everyone as long as possible to move to the 4.x series of Eclipse. 
+    /* XXX: The "new way" of creating InstanceScope was introduced in Eclipse Juno (4.2) so moving to the new way
+     * 		would actually break all backwards compatibility with the 3.x series of Eclipse. I'd rather not do
+     * 		that just yet. There are other solutions based on Eclipse (e.g., Aptana and Flash Builder) which are
+     *	    still on a 3.x version of Eclipse and I don't want to break Vrapper for all of those users until I
+     *      have to. I want to give everyone as long as possible to move to the 4.x series of Eclipse.
      *      -- Github exchange with keforbes on why we're leaving this alone for now.
      */
     @SuppressWarnings("deprecation") // See note above
     private static final IEclipsePreferences PLUGIN_PREFERENCES = new InstanceScope().getNode(PLUGIN_ID);
 
 	private static final MouseButtonListener MOUSEBUTTON = new MouseButtonListener();
-	
+
 	private final static CommandExecutionListener executionListener = new CommandExecutionListener();
 
     private boolean debugLogEnabled = Boolean.parseBoolean(System.getProperty(DEBUGLOG_PROPERTY))
@@ -156,7 +156,7 @@ public class VrapperPlugin extends AbstractUIPlugin implements /*IStartup,*/ Log
                 }
             }
         }
-            
+
         addEditorListeners();
     }
 
@@ -185,7 +185,7 @@ public class VrapperPlugin extends AbstractUIPlugin implements /*IStartup,*/ Log
         window.getWorkbench().getDisplay().addFilter(SWT.MouseDown, MOUSEBUTTON);
         window.getWorkbench().getDisplay().addFilter(SWT.MouseUp, MOUSEBUTTON);
     }
-    
+
     void addShutdownListener() {
         PlatformUI.getWorkbench().addWorkbenchListener(new IWorkbenchListener() {
             public void postShutdown(IWorkbench arg0) { }
@@ -303,7 +303,7 @@ public class VrapperPlugin extends AbstractUIPlugin implements /*IStartup,*/ Log
         }
 
     }
-    
+
     public void info(String msg) {
         log(IStatus.INFO, msg, null);
     }
@@ -347,24 +347,24 @@ public class VrapperPlugin extends AbstractUIPlugin implements /*IStartup,*/ Log
             }
         }
     }
-    
+
     public static boolean isVrapperEnabled() {
         return vrapperEnabled;
     }
-    
+
     public static boolean isMouseDown() {
     	return MOUSEBUTTON.down;
     }
-    
+
     public static class CommandExecutionListener implements IExecutionListenerWithChecks {
-    
+
         protected boolean needsCleanup;
         protected Selection lastSelection;
 
         @Override
         public void notHandled(String commandId, NotHandledException exception) {
             // TODO Auto-generated method stub
-            VrapperLog.info("Non-handled command: " + commandId + ". Ex: " + exception.getMessage());
+            VrapperLog.debug("Non-handled command: " + commandId + ". Ex: " + exception.getMessage());
             needsCleanup = false;
         }
 
@@ -372,13 +372,13 @@ public class VrapperPlugin extends AbstractUIPlugin implements /*IStartup,*/ Log
         public void postExecuteFailure(String commandId,
                 ExecutionException exception) {
             // TODO Auto-generated method stub
-            VrapperLog.info("Failed command: " + commandId + ". Ex: " + exception.getMessage());
+            VrapperLog.debug("Failed command: " + commandId + ". Ex: " + exception.getMessage());
             needsCleanup = false;
         }
 
         @Override
         public void postExecuteSuccess(String commandId, Object returnValue) {
-            VrapperLog.info("Ok command: " + commandId + ". Returns: " + returnValue);
+            VrapperLog.debug("Ok command: " + commandId + ". Returns: " + returnValue);
             if ( ! VrapperPlugin.isVrapperEnabled()) {
                 return;
             }
@@ -444,7 +444,7 @@ public class VrapperPlugin extends AbstractUIPlugin implements /*IStartup,*/ Log
         public void preExecute(final String commandId, ExecutionEvent event) {
             // TODO Auto-generated method stub
             IWorkbenchPart activePart = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActivePart();
-            VrapperLog.info("PRE command: " + commandId + " in " + activePart + ". Event: " + event);
+            VrapperLog.debug("PRE command: " + commandId + " in " + activePart + ". Event: " + event);
             needsCleanup = true;
             // Always reset this
             lastSelection = null;
@@ -456,7 +456,7 @@ public class VrapperPlugin extends AbstractUIPlugin implements /*IStartup,*/ Log
             // Chop off that last character if selection is left-to-right and command is a motion.
             IEditorPart activeEditor = HandlerUtil.getActiveEditor(event);
             if (activeEditor == null) {
-                VrapperLog.info("No active editor info in event!");
+                VrapperLog.debug("No active editor info in event!");
                 activeEditor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
             }
             if (activeEditor == null) {
@@ -479,42 +479,42 @@ public class VrapperPlugin extends AbstractUIPlugin implements /*IStartup,*/ Log
                 if (selRange == SelectionService.VRAPPER_SELECTION_ACTIVE) {
                     // This is the generic part: store Vrapper selection so that 'gv' works.
                     interceptor.getEditorAdaptor().rememberLastActiveSelection();
-                    VrapperLog.info("Stored Vrapper selection");
+                    VrapperLog.debug("Stored Vrapper selection");
                 }
                 // Store current selection so that postExecuteSuccess can update it.
                 lastSelection = interceptor.getEditorAdaptor().getSelection();
-                VrapperLog.info("Grabbed selection");
+                VrapperLog.debug("Grabbed selection");
             }
             Display.getCurrent().asyncExec(new Runnable() {
                 @Override
                 public void run() {
                     // TODO Auto-generated method stub
                     IWorkbenchPart activePart = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActivePart();
-                    VrapperLog.info("PRE-scheduled async command: " + commandId + " in " + activePart + " Needs cleanup: " + needsCleanup);
+                    VrapperLog.debug("PRE-scheduled async command: " + commandId + " in " + activePart + " Needs cleanup: " + needsCleanup);
                 }
             });
         }
-    
+
         @Override
         public void notDefined(String commandId, NotDefinedException exception) {
             // TODO Auto-generated method stub
             IWorkbenchPart activePart = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActivePart();
-            VrapperLog.info("Undefined command: " + commandId + " in " + activePart + ". Event: " + exception);
+            VrapperLog.debug("Undefined command: " + commandId + " in " + activePart + ". Event: " + exception);
             needsCleanup = false;
         }
-    
+
         @Override
         public void notEnabled(String commandId, NotEnabledException exception) {
             // TODO Auto-generated method stub
             IWorkbenchPart activePart = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActivePart();
-            VrapperLog.info("Not enabled command: " + commandId + " in " + activePart + ". Exception: " + exception);
+            VrapperLog.debug("Not enabled command: " + commandId + " in " + activePart + ". Exception: " + exception);
             needsCleanup = false;
         }
-    
+
     }
 
     private static final class MouseButtonListener implements Listener {
-    	
+
     	private boolean down;
 
 		public void handleEvent(Event event) {
