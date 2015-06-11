@@ -201,6 +201,11 @@ public class VrapperPlugin extends AbstractUIPlugin implements IStartup, Log {
         debugLogEnabled = enabled;
     }
 
+    @Override
+    public boolean isDebugEnabled() {
+        return debugLogEnabled;
+    }
+
     /**
      * Returns the shared instance
      *

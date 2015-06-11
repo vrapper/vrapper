@@ -10,8 +10,11 @@ import net.sourceforge.vrapper.eclipse.platform.SWTRegisterManager;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.vim.SimpleKeyStroke;
+import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.BufferAndTabService;
 import net.sourceforge.vrapper.platform.GlobalConfiguration;
+import net.sourceforge.vrapper.platform.Configuration.Option;
+import net.sourceforge.vrapper.vim.ConfigurationListener;
 import net.sourceforge.vrapper.vim.DefaultEditorAdaptor;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
@@ -47,7 +50,7 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
     private static final GlobalConfiguration sharedConfiguration = new SimpleGlobalConfiguration();
 
     private static final RegisterManager globalRegisterManager = new SWTRegisterManager(
-    PlatformUI.getWorkbench().getDisplay(), sharedConfiguration);
+            PlatformUI.getWorkbench().getDisplay(), sharedConfiguration);
 
     static {
         specialKeys = createSpecialKeys();
@@ -55,6 +58,22 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
         escapedChars = createEscapedChars();
 
         ignoredKeyCodes = createIgnoredKeyCodes();
+
+        setupGlobalConfiguration();
+    }
+
+    /** Initialize default configuration where it needs to be overridden by environment. */
+    private static void setupGlobalConfiguration() {
+        // Sync debuglog option's value with actual Log setting (read from system properties).
+        sharedConfiguration.set(Options.DEBUGLOG, VrapperLog.isDebugEnabled());
+        sharedConfiguration.addListener(new ConfigurationListener() {
+            @Override
+            public <T> void optionChanged(Option<T> option, T oldValue, T newValue) {
+                if (Options.DEBUGLOG.equals(option)) {
+                    VrapperLog.setDebugEnabled(Boolean.TRUE.equals(newValue));
+                }
+            }
+        });
     }
 
     private static HashMap<Integer, SpecialKey> createSpecialKeys() {

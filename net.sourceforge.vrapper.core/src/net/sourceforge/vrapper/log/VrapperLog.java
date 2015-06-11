@@ -35,4 +35,8 @@ public class VrapperLog {
 	public static void setDebugEnabled(boolean enabled) {
 		getImplementation().setDebugEnabled(enabled);
 	}
+
+	public static boolean isDebugEnabled() {
+		return getImplementation().isDebugEnabled();
+	}
 }

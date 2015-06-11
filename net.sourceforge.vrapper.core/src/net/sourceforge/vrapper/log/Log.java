@@ -7,4 +7,5 @@ public interface Log {
 	void error(String msg, Throwable exception);
 	void debug(String msg);
 	void setDebugEnabled(boolean enabled);
+	boolean isDebugEnabled();
 }

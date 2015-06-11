@@ -29,4 +29,9 @@ public class SystemStreamsLog implements Log {
     public void setDebugEnabled(boolean enabled) {
         debugEnabled = enabled;
     }
+
+    @Override
+    public boolean isDebugEnabled() {
+        return debugEnabled;
+    }
 }
