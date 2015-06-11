@@ -68,6 +68,10 @@ class RegisterSelection extends ByteArrayTransfer {
                 ByteArrayInputStream in = new ByteArrayInputStream(buffer);
                 DataInputStream readIn = new DataInputStream(in);
                 ContentType ct = ContentType.values()[readIn.readInt()];
+                // Not a block register?
+                if (ContentType.TEXT_RECTANGLE.equals(ct)) {
+                    return null;
+                }
                 int vOffset = readIn.readInt();
                 int lines = readIn.readInt();
                 registerContent = new TextBlockRegisterContent(vOffset, VimConstants.REGISTER_NEWLINE);
@@ -78,6 +82,9 @@ class RegisterSelection extends ByteArrayTransfer {
                     registerContent.appendLine(new String(line));
                 }
                 readIn.close();
+            } catch (ArrayIndexOutOfBoundsException e) {
+                // Incompatible content type ordinal passed in
+                return null;
             } catch (IOException ex) {
                 return null;
             }

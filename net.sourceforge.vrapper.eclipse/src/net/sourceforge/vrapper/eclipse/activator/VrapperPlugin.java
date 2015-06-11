@@ -57,6 +57,7 @@ public class VrapperPlugin extends AbstractUIPlugin implements IStartup, Log {
      *      have to. I want to give everyone as long as possible to move to the 4.x series of Eclipse. 
      *      -- Github exchange with keforbes on why we're leaving this alone for now.
      */
+    @SuppressWarnings("deprecation") // See note above
     private static final IEclipsePreferences PLUGIN_PREFERENCES = new InstanceScope().getNode(PLUGIN_ID);
 
 	private static MouseButtonListener mouseButton = new MouseButtonListener();

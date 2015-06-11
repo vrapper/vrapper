@@ -13,7 +13,6 @@
           name="Vrapper">
     </category>
     <command
-          category="net.sourceforge.vrapper.eclipse.commands"
           categoryId="net.sourceforge.vrapper.eclipse.commands"
           defaultHandler="net.sourceforge.vrapper.eclipse.actions.VrapperToggleHandler"
           description="Toggles Vrapper"
@@ -84,12 +83,8 @@
       </keymap-provider>
    </extension>
    <extension
-         point="org.eclipse.ui.editors.annotationTypes">
-      <type
-            markerSeverity="0"
-            markerType="net.sourceforge.vrapper.eclipse.searchhighlight"
-            name="net.sourceforge.vrapper.eclipse.searchhighlight">
-      </type>
+         id="net.sourceforge.vrapper.eclipse.searchhighlight"
+         point="org.eclipse.core.resources.markers">
    </extension>
    <extension
          point="org.eclipse.ui.editors.markerAnnotationSpecification">
@@ -110,6 +105,14 @@
             textStylePreferenceKey="searchHighlightTextStyle"
             textStylePreferenceValue="NONE">
 	  </specification>	  
+   </extension>
+   <extension
+         point="org.eclipse.ui.editors.annotationTypes">
+      <type
+            markerSeverity="0"
+            markerType="net.sourceforge.vrapper.eclipse.searchhighlight"
+            name="net.sourceforge.vrapper.eclipse.searchhighlight">
+      </type>
    </extension>
 </plugin>
 
