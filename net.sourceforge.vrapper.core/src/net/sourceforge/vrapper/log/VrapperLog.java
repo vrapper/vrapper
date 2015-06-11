@@ -12,7 +12,7 @@ public class VrapperLog {
 
 	private static synchronized Log getImplementation() {
 		if (implementation == null)
-			implementation = new SystemStreamsLog();
+			implementation = new SystemStreamsLog(false);
 		return implementation;
 	}
 
@@ -28,4 +28,11 @@ public class VrapperLog {
 		getImplementation().info(msg);
 	}
 
+	public static void debug(String msg) {
+		getImplementation().debug(msg);
+	}
+
+	public static void setDebugEnabled(boolean enabled) {
+		getImplementation().setDebugEnabled(enabled);
+	}
 }

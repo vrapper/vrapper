@@ -7,6 +7,7 @@ import java.util.EnumSet;
 
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SpecialKey;
+import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.Configuration.Option;
 import net.sourceforge.vrapper.platform.Configuration.OptionScope;
 import net.sourceforge.vrapper.platform.FileService;
@@ -122,7 +123,8 @@ public class VimTestCase {
 
     @Before
     public void setUp() {
-    	initMocks();
+        initMocks();
+        VrapperLog.setDebugEnabled(true);
     }
 
     public void setBuffer(String text) {

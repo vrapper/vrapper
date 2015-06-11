@@ -62,6 +62,9 @@ public class VrapperPlugin extends AbstractUIPlugin implements IStartup, Log {
 
 	private static MouseButtonListener mouseButton = new MouseButtonListener();
 
+    private boolean debugLogEnabled = Boolean.parseBoolean(System.getProperty(DEBUGLOG_PROPERTY))
+            || Boolean.parseBoolean(Platform.getDebugOption("net.sourceforge.vrapper.eclipse/debug"));
+
     /**
      * The constructor
      */
@@ -184,6 +187,18 @@ public class VrapperPlugin extends AbstractUIPlugin implements IStartup, Log {
 
     public void error(String msg, Throwable exception) {
         log(IStatus.ERROR, msg, exception);
+    }
+
+    @Override
+    public void debug(String msg) {
+        if (debugLogEnabled) {
+            log(IStatus.INFO, msg, null);
+        }
+    }
+
+    @Override
+    public void setDebugEnabled(boolean enabled) {
+        debugLogEnabled = enabled;
     }
 
     /**
