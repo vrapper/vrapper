@@ -19,6 +19,7 @@ import org.eclipse.jface.text.BadPositionCategoryException;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.ITextViewerExtension5;
+import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.text.source.IAnnotationModel;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -514,7 +515,8 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
 
         @Override
         public void widgetSelected(final SelectionEvent arg0) {
-            VrapperLog.debug("Detected selection change; suppressed = " + selectionInProgress);
+            VrapperLog.debug("Detected selection change; suppressed = " + selectionInProgress +
+                    ", details: " + textViewer.getTextWidget().getSelection());
             if ( ! selectionInProgress) {
                 selection = null;
                 // getPosition() compensates for inclusive visual selection's caret offset.
@@ -531,7 +533,10 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
 
         @Override
         public void selectionChanged(SelectionChangedEvent event) {
-            VrapperLog.debug("Detected jface selection change; suppressed = " + selectionInProgress);
+            TextSelection textSelection = (TextSelection)event.getSelection();
+            VrapperLog.debug("Detected jface selection change; suppressed = " + selectionInProgress
+                    + ", details: " + textSelection.getOffset() + "," + textSelection.getLength()
+                    + " type: " + textSelection.getClass());
             if ( ! selectionInProgress) {
                 selection = null;
                 // getPosition() compensates for inclusive visual selection's caret offset.
