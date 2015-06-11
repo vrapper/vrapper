@@ -43,8 +43,22 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
     /** Maps "Escape characters" to the corresponding Control + <i>x</i> character. */
     private static final HashMap<Character, Character> escapedChars;
     private static final HashSet<Integer> ignoredKeyCodes;
+
+    private static final GlobalConfiguration sharedConfiguration = new SimpleGlobalConfiguration();
+
+    private static final RegisterManager globalRegisterManager = new SWTRegisterManager(
+    PlatformUI.getWorkbench().getDisplay(), sharedConfiguration);
+
     static {
-        specialKeys = new HashMap<Integer, SpecialKey>();
+        specialKeys = createSpecialKeys();
+
+        escapedChars = createEscapedChars();
+
+        ignoredKeyCodes = createIgnoredKeyCodes();
+    }
+
+    private static HashMap<Integer, SpecialKey> createSpecialKeys() {
+        HashMap<Integer, SpecialKey> specialKeys = new HashMap<Integer, SpecialKey>();
         specialKeys.put( SWT.ARROW_LEFT,         SpecialKey.ARROW_LEFT);
         specialKeys.put( SWT.ARROW_RIGHT,        SpecialKey.ARROW_RIGHT);
         specialKeys.put( SWT.ARROW_UP,           SpecialKey.ARROW_UP);
@@ -67,12 +81,16 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
         //SWT has up to F20
         for (int i=0; i < 20; ++i)
         	specialKeys.put(swtStart+i, values[skStart+i]);
+        return specialKeys;
+    }
 
+
+    private static HashMap<Character, Character> createEscapedChars() {
         /*
          * Translate the "Escape characters" sent by Ctrl + alpha keys to regular characters.
          * This circumvents problems with the user language where raw keyCode values might not.
          */
-        escapedChars = new HashMap<Character, Character>();
+        HashMap<Character, Character> escapedChars = new HashMap<Character, Character>();
         escapedChars.put('\u0000', '@');
         escapedChars.put('\u0001', 'a');
         escapedChars.put('\u0002', 'b');
@@ -105,19 +123,18 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
         escapedChars.put('\u001D', ']');
         escapedChars.put('\u001E', '^');
         escapedChars.put('\u001F', '_');
+        return escapedChars;
+    }
 
-        ignoredKeyCodes = new HashSet<Integer>();
+    private static HashSet<Integer> createIgnoredKeyCodes() {
+        HashSet<Integer> ignoredKeyCodes = new HashSet<Integer>();
         ignoredKeyCodes.add(SWT.CTRL);
         ignoredKeyCodes.add(SWT.SHIFT);
         ignoredKeyCodes.add(SWT.ALT);
         ignoredKeyCodes.add(SWT.CAPS_LOCK);
         ignoredKeyCodes.add(SWT.COMMAND);
+        return ignoredKeyCodes;
     }
-
-
-    private static final GlobalConfiguration sharedConfiguration = new SimpleGlobalConfiguration();
-    private static final RegisterManager globalRegisterManager = new SWTRegisterManager(
-            PlatformUI.getWorkbench().getDisplay(), sharedConfiguration);
 
     public InputInterceptor createInterceptor(AbstractTextEditor abstractTextEditor,
             ITextViewer textViewer, EditorInfo partInfo, BufferAndTabService bufferAndTabService) {
