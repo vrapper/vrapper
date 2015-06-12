@@ -6,6 +6,7 @@ import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
+import net.sourceforge.vrapper.vim.modes.NormalMode;
 
 /**
  * Immediately execute a set of commands without storing them
@@ -36,6 +37,10 @@ public class AnonymousMacroOperation extends SimpleTextOperation {
 		
 		//run macro
 		editorAdaptor.getMacroPlayer().play();
+		
+		if ( ! NormalMode.NAME.equals(editorAdaptor.getCurrentModeName())) {
+			editorAdaptor.changeModeSafely(NormalMode.NAME);
+		}
 	}
 
 }
