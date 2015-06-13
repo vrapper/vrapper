@@ -359,12 +359,16 @@ public class CommandLineParser extends AbstractCommandParser {
         Evaluator normal = new Evaluator() {
             public Object evaluate(EditorAdaptor vim, Queue<String> command) {
                 try {
-                    String args = "";
-                    while(command.size() > 0)
-                        args += command.poll() + " ";
+                    StringBuilder args = new StringBuilder();
+                    if (command.size() > 0) {
+                        args.append(command.poll());
+                    }
+                    while (command.size() > 0) {
+                        args.append(' ').append(command.poll());
+                    }
 
                     StartEndTextRange range = new StartEndTextRange(vim.getPosition(), vim.getPosition());
-                    new AnonymousMacroOperation(args).execute(vim, range, ContentType.TEXT);
+                    new AnonymousMacroOperation(args.toString()).execute(vim, range, ContentType.TEXT);
 				}
                 catch (CommandExecutionException e) {
             		vim.getUserInterfaceService().setErrorMessage(e.getMessage());
