@@ -229,15 +229,14 @@ public class InsertMode extends AbstractMode {
     private void saveTypedText() {
         final Register lastEditRegister = editorAdaptor.getRegisterManager().getLastEditRegister();
         final TextContent content = editorAdaptor.getModelContent();
-        final Position position = editorAdaptor.getCursorService().getPosition();
-        if(startEditPosition.getModelOffset() > editorAdaptor.getModelContent().getTextLength()) {
-        	//if the file is shorter than where we started,
-        	//update so we aren't at an invalid position
-        	startEditPosition = editorAdaptor.getCursorService().newPositionForModelOffset(
-				        			editorAdaptor.getModelContent().getTextLength()
-			        			);
+        Position position = editorAdaptor.getCursorService().getPosition();
+        if (startEditPosition.getModelOffset() > editorAdaptor.getModelContent().getTextLength()) {
+            //if the file is shorter than where we started,
+            //update so we aren't at an invalid position
+            startEditPosition = editorAdaptor.getCursorService().newPositionForModelOffset(
+                    editorAdaptor.getModelContent().getTextLength());
         }
-        else if(cleanupIndent && position.getModelOffset() == startEditPosition.getModelOffset()) {
+        else if (cleanupIndent && position.getModelOffset() == startEditPosition.getModelOffset()) {
             //if we entered InsertMode via 'o' or 'O' but didn't enter any text,
             //remove any auto-inserted indentation
             final int startOfLine = content.getLineInformationOfOffset(position.getModelOffset()).getBeginOffset();
