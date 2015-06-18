@@ -244,6 +244,9 @@ public class InsertMode extends AbstractMode {
             if(indent.length() > 0 && VimUtils.isBlank(indent)) {
                 content.replace(startOfLine, indent.length(), "");
             }
+            // Reset positions due to changed indentation. Especially important at the end of a file
+            position = editorAdaptor.getPosition();
+            startEditPosition = position;
         }
         //reset value in case we re-enter InsertMode
         cleanupIndent = false;
