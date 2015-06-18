@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.sourceforge.vrapper.eclipse.activator.VrapperPlugin;
 import net.sourceforge.vrapper.eclipse.interceptor.EditorInfo;
 import net.sourceforge.vrapper.eclipse.ui.CaretUtils;
 import net.sourceforge.vrapper.log.VrapperLog;
@@ -474,16 +475,25 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
 
         @Override
         public void paintControl(PaintEvent e) {
-            // This painter only works for Vrapper selections.
-            if (selection == null) {
+            if ( ! VrapperPlugin.isVrapperEnabled()) {
                 return;
             }
-            GC gc = e.gc;
             StyledText text = textViewer.getTextWidget();
+            if (text.getSelectionCount() == 0) {
+                return;
+            }
+            // Forces caret visibility for blockwise mode: normally it is disabled all the time.
+            // Regular visual modes should have it visible anyway.
+            // [TODO] Maybe check if this blockwise visual selection is done through vrapper. A user
+            // dragging a block selection using the mouse might get confused.
+            text.getCaret().setVisible(true);
+//            GC gc = e.gc;
 //            text.getCaret().
 //            gc.getDevice().getSystemColor(SWT.)
-            gc.setForeground(text.getForeground());
-            Position to = selection.getTo();
+//            gc.setForeground(text.getForeground());
+//            gc.setForeground(text.getSelectionBackground());
+//            gc.setBackground(text.getSelectionForeground());
+            Position to = getSelection().getTo();
             boolean isInclusive = Selection.INCLUSIVE.equals(configuration.get(Options.SELECTION));
             int offset = to.getViewOffset();
             if (textViewer.getDocument().getLength() == to.getModelOffset() && isInclusive) {
@@ -494,9 +504,10 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
                 caretBounds = text.getTextBounds(offset, offset);
             } else {
                 Point visualOffset = text.getLocationAtOffset(offset);
-                caretBounds = new Rectangle(visualOffset.x, visualOffset.y, 1, text.getLineHeight(offset));
+                caretBounds = new Rectangle(visualOffset.x, visualOffset.y, 2, text.getLineHeight(offset));
             }
-            gc.drawRectangle(caretBounds);
+//            gc.fillRectangle(caretBounds);
+            text.getCaret().setBounds(caretBounds);
         }
     }
 
