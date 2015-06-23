@@ -40,6 +40,7 @@ import net.sourceforge.vrapper.vim.commands.ReplaceCommand;
 import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SelectionBasedTextOperationCommand;
 import net.sourceforge.vrapper.vim.commands.SwapCaseCommand;
+import net.sourceforge.vrapper.vim.commands.SwapBlockwiseSelectionSidesCommand;
 import net.sourceforge.vrapper.vim.commands.motions.BlockSelectionMotion;
 import net.sourceforge.vrapper.vim.commands.motions.Motion;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
@@ -290,6 +291,8 @@ public class BlockwiseVisualMode extends AbstractVisualMode {
                 leafBind('c', change),
                 leafBind('C', change),
                 leafBind('s', change),
+                leafBind('o', (Command) SwapBlockwiseSelectionSidesCommand.DIAGONAL_INSTANCE),
+                leafBind('O', (Command) SwapBlockwiseSelectionSidesCommand.HORIZONTAL_INSTANCE),
                 leafBind('I', (Command) new BlockwiseChangeToInsertModeCommand(new MotionCommand(bol), InsertModeType.INSERT)),
                 leafBind('A', (Command) new BlockwiseChangeToInsertModeCommand(new MotionCommand(eol), InsertModeType.APPEND)),
                 leafBind('~', swapCase),
