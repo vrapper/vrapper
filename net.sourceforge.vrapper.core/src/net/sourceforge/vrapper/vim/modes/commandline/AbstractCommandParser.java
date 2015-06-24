@@ -273,7 +273,10 @@ public abstract class AbstractCommandParser {
         } else if (parsedCommand == null) {
             editor.changeModeSafely(NormalMode.NAME);
         } else {
-            editor.changeModeSafely(NormalMode.NAME, new ExecuteCommandHint.OnEnter(parsedCommand));
+            editor.changeModeSafely(
+                    // Return to the last mode in the case of a temporary mode switch.
+                    isFromVisual ? NormalMode.NAME : editor.getLastModeName(),
+                    new ExecuteCommandHint.OnEnter(parsedCommand));
             // Only do this AFTER changing the mode, Eclipse commands might still use the selection!
             editor.setSelection(null);
         }
