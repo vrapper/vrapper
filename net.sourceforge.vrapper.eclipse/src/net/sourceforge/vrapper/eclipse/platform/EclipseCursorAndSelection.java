@@ -125,7 +125,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         // Workaround for inclusive selections (see EvilCaret) - only for length > 0 & left-to-right
         if (sel.y > 0 && cursorPos == sel.x + sel.y
                 && Selection.INCLUSIVE.equals(configuration.get(Options.SELECTION))) {
-            cursorPos = safeAddModelOffset(cursorPos, -1, true);
+            cursorPos = safeAddModelOffset(cursorPos, cursorPos - 1, true);
         }
         return new TextViewerPosition(textViewer, Space.MODEL, cursorPos);
     }
@@ -289,7 +289,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
                 // - A reversed selection needs to show its caret in column 0, don't alter selection
                 if ((end == documentLength && lastLineInfo.getLength() == 0)
                         || ! newSel.isReversed()) {
-                    end = safeAddModelOffset(end, -1, true);
+                    end = safeAddModelOffset(end, end - 1, true);
                     length = end - start;
                 }
             } else if (ContentType.TEXT.equals(contentType)) {
@@ -297,7 +297,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
                 if (isInclusive && ! newSel.isReversed() && start != end && lastLineInfo.getOffset() == end) {
                     // [NOTE] The caret must be updated as well, this is handled in
                     // VisualMode.fixCaret()
-                    end = safeAddModelOffset(end, -1, true);
+                    end = safeAddModelOffset(end, end - 1, true);
                     length = end - start;
                 }
             }
@@ -387,15 +387,23 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     public Position newPositionForModelOffset(int targetModelOffset, Position original,
             boolean allowPastLastChar) {
         int modelOffset = original.getModelOffset();
-        int delta = targetModelOffset - modelOffset;
-        targetModelOffset = safeAddModelOffset(modelOffset, delta, allowPastLastChar);
+        targetModelOffset = safeAddModelOffset(modelOffset, targetModelOffset, allowPastLastChar);
         return new TextViewerPosition(textViewer, Space.MODEL, targetModelOffset);
     }
 
     @Override
     public Position shiftPositionForModelOffset(int offset, int delta, boolean allowPastLastChar) {
-        offset = safeAddModelOffset(offset, delta, allowPastLastChar);
+        offset = safeAddModelOffset(offset, offset + delta, allowPastLastChar);
         return new TextViewerPosition(textViewer, Space.MODEL, offset);
+    }
+
+    public Position shiftPositionForViewOffset(int offset, int delta, boolean allowPastLastChar) {
+        int oldModelOffset = converter.widgetOffset2ModelOffset(offset);
+        // This might become a serious leap in case of folds
+        int targetOffset = converter.widgetOffset2ModelOffset(offset + delta);
+        int shiftedOffset = safeAddModelOffset(oldModelOffset, targetOffset, allowPastLastChar);
+        // Stick to model space, again safer for folds
+        return new TextViewerPosition(textViewer, Space.MODEL, shiftedOffset);
     }
 
     @Override
@@ -815,10 +823,10 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         }
     }
 
-    private int safeAddModelOffset(int modelOffset, int delta, boolean allowPastLastChar) {
-        int targetOffset = modelOffset + delta;
+    private int safeAddModelOffset(int oldOffset, int targetOffset, boolean allowPastLastChar) {
+        int delta = targetOffset - oldOffset;
         if (delta == 0) {
-            return modelOffset;
+            return oldOffset;
         } else if (targetOffset <= 0) {
             return 0;
         }
