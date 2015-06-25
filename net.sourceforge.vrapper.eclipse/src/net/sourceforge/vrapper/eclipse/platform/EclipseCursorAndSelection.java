@@ -120,12 +120,14 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
             return selection.getTo();
         }
         Point sel = textViewer.getSelectedRange();
-        int carretOffset = textViewer.getTextWidget().getCaretOffset();
-        int cursorPos = converter.widgetOffset2ModelOffset(carretOffset);
-        // Workaround for inclusive selections (see EvilCaret) - only for length > 0 & left-to-right
+        int caretOffset = textViewer.getTextWidget().getCaretOffset();
+        int cursorPos = converter.widgetOffset2ModelOffset(caretOffset);
+        // Workaround for inclusive selections where the caret is on the character near the end of
+        // the selection, not on the one after the selection.
         if (sel.y > 0 && cursorPos == sel.x + sel.y
                 && Selection.INCLUSIVE.equals(configuration.get(Options.SELECTION))) {
-            cursorPos = safeAddModelOffset(cursorPos, cursorPos - 1, true);
+            // Do this on widget (view) offset so that we can jump over a closed fold.
+            return shiftPositionForViewOffset(caretOffset, -1, true);
         }
         return new TextViewerPosition(textViewer, Space.MODEL, cursorPos);
     }
@@ -245,10 +247,20 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
             }
         }
 
-        final Position startSel = new TextViewerPosition(textViewer, Space.MODEL, start);
-        final Position endSel =   new TextViewerPosition(textViewer, Space.MODEL, end);
+        Position startSel = new TextViewerPosition(textViewer, Space.MODEL, start);
+        Position endSel =   new TextViewerPosition(textViewer, Space.MODEL, end);
+        Position from = startSel;
+        Position to = endSel;
+        StartEndTextRange range = new StartEndTextRange(startSel, endSel);
         boolean isInclusive = Selection.INCLUSIVE.equals(configuration.get(Options.SELECTION));
-        return new SimpleSelection(this, isInclusive, new StartEndTextRange(startSel, endSel));
+        if (range.getModelLength() > 0 && isInclusive) {
+            if (range.isReversed()) {
+                from = shiftPositionForViewOffset(from.getViewOffset(), -1, true);
+            } else {
+                to = shiftPositionForViewOffset(to.getViewOffset(), -1, true);
+            }
+        }
+        return new SimpleSelection(from, to, range);
     }
 
     public boolean isSelectionInProgress() {
