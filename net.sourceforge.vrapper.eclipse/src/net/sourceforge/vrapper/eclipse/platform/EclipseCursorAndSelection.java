@@ -427,7 +427,14 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
             if ( ! selectionInProgress) {
                 selection = null;
                 // getPosition() compensates for inclusive visual selection's caret offset.
-                updateStickyColumn(getPosition().getViewOffset());
+                Position position = getPosition();
+                int viewOffset = position.getViewOffset();
+                if (viewOffset >= 0) {
+                    updateStickyColumn(viewOffset);
+                } else {
+                    VrapperLog.error("Cannot update stick column: caret is at position M"
+                            + position.getModelOffset() + " but" + " viewoffset is -1!");
+                }
             }
         }
 
@@ -436,7 +443,14 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
             if ( ! selectionInProgress) {
                 selection = null;
                 // getPosition() compensates for inclusive visual selection's caret offset.
-                updateStickyColumn(getPosition().getViewOffset());
+                Position position = getPosition();
+                int viewOffset = position.getViewOffset();
+                if (viewOffset >= 0) {
+                    updateStickyColumn(viewOffset);
+                } else {
+                    VrapperLog.error("Cannot update stick column: caret is at position M"
+                            + position.getModelOffset() + " but" + " viewoffset is -1!");
+                }
             }
         }
     }
