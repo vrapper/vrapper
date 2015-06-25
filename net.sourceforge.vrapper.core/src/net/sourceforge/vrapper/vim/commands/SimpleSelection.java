@@ -144,7 +144,7 @@ public class SimpleSelection extends AbstractSelection {
         String caretInfo = "";
         if (range != null && to != null && range.getEnd() != to) {
             caretInfo = " @ M" + to.getModelOffset()
-                    + "/" + to.getModelOffset() + "V";
+                    + "/" + to.getViewOffset() + "V";
         }
         return "SimpleSelection( " + String.valueOf(range) + caretInfo + " )";
     }
