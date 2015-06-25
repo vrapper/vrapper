@@ -409,6 +409,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         return new TextViewerPosition(textViewer, Space.MODEL, offset);
     }
 
+    @Override
     public Position shiftPositionForViewOffset(int offset, int delta, boolean allowPastLastChar) {
         int oldModelOffset = converter.widgetOffset2ModelOffset(offset);
         // This might become a serious leap in case of folds

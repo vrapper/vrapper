@@ -91,7 +91,13 @@ public class TestCursorAndSelection implements CursorService, SelectionService {
 		return new DumbPosition(targetOffset);
 	}
 
-	public void setCaret(CaretType caretType) {
+	@Override
+	public Position shiftPositionForViewOffset(int offset, int delta, boolean allowPastLastChar) {
+		// Tests have no difference between view and model space.
+		return shiftPositionForModelOffset(offset, delta, allowPastLastChar);
+	}
+
+    public void setCaret(CaretType caretType) {
 		this.caretType = caretType;
 	}
 
