@@ -1,5 +1,6 @@
 package net.sourceforge.vrapper.vim.commands;
 
+import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
@@ -73,8 +74,13 @@ public class SelectTextObjectCommand extends CountAwareCommand {
             break;
         default: throw new CommandExecutionException("WTF");
         }
-        //Makes sure to update the sticky column.
-        editorAdaptor.setPosition(selection.getTo(), StickyColumnPolicy.ON_CHANGE);
+        // Open a closed folds if we happen to select a text object hidden by a fold.
+        Position caretPos = selection.getTo();
+        if (caretPos.getViewOffset() < 0) {
+            editorAdaptor.getViewportService().exposeModelPosition(caretPos);
+        }
+        //Make sure to update the sticky column.
+        editorAdaptor.setPosition(caretPos, StickyColumnPolicy.ON_CHANGE);
         editorAdaptor.setSelection(selection);
         editorAdaptor.changeMode(newMode, AbstractVisualMode.FIX_SELECTION_HINT);
     }
