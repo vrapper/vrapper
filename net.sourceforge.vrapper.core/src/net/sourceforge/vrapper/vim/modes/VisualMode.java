@@ -87,8 +87,7 @@ public class VisualMode extends AbstractVisualMode {
     }
 
     @Override
-    protected void fixSelection() {
-        Selection selection = editorAdaptor.getSelection();
+    protected Selection fixSelection(Selection selection) {
         Position start = selection.getFrom();
         Position end = selection.getTo();
         TextRange range;
@@ -97,7 +96,7 @@ public class VisualMode extends AbstractVisualMode {
         } else {
             range = new StartEndTextRange(start, end);
         }
-        editorAdaptor.setSelection(new SimpleSelection(start, end, range));
+        return new SimpleSelection(start, end, range);
     }
 
 }

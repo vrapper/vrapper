@@ -319,10 +319,9 @@ public class BlockwiseVisualMode extends AbstractVisualMode {
     }
     
     @Override
-    protected void fixSelection() {
-        final Selection selection = editorAdaptor.getSelection();
+    protected Selection fixSelection(Selection selection) {
         Position start = selection.getFrom();
         Position end = selection.getTo();
-        editorAdaptor.setSelection(new BlockWiseSelection(editorAdaptor, start, end));
+        return new BlockWiseSelection(editorAdaptor, start, end);
     }
 }

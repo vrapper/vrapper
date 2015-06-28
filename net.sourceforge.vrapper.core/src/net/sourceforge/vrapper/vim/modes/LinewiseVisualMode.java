@@ -65,12 +65,13 @@ public class LinewiseVisualMode extends AbstractVisualMode {
     }
 
     @Override
-    protected void fixSelection() {
-        Selection selection = editorAdaptor.getSelection();
+    protected Selection fixSelection(Selection selection) {
         if (!selection.getContentType(editorAdaptor.getConfiguration()).equals(ContentType.LINES)) {
             Position start = selection.getFrom();
             Position end = selection.getTo();
-            editorAdaptor.setSelection(new LineWiseSelection(editorAdaptor, start, end));
+            return new LineWiseSelection(editorAdaptor, start, end);
+        } else {
+            return selection;
         }
     }
 

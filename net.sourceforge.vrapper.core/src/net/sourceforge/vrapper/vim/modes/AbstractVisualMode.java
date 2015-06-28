@@ -122,8 +122,9 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
         } else if (!keepSelection) {
             editorAdaptor.setSelection(null);
         }
-        if (fixSelection && editorAdaptor.getSelection() != null) {
-            fixSelection();
+        Selection currentSelection = editorAdaptor.getSelection();
+        if (fixSelection && currentSelection != null) {
+            editorAdaptor.setSelection(fixSelection(currentSelection));
         }
         super.enterMode(hints);
         if (onEnterCommand != null) {
@@ -168,8 +169,12 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
      * this function will update the selection so that single characters can be selected.
      * Vice versa, when switching to linewise mode, this function will make sure to select complete
      * lines if that weren't the case before.
+     * @param selection Selection from which the <code>to</code> and <code>from</code> members
+     *      should be used to create the new Selection. This method can check the content type
+     *      to be sure that the selection needs fixing.
+     * @return Selection which is now of the right type and length.
      */
-    protected abstract void fixSelection();
+    protected abstract Selection fixSelection(Selection selection);
 
     /**
      * Set the caret to the right type for the current selection.
