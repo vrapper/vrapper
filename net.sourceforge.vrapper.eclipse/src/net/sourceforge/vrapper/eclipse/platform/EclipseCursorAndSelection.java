@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.sourceforge.vrapper.eclipse.activator.VrapperPlugin;
 import net.sourceforge.vrapper.eclipse.interceptor.EditorInfo;
 import net.sourceforge.vrapper.eclipse.ui.CaretUtils;
 import net.sourceforge.vrapper.log.VrapperLog;
@@ -32,10 +33,13 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.resource.JFaceColors;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
+import org.eclipse.jface.text.ITextViewerExtension2;
 import org.eclipse.jface.text.ITextViewerExtension5;
 import org.eclipse.jface.text.source.IAnnotationModel;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -43,6 +47,8 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.custom.CaretEvent;
 import org.eclipse.swt.custom.CaretListener;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.GC;
@@ -84,6 +90,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     private final EclipseTextContent textContent;
     private int averageCharWidth;
     private CaretType caretType = null;
+    private FakeCaretPainter fakeCaretPainter;
 
     public EclipseCursorAndSelection(final Configuration configuration,
             EditorInfo editorInfo, final ITextViewer textViewer, final EclipseTextContent textContent) {
@@ -106,8 +113,10 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         caretListener = new StickyColumnUpdater();
         marks = new HashMap<String, org.eclipse.jface.text.Position>();
         changeList = new ArrayList<org.eclipse.jface.text.Position>();
+        fakeCaretPainter = new FakeCaretPainter();
         textViewer.getTextWidget().addSelectionListener(selectionChangeListener);
         textViewer.getTextWidget().addCaretListener(caretListener);
+        textViewer.getTextWidget().addPaintListener(fakeCaretPainter);
         textViewer.getSelectionProvider().addSelectionChangedListener(selectionChangeListener);
         textViewer.getDocument().addPositionCategory(POSITION_CATEGORY_NAME);
     }
@@ -495,6 +504,46 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
             enabled = false;
         }
 
+    }
+
+    private final class FakeCaretPainter implements PaintListener {
+
+        @Override
+        public void paintControl(PaintEvent e) {
+            if ( ! VrapperPlugin.isVrapperEnabled()) {
+                return;
+            }
+            StyledText text = textViewer.getTextWidget();
+            if (text.getSelectionCount() == 0) {
+                return;
+            }
+            // Forces caret visibility for blockwise mode: normally it is disabled all the time.
+            // Regular visual modes should have it visible anyway.
+            // [TODO] Maybe check if this blockwise visual selection is done through vrapper. A user
+            // dragging a block selection using the mouse might get confused.
+            text.getCaret().setVisible(true);
+//            GC gc = e.gc;
+//            text.getCaret().
+//            gc.getDevice().getSystemColor(SWT.)
+//            gc.setForeground(text.getForeground());
+//            gc.setForeground(text.getSelectionBackground());
+//            gc.setBackground(text.getSelectionForeground());
+            Position to = getSelection().getTo();
+            boolean isInclusive = Selection.INCLUSIVE.equals(configuration.get(Options.SELECTION));
+            int offset = to.getViewOffset();
+            if (textViewer.getDocument().getLength() == to.getModelOffset() && isInclusive) {
+                offset--;
+            }
+            Rectangle caretBounds;
+            if (isInclusive) {
+                caretBounds = text.getTextBounds(offset, offset);
+            } else {
+                Point visualOffset = text.getLocationAtOffset(offset);
+                caretBounds = new Rectangle(visualOffset.x, visualOffset.y, 2, text.getLineHeight(offset));
+            }
+//            gc.fillRectangle(caretBounds);
+            text.getCaret().setBounds(caretBounds);
+        }
     }
 
     @Override

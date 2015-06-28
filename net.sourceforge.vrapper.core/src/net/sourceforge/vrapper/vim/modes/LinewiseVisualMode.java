@@ -3,7 +3,9 @@ package net.sourceforge.vrapper.vim.modes;
 import static net.sourceforge.vrapper.keymap.StateUtils.union;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafCtrlBind;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafState;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionState;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.vim.VisualMotionState;
 import net.sourceforge.vrapper.utils.CaretType;
@@ -19,6 +21,9 @@ import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
 import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SwapLinewiseSelectionSidesCommand;
 import net.sourceforge.vrapper.vim.commands.VisualMotionCommand;
+import net.sourceforge.vrapper.vim.commands.motions.Motion;
+import net.sourceforge.vrapper.vim.commands.motions.MoveRightAcrossLines;
+import net.sourceforge.vrapper.vim.commands.motions.MoveWordEndLeft;
 import net.sourceforge.vrapper.vim.commands.motions.SearchResultMotion;
 
 public class LinewiseVisualMode extends AbstractVisualMode {
@@ -43,7 +48,15 @@ public class LinewiseVisualMode extends AbstractVisualMode {
 
     @Override
     protected VisualMotionState getVisualMotionState() {
-        return new VisualMotionState(motions());
+        @SuppressWarnings("unchecked")
+        State<Motion> motions = union(
+                leafState(' ', MoveRightAcrossLines.INSTANCE_BEHIND_CHAR),
+                transitionState('g',
+                        state(
+                            // Included here for similarity to Visual mode, doesn't affect linewise.
+                            leafBind('e', MoveWordEndLeft.INSTANCE_VISUAL))),
+                motions());
+        return new VisualMotionState(motions);
     }
 
     public String getName() {
