@@ -5,7 +5,6 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafCtrlBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import net.sourceforge.vrapper.keymap.State;
-import net.sourceforge.vrapper.keymap.vim.VisualMotionState;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.Position;
@@ -39,11 +38,6 @@ public class LinewiseVisualMode extends AbstractVisualMode {
         if (editorAdaptor.getConfiguration().get(Options.SELECTION).equals(Selection.EXCLUSIVE))
             caret = CaretType.VERTICAL_BAR;
         editorAdaptor.getCursorService().setCaret(caret);
-    }
-
-    @Override
-    protected VisualMotionState getVisualMotionState() {
-        return new VisualMotionState(motions());
     }
 
     public String getName() {

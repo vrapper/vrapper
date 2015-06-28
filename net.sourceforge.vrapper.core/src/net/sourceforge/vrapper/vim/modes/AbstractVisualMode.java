@@ -5,8 +5,10 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.changeCaret
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.convertKeyStroke;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafCtrlBind;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafState;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionState;
 import net.sourceforge.vrapper.keymap.KeyMapInfo;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.State;
@@ -41,6 +43,9 @@ import net.sourceforge.vrapper.vim.commands.SwapCaseCommand;
 import net.sourceforge.vrapper.vim.commands.VisualFindFileCommand;
 import net.sourceforge.vrapper.vim.commands.VisualMotionCommand;
 import net.sourceforge.vrapper.vim.commands.YankOperation;
+import net.sourceforge.vrapper.vim.commands.motions.Motion;
+import net.sourceforge.vrapper.vim.commands.motions.MoveRightAcrossLines;
+import net.sourceforge.vrapper.vim.commands.motions.MoveWordEndLeft;
 import net.sourceforge.vrapper.vim.commands.motions.SearchResultMotion;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.commandline.CommandLineMode;
@@ -244,6 +249,14 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
         return initialState;
     }
 
-    protected abstract VisualMotionState getVisualMotionState();
-
+    protected VisualMotionState getVisualMotionState() {
+        @SuppressWarnings("unchecked")
+        State<Motion> motions = union(
+                leafState(' ', MoveRightAcrossLines.INSTANCE_BEHIND_CHAR),
+                transitionState('g',
+                        state(
+                            leafBind('e', MoveWordEndLeft.INSTANCE_VISUAL))),
+                motions());
+        return new VisualMotionState(motions);
+    }
 }

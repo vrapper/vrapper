@@ -9,7 +9,6 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.vim.CountingState;
-import net.sourceforge.vrapper.keymap.vim.VisualMotionState;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.HistoryService;
 import net.sourceforge.vrapper.platform.TextContent;
@@ -326,10 +325,4 @@ public class BlockwiseVisualMode extends AbstractVisualMode {
         Position end = selection.getTo();
         editorAdaptor.setSelection(new BlockWiseSelection(editorAdaptor, start, end));
     }
-
-    @Override
-    protected VisualMotionState getVisualMotionState() {
-        return new VisualMotionState(motions());
-    }
-
 }

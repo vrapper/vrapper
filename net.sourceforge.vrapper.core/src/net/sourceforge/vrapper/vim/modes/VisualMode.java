@@ -1,14 +1,11 @@
 package net.sourceforge.vrapper.vim.modes;
 
 import static net.sourceforge.vrapper.keymap.StateUtils.union;
-import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionState;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafCtrlBind;
-import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafState;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.vim.CountingState;
-import net.sourceforge.vrapper.keymap.vim.VisualMotionState;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.LineInformation;
@@ -25,9 +22,6 @@ import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 import net.sourceforge.vrapper.vim.commands.SwapSelectionSidesCommand;
 import net.sourceforge.vrapper.vim.commands.VisualMotionCommand;
-import net.sourceforge.vrapper.vim.commands.motions.Motion;
-import net.sourceforge.vrapper.vim.commands.motions.MoveRightAcrossLines;
-import net.sourceforge.vrapper.vim.commands.motions.MoveWordEndLeft;
 import net.sourceforge.vrapper.vim.commands.motions.SearchResultMotion;
 
 
@@ -72,18 +66,6 @@ public class VisualMode extends AbstractVisualMode {
             type = CaretType.RECTANGULAR;
         }
         editorAdaptor.getCursorService().setCaret(type);
-    }
-
-    @Override
-    protected VisualMotionState getVisualMotionState() {
-        @SuppressWarnings("unchecked")
-        State<Motion> motions = union(
-                leafState(' ', MoveRightAcrossLines.INSTANCE_BEHIND_CHAR),
-                transitionState('g',
-                        state(
-                            leafBind('e', MoveWordEndLeft.INSTANCE_VISUAL))),
-                motions());
-        return new VisualMotionState(motions);
     }
 
     @Override
