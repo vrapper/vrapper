@@ -558,20 +558,34 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
 //            gc.setForeground(text.getSelectionBackground());
 //            gc.setBackground(text.getSelectionForeground());
             Position to = getSelection().getTo();
+            if (VrapperLog.isDebugEnabled()) {
+                VrapperLog.debug("To: V" + to.getViewOffset() + "/M" + to.getModelOffset());
+            }
             boolean isInclusive = Selection.INCLUSIVE.equals(configuration.get(Options.SELECTION));
             int offset = to.getViewOffset();
+            // Selection is on some character in a fold?
+            if (offset <= 0) {
+                VrapperLog.debug("In a fold");
+                return;
+            }
             if (textViewer.getDocument().getLength() == to.getModelOffset() && isInclusive) {
                 offset--;
             }
             Rectangle caretBounds;
-            if (isInclusive) {
-                caretBounds = text.getTextBounds(offset, offset);
-            } else {
+//            if (isInclusive) {
+//                caretBounds = text.getTextBounds(offset, offset);
                 Point visualOffset = text.getLocationAtOffset(offset);
-                caretBounds = new Rectangle(visualOffset.x, visualOffset.y, 2, text.getLineHeight(offset));
-            }
+                Point carretSize = text.getCaret().getSize();
+//                caretBounds.height = carretSize.y;
+//                caretBounds.width = carretSize.x;
+//                caretBounds = new Rectangle(visualOffset.x, visualOffset.y, carretSize.x, carretSize.y);
+//            } else {
+//                Point visualOffset = text.getLocationAtOffset(offset);
+//                caretBounds = new Rectangle(visualOffset.x, visualOffset.y, 2, text.getLineHeight(offset));
+//            }
 //            gc.fillRectangle(caretBounds);
-            text.getCaret().setBounds(caretBounds);
+//            text.getCaret().setBounds(caretBounds);
+            text.getCaret().setLocation(visualOffset);
         }
     }
 
