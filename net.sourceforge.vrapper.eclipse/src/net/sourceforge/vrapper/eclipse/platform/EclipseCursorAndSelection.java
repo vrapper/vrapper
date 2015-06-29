@@ -299,38 +299,38 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         } else {
             IDocument document = textViewer.getDocument();
             int start = newSel.getStart().getModelOffset();
-            int end = newSel.getEnd().getModelOffset();
+//            int end = newSel.getEnd().getModelOffset();
             int length = !newSel.isReversed() ? newSel.getModelLength() : -newSel.getModelLength();
-            int documentLength = document.getLength();
-            IRegion lastLineInfo;
-            try {
-                lastLineInfo = document.getLineInformationOfOffset(end);
-            } catch (BadLocationException e) { // Shouldn't really happen...
-                selectionInProgress = false;
-                throw new VrapperPlatformException("Failed to get line info for last line of sel, "
-                        + "M " + end, e);
-            }
+//            int documentLength = document.getLength();
+//            IRegion lastLineInfo;
+//            try {
+//                lastLineInfo = document.getLineInformationOfOffset(end);
+//            } catch (BadLocationException e) { // Shouldn't really happen...
+//                selectionInProgress = false;
+//                throw new VrapperPlatformException("Failed to get line info for last line of sel, "
+//                        + "M " + end, e);
+//            }
             // Linewise selection includes final newline and so Eclipse will put the caret in column
             // 0 of the next line. We want a blinking caret at the end of the previous line instead,
             // simply shrink the selection to the previous line.
-            if (ContentType.LINES.equals(contentType)) {
-                // Special cases:
-                // - Last line of document may contain characters, don't alter selection
-                // - A reversed selection needs to show its caret in column 0, don't alter selection
-                if ((end == documentLength && lastLineInfo.getLength() == 0)
-                        || ! newSel.isReversed()) {
-                    end = safeAddModelOffset(end, end - 1, true);
-                    length = end - start;
-                }
-            } else if (ContentType.TEXT.equals(contentType)) {
-                boolean isInclusive = Selection.INCLUSIVE.equals(configuration.get(Options.SELECTION));
-                if (isInclusive && ! newSel.isReversed() && start != end && lastLineInfo.getOffset() == end) {
-                    // [NOTE] The caret must be updated as well, this is handled in
-                    // VisualMode.fixCaret()
-                    end = safeAddModelOffset(end, end - 1, true);
-                    length = end - start;
-                }
-            }
+//            if (ContentType.LINES.equals(contentType)) {
+//                // Special cases:
+//                // - Last line of document may contain characters, don't alter selection
+//                // - A reversed selection needs to show its caret in column 0, don't alter selection
+//                if ((end == documentLength && lastLineInfo.getLength() == 0)
+//                        || ! newSel.isReversed()) {
+//                    end = safeAddModelOffset(end, end - 1, true);
+//                    length = end - start;
+//                }
+//            } else if (ContentType.TEXT.equals(contentType)) {
+//                boolean isInclusive = Selection.INCLUSIVE.equals(configuration.get(Options.SELECTION));
+//                if (isInclusive && ! newSel.isReversed() && start != end && lastLineInfo.getOffset() == end) {
+//                    // [NOTE] The caret must be updated as well, this is handled in
+//                    // VisualMode.fixCaret()
+//                    end = safeAddModelOffset(end, end - 1, true);
+//                    length = end - start;
+//                }
+//            }
             selection = newSel;
             //Only the caller can set the sticky column, e.g. in the case of an up/down motion.
             caretListener.disable();

@@ -312,8 +312,8 @@ public class BlockwiseVisualMode extends AbstractVisualMode {
     
     @Override
     public void fixCaret() {
-        final CaretType caret = CaretType.LEFT_SHIFTED_RECTANGULAR;
-//        if (editorAdaptor.getConfiguration().get(Options.SELECTION).equals(Selection.EXLUSIVE))
+        CaretType caret = CaretType.RECTANGULAR;
+//        if (editorAdaptor.getConfiguration().get(Options.SELECTION).equals(Selection.EXCLUSIVE))
 //            caret = CaretType.VERTICAL_BAR;
         editorAdaptor.getCursorService().setCaret(caret);
     }
