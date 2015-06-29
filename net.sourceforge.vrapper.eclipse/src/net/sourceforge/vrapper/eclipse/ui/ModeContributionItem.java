@@ -32,7 +32,7 @@ public class ModeContributionItem extends ContributionItem {
     }
 
     //XXX Extending an SWT Widget is not recommended but we want custom text shortening.
-    //This might break CSS theme support in E4 as we can't use the E4 workarounds until we drop 3.x.
+    // [NOTE] According to https://bugs.eclipse.org/bugs/show_bug.cgi?id=391675 override should work
     protected static class ModeLabel extends CLabel {
 
         private String modeName;
@@ -62,8 +62,6 @@ public class ModeContributionItem extends ContributionItem {
     @Override
     public void fill(Composite parent) {
 
-        Color background = parent.getBackground();
-        Color foreground = parent.getForeground();
         Font boldFont = JFaceResources.getFontRegistry().getBold("");
         Font regularFont = JFaceResources.getFontRegistry().defaultFont();
 
@@ -99,8 +97,6 @@ public class ModeContributionItem extends ContributionItem {
         if (isRecording) {
             recordingText = new CLabel(parent, SWT.SHADOW_NONE | SWT.CENTER);
             recordingText.setText(getRecordingLabelText());
-            recordingText.setBackground(background);
-            recordingText.setForeground(foreground);
             recordingText.setVisible(isRecording);
             recordingText.setFont(boldFont);
             layoutData = new StatusLineLayoutData();
@@ -108,8 +104,6 @@ public class ModeContributionItem extends ContributionItem {
             recordingText.setLayoutData(layoutData);
         }
         modeText = new ModeLabel(parent, SWT.SHADOW_NONE | SWT.CENTER);
-        modeText.setBackground(background);
-        modeText.setForeground(foreground);
         modeText.setText(mode);
         modeText.setFont(regularFont);
         StatusLineLayoutData modeLayoutData = new StatusLineLayoutData();
