@@ -202,4 +202,10 @@ public class BlockWiseSelection extends AbstractSelection {
     public Selection doReset(EditorAdaptor adaptor, Position from, Position to) {
         return new BlockWiseSelection(adaptor, from, to);
     }
+
+    @Override
+    public Selection wrap(EditorAdaptor adaptor, TextRange range) {
+        // [FIXME] This is incorrect for inc/exclusive mode.
+        return new BlockWiseSelection(adaptor, range.getStart(), range.getEnd());
+    }
 }

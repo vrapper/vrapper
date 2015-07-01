@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.sourceforge.vrapper.utils.TextRange;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
@@ -286,7 +287,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         }
         return new SimpleSelection(from, to, range);
     }
-    
+
     @Override
     public TextRange getNativeSelection() {
         if (selection != null) {
@@ -513,6 +514,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
 
         @Override
         public void widgetSelected(final SelectionEvent arg0) {
+            VrapperLog.info("Detected selection change; suppressed = " + selectionInProgress);
             if ( ! selectionInProgress) {
                 selection = null;
                 // getPosition() compensates for inclusive visual selection's caret offset.
@@ -529,6 +531,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
 
         @Override
         public void selectionChanged(SelectionChangedEvent event) {
+            VrapperLog.info("Detected jface selection change; suppressed = " + selectionInProgress);
             if ( ! selectionInProgress) {
                 selection = null;
                 // getPosition() compensates for inclusive visual selection's caret offset.

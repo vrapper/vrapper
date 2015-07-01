@@ -161,4 +161,13 @@ public class SimpleSelection extends AbstractSelection {
             return new SimpleSelection(from, to, StartEndTextRange.exclusive(from, to));
         }
     }
+
+    @Override
+    public Selection wrap(EditorAdaptor adaptor, TextRange range) {
+        // [FIXME] This is incorrect for inc/exclusive mode.
+        CursorService cursorService = adaptor.getCursorService();
+        boolean isSelectionInclusive = Selection.INCLUSIVE.equals(
+                adaptor.getConfiguration().get(Options.SELECTION));
+        return new SimpleSelection(cursorService, isSelectionInclusive, range);
+    }
 }

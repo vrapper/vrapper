@@ -147,7 +147,7 @@ public class TestCursorAndSelection implements CursorService, SelectionService {
 		nativeSelection = range;
 	}
 
-	public void setSelection(Selection selection) {
+    public void setSelection(Selection selection) {
 		if (selection != null)
 			this.position = selection.getEnd();
 		this.selection = selection;
