@@ -574,6 +574,17 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         marks.put(id, p);
     }
 
+    public void deleteMark(String id) {
+        if (isGlobalMark(id)) {
+            deleteGlobalMark(id);
+            return;
+        }
+        if (marks.containsKey(id)) {
+            textViewer.getDocument().removePosition(marks.get(id));
+            marks.remove(id);
+        }
+    }
+
     /**
      * Returns true if mark id is a global mark name
      */
@@ -668,6 +679,26 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
                 MarkerUtilities.createMarker(file, map, GLOBAL_MARK_TYPE);
             } catch (BadLocationException e) {
                 throw new VrapperPlatformException("Failed to set global mark for " + position, e);
+            } catch (CoreException e) {
+                VrapperLog.error("Failed to set marker in editor input " + editorInput, e);
+            }
+        }
+    }
+    private void deleteGlobalMark(String name) {
+        final IEditorPart editorPart =
+                PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+        if (editorPart != null) {
+            final IEditorInput editorInput = editorPart.getEditorInput();
+            if (!(editorInput instanceof IFileEditorInput)) {
+                // Ignore editors without files.
+                return;
+            }
+            final IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+            try {
+                final IMarker marker = getGlobalMarker(name, root);
+                if (marker != null) {
+                    marker.delete();
+                }
             } catch (CoreException e) {
                 VrapperLog.error("Failed to set marker in editor input " + editorInput, e);
             }

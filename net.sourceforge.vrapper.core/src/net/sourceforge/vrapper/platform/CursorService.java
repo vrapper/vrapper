@@ -139,7 +139,14 @@ public interface CursorService {
      * @param position
      *            where the mark should be set
      */
-	void setMark(String id, Position position);
+    void setMark(String id, Position position);
+
+    /**
+     * Unsets / deletes a mark. Note that marks may "expire" naturally when the line they were on
+     * are deleted, this is indiscernible from a deleted mark.
+     */
+    void deleteMark(String id);
+
 
     /**
      * Gets the position of a mark.

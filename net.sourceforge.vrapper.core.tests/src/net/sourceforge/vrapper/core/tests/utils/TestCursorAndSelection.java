@@ -146,6 +146,10 @@ public class TestCursorAndSelection implements CursorService, SelectionService {
         // do nothing
     }
 
+    public void deleteMark(String id) {
+        // do nothing
+    }
+
 	public Position getNextChangeLocation(int count) {
 		// TODO Auto-generated method stub
 		return null;
