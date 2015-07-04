@@ -1,6 +1,8 @@
 package net.sourceforge.vrapper.vim.commands;
 
 import net.sourceforge.vrapper.log.VrapperLog;
+import net.sourceforge.vrapper.platform.CursorService;
+import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
@@ -21,6 +23,8 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
  * We take those pieces and generate a Command if everything is valid.
  */
 public class ExCommandOperation extends SimpleTextOperation {
+
+	protected static final String NEXTLINE_MARK = CursorService.INTERNAL_MARK_PREFIX + "-ex-nextline";
 
 	String originalDefinition;
 
@@ -131,52 +135,86 @@ public class ExCommandOperation extends SimpleTextOperation {
 	private void executeExCommand(TextRange region, boolean findMatch,
 			String pattern, SimpleTextOperation operation, EditorAdaptor editorAdaptor) {
 
+		LineInformation line;
+		/** Starting line, inclusive. */
 		int startLine;
+		/** Ending line, exclusive (inclusive if last line is not empty). */
 		int endLine;
+		TextContent modelContent = editorAdaptor.getModelContent();
 		if (region == null) { //default case, entire file
+			line = modelContent.getLineInformation(0);
 			startLine = 0;
-			endLine = editorAdaptor.getModelContent().getNumberOfLines();
+			endLine = modelContent.getNumberOfLines() - 1;
 		}
 		else {
-			startLine = editorAdaptor.getModelContent()
-					.getLineInformationOfOffset( region.getLeftBound().getModelOffset() ).getNumber();
-			endLine = editorAdaptor.getModelContent()
+			line = modelContent.getLineInformationOfOffset(region.getLeftBound().getModelOffset());
+			startLine = line.getNumber();
+			endLine = modelContent
 					.getLineInformationOfOffset( region.getRightBound().getModelOffset() ).getNumber();
 		}
 
-		LineInformation line;
 		editorAdaptor.getHistory().beginCompoundChange();
 		editorAdaptor.getHistory().lock("ex-command");
 		try {
 			if (startLine == endLine) {
-				line = editorAdaptor.getModelContent().getLineInformation(startLine);
 				processLine(pattern, findMatch, operation, line, editorAdaptor);
 			}
 			else {
-				int oldLineCount = editorAdaptor.getModelContent().getNumberOfLines();
-				for (int i=startLine; i < endLine; i++) {
-					line = editorAdaptor.getModelContent().getLineInformation(i);
-					boolean operationPerformed = processLine(pattern, findMatch, operation, line, editorAdaptor);
-
-					if (operationPerformed) {
-						int currentNumLines = editorAdaptor.getModelContent().getNumberOfLines();
-						//if this was a destructive operation and a line was removed
-						//stay in sync
-						if (oldLineCount > currentNumLines) {
-							//next line moved up, make sure we don't skip it
-							i--;
-							//make sure we don't run outside our boundary
-							endLine--;
-							oldLineCount = currentNumLines;
-						}
-					}
-				}
+				processMultipleLines(findMatch, pattern, operation, editorAdaptor, line, startLine,
+						endLine, modelContent);
 			}
 		} finally {
 			editorAdaptor.getHistory().unlock("ex-command");
 			editorAdaptor.getHistory().endCompoundChange();
 		}
 
+	}
+
+	private void processMultipleLines(boolean findMatch, String pattern,
+			SimpleTextOperation operation, EditorAdaptor editorAdaptor, LineInformation line,
+			int startLine, int endLine, TextContent modelContent) {
+		int linesProcessed = 0;
+		int nLines = modelContent.getNumberOfLines();
+		// Hard limit
+		int maxLinesToProcess = endLine - startLine;
+		if (nLines - 1 == endLine && modelContent.getLineInformation(endLine).getLength() > 0) {
+			// Using range and last line is not be empty, include it in processing
+			maxLinesToProcess++;
+		}
+		CursorService cs = editorAdaptor.getCursorService();
+
+		while (linesProcessed < maxLinesToProcess && line != null) {
+			nLines = modelContent.getNumberOfLines();
+			if (nLines > line.getNumber() + 1) {
+				LineInformation nextLine = modelContent.getLineInformation(line.getNumber() + 1);
+				cs.setMark(NEXTLINE_MARK, cs.newPositionForModelOffset(nextLine.getBeginOffset()));
+			} else {
+				// Remove mark for exit condition
+				cs.deleteMark(NEXTLINE_MARK);
+			}
+			processLine(pattern, findMatch, operation, line, editorAdaptor);
+			Position nextLineStart = cs.getMark(NEXTLINE_MARK);
+			// Try to guess our position if user ran something like 2d and removed next line
+			int updatedNLines = modelContent.getNumberOfLines();
+			if (nextLineStart == null && nLines > updatedNLines) {
+				// Do nothing except check end of document - "line" object should stay the same if still in bounds
+				if (line.getNumber() >= updatedNLines) {
+					line = null;
+				}
+			} else if (nextLineStart == null) {
+				// Either we ran out of lines or somebody replaced the contents of the next
+				// line (and the mark) without the file getting shorter
+				if (line.getNumber() + 1 >= updatedNLines) {
+					line = null;
+				} else {
+					// Assume that line + 1 is our target.
+					line = modelContent.getLineInformation(line.getNumber() + 1);
+				}
+			} else {
+				line = modelContent.getLineInformationOfOffset(nextLineStart.getModelOffset());
+			}
+			linesProcessed++;
+		}
 	}
 
 	private boolean processLine(String pattern, boolean findMatch, SimpleTextOperation operation,
