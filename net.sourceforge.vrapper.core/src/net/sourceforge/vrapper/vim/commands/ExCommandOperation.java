@@ -215,6 +215,7 @@ public class ExCommandOperation extends SimpleTextOperation {
 			}
 			linesProcessed++;
 		}
+		cs.deleteMark(NEXTLINE_MARK);
 	}
 
 	private boolean processLine(String pattern, boolean findMatch, SimpleTextOperation operation,
