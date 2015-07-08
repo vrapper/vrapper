@@ -695,10 +695,10 @@ public class CommandLineParser extends AbstractCommandParser {
         	    tokens.add(nizer.nextToken().trim());
         	// Check if there is a mapping for the operation.
         	if (platformCommands != null && platformCommands.contains(tokens.peek())) {
-        	    return new LineRangeExCommandEvaluator(rangeOp, platformCommands, tokens, isFromVisual());
+        	    return new RunSelectionAwareEvaluatorCommand(rangeOp, platformCommands, tokens, isFromVisual());
         	} else {
         	    if (mapping != null && mapping.contains(tokens.peek())) {
-        	        return new LineRangeExCommandEvaluator(rangeOp, mapping, tokens, isFromVisual());
+        	        return new RunSelectionAwareEvaluatorCommand(rangeOp, mapping, tokens, isFromVisual());
         	    } else {
         	        // Handle predefined operations (y/d/c...).
         	        return rangeOp;
@@ -757,24 +757,24 @@ public class CommandLineParser extends AbstractCommandParser {
         }
 
         //see if a command is defined for the first token
-        if(platformCommands != null && platformCommands.contains(tokens.peek())) {
-            return new ExCommandEvaluator(platformCommands, tokens);
+        if (platformCommands != null && platformCommands.contains(tokens.peek())) {
+            return new RunEvaluatorCommand(platformCommands, tokens);
         }
-        else if(mapping != null && mapping.contains(tokens.peek())) {
-            return new ExCommandEvaluator(mapping, tokens);
+        else if (mapping != null && mapping.contains(tokens.peek())) {
+            return new RunEvaluatorCommand(mapping, tokens);
         }
         else { //see if there is a partial match
             String commandName;
             if(platformCommands != null &&
                     (commandName = platformCommands.getNameFromPartial(tokens.peek())) != null) {
             	tokens.set(0, commandName);
-            	return new ExCommandEvaluator(platformCommands, tokens);
+            	return new RunEvaluatorCommand(platformCommands, tokens);
             }
             else {
             	if(mapping != null &&
             	        (commandName = mapping.getNameFromPartial(tokens.peek())) != null) {
             		tokens.set(0, commandName);
-            		return new ExCommandEvaluator(mapping, tokens);
+            		return new RunEvaluatorCommand(mapping, tokens);
             	}
             	else {
             		editor.getUserInterfaceService().setErrorMessage("Not an editor command: " + tokens.peek());
@@ -849,16 +849,19 @@ public class CommandLineParser extends AbstractCommandParser {
         }
     }
 
-    class LineRangeExCommandEvaluator implements Command {
+    /**
+     * Runs an evaluator with a temporary selection based on the ex line range given by the user.
+     */
+    class RunSelectionAwareEvaluatorCommand implements Command {
         private LineRangeOperationCommand range = null;
-        private Evaluator command = null;
+        private Evaluator action = null;
         private Queue<String> tokens = null;
         private boolean isFromVisual;
     
-        public LineRangeExCommandEvaluator(LineRangeOperationCommand range, Evaluator command, Queue<String> tokens,
+        public RunSelectionAwareEvaluatorCommand(LineRangeOperationCommand range, Evaluator action, Queue<String> tokens,
                 boolean isFromVisual) {
             this.range = range;
-            this.command = command;
+            this.action = action;
             this.tokens = tokens;
             this.isFromVisual = isFromVisual;
         }
@@ -879,17 +882,17 @@ public class CommandLineParser extends AbstractCommandParser {
             boolean linewise = !isFromVisual || editorAdaptor.getSelection().getContentType(editorAdaptor.getConfiguration()) == ContentType.LINES;
             Selection selection = range.parseRangeDefinition(editorAdaptor, linewise);
             editorAdaptor.setSelection(selection);
-            command.evaluate(editorAdaptor, tokens);
+            action.evaluate(editorAdaptor, tokens);
             editorAdaptor.setSelection(null);
         }
     
     }
 
-    public class ExCommandEvaluator implements Command {
+    public class RunEvaluatorCommand implements Command {
         private Evaluator mappping = null;
         private Queue<String> tokens = null;
     
-        public ExCommandEvaluator(Evaluator mappping, Queue<String> tokens) {
+        public RunEvaluatorCommand(Evaluator mappping, Queue<String> tokens) {
             this.mappping = mappping;
             this.tokens = tokens;
         }
