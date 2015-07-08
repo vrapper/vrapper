@@ -603,24 +603,26 @@ public class CommandLineParser extends AbstractCommandParser {
         // set the @: register even if this command is invalid
         editor.getRegisterManager().setLastCommand(first + command + "<cr>");
 
-        if(first != null) {
-            while(command.startsWith(first)) {
-                //remove any superfluous ':' preceding the command
+        //remove any superfluous ':' preceding the command
+        if (first != null) {
+            while (command.startsWith(first)) {
                 command = command.substring(1);
             }
         }
-        if(command.indexOf(" | ") > -1 && ! command.startsWith("com")) {
+
+        //command chaining using " | "
+        if (command.indexOf(" | ") > -1 && ! command.startsWith("com")) {
             String[] commands = command.split(" | ");
             editor.getHistory().beginCompoundChange();
             editor.getHistory().lock("chained-commands");
             boolean performedChain = false;
             try {
                 Command c;
-                for(String chainCommand : commands) {
-                    if( ! "|".equals(chainCommand)) {
+                for (String chainCommand : commands) {
+                    if ( ! "|".equals(chainCommand)) {
                         //recurse!
                         c = parseAndExecute(first, chainCommand);
-                        if(c != null) {
+                        if (c != null) {
                             c.execute(editor);
                             //this really was a set of commands chained together!
                             performedChain = true;
@@ -632,19 +634,21 @@ public class CommandLineParser extends AbstractCommandParser {
                     }
                 }
             }
-            catch(CommandExecutionException e) {
-                if(performedChain) {
+            catch (CommandExecutionException e) {
+                if (performedChain) {
                     //if this error wasn't due to us executing a string that
                     //wasn't actually a set of commands chained together then
                     //display the error.
                     editor.getUserInterfaceService().setErrorMessage(e.getMessage());
                 }
             }
-            catch(NullPointerException e) {
+            catch (NullPointerException e) {
                 //must not have been a chain
             }
-            editor.getHistory().unlock("chained-commands");
-            editor.getHistory().endCompoundChange();
+            finally {
+                editor.getHistory().unlock("chained-commands");
+                editor.getHistory().endCompoundChange();
+            }
 
             //If the first chained command succeeded then this really was a set
             //of commands chained together and we can exit here.  If that first
@@ -653,13 +657,13 @@ public class CommandLineParser extends AbstractCommandParser {
             //first command failed, continue into parseAndExecute() with the
             //original unmodified command.
             //(this is to handle the case of :s/ | /foo/g)
-            if(performedChain) {
+            if (performedChain) {
                 return null;
             }
         }
 
+        //shortcut: if command is just a number, jump to the given line
         try {
-            // if the command is a number, jump to the given line
             int line = Integer.parseInt(command);
             return new MotionCommand(GoToLineMotion.FIRST_LINE.withCount(line));
         } catch (NumberFormatException e) {
@@ -685,13 +689,13 @@ public class CommandLineParser extends AbstractCommandParser {
        
         //not a number but starts with a number, %, $, /, ?, +, -, ', . (dot), or , (comma)
         //might be a line range operation
-        if(command.length() > 1 && LineRangeOperationCommand.isLineRangeOperation(command))
+        if (command.length() > 1 && LineRangeOperationCommand.isLineRangeOperation(command))
         {
         	final LineRangeOperationCommand rangeOp = new LineRangeOperationCommand(command);
         	// Parse the remainder as a regular command.
         	StringTokenizer nizer = new StringTokenizer(rangeOp.getOperationStr());
         	LinkedList<String> tokens = new LinkedList<String>();
-        	while(nizer.hasMoreTokens())
+        	while (nizer.hasMoreTokens())
         	    tokens.add(nizer.nextToken().trim());
         	// Check if there is a mapping for the operation.
         	if (platformCommands != null && platformCommands.contains(tokens.peek())) {
@@ -708,11 +712,11 @@ public class CommandLineParser extends AbstractCommandParser {
         
         //might be a substitution definition
         Command substitution = parseSubstitution(command);
-        if(substitution != null)
+        if (substitution != null)
         	return substitution;
         
-        //might be an Ex command
-        if(command.length() > 1 && (command.startsWith("g") || command.startsWith("v"))
+        //might be a Global / inVerted global command
+        if (command.length() > 1 && (command.startsWith("g") || command.startsWith("v"))
         		&& VimUtils.isPatternDelimiter(""+command.charAt(1))) {
     		return new TextOperationTextObjectCommand(
 				new ExCommandOperation(command), new DummyTextObject(null)
@@ -720,7 +724,7 @@ public class CommandLineParser extends AbstractCommandParser {
         }
         
         // Read command output operation
-        if(ReadExternalOperation.isValid(editor, command)) {
+        if (ReadExternalOperation.isValid(editor, command)) {
             // Execute on the current line.
             return new LineRangeOperationCommand("." + command);
         }
@@ -730,16 +734,16 @@ public class CommandLineParser extends AbstractCommandParser {
         //tokenize based on whitespace
         StringTokenizer nizer = new StringTokenizer(command);
         LinkedList<String> tokens = new LinkedList<String>();
-        while(nizer.hasMoreTokens())
+        while (nizer.hasMoreTokens())
             tokens.add(nizer.nextToken().trim());
         
-        if(tokens.isEmpty()) {
+        if (tokens.isEmpty()) {
         	//someone hit "enter" without providing a command
         	return null;
         }
             
         //separate '!' from command name
-        if(tokens.peek().endsWith("!")) {
+        if (tokens.peek().endsWith("!")) {
         	String tok = tokens.poll();
         	if(tokens.isEmpty()) {
         		tokens.add(tok.substring(0, tok.length()-1));
@@ -765,13 +769,13 @@ public class CommandLineParser extends AbstractCommandParser {
         }
         else { //see if there is a partial match
             String commandName;
-            if(platformCommands != null &&
+            if (platformCommands != null &&
                     (commandName = platformCommands.getNameFromPartial(tokens.peek())) != null) {
             	tokens.set(0, commandName);
             	return new RunEvaluatorCommand(platformCommands, tokens);
             }
             else {
-            	if(mapping != null &&
+            	if (mapping != null &&
             	        (commandName = mapping.getNameFromPartial(tokens.peek())) != null) {
             		tokens.set(0, commandName);
             		return new RunEvaluatorCommand(mapping, tokens);
@@ -791,12 +795,12 @@ public class CommandLineParser extends AbstractCommandParser {
      * to keep it all contained here.
      */
     private Command parseSubstitution(String command) {
-    	if(command.equals("s")) {
+    	if (command.equals("s")) {
     		return RepeatLastSubstitutionCommand.CURRENT_LINE_ONLY;
     	}
     	//any non-alphanumeric character can be a delimiter
     	//(this check is to avoid treating ":set" as a substitution)
-    	if(command.startsWith("s") && VimUtils.isPatternDelimiter(""+command.charAt(1))) {
+    	if (command.startsWith("s") && VimUtils.isPatternDelimiter(""+command.charAt(1))) {
     		//null TextRange is a special case for "current line"
     		return new TextOperationTextObjectCommand(
 				new SubstitutionOperation(command), new DummyTextObject(null)
