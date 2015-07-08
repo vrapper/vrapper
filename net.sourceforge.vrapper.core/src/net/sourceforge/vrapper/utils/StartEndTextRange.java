@@ -47,6 +47,15 @@ public class StartEndTextRange implements TextRange {
         return getEnd().getModelOffset() - getStart().getModelOffset();
     }
 
+    /**
+     * Returns a TextRange spanning the lines the <code>from</code> and <code>to</code> {@link
+     * Position}s are on. The right bound is after the newline of that last line or is at the end
+     * of the file.
+     * @param editor EditorAdaptor reference.
+     * @param from Position from which to start.
+     * @param to Position up to which the lines should be included, always inclusive.
+     * @return a TextRange. Length can only be 0 for an empty file or the last line.
+     */
     public static TextRange lines(EditorAdaptor editor, Position from, Position to) {
         TextContent txt = editor.getModelContent();
         LineInformation sLine = txt.getLineInformationOfOffset(from.getModelOffset());
