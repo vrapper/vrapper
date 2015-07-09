@@ -25,6 +25,7 @@ import org.eclipse.jface.text.Region;
 
 public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
 
+    private static final String INC_ANNOTATION_TYPE = "net.sourceforge.vrapper.eclipse.incsearchhighlight";
     private static final String ANNOTATION_TYPE = "net.sourceforge.vrapper.eclipse.searchhighlight";
     private final FindReplaceDocumentAdapter adapter;
     private final HighlightingService highlightingService;
@@ -185,7 +186,7 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
     }
     public void incSearchhighlight(Position start, int length) {
         removeIncSearchHighlighting();
-        incSearchAnnotation = highlightingService.highlightRegion(ANNOTATION_TYPE,
+        incSearchAnnotation = highlightingService.highlightRegion(INC_ANNOTATION_TYPE,
                 "Incremental Search", start.getModelOffset(), length);
     }
 

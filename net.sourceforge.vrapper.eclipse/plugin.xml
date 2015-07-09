@@ -83,12 +83,12 @@
       </keymap-provider>
    </extension>
    <extension
-         id="net.sourceforge.vrapper.eclipse.searchhighlight"
-         point="org.eclipse.core.resources.markers">
+         point="org.eclipse.core.resources.markers"
+         id="net.sourceforge.vrapper.eclipse.searchhighlight">
    </extension>
    <extension
          point="org.eclipse.ui.editors.markerAnnotationSpecification">
-	  <specification
+      <specification
             annotationType="net.sourceforge.vrapper.eclipse.searchhighlight"
             label="Vrapper Search"
             textPreferenceKey="searchHighlightIndication"
@@ -104,7 +104,27 @@
             presentationLayer="4"
             textStylePreferenceKey="searchHighlightTextStyle"
             textStylePreferenceValue="NONE">
-	  </specification>	  
+      </specification>	  
+   </extension>
+   <extension
+         point="org.eclipse.ui.editors.markerAnnotationSpecification">
+      <specification
+            annotationType="net.sourceforge.vrapper.eclipse.incsearchhighlight"
+            label="Vrapper Incremental Search"
+            textPreferenceKey="incSearchHighlightIndication"
+            textPreferenceValue="true"
+            highlightPreferenceKey="incSearchHighlightingHighlighting"
+            highlightPreferenceValue="true"
+            overviewRulerPreferenceKey="writeIncOccurrenceIndicationInOverviewRuler"
+            overviewRulerPreferenceValue="false"
+            verticalRulerPreferenceKey="writeIncOccurrenceIndicationInVerticalRuler"
+            verticalRulerPreferenceValue="false"
+            colorPreferenceKey="incSearchHighlightColor"
+            colorPreferenceValue="244,251,0"
+            presentationLayer="5"
+            textStylePreferenceKey="incSearchHighlightTextStyle"
+            textStylePreferenceValue="NONE">
+      </specification>	  
    </extension>
    <extension
          point="org.eclipse.ui.editors.annotationTypes">
@@ -113,6 +133,12 @@
             markerType="net.sourceforge.vrapper.eclipse.searchhighlight"
             name="net.sourceforge.vrapper.eclipse.searchhighlight">
       </type>
+      <type
+            markerSeverity="0"
+            markerType="net.sourceforge.vrapper.eclipse.searchhighlight"
+            name="net.sourceforge.vrapper.eclipse.incsearchhighlight">
+      </type>
+
    </extension>
 </plugin>
 
