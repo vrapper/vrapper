@@ -4,7 +4,9 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.key;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.platform.CommandLineUI;
+import net.sourceforge.vrapper.platform.SearchAndReplaceService;
 import net.sourceforge.vrapper.platform.TextContent;
+import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Search;
 import net.sourceforge.vrapper.utils.SearchOffset;
 import net.sourceforge.vrapper.utils.SearchResult;
@@ -13,7 +15,6 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.CenterLineCommand;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
-import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 
 /**
@@ -97,11 +98,6 @@ public class ConfirmSubstitutionMode extends AbstractMode {
         commandLine.setPrompt("replace with " + subDef.replace + " (y/n/a/q/l)?");
         commandLine.open();
         
-        //XXX: Ugly hack.  This call will highlight the initial match to get
-        //things started. But, I can't set a selection from within this method
-        //because TextOperationTextObjectCommand will clear all selections after
-        //this method returns.  So I added a horrible horrible check in that
-        //class to *not* clear the selection if I've entered this mode.
         findNextMatch(true);
     }
     
@@ -123,14 +119,14 @@ public class ConfirmSubstitutionMode extends AbstractMode {
         }
         else {
             //start on next line
-            startOffset = editorAdaptor.getModelContent().getLineInformation(nextLine).getBeginOffset();   
+            startOffset = editorAdaptor.getModelContent().getLineInformation(nextLine).getBeginOffset();
         }
     
         SearchOffset afterSearch = new SearchOffset.Begin(startOffset);
         Search search = new Search(subDef.find, false, false, caseSensitive, afterSearch, useRegex);
-        SearchResult result = editorAdaptor.getSearchAndReplaceService().find(
-                search,
-                editorAdaptor.getPosition().setModelOffset(startOffset));
+        SearchAndReplaceService searchService = editorAdaptor.getSearchAndReplaceService();
+        Position start = editorAdaptor.getCursorService().newPositionForModelOffset(startOffset);
+        SearchResult result = searchService.find(search, start);
         //if no match found or match is outside our range
         if(result.getStart() == null || result.getRightBound().getModelOffset() > endOffset) {
             exit();
@@ -143,7 +139,7 @@ public class ConfirmSubstitutionMode extends AbstractMode {
             //is there a better way to do this?
             CenterLineCommand.CENTER.execute(editorAdaptor);
             //highlight match
-            editorAdaptor.setSelection( new SimpleSelection(result) );
+            searchService.incSearchhighlight(result.getLeftBound(), result.getModelLength());
         }
 
         //prepare for next iteration
@@ -188,7 +184,7 @@ public class ConfirmSubstitutionMode extends AbstractMode {
     
     private void exit() {
         lastMatch = null;
-        editorAdaptor.setSelection(null);
+        editorAdaptor.getSearchAndReplaceService().removeIncSearchHighlighting();
         editorAdaptor.changeModeSafely(NormalMode.NAME);
     }
     

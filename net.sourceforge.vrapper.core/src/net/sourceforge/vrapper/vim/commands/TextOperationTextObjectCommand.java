@@ -3,7 +3,6 @@ package net.sourceforge.vrapper.vim.commands;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
-import net.sourceforge.vrapper.vim.modes.ConfirmSubstitutionMode;
 
 public class TextOperationTextObjectCommand extends CountAwareCommand {
 
@@ -29,12 +28,9 @@ public class TextOperationTextObjectCommand extends CountAwareCommand {
             throws CommandExecutionException {
         command.execute(editorAdaptor, count, textObject);
 
-        //XXX: This is a horrible hack to allow for the initial match to be
-        //highlighted when in ConfirmSubstitutionMode.
-        if(editorAdaptor.getCurrentModeName() != ConfirmSubstitutionMode.NAME) {
-            CursorService cursorService = editorAdaptor.getCursorService();
-            cursorService.setPosition(cursorService.getPosition(), StickyColumnPolicy.ON_CHANGE);
-        }
+        // Reset sticky column for those few operations where it isn't done.
+        CursorService cursorService = editorAdaptor.getCursorService();
+        cursorService.setPosition(cursorService.getPosition(), StickyColumnPolicy.ON_CHANGE);
     }
 
     @Override
