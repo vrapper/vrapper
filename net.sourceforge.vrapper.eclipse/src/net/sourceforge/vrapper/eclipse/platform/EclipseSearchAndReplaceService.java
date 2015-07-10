@@ -7,6 +7,7 @@ import java.util.regex.PatternSyntaxException;
 
 import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.Configuration;
+import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.HighlightingService;
 import net.sourceforge.vrapper.platform.SearchAndReplaceService;
 import net.sourceforge.vrapper.platform.VrapperPlatformException;
@@ -14,7 +15,11 @@ import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Search;
 import net.sourceforge.vrapper.utils.SearchResult;
+import net.sourceforge.vrapper.utils.Space;
+import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.StringUtils;
+import net.sourceforge.vrapper.utils.TextRange;
+import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 
 import org.eclipse.jface.text.BadLocationException;
@@ -33,9 +38,11 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
     private Search lastHighlightedSearch;
     private List<Object> annotations;
     private Object incSearchAnnotation;
+    private ITextViewer textViewer;
 
     public EclipseSearchAndReplaceService(ITextViewer textViewer, final Configuration sharedConfiguration,
             HighlightingService highlightingService) {
+        this.textViewer = textViewer;
         this.adapter = new FindReplaceDocumentAdapter(textViewer.getDocument());
         this.highlightingService = highlightingService;
         this.sharedConfiguration = sharedConfiguration;
@@ -153,12 +160,9 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
 
     public void removeHighlighting() {
         lastHighlightedSearch = null;
-        for (Object a : annotations) {
-            highlightingService.removeHighlighting(a);
-        }
+        highlightingService.removeHighlights(annotations);
         annotations = Collections.emptyList();
     }
-
 
     public void highlight(Search search) {
 
@@ -175,15 +179,20 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
         annotations = new ArrayList<Object>();
         lastHighlightedSearch = search;
         try {
+            List<TextRange> rangesToHL = new ArrayList<TextRange>();
+            TextViewerPosition temp = new TextViewerPosition(textViewer, Space.MODEL, 0);
             while ((result = find(search, result.getOffset()+result.getLength())) != null) {
-                Object a = highlightingService.highlightRegion(ANNOTATION_TYPE,
-                        "Vrapper Search", result.getOffset(), result.getLength());
-                annotations.add(a);
+                Position start = temp.setModelOffset(result.getOffset());
+                Position end = temp.setModelOffset(result.getOffset() + result.getLength());
+                rangesToHL.add(StartEndTextRange.exclusive(start, end));
             }
+            annotations = highlightingService.highlightRegions(ANNOTATION_TYPE,
+                    "Vrapper Search", rangesToHL);
         } catch (BadLocationException e) {
             VrapperLog.error("while highlighting search", e);
         }
     }
+
     public void incSearchhighlight(Position start, int length) {
         removeIncSearchHighlighting();
         incSearchAnnotation = highlightingService.highlightRegion(INC_ANNOTATION_TYPE,

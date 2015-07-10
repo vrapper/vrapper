@@ -1,5 +1,7 @@
 package net.sourceforge.vrapper.platform;
 
+import java.util.List;
+
 import net.sourceforge.vrapper.utils.TextRange;
 
 /**
@@ -40,4 +42,21 @@ public interface HighlightingService {
      * @param annotationHandle handle returned by @ref highlightRegion.
      */
     void removeHighlighting(final Object annotationHandle);
+
+    /**
+     * Highlights given regions using Eclipse annotation type. This is faster than repeatedly
+     * calling {@link #highlightRegion(String, String, TextRange)}.
+     * @param type Eclipse annotation type.
+     * @param name highlighting name.
+     * @param region range of text to highlight.
+     * @return annotation handle or @a null if there was an error.
+     */
+    List<Object> highlightRegions(String type, String name, List<TextRange> regions);
+
+    /**
+     * Removes highlights identified by the annotation handles. This is faster than repeatedly
+     * calling {@link #removeHighlighting(Object)}.
+     * @param annotationHandle handle returned by @ref highlightRegion.
+     */
+    void removeHighlights(List<Object> annotationHandles);
 }
