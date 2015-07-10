@@ -91,18 +91,18 @@
       <specification
             annotationType="net.sourceforge.vrapper.eclipse.searchhighlight"
             label="Vrapper Search"
-            textPreferenceKey="searchHighlightIndication"
+            textPreferenceKey="net.sourceforge.vrapper.eclipse.annotation.searchhl.showtext"
             textPreferenceValue="true"
-            highlightPreferenceKey="searchHighlightingHighlighting"
+            highlightPreferenceKey="net.sourceforge.vrapper.eclipse.annotation.searchhl.highlighting"
             highlightPreferenceValue="true"
-            overviewRulerPreferenceKey="writeOccurrenceIndicationInOverviewRuler"
+            overviewRulerPreferenceKey="net.sourceforge.vrapper.eclipse.annotation.searchhl.showoverviewruler"
             overviewRulerPreferenceValue="false"
-            verticalRulerPreferenceKey="writeOccurrenceIndicationInVerticalRuler"
+            verticalRulerPreferenceKey="net.sourceforge.vrapper.eclipse.annotation.searchhl.showverticalruler"
             verticalRulerPreferenceValue="false"
-            colorPreferenceKey="searchHighlightColor"
+            colorPreferenceKey="net.sourceforge.vrapper.eclipse.annotation.searchhl.color"
             colorPreferenceValue="240,216,168"
             presentationLayer="4"
-            textStylePreferenceKey="searchHighlightTextStyle"
+            textStylePreferenceKey="net.sourceforge.vrapper.eclipse.annotation.searchhl.textstyle"
             textStylePreferenceValue="NONE">
       </specification>	  
    </extension>
@@ -111,18 +111,18 @@
       <specification
             annotationType="net.sourceforge.vrapper.eclipse.incsearchhighlight"
             label="Vrapper Incremental Search"
-            textPreferenceKey="incSearchHighlightIndication"
+            textPreferenceKey="net.sourceforge.vrapper.eclipse.annotation.incsearchhl.showtext"
             textPreferenceValue="true"
-            highlightPreferenceKey="incSearchHighlightingHighlighting"
+            highlightPreferenceKey="net.sourceforge.vrapper.eclipse.annotation.incsearchhl.highlighting"
             highlightPreferenceValue="true"
-            overviewRulerPreferenceKey="writeIncOccurrenceIndicationInOverviewRuler"
+            overviewRulerPreferenceKey="net.sourceforge.vrapper.eclipse.annotation.incsearchhl.showoverviewruler"
             overviewRulerPreferenceValue="false"
-            verticalRulerPreferenceKey="writeIncOccurrenceIndicationInVerticalRuler"
+            verticalRulerPreferenceKey="net.sourceforge.vrapper.eclipse.annotation.incsearchhl.showverticalruler"
             verticalRulerPreferenceValue="false"
-            colorPreferenceKey="incSearchHighlightColor"
+            colorPreferenceKey="net.sourceforge.vrapper.eclipse.annotation.incsearchhl.color"
             colorPreferenceValue="244,251,0"
             presentationLayer="5"
-            textStylePreferenceKey="incSearchHighlightTextStyle"
+            textStylePreferenceKey="net.sourceforge.vrapper.eclipse.annotation.incsearchhl.textstyle"
             textStylePreferenceValue="NONE">
       </specification>	  
    </extension>

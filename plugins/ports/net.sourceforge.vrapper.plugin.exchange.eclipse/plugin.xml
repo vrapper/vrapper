@@ -23,20 +23,20 @@
 	  <specification
             annotationType="net.sourceforge.vrapper.eclipse.exchangeregion"
             label="Vrapper Exchange Region"
-            textPreferenceKey="exchangeRegionIndication"
+            textPreferenceKey="net.sourceforge.vrapper.eclipse.annotation.exchange.showtext"
             textPreferenceValue="true"
-            highlightPreferenceKey="exchangeRegioningHighlighting"
+            highlightPreferenceKey="net.sourceforge.vrapper.eclipse.annotation.exchange.highlighting"
             highlightPreferenceValue="true"
-            overviewRulerPreferenceKey="writeOccurrenceIndicationInOverviewRuler"
+            overviewRulerPreferenceKey="net.sourceforge.vrapper.eclipse.annotation.exchange.showoverviewruler"
             overviewRulerPreferenceValue="false"
-            verticalRulerPreferenceKey="writeOccurrenceIndicationInVerticalRuler"
+            verticalRulerPreferenceKey="net.sourceforge.vrapper.eclipse.annotation.exchange.showverticalruler"
             verticalRulerPreferenceValue="false"
-            colorPreferenceKey="exchangeRegionColor"
+            colorPreferenceKey="net.sourceforge.vrapper.eclipse.annotation.exchange.color"
             colorPreferenceValue="30,200,230"
             presentationLayer="4"
-            textStylePreferenceKey="exchangeRegionTextStyle"
+            textStylePreferenceKey="net.sourceforge.vrapper.eclipse.annotation.exchange.textstyle"
             textStylePreferenceValue="NONE">
-	  </specification>	  
+	  </specification>
    </extension>
 
 </plugin>
