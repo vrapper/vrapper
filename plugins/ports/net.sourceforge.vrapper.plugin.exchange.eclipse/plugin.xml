@@ -11,6 +11,10 @@
       </keymap-provider>
    </extension>
    <extension
+         point="org.eclipse.core.resources.markers"
+         id="net.sourceforge.vrapper.eclipse.exchangeregion">
+   </extension>
+   <extension
          point="org.eclipse.ui.editors.annotationTypes">
       <type
             markerSeverity="0"
