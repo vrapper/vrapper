@@ -4,9 +4,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.sourceforge.vrapper.utils.LineAddressParser;
+import net.sourceforge.vrapper.utils.LineRange;
 import net.sourceforge.vrapper.utils.Position;
+import net.sourceforge.vrapper.utils.SimpleLineRange;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
+import net.sourceforge.vrapper.utils.SubstitutionDefinition;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.modes.ConfirmSubstitutionMode;
 
 /**
  * Perform an operation (yank, delete, substitution) on a range of lines.
@@ -70,11 +74,27 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
     }
 	
 	public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
-	    TextObject range = parseRangeDefinition(editorAdaptor, true);
+	    Selection range = parseRangeDefinition(editorAdaptor, true);
 	    if (range != null)
 	    {
 	        TextOperation operation = parseRangeOperation(editorAdaptor);
-	        if (operation != null)
+	        if (operation instanceof SubstitutionOperation) {
+	            //[TODO] LineRangeOperationCommand should actually be refactored so that a
+	            // substitution evaluator can handle this together with the case without range.
+	            SubstitutionOperation substitute = (SubstitutionOperation) operation;
+	            SubstitutionDefinition definition = substitute.getDefinition();
+
+	            if (definition.hasFlag('c')) {
+	                LineRange lines = SimpleLineRange.fromSelection(editorAdaptor, range);
+	                //move into "confirm" mode
+	                editorAdaptor.changeModeSafely(ConfirmSubstitutionMode.NAME,
+	                        new ConfirmSubstitutionMode.SubstitutionConfirm(definition,
+	                                lines.getStartLine(), lines.getEndLine()));
+	            } else {
+	                substitute.execute(editorAdaptor, NO_COUNT_GIVEN, range);
+	            }
+	        }
+	        else if (operation != null)
 	        {
 	            new TextOperationTextObjectCommand(operation, range).execute(editorAdaptor);
 	        }
@@ -142,8 +162,9 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
      * @param operation - single character defining the operation
      * @param remainingChars - any characters defined by the user after the operation char
      * @return the Operation corresponding to the operation char
+     * @throws CommandExecutionException 
      */
-    public SimpleTextOperation parseRangeOperation(EditorAdaptor editorAdaptor) {
+    public SimpleTextOperation parseRangeOperation(EditorAdaptor editorAdaptor) throws CommandExecutionException {
         if (operationStr.isEmpty()) {
     		editorAdaptor.getUserInterfaceService().setErrorMessage("No operation specified.");
     		return null;
@@ -170,7 +191,14 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
     		return new SortOperation(operationStr.substring(4));
     	}
     	else if(operation == 's') {
-    		return new SubstitutionOperation(operationStr);
+    		SubstitutionDefinition def;
+    		try {
+    			def = new SubstitutionDefinition(operationStr,
+    					editorAdaptor.getRegisterManager());
+    		} catch (IllegalArgumentException e) {
+    			throw new CommandExecutionException(e.getMessage());
+    		}
+    		return new SubstitutionOperation(def);
     	}
     	else if(operation == 'g' || operation == 'v') {
     		return new ExCommandOperation(operationStr);

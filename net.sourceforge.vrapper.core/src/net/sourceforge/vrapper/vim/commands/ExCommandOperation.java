@@ -7,6 +7,7 @@ import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
+import net.sourceforge.vrapper.utils.SubstitutionDefinition;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 
@@ -110,13 +111,24 @@ public class ExCommandOperation extends SimpleTextOperation {
 		}
 	}
 
-	private SimpleTextOperation buildExCommand(String command, EditorAdaptor editorAdaptor) {
+	private SimpleTextOperation buildExCommand(String command, EditorAdaptor editorAdaptor)
+			throws CommandExecutionException {
 		if(command.startsWith("normal ")) {
 			String args = command.substring("normal ".length());
 			return new AnonymousMacroOperation(args);
 		}
 		else if(command.startsWith("s")) {
-			return new SubstitutionOperation(command);
+			SubstitutionDefinition definition;
+			try {
+				definition = new SubstitutionDefinition(command,
+						editorAdaptor.getRegisterManager());
+			} catch (IllegalArgumentException e) {
+				throw new CommandExecutionException(e.getMessage());
+			}
+			if (definition.hasFlag('c')) {
+				throw new CommandExecutionException("Cannot use 'c' substitute flag in a global subcommand!");
+			}
+			return new SubstitutionOperation(definition);
 		}
 		else if(command.startsWith("d")) {
 			return DeleteOperation.INSTANCE;

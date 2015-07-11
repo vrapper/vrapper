@@ -9,19 +9,23 @@ import java.util.regex.Matcher;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.platform.Configuration.Option;
 import net.sourceforge.vrapper.utils.ContentType;
+import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Search;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
+import net.sourceforge.vrapper.utils.SubstitutionDefinition;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.AnonymousMacroOperation;
 import net.sourceforge.vrapper.vim.commands.AsciiCommand;
+import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeToInsertModeCommand;
 import net.sourceforge.vrapper.vim.commands.CloseCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.ConfigCommand;
+import net.sourceforge.vrapper.vim.commands.DummyCommand;
 import net.sourceforge.vrapper.vim.commands.DummyTextObject;
 import net.sourceforge.vrapper.vim.commands.EditFileCommand;
 import net.sourceforge.vrapper.vim.commands.ExCommandOperation;
@@ -51,6 +55,7 @@ import net.sourceforge.vrapper.vim.commands.VimCommandSequence;
 import net.sourceforge.vrapper.vim.commands.motions.GoToLineMotion;
 import net.sourceforge.vrapper.vim.commands.motions.MoveRight;
 import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
+import net.sourceforge.vrapper.vim.modes.ConfirmSubstitutionMode;
 import net.sourceforge.vrapper.vim.modes.ContentAssistMode;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
 import net.sourceforge.vrapper.vim.modes.KeyMapResolver;
@@ -795,19 +800,33 @@ public class CommandLineParser extends AbstractCommandParser {
      * to keep it all contained here.
      */
     private Command parseSubstitution(String command) {
-    	if (command.equals("s")) {
-    		return RepeatLastSubstitutionCommand.CURRENT_LINE_ONLY;
-    	}
-    	//any non-alphanumeric character can be a delimiter
-    	//(this check is to avoid treating ":set" as a substitution)
-    	if (command.startsWith("s") && VimUtils.isPatternDelimiter(""+command.charAt(1))) {
-    		//null TextRange is a special case for "current line"
-    		return new TextOperationTextObjectCommand(
-				new SubstitutionOperation(command), new DummyTextObject(null)
-    		);
-    	}
-    	//not a substitution
-    	return null;
+        if (command.equals("s")) {
+            return RepeatLastSubstitutionCommand.CURRENT_LINE_ONLY;
+        }
+        //any non-alphanumeric character can be a delimiter
+        //(this check is to avoid treating ":set" as a substitution)
+        if (command.startsWith("s") && VimUtils.isPatternDelimiter(""+command.charAt(1))) {
+            SubstitutionDefinition subDef;
+            try {
+                subDef = new SubstitutionDefinition(command, editor.getRegisterManager());
+            }
+            catch(IllegalArgumentException e) {
+                return new DummyCommand(e.getMessage());
+            }
+            if(subDef.hasFlag('c')) {
+                int line = editor.getModelContent().getLineInformationOfOffset(
+                        editor.getCursorService().getPosition().getModelOffset()).getNumber();
+                //move into "confirm" mode
+                return new ChangeModeCommand(ConfirmSubstitutionMode.NAME,
+                        new ConfirmSubstitutionMode.SubstitutionConfirm(subDef, line, line));
+            } else {
+                //null TextRange is a special case for "current line"
+                return new TextOperationTextObjectCommand(
+                        new SubstitutionOperation(subDef), new DummyTextObject(null));
+            }
+        }
+        //not a substitution
+        return null;
     }
 
     /**

@@ -7,7 +7,6 @@ import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.SubstitutionDefinition;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
-import net.sourceforge.vrapper.vim.modes.ConfirmSubstitutionMode;
 
 /**
  * Perform a substitution on a range of lines.  Can be current line,
@@ -16,10 +15,14 @@ import net.sourceforge.vrapper.vim.modes.ConfirmSubstitutionMode;
  */
 public class SubstitutionOperation extends SimpleTextOperation {
 	
-	private String substitution;
+	private SubstitutionDefinition subDef;
 	
-	public SubstitutionOperation(String substitution) {
-		this.substitution = substitution;
+	public SubstitutionOperation(SubstitutionDefinition substitution) {
+		this.subDef = substitution;
+	}
+
+	public SubstitutionDefinition getDefinition() {
+		return subDef;
 	}
 
     @Override
@@ -44,19 +47,6 @@ public class SubstitutionOperation extends SimpleTextOperation {
 	    	}
     	}
     	
-    	SubstitutionDefinition subDef;
-    	try {
-    	    subDef = new SubstitutionDefinition(substitution, editorAdaptor.getRegisterManager());
-    	}
-    	catch(IllegalArgumentException e) {
-			throw new CommandExecutionException(e.getMessage());
-    	}
-    	
-    	if(subDef.flags.indexOf('c') > -1) {
-    	    //move into "confirm" mode
-    	    editorAdaptor.changeModeSafely(ConfirmSubstitutionMode.NAME, new ConfirmSubstitutionMode.SubstitutionConfirm(subDef, startLine, endLine));
-    	    return;
-    	}
 		
 		int numReplaces = 0;
 		int lineReplaceCount = 0;
