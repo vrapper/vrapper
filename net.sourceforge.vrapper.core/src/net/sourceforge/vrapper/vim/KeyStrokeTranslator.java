@@ -1,6 +1,5 @@
 package net.sourceforge.vrapper.vim;
 
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -24,7 +23,8 @@ public class KeyStrokeTranslator {
     private final List<RemappedKeyStroke> unconsumedKeyStrokes;
     private final LinkedList<RemappedKeyStroke> resultingKeyStrokes;
     private boolean mappingSucceeded = false;
-
+    private boolean fixjjEsc = false;
+    
     public KeyStrokeTranslator() {
         unconsumedKeyStrokes = new LinkedList<RemappedKeyStroke>();
         resultingKeyStrokes  = new LinkedList<RemappedKeyStroke>();
@@ -43,6 +43,12 @@ public class KeyStrokeTranslator {
             unconsumedKeyStrokes.clear();
             mappingSucceeded = true;
         } else {
+        	if (fixjjEsc) {
+                resultingKeyStrokes.clear();
+                unconsumedKeyStrokes.clear();
+        		mappingSucceeded = true;
+        		fixjjEsc = false;
+        	}
             trans = currentState.press(key);
         }
         if (trans != null) {
@@ -72,10 +78,25 @@ public class KeyStrokeTranslator {
             prependLastValue();
             currentState = null;
             mappingSucceeded = false;
+            
+            // fixing the annoying jj-<Esc> bug.
+            if (key.getCharacter() == 'j') {
+            	trans = keymap.press(key);
+                if (trans != null && trans.getNextState() != null) {
+                	fixjjEsc = true;
+                	currentState = trans.getNextState();
+                } else {
+                	fixjjEsc = false;
+                }
+            }           
         }
         return true;
     }
 
+    public boolean needFixjjEsc() {
+    	return fixjjEsc;
+    }
+    
     public Queue<RemappedKeyStroke> resultingKeyStrokes() {
         return resultingKeyStrokes;
     }
