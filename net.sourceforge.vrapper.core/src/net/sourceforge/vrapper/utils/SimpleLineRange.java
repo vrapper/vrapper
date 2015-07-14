@@ -41,18 +41,22 @@ public class SimpleLineRange implements LineRange {
         return result;
     }
 
-    public static SimpleLineRange singleLineInModel(EditorAdaptor editorAdaptor, int modelLine) {
+    public static SimpleLineRange singleLineInModel(EditorAdaptor editorAdaptor,
+            LineInformation modelLine) {
         SimpleLineRange result = new SimpleLineRange();
-        result.startLine = modelLine;
-        result.endLine = modelLine;
-        TextContent mc = editorAdaptor.getModelContent();
-        LineInformation lineInfo = mc.getLineInformation(modelLine);
+        result.startLine = result.endLine = modelLine.getNumber();
         CursorService cs = editorAdaptor.getCursorService();
         // Shift past line end into next line. When at EOF, we get back what we started with.
-        Position nextLineStart = cs.shiftPositionForModelOffset(lineInfo.getEndOffset(), 1, false);
-        result.modelLength = nextLineStart.getModelOffset() - lineInfo.getBeginOffset();
-        result.from = result.to = cs.newPositionForModelOffset(lineInfo.getBeginOffset());
+        Position nextLineStart = cs.shiftPositionForModelOffset(modelLine.getEndOffset(), 1, false);
+        result.modelLength = nextLineStart.getModelOffset() - modelLine.getBeginOffset();
+        result.from = result.to = cs.newPositionForModelOffset(modelLine.getBeginOffset());
         return result;
+    }
+
+    public static SimpleLineRange singleLineInModel(EditorAdaptor editorAdaptor, int modelLine) {
+        TextContent mc = editorAdaptor.getModelContent();
+        LineInformation lineInfo = mc.getLineInformation(modelLine);
+        return singleLineInModel(editorAdaptor, lineInfo);
     }
 
     public static SimpleLineRange betweenPositions(EditorAdaptor editorAdaptor, Position from, Position to) {
