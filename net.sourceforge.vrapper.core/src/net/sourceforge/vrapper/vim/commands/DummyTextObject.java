@@ -8,9 +8,15 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 public class DummyTextObject implements TextObject {
     
     protected TextRange range;
+    protected ContentType contentType = ContentType.TEXT;
 
     public DummyTextObject(TextRange range) {
         this.range = range;
+    }
+
+    public DummyTextObject(TextRange range, ContentType contentType) {
+        this.range = range;
+        this.contentType = contentType;
     }
 
     @Override
@@ -30,7 +36,7 @@ public class DummyTextObject implements TextObject {
 
     @Override
     public ContentType getContentType(Configuration configuration) {
-        return ContentType.TEXT;
+        return contentType;
     }
 
 }
