@@ -54,6 +54,7 @@ public class VimTestCase {
     protected EditorAdaptor adaptor;
     protected SimpleRegister defaultRegister;
     protected SimpleRegister lastEditRegister;
+    protected SimpleRegister dummyRegister;
     protected KeyMapProvider keyMapProvider;
 
     public VimTestCase() {
@@ -108,10 +109,10 @@ public class VimTestCase {
         reloadEditorAdaptor();
         defaultRegister = spy(new SimpleRegister());
         lastEditRegister = spy(new SimpleRegister());
+        dummyRegister = spy(new SimpleRegister());
         when(registerManager.getActiveRegister()).thenReturn(defaultRegister);
         when(registerManager.getLastEditRegister()).thenReturn(lastEditRegister);
-        when(registerManager.getRegister(":")).thenReturn(defaultRegister);
-
+        when(registerManager.getRegister(Mockito.anyString())).thenReturn(dummyRegister);
     }
 
     protected void reloadEditorAdaptor() {
