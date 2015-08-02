@@ -5,6 +5,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.platform.SelectionService;
@@ -74,7 +75,27 @@ import net.sourceforge.vrapper.vim.register.StringRegisterContent;
  */
 public class CommandLineParser extends AbstractCommandParser {
 
-    private final EvaluatorMapping mapping;
+    public static final Pattern EDIT_CMD_PATTERN = Pattern.compile(""
+                    + "^"
+                    + "(e|edit)"
+                    + "\\s+");
+    public static final Pattern FIND_CMD_PATTERN = Pattern.compile("^"
+                    + "(find|fin)"
+                    + "\\s+");
+    public static final Pattern TABF_CMD_PATTERN = Pattern.compile("^"
+                    + "(tabf|tabfind)"
+                    + "\\s+");
+    public static final Pattern CD_CMD_PATTERN = Pattern.compile("^cd\\s+");
+    public static final Pattern SPLIT_CMD_PATTERN = Pattern.compile("^"
+                    + "(split|sp)"
+                    + "\\s+");
+    public static final Pattern VSPLIT_CMD_PATTERN = Pattern.compile("^"
+                    + "(vsplit|vs)"
+                    + "\\s+");
+
+	private Matcher matcher;
+
+	private final EvaluatorMapping mapping;
     private final FilePathTabCompletion tabComplete;
 
     static EvaluatorMapping coreCommands() {
@@ -575,28 +596,40 @@ public class CommandLineParser extends AbstractCommandParser {
             commandLine.resetContents("'<,'>");
         }
     }
+    
+    private boolean patternMatch(Pattern pattern, String input) {
+    	matcher = pattern.matcher(input);
+        return matcher.find();
+    }
+    
+    private int getMatcherLength(int group) {
+		if (matcher == null)
+			return 0;
+    	return matcher.end(group) - matcher.start(group);
+    }
 
     @Override
     protected String completeArgument(String commandLineContents, KeyStroke e) {
         int cmdLen = 0;
         boolean paths = false;
         boolean dirsOnly = false;
-        if (commandLineContents.toString().startsWith("e ")) {
-            cmdLen = 2;
-        } else if(commandLineContents.toString().startsWith("find ") ||
-                commandLineContents.toString().startsWith("tabf ") ) {
-            cmdLen = 5;
+
+        if (patternMatch(EDIT_CMD_PATTERN, commandLineContents.toString())) {
+            cmdLen = getMatcherLength(0);
+        } else if (patternMatch(FIND_CMD_PATTERN, commandLineContents.toString()) ||
+                        patternMatch(TABF_CMD_PATTERN, commandLineContents.toString())) {
+            cmdLen = getMatcherLength(0);
             paths = true;
-        } else if(commandLineContents.toString().startsWith("cd ")) {
-            cmdLen = 3;
+        } else if (patternMatch(CD_CMD_PATTERN, commandLineContents.toString())) {
+            cmdLen = getMatcherLength(0);
             dirsOnly = true;
-        } else if(commandLineContents.toString().startsWith("split ")) {
-            //add support for tab-completion on :split command
-            //even though the Split Editor Plugin must be installed
-            //to execute the :split command
-            cmdLen = 6;
-        } else if(commandLineContents.toString().startsWith("vsplit ")) {
-            cmdLen = 7;
+        } else if (patternMatch(SPLIT_CMD_PATTERN, commandLineContents.toString())) {
+            // add support for tab-completion on :split command
+            // even though the Split Editor Plugin must be installed
+            // to execute the :split command
+            cmdLen = getMatcherLength(0);
+        } else if (patternMatch(VSPLIT_CMD_PATTERN, commandLineContents.toString())) {
+            cmdLen = getMatcherLength(0);
         }
 
         if (cmdLen > 0) {
