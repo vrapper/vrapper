@@ -1,4 +1,31 @@
 <div class="newsbox">
+    <div class="date">2015-08-02</div>
+    <h4>0.58.0 Released</h4>
+
+    <p>Development for Vrapper is slowing to a halt.  We're all too busy to find
+    the time to make enhancements anymore.  I apologize to all of you who have
+    been filing new enhancement requests which we've been ignoring.  Hopefully
+    we'll find the time to implement some of them here and there.  However,
+    Vrapper is stable and has lots of features so I'm hoping most users are
+    happy with the current state of things.</p>
+    <p>With all that said, there were some fixes in the last couple months so
+    I'm releasing another new version.  Here are the changes:</p>
+    
+    <ul>
+        <li>Fixed issue where :g command with 'normal' wouldn't return to normal mode</li>
+        <li>Fixed issue with :g command and 'normal' inserting newlines</li>
+        <li>Fixed issue with 'o' and 'cleanindent' at the end of a file</li>
+        <li>Fixed issue with 'A-O' from insert mode not returning to insert mode</li>
+        <li>Fixed issue where selecting text within a fold didn't open the fold</li>
+        <li>Fixed issue with mouse-selections going over a fold</li>
+        <li>Fixed display of mode and recording status when using Eclipse's dark themes</li>
+        <li>Fixed selection highlighting when using 'c'onfirm flag for substitutions</li>
+        <li>Fixed performance issue with search highlighting</li>
+    </ul>
+    
+    <p>Thank you to all the users who have used and enjoyed Vrapper throughout the years!</p>
+</div>
+<div class="newsbox">
     <div class="date">2015-06-07</div>
     <h4>0.56.0 Released</h4>
 
