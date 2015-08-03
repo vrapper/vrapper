@@ -105,6 +105,25 @@ public class SimpleLineRange implements LineRange {
         return result;
     }
 
+    /**
+     * Returns a {@link LineRange} wrapping the given text region.
+     * <p><b>NOTE</b>: the very last line (the one rightBound is in) is not used as endLine if no
+     * characters are selected or if it is empty.
+     */
+    public static SimpleLineRange fromTextRange(EditorAdaptor editorAdaptor, TextRange textRange) {
+        Position start = textRange.getLeftBound();
+        Position end = textRange.getRightBound();
+        int endOffset = end.getModelOffset();
+        TextContent mc = editorAdaptor.getModelContent();
+        LineInformation lastLine = mc.getLineInformationOfOffset(endOffset);
+        CursorService cs = editorAdaptor.getCursorService();
+        // Check that the right bound includes some characters, if not we move to previous line
+        if (endOffset == lastLine.getBeginOffset()) {
+            end = cs.shiftPositionForModelOffset(endOffset, -1, false);
+        }
+        return betweenPositions(editorAdaptor, start, end);
+    }
+
     protected int startLine;
     protected int endLine;
     protected int modelLength;
