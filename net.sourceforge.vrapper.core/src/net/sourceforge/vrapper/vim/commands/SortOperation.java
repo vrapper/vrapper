@@ -18,6 +18,8 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 
 /**
+ * From the Vim manual:
+ * <pre>
  * 7. Sorting text						*sorting*
  * Vim has a sorting function and a sorting command.  The sorting function can be
  *   *:sor* *:sort*
@@ -33,10 +35,10 @@ import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
  * in the line (after or inside a {pattern} match).
  * One leading '-' is included in the number.
  * 
- * XXX: NOT ORIGINALLY PART OF VIM 
- *      With [b] sorting is done on the first binary
- * 		number in the line (after or inside a {pattern}
- * 		match). 
+ * XXX: NOT ORIGINALLY PART OF VIM
+ * With [b] sorting is done on the first binary
+ * number in the line (after or inside a {pattern}
+ * match). 
  * 
  * With [x] sorting is done on the first hexadecimal
  * number in the line (after or inside a {pattern}
@@ -52,6 +54,7 @@ import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
  * will be kept in their original order.
  * Note that leading and trailing white space may cause
  * lines to be different.
+ * </pre>
  * 
  * TODO: Pattern has not yet fully been implemented.
  * 		 This has been giving me problems, mostly because
@@ -64,6 +67,7 @@ import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
  * 		 would be a huge pain, but it would give the user a 
  * familiarity benefit.
  * 
+ * <pre>
  * When /{pattern}/ is specified and there is no [r] flag
  * the text matched with {pattern} is skipped, so that
  * you sort on what comes after the match.
@@ -96,7 +100,8 @@ import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
  * 
  * If {pattern} is empty (e.g. // is specified), the
  * last search pattern is used.  This allows trying out
- * a pattern first. 
+ * a pattern first.
+ * </pre> 
  * 
  * @author Brian Detweiler
  * 
