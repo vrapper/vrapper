@@ -104,14 +104,14 @@ public class ExCommandOperation extends SimpleTextOperation {
 		//chop off pattern (+delimiter), all that should be left is command
 		definition = definition.substring(patternEnd + 1);
 
-		SimpleTextOperation operation = buildExCommand(definition, editorAdaptor);
+		TextOperation operation = buildExCommand(definition, editorAdaptor);
 
 		if(operation != null) {
 			executeExCommand(region, findMatch, pattern, operation, editorAdaptor);
 		}
 	}
 
-	private SimpleTextOperation buildExCommand(String command, EditorAdaptor editorAdaptor)
+	private TextOperation buildExCommand(String command, EditorAdaptor editorAdaptor)
 			throws CommandExecutionException {
 		if(command.startsWith("normal ")) {
 			String args = command.substring("normal ".length());
@@ -145,7 +145,7 @@ public class ExCommandOperation extends SimpleTextOperation {
 	}
 
 	private void executeExCommand(TextRange region, boolean findMatch,
-			String pattern, SimpleTextOperation operation, EditorAdaptor editorAdaptor) {
+			String pattern, TextOperation operation, EditorAdaptor editorAdaptor) {
 
 		LineInformation line;
 		/** Starting line, inclusive. */
@@ -183,7 +183,7 @@ public class ExCommandOperation extends SimpleTextOperation {
 	}
 
 	private void processMultipleLines(boolean findMatch, String pattern,
-			SimpleTextOperation operation, EditorAdaptor editorAdaptor, LineInformation line,
+			TextOperation operation, EditorAdaptor editorAdaptor, LineInformation line,
 			int startLine, int endLine, TextContent modelContent) {
 		int linesProcessed = 0;
 		int nLines = modelContent.getNumberOfLines();
@@ -230,7 +230,7 @@ public class ExCommandOperation extends SimpleTextOperation {
 		cs.deleteMark(NEXTLINE_MARK);
 	}
 
-	private boolean processLine(String pattern, boolean findMatch, SimpleTextOperation operation,
+	private boolean processLine(String pattern, boolean findMatch, TextOperation operation,
 			LineInformation line, EditorAdaptor editorAdaptor) {
 		boolean operationPerformed = false;
 		String text = editorAdaptor.getModelContent().getText(line.getBeginOffset(), line.getLength());
@@ -253,7 +253,7 @@ public class ExCommandOperation extends SimpleTextOperation {
 				Position end = editorAdaptor.getCursorService().newPositionForModelOffset(line.getEndOffset());
 				TextRange range = new StartEndTextRange(start, end);
 
-				operation.execute(editorAdaptor, range, ContentType.LINES);
+				operation.execute(editorAdaptor, 0, new DummyTextObject(range, ContentType.LINES));
 				operationPerformed = true;
 			} catch (CommandExecutionException e) {
 			}

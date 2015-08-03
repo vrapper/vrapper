@@ -164,7 +164,7 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
      * @return the Operation corresponding to the operation char
      * @throws CommandExecutionException 
      */
-    public SimpleTextOperation parseRangeOperation(EditorAdaptor editorAdaptor) throws CommandExecutionException {
+    public TextOperation parseRangeOperation(EditorAdaptor editorAdaptor) throws CommandExecutionException {
         if (operationStr.isEmpty()) {
     		editorAdaptor.getUserInterfaceService().setErrorMessage("No operation specified.");
     		return null;
