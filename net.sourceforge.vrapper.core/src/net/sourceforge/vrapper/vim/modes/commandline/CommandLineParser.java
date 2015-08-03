@@ -48,6 +48,7 @@ import net.sourceforge.vrapper.vim.commands.SetOptionCommand;
 import net.sourceforge.vrapper.vim.commands.SortOperation;
 import net.sourceforge.vrapper.vim.commands.SubstitutionOperation;
 import net.sourceforge.vrapper.vim.commands.SwitchBufferCommand;
+import net.sourceforge.vrapper.vim.commands.TextObject;
 import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
 import net.sourceforge.vrapper.vim.commands.UndoCommand;
 import net.sourceforge.vrapper.vim.commands.VimCommandSequence;
@@ -172,13 +173,13 @@ public class CommandLineParser extends AbstractCommandParser {
             		//(if you attempt to sort with "/foo    bar/" it won't work)
             		commandStr += command.poll() + " ";
             	}
-            	TextRange selection = null;
+            	TextObject selection = new DummyTextObject(null);
             	if(vim.getSelection().getModelLength() > 0) {
             	    selection = vim.getSelection();
             	}
         		
             	try {
-					new SortOperation(commandStr).execute(vim, selection, ContentType.LINES);
+					new SortOperation(commandStr).execute(vim, 0, selection);
 				} catch (CommandExecutionException e) {
             		vim.getUserInterfaceService().setErrorMessage(e.getMessage());
 				}

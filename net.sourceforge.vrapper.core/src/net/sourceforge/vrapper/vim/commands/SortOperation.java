@@ -8,11 +8,12 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import net.sourceforge.vrapper.platform.TextContent;
-import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.LineInformation;
+import net.sourceforge.vrapper.utils.LineRange;
 import net.sourceforge.vrapper.utils.NumericStringComparator;
 import net.sourceforge.vrapper.utils.PatternSortComparator;
-import net.sourceforge.vrapper.utils.TextRange;
+import net.sourceforge.vrapper.utils.Position;
+import net.sourceforge.vrapper.utils.SimpleLineRange;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
@@ -106,7 +107,7 @@ import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
  * @author Brian Detweiler
  * 
  */
-public class SortOperation extends SimpleTextOperation {
+public class SortOperation extends AbstractLinewiseOperation {
 
     private static final String REVERSED_FLAG    = "!";
     private static final String NUMERIC_FLAG     = "n";
@@ -244,25 +245,17 @@ public class SortOperation extends SimpleTextOperation {
         return false;
     }
 
-
 	@Override
-	public void execute(EditorAdaptor editorAdaptor, TextRange region, ContentType contentType) throws CommandExecutionException {
+    public void execute(EditorAdaptor editorAdaptor, LineRange lineRange) throws CommandExecutionException {
         try {
         	TextContent content = editorAdaptor.getModelContent();
         	LineInformation startLine;
         	LineInformation endLine;
         	int length;
         	
-        	if(region == null) {
-        		startLine = content.getLineInformation(0);
-        		endLine = content.getLineInformation(content.getNumberOfLines() - 1);
-        		length = endLine.getEndOffset() - startLine.getBeginOffset();
-        	}
-        	else {
-        		startLine = content.getLineInformationOfOffset(region.getLeftBound().getModelOffset());
-        		endLine = content.getLineInformationOfOffset(region.getRightBound().getModelOffset() - 1);
-        		length = region.getModelLength();
-        	}
+        	startLine = content.getLineInformation(lineRange.getStartLine());
+        	endLine = content.getLineInformation(lineRange.getEndLine());
+        	length = lineRange.getModelLength();
         	
         	//don't sort if only one line
         	//(or if start and end are somehow swapped)
@@ -272,6 +265,12 @@ public class SortOperation extends SimpleTextOperation {
         } catch (Exception e) {
             throw new CommandExecutionException("sort failed: " + e.getMessage());
         }
+    }
+
+    @Override
+    public LineRange getDefaultRange(EditorAdaptor editorAdaptor, int count, Position currentPos)
+            throws CommandExecutionException {
+        return SimpleLineRange.entireFile(editorAdaptor);
     }
 
     /**
