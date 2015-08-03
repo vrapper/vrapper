@@ -25,6 +25,7 @@ import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
+import net.sourceforge.vrapper.vim.commands.DummyTextObject;
 import net.sourceforge.vrapper.vim.commands.LineRangeOperationCommand;
 import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
@@ -73,44 +74,45 @@ public class CommandLineTests extends VimTestCase {
         registerManager = new DefaultRegisterManager();
         when(platform.getSearchAndReplaceService()).thenReturn(new TestSearchService(content, configuration));
         reloadEditorAdaptor();
+        DummyTextObject defaultRange = new DummyTextObject(null);
 
         registerManager.setSearch(new Search("two", false, false, false));
 
         content.setText("one Two three two but two and Two");
-        makeSubstitution("s/one/four/Ig").execute(adaptor, null, ContentType.LINES);
+        makeSubstitution("s/one/four/Ig").execute(adaptor, 0, defaultRange);
         assertEquals("four Two three two but two and Two", content.getText());
 
         content.setText("one Two three two but two and Two");
-        makeSubstitution("s!one!four!Ig").execute(adaptor, null, ContentType.LINES);
+        makeSubstitution("s!one!four!Ig").execute(adaptor, 0, defaultRange);
         assertEquals("four Two three two but two and Two", content.getText());
 
         content.setText("one Two three two but two and Two");
         // Replace with contents of (search) register
-        makeSubstitution("s!one!\\=@/!Ig").execute(adaptor, null, ContentType.LINES);
+        makeSubstitution("s!one!\\=@/!Ig").execute(adaptor, 0, defaultRange);
         assertEquals("two Two three two but two and Two", content.getText());
 
         registerManager.setSearch(new Search("two", false, false, false));
 
         content.setText("one Two three two");
         // Do last search again, replace with empty string, minding case.
-        makeSubstitution("s///I").execute(adaptor, null, ContentType.LINES);
+        makeSubstitution("s///I").execute(adaptor, 0, defaultRange);
         assertEquals("one Two three ", content.getText());
 
         content.setText("one Two three two");
         // Do last search again, replace with empty string, without minding case.
-        makeSubstitution("s///ig").execute(adaptor, null, ContentType.LINES);
+        makeSubstitution("s///ig").execute(adaptor, 0, defaultRange);
         assertEquals("one  three ", content.getText());
 
         content.setText("one Two three two but two and Two");
         // Do last search again, replace with empty string, without minding case.
-        makeSubstitution("s///Ig").execute(adaptor, null, ContentType.LINES);
+        makeSubstitution("s///Ig").execute(adaptor, 0, defaultRange);
         assertEquals("one Two three  but  and Two", content.getText());
 
         registerManager.setSearch(new Search("Two", false, false, false));
 
         content.setText("one Two three two");
         // Special case: do last search again, replace with empty string
-        makeSubstitution("s//").execute(adaptor, null, ContentType.LINES);
+        makeSubstitution("s//").execute(adaptor, 0, defaultRange);
         assertEquals("one  three two", content.getText());
     }
     
