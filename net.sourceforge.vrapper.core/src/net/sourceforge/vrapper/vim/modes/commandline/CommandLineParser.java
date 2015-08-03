@@ -9,7 +9,7 @@ import java.util.regex.Matcher;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.platform.Configuration.Option;
 import net.sourceforge.vrapper.utils.ContentType;
-import net.sourceforge.vrapper.utils.LineInformation;
+import net.sourceforge.vrapper.utils.LineRange;
 import net.sourceforge.vrapper.utils.Search;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.SubstitutionDefinition;
@@ -43,7 +43,6 @@ import net.sourceforge.vrapper.vim.commands.RepeatLastSubstitutionCommand;
 import net.sourceforge.vrapper.vim.commands.RetabOperation;
 import net.sourceforge.vrapper.vim.commands.SaveAllCommand;
 import net.sourceforge.vrapper.vim.commands.SaveCommand;
-import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SetLocalOptionCommand;
 import net.sourceforge.vrapper.vim.commands.SetOptionCommand;
 import net.sourceforge.vrapper.vim.commands.SortOperation;
@@ -903,8 +902,16 @@ public class CommandLineParser extends AbstractCommandParser {
     
         public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
             boolean linewise = !isFromVisual || editorAdaptor.getSelection().getContentType(editorAdaptor.getConfiguration()) == ContentType.LINES;
-            Selection selection = range.parseRangeDefinition(editorAdaptor, linewise);
-            editorAdaptor.setSelection(selection);
+            LineRange lineRange = range.parseRangeDefinition(editorAdaptor);
+            TextRange selectionRange;
+            if (lineRange == null) {
+                selectionRange = null;
+            } else if (linewise) {
+                selectionRange = lineRange.getRegion(editorAdaptor, NO_COUNT_GIVEN);
+            } else {
+                selectionRange = StartEndTextRange.exclusive(lineRange.getFrom(), lineRange.getTo());
+            }
+            editorAdaptor.setNativeSelection(selectionRange);
             action.evaluate(editorAdaptor, tokens);
             editorAdaptor.setSelection(null);
         }

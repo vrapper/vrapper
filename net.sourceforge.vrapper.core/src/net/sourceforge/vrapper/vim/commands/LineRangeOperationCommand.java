@@ -7,7 +7,6 @@ import net.sourceforge.vrapper.utils.LineAddressParser;
 import net.sourceforge.vrapper.utils.LineRange;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.SimpleLineRange;
-import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.SubstitutionDefinition;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.modes.ConfirmSubstitutionMode;
@@ -74,7 +73,7 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
     }
 	
 	public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
-	    Selection range = parseRangeDefinition(editorAdaptor, true);
+	    LineRange range = parseRangeDefinition(editorAdaptor);
 	    if (range != null)
 	    {
 	        TextOperation operation = parseRangeOperation(editorAdaptor);
@@ -85,11 +84,10 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
 	            SubstitutionDefinition definition = substitute.getDefinition();
 
 	            if (definition.hasFlag('c')) {
-	                LineRange lines = SimpleLineRange.fromSelection(editorAdaptor, range);
 	                //move into "confirm" mode
 	                editorAdaptor.changeModeSafely(ConfirmSubstitutionMode.NAME,
 	                        new ConfirmSubstitutionMode.SubstitutionConfirm(definition,
-	                                lines.getStartLine(), lines.getEndLine()));
+	                                range.getStartLine(), range.getEndLine()));
 	            } else {
 	                substitute.execute(editorAdaptor, NO_COUNT_GIVEN, range);
 	            }
@@ -141,22 +139,17 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
             }
         }
     }
-    	
-    public Selection parseRangeDefinition(EditorAdaptor editorAdaptor, boolean linewise) {
+
+    public LineRange parseRangeDefinition(EditorAdaptor editorAdaptor) {
     	Position startPos = LineAddressParser.parseAddressPosition(startStr, editorAdaptor);
     	Position stopPos = LineAddressParser.parseAddressPosition(stopStr, editorAdaptor);
     	if(startPos != null && stopPos != null) {
-    	    if (linewise) {
-    	        return new LineWiseSelection(editorAdaptor, startPos, stopPos);
-    	    } else {
-    	        return new SimpleSelection(new StartEndTextRange(startPos, stopPos));
-    	    }
-    	}
-    	else {
+    	    return SimpleLineRange.betweenPositions(editorAdaptor, startPos, stopPos);
+    	} else {
     		return null;
     	}
     }
-    
+
     /**
      * Parse the desired operation to perform on this range.
      * @param operation - single character defining the operation
