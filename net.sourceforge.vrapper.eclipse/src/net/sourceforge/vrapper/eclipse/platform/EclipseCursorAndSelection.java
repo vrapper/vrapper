@@ -20,6 +20,7 @@ import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Space;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
+import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.Selection;
@@ -232,6 +233,25 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         if (selection != null) {
             return selection;
         }
+        TextRange range = getNativeSelection();
+        Position from = range.getStart();
+        Position to = range.getEnd();
+        boolean isInclusive = Selection.INCLUSIVE.equals(configuration.get(Options.SELECTION));
+        if (range.getModelLength() > 0 && isInclusive) {
+            if (range.isReversed()) {
+                from = shiftPositionForViewOffset(from.getViewOffset(), -1, true);
+            } else {
+                to = shiftPositionForViewOffset(to.getViewOffset(), -1, true);
+            }
+        }
+        return new SimpleSelection(from, to, range);
+    }
+    
+    @Override
+    public TextRange getNativeSelection() {
+        if (selection != null) {
+            return SelectionService.VRAPPER_SELECTION_ACTIVE;
+        }
         final Point sel = textViewer.getSelectedRange();
         int start, end;
         start = end = sel.x;
@@ -246,21 +266,9 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
                 end += len;
             }
         }
-
-        Position startSel = new TextViewerPosition(textViewer, Space.MODEL, start);
-        Position endSel =   new TextViewerPosition(textViewer, Space.MODEL, end);
-        Position from = startSel;
-        Position to = endSel;
-        StartEndTextRange range = new StartEndTextRange(startSel, endSel);
-        boolean isInclusive = Selection.INCLUSIVE.equals(configuration.get(Options.SELECTION));
-        if (range.getModelLength() > 0 && isInclusive) {
-            if (range.isReversed()) {
-                from = shiftPositionForViewOffset(from.getViewOffset(), -1, true);
-            } else {
-                to = shiftPositionForViewOffset(to.getViewOffset(), -1, true);
-            }
-        }
-        return new SimpleSelection(from, to, range);
+        final Position startSel = new TextViewerPosition(textViewer, Space.MODEL, start);
+        final Position endSel =   new TextViewerPosition(textViewer, Space.MODEL, end);
+        return StartEndTextRange.exclusive(startSel, endSel);
     }
 
     public boolean isSelectionInProgress() {
@@ -382,6 +390,17 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         //       triggers incorrect sticky column recalculation.
         caretListener.disable();
         styled.setBlockSelectionBounds(blockRect);
+        caretListener.enable();
+    }
+
+    @Override
+    public void setNativeSelection(TextRange range) {
+        int length = !range.isReversed() ? range.getModelLength() : -range.getModelLength();
+        selection = null;
+        //Only the caller can set the sticky column, e.g. in the case of an up/down motion.
+        caretListener.disable();
+        textViewer.getTextWidget().setBlockSelection(false);
+        textViewer.setSelectedRange(range.getStart().getModelOffset(), length);
         caretListener.enable();
     }
 
