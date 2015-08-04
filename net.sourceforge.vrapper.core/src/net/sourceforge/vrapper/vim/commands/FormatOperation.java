@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import net.sourceforge.vrapper.utils.LineRange;
+import net.sourceforge.vrapper.utils.Position;
+import net.sourceforge.vrapper.utils.SimpleLineRange;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
@@ -25,7 +28,7 @@ import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
  * 
  * This is mapped to the 'gq<text object>' operation.
  */
-public class FormatOperation implements TextOperation {
+public class FormatOperation extends AbstractLinewiseOperation {
 	
 	public static final FormatOperation INSTANCE = new FormatOperation();
 
@@ -33,8 +36,17 @@ public class FormatOperation implements TextOperation {
 		return this;
 	}
 
-	public void execute(EditorAdaptor editorAdaptor, int count, TextObject textObject) throws CommandExecutionException {
-		String text = editorAdaptor.getModelContent().getText(textObject.getRegion(editorAdaptor, count));
+	/** Likely never called seeing how this operation is not used as an Ex command. */
+	@Override
+	public LineRange getDefaultRange(EditorAdaptor editorAdaptor, int count, Position currentPos)
+			throws CommandExecutionException {
+		return SimpleLineRange.singleLine(editorAdaptor, currentPos);
+	}
+
+	@Override
+	public void execute(EditorAdaptor editorAdaptor, LineRange lineRange) throws CommandExecutionException {
+		TextRange originalTextRange = lineRange.getRegion(editorAdaptor, 0);
+		String text = editorAdaptor.getModelContent().getText(originalTextRange);
 		String newlineChar = editorAdaptor.getConfiguration().getNewLine();
 		String[] lines = text.split(newlineChar);
 		int textwidth = editorAdaptor.getConfiguration().get(Options.TEXT_WIDTH);
@@ -86,11 +98,10 @@ public class FormatOperation implements TextOperation {
 		}
 		
 		//swap out the old text with the formatted text
-		TextRange region = textObject.getRegion(editorAdaptor, count);
-		int start = region.getLeftBound().getModelOffset();
-		int length = region.getModelLength();
+		int start = originalTextRange.getLeftBound().getModelOffset();
+		int length = originalTextRange.getModelLength();
 		editorAdaptor.getModelContent().replace(start, length, newLines);
-		editorAdaptor.getCursorService().setPosition(region.getStart(), StickyColumnPolicy.ON_CHANGE);
+		editorAdaptor.getCursorService().setPosition(originalTextRange.getStart(), StickyColumnPolicy.ON_CHANGE);
 	}
 	
 	/**
