@@ -4,7 +4,9 @@ import java.util.Set;
 
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.utils.ContentType;
+import net.sourceforge.vrapper.utils.LineRange;
 import net.sourceforge.vrapper.utils.Position;
+import net.sourceforge.vrapper.utils.SimpleLineRange;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
@@ -16,7 +18,7 @@ import net.sourceforge.vrapper.vim.register.RegisterContent;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
 import net.sourceforge.vrapper.vim.register.StringRegisterContent;
 
-public class YankOperation extends SimpleTextOperation {
+public class YankOperation extends SimpleTextOperation implements LineWiseOperation {
 
     public static final YankOperation INSTANCE = new YankOperation(null);
     
@@ -47,6 +49,18 @@ public class YankOperation extends SimpleTextOperation {
             Register selReg = registerManager.getRegister(RegisterManager.REGISTER_NAME_SELECTION);
             selReg.setContent(registerManager.getActiveRegister().getContent());
         }
+    }
+
+    @Override
+    public void execute(EditorAdaptor editorAdaptor, LineRange lineRange)
+            throws CommandExecutionException {
+        execute(editorAdaptor, lineRange.getRegion(editorAdaptor, 0), ContentType.LINES);
+    }
+
+    @Override
+    public LineRange getDefaultRange(EditorAdaptor editorAdaptor, int count, Position currentPos)
+            throws CommandExecutionException {
+        return SimpleLineRange.singleLine(editorAdaptor, currentPos);
     }
 
     public TextOperation repetition() {
