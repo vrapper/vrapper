@@ -1,16 +1,18 @@
 package net.sourceforge.vrapper.vim.commands;
 
 import net.sourceforge.vrapper.platform.TextContent;
-import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.LineAddressParser;
 import net.sourceforge.vrapper.utils.LineInformation;
+import net.sourceforge.vrapper.utils.LineRange;
 import net.sourceforge.vrapper.utils.Position;
+import net.sourceforge.vrapper.utils.SimpleLineRange;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 
 /**
+ * <pre>
  * :[range]co[py] {address}				*:co* *:copy*
  *          Copy the lines given by [range] to below the line
  *          given by {address}.
@@ -21,8 +23,9 @@ import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
  * :[range]m[ove] {address}			*:m* *:mo* *:move* *E134*
  *          Move the lines given by [range] to below the line
  *          given by {address}.
+ * </pre>
  */
-public class CopyMoveLinesOperation extends SimpleTextOperation {
+public class CopyMoveLinesOperation extends AbstractLinewiseOperation {
 	
 	private String address = null;
 	private boolean move; //move (true) or copy (false)
@@ -50,9 +53,15 @@ public class CopyMoveLinesOperation extends SimpleTextOperation {
 		return this;
 	}
 
+	@Override
+	public LineRange getDefaultRange(EditorAdaptor editorAdaptor, int count, Position currentPos)
+			throws CommandExecutionException {
+		return SimpleLineRange.singleLine(editorAdaptor, currentPos);
+	}
+
 	@Override 
-	public void execute(EditorAdaptor editorAdaptor, TextRange region,
-			ContentType contentType) throws CommandExecutionException {
+	public void execute(EditorAdaptor editorAdaptor, LineRange range)
+			throws CommandExecutionException {
 		
 		if(address == null) {
 			throw new CommandExecutionException("Address required");
@@ -65,6 +74,7 @@ public class CopyMoveLinesOperation extends SimpleTextOperation {
 		}
 		
 		TextContent content = editorAdaptor.getModelContent();
+		TextRange region = range.getRegion(editorAdaptor, 0);
 		String lines = content.getText(region);
 		//destination might be a position in the middle of a line
 		LineInformation line = content.getLineInformationOfOffset(destination.getModelOffset());
