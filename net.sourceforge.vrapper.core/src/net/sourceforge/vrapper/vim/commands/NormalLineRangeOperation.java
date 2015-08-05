@@ -1,8 +1,5 @@
 package net.sourceforge.vrapper.vim.commands;
 
-/**
- * Use a NormalMode text object to define a line range operation.
- */
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.TextRange;
@@ -11,6 +8,9 @@ import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.InitialContentsHint;
 import net.sourceforge.vrapper.vim.modes.commandline.CommandLineMode;
 
+/**
+ * Use a NormalMode text object to define a line range operation.
+ */
 public class NormalLineRangeOperation extends SimpleTextOperation {
     
     public static final NormalLineRangeOperation INSTANCE = new NormalLineRangeOperation();
@@ -43,9 +43,14 @@ public class NormalLineRangeOperation extends SimpleTextOperation {
                 endDef += "+" + (endLine - startLine);
             }
         }
+        String lineRangeDef = ".";
+        if ( ! endDef.equals(".")) {
+            lineRangeDef += "," + endDef;
+        }
+        lineRangeDef += "!";
         
         editorAdaptor.setPosition(region.getLeftBound(), StickyColumnPolicy.NEVER);
-        editorAdaptor.changeModeSafely(CommandLineMode.NAME, new InitialContentsHint(".," + endDef + "!"));
+        editorAdaptor.changeModeSafely(CommandLineMode.NAME, new InitialContentsHint(lineRangeDef));
     }
 
 }
