@@ -4,7 +4,9 @@ import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.LineInformation;
+import net.sourceforge.vrapper.utils.LineRange;
 import net.sourceforge.vrapper.utils.Position;
+import net.sourceforge.vrapper.utils.SimpleLineRange;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
@@ -13,11 +15,23 @@ import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.register.RegisterContent;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
 
-public class DeleteOperation extends SimpleTextOperation {
+public class DeleteOperation extends SimpleTextOperation implements LineWiseOperation {
 
     public static final DeleteOperation INSTANCE = new DeleteOperation();
 
     private DeleteOperation() { /* NOP */ }
+
+    @Override
+    public LineRange getDefaultRange(EditorAdaptor editorAdaptor, int count, Position currentPos)
+            throws CommandExecutionException {
+        return SimpleLineRange.singleLine(editorAdaptor, currentPos);
+    }
+
+    @Override
+    public void execute(EditorAdaptor editorAdaptor, LineRange lineRange)
+            throws CommandExecutionException {
+        execute(editorAdaptor, lineRange.getRegion(editorAdaptor, 0), ContentType.LINES);
+    }
 
     @Override
     public void execute(EditorAdaptor editorAdaptor, TextRange region, ContentType contentType) {
