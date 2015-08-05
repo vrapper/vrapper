@@ -9,15 +9,21 @@ import java.util.regex.Pattern;
 
 import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.TextContent;
-import net.sourceforge.vrapper.utils.ContentType;
+import net.sourceforge.vrapper.utils.LineRange;
+import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.ProcessHelper;
+import net.sourceforge.vrapper.utils.SimpleLineRange;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 
-public class PipeExternalOperation extends SimpleTextOperation
-{
+/**
+ * Filters a number of lines through an external program. Used to implement
+ * <code>:&lt;range&gt;!&lt;filter&gt;</code>.
+ */
+public class PipeExternalOperation extends AbstractLinewiseOperation {
+
     private static final Pattern PIPE_RE = Pattern.compile("^\\s*!\\s*(\\S.*)");
     private String externalCommand;
 
@@ -28,10 +34,18 @@ public class PipeExternalOperation extends SimpleTextOperation
         }
     }
 
-    public void execute(EditorAdaptor editorAdaptor, TextRange region, ContentType contentType) {
+    @Override
+    public LineRange getDefaultRange(EditorAdaptor editorAdaptor, int count, Position currentPos)
+            throws CommandExecutionException {
+        return SimpleLineRange.singleLine(editorAdaptor, currentPos);
+    }
+
+    @Override
+    public void execute(EditorAdaptor editorAdaptor, LineRange lineRange)
+            throws CommandExecutionException {
         editorAdaptor.getHistory().beginCompoundChange();
         try {
-            doIt(editorAdaptor, region, contentType);
+            doIt(editorAdaptor, lineRange.getRegion(editorAdaptor, 0));
         } finally {
             editorAdaptor.getHistory().endCompoundChange();
         }
@@ -41,7 +55,7 @@ public class PipeExternalOperation extends SimpleTextOperation
         return this;
     }
 
-    public void doIt(EditorAdaptor editorAdaptor, TextRange range, ContentType contentType) {
+    protected void doIt(EditorAdaptor editorAdaptor, TextRange range) {
         if (externalCommand.isEmpty()) {
             editorAdaptor.getUserInterfaceService().setErrorMessage("syntax error for '!'");
         }
