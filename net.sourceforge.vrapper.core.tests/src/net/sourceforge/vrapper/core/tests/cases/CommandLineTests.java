@@ -17,7 +17,6 @@ import net.sourceforge.vrapper.core.tests.utils.DumbPosition;
 import net.sourceforge.vrapper.core.tests.utils.TestSearchService;
 import net.sourceforge.vrapper.core.tests.utils.VimTestCase;
 import net.sourceforge.vrapper.platform.Configuration.Option;
-import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.LineRange;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Search;
@@ -30,10 +29,10 @@ import net.sourceforge.vrapper.vim.commands.DummyTextObject;
 import net.sourceforge.vrapper.vim.commands.LineRangeOperationCommand;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.commands.RetabOperation;
-import net.sourceforge.vrapper.vim.commands.SimpleTextOperation;
 import net.sourceforge.vrapper.vim.commands.SortOperation;
 import net.sourceforge.vrapper.vim.commands.SubstitutionOperation;
 import net.sourceforge.vrapper.vim.commands.TextObject;
+import net.sourceforge.vrapper.vim.commands.TextOperation;
 import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.modes.commandline.CommandLineMode;
@@ -255,21 +254,22 @@ public class CommandLineTests extends VimTestCase {
     
     @Test
     public void testRetab() throws CommandExecutionException {
-    	SimpleTextOperation retabCommand = (SimpleTextOperation) new RetabOperation(null);
+    	TextOperation retabCommand = new RetabOperation(null);
+    	DummyTextObject defaultRange = new DummyTextObject(null);
     
     	when(configuration.get(Options.EXPAND_TAB)).thenReturn(true);
     	when(configuration.get(Options.TAB_STOP)).thenReturn(4);
     	
     	content.setText("\t");
-    	retabCommand.execute(adaptor, null, ContentType.LINES);
+    	retabCommand.execute(adaptor, 0, defaultRange);
     	assertEquals("    ", content.getText());
     	
     	content.setText("line\n\t\t\tnew\tline\n\t\tABC");
-    	retabCommand.execute(adaptor, null, ContentType.LINES);
+    	retabCommand.execute(adaptor, 0, defaultRange);
     	assertEquals("line\n            new    line\n        ABC", content.getText());
     	
     	content.setText("\t\t\t\n\t\n\n\t\t\t\n\t");
-    	retabCommand.execute(adaptor, null, ContentType.LINES);
+    	retabCommand.execute(adaptor, 0, defaultRange);
     	assertEquals("            \n    \n\n            \n    ", content.getText());
     }
     

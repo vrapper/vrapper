@@ -189,18 +189,19 @@ public class CommandLineParser extends AbstractCommandParser {
         };
         Evaluator retab = new Evaluator() {
             public Object evaluate(EditorAdaptor vim, Queue<String> command) {
-        		String commandStr = "";
-            	while(command.size() > 0)
-            		// attempt to preserve spacing
-            		commandStr += command.poll() + " ";
-        		
-            	try {
-					new RetabOperation(commandStr).execute(vim, null, ContentType.LINES);
-				} catch (CommandExecutionException e) {
-            		vim.getUserInterfaceService().setErrorMessage(e.getMessage());
-				}
-            	
-            	return null;
+                String commandStr = "";
+                while(command.size() > 0)
+                    // attempt to preserve spacing
+                    commandStr += command.poll() + " ";
+
+                try {
+                    RetabOperation retabOperation = new RetabOperation(commandStr);
+                    retabOperation.execute(vim, retabOperation.getDefaultRange(vim, 0, vim.getPosition()));
+                } catch (CommandExecutionException e) {
+                    vim.getUserInterfaceService().setErrorMessage(e.getMessage());
+                }
+                
+                return null;
             }
         };
         Evaluator sourceConfigFile = new Evaluator() {

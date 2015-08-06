@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sourceforge.vrapper.platform.TextContent;
-import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.LineInformation;
-import net.sourceforge.vrapper.utils.TextRange;
+import net.sourceforge.vrapper.utils.LineRange;
+import net.sourceforge.vrapper.utils.Position;
+import net.sourceforge.vrapper.utils.SimpleLineRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
@@ -58,7 +59,7 @@ import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
  *       Window->Preferences->General->Editors->Text Editors->"Insert spaces for tabs"
  *       
  */
-public class RetabOperation extends SimpleTextOperation {
+public class RetabOperation extends AbstractLinewiseOperation {
 
     /** ! - replace strings of normal spaces */
     private static final String REPLACE_NORMAL_SPACE = "!";
@@ -94,29 +95,28 @@ public class RetabOperation extends SimpleTextOperation {
             }
         }
     }
-    
+
 	@Override
-	public void execute(EditorAdaptor editorAdaptor, TextRange region, ContentType contentType) throws CommandExecutionException {
+    public LineRange getDefaultRange(EditorAdaptor editorAdaptor, int count, Position currentPos)
+            throws CommandExecutionException {
+        return SimpleLineRange.entireFile(editorAdaptor);
+    }
+
+    @Override
+    public void execute(EditorAdaptor editorAdaptor, LineRange lineRange) throws CommandExecutionException {
         try {
             
-        	TextContent content = editorAdaptor.getModelContent();
-        	LineInformation startLine;
-        	LineInformation endLine;
-        	int length;
-        	
-        	if(region == null) {
-        		startLine = content.getLineInformation(0);
-        		endLine = content.getLineInformation(content.getNumberOfLines() - 1);
-        		length = endLine.getEndOffset() - startLine.getBeginOffset();
-        	}
-        	else {
-        		startLine = content.getLineInformationOfOffset(region.getLeftBound().getModelOffset());
-        		endLine = content.getLineInformationOfOffset(region.getRightBound().getModelOffset() - 1);
-        		length = region.getModelLength();
-        	}
-        	
+            TextContent content = editorAdaptor.getModelContent();
+            LineInformation startLine;
+            LineInformation endLine;
+            int length;
+            
+            startLine = content.getLineInformation(lineRange.getStartLine());
+            endLine = content.getLineInformation(lineRange.getEndLine());
+            length = lineRange.getModelLength();
+            
             doIt(editorAdaptor, startLine, endLine, length);
-        	
+            
         } catch (Exception e) {
             throw new CommandExecutionException("retab failed: " + e.getMessage());
         }
@@ -132,7 +132,7 @@ public class RetabOperation extends SimpleTextOperation {
                      LineInformation startLine, 
                      LineInformation endLine, 
                      int totalLengthOfRange) throws Exception {
-        
+
         int tabStop = editorAdaptor.getConfiguration().get(Options.TAB_STOP);
         boolean expandTab = editorAdaptor.getConfiguration().get(Options.EXPAND_TAB);
         
