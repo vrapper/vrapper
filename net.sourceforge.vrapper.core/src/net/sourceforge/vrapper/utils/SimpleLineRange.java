@@ -32,6 +32,7 @@ public class SimpleLineRange implements LineRange {
         return result;
     }
 
+    /** Returns a line range for a single line. To and From are set based on current cursor pos. */
     public static SimpleLineRange singleLine(EditorAdaptor editorAdaptor, Position position) {
         int modelOffset = position.getModelOffset();
         TextContent mc = editorAdaptor.getModelContent();
@@ -41,6 +42,7 @@ public class SimpleLineRange implements LineRange {
         return result;
     }
 
+    /** Returns a line range for a single line. To and From are set at the start of the line. */
     public static SimpleLineRange singleLineInModel(EditorAdaptor editorAdaptor,
             LineInformation modelLine) {
         SimpleLineRange result = new SimpleLineRange();
@@ -53,12 +55,14 @@ public class SimpleLineRange implements LineRange {
         return result;
     }
 
+    /** Returns a line range for a single line. To and From are set at the start of the line. */
     public static SimpleLineRange singleLineInModel(EditorAdaptor editorAdaptor, int modelLine) {
         TextContent mc = editorAdaptor.getModelContent();
         LineInformation lineInfo = mc.getLineInformation(modelLine);
         return singleLineInModel(editorAdaptor, lineInfo);
     }
 
+    /** Returns a line range where both positions are included. */
     public static SimpleLineRange betweenPositions(EditorAdaptor editorAdaptor, Position from, Position to) {
         SimpleLineRange result = new SimpleLineRange();
         LineInformation startLine;
@@ -79,6 +83,7 @@ public class SimpleLineRange implements LineRange {
         return result;
     }
 
+    /** Calculates a line range based on the from and to position of the selection. */
     public static SimpleLineRange fromSelection(EditorAdaptor editorAdaptor, Selection selection) {
         SimpleLineRange result = new SimpleLineRange();
         LineInformation startLine;
