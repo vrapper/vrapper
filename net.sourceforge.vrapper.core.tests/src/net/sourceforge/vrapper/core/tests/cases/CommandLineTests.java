@@ -34,6 +34,7 @@ import net.sourceforge.vrapper.vim.commands.SubstitutionOperation;
 import net.sourceforge.vrapper.vim.commands.TextObject;
 import net.sourceforge.vrapper.vim.commands.TextOperation;
 import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.modes.commandline.CommandLineMode;
 import net.sourceforge.vrapper.vim.modes.commandline.CommandLineParser;
@@ -41,11 +42,18 @@ import net.sourceforge.vrapper.vim.modes.commandline.ComplexOptionEvaluator;
 import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
 
+import org.junit.Before;
 import org.junit.Test;
 
 public class CommandLineTests extends VimTestCase {
 
     ComplexOptionEvaluator ev = new ComplexOptionEvaluator();
+
+
+    @Before
+    public void activateNormalMode() {
+        adaptor.changeModeSafely(NormalMode.NAME);
+    }
 
     @Test
     public void testComplexOptionEvaluator() {
@@ -453,6 +461,24 @@ public class CommandLineTests extends VimTestCase {
     	
     	new SortOperation("n").execute(adaptor, 0, range);
     	assertEquals("a\nb\nc\n3\n1\n2\n10", content.getText());
+    }
+
+    @Test
+    public void testNormalCommandMacro() throws CommandExecutionException {
+
+        adaptor.setPosition(new DumbPosition(2), StickyColumnPolicy.ON_CHANGE);
+
+        content.setText("line\n\t\t\tnew\tline\n\t\tABC");
+        type(parseKeyStrokes(":normal rt<CR>"));
+        assertEquals("lite\n\t\t\tnew\tline\n\t\tABC", content.getText());
+
+        content.setText("line\n\t\t\tnew\tline\n\t\tABC");
+        type(parseKeyStrokes(":.normal rt<CR>"));
+        assertEquals("tine\n\t\t\tnew\tline\n\t\tABC", content.getText());
+
+        content.setText("line\n\t\t\tnew\tline\n\t\tABC");
+        type(parseKeyStrokes(":%normal rm<CR>"));
+        assertEquals("mine\nm\t\tnew\tline\nm\tABC", content.getText());
     }
 
     @Test

@@ -7,10 +7,12 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 
 import net.sourceforge.vrapper.keymap.KeyStroke;
+import net.sourceforge.vrapper.platform.SelectionService;
 import net.sourceforge.vrapper.platform.Configuration.Option;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.LineRange;
 import net.sourceforge.vrapper.utils.Search;
+import net.sourceforge.vrapper.utils.SimpleLineRange;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.SubstitutionDefinition;
 import net.sourceforge.vrapper.utils.TextRange;
@@ -372,13 +374,22 @@ public class CommandLineParser extends AbstractCommandParser {
                     while (command.size() > 0) {
                         args.append(' ').append(command.poll());
                     }
-
-                    StartEndTextRange range = new StartEndTextRange(vim.getPosition(), vim.getPosition());
-                    new AnonymousMacroOperation(args.toString()).execute(vim, range, ContentType.TEXT);
-				}
+                    LineRange range;
+                    TextRange nativeSelection = vim.getNativeSelection();
+                    if (nativeSelection.getModelLength() > 0
+                            && SelectionService.VRAPPER_SELECTION_ACTIVE.equals(nativeSelection)) {
+                        range = SimpleLineRange.fromSelection(vim, vim.getSelection());
+                    } else if (nativeSelection.getModelLength() > 0) {
+                        // Native selection is exclusive, use the TextRange
+                        range = SimpleLineRange.fromTextRange(vim, nativeSelection);
+                    } else {
+                        range = SimpleLineRange.singleLine(vim, vim.getPosition());
+                    }
+                    new AnonymousMacroOperation(args.toString()).execute(vim, range);
+                }
                 catch (CommandExecutionException e) {
-            		vim.getUserInterfaceService().setErrorMessage(e.getMessage());
-				}
+                    vim.getUserInterfaceService().setErrorMessage(e.getMessage());
+                }
                 return null;
             }
         };
