@@ -79,4 +79,8 @@ public class SubstitutionDefinition {
 		    throw new IllegalArgumentException(e.getDescription());
 		}
     }
+
+    public boolean hasFlag(char flag) {
+        return flags.indexOf(flag) > -1;
+    }
 }

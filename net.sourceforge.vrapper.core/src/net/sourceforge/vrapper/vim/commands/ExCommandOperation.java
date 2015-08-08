@@ -5,24 +5,31 @@ import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.LineInformation;
+import net.sourceforge.vrapper.utils.LineRange;
 import net.sourceforge.vrapper.utils.Position;
+import net.sourceforge.vrapper.utils.SimpleLineRange;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
+import net.sourceforge.vrapper.utils.SubstitutionDefinition;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 
 /**
  * Takes a user-defined String such as:
+ * <pre>
  * :g/^a/normal wdw
  * :g/something/s/foo/bar/g
- * And parses all the pieces.  The expected pieces are:
- * 'g', 'g!', or 'v' to determine whether we find matches or non-matches
- * /{pattern}/ to determine what we're matching on
- * command name (e.g., 'normal', 's', 'd', etc.)
- * any command args (e.g., 'wdw' or '/foo/bar/g')
+ * </pre>
+ * and parses all the pieces.  The expected pieces are:
+ * <ul>
+ *     <li>'g', 'g!', or 'v' to determine whether we find matches or non-matches</li>
+ *     <li>/{pattern}/ to determine what we're matching on</li>
+ *     <li>command name (e.g., 'normal', 's', 'd', etc.)</li>
+ *     <li>any command args (e.g., 'wdw' or '/foo/bar/g')</li>
+ * </ul>
  *
  * We take those pieces and generate a Command if everything is valid.
  */
-public class ExCommandOperation extends SimpleTextOperation {
+public class ExCommandOperation extends AbstractLinewiseOperation {
 
 	protected static final String NEXTLINE_MARK = CursorService.INTERNAL_MARK_PREFIX + "-ex-nextline";
 
@@ -46,7 +53,14 @@ public class ExCommandOperation extends SimpleTextOperation {
 		}
 	}
 
-	public void execute(EditorAdaptor editorAdaptor, TextRange region, ContentType contentType)
+	@Override
+	public LineRange getDefaultRange(EditorAdaptor editorAdaptor, int count, Position currentPos)
+			throws CommandExecutionException {
+		return SimpleLineRange.entireFile(editorAdaptor);
+	}
+
+	@Override
+	public void execute(EditorAdaptor editorAdaptor, LineRange lineRange)
 			throws CommandExecutionException {
 		boolean findMatch = true;
 		//leave 'originalDefinition' untouched so repetition can use it again
@@ -103,20 +117,31 @@ public class ExCommandOperation extends SimpleTextOperation {
 		//chop off pattern (+delimiter), all that should be left is command
 		definition = definition.substring(patternEnd + 1);
 
-		SimpleTextOperation operation = buildExCommand(definition, editorAdaptor);
+		LineWiseOperation operation = buildExCommand(definition, editorAdaptor);
 
 		if(operation != null) {
-			executeExCommand(region, findMatch, pattern, operation, editorAdaptor);
+			executeExCommand(lineRange, findMatch, pattern, operation, editorAdaptor);
 		}
 	}
 
-	private SimpleTextOperation buildExCommand(String command, EditorAdaptor editorAdaptor) {
+	private LineWiseOperation buildExCommand(String command, EditorAdaptor editorAdaptor)
+			throws CommandExecutionException {
 		if(command.startsWith("normal ")) {
 			String args = command.substring("normal ".length());
 			return new AnonymousMacroOperation(args);
 		}
 		else if(command.startsWith("s")) {
-			return new SubstitutionOperation(command);
+			SubstitutionDefinition definition;
+			try {
+				definition = new SubstitutionDefinition(command,
+						editorAdaptor.getRegisterManager());
+			} catch (IllegalArgumentException e) {
+				throw new CommandExecutionException(e.getMessage());
+			}
+			if (definition.hasFlag('c')) {
+				throw new CommandExecutionException("Cannot use 'c' substitute flag in a global subcommand!");
+			}
+			return new SubstitutionOperation(definition);
 		}
 		else if(command.startsWith("d")) {
 			return DeleteOperation.INSTANCE;
@@ -132,26 +157,15 @@ public class ExCommandOperation extends SimpleTextOperation {
 		return null;
 	}
 
-	private void executeExCommand(TextRange region, boolean findMatch,
-			String pattern, SimpleTextOperation operation, EditorAdaptor editorAdaptor) {
+	private void executeExCommand(LineRange lineRange, boolean findMatch,
+			String pattern, LineWiseOperation operation, EditorAdaptor editorAdaptor) {
 
-		LineInformation line;
 		/** Starting line, inclusive. */
-		int startLine;
-		/** Ending line, exclusive (inclusive if last line is not empty). */
-		int endLine;
+		int startLine = lineRange.getStartLine();
+		/** Ending line, inclusive. */
+		int endLine = lineRange.getEndLine();
 		TextContent modelContent = editorAdaptor.getModelContent();
-		if (region == null) { //default case, entire file
-			line = modelContent.getLineInformation(0);
-			startLine = 0;
-			endLine = modelContent.getNumberOfLines() - 1;
-		}
-		else {
-			line = modelContent.getLineInformationOfOffset(region.getLeftBound().getModelOffset());
-			startLine = line.getNumber();
-			endLine = modelContent
-					.getLineInformationOfOffset( region.getRightBound().getModelOffset() ).getNumber();
-		}
+		LineInformation line = modelContent.getLineInformation(startLine);
 
 		editorAdaptor.getHistory().beginCompoundChange();
 		editorAdaptor.getHistory().lock("ex-command");
@@ -167,20 +181,15 @@ public class ExCommandOperation extends SimpleTextOperation {
 			editorAdaptor.getHistory().unlock("ex-command");
 			editorAdaptor.getHistory().endCompoundChange();
 		}
-
 	}
 
 	private void processMultipleLines(boolean findMatch, String pattern,
-			SimpleTextOperation operation, EditorAdaptor editorAdaptor, LineInformation line,
+			LineWiseOperation operation, EditorAdaptor editorAdaptor, LineInformation line,
 			int startLine, int endLine, TextContent modelContent) {
 		int linesProcessed = 0;
 		int nLines = modelContent.getNumberOfLines();
-		// Hard limit
-		int maxLinesToProcess = endLine - startLine;
-		if (nLines - 1 == endLine && modelContent.getLineInformation(endLine).getLength() > 0) {
-			// Using range and last line is not be empty, include it in processing
-			maxLinesToProcess++;
-		}
+		// Hard limit ( + 1 because endLine is inclusive )
+		int maxLinesToProcess = endLine - startLine + 1;
 		CursorService cs = editorAdaptor.getCursorService();
 
 		while (linesProcessed < maxLinesToProcess && line != null) {
@@ -218,7 +227,7 @@ public class ExCommandOperation extends SimpleTextOperation {
 		cs.deleteMark(NEXTLINE_MARK);
 	}
 
-	private boolean processLine(String pattern, boolean findMatch, SimpleTextOperation operation,
+	private boolean processLine(String pattern, boolean findMatch, LineWiseOperation operation,
 			LineInformation line, EditorAdaptor editorAdaptor) {
 		boolean operationPerformed = false;
 		String text = editorAdaptor.getModelContent().getText(line.getBeginOffset(), line.getLength());
@@ -237,11 +246,8 @@ public class ExCommandOperation extends SimpleTextOperation {
 		boolean matches = text.matches(pattern);
 		if( (findMatch && matches) || (!findMatch && !matches) ) {
 			try {
-				Position start = editorAdaptor.getCursorService().newPositionForModelOffset(line.getBeginOffset());
-				Position end = editorAdaptor.getCursorService().newPositionForModelOffset(line.getEndOffset());
-				TextRange range = new StartEndTextRange(start, end);
-
-				operation.execute(editorAdaptor, range, ContentType.LINES);
+				LineRange singleLine = SimpleLineRange.singleLineInModel(editorAdaptor, line);
+				operation.execute(editorAdaptor, singleLine);
 				operationPerformed = true;
 			} catch (CommandExecutionException e) {
 			}

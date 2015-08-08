@@ -32,6 +32,7 @@ public class SimpleLineRange implements LineRange {
         return result;
     }
 
+    /** Returns a line range for a single line. To and From are set based on current cursor pos. */
     public static SimpleLineRange singleLine(EditorAdaptor editorAdaptor, Position position) {
         int modelOffset = position.getModelOffset();
         TextContent mc = editorAdaptor.getModelContent();
@@ -41,20 +42,27 @@ public class SimpleLineRange implements LineRange {
         return result;
     }
 
-    public static SimpleLineRange singleLineInModel(EditorAdaptor editorAdaptor, int modelLine) {
+    /** Returns a line range for a single line. To and From are set at the start of the line. */
+    public static SimpleLineRange singleLineInModel(EditorAdaptor editorAdaptor,
+            LineInformation modelLine) {
         SimpleLineRange result = new SimpleLineRange();
-        result.startLine = modelLine;
-        result.endLine = modelLine;
-        TextContent mc = editorAdaptor.getModelContent();
-        LineInformation lineInfo = mc.getLineInformation(modelLine);
+        result.startLine = result.endLine = modelLine.getNumber();
         CursorService cs = editorAdaptor.getCursorService();
         // Shift past line end into next line. When at EOF, we get back what we started with.
-        Position nextLineStart = cs.shiftPositionForModelOffset(lineInfo.getEndOffset(), 1, false);
-        result.modelLength = nextLineStart.getModelOffset() - lineInfo.getBeginOffset();
-        result.from = result.to = cs.newPositionForModelOffset(lineInfo.getBeginOffset());
+        Position nextLineStart = cs.shiftPositionForModelOffset(modelLine.getEndOffset(), 1, false);
+        result.modelLength = nextLineStart.getModelOffset() - modelLine.getBeginOffset();
+        result.from = result.to = cs.newPositionForModelOffset(modelLine.getBeginOffset());
         return result;
     }
 
+    /** Returns a line range for a single line. To and From are set at the start of the line. */
+    public static SimpleLineRange singleLineInModel(EditorAdaptor editorAdaptor, int modelLine) {
+        TextContent mc = editorAdaptor.getModelContent();
+        LineInformation lineInfo = mc.getLineInformation(modelLine);
+        return singleLineInModel(editorAdaptor, lineInfo);
+    }
+
+    /** Returns a line range where both positions are included. */
     public static SimpleLineRange betweenPositions(EditorAdaptor editorAdaptor, Position from, Position to) {
         SimpleLineRange result = new SimpleLineRange();
         LineInformation startLine;
@@ -75,6 +83,7 @@ public class SimpleLineRange implements LineRange {
         return result;
     }
 
+    /** Calculates a line range based on the from and to position of the selection. */
     public static SimpleLineRange fromSelection(EditorAdaptor editorAdaptor, Selection selection) {
         SimpleLineRange result = new SimpleLineRange();
         LineInformation startLine;
@@ -99,6 +108,25 @@ public class SimpleLineRange implements LineRange {
         result.from = from;
         result.to = to;
         return result;
+    }
+
+    /**
+     * Returns a {@link LineRange} wrapping the given text region.
+     * <p><b>NOTE</b>: the very last line (the one rightBound is in) is not used as endLine if no
+     * characters are selected or if it is empty.
+     */
+    public static SimpleLineRange fromTextRange(EditorAdaptor editorAdaptor, TextRange textRange) {
+        Position start = textRange.getLeftBound();
+        Position end = textRange.getRightBound();
+        int endOffset = end.getModelOffset();
+        TextContent mc = editorAdaptor.getModelContent();
+        LineInformation lastLine = mc.getLineInformationOfOffset(endOffset);
+        CursorService cs = editorAdaptor.getCursorService();
+        // Check that the right bound includes some characters, if not we move to previous line
+        if (endOffset == lastLine.getBeginOffset()) {
+            end = cs.shiftPositionForModelOffset(endOffset, -1, false);
+        }
+        return betweenPositions(editorAdaptor, start, end);
     }
 
     protected int startLine;

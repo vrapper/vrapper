@@ -3,10 +3,15 @@ package net.sourceforge.vrapper.vim.commands;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.utils.LineAddressParser;
+import net.sourceforge.vrapper.utils.LineRange;
 import net.sourceforge.vrapper.utils.Position;
-import net.sourceforge.vrapper.utils.StartEndTextRange;
+import net.sourceforge.vrapper.utils.SimpleLineRange;
+import net.sourceforge.vrapper.utils.SubstitutionDefinition;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
+import net.sourceforge.vrapper.vim.modes.ConfirmSubstitutionMode;
 
 /**
  * Perform an operation (yank, delete, substitution) on a range of lines.
@@ -70,13 +75,31 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
     }
 	
 	public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
-	    TextObject range = parseRangeDefinition(editorAdaptor, true);
+	    LineRange range = parseRangeDefinition(editorAdaptor);
 	    if (range != null)
 	    {
-	        TextOperation operation = parseRangeOperation(editorAdaptor);
-	        if (operation != null)
+	        LineWiseOperation operation = parseRangeOperation(editorAdaptor);
+	        if (operation instanceof SubstitutionOperation) {
+	            //[TODO] LineRangeOperationCommand should actually be refactored so that a
+	            // substitution evaluator can handle this together with the case without range.
+	            SubstitutionOperation substitute = (SubstitutionOperation) operation;
+	            SubstitutionDefinition definition = substitute.getDefinition();
+
+	            if (definition.hasFlag('c')) {
+	                //move into "confirm" mode
+	                editorAdaptor.changeModeSafely(ConfirmSubstitutionMode.NAME,
+	                        new ConfirmSubstitutionMode.SubstitutionConfirm(definition,
+	                                range.getStartLine(), range.getEndLine()));
+	            } else {
+	                substitute.execute(editorAdaptor, range);
+	            }
+	        }
+	        else if (operation != null)
 	        {
-	            new TextOperationTextObjectCommand(operation, range).execute(editorAdaptor);
+	            operation.execute(editorAdaptor, range);
+	            // Reset sticky column for those few operations where it isn't done.
+	            CursorService cursorService = editorAdaptor.getCursorService();
+	            cursorService.setPosition(cursorService.getPosition(), StickyColumnPolicy.ON_CHANGE);
 	        }
 	    }
 	}
@@ -121,29 +144,25 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
             }
         }
     }
-    	
-    public Selection parseRangeDefinition(EditorAdaptor editorAdaptor, boolean linewise) {
+
+    public LineRange parseRangeDefinition(EditorAdaptor editorAdaptor) {
     	Position startPos = LineAddressParser.parseAddressPosition(startStr, editorAdaptor);
     	Position stopPos = LineAddressParser.parseAddressPosition(stopStr, editorAdaptor);
     	if(startPos != null && stopPos != null) {
-    	    if (linewise) {
-    	        return new LineWiseSelection(editorAdaptor, startPos, stopPos);
-    	    } else {
-    	        return new SimpleSelection(new StartEndTextRange(startPos, stopPos));
-    	    }
-    	}
-    	else {
+    	    return SimpleLineRange.betweenPositions(editorAdaptor, startPos, stopPos);
+    	} else {
     		return null;
     	}
     }
-    
+
     /**
      * Parse the desired operation to perform on this range.
      * @param operation - single character defining the operation
      * @param remainingChars - any characters defined by the user after the operation char
      * @return the Operation corresponding to the operation char
+     * @throws CommandExecutionException 
      */
-    public SimpleTextOperation parseRangeOperation(EditorAdaptor editorAdaptor) {
+    public LineWiseOperation parseRangeOperation(EditorAdaptor editorAdaptor) throws CommandExecutionException {
         if (operationStr.isEmpty()) {
     		editorAdaptor.getUserInterfaceService().setErrorMessage("No operation specified.");
     		return null;
@@ -170,7 +189,14 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
     		return new SortOperation(operationStr.substring(4));
     	}
     	else if(operation == 's') {
-    		return new SubstitutionOperation(operationStr);
+    		SubstitutionDefinition def;
+    		try {
+    			def = new SubstitutionDefinition(operationStr,
+    					editorAdaptor.getRegisterManager());
+    		} catch (IllegalArgumentException e) {
+    			throw new CommandExecutionException(e.getMessage());
+    		}
+    		return new SubstitutionOperation(def);
     	}
     	else if(operation == 'g' || operation == 'v') {
     		return new ExCommandOperation(operationStr);
@@ -183,6 +209,9 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
     	}
     	else if(operation == 'm') {
     		return new CopyMoveLinesOperation(operationStr, true);
+    	}
+    	else if(operation == 'n' && operationStr.startsWith("norm")) {
+    		return new AnonymousMacroOperation(operationStr);
     	}
     	else if(operation == '!') {
     		return new PipeExternalOperation(operationStr);

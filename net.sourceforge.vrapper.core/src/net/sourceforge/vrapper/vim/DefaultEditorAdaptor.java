@@ -468,6 +468,16 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     }
 
     @Override
+    public void setNativeSelection(TextRange range) {
+        selectionService.setNativeSelection(range);
+    }
+
+    @Override
+    public TextRange getNativeSelection() {
+        return selectionService.getNativeSelection();
+    }
+
+    @Override
     public BufferAndTabService getBufferAndTabService() {
         return bufferAndTabService;
     }

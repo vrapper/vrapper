@@ -17,21 +17,24 @@ import net.sourceforge.vrapper.core.tests.utils.DumbPosition;
 import net.sourceforge.vrapper.core.tests.utils.TestSearchService;
 import net.sourceforge.vrapper.core.tests.utils.VimTestCase;
 import net.sourceforge.vrapper.platform.Configuration.Option;
-import net.sourceforge.vrapper.utils.ContentType;
+import net.sourceforge.vrapper.utils.LineRange;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Search;
-import net.sourceforge.vrapper.utils.TextRange;
+import net.sourceforge.vrapper.utils.SimpleLineRange;
+import net.sourceforge.vrapper.utils.SubstitutionDefinition;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
+import net.sourceforge.vrapper.vim.commands.DummyTextObject;
 import net.sourceforge.vrapper.vim.commands.LineRangeOperationCommand;
-import net.sourceforge.vrapper.vim.commands.LineWiseSelection;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.commands.RetabOperation;
-import net.sourceforge.vrapper.vim.commands.SimpleTextOperation;
 import net.sourceforge.vrapper.vim.commands.SortOperation;
 import net.sourceforge.vrapper.vim.commands.SubstitutionOperation;
+import net.sourceforge.vrapper.vim.commands.TextObject;
+import net.sourceforge.vrapper.vim.commands.TextOperation;
 import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.modes.commandline.CommandLineMode;
 import net.sourceforge.vrapper.vim.modes.commandline.CommandLineParser;
@@ -39,11 +42,18 @@ import net.sourceforge.vrapper.vim.modes.commandline.ComplexOptionEvaluator;
 import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
 
+import org.junit.Before;
 import org.junit.Test;
 
 public class CommandLineTests extends VimTestCase {
 
     ComplexOptionEvaluator ev = new ComplexOptionEvaluator();
+
+
+    @Before
+    public void activateNormalMode() {
+        adaptor.changeModeSafely(NormalMode.NAME);
+    }
 
     @Test
     public void testComplexOptionEvaluator() {
@@ -72,45 +82,51 @@ public class CommandLineTests extends VimTestCase {
         registerManager = new DefaultRegisterManager();
         when(platform.getSearchAndReplaceService()).thenReturn(new TestSearchService(content, configuration));
         reloadEditorAdaptor();
+        DummyTextObject defaultRange = new DummyTextObject(null);
 
         registerManager.setSearch(new Search("two", false, false, false));
 
         content.setText("one Two three two but two and Two");
-        new SubstitutionOperation("s/one/four/Ig").execute(adaptor, null, ContentType.LINES);
+        makeSubstitution("s/one/four/Ig").execute(adaptor, 0, defaultRange);
         assertEquals("four Two three two but two and Two", content.getText());
 
         content.setText("one Two three two but two and Two");
-        new SubstitutionOperation("s!one!four!Ig").execute(adaptor, null, ContentType.LINES);
+        makeSubstitution("s!one!four!Ig").execute(adaptor, 0, defaultRange);
         assertEquals("four Two three two but two and Two", content.getText());
 
         content.setText("one Two three two but two and Two");
         // Replace with contents of (search) register
-        new SubstitutionOperation("s!one!\\=@/!Ig").execute(adaptor, null, ContentType.LINES);
+        makeSubstitution("s!one!\\=@/!Ig").execute(adaptor, 0, defaultRange);
         assertEquals("two Two three two but two and Two", content.getText());
 
         registerManager.setSearch(new Search("two", false, false, false));
 
         content.setText("one Two three two");
         // Do last search again, replace with empty string, minding case.
-        new SubstitutionOperation("s///I").execute(adaptor, null, ContentType.LINES);
+        makeSubstitution("s///I").execute(adaptor, 0, defaultRange);
         assertEquals("one Two three ", content.getText());
 
         content.setText("one Two three two");
         // Do last search again, replace with empty string, without minding case.
-        new SubstitutionOperation("s///ig").execute(adaptor, null, ContentType.LINES);
+        makeSubstitution("s///ig").execute(adaptor, 0, defaultRange);
         assertEquals("one  three ", content.getText());
 
         content.setText("one Two three two but two and Two");
         // Do last search again, replace with empty string, without minding case.
-        new SubstitutionOperation("s///Ig").execute(adaptor, null, ContentType.LINES);
+        makeSubstitution("s///Ig").execute(adaptor, 0, defaultRange);
         assertEquals("one Two three  but  and Two", content.getText());
 
         registerManager.setSearch(new Search("Two", false, false, false));
 
         content.setText("one Two three two");
         // Special case: do last search again, replace with empty string
-        new SubstitutionOperation("s//").execute(adaptor, null, ContentType.LINES);
+        makeSubstitution("s//").execute(adaptor, 0, defaultRange);
         assertEquals("one  three two", content.getText());
+    }
+    
+    private SubstitutionOperation makeSubstitution(String command) {
+        SubstitutionDefinition definition = new SubstitutionDefinition(command, registerManager);
+        return new SubstitutionOperation(definition);
     }
 
     @Test
@@ -246,137 +262,140 @@ public class CommandLineTests extends VimTestCase {
     
     @Test
     public void testRetab() throws CommandExecutionException {
-    	SimpleTextOperation retabCommand = (SimpleTextOperation) new RetabOperation(null);
+    	TextOperation retabCommand = new RetabOperation(null);
+    	DummyTextObject defaultRange = new DummyTextObject(null);
     
     	when(configuration.get(Options.EXPAND_TAB)).thenReturn(true);
     	when(configuration.get(Options.TAB_STOP)).thenReturn(4);
     	
     	content.setText("\t");
-    	retabCommand.execute(adaptor, null, ContentType.LINES);
+    	retabCommand.execute(adaptor, 0, defaultRange);
     	assertEquals("    ", content.getText());
     	
     	content.setText("line\n\t\t\tnew\tline\n\t\tABC");
-    	retabCommand.execute(adaptor, null, ContentType.LINES);
+    	retabCommand.execute(adaptor, 0, defaultRange);
     	assertEquals("line\n            new    line\n        ABC", content.getText());
     	
     	content.setText("\t\t\t\n\t\n\n\t\t\t\n\t");
-    	retabCommand.execute(adaptor, null, ContentType.LINES);
+    	retabCommand.execute(adaptor, 0, defaultRange);
     	assertEquals("            \n    \n\n            \n    ", content.getText());
     }
     
     @Test
     public void testSort() throws CommandExecutionException {
+        // This will trigger sort operation's default range (sort all file)
+        TextObject defaultRange = new DummyTextObject(null);
     	content.setText("single line");
-    	new SortOperation("").execute(adaptor, null, ContentType.LINES);
+    	new SortOperation("").execute(adaptor, 0, defaultRange);
     	assertEquals("single line", content.getText());
     	
     	content.setText("3\n2\n1\n10");
-    	new SortOperation("").execute(adaptor, null, ContentType.LINES);
+    	new SortOperation("").execute(adaptor, 0, defaultRange);
     	assertEquals("1\n10\n2\n3", content.getText());
     	
-    	new SortOperation("!").execute(adaptor, null, ContentType.LINES);
+    	new SortOperation("!").execute(adaptor, 0, defaultRange);
     	assertEquals("3\n2\n10\n1", content.getText());
     	
-    	new SortOperation("n").execute(adaptor, null, ContentType.LINES);
+    	new SortOperation("n").execute(adaptor, 0, defaultRange);
     	assertEquals("1\n2\n3\n10", content.getText());
     	
-    	new SortOperation("!n").execute(adaptor, null, ContentType.LINES);
+    	new SortOperation("!n").execute(adaptor, 0, defaultRange);
     	assertEquals("10\n3\n2\n1", content.getText());
     	
     	content.setText("3\n-2\n1\n10");
-    	new SortOperation("").execute(adaptor, null, ContentType.LINES);
+    	new SortOperation("").execute(adaptor, 0, defaultRange);
     	assertEquals("-2\n1\n10\n3", content.getText());
     	
     	content.setText("3\n-2\n1\n10");
-    	new SortOperation("n").execute(adaptor, null, ContentType.LINES);
+    	new SortOperation("n").execute(adaptor, 0, defaultRange);
     	assertEquals("-2\n1\n3\n10", content.getText());
     	
     	content.setText("c\n3\n2\nb\n10\n1\na");
-    	new SortOperation("").execute(adaptor, null, ContentType.LINES);
+    	new SortOperation("").execute(adaptor, 0, defaultRange);
     	assertEquals("1\n10\n2\n3\na\nb\nc", content.getText());
     	
     	content.setText("c\n3\n2\nb\n10\n1\na");
-    	new SortOperation("n").execute(adaptor, null, ContentType.LINES);
+    	new SortOperation("n").execute(adaptor, 0, defaultRange);
     	assertEquals("c\nb\na\n1\n2\n3\n10", content.getText());
     	
     	content.setText("c\n3\n2\nb\n10\n1\na");
-    	new SortOperation("n!").execute(adaptor, null, ContentType.LINES);
+    	new SortOperation("n!").execute(adaptor, 0, defaultRange);
     	assertEquals("10\n3\n2\n1\na\nb\nc", content.getText());
     	
     	content.setText("c\n3\n2\nb\n10\n1\na");
-    	new SortOperation("x").execute(adaptor, null, ContentType.LINES);
+    	new SortOperation("x").execute(adaptor, 0, defaultRange);
     	assertEquals("1\n2\n3\na\nb\nc\n10", content.getText());
     	
     	content.setText("c\n3\n2\nb\nxx\n10\n1\na");
-    	new SortOperation("x").execute(adaptor, null, ContentType.LINES);
+    	new SortOperation("x").execute(adaptor, 0, defaultRange);
     	assertEquals("xx\n1\n2\n3\na\nb\nc\n10", content.getText());
     	
     	content.setText("bb3\naa4\ncc2\ndd1");
-    	new SortOperation("").execute(adaptor, null, ContentType.LINES);
+    	new SortOperation("").execute(adaptor, 0, defaultRange);
     	assertEquals("aa4\nbb3\ncc2\ndd1", content.getText());
     	
-    	new SortOperation("n").execute(adaptor, null, ContentType.LINES);
+    	new SortOperation("n").execute(adaptor, 0, defaultRange);
     	assertEquals("dd1\ncc2\nbb3\naa4", content.getText());
     	
-    	new SortOperation("x").execute(adaptor, null, ContentType.LINES);
+    	new SortOperation("x").execute(adaptor, 0, defaultRange);
     	assertEquals("aa4\nbb3\ncc2\ndd1", content.getText());
     	
     	content.setText("a\na\na\na\nb\nb\nc");
-    	new SortOperation("").execute(adaptor, null, ContentType.LINES);
+    	new SortOperation("").execute(adaptor, 0, defaultRange);
     	assertEquals("a\na\na\na\nb\nb\nc", content.getText());
     	
-    	new SortOperation("u").execute(adaptor, null, ContentType.LINES);
+    	new SortOperation("u").execute(adaptor, 0, defaultRange);
     	assertEquals("a\nb\nc", content.getText());
     	
     	content.setText("a\na\nA\nA\nb\nb\nc");
-    	new SortOperation("").execute(adaptor, null, ContentType.LINES);
+    	new SortOperation("").execute(adaptor, 0, defaultRange);
     	assertEquals("A\nA\na\na\nb\nb\nc", content.getText());
     	
     	content.setText("d\nA\nC\nb\nE");
-    	new SortOperation("").execute(adaptor, null, ContentType.LINES);
+    	new SortOperation("").execute(adaptor, 0, defaultRange);
     	assertEquals("A\nC\nE\nb\nd", content.getText());
     	
     	content.setText("d\nA\nC\nb\nE");
-    	new SortOperation("i").execute(adaptor, null, ContentType.LINES);
+    	new SortOperation("i").execute(adaptor, 0, defaultRange);
     	assertEquals("A\nb\nC\nd\nE", content.getText());
     	
     	content.setText("a\na\nA\nA\nb\nb\nc");
-    	new SortOperation("i").execute(adaptor, null, ContentType.LINES);
+    	new SortOperation("i").execute(adaptor, 0, defaultRange);
     	assertEquals("a\na\nA\nA\nb\nb\nc", content.getText());
     	
-    	new SortOperation("u").execute(adaptor, null, ContentType.LINES);
+    	new SortOperation("u").execute(adaptor, 0, defaultRange);
     	assertEquals("A\na\nb\nc", content.getText());
     	
     	content.setText("a\na\nA\nA\nb\nb\nc");
-    	new SortOperation("ui").execute(adaptor, null, ContentType.LINES);
+    	new SortOperation("ui").execute(adaptor, 0, defaultRange);
     	assertEquals("a\nb\nc", content.getText());
     	
     	content.setText("A\nA\na\na\nb\nb\nc");
-    	new SortOperation("ui").execute(adaptor, null, ContentType.LINES);
+    	new SortOperation("ui").execute(adaptor, 0, defaultRange);
     	assertEquals("A\nb\nc", content.getText());
     	
     	content.setText("1xx5\n3xx3\n2xx4\n4xx2");
-    	new SortOperation("n").execute(adaptor, null, ContentType.LINES);
+    	new SortOperation("n").execute(adaptor, 0, defaultRange);
     	assertEquals("1xx5\n2xx4\n3xx3\n4xx2", content.getText());
     	
     	content.setText("1xx5\n3xx3\n2xx4\n4xx2");
-    	new SortOperation("/xx/ n").execute(adaptor, null, ContentType.LINES);
+    	new SortOperation("/xx/ n").execute(adaptor, 0, defaultRange);
     	assertEquals("4xx2\n3xx3\n2xx4\n1xx5", content.getText());
     	
     	content.setText("1xx5\n3xx3\n2xx4\n4xx2\naxxb");
-    	new SortOperation("/xx/").execute(adaptor, null, ContentType.LINES);
+    	new SortOperation("/xx/").execute(adaptor, 0, defaultRange);
     	assertEquals("4xx2\n3xx3\n2xx4\n1xx5\naxxb", content.getText());
     	
     	content.setText("1xx5\n3xx3\n2xx4\n4xx2\naxxa");
-    	new SortOperation("/xx/ n").execute(adaptor, null, ContentType.LINES);
+    	new SortOperation("/xx/ n").execute(adaptor, 0, defaultRange);
     	assertEquals("axxa\n4xx2\n3xx3\n2xx4\n1xx5", content.getText());
     	
     	content.setText("1xx5\n3xx3\n2xx4\n4xx2\naxxb\nfoo");
-    	new SortOperation("/xx/").execute(adaptor, null, ContentType.LINES);
+    	new SortOperation("/xx/").execute(adaptor, 0, defaultRange);
     	assertEquals("foo\n4xx2\n3xx3\n2xx4\n1xx5\naxxb", content.getText());
     	
     	content.setText("3\n2\n-1\n1\n0");
-    	new SortOperation("").execute(adaptor, null, ContentType.LINES);
+    	new SortOperation("").execute(adaptor, 0, defaultRange);
     	assertEquals("-1\n0\n1\n2\n3", content.getText());
     }
    
@@ -406,42 +425,60 @@ public class CommandLineTests extends VimTestCase {
     	content.setText("one\ntwo\nthree");
     	Position startPos = new DumbPosition(4);
     	Position stopPos = new DumbPosition(6);
-    	TextRange range = new LineWiseSelection(adaptor, startPos, stopPos);
+    	LineRange range = SimpleLineRange.betweenPositions(adaptor, startPos, stopPos);
     	
-    	new SortOperation("").execute(adaptor, range, ContentType.LINES);
+    	new SortOperation("").execute(adaptor, 0, range);
     	assertEquals("one\ntwo\nthree", content.getText());
     	
     	content.setText("3\n2\n1\n10");
     	startPos = new DumbPosition(0);
     	stopPos = new DumbPosition(6);
-    	range = new LineWiseSelection(adaptor, startPos, stopPos);
+    	range = SimpleLineRange.betweenPositions(adaptor, startPos, stopPos);
     	
-    	new SortOperation("").execute(adaptor, range, ContentType.LINES);
+    	new SortOperation("").execute(adaptor, 0, range);
     	assertEquals("1\n10\n2\n3", content.getText());
     	
     	content.setText("3\n2\n1\n10");
     	startPos = new DumbPosition(2);
     	stopPos = new DumbPosition(5);
-    	range = new LineWiseSelection(adaptor, startPos, stopPos);
+    	range = SimpleLineRange.betweenPositions(adaptor, startPos, stopPos);
     	
-    	new SortOperation("").execute(adaptor, range, ContentType.LINES);
+    	new SortOperation("").execute(adaptor, 0, range);
     	assertEquals("3\n1\n2\n10", content.getText());
     	
     	content.setText("3\n2\n10\n1");
     	startPos = new DumbPosition(2);
     	stopPos = new DumbPosition(8);
-    	range = new LineWiseSelection(adaptor, startPos, stopPos);
+    	range = SimpleLineRange.betweenPositions(adaptor, startPos, stopPos);
     	
-    	new SortOperation("").execute(adaptor, range, ContentType.LINES);
+    	new SortOperation("").execute(adaptor, 0, range);
     	assertEquals("3\n1\n10\n2", content.getText());
     	
     	content.setText("a\nb\nc\n3\n2\n10\n1");
     	startPos = new DumbPosition(9);
     	stopPos = new DumbPosition(14);
-    	range = new LineWiseSelection(adaptor, startPos, stopPos);
+    	range = SimpleLineRange.betweenPositions(adaptor, startPos, stopPos);
     	
-    	new SortOperation("n").execute(adaptor, range, ContentType.LINES);
+    	new SortOperation("n").execute(adaptor, 0, range);
     	assertEquals("a\nb\nc\n3\n1\n2\n10", content.getText());
+    }
+
+    @Test
+    public void testNormalCommandMacro() throws CommandExecutionException {
+
+        adaptor.setPosition(new DumbPosition(2), StickyColumnPolicy.ON_CHANGE);
+
+        content.setText("line\n\t\t\tnew\tline\n\t\tABC");
+        type(parseKeyStrokes(":normal rt<CR>"));
+        assertEquals("lite\n\t\t\tnew\tline\n\t\tABC", content.getText());
+
+        content.setText("line\n\t\t\tnew\tline\n\t\tABC");
+        type(parseKeyStrokes(":.normal rt<CR>"));
+        assertEquals("tine\n\t\t\tnew\tline\n\t\tABC", content.getText());
+
+        content.setText("line\n\t\t\tnew\tline\n\t\tABC");
+        type(parseKeyStrokes(":%normal rm<CR>"));
+        assertEquals("mine\nm\t\tnew\tline\nm\tABC", content.getText());
     }
 
     @Test

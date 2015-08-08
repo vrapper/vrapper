@@ -12,6 +12,7 @@ import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
+import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
@@ -21,6 +22,7 @@ public class TestCursorAndSelection implements CursorService, SelectionService {
 
 	private Position position = new DumbPosition(0);
 	private Selection selection;
+	private TextRange nativeSelection;
 	private CaretType caretType;
     private TextContent content;
     private int stickyColumnNo;
@@ -116,17 +118,42 @@ public class TestCursorAndSelection implements CursorService, SelectionService {
 	}
 
 	public Selection getSelection() {
-	    if (selection != null)
-	        return selection;
-	    else
-	        //basically an empty selection centered around the cursor.
-	        return new SimpleSelection(new StartEndTextRange(position, position));
+		if (selection != null) {
+			return selection;
+		} else if (nativeSelection != null) {
+			return new SimpleSelection(nativeSelection);
+		} else {
+			//basically an empty selection centered around the cursor.
+			return new SimpleSelection(new StartEndTextRange(position, position));
+		}
+	}
+	
+	@Override
+	public TextRange getNativeSelection() {
+		if (selection == null && nativeSelection == null) {
+			//basically an empty selection centered around the cursor.
+			return new StartEndTextRange(position, position);
+		} else if (selection == null) {
+			return nativeSelection;
+		} else {
+			// regular Vrapper selection always has priority over native selection
+			return VRAPPER_SELECTION_ACTIVE;
+		}
+	}
+	
+	@Override
+	public void setNativeSelection(TextRange range) {
+		selection = null;
+		nativeSelection = range;
 	}
 
 	public void setSelection(Selection selection) {
 		if (selection != null)
 			this.position = selection.getEnd();
 		this.selection = selection;
+		if (selection == null) {
+			nativeSelection = null;
+		}
 	}
 
 	public void setLineWiseSelection(boolean lineWise) {

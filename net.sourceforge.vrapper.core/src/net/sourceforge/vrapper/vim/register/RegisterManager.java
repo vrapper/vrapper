@@ -5,7 +5,7 @@ import java.util.Set;
 import net.sourceforge.vrapper.utils.Search;
 import net.sourceforge.vrapper.utils.SelectionArea;
 import net.sourceforge.vrapper.vim.commands.Command;
-import net.sourceforge.vrapper.vim.commands.TextOperation;
+import net.sourceforge.vrapper.vim.commands.SubstitutionOperation;
 import net.sourceforge.vrapper.vim.commands.motions.FindMotion;
 
 /**
@@ -45,8 +45,8 @@ public interface RegisterManager {
     void setLastEdit(Command edit);
     void setLastInsertion(Command command);
     Command getLastInsertion();
-    void setLastSubstitution(TextOperation operation);
-    TextOperation getLastSubstitution();
+    void setLastSubstitution(SubstitutionOperation operation);
+    SubstitutionOperation getLastSubstitution();
     void setLastYank(RegisterContent register);
     void setLastDelete(RegisterContent register);
     void setLastFindMotion(FindMotion motion);

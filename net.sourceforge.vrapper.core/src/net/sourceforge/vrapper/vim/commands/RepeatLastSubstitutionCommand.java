@@ -1,6 +1,7 @@
 package net.sourceforge.vrapper.vim.commands;
 
-import net.sourceforge.vrapper.utils.Position;
+import net.sourceforge.vrapper.utils.LineRange;
+import net.sourceforge.vrapper.utils.SimpleLineRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 
 public class RepeatLastSubstitutionCommand extends CountAwareCommand {
@@ -17,33 +18,25 @@ public class RepeatLastSubstitutionCommand extends CountAwareCommand {
 	@Override
 	public void execute(EditorAdaptor editorAdaptor, int count)
 			throws CommandExecutionException {
-		TextOperation substitution = editorAdaptor.getRegisterManager().getLastSubstitution();
+		SubstitutionOperation substitution = editorAdaptor.getRegisterManager().getLastSubstitution();
 		if(substitution == null) {
 			//no-op
 			return;
 		}
 		
-		Command command;
+		LineRange range;
 		if(currentLineOnly) {
-			//null TextRange is a special case for "current line"
-			command = new TextOperationTextObjectCommand(
-				substitution, new DummyTextObject(null)
-			);
+			range = SimpleLineRange.singleLine(editorAdaptor, editorAdaptor.getPosition());
 		}
 		else {
-    		Position start = editorAdaptor.getCursorService().newPositionForModelOffset( 0 );
-    		Position end = editorAdaptor.getCursorService().newPositionForModelOffset( editorAdaptor.getModelContent().getTextLength() );
-    		command = new TextOperationTextObjectCommand(
-				substitution, new LineWiseSelection(editorAdaptor, start, end)
-    		);
+			range = SimpleLineRange.entireFile(editorAdaptor);
 		}
 		
-		command.execute(editorAdaptor);
+		substitution.execute(editorAdaptor, range);
 	}
 
 	@Override
 	public CountAwareCommand repetition() {
 		return this;
 	}
-
 }

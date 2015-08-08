@@ -2,66 +2,43 @@ package net.sourceforge.vrapper.vim.commands;
 
 import net.sourceforge.vrapper.platform.SearchAndReplaceService;
 import net.sourceforge.vrapper.platform.TextContent;
-import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.LineInformation;
+import net.sourceforge.vrapper.utils.LineRange;
+import net.sourceforge.vrapper.utils.Position;
+import net.sourceforge.vrapper.utils.SimpleLineRange;
 import net.sourceforge.vrapper.utils.SubstitutionDefinition;
-import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
-import net.sourceforge.vrapper.vim.modes.ConfirmSubstitutionMode;
 
 /**
  * Perform a substitution on a range of lines.  Can be current line,
  * all lines, or any range in between.
  * For example, :s/foo/blah/g or :%s/foo/blah/g or :2,5s/foo/blah/g
  */
-public class SubstitutionOperation extends SimpleTextOperation {
-	
-	private String substitution;
-	
-	public SubstitutionOperation(String substitution) {
-		this.substitution = substitution;
+public class SubstitutionOperation extends AbstractLinewiseOperation {
+
+	private SubstitutionDefinition subDef;
+
+	public SubstitutionOperation(SubstitutionDefinition substitution) {
+		this.subDef = substitution;
+	}
+
+	public SubstitutionDefinition getDefinition() {
+		return subDef;
 	}
 
     @Override
-    public void execute(EditorAdaptor editorAdaptor, TextRange region, ContentType contentType) throws CommandExecutionException {
+    public LineRange getDefaultRange(EditorAdaptor editorAdaptor, int count, Position currentPos)
+            throws CommandExecutionException {
+        return SimpleLineRange.singleLine(editorAdaptor, currentPos);
+    }
+
+    @Override
+    public void execute(EditorAdaptor editorAdaptor, LineRange range) throws CommandExecutionException {
         TextContent model = editorAdaptor.getModelContent();
-    	int startLine;
-    	int endLine;
-    	if(region == null) {
-    		//special case, recalculate 'current line' every time
-    		//(this is to ensure '.' always works on current line)
-    		int offset = editorAdaptor.getPosition().getModelOffset();
-			startLine = model.getLineInformationOfOffset(offset).getNumber();
-			endLine = startLine;
-    	}
-    	else {
-	    	startLine = model.getLineInformationOfOffset( region.getLeftBound().getModelOffset() ).getNumber();
-	    	endLine = model.getLineInformationOfOffset( region.getRightBound().getModelOffset() ).getNumber();
-	    	if(model.getTextLength() == region.getRightBound().getModelOffset()) {
-	    	    //the endLine calculation is off-by-one for the last line in the file
-	    	    //force it to actually use the last line
-	    	    endLine = model.getNumberOfLines();
-	    	}
-    	}
-    	
-    	SubstitutionDefinition subDef;
-    	try {
-    	    subDef = new SubstitutionDefinition(substitution, editorAdaptor.getRegisterManager());
-    	}
-    	catch(IllegalArgumentException e) {
-			throw new CommandExecutionException(e.getMessage());
-    	}
-    	
-    	if(subDef.flags.indexOf('c') > -1) {
-    	    //move into "confirm" mode
-    	    editorAdaptor.changeModeSafely(ConfirmSubstitutionMode.NAME, new ConfirmSubstitutionMode.SubstitutionConfirm(subDef, startLine, endLine));
-    	    return;
-    	}
-		
 		int numReplaces = 0;
 		int lineReplaceCount = 0;
-		if(startLine == endLine) {
-			LineInformation currentLine = model.getLineInformation(startLine);
+		if (range.getStartLine() == range.getEndLine()) {
+			LineInformation currentLine = model.getLineInformation(range.getStartLine());
 			//begin and end compound change so a single 'u' undoes all replaces
 			editorAdaptor.getHistory().beginCompoundChange();
 			numReplaces = performReplace(currentLine, subDef.find, subDef.replace, subDef.flags, editorAdaptor);
@@ -70,13 +47,14 @@ public class SubstitutionOperation extends SimpleTextOperation {
 		else {
 			LineInformation line;
 			int lineChanges = 0;
-			
+
+			int endLine = range.getEndLine();
 			int totalLines = model.getNumberOfLines();
 			int lineDiff;
 			//perform search individually on each line in the range
 			//(so :%s without 'g' flag runs once on each line)
 			editorAdaptor.getHistory().beginCompoundChange();
-			for(int i=startLine; i < endLine; i++) {
+			for(int i=range.getStartLine(); i <= endLine; i++) {
 				line = model.getLineInformation(i);
 				lineChanges = performReplace(line, subDef.find, subDef.replace, subDef.flags, editorAdaptor);
 				if(lineChanges > 0) {
@@ -110,6 +88,7 @@ public class SubstitutionOperation extends SimpleTextOperation {
 		}
 		
 		//enable '&', 'g&', and ':s' features
+		// [TODO] Move to substitution parser
 		editorAdaptor.getRegisterManager().setLastSubstitution(this);
 	}
     

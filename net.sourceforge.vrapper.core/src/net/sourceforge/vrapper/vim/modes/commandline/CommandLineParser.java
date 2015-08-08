@@ -7,21 +7,27 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 
 import net.sourceforge.vrapper.keymap.KeyStroke;
+import net.sourceforge.vrapper.platform.SelectionService;
 import net.sourceforge.vrapper.platform.Configuration.Option;
 import net.sourceforge.vrapper.utils.ContentType;
+import net.sourceforge.vrapper.utils.LineRange;
 import net.sourceforge.vrapper.utils.Search;
+import net.sourceforge.vrapper.utils.SimpleLineRange;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
+import net.sourceforge.vrapper.utils.SubstitutionDefinition;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.AnonymousMacroOperation;
 import net.sourceforge.vrapper.vim.commands.AsciiCommand;
+import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
 import net.sourceforge.vrapper.vim.commands.ChangeToInsertModeCommand;
 import net.sourceforge.vrapper.vim.commands.CloseCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.ConfigCommand;
+import net.sourceforge.vrapper.vim.commands.DummyCommand;
 import net.sourceforge.vrapper.vim.commands.DummyTextObject;
 import net.sourceforge.vrapper.vim.commands.EditFileCommand;
 import net.sourceforge.vrapper.vim.commands.ExCommandOperation;
@@ -39,18 +45,19 @@ import net.sourceforge.vrapper.vim.commands.RepeatLastSubstitutionCommand;
 import net.sourceforge.vrapper.vim.commands.RetabOperation;
 import net.sourceforge.vrapper.vim.commands.SaveAllCommand;
 import net.sourceforge.vrapper.vim.commands.SaveCommand;
-import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SetLocalOptionCommand;
 import net.sourceforge.vrapper.vim.commands.SetOptionCommand;
 import net.sourceforge.vrapper.vim.commands.SortOperation;
 import net.sourceforge.vrapper.vim.commands.SubstitutionOperation;
 import net.sourceforge.vrapper.vim.commands.SwitchBufferCommand;
+import net.sourceforge.vrapper.vim.commands.TextObject;
 import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
 import net.sourceforge.vrapper.vim.commands.UndoCommand;
 import net.sourceforge.vrapper.vim.commands.VimCommandSequence;
 import net.sourceforge.vrapper.vim.commands.motions.GoToLineMotion;
 import net.sourceforge.vrapper.vim.commands.motions.MoveRight;
 import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
+import net.sourceforge.vrapper.vim.modes.ConfirmSubstitutionMode;
 import net.sourceforge.vrapper.vim.modes.ContentAssistMode;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
 import net.sourceforge.vrapper.vim.modes.KeyMapResolver;
@@ -168,13 +175,13 @@ public class CommandLineParser extends AbstractCommandParser {
             		//(if you attempt to sort with "/foo    bar/" it won't work)
             		commandStr += command.poll() + " ";
             	}
-            	TextRange selection = null;
+            	TextObject selection = new DummyTextObject(null);
             	if(vim.getSelection().getModelLength() > 0) {
             	    selection = vim.getSelection();
             	}
         		
             	try {
-					new SortOperation(commandStr).execute(vim, selection, ContentType.LINES);
+					new SortOperation(commandStr).execute(vim, 0, selection);
 				} catch (CommandExecutionException e) {
             		vim.getUserInterfaceService().setErrorMessage(e.getMessage());
 				}
@@ -184,18 +191,19 @@ public class CommandLineParser extends AbstractCommandParser {
         };
         Evaluator retab = new Evaluator() {
             public Object evaluate(EditorAdaptor vim, Queue<String> command) {
-        		String commandStr = "";
-            	while(command.size() > 0)
-            		// attempt to preserve spacing
-            		commandStr += command.poll() + " ";
-        		
-            	try {
-					new RetabOperation(commandStr).execute(vim, null, ContentType.LINES);
-				} catch (CommandExecutionException e) {
-            		vim.getUserInterfaceService().setErrorMessage(e.getMessage());
-				}
-            	
-            	return null;
+                String commandStr = "";
+                while(command.size() > 0)
+                    // attempt to preserve spacing
+                    commandStr += command.poll() + " ";
+
+                try {
+                    RetabOperation retabOperation = new RetabOperation(commandStr);
+                    retabOperation.execute(vim, retabOperation.getDefaultRange(vim, 0, vim.getPosition()));
+                } catch (CommandExecutionException e) {
+                    vim.getUserInterfaceService().setErrorMessage(e.getMessage());
+                }
+                
+                return null;
             }
         };
         Evaluator sourceConfigFile = new Evaluator() {
@@ -366,13 +374,22 @@ public class CommandLineParser extends AbstractCommandParser {
                     while (command.size() > 0) {
                         args.append(' ').append(command.poll());
                     }
-
-                    StartEndTextRange range = new StartEndTextRange(vim.getPosition(), vim.getPosition());
-                    new AnonymousMacroOperation(args.toString()).execute(vim, range, ContentType.TEXT);
-				}
+                    LineRange range;
+                    TextRange nativeSelection = vim.getNativeSelection();
+                    if (nativeSelection.getModelLength() > 0
+                            && SelectionService.VRAPPER_SELECTION_ACTIVE.equals(nativeSelection)) {
+                        range = SimpleLineRange.fromSelection(vim, vim.getSelection());
+                    } else if (nativeSelection.getModelLength() > 0) {
+                        // Native selection is exclusive, use the TextRange
+                        range = SimpleLineRange.fromTextRange(vim, nativeSelection);
+                    } else {
+                        range = SimpleLineRange.singleLine(vim, vim.getPosition());
+                    }
+                    new AnonymousMacroOperation(args.toString()).execute(vim, range);
+                }
                 catch (CommandExecutionException e) {
-            		vim.getUserInterfaceService().setErrorMessage(e.getMessage());
-				}
+                    vim.getUserInterfaceService().setErrorMessage(e.getMessage());
+                }
                 return null;
             }
         };
@@ -795,19 +812,33 @@ public class CommandLineParser extends AbstractCommandParser {
      * to keep it all contained here.
      */
     private Command parseSubstitution(String command) {
-    	if (command.equals("s")) {
-    		return RepeatLastSubstitutionCommand.CURRENT_LINE_ONLY;
-    	}
-    	//any non-alphanumeric character can be a delimiter
-    	//(this check is to avoid treating ":set" as a substitution)
-    	if (command.startsWith("s") && VimUtils.isPatternDelimiter(""+command.charAt(1))) {
-    		//null TextRange is a special case for "current line"
-    		return new TextOperationTextObjectCommand(
-				new SubstitutionOperation(command), new DummyTextObject(null)
-    		);
-    	}
-    	//not a substitution
-    	return null;
+        if (command.equals("s")) {
+            return RepeatLastSubstitutionCommand.CURRENT_LINE_ONLY;
+        }
+        //any non-alphanumeric character can be a delimiter
+        //(this check is to avoid treating ":set" as a substitution)
+        if (command.startsWith("s") && VimUtils.isPatternDelimiter(""+command.charAt(1))) {
+            SubstitutionDefinition subDef;
+            try {
+                subDef = new SubstitutionDefinition(command, editor.getRegisterManager());
+            }
+            catch(IllegalArgumentException e) {
+                return new DummyCommand(e.getMessage());
+            }
+            if(subDef.hasFlag('c')) {
+                int line = editor.getModelContent().getLineInformationOfOffset(
+                        editor.getCursorService().getPosition().getModelOffset()).getNumber();
+                //move into "confirm" mode
+                return new ChangeModeCommand(ConfirmSubstitutionMode.NAME,
+                        new ConfirmSubstitutionMode.SubstitutionConfirm(subDef, line, line));
+            } else {
+                //null TextRange is a special case for "current line"
+                return new TextOperationTextObjectCommand(
+                        new SubstitutionOperation(subDef), new DummyTextObject(null));
+            }
+        }
+        //not a substitution
+        return null;
     }
 
     /**
@@ -884,8 +915,16 @@ public class CommandLineParser extends AbstractCommandParser {
     
         public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
             boolean linewise = !isFromVisual || editorAdaptor.getSelection().getContentType(editorAdaptor.getConfiguration()) == ContentType.LINES;
-            Selection selection = range.parseRangeDefinition(editorAdaptor, linewise);
-            editorAdaptor.setSelection(selection);
+            LineRange lineRange = range.parseRangeDefinition(editorAdaptor);
+            TextRange selectionRange;
+            if (lineRange == null) {
+                selectionRange = null;
+            } else if (linewise) {
+                selectionRange = lineRange.getRegion(editorAdaptor, NO_COUNT_GIVEN);
+            } else {
+                selectionRange = StartEndTextRange.exclusive(lineRange.getFrom(), lineRange.getTo());
+            }
+            editorAdaptor.setNativeSelection(selectionRange);
             action.evaluate(editorAdaptor, tokens);
             editorAdaptor.setSelection(null);
         }

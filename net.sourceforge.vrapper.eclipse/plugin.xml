@@ -104,10 +104,7 @@
             presentationLayer="4"
             textStylePreferenceKey="net.sourceforge.vrapper.eclipse.annotation.searchhl.textstyle"
             textStylePreferenceValue="NONE">
-      </specification>	  
-   </extension>
-   <extension
-         point="org.eclipse.ui.editors.markerAnnotationSpecification">
+      </specification>
       <specification
             annotationType="net.sourceforge.vrapper.eclipse.incsearchhighlight"
             label="Vrapper Incremental Search"
@@ -124,7 +121,7 @@
             presentationLayer="5"
             textStylePreferenceKey="net.sourceforge.vrapper.eclipse.annotation.incsearchhl.textstyle"
             textStylePreferenceValue="NONE">
-      </specification>	  
+      </specification>
    </extension>
    <extension
          point="org.eclipse.ui.editors.annotationTypes">

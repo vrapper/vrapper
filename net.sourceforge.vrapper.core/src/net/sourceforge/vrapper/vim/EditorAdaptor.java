@@ -10,12 +10,14 @@ import net.sourceforge.vrapper.platform.HistoryService;
 import net.sourceforge.vrapper.platform.KeyMapProvider;
 import net.sourceforge.vrapper.platform.PlatformSpecificStateProvider;
 import net.sourceforge.vrapper.platform.SearchAndReplaceService;
+import net.sourceforge.vrapper.platform.SelectionService;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.platform.UnderlyingEditorSettings;
 import net.sourceforge.vrapper.platform.UserInterfaceService;
 import net.sourceforge.vrapper.platform.ViewportService;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.SearchResult;
+import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.TextObject;
@@ -67,6 +69,19 @@ public interface EditorAdaptor {
     void setPosition(Position destination, StickyColumnPolicy stickyColumnPolicy);
     void setSelection(Selection selection);
     Selection getSelection();
+    /**
+     * Set the editor selection directly.
+     * <p><b>NOTE</b>: Use sparingly, {@link #setSelection(Selection)} is still the expected method.
+     *  @see SelectionService#setNativeSelection(TextRange)
+     */
+    void setNativeSelection(TextRange range);
+    /**
+     * Get information whether a selection is present. The length is only guaranteed to be either
+     * <code>0</code> or <code>&gt; 0</code>.
+     * <p><b>NOTE</b>: Use sparingly, {@link #getSelection()} is still the expected method.
+     * @see SelectionService#getNativeSelection() SelectionService, for more info on return values.
+     */
+    TextRange getNativeSelection();
     <T>T getService(Class<T> serviceClass);
     void useGlobalRegisters();
     void useLocalRegisters();
