@@ -90,7 +90,8 @@ public class YankOperation extends SimpleTextOperation implements LineWiseOperat
         if (exclude == 0) {
             exclude = 1;
         }
-        cur.setMark(CursorService.LAST_CHANGE_END, range.getRightBound().addModelOffset(-exclude));
+        cur.setMark(CursorService.LAST_CHANGE_END,
+                cur.shiftPositionForModelOffset(range.getRightBound().getModelOffset(), -exclude, true));
         
         RegisterContent content = new StringRegisterContent(contentType, text);
         
