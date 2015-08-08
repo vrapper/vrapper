@@ -3,12 +3,14 @@ package net.sourceforge.vrapper.vim.commands;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.utils.LineAddressParser;
 import net.sourceforge.vrapper.utils.LineRange;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.SimpleLineRange;
 import net.sourceforge.vrapper.utils.SubstitutionDefinition;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.ConfirmSubstitutionMode;
 
 /**
@@ -76,7 +78,7 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
 	    LineRange range = parseRangeDefinition(editorAdaptor);
 	    if (range != null)
 	    {
-	        TextOperation operation = parseRangeOperation(editorAdaptor);
+	        LineWiseOperation operation = parseRangeOperation(editorAdaptor);
 	        if (operation instanceof SubstitutionOperation) {
 	            //[TODO] LineRangeOperationCommand should actually be refactored so that a
 	            // substitution evaluator can handle this together with the case without range.
@@ -89,12 +91,15 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
 	                        new ConfirmSubstitutionMode.SubstitutionConfirm(definition,
 	                                range.getStartLine(), range.getEndLine()));
 	            } else {
-	                substitute.execute(editorAdaptor, NO_COUNT_GIVEN, range);
+	                substitute.execute(editorAdaptor, range);
 	            }
 	        }
 	        else if (operation != null)
 	        {
-	            new TextOperationTextObjectCommand(operation, range).execute(editorAdaptor);
+	            operation.execute(editorAdaptor, range);
+	            // Reset sticky column for those few operations where it isn't done.
+	            CursorService cursorService = editorAdaptor.getCursorService();
+	            cursorService.setPosition(cursorService.getPosition(), StickyColumnPolicy.ON_CHANGE);
 	        }
 	    }
 	}
@@ -157,7 +162,7 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
      * @return the Operation corresponding to the operation char
      * @throws CommandExecutionException 
      */
-    public TextOperation parseRangeOperation(EditorAdaptor editorAdaptor) throws CommandExecutionException {
+    public LineWiseOperation parseRangeOperation(EditorAdaptor editorAdaptor) throws CommandExecutionException {
         if (operationStr.isEmpty()) {
     		editorAdaptor.getUserInterfaceService().setErrorMessage("No operation specified.");
     		return null;
@@ -204,6 +209,9 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
     	}
     	else if(operation == 'm') {
     		return new CopyMoveLinesOperation(operationStr, true);
+    	}
+    	else if(operation == 'n' && operationStr.startsWith("norm")) {
+    		return new AnonymousMacroOperation(operationStr);
     	}
     	else if(operation == '!') {
     		return new PipeExternalOperation(operationStr);

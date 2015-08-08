@@ -117,14 +117,14 @@ public class ExCommandOperation extends AbstractLinewiseOperation {
 		//chop off pattern (+delimiter), all that should be left is command
 		definition = definition.substring(patternEnd + 1);
 
-		TextOperation operation = buildExCommand(definition, editorAdaptor);
+		LineWiseOperation operation = buildExCommand(definition, editorAdaptor);
 
 		if(operation != null) {
 			executeExCommand(lineRange, findMatch, pattern, operation, editorAdaptor);
 		}
 	}
 
-	private TextOperation buildExCommand(String command, EditorAdaptor editorAdaptor)
+	private LineWiseOperation buildExCommand(String command, EditorAdaptor editorAdaptor)
 			throws CommandExecutionException {
 		if(command.startsWith("normal ")) {
 			String args = command.substring("normal ".length());
@@ -158,7 +158,7 @@ public class ExCommandOperation extends AbstractLinewiseOperation {
 	}
 
 	private void executeExCommand(LineRange lineRange, boolean findMatch,
-			String pattern, TextOperation operation, EditorAdaptor editorAdaptor) {
+			String pattern, LineWiseOperation operation, EditorAdaptor editorAdaptor) {
 
 		/** Starting line, inclusive. */
 		int startLine = lineRange.getStartLine();
@@ -184,7 +184,7 @@ public class ExCommandOperation extends AbstractLinewiseOperation {
 	}
 
 	private void processMultipleLines(boolean findMatch, String pattern,
-			TextOperation operation, EditorAdaptor editorAdaptor, LineInformation line,
+			LineWiseOperation operation, EditorAdaptor editorAdaptor, LineInformation line,
 			int startLine, int endLine, TextContent modelContent) {
 		int linesProcessed = 0;
 		int nLines = modelContent.getNumberOfLines();
@@ -227,7 +227,7 @@ public class ExCommandOperation extends AbstractLinewiseOperation {
 		cs.deleteMark(NEXTLINE_MARK);
 	}
 
-	private boolean processLine(String pattern, boolean findMatch, TextOperation operation,
+	private boolean processLine(String pattern, boolean findMatch, LineWiseOperation operation,
 			LineInformation line, EditorAdaptor editorAdaptor) {
 		boolean operationPerformed = false;
 		String text = editorAdaptor.getModelContent().getText(line.getBeginOffset(), line.getLength());
@@ -246,11 +246,8 @@ public class ExCommandOperation extends AbstractLinewiseOperation {
 		boolean matches = text.matches(pattern);
 		if( (findMatch && matches) || (!findMatch && !matches) ) {
 			try {
-				Position start = editorAdaptor.getCursorService().newPositionForModelOffset(line.getBeginOffset());
-				Position end = editorAdaptor.getCursorService().newPositionForModelOffset(line.getEndOffset());
-				TextRange range = new StartEndTextRange(start, end);
-
-				operation.execute(editorAdaptor, 0, new DummyTextObject(range, ContentType.LINES));
+				LineRange singleLine = SimpleLineRange.singleLineInModel(editorAdaptor, line);
+				operation.execute(editorAdaptor, singleLine);
 				operationPerformed = true;
 			} catch (CommandExecutionException e) {
 			}
