@@ -20,6 +20,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Caret;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Menu;
@@ -179,6 +180,9 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener,
     }
 
     public void open() {
+        Composite parent = commandLineText.getParent();
+        commandLineText.setForeground(parent.getForeground());
+        commandLineText.setBackground(parent.getBackground());
         commandLineText.setVisible(true);
         commandLineText.getParent().redraw();
         //The expected size of the command line is only known when the parent is drawn, paint async
