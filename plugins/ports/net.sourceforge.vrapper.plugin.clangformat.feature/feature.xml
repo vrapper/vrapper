@@ -2,7 +2,7 @@
 <feature
       id="net.sourceforge.vrapper.plugin.clangformat"
       label="Vrapper - Clang-Format Plugin (Optional)"
-      version="0.58.0"
+      version="0.59.20150812"
       provider-name="Vrapper Team">
 
    <description url="http://vrapper.sourceforge.net/documentation/">
@@ -860,8 +860,8 @@ Public License instead of this License.  But first, please read
    </license>
 
    <requires>
-      <import plugin="net.sourceforge.vrapper.eclipse" version="0.58.0" match="greaterOrEqual"/>
-      <import feature="net.sourceforge.vrapper" version="0.58.0"/>
+      <import plugin="net.sourceforge.vrapper.eclipse" version="0.59.20150812" match="greaterOrEqual"/>
+      <import feature="net.sourceforge.vrapper" version="0.59.20150812"/>
    </requires>
 
    <plugin
