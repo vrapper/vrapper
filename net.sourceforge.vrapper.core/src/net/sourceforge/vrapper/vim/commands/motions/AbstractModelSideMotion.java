@@ -4,13 +4,13 @@ import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
-import net.sourceforge.vrapper.vim.commands.Selection;
 
 public abstract class AbstractModelSideMotion extends CountAwareMotion {
 
     protected abstract int destination(int offset, TextContent content, int count) throws CommandExecutionException;
     protected boolean isLeftRight() {return false;}
-    protected void setCurrentState(String mode, Selection sel) {}
+
+    protected void setCurrentState(EditorAdaptor editorAdaptor) {}
 
     @Override
     public Position destination(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
@@ -22,7 +22,7 @@ public abstract class AbstractModelSideMotion extends CountAwareMotion {
         if (count == NO_COUNT_GIVEN) {
             count = 1;
         }
-        setCurrentState(editorAdaptor.getCurrentModeName(), editorAdaptor.getSelection());
+        setCurrentState(editorAdaptor);
         TextContent modelContent = editorAdaptor.getModelContent();
         int destination = destination(modelOffset, modelContent, count);
         return editorAdaptor.getCursorService().newPositionForModelOffset(destination);
