@@ -69,7 +69,7 @@ class RegisterSelection extends ByteArrayTransfer {
                 DataInputStream readIn = new DataInputStream(in);
                 ContentType ct = ContentType.values()[readIn.readInt()];
                 // Not a block register?
-                if (ContentType.TEXT_RECTANGLE.equals(ct)) {
+                if ( ! ContentType.TEXT_RECTANGLE.equals(ct)) {
                     return null;
                 }
                 int vOffset = readIn.readInt();
