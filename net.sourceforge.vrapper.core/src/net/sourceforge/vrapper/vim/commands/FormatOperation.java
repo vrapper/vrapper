@@ -7,6 +7,7 @@ import java.util.Set;
 import net.sourceforge.vrapper.utils.LineRange;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.SimpleLineRange;
+import net.sourceforge.vrapper.utils.StringUtils;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
@@ -49,7 +50,8 @@ public class FormatOperation extends AbstractLinewiseOperation {
 		String text = editorAdaptor.getModelContent().getText(originalTextRange);
 		String newlineChar = editorAdaptor.getConfiguration().getNewLine();
 		String[] lines = text.split(newlineChar);
-		int textwidth = editorAdaptor.getConfiguration().get(Options.TEXT_WIDTH);
+		int textWidth = editorAdaptor.getConfiguration().get(Options.TEXT_WIDTH);
+		int tabStop = editorAdaptor.getConfiguration().get(Options.TAB_STOP);
 		
 		CommentedLine current;
 		CommentedLine previous = null;
@@ -73,7 +75,7 @@ public class FormatOperation extends AbstractLinewiseOperation {
 								previous.getPostIndent(),
 								previous.getText()+" "+current.getText(),
 								previous.getContinueChar()),
-						textwidth
+						textWidth, tabStop
 				);
 				//remove old 'previous' text
 				formattedLines.remove(formattedLines.size() - 1);
@@ -84,7 +86,7 @@ public class FormatOperation extends AbstractLinewiseOperation {
 			}
 			//we can't merge with line above, does this line need to be split?
 			else {
-				processed = formatLines(new ArrayList<String>(), current, textwidth);
+				processed = formatLines(new ArrayList<String>(), current, textWidth, tabStop);
 				formattedLines.addAll(processed);
 				//prepare for next iteration
 				previous = new CommentedLine(processed.get(processed.size()-1));
@@ -109,27 +111,22 @@ public class FormatOperation extends AbstractLinewiseOperation {
 	 * Note that this may result in multiple lines.  Each new line will
 	 * share the same indentation and comment character as the first.
 	 */
-	private List<String> formatLines(List<String> formatted, CommentedLine textToFormat, int textwidth) {
-		if(textToFormat.getFullLine().length() <= textwidth) {
+	private List<String> formatLines(List<String> formatted, CommentedLine textToFormat,
+			int textWidth, int tabStop) {
+		String fullLine = textToFormat.getFullLine();
+		int[] visualOffsets = StringUtils.calculateVisualOffsets(fullLine, fullLine.length(), tabStop);
+		if (visualOffsets[fullLine.length()] <= textWidth) {
 			formatted.add(textToFormat.getFullLine());
 		}
 		else {
 			String text = textToFormat.getText();
-			//make sure we don't end up with indentation when
-			//trying to find the closest whitespace character
-			int adjustedTextWidth = textwidth - textToFormat.getPrefix().length();
-			adjustedTextWidth = Math.max(0, adjustedTextWidth);
-			int lineBreak = getLastWhitespaceBeforeWidth(text, adjustedTextWidth);
-			if(lineBreak < 0) {
-				//if we can't break cleanly within textwidth,
-				//break as close to it as we can
-				lineBreak = getFirstWhitespaceAfterWidth(text, adjustedTextWidth);
-			}
-			String line = text.substring(0, lineBreak);
-			String remainder = text.substring(lineBreak).trim();
+			int textStartIndex = textToFormat.getPrefix().length();
+			int lineBreakIndex = findLineBreakIndex(text, textWidth, textStartIndex, visualOffsets);
+			String line = text.substring(0, lineBreakIndex);
+			String remainder = text.substring(lineBreakIndex).trim();
 			formatted.add(textToFormat.getPrefix() + line);
 			
-			if(remainder.length() > 0) {
+			if (remainder.length() > 0) {
 				CommentedLine newLine = new CommentedLine(
 						textToFormat.getPreIndent(),
 						textToFormat.getContinueChar(),
@@ -137,40 +134,64 @@ public class FormatOperation extends AbstractLinewiseOperation {
 						remainder,
 						textToFormat.getContinueChar()
 				);
-				//recursion!
-				return formatLines(formatted, newLine, textwidth);
+				// Recursion! Break the rest of this line until within textwidth.
+				// The original caller will then check if it can glue the last piece to a fresh line
+				return formatLines(formatted, newLine, textWidth, tabStop);
 			}
 		}
-		
 		return formatted;
 	}
-	
-	private int getLastWhitespaceBeforeWidth(String text, int width) {
-		for(int i=width; i > 0; i--) {
-			if(Character.isWhitespace(text.charAt(i))) {
-				return i;
+
+	/** Finds the most appropriate whitespace character on which we can break the text line.
+	 * @param text The text in which we need to find whitespace, stripped of indent and commentchar. 
+	 * @param textwidth Requested text width (i.e. screen column).
+	 * @param textStartIndex Index at which text starts in the full line
+	 *   (or put differently: how many indent and comment characters there are before text)
+	 * @param visualOffsets Screen column information for the full string.
+	 * @return Index at which to break the line for the string passed in <code>text</code>
+	 */
+	private int findLineBreakIndex(String text, int textwidth, int textStartIndex,
+			int[] visualOffsets) {
+		int lineBreakIndex = -1;
+		int i = 0;
+		// Find the whitespace char with the largest visual offset before we hit our intended
+		// textwidth. A whitespace char which has visual offset == 'textwidth' is acceptable,
+		// the line we're about to break will exactly break at the 'textwidth' column.
+		while (i < text.length() && visualOffsets[i + textStartIndex] <= textwidth) {
+			if (Character.isWhitespace(text.charAt(i))) {
+				lineBreakIndex = i;
+			}
+			i++;
+		}
+		// No whitespace found whatsoever. Keep searching and use the first to be found.
+		if (lineBreakIndex == -1) {
+			while( i < text.length() && ! Character.isWhitespace(text.charAt(i))) {
+				i++;
+			}
+			if (i < text.length()) {
+				lineBreakIndex = i;
 			}
 		}
-		//no whitespace available
-		return -1;
+		// No whitespace in text so don't break it at all.
+		if (lineBreakIndex == -1) {
+			lineBreakIndex = text.length();
+		}
+		return lineBreakIndex;
 	}
 	
-	private int getFirstWhitespaceAfterWidth(String text, int width) {
-		for(int i=width; i < text.length(); i++) {
-			if(Character.isWhitespace(text.charAt(i))) {
-				return i;
-			}
-		}
-		//no whitespace available
-		return text.length();
-	}
 	
 	/**
-	 * Take a line of text and find the following pieces:
-	 * - indent prior to comment character
-	 * - comment character 
-	 * - indent after comment character
-	 * - line contents
+	 * Takes a line of text and stores it in several pieces. Here is an overview:
+	 * <pre>
+	 * |           |//|    |My comment is here for you.|
+	 * |           |   \      \_                       |
+	 * |           |     \       \_                    |
+	 * |           |       \        \_                 |
+	 * |           |         \         \               |
+	 * | preIndent | commChar | postInd |              |
+	 * |----------- prefix -------------|--- text -----|
+	 * |------------------- fullLine ------------------|
+	 * </pre>
 	 */
 	private class CommentedLine {
 	

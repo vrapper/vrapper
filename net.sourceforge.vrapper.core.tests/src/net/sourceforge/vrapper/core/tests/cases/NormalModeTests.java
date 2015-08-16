@@ -1420,6 +1420,18 @@ public class NormalModeTests extends CommandTestCase {
         checkCommand(forKeySeq("gqq"),
                 "/* this",' ',"line will be split multiple times */",
                 "", '/', "* this\n* line\n* will\n* be\n* split\n* multiple\n* times\n* */\n");
+
+        configuration.set(Options.TEXT_WIDTH, 30);
+
+        // Ensure tabs are counted as if they were 8 spaces (default tabstop)
+        checkCommand(forKeySeq("gqq"),
+                "\t# this",' ',"line will be split multiple times to fit textwidth\n",
+                "", '\t', "# this line will be\n\t# split multiple times\n\t# to fit textwidth\n");
+
+        // [TODO] Vim actually puts a space between the tab char and '*' to align with '/*'
+        checkCommand(forKeySeq("gqq"),
+                "\t/* this",' ',"line will be split multiple times to fit textwidth */",
+                "", '\t', "/* this line will be\n\t* split multiple times\n\t* to fit textwidth */\n");
 	}
 	
 	@Test
