@@ -7,7 +7,6 @@ import java.util.regex.PatternSyntaxException;
 
 import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.Configuration;
-import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.HighlightingService;
 import net.sourceforge.vrapper.platform.SearchAndReplaceService;
 import net.sourceforge.vrapper.platform.VrapperPlatformException;
@@ -19,7 +18,6 @@ import net.sourceforge.vrapper.utils.Space;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.StringUtils;
 import net.sourceforge.vrapper.utils.TextRange;
-import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 
 import org.eclipse.jface.text.BadLocationException;
@@ -34,18 +32,18 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
     private static final String ANNOTATION_TYPE = "net.sourceforge.vrapper.eclipse.searchhighlight";
     private final FindReplaceDocumentAdapter adapter;
     private final HighlightingService highlightingService;
-    final Configuration sharedConfiguration;
+    private final Configuration configuration;
     private Search lastHighlightedSearch;
     private List<Object> annotations;
     private Object incSearchAnnotation;
     private ITextViewer textViewer;
 
-    public EclipseSearchAndReplaceService(ITextViewer textViewer, final Configuration sharedConfiguration,
+    public EclipseSearchAndReplaceService(ITextViewer textViewer, final Configuration configuration,
             HighlightingService highlightingService) {
         this.textViewer = textViewer;
         this.adapter = new FindReplaceDocumentAdapter(textViewer.getDocument());
         this.highlightingService = highlightingService;
-        this.sharedConfiguration = sharedConfiguration;
+        this.configuration = configuration;
         this.annotations = Collections.emptyList();
     }
 
@@ -103,8 +101,8 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
     }
 
     public boolean isCaseSensitive(String toFind, String flags) {
-        boolean caseSensitive = !sharedConfiguration.get(Options.IGNORE_CASE)
-            || (sharedConfiguration.get(Options.SMART_CASE)
+        boolean caseSensitive = !configuration.get(Options.IGNORE_CASE)
+            || (configuration.get(Options.SMART_CASE)
                 && StringUtils.containsUppercase(toFind));
         if (flags.contains("i"))
             caseSensitive = false;

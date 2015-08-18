@@ -1,5 +1,6 @@
 package net.sourceforge.vrapper.platform;
 
+import net.sourceforge.vrapper.vim.LocalConfiguration;
 import net.sourceforge.vrapper.vim.TextObjectProvider;
 
 
@@ -16,7 +17,7 @@ public interface Platform {
     ServiceProvider getServiceProvider();
     KeyMapProvider getKeyMapProvider();
     UnderlyingEditorSettings getUnderlyingEditorSettings();
-    GlobalConfiguration getConfiguration();
+    LocalConfiguration getConfiguration();
     PlatformSpecificStateProvider getPlatformSpecificStateProvider(
             TextObjectProvider textObjectProvider);
     PlatformSpecificModeProvider getPlatformSpecificModeProvider();

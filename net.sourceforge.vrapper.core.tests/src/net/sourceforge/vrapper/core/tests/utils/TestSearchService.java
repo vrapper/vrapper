@@ -3,7 +3,7 @@ package net.sourceforge.vrapper.core.tests.utils;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.sourceforge.vrapper.platform.GlobalConfiguration;
+import net.sourceforge.vrapper.platform.Configuration;
 import net.sourceforge.vrapper.platform.SearchAndReplaceService;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
@@ -15,9 +15,9 @@ import net.sourceforge.vrapper.vim.Options;
 public class TestSearchService implements SearchAndReplaceService {
     
     private final TestTextContent content;
-    private GlobalConfiguration sharedConfiguration;
+    private Configuration sharedConfiguration;
 
-    public TestSearchService(TestTextContent content, GlobalConfiguration sharedConfiguration) {
+    public TestSearchService(TestTextContent content, Configuration sharedConfiguration) {
         this.content = content;
         this.sharedConfiguration = sharedConfiguration;
     }

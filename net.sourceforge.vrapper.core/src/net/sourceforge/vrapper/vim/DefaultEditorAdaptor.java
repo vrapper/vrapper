@@ -119,7 +119,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
 
 
     public DefaultEditorAdaptor(final Platform editor, final RegisterManager registerManager, final boolean isActive) {
-        this.configuration = new SimpleLocalConfiguration(editor.getConfiguration());
+        this.configuration = editor.getConfiguration();
         userInterfaceService = editor.getUserInterfaceService();
         this.modelContent = new UnmodifiableTextContentDecorator(editor.getModelContent(),
                                     configuration, editor);

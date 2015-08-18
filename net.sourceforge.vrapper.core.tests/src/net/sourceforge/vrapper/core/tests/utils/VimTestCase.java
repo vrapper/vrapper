@@ -24,8 +24,10 @@ import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.ViewPortInformation;
 import net.sourceforge.vrapper.vim.DefaultEditorAdaptor;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.LocalConfiguration;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.SimpleGlobalConfiguration;
+import net.sourceforge.vrapper.vim.SimpleLocalConfiguration;
 import net.sourceforge.vrapper.vim.TextObjectProvider;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
@@ -48,7 +50,8 @@ public class VimTestCase {
     @Mock protected HistoryService historyService;
     @Mock protected ServiceProvider serviceProvider;
     @Mock protected PlatformSpecificStateProvider platformSpecificStateProvider;
-    protected GlobalConfiguration configuration;
+    @Mock private GlobalConfiguration globalConfiguration;
+    protected LocalConfiguration configuration;
     protected TestTextContent content;
     protected TestCursorAndSelection cursorAndSelection;
     protected EditorAdaptor adaptor;
@@ -68,7 +71,8 @@ public class VimTestCase {
         content = spy(new TestTextContent(cursorAndSelection));
         cursorAndSelection.setContent(content);
         keyMapProvider = spy(new DefaultKeyMapProvider());
-        configuration = spy(new SimpleGlobalConfiguration());
+        globalConfiguration = spy(new SimpleGlobalConfiguration());
+        configuration = spy(new SimpleLocalConfiguration(globalConfiguration));
         when(configuration.getNewLine()).thenReturn("\n");
         for (Option<Boolean> o : Options.BOOLEAN_OPTIONS) {
             // Use defaults only for local options.

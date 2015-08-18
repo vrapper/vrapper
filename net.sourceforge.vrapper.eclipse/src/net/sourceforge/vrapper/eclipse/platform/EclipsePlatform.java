@@ -31,6 +31,8 @@ import net.sourceforge.vrapper.platform.UnderlyingEditorSettings;
 import net.sourceforge.vrapper.platform.UserInterfaceService;
 import net.sourceforge.vrapper.platform.ViewportService;
 import net.sourceforge.vrapper.utils.DefaultKeyMapProvider;
+import net.sourceforge.vrapper.vim.LocalConfiguration;
+import net.sourceforge.vrapper.vim.SimpleLocalConfiguration;
 import net.sourceforge.vrapper.vim.TextObjectProvider;
 
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -53,7 +55,7 @@ public class EclipsePlatform implements Platform {
     private final EclipseUserInterfaceService userInterfaceService;
     private final DefaultKeyMapProvider keyMapProvider;
     private final UnderlyingEditorSettings underlyingEditorSettings;
-    private final GlobalConfiguration configuration;
+    private final LocalConfiguration localConfiguration;
     private final AbstractTextEditor underlyingEditor;
     private final HighlightingService highlightingService;
     private final SearchAndReplaceService searchAndReplaceService;
@@ -66,10 +68,10 @@ public class EclipsePlatform implements Platform {
             final ITextViewer textViewer, final GlobalConfiguration sharedConfiguration,
             BufferAndTabService bufferAndTabService) {
         underlyingEditor = abstractTextEditor;
-        configuration = sharedConfiguration;
+        this.localConfiguration = new SimpleLocalConfiguration(sharedConfiguration);
         this.bufferAndTabService = bufferAndTabService;
         textContent = new EclipseTextContent(textViewer);
-        cursorAndSelection = new EclipseCursorAndSelection(configuration, partInfo, textViewer, textContent);
+        cursorAndSelection = new EclipseCursorAndSelection(localConfiguration, partInfo, textViewer, textContent);
         fileService = new EclipseFileService(abstractTextEditor);
         viewportService = new EclipseViewportService(textViewer);
         serviceProvider = new EclipseServiceProvider(abstractTextEditor);
@@ -79,7 +81,7 @@ public class EclipsePlatform implements Platform {
         underlyingEditorSettings = new AbstractTextEditorSettings(
                 abstractTextEditor);
         highlightingService = new EclipseHighlightingService(abstractTextEditor, cursorAndSelection);
-        searchAndReplaceService = new EclipseSearchAndReplaceService(textViewer, sharedConfiguration, highlightingService);
+        searchAndReplaceService = new EclipseSearchAndReplaceService(textViewer, localConfiguration, highlightingService);
         if (textViewer instanceof ITextViewerExtension6) {
             final IUndoManager delegate = ((ITextViewerExtension6) textViewer)
                     .getUndoManager();
@@ -153,8 +155,8 @@ public class EclipsePlatform implements Platform {
     }
 
     @Override
-    public GlobalConfiguration getConfiguration() {
-        return configuration;
+    public LocalConfiguration getConfiguration() {
+        return localConfiguration;
     }
 
     @Override
