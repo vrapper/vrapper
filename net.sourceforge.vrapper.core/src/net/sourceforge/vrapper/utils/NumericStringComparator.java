@@ -18,12 +18,15 @@ public class NumericStringComparator implements Comparator<String>{
 	private boolean hex         = false;
 	private boolean usePattern  = false;
 	private boolean usePatternR = false;
+	private String newLine;
 
 	private String pattern = null;
 	
-	public NumericStringComparator(boolean binary, boolean octal, boolean hex, String pattern, boolean patternR) throws Exception {
+	public NumericStringComparator(String newLine, boolean binary, boolean octal, boolean hex, String pattern, boolean patternR) throws Exception {
 		super();
-    		
+
+		this.newLine = newLine;
+
     	//numeric is assumed, no need for a flag
     	this.binary = binary;
     	this.octal = octal;
@@ -51,8 +54,6 @@ public class NumericStringComparator implements Comparator<String>{
      * @return
      */
     private double getFirstNumber(String str) {
-    	SimpleConfiguration config = new SimpleConfiguration();
-    	String newLine = config.getNewLine();
     	
     	try {
 	    	if(binary) {

@@ -346,7 +346,8 @@ public class SortOperation extends AbstractLinewiseOperation {
          *         Also handle ignore case
          */
         if (numeric || binary || octal || hex) {
-        	comp = new NumericStringComparator(binary, octal, hex, pattern, usePatternR);
+        	String newLine = editorAdaptor.getConfiguration().getNewLine();
+        	comp = new NumericStringComparator(newLine, binary, octal, hex, pattern, usePatternR);
 
         	String candidate;
         	int candidateOffset;
