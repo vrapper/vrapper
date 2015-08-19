@@ -1,20 +1,39 @@
 package net.sourceforge.vrapper.platform;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+
+import net.sourceforge.vrapper.vim.DefaultConfigProvider;
 
 public class SimpleConfiguration implements Configuration {
 
     private String newLine = NewLine.SYSTEM.nl;
     private final Map<Option<?>, Object> vars = new HashMap<Option<?>, Object>();
+    private final List<DefaultConfigProvider> defaultConfigProviders;
 
+    public SimpleConfiguration(List<DefaultConfigProvider> defaultConfigProviders) {
+        this.defaultConfigProviders = defaultConfigProviders;
+    }
 
     @SuppressWarnings("unchecked")
     public <T> T get(Option<T> key) {
         if (isSet(key)) {
             return (T) vars.get(key);
         }
-        return key.getDefaultValue();
+        T value = null;
+        Iterator<DefaultConfigProvider> it = defaultConfigProviders.iterator();
+        while (value == null && it.hasNext()) {
+            DefaultConfigProvider provider = it.next();
+            value = provider.getDefault(key);
+        }
+        if (value != null) {
+            return value;
+        }
+        else {
+            return key.getDefaultValue();
+        }
     }
 
     public <T> boolean isSet(Option<T> key) {

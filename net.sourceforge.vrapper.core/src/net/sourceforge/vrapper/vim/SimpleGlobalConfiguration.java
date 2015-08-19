@@ -13,6 +13,10 @@ import net.sourceforge.vrapper.platform.SimpleConfiguration;
 // This class is implemented in core as it doesn't really depend on platform-specific code.
 public class SimpleGlobalConfiguration extends SimpleConfiguration implements GlobalConfiguration {
 
+    public SimpleGlobalConfiguration(List<DefaultConfigProvider> defaultConfigProviders) {
+        super(defaultConfigProviders);
+    }
+
     protected List<ConfigurationListener> listeners =
             new CopyOnWriteArrayList<ConfigurationListener>();
 

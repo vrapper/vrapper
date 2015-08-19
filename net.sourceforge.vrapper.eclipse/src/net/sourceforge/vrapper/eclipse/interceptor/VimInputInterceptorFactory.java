@@ -1,6 +1,7 @@
 
 package net.sourceforge.vrapper.eclipse.interceptor;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -12,9 +13,10 @@ import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.vim.SimpleKeyStroke;
 import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.BufferAndTabService;
-import net.sourceforge.vrapper.platform.GlobalConfiguration;
 import net.sourceforge.vrapper.platform.Configuration.Option;
+import net.sourceforge.vrapper.platform.GlobalConfiguration;
 import net.sourceforge.vrapper.vim.ConfigurationListener;
+import net.sourceforge.vrapper.vim.DefaultConfigProvider;
 import net.sourceforge.vrapper.vim.DefaultEditorAdaptor;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
@@ -47,7 +49,7 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
     private static final HashMap<Character, Character> escapedChars;
     private static final HashSet<Integer> ignoredKeyCodes;
 
-    private static final GlobalConfiguration sharedConfiguration = new SimpleGlobalConfiguration();
+    private static final GlobalConfiguration sharedConfiguration = new SimpleGlobalConfiguration(Collections.<DefaultConfigProvider>emptyList());
 
     private static final RegisterManager globalRegisterManager = new SWTRegisterManager(
             PlatformUI.getWorkbench().getDisplay(), sharedConfiguration);

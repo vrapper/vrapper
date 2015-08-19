@@ -1,42 +1,37 @@
 package net.sourceforge.vrapper.vim;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import net.sourceforge.vrapper.platform.Configuration;
 import net.sourceforge.vrapper.platform.SimpleConfiguration;
-import net.sourceforge.vrapper.platform.SimpleConfiguration.NewLine;
 
 /** Wraps a {@link Configuration}, allowing to notify {@link ConfigurationListener}. */
-public class SimpleLocalConfiguration implements LocalConfiguration {
-    
+public class SimpleLocalConfiguration extends SimpleConfiguration implements LocalConfiguration {
+
     protected Configuration sharedConfiguration;
-    protected SimpleConfiguration localConfiguration = new SimpleConfiguration();
-    
-    protected String newLine;
-    
+
     protected List<ConfigurationListener> listeners =
             new CopyOnWriteArrayList<ConfigurationListener>();
     private boolean listenersEnabled;
 
-    public SimpleLocalConfiguration(Configuration configuration) {
-        sharedConfiguration = configuration;
+    public SimpleLocalConfiguration(List<DefaultConfigProvider> defaultConfigProviders,
+            Configuration sharedConfiguration) {
+        super(hookSharedConfigurationProviders(defaultConfigProviders, sharedConfiguration));
+        this.sharedConfiguration = sharedConfiguration;
         //Don't share the newline.  Each file has its own newline.
         //(in case you have one windows file open
         //  and one unix file open at the same time)
-        newLine = sharedConfiguration.getNewLine();
+        setNewLine(sharedConfiguration.getNewLine());
     }
-
-    public String getNewLine() {
-        return newLine;
-    }
-
-    public void setNewLine(String newLine) {
-        this.newLine = newLine;
-    }
-
-    public void setNewLine(NewLine newLine) {
-        this.newLine = newLine.nl;
+    
+    protected final static List<DefaultConfigProvider> hookSharedConfigurationProviders(
+            List<DefaultConfigProvider> providers, Configuration sharedConfiguration) {
+        List<DefaultConfigProvider> list = new ArrayList<DefaultConfigProvider>(providers);
+        list.add(0, new SharedConfigurationValueProvider(sharedConfiguration));
+        list.add(new SharedConfigurationDefaultProvider(sharedConfiguration));
+        return list;
     }
 
     public <T> void set(Option<T> key, T value) {
@@ -44,9 +39,9 @@ public class SimpleLocalConfiguration implements LocalConfiguration {
         if ( ! key.getScope().equals(OptionScope.LOCAL)) {
             sharedConfiguration.set(key, value);
         }
-        if (localConfiguration.isSet(key) || key.getScope().equals(OptionScope.LOCAL)) {
-            oldValue = localConfiguration.get(key);
-            localConfiguration.set(key, value);
+        if (isSet(key) || key.getScope().equals(OptionScope.LOCAL)) {
+            oldValue = get(key);
+            super.set(key, value);
         }
         if (listenersEnabled) {
             for (ConfigurationListener listener : listeners) {
@@ -60,30 +55,17 @@ public class SimpleLocalConfiguration implements LocalConfiguration {
         if (key.getScope() == OptionScope.GLOBAL) {
             set(key, value);
         } else {
-            T oldValue = localConfiguration.get(key);
+            T oldValue = get(key);
             if (key.getScope().equals(OptionScope.DEFAULT) && oldValue == null) {
                 oldValue = sharedConfiguration.get(key);
             }
-            localConfiguration.set(key, value);
+            super.set(key, value);
             if (listenersEnabled) {
                 for (ConfigurationListener listener : listeners) {
                     listener.optionChanged(key, oldValue, value);
                 }
             }
         }
-    }
-
-    public <T> T get(Option<T> key) {
-        if (localConfiguration.isSet(key)) {
-            return localConfiguration.get(key);
-        } else {
-            return sharedConfiguration.get(key);
-        }
-    }
-    
-    @Override
-    public <T> boolean isSet(Option<T> key) {
-        return localConfiguration.isSet(key);
     }
     
     public void setListenersEnabled(boolean enabled) {
@@ -98,4 +80,46 @@ public class SimpleLocalConfiguration implements LocalConfiguration {
         listeners.remove(listener);
     }
 
+    /**
+     * If an option is not set locally, the first "default" place to look is in the shared config.
+     * This provider is meant to be the first default config provider.
+     */
+    static class SharedConfigurationValueProvider implements DefaultConfigProvider {
+
+        private Configuration sharedConfiguration;
+
+        public SharedConfigurationValueProvider(Configuration sharedConfiguration) {
+            this.sharedConfiguration = sharedConfiguration;
+        }
+
+        @Override
+        public <T> T getDefault(Option<T> option) {
+            // Makes sure the shared configuration settings are used kk default providers are called.
+            if (sharedConfiguration.isSet(option)) {
+                return sharedConfiguration.get(option);
+            }
+            return null;
+        }
+    }
+
+    /**
+     * Falls back on the shared configuration to provide a default value if an option is not set
+     * anywhere and the local default providers don't know about the requested option.
+     * This provider is meant to be the last default config provider.
+     */
+    static class SharedConfigurationDefaultProvider implements DefaultConfigProvider {
+
+        private Configuration sharedConfiguration;
+
+        public SharedConfigurationDefaultProvider(Configuration sharedConfiguration) {
+            this.sharedConfiguration = sharedConfiguration;
+        }
+
+        @Override
+        public <T> T getDefault(Option<T> option) {
+            // The shared configuration is responsible for calling the global default providers and
+            // returning the built-in default if all else fails.
+            return sharedConfiguration.get(option);
+        }
+    }
 }

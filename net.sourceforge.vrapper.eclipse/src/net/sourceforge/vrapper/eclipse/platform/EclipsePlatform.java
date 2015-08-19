@@ -31,6 +31,7 @@ import net.sourceforge.vrapper.platform.UnderlyingEditorSettings;
 import net.sourceforge.vrapper.platform.UserInterfaceService;
 import net.sourceforge.vrapper.platform.ViewportService;
 import net.sourceforge.vrapper.utils.DefaultKeyMapProvider;
+import net.sourceforge.vrapper.vim.DefaultConfigProvider;
 import net.sourceforge.vrapper.vim.LocalConfiguration;
 import net.sourceforge.vrapper.vim.SimpleLocalConfiguration;
 import net.sourceforge.vrapper.vim.TextObjectProvider;
@@ -68,7 +69,8 @@ public class EclipsePlatform implements Platform {
             final ITextViewer textViewer, final GlobalConfiguration sharedConfiguration,
             BufferAndTabService bufferAndTabService) {
         underlyingEditor = abstractTextEditor;
-        this.localConfiguration = new SimpleLocalConfiguration(sharedConfiguration);
+        this.localConfiguration = new SimpleLocalConfiguration(
+                Collections.<DefaultConfigProvider>emptyList(), sharedConfiguration);
         this.bufferAndTabService = bufferAndTabService;
         textContent = new EclipseTextContent(textViewer);
         cursorAndSelection = new EclipseCursorAndSelection(localConfiguration, partInfo, textViewer, textContent);

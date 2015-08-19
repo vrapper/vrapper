@@ -3,7 +3,9 @@ package net.sourceforge.vrapper.core.tests.utils;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
+import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
 
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SpecialKey;
@@ -22,6 +24,7 @@ import net.sourceforge.vrapper.platform.ViewportService;
 import net.sourceforge.vrapper.utils.DefaultKeyMapProvider;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.ViewPortInformation;
+import net.sourceforge.vrapper.vim.DefaultConfigProvider;
 import net.sourceforge.vrapper.vim.DefaultEditorAdaptor;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.LocalConfiguration;
@@ -71,8 +74,10 @@ public class VimTestCase {
         content = spy(new TestTextContent(cursorAndSelection));
         cursorAndSelection.setContent(content);
         keyMapProvider = spy(new DefaultKeyMapProvider());
-        globalConfiguration = spy(new SimpleGlobalConfiguration());
-        configuration = spy(new SimpleLocalConfiguration(globalConfiguration));
+        // Test cases don't need any dynamic default providers.
+        List<DefaultConfigProvider> configProviders = Collections.emptyList();
+        globalConfiguration = spy(new SimpleGlobalConfiguration(configProviders));
+        configuration = spy(new SimpleLocalConfiguration(configProviders, globalConfiguration));
         when(configuration.getNewLine()).thenReturn("\n");
         for (Option<Boolean> o : Options.BOOLEAN_OPTIONS) {
             // Use defaults only for local options.
