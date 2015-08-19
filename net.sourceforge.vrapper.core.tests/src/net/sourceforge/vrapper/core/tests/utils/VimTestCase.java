@@ -53,7 +53,7 @@ public class VimTestCase {
     @Mock protected HistoryService historyService;
     @Mock protected ServiceProvider serviceProvider;
     @Mock protected PlatformSpecificStateProvider platformSpecificStateProvider;
-    @Mock private GlobalConfiguration globalConfiguration;
+    private GlobalConfiguration globalConfiguration;
     protected LocalConfiguration configuration;
     protected TestTextContent content;
     protected TestCursorAndSelection cursorAndSelection;
@@ -77,14 +77,14 @@ public class VimTestCase {
         // Test cases don't need any dynamic default providers.
         List<DefaultConfigProvider> configProviders = Collections.emptyList();
         globalConfiguration = spy(new SimpleGlobalConfiguration(configProviders));
-        configuration = spy(new SimpleLocalConfiguration(configProviders, globalConfiguration));
-        when(configuration.getNewLine()).thenReturn("\n");
+        when(globalConfiguration.getNewLine()).thenReturn("\n");
         for (Option<Boolean> o : Options.BOOLEAN_OPTIONS) {
-            // Use defaults only for local options.
+            // Don't return mock answers for local-scoped options
             if (EnumSet.of(OptionScope.GLOBAL, OptionScope.DEFAULT).contains(o.getScope())) {
-                when(configuration.get(o)).thenReturn(Boolean.FALSE);
+                when(globalConfiguration.get(o)).thenReturn(Boolean.FALSE);
             }
         }
+        configuration = spy(new SimpleLocalConfiguration(configProviders, globalConfiguration));
         when(fileService.isEditable()).thenReturn(true);
         when(fileService.checkModifiable()).thenReturn(true);
         //let UIInterface mock print out error messages
