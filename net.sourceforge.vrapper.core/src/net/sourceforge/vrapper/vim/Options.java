@@ -27,14 +27,11 @@ public interface Options {
     public static final Option<Boolean> SEARCH_HIGHLIGHT= globalBool("hlsearch",     false, "hls");
     public static final Option<Boolean> SEARCH_REGEX          = bool("regexsearch",  true,  "rxs");
     public static final Option<Boolean> INCREMENTAL_SEARCH    = bool("incsearch",    false, "is");
-    public static final Option<Boolean> LINE_NUMBERS          = bool("number",       false, "nu");
-    public static final Option<Boolean> SHOW_WHITESPACE       = bool("list",         false, "l");
     public static final Option<Boolean> IM_DISABLE            = bool("imdisable",    false, "imd");
     public static final Option<Boolean> VISUAL_MOUSE          = bool("visualmouse",  true,  "vm");
     public static final Option<Boolean> EXIT_LINK_MODE        = bool("exitlinkmode", true,  "elm");
     public static final Option<Boolean> CLEAN_INDENT          = bool("cleanindent",  true);
     public static final Option<Boolean> AUTO_CHDIR            = bool("autochdir",    false, "acd");
-    public static final Option<Boolean> HIGHLIGHT_CURSOR_LINE = bool("cursorline",   false, "cul");
     // TODO: This is an Eclipse setting under Window->Preferences->Editors->Text Editors->"Insert spaces for tabs"
     //       Changing this value should change the Eclipse configuration too. -- BRD
     public static final Option<Boolean> EXPAND_TAB            = bool("expandtab",    true,  "et");
@@ -43,6 +40,9 @@ public interface Options {
     public static final Option<Boolean> START_NORMAL_MODE     = bool("startnormalmode",   false, "snm");
     public static final Option<Boolean> UNDO_MOVES_CURSOR     = bool("undomovescursor",  true,  "umvc");
     public static final Option<Boolean> DEBUGLOG        = globalBool("debuglog",     false);
+    public static final Option<Boolean> LINE_NUMBERS    = globalBool("number",       false, "nu");
+    public static final Option<Boolean> SHOW_WHITESPACE = globalBool("list",         false, "l");
+    public static final Option<Boolean> HIGHLIGHT_CURSOR_LINE = globalBool("cursorline",   false, "cul");
 
     public static final Option<Boolean> MODIFIABLE       = localBool("modifiable", true, "ma");
     public static final Option<Boolean> GLOBAL_REGISTERS = localBool("globalregisters", true);
