@@ -93,6 +93,21 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
             public <T> void optionChanged(Option<T> option, T oldValue, T newValue) {
                 if (Options.DEBUGLOG.equals(option)) {
                     VrapperLog.setDebugEnabled(Boolean.TRUE.equals(newValue));
+                } else if (Options.SHOW_WHITESPACE.equals(option)) {
+                    Boolean show = (Boolean) newValue;
+                    EditorsUI.getPreferenceStore().setValue(
+                            AbstractDecoratedTextEditorPreferenceConstants.EDITOR_SHOW_WHITESPACE_CHARACTERS,
+                            show);
+                } else if (Options.LINE_NUMBERS.equals(option)) {
+                    Boolean show = (Boolean) newValue;
+                    EditorsUI.getPreferenceStore().setValue(
+                            AbstractDecoratedTextEditorPreferenceConstants.EDITOR_LINE_NUMBER_RULER,
+                            show);
+                } else if (Options.HIGHLIGHT_CURSOR_LINE.equals(option)) {
+                    Boolean highlight = (Boolean) newValue;
+                    EditorsUI.getPreferenceStore().setValue(
+                            AbstractDecoratedTextEditorPreferenceConstants.EDITOR_CURRENT_LINE,
+                            highlight);
                 }
             }
         };

@@ -547,9 +547,6 @@ public class CommandLineParser extends AbstractCommandParser {
             }
         }
         addActionsToBooleanOption(config, Options.GLOBAL_REGISTERS, ConfigAction.GLOBAL_REGISTERS, ConfigAction.NO_GLOBAL_REGISTERS);
-        addActionsToBooleanOption(config, Options.LINE_NUMBERS, ConfigAction.LINE_NUMBERS, ConfigAction.NO_LINE_NUMBERS);
-        addActionsToBooleanOption(config, Options.SHOW_WHITESPACE, ConfigAction.SHOW_WHITESPACE, ConfigAction.NO_SHOW_WHITESPACE);
-        addActionsToBooleanOption(config, Options.HIGHLIGHT_CURSOR_LINE, ConfigAction.HIGHLIGHT_CURSOR_LINE, ConfigAction.NO_HIGHLIGHT_CURSOR_LINE);
 
         return config;
     }
@@ -971,48 +968,6 @@ public class CommandLineParser extends AbstractCommandParser {
             public Object evaluate(EditorAdaptor vim, Queue<String> command) {
                 vim.getConfiguration().set(Options.GLOBAL_REGISTERS, Boolean.FALSE);
                 vim.useLocalRegisters();
-                return null;
-            }
-        },
-        LINE_NUMBERS {
-            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
-                vim.getConfiguration().set(Options.LINE_NUMBERS, Boolean.TRUE);
-                vim.getEditorSettings().setShowLineNumbers(true);
-                return null;
-            }
-        },
-        NO_LINE_NUMBERS {
-            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
-                vim.getConfiguration().set(Options.LINE_NUMBERS, Boolean.FALSE);
-                vim.getEditorSettings().setShowLineNumbers(false);
-                return null;
-            }
-        },
-        SHOW_WHITESPACE {
-            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
-                vim.getConfiguration().set(Options.SHOW_WHITESPACE, Boolean.TRUE);
-                vim.getEditorSettings().setShowWhitespace(true);
-                return null;
-            }
-        },
-        NO_SHOW_WHITESPACE {
-            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
-                vim.getConfiguration().set(Options.SHOW_WHITESPACE, Boolean.FALSE);
-                vim.getEditorSettings().setShowWhitespace(false);
-                return null;
-            }
-        },
-        HIGHLIGHT_CURSOR_LINE {
-            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
-                vim.getConfiguration().set(Options.HIGHLIGHT_CURSOR_LINE, Boolean.TRUE);
-                vim.getEditorSettings().setHighlightCursorLine(true);
-                return null;
-            }
-        },
-        NO_HIGHLIGHT_CURSOR_LINE {
-            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
-                vim.getConfiguration().set(Options.HIGHLIGHT_CURSOR_LINE, Boolean.FALSE);
-                vim.getEditorSettings().setHighlightCursorLine(false);
                 return null;
             }
         }
