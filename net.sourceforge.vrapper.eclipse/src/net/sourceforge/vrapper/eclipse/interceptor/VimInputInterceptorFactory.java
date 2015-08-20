@@ -4,6 +4,7 @@ package net.sourceforge.vrapper.eclipse.interceptor;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 import net.sourceforge.vrapper.eclipse.activator.VrapperPlugin;
 import net.sourceforge.vrapper.eclipse.platform.EclipsePlatform;
@@ -29,6 +30,8 @@ import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.editors.text.EditorsUI;
+import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 
 /**
@@ -49,7 +52,7 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
     private static final HashMap<Character, Character> escapedChars;
     private static final HashSet<Integer> ignoredKeyCodes;
 
-    private static final GlobalConfiguration sharedConfiguration = new SimpleGlobalConfiguration(Collections.<DefaultConfigProvider>emptyList());
+    private static final GlobalConfiguration sharedConfiguration = setupGlobalConfiguration();
 
     private static final RegisterManager globalRegisterManager = new SWTRegisterManager(
             PlatformUI.getWorkbench().getDisplay(), sharedConfiguration);
@@ -60,22 +63,45 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
         escapedChars = createEscapedChars();
 
         ignoredKeyCodes = createIgnoredKeyCodes();
-
-        setupGlobalConfiguration();
     }
 
     /** Initialize default configuration where it needs to be overridden by environment. */
-    private static void setupGlobalConfiguration() {
-        // Sync debuglog option's value with actual Log setting (read from system properties).
-        sharedConfiguration.set(Options.DEBUGLOG, VrapperLog.isDebugEnabled());
-        sharedConfiguration.addListener(new ConfigurationListener() {
+    private static GlobalConfiguration setupGlobalConfiguration() {
+        DefaultConfigProvider globalDefaults = new DefaultConfigProvider() {
+            @Override
+            @SuppressWarnings("unchecked") // we need casting for our return values
+            public <T> T getDefault(Option<T> option) {
+                if (Options.SHOW_WHITESPACE.equals(option)) {
+                    Boolean show = EditorsUI.getPreferenceStore().getBoolean(
+                            AbstractDecoratedTextEditorPreferenceConstants.EDITOR_SHOW_WHITESPACE_CHARACTERS);
+                    return (T) show;
+                } else if (Options.LINE_NUMBERS.equals(option)) {
+                    Boolean show = EditorsUI.getPreferenceStore().getBoolean(
+                            AbstractDecoratedTextEditorPreferenceConstants.EDITOR_LINE_NUMBER_RULER);
+                    return (T) show;
+                } else if (Options.HIGHLIGHT_CURSOR_LINE.equals(option)) {
+                    Boolean highlight = EditorsUI.getPreferenceStore().getBoolean(
+                            AbstractDecoratedTextEditorPreferenceConstants.EDITOR_CURRENT_LINE);
+                    return (T) highlight;
+                } else {
+                    return null;
+                }
+            }
+        };
+        ConfigurationListener configListener = new ConfigurationListener() {
             @Override
             public <T> void optionChanged(Option<T> option, T oldValue, T newValue) {
                 if (Options.DEBUGLOG.equals(option)) {
                     VrapperLog.setDebugEnabled(Boolean.TRUE.equals(newValue));
                 }
             }
-        });
+        };
+        List<DefaultConfigProvider> configProviders = Collections.singletonList(globalDefaults);
+        GlobalConfiguration sharedConfiguration = new SimpleGlobalConfiguration(configProviders);
+        // Sync debuglog option's value with actual Log setting (read from system properties).
+        sharedConfiguration.set(Options.DEBUGLOG, VrapperLog.isDebugEnabled());
+        sharedConfiguration.addListener(configListener);
+        return sharedConfiguration;
     }
 
     private static HashMap<Integer, SpecialKey> createSpecialKeys() {
