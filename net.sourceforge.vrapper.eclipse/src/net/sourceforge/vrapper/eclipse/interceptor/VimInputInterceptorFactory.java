@@ -24,8 +24,8 @@ import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.SimpleGlobalConfiguration;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
 
-import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.source.ContentAssistantFacade;
+import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.VerifyEvent;
@@ -198,8 +198,9 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
         return ignoredKeyCodes;
     }
 
+    @Override
     public InputInterceptor createInterceptor(AbstractTextEditor abstractTextEditor,
-            ITextViewer textViewer, EditorInfo partInfo, BufferAndTabService bufferAndTabService) {
+            ISourceViewer textViewer, EditorInfo partInfo, BufferAndTabService bufferAndTabService) {
         EclipsePlatform platform = new EclipsePlatform(partInfo, abstractTextEditor, textViewer,
                 sharedConfiguration, bufferAndTabService);
         DefaultEditorAdaptor editorAdaptor = new DefaultEditorAdaptor(

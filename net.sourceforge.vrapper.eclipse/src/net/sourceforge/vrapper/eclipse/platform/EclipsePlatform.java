@@ -38,9 +38,9 @@ import net.sourceforge.vrapper.vim.TextObjectProvider;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
-import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.ITextViewerExtension6;
 import org.eclipse.jface.text.IUndoManager;
+import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.part.MultiPageEditorSite;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
@@ -65,31 +65,31 @@ public class EclipsePlatform implements Platform {
     private static final Map<String, PlatformSpecificTextObjectProvider> textObjProviderCache = new ConcurrentHashMap<String, PlatformSpecificTextObjectProvider>();
     private BufferAndTabService bufferAndTabService;
 
-    public EclipsePlatform(EditorInfo partInfo, final AbstractTextEditor abstractTextEditor,
-            final ITextViewer textViewer, final GlobalConfiguration sharedConfiguration,
+    public EclipsePlatform(EditorInfo partInfo, AbstractTextEditor abstractTextEditor,
+            ISourceViewer sourceViewer, GlobalConfiguration sharedConfiguration,
             BufferAndTabService bufferAndTabService) {
         underlyingEditor = abstractTextEditor;
         this.localConfiguration = new SimpleLocalConfiguration(
                 Collections.<DefaultConfigProvider>emptyList(), sharedConfiguration);
         this.bufferAndTabService = bufferAndTabService;
-        textContent = new EclipseTextContent(textViewer);
-        cursorAndSelection = new EclipseCursorAndSelection(localConfiguration, partInfo, textViewer, textContent);
+        textContent = new EclipseTextContent(sourceViewer);
+        cursorAndSelection = new EclipseCursorAndSelection(localConfiguration, partInfo, sourceViewer, textContent);
         fileService = new EclipseFileService(abstractTextEditor);
-        viewportService = new EclipseViewportService(textViewer);
+        viewportService = new EclipseViewportService(sourceViewer);
         serviceProvider = new EclipseServiceProvider(abstractTextEditor);
         userInterfaceService = new EclipseUserInterfaceService(
-                abstractTextEditor, textViewer);
+                abstractTextEditor, sourceViewer);
         keyMapProvider = new DefaultKeyMapProvider();
         underlyingEditorSettings = new AbstractTextEditorSettings(
                 abstractTextEditor);
         highlightingService = new EclipseHighlightingService(abstractTextEditor, cursorAndSelection);
-        searchAndReplaceService = new EclipseSearchAndReplaceService(textViewer, localConfiguration, highlightingService);
-        if (textViewer instanceof ITextViewerExtension6) {
-            final IUndoManager delegate = ((ITextViewerExtension6) textViewer)
+        searchAndReplaceService = new EclipseSearchAndReplaceService(sourceViewer, localConfiguration, highlightingService);
+        if (sourceViewer instanceof ITextViewerExtension6) {
+            final IUndoManager delegate = ((ITextViewerExtension6) sourceViewer)
                     .getUndoManager();
             final EclipseHistoryService manager = new EclipseHistoryService(
-                    textViewer.getTextWidget(), delegate);
-            textViewer.setUndoManager(manager);
+                    sourceViewer.getTextWidget(), delegate);
+            sourceViewer.setUndoManager(manager);
             this.historyService = manager;
         } else {
             this.historyService = new DummyHistoryService();

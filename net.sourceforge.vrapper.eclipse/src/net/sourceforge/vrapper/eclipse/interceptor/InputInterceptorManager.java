@@ -29,6 +29,7 @@ import org.eclipse.jface.dialogs.IPageChangedListener;
 import org.eclipse.jface.dialogs.PageChangedEvent;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.ITextViewerExtension;
+import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
@@ -185,10 +186,10 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
             Object viewer = me.invoke(editor);
             if (viewer != null) {
                 // test for needed interfaces
-                ITextViewer textViewer = (ITextViewer) viewer;
+                ISourceViewer srcViewer = (ISourceViewer) viewer;
                 ITextViewerExtension textViewerExt = (ITextViewerExtension) viewer;
                 EclipseBufferAndTabService batService = ensureBufferService(editor);
-                InputInterceptor interceptor = factory.createInterceptor(editor, textViewer,
+                InputInterceptor interceptor = factory.createInterceptor(editor, srcViewer,
                         partInfo, batService);
                 CaretPositionHandler caretPositionHandler = interceptor.getCaretPositionHandler();
                 CaretPositionUndoHandler caretPositionUndoHandler = interceptor.getCaretPositionUndoHandler();
@@ -196,9 +197,9 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
                 interceptor.getEditorAdaptor().addVrapperEventListener(interceptor.getCaretPositionUndoHandler());
 
                 textViewerExt.prependVerifyKeyListener(interceptor);
-                textViewer.getTextWidget().addMouseListener(caretPositionHandler);
-                textViewer.getTextWidget().addCaretListener(caretPositionHandler);
-                textViewer.getSelectionProvider().addSelectionChangedListener(visualHandler);
+                srcViewer.getTextWidget().addMouseListener(caretPositionHandler);
+                srcViewer.getTextWidget().addCaretListener(caretPositionHandler);
+                srcViewer.getSelectionProvider().addSelectionChangedListener(visualHandler);
                 IOperationHistory operationHistory = PlatformUI.getWorkbench().getOperationSupport().getOperationHistory();
                 operationHistory.addOperationHistoryListener(caretPositionUndoHandler);
                 interceptors.put(editor, interceptor);
