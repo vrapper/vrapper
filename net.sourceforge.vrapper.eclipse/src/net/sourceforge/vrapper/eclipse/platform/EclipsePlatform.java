@@ -69,8 +69,10 @@ public class EclipsePlatform implements Platform {
             ISourceViewer sourceViewer, GlobalConfiguration sharedConfiguration,
             BufferAndTabService bufferAndTabService) {
         underlyingEditor = abstractTextEditor;
-        this.localConfiguration = new SimpleLocalConfiguration(
-                Collections.<DefaultConfigProvider>emptyList(), sharedConfiguration);
+        underlyingEditorSettings = new AbstractTextEditorSettings(abstractTextEditor, sourceViewer);
+        List<DefaultConfigProvider> configProviders =
+                Collections.singletonList((DefaultConfigProvider)underlyingEditorSettings);
+        this.localConfiguration = new SimpleLocalConfiguration(configProviders, sharedConfiguration);
         this.bufferAndTabService = bufferAndTabService;
         textContent = new EclipseTextContent(sourceViewer);
         cursorAndSelection = new EclipseCursorAndSelection(localConfiguration, partInfo, sourceViewer, textContent);
@@ -80,8 +82,6 @@ public class EclipsePlatform implements Platform {
         userInterfaceService = new EclipseUserInterfaceService(
                 abstractTextEditor, sourceViewer);
         keyMapProvider = new DefaultKeyMapProvider();
-        underlyingEditorSettings = new AbstractTextEditorSettings(
-                abstractTextEditor);
         highlightingService = new EclipseHighlightingService(abstractTextEditor, cursorAndSelection);
         searchAndReplaceService = new EclipseSearchAndReplaceService(sourceViewer, localConfiguration, highlightingService);
         if (sourceViewer instanceof ITextViewerExtension6) {
