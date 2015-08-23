@@ -15,7 +15,6 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
@@ -103,6 +102,16 @@ public class AbstractTextEditorSettings implements UnderlyingEditorSettings, Def
                 int[] offsets = StringUtils.calculateVisualOffsets(indent, indent.length(), tabWidth);
                 Integer shiftWidth = offsets[indent.length()]; // offsets array size is +1 longer
                 return (T) shiftWidth;
+
+            } else if (Options.EXPAND_TAB.equals(option)) {
+                SourceViewerConfiguration config = getSourceViewerConfig();
+                String[] indents = config.getIndentPrefixes(sourceViewer, IDocument.DEFAULT_CONTENT_TYPE);
+                if (indents.length < 1) {
+                    return null;
+                }
+                String indent = indents[0];
+                Boolean expandTab = ! indent.contains("\t");
+                return (T) expandTab;
             }
         } catch (IOException e) {
             VrapperLog.debug("Failed to get source viewer: " + e);
