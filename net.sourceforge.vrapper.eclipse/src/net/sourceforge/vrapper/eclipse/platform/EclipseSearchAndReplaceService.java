@@ -130,10 +130,19 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
         if(search.isRegExSearch()) {
             search = convertRegexSearch(search);
         }
-        IRegion result = adapter.find(
-                    begin, search.getKeyword(),
-                    !search.isBackward(), search.isCaseSensitive(),
-                    search.isWholeWord(), search.isRegExSearch());
+        IRegion result;
+        try {
+            result = adapter.find(
+                        begin, search.getKeyword(),
+                        !search.isBackward(), search.isCaseSensitive(),
+                        search.isWholeWord(), search.isRegExSearch());
+        } catch (BadLocationException e) {
+            throw new VrapperPlatformException("Failed to find '" + search.getKeyword() + "' at "
+                    + "offset" + begin + ", offset is invalid.", e);
+        } catch (PatternSyntaxException e) {
+            throw new VrapperPlatformException("Failed to find '" + search.getKeyword() + "' at "
+                    + "offset" + begin + ", search pattern is invalid.", e);
+        }
         return result;
     }
     
