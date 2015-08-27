@@ -12,6 +12,7 @@ import net.sourceforge.vrapper.core.tests.cases.SearchModeTests;
 import net.sourceforge.vrapper.core.tests.cases.SimpleKeyStrokeTests;
 import net.sourceforge.vrapper.core.tests.cases.SnapshotTests;
 import net.sourceforge.vrapper.core.tests.cases.StateAndTransitionTests;
+import net.sourceforge.vrapper.core.tests.cases.UtilityTests;
 import net.sourceforge.vrapper.core.tests.cases.VisualModeTests;
 import net.sourceforge.vrapper.core.tests.cases.VisualModeExclusiveTests;
 import net.sourceforge.vrapper.core.tests.cases.VisualModeInclusiveTests;
@@ -36,6 +37,7 @@ import org.junit.runners.Suite;
 	VisualModeInclusiveTests.class,
 	VisualModeExclusiveTests.class,
 	BlockwiseVisualModeTests.class,
+	UtilityTests.class,
 //	VrapperRCTests.class,
 //	TextObjectsUnitTests.class,
 //	CommandUnitTests.class,
