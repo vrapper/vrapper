@@ -2,6 +2,7 @@ package net.sourceforge.vrapper.core.tests.cases;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import net.sourceforge.vrapper.utils.ExplodedPattern;
@@ -91,6 +92,14 @@ public class UtilityTests {
                 " ","\\\\");
         Assert.assertThat(contents, CoreMatchers.is(contentsExpected));
 
+        test = "test backslash \\\\can't\\\\\\c";
+        result = StringUtils.explodePattern(test);
+        Assert.assertTrue(result.contains("\\\\"));
+        contents = (List<String>) contentsRef.get(result);
+        contentsExpected = Arrays.asList("t","e","s","t"," ","b","a","c","k","s","l","a","s","h",
+                " ","\\\\", "c", "a", "n", "'", "t", "\\\\", "\\c");
+        Assert.assertThat(contents, CoreMatchers.is(contentsExpected));
+
         test = "test \\\\replace and reassembly\\c\\%v";
         result = StringUtils.explodePattern(test);
         Assert.assertTrue(result.replace("\\%v", "\\%V"));
@@ -100,5 +109,11 @@ public class UtilityTests {
         result = StringUtils.explodePattern(test);
         Assert.assertTrue(result.removeAll("\\c"));
         Assert.assertEquals("test \\\\remove\\%v", result.toString());
+
+        test = "";
+        result = StringUtils.explodePattern(test);
+        contents = (List<String>) contentsRef.get(result);
+        contentsExpected = Collections.emptyList();
+        Assert.assertThat(contents, CoreMatchers.is(contentsExpected));
     }
 }
