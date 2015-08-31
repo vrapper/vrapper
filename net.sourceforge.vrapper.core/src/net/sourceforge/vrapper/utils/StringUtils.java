@@ -97,7 +97,7 @@ public class StringUtils {
         return result;
     }
 
-    public static ExplodedPattern explodePattern(String pattern) {
+    public static ExplodedPattern explodePattern(String pattern) throws IllegalArgumentException {
         List<String> parts = new ArrayList<String>();
         for (int i = 0; i < pattern.length(); i++) {
             char currentChar = pattern.charAt(i);
@@ -128,4 +128,55 @@ public class StringUtils {
         return new ExplodedPattern(parts);
     }
 
+    public static class PatternHolder {
+        public char delimiter;
+        public List<ExplodedPattern> patterns = new ArrayList<ExplodedPattern>();
+        public String remainder = "";
+    }
+
+    public static PatternHolder splitIntoPatterns(String pattern, int patternsToScan) throws IllegalArgumentException {
+        PatternHolder result = new PatternHolder();
+        char delimiter = result.delimiter = pattern.charAt(0);
+        int i = 1;
+        int currentPatternNum = 0;
+        List<String> currentPattern = new ArrayList<String>();
+        while (i < pattern.length() && currentPatternNum < patternsToScan) {
+            char currentChar = pattern.charAt(i);
+            if (currentChar == delimiter) {
+                result.patterns.add(new ExplodedPattern(currentPattern));
+                currentPattern.clear();
+                currentPatternNum++;
+            } else if (currentChar == '\\' && i + 1 == pattern.length()) {
+                throw new IllegalArgumentException("Unmatched backslash found at end of pattern!");
+            } else if (currentChar == '\\') {
+                char nextChar = pattern.charAt(i + 1);
+                // Escape codes with three chars.
+                if (nextChar == '%' && i + 2 == pattern.length()) {
+                    throw new IllegalArgumentException("Backslash-% without extra token found at "
+                            + "end of pattern!");
+                } else if (nextChar == '%') {
+                    currentPattern.add(pattern.substring(i, i + 3));
+                    i += 2;
+                } else {
+                    currentPattern.add(pattern.substring(i, i + 2));
+                    i++;
+                }
+            } else if (Character.isHighSurrogate(currentChar) && i + 1 == pattern.length()) {
+                throw new IllegalArgumentException("Unmatched surrogate found at end of pattern!");
+            } else if (Character.isHighSurrogate(currentChar)) {
+                currentPattern.add(pattern.substring(i, i + 1));
+                i++;
+            } else {
+                currentPattern.add(pattern.substring(i, i + 1));
+            }
+            i++;
+        }
+        if (i < pattern.length() && currentPatternNum == patternsToScan) {
+            result.remainder = pattern.substring(i);
+        } else if (currentPatternNum < patternsToScan) {
+            result.patterns.add(new ExplodedPattern(currentPattern));
+            currentPatternNum++;
+        }
+        return result;
+    }
 }

@@ -7,6 +7,7 @@ import java.util.List;
 
 import net.sourceforge.vrapper.utils.ExplodedPattern;
 import net.sourceforge.vrapper.utils.StringUtils;
+import net.sourceforge.vrapper.utils.StringUtils.PatternHolder;
 
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
@@ -115,5 +116,63 @@ public class UtilityTests {
         contents = (List<String>) contentsRef.get(result);
         contentsExpected = Collections.emptyList();
         Assert.assertThat(contents, CoreMatchers.is(contentsExpected));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testSplitIntoPatterns() throws Exception {
+        // Get access to internal parts list
+        Field contentsRef = ExplodedPattern.class.getDeclaredField("contents");
+        contentsRef.setAccessible(true);
+
+        String test = "#I want to \\cSEE this split#replaced#c";
+        PatternHolder holder = StringUtils.splitIntoPatterns(test, 2);
+        ExplodedPattern result = holder.patterns.get(0);
+        Assert.assertTrue(result.contains("\\c"));
+        List<String> contents = (List<String>) contentsRef.get(result);
+        List<String> contentsExpected = Arrays.asList("I"," ","w","a","n","t"," ","t","o"," ","\\c",
+                "S","E","E"," ","t","h","i","s"," ","s","p","l","i","t");
+        Assert.assertThat(contents, CoreMatchers.is(contentsExpected));
+        result = holder.patterns.get(1);
+        contents = (List<String>) contentsRef.get(result);
+        contentsExpected = Arrays.asList("r","e","p","l","a","c","e","d");
+        Assert.assertThat(contents, CoreMatchers.is(contentsExpected));
+        Assert.assertEquals("c", holder.remainder);
+
+        test = "#I want to \\cSEE this split\\#now\\\\#replaced#c";
+        holder = StringUtils.splitIntoPatterns(test, 2);
+        result = holder.patterns.get(0);
+        Assert.assertTrue(result.contains("\\c"));
+        contents = (List<String>) contentsRef.get(result);
+        contentsExpected = Arrays.asList("I"," ","w","a","n","t"," ","t","o"," ","\\c",
+                "S","E","E"," ","t","h","i","s"," ","s","p","l","i","t","\\#","n","o","w","\\\\");
+        Assert.assertThat(contents, CoreMatchers.is(contentsExpected));
+        result = holder.patterns.get(1);
+        contents = (List<String>) contentsRef.get(result);
+        contentsExpected = Arrays.asList("r","e","p","l","a","c","e","d");
+        Assert.assertThat(contents, CoreMatchers.is(contentsExpected));
+        Assert.assertEquals("c", holder.remainder);
+
+        test = "##replaced#c";
+        holder = StringUtils.splitIntoPatterns(test, 2);
+        result = holder.patterns.get(0);
+        contents = (List<String>) contentsRef.get(result);
+        contentsExpected = Collections.emptyList();
+        Assert.assertThat(contents, CoreMatchers.is(contentsExpected));
+        result = holder.patterns.get(1);
+        contents = (List<String>) contentsRef.get(result);
+        contentsExpected = Arrays.asList("r","e","p","l","a","c","e","d");
+        Assert.assertThat(contents, CoreMatchers.is(contentsExpected));
+        Assert.assertEquals("c", holder.remainder);
+
+        test = "#replaced";
+        holder = StringUtils.splitIntoPatterns(test, 2);
+        Assert.assertEquals(1, holder.patterns.size());
+        result = holder.patterns.get(0);
+        contents = (List<String>) contentsRef.get(result);
+        contentsExpected = Arrays.asList("r","e","p","l","a","c","e","d");
+        Assert.assertThat(contents, CoreMatchers.is(contentsExpected));
+        Assert.assertEquals("", holder.remainder);
+
     }
 }

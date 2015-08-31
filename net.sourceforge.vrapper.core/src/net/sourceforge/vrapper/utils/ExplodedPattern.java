@@ -1,5 +1,6 @@
 package net.sourceforge.vrapper.utils;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -12,7 +13,7 @@ public class ExplodedPattern implements Iterable<String> {
     protected String cachedResult;
 
     public ExplodedPattern(List<String> contents) {
-        this.contents = contents;
+        this.contents = new ArrayList<String>(contents);
     }
 
     public StringBuilder appendTo(StringBuilder output) {
