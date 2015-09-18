@@ -37,6 +37,7 @@ public class SearchResultMotion extends CountAwareMotion {
     public static final TextObject SELECT_PREVIOUS_MATCH = new SearchResultTextObject(true);
 
     private static final String NOT_FOUND_MESSAGE = "'%s' not found";
+    private static final String NOT_FOUND_WRAP = "search hit %s without match for: %s";
 
     protected final boolean reverse;
     private Boolean forcedBackwards;
@@ -103,8 +104,14 @@ public class SearchResultMotion extends CountAwareMotion {
             editorAdaptor.setLastSearchResult(result);
             if (! result.isFound()) {
                 editorAdaptor.getSearchAndReplaceService().removeHighlighting();
-                throw new CommandExecutionException(
-                        String.format(NOT_FOUND_MESSAGE, search.getKeyword()));
+                if(editorAdaptor.getConfiguration().get(Options.WRAP_SCAN)) {
+                	throw new CommandExecutionException(
+                			String.format(NOT_FOUND_MESSAGE, search.getKeyword()));
+                }
+                else {
+                	throw new CommandExecutionException(
+                			String.format(NOT_FOUND_WRAP, shouldReverse ? "TOP":"BOTTOM", search.getKeyword()));
+                }
             }
             position = result.getStart();
         }

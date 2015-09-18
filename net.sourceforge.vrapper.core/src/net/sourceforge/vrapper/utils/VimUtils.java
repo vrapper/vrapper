@@ -333,19 +333,15 @@ public class VimUtils {
 
     public static SearchResult wrapAroundSearch(final EditorAdaptor vim, final Search search,
             final Position position) {
-        SearchResult result2;
         final SearchAndReplaceService searcher = vim.getSearchAndReplaceService();
         SearchResult result = searcher.find(search, position);
-        if (result.isFound()) {
-            result2 = result;
-        } else {
+        if (!result.isFound() && vim.getConfiguration().get(Options.WRAP_SCAN)) {
             // redo search from beginning / end of document
             final TextContent p = vim.getModelContent();
             final int index = search.isBackward() ? p.getLineInformation(p.getNumberOfLines()-1).getEndOffset()-1 : 0;
             result = searcher.find(search, position.setModelOffset(index));
-            result2 = result;
         }
-        return result2;
+        return result;
     }
     
     /**

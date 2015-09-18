@@ -39,6 +39,7 @@ public interface Options {
     public static final Option<Boolean> CONTENT_ASSIST_MODE   = bool("contentassistmode", false, "cam");
     public static final Option<Boolean> START_NORMAL_MODE     = bool("startnormalmode",   false, "snm");
     public static final Option<Boolean> UNDO_MOVES_CURSOR     = bool("undomovescursor",  true,  "umvc");
+    public static final Option<Boolean> WRAP_SCAN             = bool("wrapscan",     true,  "ws");
     public static final Option<Boolean> DEBUGLOG        = globalBool("debuglog",     false);
     public static final Option<Boolean> LINE_NUMBERS    = globalBool("number",       false, "nu");
     public static final Option<Boolean> SHOW_WHITESPACE = globalBool("list",         false, "l");
@@ -54,7 +55,7 @@ public interface Options {
             INCREMENTAL_SEARCH, LINE_NUMBERS, SHOW_WHITESPACE, IM_DISABLE,
             VISUAL_MOUSE, EXIT_LINK_MODE, CLEAN_INDENT, AUTO_CHDIR, HIGHLIGHT_CURSOR_LINE,
             CONTENT_ASSIST_MODE, START_NORMAL_MODE, UNDO_MOVES_CURSOR, DEBUGLOG, MODIFIABLE,
-            GLOBAL_REGISTERS);
+            GLOBAL_REGISTERS, WRAP_SCAN);
 
     // String options:
     public static final Option<String> SYNC_MODIFIABLE = globalString("syncmodifiable", "nosync", "nosync, matchreadonly", "syncma");
