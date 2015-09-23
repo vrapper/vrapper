@@ -79,14 +79,14 @@ public class KeyStrokeTranslator {
             currentState = null;
             mappingSucceeded = false;
             
-            // fixing the annoying jj-<Esc> bug.
-            if (key.getCharacter() == 'j') {
-            	trans = keymap.press(key);
+            // fixing the annoying jj-<Esc> bug. 'j' for 'jj', 'i' for 'ii'.
+            if (key.getCharacter() == 'j' || key.getCharacter() == 'i') {
+                trans = keymap.press(key);
                 if (trans != null && trans.getNextState() != null) {
-                	fixjjEsc = true;
-                	currentState = trans.getNextState();
+                    fixjjEsc = true;
+                    currentState = trans.getNextState();
                 } else {
-                	fixjjEsc = false;
+                    fixjjEsc = false;
                 }
             }           
         }
