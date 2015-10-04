@@ -1,4 +1,23 @@
 <div class="newsbox">
+    <div class="date">2015-10-04</div>
+    <h4>0.60.0 Released</h4>
+    
+    <p>It's been another two months so I'm releasing our current changes.
+    Development is still moving slowly, but it's moving forward.  Albertdev did
+    a bunch of refactoring to clean up some code under the hood.  The work
+    wasn't related to any specific defect but a lot of the commands should be
+    more stable.  Here are the changes I can describe:</p>
+    
+    <ul>
+		<li>Added support for 'wrapscan' setting</li>
+		<li>We now determine certain default values based on Eclipse settings</li>
+			<ul><li>tabstop, expandtab, newline type, etc.</li></ul>
+		<li>Fixed intermittent display issue with dark themes</li>
+		<li>Fixed issue with 'gq' counting a tab character as one column</li>
+		<li>Massive refactoring of many line-based and :ex commands</li>
+    </ul>
+</div>
+<div class="newsbox">
     <div class="date">2015-08-02</div>
     <h4>0.58.0 Released</h4>
 
