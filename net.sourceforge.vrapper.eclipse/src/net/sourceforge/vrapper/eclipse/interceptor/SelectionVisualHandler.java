@@ -12,6 +12,7 @@ import net.sourceforge.vrapper.vim.modes.CommandBasedMode;
 import net.sourceforge.vrapper.vim.modes.EditorMode;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
+import net.sourceforge.vrapper.vim.modes.SelectMode;
 import net.sourceforge.vrapper.vim.modes.TempVisualMode;
 import net.sourceforge.vrapper.vim.modes.TemporaryMode;
 import net.sourceforge.vrapper.vim.modes.VisualMode;
@@ -66,6 +67,9 @@ public class SelectionVisualHandler implements ISelectionChangedListener {
             // User cleared selection or moved caret with mouse in a temporary mode.
             if(currentMode instanceof TemporaryMode) {
                 editorAdaptor.changeModeSafely(InsertMode.NAME);
+            // Selection cleared, most likely some Eclipse motion ( e.g. Home / End )
+            } else if(currentMode instanceof SelectMode) {
+                editorAdaptor.changeModeSafely(InsertMode.NAME, InsertMode.DONT_MOVE_CURSOR);
             } else if(currentMode instanceof AbstractVisualMode){
                 editorAdaptor.changeModeSafely(NormalMode.NAME);
             // Cursor can be after the line if an Eclipse operation cleared the selection, e.g. undo
@@ -86,8 +90,14 @@ public class SelectionVisualHandler implements ISelectionChangedListener {
                 editorAdaptor.changeModeSafely(VisualMode.NAME, AbstractVisualMode.KEEP_SELECTION_HINT);
             }
             else if (InsertMode.NAME.equals(editorAdaptor.getCurrentModeName())) {
-                editorAdaptor.changeModeSafely(TempVisualMode.NAME,
-                        AbstractVisualMode.KEEP_SELECTION_HINT, InsertMode.DONT_MOVE_CURSOR);
+                // [TODO] Make configurable
+                if (VrapperPlugin.isMouseDown()) {
+                    editorAdaptor.changeModeSafely(TempVisualMode.NAME,
+                            AbstractVisualMode.KEEP_SELECTION_HINT, InsertMode.DONT_MOVE_CURSOR);
+                } else {
+                    editorAdaptor.changeModeSafely(SelectMode.NAME,
+                            AbstractVisualMode.KEEP_SELECTION_HINT, InsertMode.DONT_MOVE_CURSOR);
+                }
             }
             // Store the selection - user might click with mouse and immediately destroy selection
             editorAdaptor.rememberLastActiveSelection();
