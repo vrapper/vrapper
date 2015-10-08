@@ -87,6 +87,8 @@ public class SelectionVisualHandler implements ISelectionChangedListener {
                 editorAdaptor.changeModeSafely(TempVisualMode.NAME,
                         AbstractVisualMode.KEEP_SELECTION_HINT, InsertMode.DONT_MOVE_CURSOR);
             }
+            // Store the selection - user might click with mouse and immediately destroy selection
+            editorAdaptor.rememberLastActiveSelection();
         }
     }
 }
