@@ -52,6 +52,7 @@ public class LinkedModeHandler implements IDocumentListener, ILinkedModeListener
                     && ! ContentAssistMode.NAME.equals(mode)
                     && ! NormalMode.NAME.equals(mode)) {
                 hintReceiver.changeModeSafely(NormalMode.NAME);
+                hintReceiver.setSelection(null);
             }
         }
     }
