@@ -217,6 +217,7 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
                 leafBind('d', delete),
                 leafBind('x', delete),
                 leafBind('X', delete),
+                leafBind(SpecialKey.DELETE, delete),
                 leafBind('p', paste),
                 leafBind('P', paste),
                 leafBind('~', swapCase),
