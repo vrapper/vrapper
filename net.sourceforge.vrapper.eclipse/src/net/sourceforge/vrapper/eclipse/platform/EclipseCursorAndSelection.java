@@ -552,6 +552,11 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
                     || (vrapperModeRecorder.getCurrentMode() instanceof InsertMode)) {
                 return;
             }
+            // Mark selection as "conflicted" - we're in Normal mode but somehow a selection exists
+            else if (vrapperModeRecorder.getCurrentMode() instanceof NormalMode) {
+                setCaret(CaretType.UNDERLINE);
+                return;
+            }
             // Forces caret visibility for blockwise mode: normally it is disabled all the time.
             // Regular visual modes should have it visible anyway.
             // [TODO] Maybe check if this blockwise visual selection is done through vrapper. A user
