@@ -77,7 +77,7 @@ public class EclipsePlatform implements Platform {
         this.localConfiguration = new SimpleLocalConfiguration(configProviders, sharedConfiguration);
         this.bufferAndTabService = bufferAndTabService;
         textContent = new EclipseTextContent(sourceViewer);
-        cursorAndSelection = new EclipseCursorAndSelection(localConfiguration, partInfo, sourceViewer, textContent);
+        cursorAndSelection = new EclipseCursorAndSelection(vrapperModeRecorder, localConfiguration, partInfo, sourceViewer, textContent);
         fileService = new EclipseFileService(abstractTextEditor);
         viewportService = new EclipseViewportService(sourceViewer);
         serviceProvider = new EclipseServiceProvider(abstractTextEditor);

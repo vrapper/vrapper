@@ -27,6 +27,8 @@ import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
+import net.sourceforge.vrapper.vim.modes.InsertMode;
+import net.sourceforge.vrapper.vim.modes.NormalMode;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -93,9 +95,11 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     private CaretType caretType = null;
     private Point caretCachedSize;
     private FakeCaretPainter fakeCaretPainter;
+    private VrapperModeRecorder vrapperModeRecorder;
 
-    public EclipseCursorAndSelection(final Configuration configuration,
+    public EclipseCursorAndSelection(VrapperModeRecorder vrapperModeRecorder, final Configuration configuration,
             EditorInfo editorInfo, final ITextViewer textViewer, final EclipseTextContent textContent) {
+        this.vrapperModeRecorder = vrapperModeRecorder;
         this.configuration = configuration;
         this.editorInfo = editorInfo;
         this.textViewer = textViewer;
@@ -543,7 +547,9 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
                 return;
             }
             StyledText text = textViewer.getTextWidget();
-            if (text.getSelectionCount() == 0) {
+            // Never move caret back in Normal or Insert / Select mode
+            if (text.getSelectionCount() == 0
+                    || (vrapperModeRecorder.getCurrentMode() instanceof InsertMode)) {
                 return;
             }
             // Forces caret visibility for blockwise mode: normally it is disabled all the time.
