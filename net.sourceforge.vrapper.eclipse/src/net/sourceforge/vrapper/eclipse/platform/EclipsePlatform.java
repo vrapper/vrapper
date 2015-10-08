@@ -60,6 +60,7 @@ public class EclipsePlatform implements Platform {
     private final AbstractTextEditor underlyingEditor;
     private final HighlightingService highlightingService;
     private final SearchAndReplaceService searchAndReplaceService;
+    private final VrapperModeRecorder vrapperModeRecorder;
     private static final Map<String, PlatformSpecificStateProvider> providerCache = new ConcurrentHashMap<String, PlatformSpecificStateProvider>();
     private static final AtomicReference<PlatformSpecificModeProvider> modeProviderCache= new AtomicReference<PlatformSpecificModeProvider>();
     private static final Map<String, PlatformSpecificTextObjectProvider> textObjProviderCache = new ConcurrentHashMap<String, PlatformSpecificTextObjectProvider>();
@@ -68,6 +69,7 @@ public class EclipsePlatform implements Platform {
     public EclipsePlatform(EditorInfo partInfo, AbstractTextEditor abstractTextEditor,
             ISourceViewer sourceViewer, GlobalConfiguration sharedConfiguration,
             BufferAndTabService bufferAndTabService) {
+        vrapperModeRecorder = new VrapperModeRecorder();
         underlyingEditor = abstractTextEditor;
         underlyingEditorSettings = new AbstractTextEditorSettings(abstractTextEditor, sourceViewer);
         List<DefaultConfigProvider> configProviders =
@@ -94,6 +96,10 @@ public class EclipsePlatform implements Platform {
         } else {
             this.historyService = new DummyHistoryService();
         }
+    }
+
+    public VrapperModeRecorder getModeRecorder() {
+        return vrapperModeRecorder;
     }
 
     @Override

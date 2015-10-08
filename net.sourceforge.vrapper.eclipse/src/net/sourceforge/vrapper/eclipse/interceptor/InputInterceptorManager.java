@@ -194,7 +194,6 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
                 CaretPositionHandler caretPositionHandler = interceptor.getCaretPositionHandler();
                 CaretPositionUndoHandler caretPositionUndoHandler = interceptor.getCaretPositionUndoHandler();
                 SelectionVisualHandler visualHandler = interceptor.getSelectionVisualHandler();
-                interceptor.getEditorAdaptor().addVrapperEventListener(interceptor.getCaretPositionUndoHandler());
 
                 textViewerExt.prependVerifyKeyListener(interceptor);
                 srcViewer.getTextWidget().addMouseListener(caretPositionHandler);

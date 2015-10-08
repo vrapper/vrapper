@@ -9,6 +9,7 @@ import java.util.List;
 import net.sourceforge.vrapper.eclipse.activator.VrapperPlugin;
 import net.sourceforge.vrapper.eclipse.platform.EclipsePlatform;
 import net.sourceforge.vrapper.eclipse.platform.SWTRegisterManager;
+import net.sourceforge.vrapper.eclipse.platform.VrapperModeRecorder;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.vim.SimpleKeyStroke;
@@ -201,15 +202,21 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
     @Override
     public InputInterceptor createInterceptor(AbstractTextEditor abstractTextEditor,
             ISourceViewer textViewer, EditorInfo partInfo, BufferAndTabService bufferAndTabService) {
+
         EclipsePlatform platform = new EclipsePlatform(partInfo, abstractTextEditor, textViewer,
                 sharedConfiguration, bufferAndTabService);
         DefaultEditorAdaptor editorAdaptor = new DefaultEditorAdaptor(
                 platform,
                 globalRegisterManager, VrapperPlugin.isVrapperEnabled());
+        editorAdaptor.addVrapperEventListener(platform.getModeRecorder());
         InputInterceptor interceptor = createInterceptor(editorAdaptor);
         interceptor.setEditorInfo(partInfo);
+
         interceptor.setCaretPositionUndoHandler(new CaretPositionUndoHandler(editorAdaptor, textViewer));
+        editorAdaptor.addVrapperEventListener(interceptor.getCaretPositionUndoHandler());
+
         interceptor.setCaretPositionHandler(new CaretPositionHandler(editorAdaptor, textViewer));
+
         if (editorAdaptor.getConfiguration().get(Options.EXIT_LINK_MODE)) {
             LinkedModeHandler linkedModeHandler = new LinkedModeHandler(editorAdaptor);
             LinkedModeHandler.registerListener(textViewer.getDocument(), linkedModeHandler);
@@ -224,6 +231,7 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
                 }
             }
         }
+
         SelectionVisualHandler visualHandler = new SelectionVisualHandler(editorAdaptor,
                 platform.getSelectionService(), textViewer);
         interceptor.setSelectionVisualHandler(visualHandler);
