@@ -85,6 +85,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     private final EclipseTextContent textContent;
     private int averageCharWidth;
     private CaretType caretType = null;
+    private Point caretCachedSize;
 
     public EclipseCursorAndSelection(final Configuration configuration,
             EditorInfo editorInfo, final ITextViewer textViewer, final EclipseTextContent textContent) {
@@ -440,13 +441,22 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
 
     @Override
     public void setCaret(final CaretType caretType) {
+        StyledText styledText = textViewer.getTextWidget();
         if (this.caretType != caretType) {
-            final StyledText styledText = textViewer.getTextWidget();
-            final Caret old = styledText.getCaret();
-            styledText.setCaret(CaretUtils.createCaret(caretType, styledText));
+            Caret old = styledText.getCaret();
+            Caret newCaret = CaretUtils.createCaret(caretType, styledText);
             // old caret is not disposed automatically
             old.dispose();
             this.caretType = caretType;
+            this.caretCachedSize = newCaret.getSize();
+            styledText.setCaret(newCaret);
+        } else {
+            // Reset caret size without disposing - sometimes Eclipse switches to an Insert cursor.
+            Caret caret = styledText.getCaret();
+            Rectangle oldBounds = caret.getBounds();
+            caret.setSize(caretCachedSize);
+            // Repaint region where old caret used to be - otherwise artifacts might show up
+            styledText.redraw(oldBounds.x, oldBounds.y, oldBounds.width, oldBounds.height, true);
         }
     }
 
