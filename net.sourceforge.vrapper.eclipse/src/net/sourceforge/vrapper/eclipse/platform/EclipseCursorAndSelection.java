@@ -34,6 +34,7 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.BadPositionCategoryException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
@@ -108,10 +109,24 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         caretListener = new StickyColumnUpdater();
         marks = new HashMap<String, org.eclipse.jface.text.Position>();
         changeList = new ArrayList<org.eclipse.jface.text.Position>();
+    }
+
+    public void installHooks() {
         textViewer.getTextWidget().addSelectionListener(selectionChangeListener);
         textViewer.getTextWidget().addCaretListener(caretListener);
         textViewer.getSelectionProvider().addSelectionChangedListener(selectionChangeListener);
         textViewer.getDocument().addPositionCategory(POSITION_CATEGORY_NAME);
+    }
+
+    public void uninstallHooks() {
+        textViewer.getTextWidget().removeSelectionListener(selectionChangeListener);
+        textViewer.getTextWidget().removeCaretListener(caretListener);
+        textViewer.getSelectionProvider().removeSelectionChangedListener(selectionChangeListener);
+        try {
+            textViewer.getDocument().removePositionCategory(POSITION_CATEGORY_NAME);
+        } catch (BadPositionCategoryException e) {
+            throw new VrapperPlatformException("Failed to delete position category", e);
+        }
     }
 
     @Override

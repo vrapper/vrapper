@@ -14,6 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import net.sourceforge.vrapper.eclipse.activator.VrapperPlugin;
 import net.sourceforge.vrapper.eclipse.extractor.EditorExtractor;
 import net.sourceforge.vrapper.eclipse.platform.EclipseBufferAndTabService;
+import net.sourceforge.vrapper.eclipse.platform.EclipseCursorAndSelection;
 import net.sourceforge.vrapper.eclipse.utils.Utils;
 import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.VrapperPlatformException;
@@ -194,6 +195,7 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
                 CaretPositionHandler caretPositionHandler = interceptor.getCaretPositionHandler();
                 CaretPositionUndoHandler caretPositionUndoHandler = interceptor.getCaretPositionUndoHandler();
                 SelectionVisualHandler visualHandler = interceptor.getSelectionVisualHandler();
+                EclipseCursorAndSelection selectionSvc = interceptor.getPlatform().getSelectionService();
 
                 textViewerExt.prependVerifyKeyListener(interceptor);
                 srcViewer.getTextWidget().addMouseListener(caretPositionHandler);
@@ -201,6 +203,7 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
                 srcViewer.getSelectionProvider().addSelectionChangedListener(visualHandler);
                 IOperationHistory operationHistory = PlatformUI.getWorkbench().getOperationSupport().getOperationHistory();
                 operationHistory.addOperationHistoryListener(caretPositionUndoHandler);
+                selectionSvc.installHooks();
                 interceptors.put(editor, interceptor);
             }
         } catch (Exception exception) {
@@ -225,12 +228,15 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
                 CaretPositionHandler caretPositionHandler = interceptor.getCaretPositionHandler();
                 CaretPositionUndoHandler caretPositionUndoHandler = interceptor.getCaretPositionUndoHandler();
                 SelectionVisualHandler visualHandler = interceptor.getSelectionVisualHandler();
+                EclipseCursorAndSelection selectionSvc = interceptor.getPlatform().getSelectionService();
+
                 textViewerExt.removeVerifyKeyListener(interceptor);
                 textViewer.getTextWidget().removeCaretListener(caretPositionHandler);
                 textViewer.getTextWidget().removeMouseListener(caretPositionHandler);
                 textViewer.getSelectionProvider().removeSelectionChangedListener(visualHandler);
                 IOperationHistory operationHistory = PlatformUI.getWorkbench().getOperationSupport().getOperationHistory();
                 operationHistory.removeOperationHistoryListener(caretPositionUndoHandler);
+                selectionSvc.uninstallHooks();
             } catch (Exception exception) {
                 VrapperLog.error("Exception during closing IWorkbenchPart",
                         exception);
