@@ -210,6 +210,7 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
                 globalRegisterManager, VrapperPlugin.isVrapperEnabled());
         editorAdaptor.addVrapperEventListener(platform.getModeRecorder());
         InputInterceptor interceptor = createInterceptor(editorAdaptor);
+        interceptor.setPlatform(platform);
         interceptor.setEditorInfo(partInfo);
 
         interceptor.setCaretPositionUndoHandler(new CaretPositionUndoHandler(editorAdaptor, textViewer));
@@ -250,6 +251,7 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
         private CaretPositionHandler caretPositionHandler;
         private SelectionVisualHandler selectionVisualHandler;
         private CaretPositionUndoHandler caretPositionUndoHandler;
+        private EclipsePlatform eclipsePlatform;
 
         private VimInputInterceptor(EditorAdaptor editorAdaptor) {
             this.editorAdaptor = editorAdaptor;
@@ -328,6 +330,16 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
         @Override
         public void setCaretPositionUndoHandler(CaretPositionUndoHandler handler) {
             this.caretPositionUndoHandler = handler;
+        }
+
+        @Override
+        public EclipsePlatform getPlatform() {
+            return eclipsePlatform;
+        }
+
+        @Override
+        public void setPlatform(EclipsePlatform platform) {
+            eclipsePlatform = platform;
         }
     }
 }

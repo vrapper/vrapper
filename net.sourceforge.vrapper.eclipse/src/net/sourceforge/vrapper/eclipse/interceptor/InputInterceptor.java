@@ -1,5 +1,6 @@
 package net.sourceforge.vrapper.eclipse.interceptor;
 
+import net.sourceforge.vrapper.eclipse.platform.EclipsePlatform;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 
 import org.eclipse.swt.custom.VerifyKeyListener;
@@ -26,4 +27,7 @@ public interface InputInterceptor extends VerifyKeyListener {
     
     public CaretPositionUndoHandler getCaretPositionUndoHandler();
     public void setCaretPositionUndoHandler(CaretPositionUndoHandler handler);
+
+    public EclipsePlatform getPlatform();
+    public void setPlatform(EclipsePlatform platform);
 }
