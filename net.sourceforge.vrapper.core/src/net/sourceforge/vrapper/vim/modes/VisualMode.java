@@ -47,19 +47,7 @@ public class VisualMode extends AbstractVisualMode {
         String selectionType = editorAdaptor.getConfiguration().get(Options.SELECTION);
         CaretType type;
         if (Selection.INCLUSIVE.equals(selectionType)) {
-            if (editorAdaptor.getSelection().isReversed()) {
                 type = CaretType.RECTANGULAR;
-            } else {
-                Selection selection = editorAdaptor.getSelection();
-                int to = selection.getTo().getModelOffset();
-                TextContent modelContent = editorAdaptor.getModelContent();
-                LineInformation li = modelContent.getLineInformationOfOffset(to);
-                if (to == li.getEndOffset() && to < modelContent.getTextLength()) {
-                    type = CaretType.RECTANGULAR;
-                } else {
-                    type = CaretType.LEFT_SHIFTED_RECTANGULAR;
-                }
-            }
         } else if (Selection.EXCLUSIVE.equals(selectionType)) {
             type = CaretType.VERTICAL_BAR;
         } else {
