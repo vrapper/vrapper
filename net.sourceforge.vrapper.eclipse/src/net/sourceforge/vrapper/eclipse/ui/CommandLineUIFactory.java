@@ -35,7 +35,8 @@ public class CommandLineUIFactory {
     public CommandLineUIFactory(StyledText parentText) {
         parent = parentText;
 
-        StyledText widget = new StyledText(parent, SWT.ON_TOP);
+        StyledText widget = new StyledText(parent, SWT.ON_TOP | SWT.V_SCROLL);
+        widget.setAlwaysShowScrollBars(false);
         widget.setFont(parent.getFont());
         widget.setMargins(COMMAND_CHAR_INDENT, 3, 3, 3);
         widget.setSize(5, 5);
