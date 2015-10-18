@@ -219,6 +219,9 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         } catch (final CommandExecutionException e) {
             VrapperLog.error("exception when changing mode",  e);
             userInterfaceService.setErrorMessage(e.getMessage());
+        } catch (RuntimeException e) {
+            VrapperLog.error("unexpected exception when changing mode",  e);
+            userInterfaceService.setErrorMessage("error while changing to mode " + name);
         }
     }
 
@@ -389,6 +392,16 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
             	userInterfaceService.setEditorMode(currentMode.getDisplayName());
             	listeners.fireModeSwitched(oldMode);
             	throw e;
+            }
+            catch (RuntimeException e) {
+                //failed to enter new mode, revert to previous mode
+                //then let Exception bubble up
+                currentMode = oldMode;
+                oldMode.enterMode();
+                //EditorMode might have called changeMode again, so update UI with actual mode.
+                userInterfaceService.setEditorMode(currentMode.getDisplayName());
+                listeners.fireModeSwitched(oldMode);
+                throw e;
             }
         }
     }
