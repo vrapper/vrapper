@@ -9,7 +9,6 @@ import java.util.List;
 import net.sourceforge.vrapper.eclipse.activator.VrapperPlugin;
 import net.sourceforge.vrapper.eclipse.platform.EclipsePlatform;
 import net.sourceforge.vrapper.eclipse.platform.SWTRegisterManager;
-import net.sourceforge.vrapper.eclipse.platform.VrapperModeRecorder;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.vim.SimpleKeyStroke;

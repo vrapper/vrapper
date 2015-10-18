@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.sourceforge.vrapper.eclipse.activator.VrapperPlugin;
 import net.sourceforge.vrapper.eclipse.interceptor.EditorInfo;
 import net.sourceforge.vrapper.eclipse.ui.CaretUtils;
 import net.sourceforge.vrapper.log.VrapperLog;
@@ -26,6 +27,8 @@ import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
+import net.sourceforge.vrapper.vim.modes.InsertMode;
+import net.sourceforge.vrapper.vim.modes.NormalMode;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -45,6 +48,8 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.custom.CaretEvent;
 import org.eclipse.swt.custom.CaretListener;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.GC;
@@ -87,9 +92,12 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     private int averageCharWidth;
     private CaretType caretType = null;
     private Point caretCachedSize;
+    private VisualCaretPainter visualCaretPainter;
+    private VrapperModeRecorder vrapperModeRecorder;
 
-    public EclipseCursorAndSelection(final Configuration configuration,
+    public EclipseCursorAndSelection(VrapperModeRecorder vrapperModeRecorder, final Configuration configuration,
             EditorInfo editorInfo, final ITextViewer textViewer, final EclipseTextContent textContent) {
+        this.vrapperModeRecorder = vrapperModeRecorder;
         this.configuration = configuration;
         this.editorInfo = editorInfo;
         this.textViewer = textViewer;
@@ -109,21 +117,26 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         caretListener = new StickyColumnUpdater();
         marks = new HashMap<String, org.eclipse.jface.text.Position>();
         changeList = new ArrayList<org.eclipse.jface.text.Position>();
+        visualCaretPainter = new VisualCaretPainter();
     }
 
     public void installHooks() {
         textViewer.getTextWidget().addSelectionListener(selectionChangeListener);
         textViewer.getTextWidget().addCaretListener(caretListener);
+        textViewer.getTextWidget().addPaintListener(visualCaretPainter);
         textViewer.getSelectionProvider().addSelectionChangedListener(selectionChangeListener);
         textViewer.getDocument().addPositionCategory(POSITION_CATEGORY_NAME);
     }
 
     public void uninstallHooks() {
-        textViewer.getTextWidget().removeSelectionListener(selectionChangeListener);
-        textViewer.getTextWidget().removeCaretListener(caretListener);
-        textViewer.getSelectionProvider().removeSelectionChangedListener(selectionChangeListener);
         try {
+            textViewer.getTextWidget().removeSelectionListener(selectionChangeListener);
+            textViewer.getTextWidget().removeCaretListener(caretListener);
+            textViewer.getTextWidget().removePaintListener(visualCaretPainter);
+            textViewer.getSelectionProvider().removeSelectionChangedListener(selectionChangeListener);
             textViewer.getDocument().removePositionCategory(POSITION_CATEGORY_NAME);
+        } catch (RuntimeException e) {
+            throw new VrapperPlatformException("Failed to unhook selection listeners", e);
         } catch (BadPositionCategoryException e) {
             throw new VrapperPlatformException("Failed to delete position category", e);
         }
@@ -303,40 +316,9 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         } else if (ContentType.TEXT_RECTANGLE.equals(contentType)) {
             setBlockSelection(newSel);
         } else {
-            IDocument document = textViewer.getDocument();
             int start = newSel.getStart().getModelOffset();
-            int end = newSel.getEnd().getModelOffset();
             int length = !newSel.isReversed() ? newSel.getModelLength() : -newSel.getModelLength();
-            int documentLength = document.getLength();
-            IRegion lastLineInfo;
-            try {
-                lastLineInfo = document.getLineInformationOfOffset(end);
-            } catch (BadLocationException e) { // Shouldn't really happen...
-                selectionInProgress = false;
-                throw new VrapperPlatformException("Failed to get line info for last line of sel, "
-                        + "M " + end, e);
-            }
-            // Linewise selection includes final newline and so Eclipse will put the caret in column
-            // 0 of the next line. We want a blinking caret at the end of the previous line instead,
-            // simply shrink the selection to the previous line.
-            if (ContentType.LINES.equals(contentType)) {
-                // Special cases:
-                // - Last line of document may contain characters, don't alter selection
-                // - A reversed selection needs to show its caret in column 0, don't alter selection
-                if ((end == documentLength && lastLineInfo.getLength() == 0)
-                        || ! newSel.isReversed()) {
-                    end = safeAddModelOffset(end, end - 1, true);
-                    length = end - start;
-                }
-            } else if (ContentType.TEXT.equals(contentType)) {
-                boolean isInclusive = Selection.INCLUSIVE.equals(configuration.get(Options.SELECTION));
-                if (isInclusive && ! newSel.isReversed() && start != end && lastLineInfo.getOffset() == end) {
-                    // [NOTE] The caret must be updated as well, this is handled in
-                    // VisualMode.fixCaret()
-                    end = safeAddModelOffset(end, end - 1, true);
-                    length = end - start;
-                }
-            }
+
             selection = newSel;
             //Only the caller can set the sticky column, e.g. in the case of an up/down motion.
             caretListener.disable();
@@ -539,6 +521,47 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
             enabled = false;
         }
 
+    }
+
+    private final class VisualCaretPainter implements PaintListener {
+
+        @Override
+        public void paintControl(PaintEvent e) {
+            if ( ! VrapperPlugin.isVrapperEnabled()) {
+                return;
+            }
+            StyledText text = textViewer.getTextWidget();
+            // Never move caret somewhere else in Insert / Select mode
+            if (text.getSelectionCount() == 0
+                    || (vrapperModeRecorder.getCurrentMode() instanceof InsertMode)) {
+                return;
+            }
+            // Mark selection as "conflicted" - we're in Normal mode but somehow a selection exists
+            else if (vrapperModeRecorder.getCurrentMode() instanceof NormalMode) {
+                setCaret(CaretType.UNDERLINE);
+                return;
+            }
+            // Forces caret visibility for blockwise mode: normally it is disabled all the time.
+            // Regular visual modes should have it visible anyway.
+            text.getCaret().setVisible(true);
+            Position to = getSelection().getTo();
+            if (VrapperLog.isDebugEnabled()) {
+                VrapperLog.debug("To: V" + to.getViewOffset() + "/M" + to.getModelOffset());
+            }
+            boolean isInclusive = Selection.INCLUSIVE.equals(configuration.get(Options.SELECTION));
+            int offset = to.getViewOffset();
+            // Selection is on some character in a fold or file is empty?
+            if (offset <= 0) {
+                VrapperLog.debug("In a fold");
+                return;
+            }
+            // Fix caret position for last character in the file.
+            if (textViewer.getDocument().getLength() == to.getModelOffset() && isInclusive) {
+                offset--;
+            }
+            Point visualOffset = text.getLocationAtOffset(offset);
+            text.getCaret().setLocation(visualOffset);
+        }
     }
 
     @Override
