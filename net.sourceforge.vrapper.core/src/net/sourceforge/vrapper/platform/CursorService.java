@@ -114,7 +114,7 @@ public interface CursorService {
      * "visual" offset.
      * @param lineNo line number
      * @param visualOffset horizontal "visual" offset obtained from @ref getVisualOffset.
-     * @return target position or @a null if there are no characters at the
+     * @return target position or <code>null</code> if there are no characters at the
      *         provided offset.
      */
     Position getPositionByVisualOffset(int lineNo, int visualOffset);
