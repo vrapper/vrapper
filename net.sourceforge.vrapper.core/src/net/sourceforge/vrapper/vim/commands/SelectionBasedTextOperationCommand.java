@@ -202,8 +202,6 @@ public class SelectionBasedTextOperationCommand extends CountAwareCommand {
         Position runEnd = cursorService.getPositionByVisualOffset(textBlock.startLine, textBlock.endVisualOffset);
         if (runEnd == null) {
             runEnd = cursorService.newPositionForModelOffset(lineInfo.getEndOffset());
-        } else {
-            runEnd = runEnd.addModelOffset(1);
         }
         final TextObject firstLine = new DummyTextObject(new StartEndTextRange(runStart, runEnd));
 
