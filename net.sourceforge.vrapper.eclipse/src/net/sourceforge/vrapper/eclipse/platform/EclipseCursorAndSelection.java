@@ -164,12 +164,13 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
 
     @Override
     public void setPosition(final Position position, final StickyColumnPolicy columnPolicy) {
-        if (columnPolicy == StickyColumnPolicy.NEVER
-                || columnPolicy == StickyColumnPolicy.RESET_EOL) {
-            caretListener.disable();
-        }
+        caretListener.disable();
+        // Use our own position, SWT block mode doesn't know about Vrapper's caret position.
+        Position oldPosition = getPosition();
         int viewOffset = position.getViewOffset();
+        int oldViewOffset = oldPosition.getViewOffset();
         if (viewOffset < 0) {
+            VrapperLog.info("Position M" + position.getModelOffset() + " was not visible.");
             //Something went screwy, avoid getting into a bad state.
             //Just put the cursor at offset 0.
             viewOffset = 0;
@@ -181,11 +182,21 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         }
         // Reset Vrapper selection
         selection = null;
-        if (columnPolicy == StickyColumnPolicy.RESET_EOL) {
+        switch (columnPolicy) {
+        case NEVER:
+            break;
+        case ON_CHANGE:
+            if (oldViewOffset != viewOffset) {
+                updateStickyColumn(viewOffset);
+            }
+            break;
+        case RESET_EOL:
             stickToEOL = false;
             updateStickyColumn(viewOffset);
-        } else if (columnPolicy == StickyColumnPolicy.TO_EOL) {
+            break;
+        case TO_EOL:
             stickToEOL = true;
+            break;
         }
         caretListener.enable();
     }
