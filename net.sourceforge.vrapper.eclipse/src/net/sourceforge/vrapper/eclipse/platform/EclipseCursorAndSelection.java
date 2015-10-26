@@ -14,6 +14,7 @@ import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.Configuration;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.SelectionService;
+import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.platform.VrapperPlatformException;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.ContentType;
@@ -38,7 +39,6 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.BadPositionCategoryException;
-import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.ITextViewerExtension5;
@@ -330,52 +330,80 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
     }
 
     private void setBlockSelection(Selection newSelection) {
-        IDocument document = textViewer.getDocument();
-        // block selection
         final StyledText styled = textViewer.getTextWidget();
         styled.setBlockSelection(true);
-        final int startOfs = selection.getFrom().getViewOffset();
-        final int endOfs = selection.getTo().getViewOffset();
-        if (endOfs == textViewer.getDocument().getLength()) {
+        GC gc = new GC(styled);
+        final int avgCharWidth = gc.getFontMetrics().getAverageCharWidth();
+        gc.dispose();
+        final TextContent viewContent = textContent.getViewContent();
+        final int fromOfs = selection.getFrom().getViewOffset();
+        final int toOfs = selection.getTo().getViewOffset();
+        if (toOfs == textViewer.getDocument().getLength()) {
             // Don't change selection if the caret is after the last character.
             return;
         }
-        final Rectangle fromRect = styled.getTextBounds(startOfs, startOfs);
+        final Rectangle fromRect = styled.getTextBounds(fromOfs, fromOfs);
+        LineInformation fromLine = viewContent.getLineInformationOfOffset(fromOfs);
+        final Rectangle toRect = styled.getTextBounds(toOfs, toOfs);
+        LineInformation toLine = viewContent.getLineInformationOfOffset(toOfs);
+        // getTextBounds actually returns a bounding box for the last character and never for the
+        // endline. If either one of these positions is EOL, shift to right
+        if (fromLine.getEndOffset() == fromOfs) {
+            fromRect.x += avgCharWidth;
+        }
+        if (toLine.getEndOffset() == toOfs) {
+            toRect.x += avgCharWidth;
+        }
         Rectangle blockRect;
         if (stickToEOL) {
-            if (startOfs <= endOfs) {
-                //
-                // endOfs is looking at the last character on the current line:
-                //
-                // startOfs -> o-------
-                //             |
-                //             +---------------------o <- endOfs
-                //
-                blockRect = styled.getTextBounds(startOfs, endOfs);
+            int leftTrim;
+            if (fromRect.x < toRect.x) {
+                leftTrim = fromRect.x;
             } else {
-                //
-                // three "points" are needed to be considered to determine the
-                // encompassing rectangle:
-                //
-                //             +-------o <-endOfs
+                leftTrim = toRect.x;
+            }
+            if (fromOfs <= toOfs) {
+                // endOfs is always looking at the last character on the current line.
+                // The following situations are possible:
+                // startOfs -> o                (pos on top of EOL)
+                //             |
+                // leftTrim -> o---------------------o <- endOfs
+                // or:
+                // startOfs -> o----------------o <- startEOL
+                //             |
+                // leftTrim -> o------------o <- endOfs
+                // or:
+                // startOfs --------v
+                //             +----o----------o <- startEOL
+                //             |
+                // leftTrim -> o <- endOfs
+
+                // getTextBounds deals with all cases as it includes everything to right of startOfs
+                blockRect = styled.getTextBounds(fromOfs, toOfs);
+            } else {
+                // leftTrim -> o-------o <-endOfs
                 //             |
                 // startOfs -> o---------------------o <- startEOL
-                //
-                try {
-                    final IRegion startLine = document.getLineInformationOfOffset(startOfs);
-                    blockRect = styled.getTextBounds(endOfs, startLine.getOffset() + startLine.getLength());
-                    blockRect = blockRect.union(styled.getTextBounds(endOfs, startOfs));
-                } catch (BadLocationException e) {
-                    VrapperLog.error("Failed to get start line info", e);
-                    return;
-                }
+                // or:
+                // leftTrim -> o <-endOfs
+                //             |
+                //             +--------o------------o <- startEOL
+                // startOfs ____________^
+                // or:
+                // leftTrim -> o <-endOfs
+                //             |
+                //             +--------o <- startEOL
+                // startOfs ____________^
+
+                blockRect = styled.getTextBounds(toOfs, fromLine.getEndOffset());
             }
-            // getTextBounds makes a spanning block for the characters at the start of all lines.
-            // Clip and move it.
-            blockRect.width -= fromRect.x - blockRect.x;
-            blockRect.x = fromRect.x;
+            // Enlarge block to right to include endline characters (endOfs is always past the line)
+            blockRect.width += avgCharWidth;
+            // blockRect is now a "spanning block" - it includes characters on the left. Trim it.
+            blockRect.width -= leftTrim - blockRect.x;
+            // Move block to where we started trimming.
+            blockRect.x = leftTrim;
         } else {
-            final Rectangle toRect = styled.getTextBounds(endOfs, endOfs);
             blockRect = fromRect.union(toRect);
         }
         //
@@ -546,7 +574,8 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
             text.getCaret().setVisible(true);
             Position to = getSelection().getTo();
             if (VrapperLog.isDebugEnabled()) {
-                VrapperLog.debug("To: V" + to.getViewOffset() + "/M" + to.getModelOffset());
+//                VrapperLog.debug("To: V" + to.getViewOffset() + "/M" + to.getModelOffset());
+                VrapperLog.debug(getSelection().toString());
             }
             boolean isInclusive = Selection.INCLUSIVE.equals(configuration.get(Options.SELECTION));
             int offset = to.getViewOffset();
