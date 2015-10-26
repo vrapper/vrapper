@@ -94,6 +94,15 @@ public class BlockWiseSelection extends AbstractSelection {
         return to;
     }
 
+    public String toString() {
+        String caretInfo = "";
+        if (range != null && to != null && range.getEnd() != to) {
+            caretInfo = " @ M" + to.getModelOffset()
+                    + "/" + to.getViewOffset() + "V";
+        }
+        return "BlockWiseSelection( " + String.valueOf(range) + caretInfo + " )";
+    }
+
     /**
      * Text block representation by a line range and a visual (think pixel)
      * range.
