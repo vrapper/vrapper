@@ -52,15 +52,15 @@ public class SwapBlockwiseSelectionSidesCommand extends CountIgnoringNonRepeatab
             // on the same line.
             newStartPos = cs.getPositionByVisualOffset(startLine.getNumber(), endVOffs);
             newEndPos   = cs.getPositionByVisualOffset(endLine.getNumber(),   startVOffs);
-            // Clamp by the last character on the line if there is no characters
+            // Clamp by the last character on the line if there are no characters
             // at the visual offset (mimics VIM behaviour).
             if (newStartPos == null) {
-                final int lineEndOfs = Math.max(startLine.getEndOffset() - 1,
+                final int lineEndOfs = Math.max(startLine.getEndOffset(),
                         startLine.getBeginOffset());
                 newStartPos = cs.newPositionForModelOffset(lineEndOfs);
             }
             if (newEndPos == null) {
-                final int lineEndOfs = Math.max(endLine.getEndOffset() - 1,
+                final int lineEndOfs = Math.max(endLine.getEndOffset(),
                         endLine.getBeginOffset());
                 newEndPos = cs.newPositionForModelOffset(lineEndOfs);
             }
