@@ -654,6 +654,10 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
                     			}
                     		}
                     		else {
+                    			// fixing the annoying jj-<Esc> bug.
+                    			if (keyStrokeTranslator.needFixjjEsc()) {
+                    				cursorBeforeMapping = cursorService.getPosition().getModelOffset();
+                    			}
                     			//we've already displayed all but this most recent key
 
                     			//mapping failed though, check if key is in global map.
