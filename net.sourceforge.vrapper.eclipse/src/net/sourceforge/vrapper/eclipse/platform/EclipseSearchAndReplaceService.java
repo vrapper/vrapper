@@ -5,6 +5,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.PatternSyntaxException;
 
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.FindReplaceDocumentAdapter;
+import org.eclipse.jface.text.IRegion;
+import org.eclipse.jface.text.ITextViewer;
+import org.eclipse.jface.text.Region;
+
 import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.Configuration;
 import net.sourceforge.vrapper.platform.HighlightingService;
@@ -20,17 +26,10 @@ import net.sourceforge.vrapper.utils.StringUtils;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.Options;
 
-import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.FindReplaceDocumentAdapter;
-import org.eclipse.jface.text.IRegion;
-import org.eclipse.jface.text.ITextViewer;
-import org.eclipse.jface.text.Region;
-
 public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
 
     private static final String INC_ANNOTATION_TYPE = "net.sourceforge.vrapper.eclipse.incsearchhighlight";
     private static final String ANNOTATION_TYPE = "net.sourceforge.vrapper.eclipse.searchhighlight";
-    private final FindReplaceDocumentAdapter adapter;
     private final HighlightingService highlightingService;
     private final Configuration configuration;
     private Search lastHighlightedSearch;
@@ -41,7 +40,6 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
     public EclipseSearchAndReplaceService(ITextViewer textViewer, final Configuration configuration,
             HighlightingService highlightingService) {
         this.textViewer = textViewer;
-        this.adapter = new FindReplaceDocumentAdapter(textViewer.getDocument());
         this.highlightingService = highlightingService;
         this.configuration = configuration;
         this.annotations = Collections.emptyList();
@@ -49,7 +47,8 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
 
     public SearchResult find(Search search, Position start) {
         try {
-            IRegion result = find(search, start.getModelOffset());
+            FindReplaceDocumentAdapter adapter = new FindReplaceDocumentAdapter(textViewer.getDocument());
+            IRegion result = find(search, start.getModelOffset(), adapter);
             Position resultPosition = result != null ? start.setModelOffset(result.getOffset()) : null;
             Position endPosition = result != null ? start.setModelOffset(result.getOffset()+result.getLength()) : null;
             return new SearchResult(resultPosition, endPosition);
@@ -70,6 +69,7 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
         int numReplaces = 0;
         toFind = convertRegexSearch(toFind);
         IRegion result;
+        FindReplaceDocumentAdapter adapter = new FindReplaceDocumentAdapter(textViewer.getDocument());
         try {
             result = adapter.find(start, toFind, true, caseSensitive, false, true);
             if (result != null && result.getOffset() < end) {
@@ -115,6 +115,7 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
         boolean success = false;
         try {
             toFind = convertRegexSearch(toFind);
+            FindReplaceDocumentAdapter adapter = new FindReplaceDocumentAdapter(textViewer.getDocument());
             IRegion result = adapter.find(start, toFind, true, isCaseSensitive(toFind, flags), false, true);
             if(result != null) {
                 adapter.replace(toReplace, true);
@@ -126,7 +127,7 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
         return success;
     }
 
-    private IRegion find(Search search, int begin) throws BadLocationException {
+    private IRegion find(Search search, int begin, FindReplaceDocumentAdapter adapter) throws BadLocationException {
         if(search.isRegExSearch()) {
             search = convertRegexSearch(search);
         }
@@ -186,9 +187,10 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
         annotations = new ArrayList<Object>();
         lastHighlightedSearch = search;
         try {
+            FindReplaceDocumentAdapter adapter = new FindReplaceDocumentAdapter(textViewer.getDocument());
             List<TextRange> rangesToHL = new ArrayList<TextRange>();
             TextViewerPosition temp = new TextViewerPosition(textViewer, Space.MODEL, 0);
-            while ((result = find(search, result.getOffset()+result.getLength())) != null) {
+            while ((result = find(search, result.getOffset()+result.getLength(), adapter)) != null) {
                 Position start = temp.setModelOffset(result.getOffset());
                 Position end = temp.setModelOffset(result.getOffset() + result.getLength());
                 rangesToHL.add(StartEndTextRange.exclusive(start, end));
