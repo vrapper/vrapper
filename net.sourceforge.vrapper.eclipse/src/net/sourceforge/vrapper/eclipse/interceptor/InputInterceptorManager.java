@@ -413,8 +413,25 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
         }
         if (event.getPageChangeProvider() instanceof IEditorPart
                 && event.getSelectedPage() instanceof IEditorPart) {
+            IEditorPart toplevelEditor = (IEditorPart) event.getPageChangeProvider();
             IEditorPart editor = (IEditorPart) event.getSelectedPage();
             InputInterceptor interceptor = interceptors.get(editor);
+
+            // This can happen for some rare, dynamic editors which replace editor pages later on.
+            // They tend to do this upon changing pages in which case they're called before.
+            if (interceptor == null) {
+                EditorInfo topPageEditorInfo = toplevelEditorInfo.get(toplevelEditor);
+                if (topPageEditorInfo != null && editor instanceof AbstractTextEditor) {
+                    AbstractTextEditor abstractTextEditor = (AbstractTextEditor) editor;
+                    EditorInfo childInfo = topPageEditorInfo.createChildInfo(editor);
+
+                    // Calling partActivated below will update the 'lastSeen' info, pass false.
+                    registerEditorPart(childInfo, false);
+                    interceptAbstractTextEditor(abstractTextEditor, childInfo);
+                    interceptor = interceptors.get(editor);
+                }
+            }
+
             if (interceptor != null) {
                 EditorInfo info = interceptor.getEditorInfo();
                 partActivated(info, new ProcessedInfo(editor));
