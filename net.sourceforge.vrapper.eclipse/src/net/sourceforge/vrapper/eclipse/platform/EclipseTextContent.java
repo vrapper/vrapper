@@ -175,7 +175,7 @@ public class EclipseTextContent {
         public void smartInsert(int index, String s) {
             StyledText textWidget = textViewer.getTextWidget();
             int oldIndex = textWidget.getCaretOffset();
-            Position oldposition = new Position(oldIndex);
+            Position oldposition = new Position(converter.widgetOffset2ModelOffset(oldIndex));
             try {
                 try {
                     textViewer.getDocument().addPosition(oldposition);
@@ -190,10 +190,11 @@ public class EclipseTextContent {
                 }
                 textWidget.insert(s);
                 try {
+                    int newIndex = converter.modelOffset2WidgetOffset(oldposition.offset);
                     // Old position is automatically updated by JFace.
-                    textWidget.setCaretOffset(oldposition.offset);
+                    textWidget.setCaretOffset(newIndex);
                 } catch (IllegalArgumentException e) {
-                    throw new VrapperPlatformException("Failed to move caret to V" + oldIndex, e);
+                    throw new VrapperPlatformException("Failed to move caret to M" + oldposition.offset, e);
                 }
             } finally {
                 if (oldposition != null) {
