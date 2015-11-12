@@ -206,36 +206,16 @@ public class EclipseTextContent {
         public void smartInsert(String s) {
             StyledText textWidget = textViewer.getTextWidget();
             int pos = textWidget.getCaretOffset();
-            // move caret after insertion to preserve position
+
             if (pos < textWidget.getCharCount()) {
-                // check that we're not at the end of the line, in which case we might run into \r\n
-                int mOffset = converter.widgetOffset2ModelOffset(pos);
-                int nextLineStart, lineStart, lineEnd;
-                try {
-                    int mLine = textViewer.getDocument().getLineOfOffset(mOffset);
-                    int lineLenDelim = textViewer.getDocument().getLineLength(mLine);
-                    IRegion lineInfo = textViewer.getDocument().getLineInformation(mLine);
-                    lineStart = lineInfo.getOffset();
-                    lineEnd = lineStart + lineInfo.getLength();
-                    nextLineStart = lineStart + lineLenDelim;
-                } catch (BadLocationException e) {
-                    throw new VrapperPlatformException("Failed to get line info for M" + mOffset
-                            + "/V" + pos, e);
-                }
-                try {
-                    int jump = 1;
-                    if (mOffset + jump > lineEnd) {
-                        // park caret on next line so we don't jump into the middle of \r\n
-                        jump = nextLineStart - mOffset;
-                    }
-                    textWidget.setCaretOffset(pos + jump);
-                    textWidget.replaceTextRange(pos, 0, s);
-                    textWidget.setCaretOffset(textWidget.getCaretOffset() - jump);
-                } catch (IllegalArgumentException e) {
-                    throw new VrapperPlatformException("Failed to insert text"
-                            + " at M" + mOffset + "/V" + pos, e);
-                }
+                // Insert at current position and move caret after newly inserted text.
+                // Doing a simple insert or replace may sometimes move the caret automatically when
+                // in linked mode, at other times it might not. The other smartInsert method handles
+                // both cases fine.
+                smartInsert(pos, s);
             } else {
+                // No need to work with position updaters, we know we can jump to the new end of the
+                // file.
                 try {
                     textWidget.replaceTextRange(pos, 0, s);
                     textWidget.setCaretOffset(textWidget.getCharCount());
