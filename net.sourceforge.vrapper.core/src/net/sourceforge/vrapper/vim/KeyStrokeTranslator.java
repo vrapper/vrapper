@@ -1,8 +1,11 @@
 package net.sourceforge.vrapper.vim;
 
 
+import java.util.AbstractQueue;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Queue;
 
 import net.sourceforge.vrapper.keymap.KeyMap;
@@ -18,6 +21,48 @@ import net.sourceforge.vrapper.keymap.Transition;
  * @author Matthias Radig
  */
 public class KeyStrokeTranslator {
+
+    private static final Queue<RemappedKeyStroke> EMPTY_QUEUE = new AbstractQueue<RemappedKeyStroke>(){
+        @Override
+        public boolean offer(RemappedKeyStroke e) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public RemappedKeyStroke poll() {
+            return null;
+        }
+
+        @Override
+        public RemappedKeyStroke peek() {
+            return null;
+        }
+
+        @Override
+        public Iterator<RemappedKeyStroke> iterator() {
+            return new Iterator<RemappedKeyStroke>() {
+                @Override
+                public boolean hasNext() {
+                    return false;
+                }
+
+                @Override
+                public RemappedKeyStroke next() {
+                    throw new NoSuchElementException();
+                }
+
+                @Override
+                public void remove() {
+                    throw new UnsupportedOperationException();
+                }
+            };
+        }
+
+        @Override
+        public int size() {
+            return 0;
+        }
+    };
 
     private State<Remapping> currentState;
     private Remapping lastValue;
@@ -77,7 +122,11 @@ public class KeyStrokeTranslator {
     }
 
     public Queue<RemappedKeyStroke> resultingKeyStrokes() {
-        return resultingKeyStrokes;
+        if (resultingKeyStrokes.isEmpty()) {
+            return EMPTY_QUEUE;
+        } else {
+            return new LinkedList<RemappedKeyStroke>(resultingKeyStrokes);
+        }
     }
 
     public boolean didMappingSucceed() {
