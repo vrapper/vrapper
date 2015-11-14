@@ -9,6 +9,7 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafState;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionState;
+
 import net.sourceforge.vrapper.keymap.KeyMapInfo;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.State;
@@ -35,6 +36,7 @@ import net.sourceforge.vrapper.vim.commands.InsertShiftWidth;
 import net.sourceforge.vrapper.vim.commands.JoinVisualLinesCommand;
 import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
 import net.sourceforge.vrapper.vim.commands.PasteOperation;
+import net.sourceforge.vrapper.vim.commands.PrintOffsetInformation;
 import net.sourceforge.vrapper.vim.commands.ReplaceCommand;
 import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SelectionBasedTextOperationCommand;
@@ -200,6 +202,7 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
         final Command joinLines = JoinVisualLinesCommand.INSTANCE;
         final Command joinLinesDumbWay = JoinVisualLinesCommand.DUMB_INSTANCE;
         final Command findFile = VisualFindFileCommand.INSTANCE;
+        final Command printOffsetInfo = PrintOffsetInformation.INSTANCE;
         final State<Command> visualMotions = getVisualMotionState();
         final State<Command> visualTextObjects = new VisualTextObjectState(
                                         editorAdaptor.getTextObjectProvider());
@@ -226,6 +229,7 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
                 leafBind('>', shiftRight),
                 leafBind('<', shiftLeft),
                 transitionBind('g',
+                        leafCtrlBind('g', printOffsetInfo),
                         // Always switch back to visual mode to show these text objects
                         leafBind('n', (Command) new ChangeToVisualModeCommand(VisualMode.NAME,
                                 new VisualMotionCommand(SearchResultMotion.NEXT_END))),

@@ -50,6 +50,7 @@ import net.sourceforge.vrapper.vim.commands.NormalLineRangeOperation;
 import net.sourceforge.vrapper.vim.commands.PasteAfterCommand;
 import net.sourceforge.vrapper.vim.commands.PasteBeforeCommand;
 import net.sourceforge.vrapper.vim.commands.PlaybackMacroCommand;
+import net.sourceforge.vrapper.vim.commands.PrintOffsetInformation;
 import net.sourceforge.vrapper.vim.commands.RecordMacroMode;
 import net.sourceforge.vrapper.vim.commands.RedoCommand;
 import net.sourceforge.vrapper.vim.commands.RepeatLastSubstitutionCommand;
@@ -148,6 +149,7 @@ public class NormalMode extends CommandBasedMode {
         final TextOperation yank   = YankOperation.INSTANCE;
         final TextOperation format = FormatOperation.INSTANCE;
         final Command undo = UndoCommand.INSTANCE;
+        final Command printOffsetInfo = PrintOffsetInformation.INSTANCE;
         final Command redo = RedoCommand.INSTANCE;
         final Command pasteAfter  = PasteAfterCommand.CURSOR_ON_TEXT;
         final Command pasteBefore = PasteBeforeCommand.CURSOR_ON_TEXT;
@@ -218,6 +220,7 @@ public class NormalMode extends CommandBasedMode {
                         leafCtrlBind('^', SwitchBufferCommand.INSTANCE),
                         leafBind('&', repeatSubLine),
                         transitionBind('g',
+                                leafCtrlBind('g', printOffsetInfo),
                                 leafBind('a', (Command)AsciiCommand.INSTANCE),
                                 leafBind('f', findFile),
                                 leafBind('&', repeatSubGlobal),
