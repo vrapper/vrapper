@@ -15,6 +15,7 @@ import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.Transition;
+import net.sourceforge.vrapper.keymap.vim.ConstructorWrappers;
 import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.PlatformSpecificStateProvider;
@@ -72,6 +73,7 @@ public abstract class CommandBasedMode extends AbstractMode {
     protected State<Command> currentState;
     private final KeyMapResolver keyMapResolver;
     private final StringBuilder commandBuffer;
+    protected int commandBufferRemapIndex = -1;
     private static Map<String, State<Command>> initialStateCache = new HashMap<String, State<Command>>();
 
     public CommandBasedMode(EditorAdaptor editorAdaptor) {
@@ -79,6 +81,12 @@ public abstract class CommandBasedMode extends AbstractMode {
         currentState = initialState = getInitialState();
         keyMapResolver = buildKeyMapResolver();
         commandBuffer = new StringBuilder();
+    }
+
+    @Override
+    public void enterMode(ModeSwitchHint... hints) throws CommandExecutionException {
+        super.enterMode(hints);
+        commandBufferRemapIndex = -1;
     }
 
     /** Reset cursor position if it is at the end of the line and the current mode won't allow it. 
@@ -375,9 +383,28 @@ public abstract class CommandBasedMode extends AbstractMode {
         resetCommandBuffer();
     }
 
+    @Override
+    public void addKeyToMapBuffer(KeyStroke stroke) {
+        String keyStrokeString = ConstructorWrappers.keyStrokeToString(stroke);
+        if (commandBufferRemapIndex == -1) {
+            commandBufferRemapIndex = commandBuffer.length();
+        }
+        commandBuffer.append(keyStrokeString);
+        editorAdaptor.getUserInterfaceService().setInfoMessage(commandBuffer.toString());
+    }
+
+    @Override
+    public void cleanMapBuffer(boolean mappingSucceeded) {
+        if (commandBufferRemapIndex > -1) {
+            commandBuffer.delete(commandBufferRemapIndex, commandBuffer.length());
+        }
+        editorAdaptor.getUserInterfaceService().setInfoMessage(commandBuffer.toString());
+    }
+
     private void resetCommandBuffer() {
         commandBuffer.delete(0, commandBuffer.length());
         editorAdaptor.getUserInterfaceService().setInfoMessage("");
+        commandBufferRemapIndex = -1;
     }
 
     protected State<Command> getPlatformSpecificState(String mode) {
