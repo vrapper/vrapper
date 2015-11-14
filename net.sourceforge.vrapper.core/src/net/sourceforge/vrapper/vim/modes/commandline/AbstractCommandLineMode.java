@@ -1,6 +1,7 @@
 package net.sourceforge.vrapper.vim.modes.commandline;
 
 import net.sourceforge.vrapper.keymap.KeyStroke;
+import net.sourceforge.vrapper.keymap.vim.ConstructorWrappers;
 import net.sourceforge.vrapper.platform.CommandLineUI;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
@@ -17,7 +18,11 @@ public abstract class AbstractCommandLineMode extends AbstractMode {
     protected abstract String getPrompt();
 
     protected abstract AbstractCommandParser createParser();
-    
+
+    protected int mapBufferStart = -1;
+
+    protected int mapBufferLength = -1;
+
     public static final ModeSwitchHint FROM_VISUAL = new ModeSwitchHint() { };
 
     public AbstractCommandLineMode(EditorAdaptor editorAdaptor) {
@@ -29,6 +34,8 @@ public abstract class AbstractCommandLineMode extends AbstractMode {
      */
     public void enterMode(ModeSwitchHint... args) throws CommandExecutionException {
         isEnabled = true;
+        mapBufferStart = -1;
+        mapBufferLength = -1;
         CommandLineUI commandLine = editorAdaptor.getCommandLine();
         commandLine.setPrompt(getPrompt());
         parser = createParser();
@@ -55,6 +62,29 @@ public abstract class AbstractCommandLineMode extends AbstractMode {
     public boolean handleKey(KeyStroke stroke) {
         parser.type(stroke);
         return true;
+    }
+
+    @Override
+    public void addKeyToMapBuffer(KeyStroke stroke) {
+        String strokeString = ConstructorWrappers.keyStrokeToString(stroke);
+        if (mapBufferStart == -1) {
+            mapBufferStart = parser.commandLine.getPosition();
+        }
+        if (mapBufferLength == -1) {
+            mapBufferLength = strokeString.length();
+        } else {
+            mapBufferLength += strokeString.length();
+        }
+        parser.commandLine.type(strokeString);
+    }
+
+    @Override
+    public void cleanMapBuffer(boolean mappingSucceeded) {
+        if (mapBufferStart != -1 && mapBufferLength != -1) {
+            parser.commandLine.replace(mapBufferStart, mapBufferStart + mapBufferLength, "");
+        }
+        mapBufferStart = -1;
+        mapBufferLength = -1;
     }
 
     /**
