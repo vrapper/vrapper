@@ -376,6 +376,11 @@ public abstract class CommandBasedMode extends AbstractMode {
         resetCommandBuffer();
     }
 
+    @Override
+    public boolean isRemapBacktracking() {
+        return false;
+    }
+
     /**
      * this is a hook method which is called when command execution is done
      */

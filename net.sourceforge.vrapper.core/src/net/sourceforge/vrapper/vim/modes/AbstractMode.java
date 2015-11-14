@@ -28,4 +28,9 @@ public abstract class AbstractMode implements EditorMode {
     @Override
     public void cleanMapBuffer(boolean mappingSucceeded) {
     }
+
+    @Override
+    public boolean isRemapBacktracking() {
+        return true;
+    }
 }

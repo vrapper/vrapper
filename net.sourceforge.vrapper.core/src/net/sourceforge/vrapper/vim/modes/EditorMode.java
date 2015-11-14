@@ -14,4 +14,10 @@ public interface EditorMode {
     String resolveKeyMap(KeyStroke stroke);
     void addKeyToMapBuffer(KeyStroke stroke);
     void cleanMapBuffer(boolean mappingSucceeded);
+    /**
+     * Whether a failed multi-character remap match should be retried without the first character.
+     * Command modes best return <code>false</code> whereas modes with a continuous stream of input
+     * (Insert, Command line) can keep the default of <code>true</code>
+     */
+    boolean isRemapBacktracking();
 }

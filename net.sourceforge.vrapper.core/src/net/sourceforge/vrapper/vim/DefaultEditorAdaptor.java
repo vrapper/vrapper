@@ -628,62 +628,84 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
                 if (inMapping) {
                     final Queue<RemappedKeyStroke> resultingKeyStrokes =
                         keyStrokeTranslator.resultingKeyStrokes();
-                    //if we're in a mapping in InsertMode, display the pending characters
-                    //(we'll delete them if the user completes the mapping)
-                    if(currentMode.getName() == InsertMode.NAME) {
-                        if(cursorBeforeMapping == -1) {
+                    // Check if we should do backtracking: a multi-character mapping failed after
+                    // the user entered two or more characters. The first few characters can be
+                    // passed to the current mode whereas the later ones might be another mapping.
+                    boolean doBackTrack = ! keyStrokeTranslator.didMappingSucceed()
+                            && resultingKeyStrokes.size() > 1 && currentMode.isRemapBacktracking();
+                    // Insert mode uses no map buffer, pending characters are inserted by Eclipse.
+                    if (currentMode instanceof InsertMode) {
+                        if (cursorBeforeMapping == -1) {
                             //keep track of where the cursor is at the start of a mapping
                             //so we can delete the pending characters if the mapping completes
                             cursorBeforeMapping = cursorService.getPosition().getModelOffset();
                         }
-                    	//display pending character
-                    	if(resultingKeyStrokes.isEmpty()) {
-                    		return currentMode.handleKey(key);
-                    	}
-                    	//there are resulting key strokes,
-                    	//mapping exited either successfully or unsuccessfully.
-                    	//do we have pending characters to delete?
-                    	else if(cursorService.getPosition().getModelOffset() - cursorBeforeMapping > 0) {
-                    	    int pendingChars = cursorService.getPosition().getModelOffset() - cursorBeforeMapping;
-                    	    //prepare for next mapping
-                    	    cursorBeforeMapping = -1;
-                    		if(keyStrokeTranslator.didMappingSucceed()) {
-                    			//delete all the pending characters we had displayed
-                    			for(int i=0; i < pendingChars; i++) {
-                    				currentMode.handleKey(new RemappedKeyStroke(new SimpleKeyStroke(SpecialKey.BACKSPACE), false));
-                    			}
-                    		}
-                    		else {
-                    			//we've already displayed all but this most recent key
+                        // Display pending characters - most keys will make us return false in which
+                        // case Eclipse's default insert logic becomes active (e.g. for auto-closing
+                        // parentheses). Some automatic stuff can't be triggered any other way.
+                        if (resultingKeyStrokes.isEmpty()) {
+                            return currentMode.handleKey(key);
+                        }
+                        // Else there are resulting key strokes, mapping exited either successfully
+                        // or unsuccessfully. Are there previous characters to delete?
+                        else if (cursorService.getPosition().getModelOffset() - cursorBeforeMapping > 0) {
 
-                    			//mapping failed though, check if key is in global map.
-                    			if (KeyMap.GLOBAL_MAP.containsKey(key)) {
-                    				key = new RemappedKeyStroke(KeyMap.GLOBAL_MAP.get(key), false);
-                    			}
-                    			return currentMode.handleKey(key);
-                    		}
-                    	}
-                    	//else, mapping is only one character long (no pending characters to remove)
-                    	
-                    	//prepare for next mapping
-                    	cursorBeforeMapping = -1;
+                            try {
+                                if (keyStrokeTranslator.didMappingSucceed() || doBackTrack) {
+                                    int pendingChars = cursorService.getPosition().getModelOffset() - cursorBeforeMapping;
+                                    //delete all the pending characters we had displayed
+                                    for (int i=0; i < pendingChars; i++) {
+                                        currentMode.handleKey(new RemappedKeyStroke(new SimpleKeyStroke(SpecialKey.BACKSPACE), false));
+                                    }
+                                }
+                                else {
+                                    // Mapping failed. We inserted all other characters so only the
+                                    // last key should be dealt with.
+
+                                    // check if key is in global map.
+                                    if (KeyMap.GLOBAL_MAP.containsKey(key)) {
+                                        key = new RemappedKeyStroke(KeyMap.GLOBAL_MAP.get(key), false);
+                                    }
+                                    return currentMode.handleKey(key);
+                                }
+                            } finally {
+                                //prepare for next insert mapping
+                                cursorBeforeMapping = -1;
+                            }
+                        } else {
+                            //mapping is only one character long (no pending characters to remove)
+                            //prepare for next insert mapping
+                            cursorBeforeMapping = -1;
+                        }
+
                     } else if (resultingKeyStrokes.isEmpty()) {
                         currentMode.addKeyToMapBuffer(key);
                     } else {
                         currentMode.cleanMapBuffer(keyStrokeTranslator.didMappingSucceed());
                     }
-                    //play all resulting key strokes
-                    while (!resultingKeyStrokes.isEmpty()) {
-                        final RemappedKeyStroke next = resultingKeyStrokes.poll();
-                        if (next.isRecursive()) {
-                            handleKey(next);
-                        } else {
-                            currentMode.handleKey(next);
+                    // Backtrack remap
+                    if (doBackTrack) {
+                        // First key needs to be removed and handled or it would trigger same remap.
+                        currentMode.handleKey(resultingKeyStrokes.poll());
+                        // Backtrack by recursion. Don't call handleKey as it records macros.
+                        while ( ! resultingKeyStrokes.isEmpty()) {
+                            final RemappedKeyStroke next = resultingKeyStrokes.poll();
+                            handleKey0(next);
+                        }
+                    } else {
+                        // play all key strokes, either the pending characters or the successful map
+                        while ( ! resultingKeyStrokes.isEmpty()) {
+                            final RemappedKeyStroke next = resultingKeyStrokes.poll();
+                            if (next.isRecursive()) {
+                                handleKey(next);
+                            } else {
+                                currentMode.handleKey(next);
+                            }
                         }
                     }
                     return true;
-                }
-            }
+                } // else the character matches no mapping.
+            } // else mode does not allow remapping at this point.
             if (KeyMap.GLOBAL_MAP.containsKey(key)) {
                 key = new RemappedKeyStroke(KeyMap.GLOBAL_MAP.get(key), false);
             }
