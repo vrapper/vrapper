@@ -590,13 +590,14 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
             }
             boolean isInclusive = Selection.INCLUSIVE.equals(configuration.get(Options.SELECTION));
             int offset = to.getViewOffset();
+            int documentLength = textViewer.getDocument().getLength();
             // Selection is on some character in a fold or file is empty?
-            if (offset <= 0) {
+            if (offset < 0) {
                 VrapperLog.debug("In a fold");
                 return;
             }
-            // Fix caret position for last character in the file.
-            if (textViewer.getDocument().getLength() == to.getModelOffset() && isInclusive) {
+            // Fix caret position for last character in the file - selection.to might not be correct
+            if (documentLength > 0 && documentLength == to.getModelOffset() && isInclusive) {
                 offset--;
             }
             Point visualOffset = text.getLocationAtOffset(offset);
