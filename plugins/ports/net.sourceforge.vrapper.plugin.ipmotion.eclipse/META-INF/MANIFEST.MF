@@ -2,8 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Vrapper ipmotion Plug-in Eclipse integration
 Bundle-SymbolicName: net.sourceforge.vrapper.plugin.ipmotion.eclipse;singleton:=true
-Bundle-Version: 0.61.20151115
+Bundle-Version: 0.61.20151119
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: net.sourceforge.vrapper.plugin.ipmotion.core;bundle-version="0.61.20151115";visibility:=reexport,
+Require-Bundle: net.sourceforge.vrapper.plugin.ipmotion.core;bundle-version="0.61.20151119";visibility:=reexport,
  net.sourceforge.vrapper.eclipse
 Eclipse-BuddyPolicy: dependent
