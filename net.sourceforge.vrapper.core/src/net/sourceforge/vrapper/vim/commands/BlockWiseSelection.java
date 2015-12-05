@@ -22,7 +22,7 @@ public class BlockWiseSelection extends AbstractSelection {
         super();
         this.from = from;
         this.to = to;
-        this.range = StartEndTextRange.inclusive(editor.getCursorService(), from, to);
+        this.range = StartEndTextRange.exclusive(from, to);
     }
     
     @Override

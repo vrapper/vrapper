@@ -41,10 +41,10 @@ public class SwapBlockwiseSelectionSidesCommand extends CountIgnoringNonRepeatab
             // Swapping to and from is enough for the diagonal swap.
             break;
         case HORIZONTAL:
-            final int startVOffs = cs.getVisualOffset(sel.getFrom());
-            final int endVOffs = cs.getVisualOffset(sel.getTo());
-            final LineInformation startLine = mc.getLineInformationOfOffset(sel.getFrom().getModelOffset());
-            final LineInformation endLine = mc.getLineInformationOfOffset(sel.getTo().getModelOffset());
+            final int startVOffs = cs.getVisualOffset(sel.getStart());
+            final int endVOffs = cs.getVisualOffset(sel.getEnd());
+            final LineInformation startLine = mc.getLineInformationOfOffset(sel.getStart().getModelOffset());
+            final LineInformation endLine = mc.getLineInformationOfOffset(sel.getEnd().getModelOffset());
             // Swap visual offsets of the start and end position, but keep them
             // on the same line.
             newStartPos = cs.getPositionByVisualOffset(startLine.getNumber(), endVOffs);
