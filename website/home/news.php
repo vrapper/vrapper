@@ -1,4 +1,29 @@
 <div class="newsbox">
+    <div class="date">2015-12-06</div>
+    <h4>0.62.0 Released</h4>
+    
+    <p>Time for another Vrapper release.  Some great progress
+    was made in the last two months fixing older defects that
+    have been around for a while.  There was also a lot of general
+    refactoring to cleanup the code and fix certain little annoyances.
+    Hope everyone enjoys this new release!</p>
+    
+    <ul>
+		<li>Added support for 'o' and 'O' in visual block mode</li>
+		<li>Added support for g_CTRL-G to display cursor position info</li>
+		<li>Fixed issue where a bad regex pattern could crash a Vrapper instance</li>
+		<li>Fixed issue where pressing DELETE in visual mode wouldn't delete</li>
+		<li>Fixed issue when multiple possible mappings are pending</li>
+		<li>Fixed issue with multi-page editors in ABAP Development Tools</li>
+		<li>Fixed error when using Vrapper with Eclipse Overview plugin</li>
+		<li>Fixed corner case where 'gv' wasn't restoring the correct selection</li>
+		<li>Fixed corner case related to executing a mapping after Eclipse auto-completed a set of parentheses</li>
+		<li>Refactored some code to remove hacks for drawing the cursor</li>
+		<li>Refactored code around visual block mode</li>
+		<li>Refactored command-line parsing so multiple spaces can appear between certain commands and their arguments</li>
+    </ul>
+</div>
+<div class="newsbox">
     <div class="date">2015-10-04</div>
     <h4>0.60.0 Released</h4>
     
