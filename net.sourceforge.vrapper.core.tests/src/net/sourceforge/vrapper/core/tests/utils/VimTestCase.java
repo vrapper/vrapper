@@ -33,6 +33,7 @@ import net.sourceforge.vrapper.vim.SimpleGlobalConfiguration;
 import net.sourceforge.vrapper.vim.SimpleLocalConfiguration;
 import net.sourceforge.vrapper.vim.TextObjectProvider;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
+import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
 import net.sourceforge.vrapper.vim.register.SimpleRegister;
 
@@ -172,6 +173,11 @@ public class VimTestCase {
             int offset = cursorAndSelection.getPosition().getModelOffset();
             content.replace(offset, 0, ""+stroke.getCharacter());
         }
+    }
+
+    public void installSaneRegisterManager() {
+        registerManager = new DefaultRegisterManager();
+        reloadEditorAdaptor();
     }
 
 }

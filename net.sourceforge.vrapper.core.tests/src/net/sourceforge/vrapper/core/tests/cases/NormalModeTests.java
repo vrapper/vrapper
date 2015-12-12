@@ -28,7 +28,6 @@ import net.sourceforge.vrapper.vim.modes.CommandBasedMode;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
 import net.sourceforge.vrapper.vim.modes.ModeSwitchHint;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
-import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
 import net.sourceforge.vrapper.vim.register.Register;
 import net.sourceforge.vrapper.vim.register.StringRegisterContent;
 
@@ -2460,10 +2459,4 @@ public class NormalModeTests extends CommandTestCase {
                 "Ala ",'m', "a kota",
                 "",'A', "la ma kota\nAla ma kota\nAla ma kota");
     }
-
-    private void installSaneRegisterManager() {
-        registerManager = new DefaultRegisterManager();
-        reloadEditorAdaptor();
-    }
-
 }
