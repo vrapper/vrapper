@@ -355,7 +355,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         EditorMode newMode = modeMap.get(modeName);
         if (newMode == null) {
             // Load extension modes
-            final List<EditorMode> modes = platformSpecificModeProvider.getModes(this);
+            List<EditorMode> modes = platformSpecificModeProvider.getModes(this);
             for (final EditorMode mode : modes) {
                 if (modeMap.containsKey(mode.getName())) {
                     VrapperLog.error(format("Mode '%s' was already loaded!", mode.getName()));
@@ -371,37 +371,46 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         }
         if (currentMode != newMode) {
             listeners.fireModeAboutToSwitch(newMode);
-        	final EditorMode oldMode = currentMode;
+            EditorMode oldMode = currentMode;
             if (currentMode != null) {
                 currentMode.leaveMode(args);
                 lastModeName = currentMode.getName();
             }
             try {
-            	currentMode = newMode;
-            	newMode.enterMode(args);
-            	//EditorMode might have called changeMode again, so update UI with actual mode.
-            	userInterfaceService.setEditorMode(currentMode.getDisplayName());
-            	listeners.fireModeSwitched(oldMode);
-            }
-            catch(final CommandExecutionException e) {
-            	//failed to enter new mode, revert to previous mode
-            	//then let Exception bubble up
-            	currentMode = oldMode;
-            	oldMode.enterMode();
-            	//EditorMode might have called changeMode again, so update UI with actual mode.
-            	userInterfaceService.setEditorMode(currentMode.getDisplayName());
-            	listeners.fireModeSwitched(oldMode);
-            	throw e;
-            }
-            catch (RuntimeException e) {
-                //failed to enter new mode, revert to previous mode
-                //then let Exception bubble up
-                currentMode = oldMode;
-                oldMode.enterMode();
+                currentMode = newMode;
+                newMode.enterMode(args);
                 //EditorMode might have called changeMode again, so update UI with actual mode.
                 userInterfaceService.setEditorMode(currentMode.getDisplayName());
                 listeners.fireModeSwitched(oldMode);
-                throw e;
+            }
+            catch (Exception e) {
+                //failed to enter new mode, revert to previous mode then let Exception bubble up
+                currentMode = oldMode;
+                RuntimeException result = null;
+                try {
+                    oldMode.enterMode();
+                } catch (Exception e2) {
+                    // old mode cannot be entered due to invalid state. Fall back to normal mode.
+                    String msg = "Failed to switch to mode " + newMode
+                            + " and failed to switch back to " + oldMode.getName();
+                    VrapperLog.error(msg, e);
+                    EditorMode temp = modeMap.get(NormalMode.NAME);
+                    temp.enterMode();
+                    oldMode = temp;
+                    currentMode = temp;
+                    result = new RuntimeException(msg, e2);
+                }
+                //EditorMode might have called changeMode again, so update UI with actual mode.
+                userInterfaceService.setEditorMode(currentMode.getDisplayName());
+                listeners.fireModeSwitched(oldMode);
+
+                if (result == null && e instanceof CommandExecutionException) {
+                    throw (CommandExecutionException) e;
+                } else if (result == null) {
+                    throw new RuntimeException("Failed to switch to mode " + newMode, e);
+                } else {
+                    throw result;
+                }
             }
         }
     }
