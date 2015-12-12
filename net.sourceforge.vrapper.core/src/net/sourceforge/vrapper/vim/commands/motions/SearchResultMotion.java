@@ -5,6 +5,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import net.sourceforge.vrapper.platform.Configuration;
+import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.SearchAndReplaceService;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.ContentType;
@@ -137,11 +138,12 @@ public class SearchResultMotion extends CountAwareMotion {
         if (reverse) {
             search = search.reverse();
         }
-        // Move position so we don't hit current match again.
+        // Move position so we don't hit current match again. Shifting will clip to file boundaries.
+        CursorService cursorService = vim.getCursorService();
         if (search.isBackward()) {
-            position = position.addModelOffset(-1);
+            position = cursorService.shiftPositionForModelOffset(position.getModelOffset(), -1, true);
         } else {
-            position = position.addModelOffset(1);
+            position = cursorService.shiftPositionForModelOffset(position.getModelOffset(), 1, true);
         }
         return VimUtils.wrapAroundSearch(vim, search, position);
     }
