@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -39,6 +40,7 @@ public class NormalModeTests extends CommandTestCase {
 	public void setUp() {
 		super.setUp();
 		adaptor.changeModeSafely(NormalMode.NAME);
+		reset(adaptor);
 	};
 
 	@Override
@@ -109,7 +111,6 @@ public class NormalModeTests extends CommandTestCase {
 	}
 
 	@Test public void test_s() throws CommandExecutionException {
-		Mockito.reset(adaptor);
 		checkCommand(forKeySeq("s"),
 				"Al",'a'," ma kota",
 				"Al",' ',"ma kota");
