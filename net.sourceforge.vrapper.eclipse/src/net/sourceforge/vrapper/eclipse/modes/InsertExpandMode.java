@@ -102,7 +102,7 @@ public class InsertExpandMode extends InsertMode {
         int cursorOffset = cursorPos.getModelOffset();
         LineInformation lineInfo = model.getLineInformationOfOffset(cursorOffset);
         String line = model.getText(lineInfo.getBeginOffset(), lineInfo.getLength());
-        if(lastLineNo != lineInfo.getNumber() || ! line.startsWith(lastIndent + lastPrefix)) {
+		if (lastLineNo != lineInfo.getNumber() || (!line.equals(lastIndent + lastPrefix) && lastIndex == 0)) {
 			rebuildLineMatches(cursorOffset - lineInfo.getBeginOffset(), line, lineInfo.getNumber());
         }
 
