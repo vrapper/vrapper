@@ -157,7 +157,7 @@ public class InsertExpandMode extends InsertMode {
 		IRegion matchLine;
 		String matchText;
 		Set<String> alreadySeen = new HashSet<String>();
-		alreadySeen.add(line); // ignore current text
+		alreadySeen.add(lastPrefix); // ignore current text
 		alreadySeen.add(""); // ignore empty lines
 		try {
 			for (IDocument model : hippieDocuments) {
