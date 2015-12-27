@@ -3,12 +3,18 @@ package net.sourceforge.vrapper.eclipse.modes;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.ctrlKey;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.ui.texteditor.ITextEditor;
 
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.IRegion;
+import org.eclipse.ui.internal.texteditor.HippieCompletionEngine;
 import net.sourceforge.vrapper.eclipse.activator.VrapperPlugin;
 import net.sourceforge.vrapper.eclipse.interceptor.InputInterceptor;
 import net.sourceforge.vrapper.eclipse.interceptor.UnknownEditorException;
@@ -30,7 +36,7 @@ import net.sourceforge.vrapper.vim.modes.InsertMode;
 public class InsertExpandMode extends InsertMode {
 
     public static final String NAME = InsertExpandMode.class.getName();
-    public static final String DISPLAY_NAME = "^X mode (^L)";
+	public static final String DISPLAY_NAME = "^X mode (^L^N^P)";
     private static final Pattern indentPattern = Pattern.compile("(^\\s*)\\S*");
     private ITextEditor textEditor;
     private String lastIndent = "";
@@ -73,7 +79,13 @@ public class InsertExpandMode extends InsertMode {
     @Override
     public boolean handleKey(KeyStroke stroke) {
         if(stroke.equals(ctrlKey('l'))) {
-            doLineCompletion();
+			doLineCompletion(1, true);
+			return true;
+		} else if (stroke.equals(ctrlKey('n'))) {
+			doLineCompletion(1, false);
+			return true;
+		} else if (stroke.equals(ctrlKey('p'))) {
+			doLineCompletion(-1, false);
             return true;
         }
         else {
@@ -84,21 +96,21 @@ public class InsertExpandMode extends InsertMode {
     }
     
     // ^X^L
-    private void doLineCompletion() {
-        TextContent model = editorAdaptor.getModelContent();
+	private void doLineCompletion(int step, boolean nextLine) {
+		TextContent model = editorAdaptor.getModelContent();
         Position cursorPos = editorAdaptor.getCursorService().getPosition();
         int cursorOffset = cursorPos.getModelOffset();
         LineInformation lineInfo = model.getLineInformationOfOffset(cursorOffset);
         String line = model.getText(lineInfo.getBeginOffset(), lineInfo.getLength());
         if(lastLineNo != lineInfo.getNumber() || ! line.startsWith(lastIndent + lastPrefix)) {
-            rebuildLineMatches(cursorOffset - lineInfo.getBeginOffset(), line, lineInfo.getNumber(), model);
+			rebuildLineMatches(cursorOffset - lineInfo.getBeginOffset(), line, lineInfo.getNumber());
         }
 
         if(lastMatches.size() == 1) {
             editorAdaptor.getUserInterfaceService().setErrorMessage("Pattern not found");
         }
         else {
-            lastIndex = (lastIndex + 1) % lastMatches.size();
+			lastIndex = (lastIndex + step) % lastMatches.size();
             String newString = lastIndent + lastMatches.get(lastIndex) + lastSuffix;
             model.replace(lineInfo.getBeginOffset(), lineInfo.getLength(), newString);
             int newCursor = lineInfo.getBeginOffset() + lastIndent.length() + lastMatches.get(lastIndex).length();
@@ -119,9 +131,11 @@ public class InsertExpandMode extends InsertMode {
      * @param cursorPos - index into 'line' where cursor is
      * @param line - line of text in the file
      * @param lineNo - line number of 'line'
-     * @param model - model content
      */
-    private void rebuildLineMatches(int cursorPos, String line, int lineNo, TextContent model) {
+    private void rebuildLineMatches(int cursorPos, String line, int lineNo) {
+		@SuppressWarnings("unchecked") // this API seems to have no generics built in
+        List<IDocument> hippieDocuments = HippieCompletionEngine.computeDocuments(textEditor);
+
     	Matcher matcher = indentPattern.matcher(line);
     	if(matcher.find()) {
     	    lastIndent = matcher.group(1);
@@ -130,29 +144,35 @@ public class InsertExpandMode extends InsertMode {
     	    lastIndent = "";
     	}
 
-        lastPrefix = line.substring(lastIndent.length(), cursorPos);
-        lastSuffix = line.substring(cursorPos);
-        lastLineNo = lineNo;
-        //will be incremented to 1 on first iteration
-        lastIndex = 0;
-        lastMatches.clear();
-        //index 0 will be original state
-        lastMatches.add(lastPrefix);
+		lastPrefix = line.substring(lastIndent.length(), cursorPos);
+		lastSuffix = line.substring(cursorPos);
+		lastLineNo = lineNo;
+		// will be incremented to 1 on first iteration
+		lastIndex = 0;
+		lastMatches.clear();
+		// index 0 will be original state
+		lastMatches.add(lastPrefix);
 
-        //rebuild list of all lines that start with lastPrefix
-        LineInformation matchLine;
-        String matchText;
-        for(int i=0; i < model.getNumberOfLines(); i++) {
-            if(i == lineNo) {
-                //skip self
-                continue;
-            }
-            matchLine = model.getLineInformation(i);
-            matchText = model.getText(matchLine.getBeginOffset(), matchLine.getLength());
-            matchText = matchText.replaceFirst("^\\s+", "");
-            if(matchText.startsWith(lastPrefix)) {
-                lastMatches.add(matchText);
-            }
-        }
-    }
+		// rebuild list of all lines that start with lastPrefix
+		IRegion matchLine;
+		String matchText;
+		Set<String> alreadySeen = new HashSet<String>();
+		alreadySeen.add(line); // ignore current text
+		alreadySeen.add(""); // ignore empty lines
+		try {
+			for (IDocument model : hippieDocuments) {
+				for (int i = 0; i < model.getNumberOfLines(); i++) {
+					matchLine = model.getLineInformation(i);
+					matchText = model.get(matchLine.getOffset(), matchLine.getLength());
+					matchText = matchText.replaceFirst("^\\s+", "");
+					if (matchText.startsWith(lastPrefix) && !alreadySeen.contains(matchText)) {
+						lastMatches.add(matchText);
+						alreadySeen.add(matchText);
+					}
+				}
+			}
+		} catch (BadLocationException e) {
+			throw new VrapperPlatformException("Failed to find line completions", e);
+		}
+	}
 }
