@@ -90,6 +90,7 @@ public class InsertExpandMode extends InsertMode {
         }
         else {
             //return to insert mode if any other key pressed
+			clearLineMatches();
             editorAdaptor.changeModeSafely(InsertMode.NAME, InsertMode.RESUME_ON_MODE_ENTER);
             return super.handleKey(stroke);
         }
@@ -174,5 +175,15 @@ public class InsertExpandMode extends InsertMode {
 		} catch (BadLocationException e) {
 			throw new VrapperPlatformException("Failed to find line completions", e);
 		}
+	}
+
+	private void clearLineMatches() {
+		// will be incremented to 1 on first iteration
+		lastIndex = 0;
+		lastMatches.clear();
+		lastLineNo = 0;
+		lastIndent = "";
+		lastPrefix = "";
+		lastSuffix = "";
 	}
 }
