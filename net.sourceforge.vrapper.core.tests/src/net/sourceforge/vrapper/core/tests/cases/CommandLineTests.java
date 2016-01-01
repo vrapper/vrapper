@@ -480,6 +480,19 @@ public class CommandLineTests extends VimTestCase {
         type(parseKeyStrokes(":%normal rm<CR>"));
         assertEquals("mine\nm\t\tnew\tline\nm\tABC", content.getText());
     }
+    
+    @Test
+    public void testLetRegisterContents() throws CommandExecutionException {
+        type(parseKeyStrokes(":let @x=foo<CR>"));
+        assertEquals("foo", registerManager.getRegister("x").getContent().getText());
+
+        type(parseKeyStrokes(":let @x=bar<CR>"));
+        type(parseKeyStrokes(":let @y=@x<CR>"));
+        assertEquals("bar", registerManager.getRegister("y").getContent().getText());
+
+        type(parseKeyStrokes(":let @x='foo=bar'<CR>"));
+        assertEquals("foo=bar", registerManager.getRegister("x").getContent().getText());
+    }
 
     @Test
     public void test_CtrlC_exits() {

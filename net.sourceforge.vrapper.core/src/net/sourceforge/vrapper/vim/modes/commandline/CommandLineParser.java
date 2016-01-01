@@ -293,16 +293,15 @@ public class CommandLineParser extends AbstractCommandParser {
                     return null;
                 }
                 String args = "";
-                //remove superfluous whitespace
                 while(command.size() > 0)
-                    args += command.poll().trim();
+                    args += command.poll();
 
                 if( ! args.startsWith("@")) {
                     vim.getUserInterfaceService().setErrorMessage("Can only set register contents (@<char>)");
                     return null;
                 }
 
-                String[] expr = args.split("=");
+                String[] expr = args.split("=", 2);
                 if(expr.length != 2) {
                     vim.getUserInterfaceService().setErrorMessage("Could not parse " + args);
                     return null;
