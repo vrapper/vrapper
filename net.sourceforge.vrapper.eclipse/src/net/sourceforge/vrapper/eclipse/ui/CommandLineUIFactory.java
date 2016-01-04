@@ -2,8 +2,12 @@ package net.sourceforge.vrapper.eclipse.ui;
 
 import net.sourceforge.vrapper.eclipse.interceptor.InputInterceptor;
 import net.sourceforge.vrapper.eclipse.interceptor.VimInputInterceptorFactory;
+import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.CommandLineUI;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
@@ -36,7 +40,20 @@ public class CommandLineUIFactory {
         parent = parentText;
 
         StyledText widget = new StyledText(parent, SWT.ON_TOP | SWT.V_SCROLL);
-        widget.setAlwaysShowScrollBars(false);
+        try {
+            Method method = widget.getClass().getMethod("setAlwaysShowScrollBars", Boolean.TYPE);
+            method.invoke(widget, false);
+        } catch (SecurityException e) {
+            VrapperLog.info("No permissions to use reflection on StyledText widget. " + e);
+        } catch (IllegalArgumentException e) {
+            VrapperLog.info("Wrong method signature for StyledText method. " + e);
+        } catch (IllegalAccessException e) {
+            VrapperLog.info("No access to StyledText method. " + e);
+        } catch (InvocationTargetException e) {
+            VrapperLog.error("Unexpected error while setting always show scrollbars property", e);
+        } catch (NoSuchMethodException e) {
+            // Expected for Eclipse 3.6 or 3.7.
+        }
         widget.setFont(parent.getFont());
         widget.setMargins(COMMAND_CHAR_INDENT, 3, 3, 3);
         widget.setSize(5, 5);
