@@ -9,6 +9,7 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.vim.commands.CommandWrappers.dontRepeat;
 import static net.sourceforge.vrapper.vim.commands.CommandWrappers.repeat;
 import static net.sourceforge.vrapper.vim.commands.CommandWrappers.seq;
+
 import net.sourceforge.vrapper.keymap.EmptyState;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SpecialKey;
@@ -355,9 +356,6 @@ public class InsertMode extends AbstractMode {
             // move to "paste register" mode, but don't actually perform the
             // "leave insert mode" operations
             editorAdaptor.changeModeSafely(PasteRegisterMode.NAME, RESUME_ON_MODE_ENTER);
-            return true;
-        } else if (stroke.equals(CTRL_X)) {
-            editorAdaptor.changeModeSafely(InsertExpandMode.NAME, RESUME_ON_MODE_ENTER);
             return true;
         } else if (stroke.equals(CTRL_O)) {
             // perform a single NormalMode command then return to InsertMode

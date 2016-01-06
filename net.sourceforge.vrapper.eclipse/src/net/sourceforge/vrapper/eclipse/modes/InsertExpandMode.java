@@ -1,4 +1,4 @@
-package net.sourceforge.vrapper.vim.modes;
+package net.sourceforge.vrapper.eclipse.modes;
 
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.ctrlKey;
 
@@ -13,6 +13,7 @@ import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
+import net.sourceforge.vrapper.vim.modes.InsertMode;
 
 /**
  * See :help ins-completion 
@@ -21,7 +22,7 @@ import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
  */
 public class InsertExpandMode extends InsertMode {
 
-    public static final String NAME = "insert expand mode";
+    public static final String NAME = InsertExpandMode.class.getName();
     public static final String DISPLAY_NAME = "^X mode (^L)";
     private static final Pattern indentPattern = Pattern.compile("(^\\s*)\\S*");
     private String lastIndent = "";

@@ -137,5 +137,13 @@
       </type>
 
    </extension>
+   <extension
+         point="net.sourceforge.vrapper.eclipse.psmp">
+      <mode-provider
+            id="net.sourceforge.vrapper.eclipse.mode-provider1"
+            name="net.sourceforge.vrapper.eclipse.mode-provider1"
+            provider-class="net.sourceforge.vrapper.eclipse.modes.EclipseSpecificModeProvider">
+      </mode-provider>
+   </extension>
 </plugin>
 
