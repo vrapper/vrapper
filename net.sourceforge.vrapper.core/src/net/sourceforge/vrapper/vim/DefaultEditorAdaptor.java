@@ -358,7 +358,10 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
             List<EditorMode> modes = platformSpecificModeProvider.getModes(this);
             for (final EditorMode mode : modes) {
                 if (modeMap.containsKey(mode.getName())) {
-                    VrapperLog.error(format("Mode '%s' was already loaded!", mode.getName()));
+                    VrapperLog.error(format("Mode '%s' was already loaded! Mode in registry '%s',"
+                                + "conflicting mode '%s'", mode.getName(),
+                                modeMap.get(mode.getName()).getClass().getName(),
+                                mode.getClass().getName()));
                 } else {
                     modeMap.put(mode.getName(), mode);
                 }

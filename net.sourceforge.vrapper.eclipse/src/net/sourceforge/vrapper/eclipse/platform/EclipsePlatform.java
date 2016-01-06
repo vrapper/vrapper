@@ -10,10 +10,10 @@ import java.util.concurrent.atomic.AtomicReference;
 import net.sourceforge.vrapper.eclipse.interceptor.EditorInfo;
 import net.sourceforge.vrapper.eclipse.keymap.AbstractEclipseSpecificStateProvider;
 import net.sourceforge.vrapper.eclipse.keymap.UnionStateProvider;
-import net.sourceforge.vrapper.eclipse.mode.AbstractEclipseSpecificModeProvider;
 import net.sourceforge.vrapper.eclipse.mode.UnionModeProvider;
 import net.sourceforge.vrapper.eclipse.utils.Utils;
 import net.sourceforge.vrapper.log.VrapperLog;
+import net.sourceforge.vrapper.platform.AbstractPlatformSpecificModeProvider;
 import net.sourceforge.vrapper.platform.BufferAndTabService;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.FileService;
@@ -232,10 +232,10 @@ public class EclipsePlatform implements Platform {
         final IExtensionRegistry registry = org.eclipse.core.runtime.Platform.getExtensionRegistry();
         final IConfigurationElement[] elements = registry
                 .getConfigurationElementsFor("net.sourceforge.vrapper.eclipse.psmp");
-        final List<AbstractEclipseSpecificModeProvider> matched = new ArrayList<AbstractEclipseSpecificModeProvider>();
+        final List<AbstractPlatformSpecificModeProvider> matched = new ArrayList<AbstractPlatformSpecificModeProvider>();
         for (final IConfigurationElement element : elements) {
             try {
-                matched.add((AbstractEclipseSpecificModeProvider)
+                matched.add((AbstractPlatformSpecificModeProvider)
                         element.createExecutableExtension("provider-class"));
             } catch (final Exception e) {
                 VrapperLog.error("error while building mode providers", e);

@@ -72,7 +72,7 @@
                   
                </documentation>
                <appInfo>
-                  <meta.attribute kind="java" basedOn="net.sourceforge.vrapper.eclipse.mode.AbstractEclipseSpecificModeProvider:"/>
+                  <meta.attribute kind="java" basedOn="net.sourceforge.vrapper.platform.AbstractPlatformSpecificModeProvider:"/>
                </appInfo>
             </annotation>
          </attribute>
