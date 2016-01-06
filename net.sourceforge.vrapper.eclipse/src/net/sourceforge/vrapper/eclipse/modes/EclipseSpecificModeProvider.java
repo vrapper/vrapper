@@ -6,6 +6,7 @@ import java.util.List;
 import net.sourceforge.vrapper.platform.AbstractPlatformSpecificModeProvider;
 import net.sourceforge.vrapper.platform.PlatformSpecificModeProvider;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.modes.EditorMode;
 
 public class EclipseSpecificModeProvider extends AbstractPlatformSpecificModeProvider
@@ -16,7 +17,7 @@ public class EclipseSpecificModeProvider extends AbstractPlatformSpecificModePro
     }
 
     @Override
-    public List<EditorMode> getModes(EditorAdaptor editorAdaptor) {
+    public List<EditorMode> getModes(EditorAdaptor editorAdaptor) throws CommandExecutionException {
         return Collections.singletonList((EditorMode) new InsertExpandMode(editorAdaptor));
     }
 }

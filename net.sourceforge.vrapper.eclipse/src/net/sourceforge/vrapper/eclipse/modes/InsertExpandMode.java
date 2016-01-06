@@ -7,11 +7,18 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.ui.texteditor.ITextEditor;
+
+import net.sourceforge.vrapper.eclipse.activator.VrapperPlugin;
+import net.sourceforge.vrapper.eclipse.interceptor.InputInterceptor;
+import net.sourceforge.vrapper.eclipse.interceptor.UnknownEditorException;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.platform.TextContent;
+import net.sourceforge.vrapper.platform.VrapperPlatformException;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
 
@@ -25,6 +32,7 @@ public class InsertExpandMode extends InsertMode {
     public static final String NAME = InsertExpandMode.class.getName();
     public static final String DISPLAY_NAME = "^X mode (^L)";
     private static final Pattern indentPattern = Pattern.compile("(^\\s*)\\S*");
+    private ITextEditor textEditor;
     private String lastIndent = "";
     private String lastPrefix = "";
     private String lastSuffix = "";
@@ -32,8 +40,24 @@ public class InsertExpandMode extends InsertMode {
     private int lastIndex = 0;
     private int lastLineNo = 0;
 
-    public InsertExpandMode(EditorAdaptor editorAdaptor) {
+    public InsertExpandMode(EditorAdaptor editorAdaptor) throws CommandExecutionException {
         super(editorAdaptor);
+        InputInterceptor interceptor;
+        try {
+            interceptor = VrapperPlugin.getDefault().findActiveInterceptor();
+        } catch (VrapperPlatformException e) {
+            CommandExecutionException e2 =  new CommandExecutionException(
+                    "Failed to initialize InsertExpandMode.");
+            e2.initCause(e);
+            throw e2;
+        } catch (UnknownEditorException e) {
+            CommandExecutionException e2 = new CommandExecutionException(
+                    "Failed to initialize InsertExpandMode.");
+            e2.initCause(e);
+            throw e2;
+        }
+        assert editorAdaptor.equals(interceptor.getEditorAdaptor());
+        textEditor = interceptor.getPlatform().getUnderlyingEditor();
     }
 
     @Override
