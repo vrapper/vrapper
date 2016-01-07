@@ -102,6 +102,10 @@ public class EclipsePlatform implements Platform {
         return vrapperModeRecorder;
     }
 
+    public AbstractTextEditor getUnderlyingEditor() {
+        return underlyingEditor;
+    }
+
     @Override
     public CursorService getCursorService() {
         return cursorAndSelection;

@@ -26,6 +26,7 @@ import org.eclipse.ui.IWorkbenchListener;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
@@ -69,6 +70,13 @@ public class VrapperPlugin extends AbstractUIPlugin implements IStartup, Log {
      * The constructor
      */
     public VrapperPlugin() {
+    }
+
+    public InputInterceptor findActiveInterceptor()
+            throws VrapperPlatformException, UnknownEditorException {
+        IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+        IEditorPart activeEditor = workbenchWindow.getActivePage().getActiveEditor();
+        return InputInterceptorManager.INSTANCE.findActiveInterceptor(activeEditor);
     }
 
     public InputInterceptor findActiveInterceptor(IEditorPart toplevelEditor)
