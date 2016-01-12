@@ -118,6 +118,38 @@ public class NormalModeTests extends CommandTestCase {
 		verify(adaptor).changeMode(eq(InsertMode.NAME), (ModeSwitchHint[]) any());
 	}
 
+	@Test public void test_S_middle_of_line() throws CommandExecutionException {
+		checkCommand(forKeySeq("S"),
+				"Al",'a'," ma kota",
+				"",'\n',"");
+		assertYanked(ContentType.LINES, "Ala ma kota\n");
+		verify(adaptor).changeMode(eq(InsertMode.NAME), (ModeSwitchHint[]) any());
+	}
+
+
+	@Test public void test_S_beginning_of_line() throws CommandExecutionException {
+		checkCommand(forKeySeq("S"),
+				"",'A',"la ma kota",
+				"",'\n',"");
+		assertYanked(ContentType.LINES, "Ala ma kota\n");
+		verify(adaptor).changeMode(eq(InsertMode.NAME), (ModeSwitchHint[]) any());
+	}
+	
+	@Test public void test_S_end_of_line() throws CommandExecutionException {
+		checkCommand(forKeySeq("S"),
+				"Ala ma kot",'a',"",
+				"",'\n',"");
+		assertYanked(ContentType.LINES, "Ala ma kota\n");
+		verify(adaptor).changeMode(eq(InsertMode.NAME), (ModeSwitchHint[]) any());
+	}	
+	
+	@Test public void test_S_middle_of_file() throws CommandExecutionException {
+		checkCommand(forKeySeq("S"), "First Line\nSec", 'o', "nd Line\nThird Line",
+				"First Line\n", '\n', "Third Line");
+		assertYanked(ContentType.LINES, "Second Line\n");
+		verify(adaptor).changeMode(eq(InsertMode.NAME), (ModeSwitchHint[]) any());
+	}
+
 	@Test public void test_X() {
 		checkCommand(forKeySeq("X"),
 				"",'a'," ma kota",
