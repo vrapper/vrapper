@@ -693,7 +693,7 @@ Public License instead of this License.  But first, please read
    <requires>
       <import plugin="net.sourceforge.vrapper.eclipse" version="0.63.20160104" match="greaterOrEqual"/>
       <import feature="net.sourceforge.vrapper" version="0.63.20160104"/>
-      <import plugin="org.eclipse.cdt.ui" version="5.1.1" match="compatible"/>
+      <import plugin="org.eclipse.cdt.ui" version="5.1.1" match="greaterOrEqual"/>
    </requires>
 
    <plugin
