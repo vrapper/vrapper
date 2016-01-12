@@ -142,6 +142,13 @@ public class NormalModeTests extends CommandTestCase {
 		assertYanked(ContentType.LINES, "Ala ma kota\n");
 		verify(adaptor).changeMode(eq(InsertMode.NAME), (ModeSwitchHint[]) any());
 	}	
+	
+	@Test public void test_S_middle_of_file() throws CommandExecutionException {
+		checkCommand(forKeySeq("S"), "First Line\nSec", 'o', "nd Line\nThird Line",
+				"First Line\n", '\n', "Third Line");
+		assertYanked(ContentType.LINES, "Second Line\n");
+		verify(adaptor).changeMode(eq(InsertMode.NAME), (ModeSwitchHint[]) any());
+	}
 
 	@Test public void test_X() {
 		checkCommand(forKeySeq("X"),
