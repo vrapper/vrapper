@@ -133,6 +133,10 @@ public class ConfirmSubstitutionMode extends AbstractMode {
             return;
         }
 
+        if (result.getLeftBound().getViewOffset() < 0) {
+            editorAdaptor.getViewportService().exposeModelPosition(result.getLeftBound());
+        }
+        
         editorAdaptor.setPosition(result.getLeftBound(), StickyColumnPolicy.NEVER);
         if(doHighlight) {
             //force match to be visible (move scrollbars)
