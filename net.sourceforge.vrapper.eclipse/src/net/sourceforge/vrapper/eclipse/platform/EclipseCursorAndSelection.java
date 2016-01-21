@@ -7,30 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.sourceforge.vrapper.eclipse.activator.VrapperPlugin;
-import net.sourceforge.vrapper.eclipse.interceptor.EditorInfo;
-import net.sourceforge.vrapper.eclipse.ui.CaretUtils;
-import net.sourceforge.vrapper.log.VrapperLog;
-import net.sourceforge.vrapper.platform.Configuration;
-import net.sourceforge.vrapper.platform.CursorService;
-import net.sourceforge.vrapper.platform.SelectionService;
-import net.sourceforge.vrapper.platform.TextContent;
-import net.sourceforge.vrapper.platform.VrapperPlatformException;
-import net.sourceforge.vrapper.utils.CaretType;
-import net.sourceforge.vrapper.utils.ContentType;
-import net.sourceforge.vrapper.utils.LineInformation;
-import net.sourceforge.vrapper.utils.Position;
-import net.sourceforge.vrapper.utils.Space;
-import net.sourceforge.vrapper.utils.StartEndTextRange;
-import net.sourceforge.vrapper.utils.TextRange;
-import net.sourceforge.vrapper.utils.VimUtils;
-import net.sourceforge.vrapper.vim.Options;
-import net.sourceforge.vrapper.vim.commands.Selection;
-import net.sourceforge.vrapper.vim.commands.SimpleSelection;
-import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
-import net.sourceforge.vrapper.vim.modes.InsertMode;
-import net.sourceforge.vrapper.vim.modes.NormalMode;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
@@ -68,6 +44,30 @@ import org.eclipse.ui.internal.WorkbenchPage;
 import org.eclipse.ui.texteditor.AbstractMarkerAnnotationModel;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 import org.eclipse.ui.texteditor.MarkerUtilities;
+
+import net.sourceforge.vrapper.eclipse.activator.VrapperPlugin;
+import net.sourceforge.vrapper.eclipse.interceptor.EditorInfo;
+import net.sourceforge.vrapper.eclipse.ui.CaretUtils;
+import net.sourceforge.vrapper.log.VrapperLog;
+import net.sourceforge.vrapper.platform.Configuration;
+import net.sourceforge.vrapper.platform.CursorService;
+import net.sourceforge.vrapper.platform.SelectionService;
+import net.sourceforge.vrapper.platform.TextContent;
+import net.sourceforge.vrapper.platform.VrapperPlatformException;
+import net.sourceforge.vrapper.utils.CaretType;
+import net.sourceforge.vrapper.utils.ContentType;
+import net.sourceforge.vrapper.utils.LineInformation;
+import net.sourceforge.vrapper.utils.Position;
+import net.sourceforge.vrapper.utils.Space;
+import net.sourceforge.vrapper.utils.StartEndTextRange;
+import net.sourceforge.vrapper.utils.TextRange;
+import net.sourceforge.vrapper.utils.VimUtils;
+import net.sourceforge.vrapper.vim.Options;
+import net.sourceforge.vrapper.vim.commands.Selection;
+import net.sourceforge.vrapper.vim.commands.SimpleSelection;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
+import net.sourceforge.vrapper.vim.modes.InsertMode;
+import net.sourceforge.vrapper.vim.modes.NormalMode;
 
 @SuppressWarnings("restriction")
 public class EclipseCursorAndSelection implements CursorService, SelectionService {
@@ -572,12 +572,8 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
             StyledText text = textViewer.getTextWidget();
             // Never move caret somewhere else in Insert / Select mode
             if (text.getSelectionCount() == 0
-                    || (vrapperModeRecorder.getCurrentMode() instanceof InsertMode)) {
-                return;
-            }
-            // Mark selection as "conflicted" - we're in Normal mode but somehow a selection exists
-            else if (vrapperModeRecorder.getCurrentMode() instanceof NormalMode) {
-                setCaret(CaretType.UNDERLINE);
+                    || (vrapperModeRecorder.getCurrentMode() instanceof InsertMode)
+                    || (vrapperModeRecorder.getCurrentMode() instanceof NormalMode)) {
                 return;
             }
             // Forces caret visibility for blockwise mode: normally it is disabled all the time.
@@ -585,7 +581,6 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
             text.getCaret().setVisible(true);
             Position to = getSelection().getTo();
             if (VrapperLog.isDebugEnabled()) {
-//                VrapperLog.debug("To: V" + to.getViewOffset() + "/M" + to.getModelOffset());
                 VrapperLog.debug(getSelection().toString());
             }
             boolean isInclusive = Selection.INCLUSIVE.equals(configuration.get(Options.SELECTION));

@@ -1,8 +1,16 @@
 package net.sourceforge.vrapper.eclipse.interceptor;
 
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.IRegion;
+import org.eclipse.jface.text.ITextViewer;
+import org.eclipse.jface.text.TextSelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+
 import net.sourceforge.vrapper.eclipse.activator.VrapperPlugin;
 import net.sourceforge.vrapper.eclipse.platform.EclipseCursorAndSelection;
 import net.sourceforge.vrapper.log.VrapperLog;
+import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.vim.DefaultEditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
@@ -14,13 +22,6 @@ import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.modes.TempVisualMode;
 import net.sourceforge.vrapper.vim.modes.TemporaryMode;
 import net.sourceforge.vrapper.vim.modes.VisualMode;
-
-import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.IRegion;
-import org.eclipse.jface.text.ITextViewer;
-import org.eclipse.jface.text.TextSelection;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 
 public class SelectionVisualHandler implements ISelectionChangedListener {
 
@@ -73,6 +74,10 @@ public class SelectionVisualHandler implements ISelectionChangedListener {
             }
         } else if ( ! VrapperPlugin.isMouseDown()
                 || !editorAdaptor.getConfiguration().get(Options.VISUAL_MOUSE)) {
+            // Mark selection as "conflicted" - we're in Normal mode but somehow a selection exists
+            if (NormalMode.NAME.equals(editorAdaptor.getCurrentModeName())) {
+                editorAdaptor.getCursorService().setCaret(CaretType.UNDERLINE);
+            }
             return;
         // Detect if a reverse selection got its last character chopped off.
         } else if (selectionResetOffset != -1
