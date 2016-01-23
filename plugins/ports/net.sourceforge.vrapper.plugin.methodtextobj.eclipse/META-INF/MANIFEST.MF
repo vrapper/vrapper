@@ -2,8 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Vrapper methodtextobj Plug-in Eclipse integration
 Bundle-SymbolicName: net.sourceforge.vrapper.plugin.methodtextobj.eclipse;singleton:=true
-Bundle-Version: 0.63.20160113
+Bundle-Version: 0.63.20160123
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: net.sourceforge.vrapper.core,
- net.sourceforge.vrapper.plugin.methodtextobj.core;bundle-version="0.63.20160113"
+ net.sourceforge.vrapper.plugin.methodtextobj.core;bundle-version="0.63.20160123"
 Eclipse-BuddyPolicy: dependent
