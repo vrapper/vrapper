@@ -1,8 +1,10 @@
 package net.sourceforge.vrapper.utils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -329,6 +331,10 @@ public class VimUtils {
 
     public static final <T> Set<T> set(final T... content) {
         return Collections.unmodifiableSet(new HashSet<T>(Arrays.asList(content)));
+    }
+    
+    public static final <T> List<T> list(final T... content) {
+    	return Collections.unmodifiableList(new ArrayList<T>(Arrays.asList(content)));
     }
 
     public static SearchResult wrapAroundSearch(final EditorAdaptor vim, final Search search,
