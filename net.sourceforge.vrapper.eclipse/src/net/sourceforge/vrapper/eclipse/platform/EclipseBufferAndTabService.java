@@ -1,5 +1,6 @@
 package net.sourceforge.vrapper.eclipse.platform;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -27,14 +28,16 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 
 public class EclipseBufferAndTabService implements BufferAndTabService {
-    protected IEditorPart previousEditor;
-    protected IEditorPart currentEditor;
+    protected WeakReference<IEditorPart> previousEditorReference;
+    protected WeakReference<IEditorPart> currentEditorReference;
     protected BufferManager bufferIdManager;
     protected IWorkbenchWindow workbenchWindow;
     
     public EclipseBufferAndTabService(IWorkbenchWindow window, BufferManager bufferIdManager) {
         this.workbenchWindow = window;
         this.bufferIdManager = bufferIdManager;
+        previousEditorReference = new WeakReference<IEditorPart>(null);
+        currentEditorReference = new WeakReference<IEditorPart>(null);
     }
 
     /** Thin wrapper around the {@link BufferInfo} class to store extra flags. */
@@ -92,14 +95,15 @@ public class EclipseBufferAndTabService implements BufferAndTabService {
         if (activeEditor == null || activeEditor.getEditorInput() == null) {
             return;
         }
-        if (currentEditor == null) {
-            previousEditor = activeEditor;
+        IEditorPart currentEditor = currentEditorReference.get();
+        if (currentEditor == null || currentEditor.getEditorInput() == null) {
+            previousEditorReference = new WeakReference<IEditorPart>(activeEditor);
         } else if ( ! currentEditor.equals(activeEditor)
-                && ! currentEditor.getEditorInput().equals(activeEditor.getEditorInput())) {
+                && ! activeEditor.getEditorInput().equals(currentEditor.getEditorInput())) {
             // Only replace previous editor info when we switched to a different editor and input.
-            previousEditor = currentEditor;
+            previousEditorReference = new WeakReference<IEditorPart>(currentEditor);
         }
-        currentEditor = activeEditor;
+        currentEditorReference = new WeakReference<IEditorPart>(activeEditor);
         // Update IEditorPart info.
         bufferIdManager.registerEditorPart(editorInfo, true);
     }
@@ -109,8 +113,15 @@ public class EclipseBufferAndTabService implements BufferAndTabService {
      */
     @Override
     public Buffer getPreviousBuffer() {
+        IEditorPart previousEditor = previousEditorReference.get();
+        IEditorPart currentEditor = currentEditorReference.get();
+        // Previous editor might have been garbage collected.
         if (previousEditor == null) {
-            throw new VrapperPlatformException("Previous editor not set - cannot continue.");
+            previousEditor = currentEditor;
+        }
+        // Last marked editor got garbage collected as well - this should almost never happen.
+        if (previousEditor == null) {
+            throw new VrapperPlatformException("All previous editors are garbage collected.");
         }
         IEditorInput previousInput = previousEditor.getEditorInput();
         BufferInfo bufferInfo = bufferIdManager.getBuffer(previousInput);
@@ -127,6 +138,7 @@ public class EclipseBufferAndTabService implements BufferAndTabService {
      */
     @Override
     public Buffer getActiveBuffer() {
+        IEditorPart currentEditor = currentEditorReference.get();
         if (currentEditor == null) {
             throw new VrapperPlatformException("Current editor not set - cannot continue.");
         }
@@ -140,8 +152,11 @@ public class EclipseBufferAndTabService implements BufferAndTabService {
      */
     @Override
     public void switchBuffer(Buffer buffer) {
+        if (buffer == null) {
+            throw new VrapperPlatformException("Buffer cannot be null.");
+        }
         if ( ! (buffer instanceof EclipseBuffer)) {
-            throw new VrapperPlatformException("Received an unexpected kind of Buffer object!");
+            throw new VrapperPlatformException("Received an unexpected kind of Buffer object.");
         }
         EclipseBuffer targetBuffer = (EclipseBuffer) buffer;
         bufferIdManager.activate(targetBuffer.bufferInfo);
@@ -154,6 +169,12 @@ public class EclipseBufferAndTabService implements BufferAndTabService {
     public List<Buffer> getBuffers() {
         List<Buffer> result = new ArrayList<Buffer>();
         List<BufferInfo> buffers = bufferIdManager.getBuffers();
+
+        IEditorPart currentEditor = currentEditorReference.get();
+        IEditorPart previousEditor = previousEditorReference.get();
+        if (previousEditor == null) {
+            previousEditor = currentEditor;
+        }
         if (currentEditor == null || buffers.size() == 0) {
             return Collections.emptyList();
         }
@@ -165,9 +186,9 @@ public class EclipseBufferAndTabService implements BufferAndTabService {
                 continue;
             }
             EclipseBuffer eclipseBuffer = new EclipseBuffer(editorInfo);
-            if (currentInput.equals(editorInfo.input)) {
+            if (currentInput != null && currentInput.equals(editorInfo.input)) {
                 eclipseBuffer.markActive();
-            } else if (previousInput.equals(editorInfo.input)) {
+            } else if (previousInput != null && previousInput.equals(editorInfo.input)) {
                 eclipseBuffer.markAlternate();
             }
             result.add(eclipseBuffer);
