@@ -114,10 +114,8 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
 
     public EclipseBufferAndTabService ensureBufferService(IEditorPart editor) {
         IWorkbenchWindow window = editor.getEditorSite().getWorkbenchWindow();
-        EclipseBufferAndTabService batservice;
-        if (bufferAndTabServices.containsKey(window)) {
-            batservice = bufferAndTabServices.get(window);
-        } else {
+        EclipseBufferAndTabService batservice = bufferAndTabServices.get(window);
+        if (batservice == null) {
             batservice = new EclipseBufferAndTabService(window, this);
             bufferAndTabServices.put(window, batservice);
         }
@@ -349,7 +347,14 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
         if (part instanceof IEditorPart) {
             IEditorPart editor = (IEditorPart) part;
             EditorInfo editorInfo = toplevelEditorInfo.get(editor);
-            partActivated(editorInfo, new ProcessedInfo(editor));
+            // While *very rare*, some editors manage to sneak up on Vrapper by skipping partOpened.
+            if (editorInfo == null) {
+                editorInfo = new EditorInfo(editor);
+                toplevelEditorInfo.put(editor, editorInfo);
+                interceptWorkbenchPart(editorInfo, new ProcessedInfo(editor));
+            } else {
+                partActivated(editorInfo, new ProcessedInfo(editor));
+            }
         }
     }
 
@@ -363,6 +368,9 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
         if (part instanceof IEditorPart) {
             IEditorPart editor = (IEditorPart) part;
             EditorInfo nestedInfo = toplevelEditorInfo.get(editor);
+            if (nestedInfo == null) {
+                nestedInfo = new EditorInfo(editor);
+            }
             partClosed(nestedInfo, new ProcessedInfo(editor));
             toplevelEditorInfo.remove(editor);
         }
@@ -401,7 +409,11 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
             EditorInfo editorInfo = toplevelEditorInfo.get(editor);
             if (editorInfo != null) {
                 partClosed(editorInfo, new ProcessedInfo(editor));
+                toplevelEditorInfo.remove(editor);
             }
+            // Reset nested structures, changing the input might have shook things around.
+            editorInfo = new EditorInfo(editor);
+            toplevelEditorInfo.put(editor, editorInfo);
             interceptWorkbenchPart(editorInfo, new ProcessedInfo(editor));
         }
     }
