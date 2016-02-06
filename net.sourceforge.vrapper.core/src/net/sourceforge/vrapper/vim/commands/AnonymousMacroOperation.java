@@ -4,6 +4,7 @@ import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.vim.ConstructorWrappers;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.TextContent;
+import net.sourceforge.vrapper.platform.ViewportService;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.LineRange;
 import net.sourceforge.vrapper.utils.Position;
@@ -14,7 +15,7 @@ import net.sourceforge.vrapper.vim.modes.NormalMode;
 
 /**
  * Immediately execute a set of commands without storing them
- * in a named register.
+ * in a named register. Backs the <code>normal</code> command.
  */
 public class AnonymousMacroOperation extends AbstractLinewiseOperation {
 	
@@ -59,12 +60,23 @@ public class AnonymousMacroOperation extends AbstractLinewiseOperation {
 				Position lineStart = cursor.newPositionForModelOffset(lineInfo.getBeginOffset());
 				editorAdaptor.setPosition(lineStart, StickyColumnPolicy.NEVER);
 			}
-			
-			//set macro
-			editorAdaptor.getMacroPlayer().add(parsed);
-			//run macro
-			editorAdaptor.getMacroPlayer().play();
-			
+
+			ViewportService view = editorAdaptor.getViewportService();
+			try {
+				view.setRepaint(false);
+				view.lockRepaint(this);
+				editorAdaptor.getHistory().beginCompoundChange();
+				editorAdaptor.getHistory().lock("normal-command");
+				for (KeyStroke key : parsed) {
+					editorAdaptor.handleKeyOffRecord(key);
+				}
+			} finally {
+				editorAdaptor.getHistory().unlock("normal-command");
+				editorAdaptor.getHistory().endCompoundChange();
+				view.unlockRepaint(this);
+				view.setRepaint(true);
+			}
+
 			if ( ! NormalMode.NAME.equals(editorAdaptor.getCurrentModeName())) {
 				editorAdaptor.changeModeSafely(NormalMode.NAME);
 			}
