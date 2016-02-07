@@ -32,10 +32,10 @@ public class PlaybackMacroCommand extends SimpleRepeatableCommand {
         this.macroName = macroName;
     }
 
-    public void execute(EditorAdaptor editorAdaptor)
-            throws CommandExecutionException {
-    	RegisterManager registerManager = editorAdaptor.getRegisterManager();
-    	Register namedRegister = registerManager.getRegister(macroName);
+    public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
+
+        RegisterManager registerManager = editorAdaptor.getRegisterManager();
+        Register namedRegister = registerManager.getRegister(macroName);
         RegisterContent content = namedRegister.getContent();
         if (content == null) {
             throw new CommandExecutionException("Macro "+macroName+" does not exist");
@@ -43,7 +43,7 @@ public class PlaybackMacroCommand extends SimpleRepeatableCommand {
         //store this register for the '@@' command
         registerManager.setLastNamedRegister(namedRegister);
         Iterable<KeyStroke> parsed = ConstructorWrappers.parseKeyStrokes(content.getText());
-        editorAdaptor.getMacroPlayer().add(parsed);
+        editorAdaptor.getMacroPlayer(macroName).add(parsed);
     }
 
     public Command repetition() {

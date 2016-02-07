@@ -20,10 +20,12 @@ import net.sourceforge.vrapper.vim.modes.EditorMode;
  */
 public class MacroPlayer {
 
+    private final String macroName;
     private final Queue<KeyStroke> playlist;
-    private final EditorAdaptor editorAdaptor;
+    private final DefaultEditorAdaptor editorAdaptor;
 
-    MacroPlayer (EditorAdaptor editorAdaptor) {
+    MacroPlayer (DefaultEditorAdaptor editorAdaptor, String macroName) {
+        this.macroName = macroName;
         this.editorAdaptor = editorAdaptor;
         playlist = new LinkedList<KeyStroke>();
     }
@@ -57,7 +59,7 @@ public class MacroPlayer {
             view.lockRepaint(this);
             editorAdaptor.getHistory().beginCompoundChange();
             editorAdaptor.getHistory().lock("macroplayback");
-            while (!playlist.isEmpty()) {
+            while (! editorAdaptor.abortRecursion && ! playlist.isEmpty()) {
                 editorAdaptor.handleKeyOffRecord(playlist.poll());
             }
         } finally {
@@ -66,5 +68,10 @@ public class MacroPlayer {
             view.unlockRepaint(this);
             view.setRepaint(true);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "MacroPlayer(" + macroName + ")";
     }
 }

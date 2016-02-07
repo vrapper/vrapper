@@ -59,7 +59,12 @@ public interface EditorAdaptor {
     UnderlyingEditorSettings getEditorSettings();
     LocalConfiguration getConfiguration();
     MacroRecorder getMacroRecorder();
-    MacroPlayer getMacroPlayer();
+    /** @throws CommandExecutionException when the requested macro could not be created
+     *      due to deep nesting or certain recursive usage.
+     */
+    MacroPlayer getMacroPlayer(String macroName) throws CommandExecutionException;
+    void stopMacrosAndMappings();
+    void stopMacrosAndMappings(String errorMessage);
     PlatformSpecificStateProvider getPlatformSpecificStateProvider();
     SearchAndReplaceService getSearchAndReplaceService();
     HighlightingService getHighlightingService();

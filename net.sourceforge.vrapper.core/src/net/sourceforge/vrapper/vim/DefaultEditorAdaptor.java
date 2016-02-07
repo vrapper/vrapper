@@ -7,7 +7,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Deque;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
@@ -109,6 +111,9 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     private final HighlightingService highlightingService;
     private MacroRecorder macroRecorder;
     private MacroPlayer macroPlayer;
+    private Deque<String> macroStack;
+    boolean abortRecursion;
+    private String recursionErrorMessage;
     private String lastModeName;
     private String editorType;
     private VrapperEventListeners listeners;
@@ -148,6 +153,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         keyStrokeTranslator = new KeyStrokeTranslator();
         macroRecorder = new MacroRecorder(registerManager, userInterfaceService);
         macroPlayer = null;
+        macroStack = new LinkedList<String>();
         this.editorType = editor.getEditorType();
         listeners = new VrapperEventListeners(this);
         fileService = editor.getFileService();
@@ -420,8 +426,27 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
 
     @Override
     public boolean handleKey(final KeyStroke key) {
-        macroRecorder.handleKey(key);
-        return handleKeyOffRecord(key);
+        try {
+            macroRecorder.handleKey(key);
+            return handleKeyOffRecord(key);
+
+        } catch (MacroAbortedException e) {
+            // Clean up after aborted macro
+            changeModeSafely(NormalMode.NAME);
+            if (recursionErrorMessage == null) {
+                getUserInterfaceService().setErrorMessage(e.getMessage());
+            }
+            return true;
+
+        } finally {
+            macroStack.clear();
+            macroPlayer = null;
+            abortRecursion = false;
+            if (recursionErrorMessage != null) {
+                userInterfaceService.setErrorMessage(recursionErrorMessage);
+            }
+            recursionErrorMessage = null;
+        }
     }
 
     @Override
@@ -433,6 +458,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
             final MacroPlayer player = macroPlayer;
             macroPlayer = null;
             player.play();
+            macroStack.pop();
         }
         return result;
     }
@@ -600,11 +626,29 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     }
 
     @Override
-    public MacroPlayer getMacroPlayer() {
+    public MacroPlayer getMacroPlayer(String macroName) throws CommandExecutionException {
+        if (macroStack.contains(macroName)) {
+            recursionErrorMessage = "Macro @" + macroName + " is called recursively,"
+                    + " macro execution aborted.";
+            abortRecursion = true;
+            throw new CommandExecutionException(recursionErrorMessage);
+        }
         if (macroPlayer == null) {
-            macroPlayer = new MacroPlayer(this);
+            macroPlayer = new MacroPlayer(this, macroName);
+            macroStack.push(macroName);
         }
         return macroPlayer;
+    }
+
+    @Override
+    public void stopMacrosAndMappings() {
+        stopMacrosAndMappings(null);
+    }
+
+    @Override
+    public void stopMacrosAndMappings(String errorMessage) {
+        abortRecursion = true;
+        recursionErrorMessage = errorMessage;
     }
 
     private void swapMacroRecorder() {
