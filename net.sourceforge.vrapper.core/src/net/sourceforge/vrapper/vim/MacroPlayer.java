@@ -1,5 +1,6 @@
 package net.sourceforge.vrapper.vim;
 
+import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -52,18 +53,19 @@ public class MacroPlayer {
      * (This method is now public rather than package-private just
      *  so we can support the 'normal' command, see ":help normal")
      */
-    public void play() {
+    void play(Deque<String> macroStack) {
         ViewportService view = editorAdaptor.getViewportService();
+        String historyLock = "macroplayback " + macroStack;
         try {
             view.setRepaint(false);
             view.lockRepaint(this);
             editorAdaptor.getHistory().beginCompoundChange();
-            editorAdaptor.getHistory().lock("macroplayback");
+            editorAdaptor.getHistory().lock();
             while (! editorAdaptor.abortRecursion && ! playlist.isEmpty()) {
                 editorAdaptor.handleKeyOffRecord(playlist.poll());
             }
         } finally {
-            editorAdaptor.getHistory().unlock("macroplayback");
+            editorAdaptor.getHistory().unlock(historyLock);
             editorAdaptor.getHistory().endCompoundChange();
             view.unlockRepaint(this);
             view.setRepaint(true);

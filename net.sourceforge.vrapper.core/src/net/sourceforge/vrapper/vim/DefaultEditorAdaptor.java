@@ -457,7 +457,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
             // recursively. we need a fresh macro player for that.
             final MacroPlayer player = macroPlayer;
             macroPlayer = null;
-            player.play();
+            player.play(macroStack);
             macroStack.pop();
         }
         return result;
