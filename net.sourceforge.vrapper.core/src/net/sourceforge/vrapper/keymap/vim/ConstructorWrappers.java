@@ -186,9 +186,9 @@ public class ConstructorWrappers {
     	return stroke;
     }
 
-    public static String keyStrokesToString(Iterable<KeyStroke> strokes) {
+    public static <T extends KeyStroke> String keyStrokesToString(Iterable<T> strokes) {
         StringBuilder sb = new StringBuilder();
-        for (KeyStroke stroke : strokes) {
+        for (T stroke : strokes) {
             sb.append(keyStrokeToString(stroke));
         }
         return sb.toString();
