@@ -5,6 +5,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import net.sourceforge.vrapper.core.tests.utils.CommandTestCase;
 import net.sourceforge.vrapper.utils.Position;
+import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 
 import org.junit.After;
@@ -261,6 +262,38 @@ public class RemappingTests extends CommandTestCase {
     }
     
     @Test
+    public void testRemapShouldNotShadeOriginalCommand() {
+        // Sanity check
+        checkCommand(forKeySeq("gg"),
+                "    h", 'e', "ey oldMcDonnaLD had some $\nia\nia\no",
+                "    ", 'h', "eey oldMcDonnaLD had some $\nia\nia\no");
+        checkCommand(forKeySeq("G"),
+                "    h", 'e', "ey oldMcDonnaLD had some $\nia\nia\no",
+                "    heey oldMcDonnaLD had some $\nia\nia\n", 'o', "");
+
+        // Both commands should work
+        type(parseKeyStrokes(":noremap gr G<CR>"));
+        checkCommand(forKeySeq("gg<ESC>"),
+                "    h", 'e', "ey oldMcDonnaLD had some $\nia\nia\no",
+                "    ", 'h', "eey oldMcDonnaLD had some $\nia\nia\no");
+        checkCommand(forKeySeq("gr<ESC>"),
+                "    h", 'e', "ey oldMcDonnaLD had some $\nia\nia\no",
+                "    heey oldMcDonnaLD had some $\nia\nia\n", 'o', "");
+        checkCommand(forKeySeq("gg<ESC>"),
+                "    h", 'e', "ey oldMcDonnaLD had some $\nia\nia\no",
+                "    ", 'h', "eey oldMcDonnaLD had some $\nia\nia\no");
+        checkCommand(forKeySeq("grgg<ESC>"),
+                "    h", 'e', "ey oldMcDonnaLD had some $\nia\nia\no",
+                "    ", 'h', "eey oldMcDonnaLD had some $\nia\nia\no");
+        checkCommand(forKeySeq("grgggr<ESC>"),
+                "    h", 'e', "ey oldMcDonnaLD had some $\nia\nia\no",
+                "    heey oldMcDonnaLD had some $\nia\nia\n", 'o', "");
+        checkCommand(forKeySeq("grxggxgr<ESC>"),
+                "    h", 'e', "ey oldMcDonnaLD had some $\nia\nia\no",
+                "    eey oldMcDonnaLD had some $\nia\nia\n", super.EOF, "");
+    }
+
+    @Test
     public void testRemapZero() {
         // Sanity checks
         checkCommand(forKeySeq("d0"),
@@ -308,5 +341,31 @@ public class RemappingTests extends CommandTestCase {
         checkCommand(forKeySeq("df0"),
                 "so old", ' ', "McD0nnaLD had some $LLaz",
                 "so old", 'n', "naLD had some $LLaz");
+    }
+
+    @Test
+    public void testInsertModeRemap() {
+        // Quick sanity check
+        checkCommand(forKeySeq("aya<esc>"),
+                "    h", 'e', "ey\noldMcDonnaLD had some $\nia\nia\no",
+                "    hey", 'a', "ey\noldMcDonnaLD had some $\nia\nia\no");
+
+        // Test that 'jj' quits (only after remapping)
+        checkCommand(forKeySeq("ijkjjlh<ESC>"),
+                "    h", 'e', "ey\noldMcDonnaLD had some $\nia\nia\no",
+                "    hjkjjl", 'h', "eey\noldMcDonnaLD had some $\nia\nia\no");
+        type(parseKeyStrokes(":inoremap jj <LT>ESC<GT><CR>")); // Double escaping for test key parse
+        checkCommand(forKeySeq("ijkjjlh<ESC>"),
+                "    h", 'e', "ey\noldMcDonnaLD had some $\nia\nia\no",
+                "    hj", 'k', "eey\noldMcDonnaLD had some $\nia\nia\no");
+
+        // Test that initially failed 'jj' mapping allows kk mapping to be detected by backtracking
+        checkCommand(forKeySeq("ijkklhjjlh"),
+                "    h", 'e', "ey\noldMcDonnaLD had some $\nia\nia\no",
+                "    hjkkl", 'h', "eey\noldMcDonnaLD had some $\nia\nia\no");
+        type(parseKeyStrokes(":inoremap kk <LT>ESC<GT><CR>"));
+        checkCommand(forKeySeq("ijkklh<ESC>"),
+                "    h", 'e', "ey\noldMcDonnaLD had some $\nia\nia\no",
+                "    h", 'j', "eey\noldMcDonnaLD had some $\nia\nia\no");
     }
 }
