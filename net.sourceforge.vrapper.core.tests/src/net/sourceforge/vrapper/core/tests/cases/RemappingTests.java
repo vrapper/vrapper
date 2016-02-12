@@ -33,6 +33,7 @@ public class RemappingTests extends CommandTestCase {
     @Before
     @After
     public void clearMappings() {
+        super.cleanUp();
         type(parseKeyStrokes(":nmapclear<CR>"));
         type(parseKeyStrokes(":omapclear<CR>"));
         type(parseKeyStrokes(":vmapclear<CR>"));

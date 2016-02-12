@@ -24,6 +24,7 @@ import net.sourceforge.vrapper.platform.ViewportService;
 import net.sourceforge.vrapper.utils.DefaultKeyMapProvider;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.ViewPortInformation;
+import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.DefaultConfigProvider;
 import net.sourceforge.vrapper.vim.DefaultEditorAdaptor;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
@@ -37,6 +38,7 @@ import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
 import net.sourceforge.vrapper.vim.register.SimpleRegister;
 
+import org.junit.After;
 import org.junit.Before;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -136,6 +138,11 @@ public class VimTestCase {
     public void setUp() {
         initMocks();
         VrapperLog.setDebugEnabled(true);
+    }
+
+    @After
+    public void cleanUp() {
+        VimUtils.BREAKPOINT_TRIGGER = 0;
     }
 
     public void setBuffer(String text) {
