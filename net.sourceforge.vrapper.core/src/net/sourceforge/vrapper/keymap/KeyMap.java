@@ -67,6 +67,10 @@ public class KeyMap {
         return root.press(key);
     }
 
+    public String getMapId() {
+        return mapid;
+    }
+
     public String toString() {
         return "KeyMap[" + mapid + "]";
     }

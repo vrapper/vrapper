@@ -18,6 +18,7 @@ import java.util.Set;
 import net.sourceforge.vrapper.keymap.KeyMap;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SpecialKey;
+import net.sourceforge.vrapper.keymap.vim.ConstructorWrappers;
 import net.sourceforge.vrapper.keymap.vim.SimpleKeyStroke;
 import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.BufferAndTabService;
@@ -112,6 +113,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     private MacroRecorder macroRecorder;
     private MacroPlayer macroPlayer;
     private Deque<String> macroStack;
+    private Deque<String> mappingStack;
     boolean abortRecursion;
     private String recursionErrorMessage;
     private String lastModeName;
@@ -154,6 +156,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         macroRecorder = new MacroRecorder(registerManager, userInterfaceService);
         macroPlayer = null;
         macroStack = new LinkedList<String>();
+        mappingStack = new LinkedList<String>();
         this.editorType = editor.getEditorType();
         listeners = new VrapperEventListeners(this);
         fileService = editor.getFileService();
@@ -433,6 +436,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         } catch (MacroAbortedException e) {
             // Clean up after aborted macro
             changeModeSafely(NormalMode.NAME);
+            // Print exception message when recursion error message is not set.
             if (recursionErrorMessage == null) {
                 getUserInterfaceService().setErrorMessage(e.getMessage());
             }
@@ -440,6 +444,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
 
         } finally {
             macroStack.clear();
+            mappingStack.clear();
             macroPlayer = null;
             abortRecursion = false;
             if (recursionErrorMessage != null) {
@@ -734,6 +739,8 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
                             cursorBeforeMapping = -1;
                         }
 
+                    // ### End of Insert mode "previously entered keys" printing code ###
+
                     } else if (resultingKeyStrokes.isEmpty()) {
                         currentMode.addKeyToMapBuffer(key);
                     } else {
@@ -746,16 +753,35 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
                         // Backtrack by recursion. Don't call handleKey as it records macros.
                         while ( ! resultingKeyStrokes.isEmpty()) {
                             final RemappedKeyStroke next = resultingKeyStrokes.poll();
-                            handleKey0(next);
+                            handleKeyOffRecord(next);
                         }
                     } else {
                         // play all key strokes, either the pending characters or the successful map
-                        while ( ! resultingKeyStrokes.isEmpty()) {
-                            final RemappedKeyStroke next = resultingKeyStrokes.poll();
-                            if (next.isRecursive()) {
-                                handleKey(next);
-                            } else {
-                                currentMode.handleKey(next);
+                        if (keyStrokeTranslator.didMappingSucceed()) {
+                            String mappingId = '[' + map.getMapId() + "] "
+                                    + ConstructorWrappers.keyStrokesToString(
+                                            keyStrokeTranslator.originalKeyStrokes());
+                            // Check for infinite recursion - throw away state and return
+                            if (mappingStack.contains(mappingId)) {
+                                recursionErrorMessage = "Mapping " + mappingId + " is called "
+                                        + "recursively, mapping execution aborted.";
+                                abortRecursion = true;
+                                return true;
+                            }
+                            mappingStack.push(mappingId);
+                        }
+                        try {
+                            while (!resultingKeyStrokes.isEmpty() && ! abortRecursion) {
+                                final RemappedKeyStroke next = resultingKeyStrokes.poll();
+                                if (next.isRecursive()) {
+                                    handleKeyOffRecord(next);
+                                } else {
+                                    currentMode.handleKey(next);
+                                }
+                            } 
+                        } finally {
+                            if (keyStrokeTranslator.didMappingSucceed()) {
+                                mappingStack.pop();
                             }
                         }
                     }
