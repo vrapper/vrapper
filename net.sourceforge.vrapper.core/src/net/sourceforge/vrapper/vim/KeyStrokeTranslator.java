@@ -80,22 +80,23 @@ public class KeyStrokeTranslator {
         if (currentState == null) {
             trans = keymap.press(key);
             if (trans == null) {
-            	//no mapping begins with this key
+                //no mapping begins with this key
                 return false;
             }
             //begin new mapping, make sure values are reset
             resultingKeyStrokes.clear();
             unconsumedKeyStrokes.clear();
-            mappingSucceeded = true;
+            mappingSucceeded = false;
         } else {
             trans = currentState.press(key);
         }
         if (trans != null) {
             // mapping exists
             if (trans.getValue() != null) {
-            	//mapping completed successfully
+                //mapping completed successfully
                 lastValue = trans.getValue();
-                unconsumedKeyStrokes.clear();
+                unconsumedKeyStrokes.add(new RemappedKeyStroke(key, false));
+                mappingSucceeded = true;
             } else { //mapping pending
                 // as long as no preliminary result is found, keystrokes
                 // should not be evaluated again
@@ -103,11 +104,11 @@ public class KeyStrokeTranslator {
                 unconsumedKeyStrokes.add(new RemappedKeyStroke(key, recursive));
             }
             if (trans.getNextState() == null) {
-            	//mapping completed
+                //mapping completed
                 prependLastValue();
                 currentState = null;
             } else {
-            	//mapping still pending
+                //mapping still pending
                 currentState = trans.getNextState();
             }
         } else {
@@ -119,6 +120,15 @@ public class KeyStrokeTranslator {
             mappingSucceeded = false;
         }
         return true;
+    }
+
+    public Queue<RemappedKeyStroke> originalKeyStrokes() {
+        // This is unlikely to happen
+        if (unconsumedKeyStrokes.isEmpty()) {
+            return EMPTY_QUEUE;
+        } else {
+            return new LinkedList<RemappedKeyStroke>(unconsumedKeyStrokes);
+        }
     }
 
     public Queue<RemappedKeyStroke> resultingKeyStrokes() {
