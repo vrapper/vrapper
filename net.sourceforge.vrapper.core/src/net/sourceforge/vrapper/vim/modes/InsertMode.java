@@ -167,10 +167,12 @@ public class InsertMode extends AbstractMode {
         } finally {
             editorAdaptor.getViewportService().setRepaint(true);
         }
+
+        editorAdaptor.getEditorSettings().setReplaceMode(false);
         editorAdaptor.getCursorService().setCaret(CaretType.VERTICAL_BAR);
         if(initMode) {
-        	startEditPosition = editorAdaptor.getCursorService().getPosition();
-        	numCharsDeleted = 0;
+            startEditPosition = editorAdaptor.getCursorService().getPosition();
+            numCharsDeleted = 0;
         }
         super.enterMode(args);
     }

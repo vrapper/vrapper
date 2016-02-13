@@ -46,11 +46,11 @@ public class ReplaceMode extends InsertMode {
 
     @Override
     public void enterMode(ModeSwitchHint... args) throws CommandExecutionException {
-        editorAdaptor.getEditorSettings().setReplaceMode(true);
         editorAdaptor.getCursorService().setCaret(CaretType.UNDERLINE);
         startCursorOffset = editorAdaptor.getCursorService().getPosition().getModelOffset();
         afterNewline = false;
         super.enterMode(args);
+        editorAdaptor.getEditorSettings().setReplaceMode(true);
     }
 
     @Override

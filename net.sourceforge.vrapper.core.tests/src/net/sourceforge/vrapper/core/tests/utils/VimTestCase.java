@@ -19,6 +19,7 @@ import net.sourceforge.vrapper.platform.KeyMapProvider;
 import net.sourceforge.vrapper.platform.Platform;
 import net.sourceforge.vrapper.platform.PlatformSpecificStateProvider;
 import net.sourceforge.vrapper.platform.ServiceProvider;
+import net.sourceforge.vrapper.platform.UnderlyingEditorSettings;
 import net.sourceforge.vrapper.platform.UserInterfaceService;
 import net.sourceforge.vrapper.platform.ViewportService;
 import net.sourceforge.vrapper.utils.DefaultKeyMapProvider;
@@ -56,6 +57,7 @@ public class VimTestCase {
     @Mock protected HistoryService historyService;
     @Mock protected ServiceProvider serviceProvider;
     @Mock protected PlatformSpecificStateProvider platformSpecificStateProvider;
+    @Mock protected UnderlyingEditorSettings underlyingEditorSettings;
     private GlobalConfiguration globalConfiguration;
     protected LocalConfiguration configuration;
     protected TestTextContent content;
@@ -118,6 +120,7 @@ public class VimTestCase {
         when(platform.getConfiguration()).thenReturn(configuration);
         when(platform.getPlatformSpecificStateProvider(Mockito.<TextObjectProvider>any()))
                 .thenReturn(platformSpecificStateProvider);
+        when(platform.getUnderlyingEditorSettings()).thenReturn(underlyingEditorSettings);
         reloadEditorAdaptor();
         defaultRegister = spy(new SimpleRegister());
         lastEditRegister = spy(new SimpleRegister());
