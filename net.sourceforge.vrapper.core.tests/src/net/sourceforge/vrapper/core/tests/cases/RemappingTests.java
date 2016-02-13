@@ -290,7 +290,7 @@ public class RemappingTests extends CommandTestCase {
                 "    heey oldMcDonnaLD had some $\nia\nia\n", 'o', "");
         checkCommand(forKeySeq("grxggxgr<ESC>"),
                 "    h", 'e', "ey oldMcDonnaLD had some $\nia\nia\no",
-                "    eey oldMcDonnaLD had some $\nia\nia\n", super.EOF, "");
+                "    eey oldMcDonnaLD had some $\nia\nia\n", EOF, "");
     }
 
     @Test
@@ -367,5 +367,14 @@ public class RemappingTests extends CommandTestCase {
         checkCommand(forKeySeq("ijkklh<ESC>"),
                 "    h", 'e', "ey\noldMcDonnaLD had some $\nia\nia\no",
                 "    h", 'j', "eey\noldMcDonnaLD had some $\nia\nia\no");
+    }
+
+    @Test
+    public void testRecursiveRemap() {
+        type(parseKeyStrokes(":nnoremap Z ex<CR>"));
+        type(parseKeyStrokes(":nmap gz ggZbx<CR>"));
+        checkCommand(forKeySeq("gz"),
+                "    h", 'e', "ey\noldMcDonnaLD had some $\nia\nia\no",
+                "    ", 'e', "e\noldMcDonnaLD had some $\nia\nia\no");
     }
 }
