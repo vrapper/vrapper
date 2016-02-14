@@ -279,7 +279,11 @@ public class NormalMode extends CommandBasedMode {
     @Override
     protected void commandDone() {
         super.commandDone();
-        editorAdaptor.getCursorService().setCaret(CaretType.RECTANGULAR);
+        if (editorAdaptor.getNativeSelection().getModelLength() == 0) {
+            editorAdaptor.getCursorService().setCaret(CaretType.RECTANGULAR);
+        } else {
+            editorAdaptor.getCursorService().setCaret(CaretType.UNDERLINE);
+        }
         editorAdaptor.getRegisterManager().activateDefaultRegister();
     }
 
