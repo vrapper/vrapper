@@ -580,9 +580,6 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
             // Regular visual modes should have it visible anyway.
             text.getCaret().setVisible(true);
             Position to = getSelection().getTo();
-            if (VrapperLog.isDebugEnabled()) {
-                VrapperLog.debug(getSelection().toString());
-            }
             boolean isInclusive = Selection.INCLUSIVE.equals(configuration.get(Options.SELECTION));
             int offset = to.getViewOffset();
             int documentLength = textViewer.getDocument().getLength();
