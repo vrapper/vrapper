@@ -249,6 +249,10 @@ public class ConstructorWrappers {
         return new SimpleKeyStroke(key);
     }
 
+    public static KeyStroke shiftKey(SpecialKey key) {
+        return new SimpleKeyStroke(key, true, false, false);
+    }
+
     public static<T> KeyBinding<T> binding(char k, Transition<T> transition) {
         return new SimpleKeyBinding<T>(key(k), transition);
     }

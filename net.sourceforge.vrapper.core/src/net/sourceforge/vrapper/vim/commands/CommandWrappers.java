@@ -40,4 +40,13 @@ public class CommandWrappers {
         return new MotionCommand(motion);
     }
 
+    /**
+     * Silly helper method which implicitly casts the input to a {@link Command}. Useful when
+     * dealing with all the generics used in the keymap types as its shorter to write
+     * <code>cmd(new Instance())</code> than writing <code>(Command) new Instance()</code>.
+     */
+    public static Command cmd(Command command) {
+        return command;
+    }
+
 }
