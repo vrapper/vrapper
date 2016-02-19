@@ -3,6 +3,7 @@ package net.sourceforge.vrapper.vim.modes;
 import static net.sourceforge.vrapper.keymap.StateUtils.union;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.changeCaret;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.convertKeyStroke;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.shiftKey;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafCtrlBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafState;
@@ -46,7 +47,11 @@ import net.sourceforge.vrapper.vim.commands.VisualFindFileCommand;
 import net.sourceforge.vrapper.vim.commands.VisualMotionCommand;
 import net.sourceforge.vrapper.vim.commands.YankOperation;
 import net.sourceforge.vrapper.vim.commands.motions.Motion;
+import net.sourceforge.vrapper.vim.commands.motions.MoveDown;
+import net.sourceforge.vrapper.vim.commands.motions.MoveLeft;
+import net.sourceforge.vrapper.vim.commands.motions.MoveRight;
 import net.sourceforge.vrapper.vim.commands.motions.MoveRightAcrossLines;
+import net.sourceforge.vrapper.vim.commands.motions.MoveUp;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordEndLeft;
 import net.sourceforge.vrapper.vim.commands.motions.SearchResultMotion;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
@@ -263,6 +268,11 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
         @SuppressWarnings("unchecked")
         State<Motion> motions = union(
                 leafState(' ', MoveRightAcrossLines.INSTANCE_BEHIND_CHAR),
+                // Shift + Arrows use Vrapper motions rather than SWT handling to have sticky column
+                leafState(shiftKey(SpecialKey.ARROW_UP), MoveUp.INSTANCE),
+                leafState(shiftKey(SpecialKey.ARROW_DOWN), MoveDown.INSTANCE),
+                leafState(shiftKey(SpecialKey.ARROW_LEFT), MoveLeft.INSTANCE),
+                leafState(shiftKey(SpecialKey.ARROW_RIGHT), MoveRight.INSTANCE),
                 transitionState('g',
                         state(
                             leafBind('e', MoveWordEndLeft.INSTANCE_VISUAL))),

@@ -4,7 +4,7 @@ import net.sourceforge.vrapper.platform.TextContent;
 
 public class MoveLeft extends LeftRightMotion {
 
-    public static final MoveLeft INSTANCE = new MoveLeft();
+    public static final Motion INSTANCE = new MoveLeft();
 
     private MoveLeft() { /* NOP */ }
 

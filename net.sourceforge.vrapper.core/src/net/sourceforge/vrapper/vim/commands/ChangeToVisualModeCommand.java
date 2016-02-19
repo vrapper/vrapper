@@ -1,6 +1,7 @@
 package net.sourceforge.vrapper.vim.commands;
 
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.motions.Motion;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
 import net.sourceforge.vrapper.vim.modes.LinewiseVisualMode;
@@ -19,7 +20,11 @@ public class ChangeToVisualModeCommand extends CountIgnoringNonRepeatableCommand
     protected final Command command;
 
     public ChangeToVisualModeCommand(String mode) {
-        this(mode, null);
+        this(mode, (Command)null);
+    }
+
+    public ChangeToVisualModeCommand(String mode, final Motion motion) {
+        this (mode, new VisualMotionCommand(motion));
     }
 
     public ChangeToVisualModeCommand(String mode, final Command command) {

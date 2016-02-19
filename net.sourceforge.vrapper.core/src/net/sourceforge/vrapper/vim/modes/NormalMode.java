@@ -4,6 +4,7 @@ import static net.sourceforge.vrapper.keymap.StateUtils.union;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.changeCaret;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.convertKeyStroke;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.key;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.shiftKey;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafCtrlBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.operatorCmds;
@@ -12,6 +13,7 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.operatorKey
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.prefixedOperatorCmds;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
+import static net.sourceforge.vrapper.vim.commands.CommandWrappers.cmd;
 import net.sourceforge.vrapper.keymap.KeyMapInfo;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.State;
@@ -72,8 +74,10 @@ import net.sourceforge.vrapper.vim.commands.motions.LineEndMotion;
 import net.sourceforge.vrapper.vim.commands.motions.LineStartMotion;
 import net.sourceforge.vrapper.vim.commands.motions.Motion;
 import net.sourceforge.vrapper.vim.commands.motions.MoveBigWORDEndRightForChange;
+import net.sourceforge.vrapper.vim.commands.motions.MoveDown;
 import net.sourceforge.vrapper.vim.commands.motions.MoveLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveRight;
+import net.sourceforge.vrapper.vim.commands.motions.MoveUp;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordEndRightForChange;
 import net.sourceforge.vrapper.vim.commands.motions.SearchResultMotion;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
@@ -259,7 +263,16 @@ public class NormalMode extends CommandBasedMode {
                             leafBind('b', centerBottomLine),
                             leafBind('t', centerTopLine),
                             leafBind(SpecialKey.RETURN, centerTopLine)
-                        ))))));
+                        ),
+                        leafBind(shiftKey(SpecialKey.ARROW_LEFT),
+                                cmd(new ChangeToVisualModeCommand(VisualMode.NAME, MoveLeft.INSTANCE))),
+                        leafBind(shiftKey(SpecialKey.ARROW_RIGHT),
+                                cmd(new ChangeToVisualModeCommand(VisualMode.NAME, MoveRight.INSTANCE))),
+                        leafBind(shiftKey(SpecialKey.ARROW_UP),
+                                cmd(new ChangeToVisualModeCommand(VisualMode.NAME, MoveUp.INSTANCE))),
+                        leafBind(shiftKey(SpecialKey.ARROW_DOWN),
+                                cmd(new ChangeToVisualModeCommand(VisualMode.NAME, MoveDown.INSTANCE)))
+                        )))));
     }
 
     /**

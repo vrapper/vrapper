@@ -3,7 +3,7 @@ package net.sourceforge.vrapper.vim.commands.motions;
 
 public class MoveDown extends UpDownMotion {
 
-    public static final MoveDown INSTANCE = new MoveDown();
+    public static final Motion INSTANCE = new MoveDown();
 
     private MoveDown() { /* NOP */ }
 
