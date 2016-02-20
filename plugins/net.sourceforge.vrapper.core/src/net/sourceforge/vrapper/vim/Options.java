@@ -24,7 +24,7 @@ public interface Options {
     public static final Option<Boolean> INCREMENTAL_SEARCH    = bool("incsearch",      false, "is");
     public static final Option<Boolean> IM_DISABLE            = bool("imdisable",      false, "imd");
     public static final Option<Boolean> VISUAL_MOUSE          = bool("visualmouse",    true,  "vm");
-    public static final Option<Boolean> VISUAL_OTHER          = bool("visualother",  true,  "vo");
+    public static final Option<Boolean> VISUAL_OTHER          = bool("visualother",  false, "vo");
     public static final Option<Boolean> EXIT_LINK_MODE        = bool("exitlinkmode",   true,  "elm");
     public static final Option<Boolean> CLEAN_INDENT          = bool("cleanindent",    true);
     public static final Option<Boolean> AUTO_CHDIR            = bool("autochdir",      false, "acd");
