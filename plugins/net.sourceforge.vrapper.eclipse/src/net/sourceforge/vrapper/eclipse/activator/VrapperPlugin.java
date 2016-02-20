@@ -10,6 +10,7 @@ import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
+import net.sourceforge.vrapper.vim.modes.commandline.AbstractCommandLineMode;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IExecutionListenerWithChecks;
@@ -414,7 +415,8 @@ public class VrapperPlugin extends AbstractUIPlugin implements /*IStartup,*/ Log
                 TextRange nativeSelection = interceptor.getPlatform().getSelectionService().getNativeSelection();
                 // Vrapper selection might be still active if command did not modify selection state
                 if (nativeSelection.getModelLength() > 0
-                        && nativeSelection != SelectionService.VRAPPER_SELECTION_ACTIVE) {
+                        && nativeSelection != SelectionService.VRAPPER_SELECTION_ACTIVE
+                        && ! (adaptor.getCurrentMode() instanceof AbstractCommandLineMode)) {
                     if (lastSelection == null) {
                         lastSelection = new SimpleSelection(nativeSelection);
                     }
@@ -430,11 +432,17 @@ public class VrapperPlugin extends AbstractUIPlugin implements /*IStartup,*/ Log
                     || "org.eclipse.jdt.ui.edit.text.java.goto.matching.bracket".equals(commandId)
                     ) {
                 if (lastSelection != null) {
-                    // [TODO] Check for inclusive / exclusive!
-                    lastSelection = lastSelection.reset(adaptor, lastSelection.getFrom(), adaptor.getPosition());
-                    adaptor.setSelection(lastSelection);
-                    // Should not pose any problems if we are still in the same visual mode.
-                    adaptor.changeModeSafely(lastSelection.getModeName(), AbstractVisualMode.KEEP_SELECTION_HINT);
+                    if (adaptor.getCurrentMode() instanceof AbstractCommandLineMode) {
+                        // Restore selection to former state - Home / End will clear or mutilate sel
+                        // [TODO] Check for inclusive / exclusive!
+                        adaptor.setSelection(lastSelection);
+                    } else {
+                        // [TODO] Check for inclusive / exclusive!
+                        lastSelection = lastSelection.reset(adaptor, lastSelection.getFrom(), adaptor.getPosition());
+                        adaptor.setSelection(lastSelection);
+                        // Should not pose any problems if we are still in the same visual mode.
+                        adaptor.changeModeSafely(lastSelection.getModeName(), AbstractVisualMode.KEEP_SELECTION_HINT);
+                    }
                 }
             }
             needsCleanup = false;
