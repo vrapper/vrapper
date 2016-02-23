@@ -195,7 +195,7 @@ public class FormatOperation extends AbstractLinewiseOperation {
 	 */
 	private class CommentedLine {
 	
-		public final Set<String> SINGLE_LINE_COMMENTS = VimUtils.set("//", "#", "*");
+		public final List<String> SINGLE_LINE_COMMENTS = VimUtils.list("//!", "///", "//", "#", "*");
 		public static final String MULTI_LINE_START = "/*";
 		public static final String MULTI_LINE_END = "*/";
 	
