@@ -50,6 +50,7 @@ public class PasteAfterCommand extends CountAwareCommand {
             }
             break;
         case TEXT:
+        case KEY_SEQUENCE:
             offset = Math.min(line.getEndOffset(), offset + 1);
             position = offset + text.length() * count;
             // Move cursor back, unless we should be after the pasted text or if line is empty.

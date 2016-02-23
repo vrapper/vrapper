@@ -97,6 +97,42 @@ public class MacroTests extends CommandTestCase {
 				"Ala bla", 'h', " kota");
 	}
 	
+	@Test public void testYankMacro() {
+		//yank text into a register to be used later as a macro
+		checkCommand(forKeySeq("\"byW"),
+				"Ala ",'c', "wfoo<ESC> ma kota",
+				"Ala ",'c', "wfoo<ESC> ma kota");
+
+		//execute the register as a macro, changing the word to foo
+		checkCommand(forKeySeq("@b"),
+				"Ala ",'m', "a kota",
+				"Ala foo", ' ' , "kota");
+	}
+	
+	@Test public void testPasteMacroBefore() {
+		//define macro
+		checkCommand(forKeySeq("qacwfoo<ESC>q"),
+				"Ala ",'m', "a kota",
+				"Ala fo", 'o', " kota");
+
+		//paste before from a register filled by recording a macro
+		checkCommand(forKeySeq("\"aP"),
+				"Ala ",'m', "a kota",
+				"Ala cwfoo<ESC", '>' , "ma kota");
+	}
+	
+	@Test public void testPasteMacroAfter() {
+		//define macro
+		checkCommand(forKeySeq("qacwfoo<ESC>q"),
+				"Ala ",'m', "a kota",
+				"Ala fo", 'o', " kota");
+
+		//paste after from a register filled by recording a macro
+		checkCommand(forKeySeq("\"ap"),
+				"Ala ",'m', "a kota",
+				"Ala mcwfoo<ESC", '>' , "a kota");
+	}
+	
 	@Test public void testRegisters() {
 		//yank a word into the "a" register
 		checkCommand(forKeySeq("\"ayw"),
