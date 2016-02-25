@@ -7,12 +7,14 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.DelimitedText;
+import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
 import net.sourceforge.vrapper.vim.modes.ModeSwitchHint;
 import net.sourceforge.vrapper.vim.modes.commandline.AbstractCommandLineMode;
 import net.sourceforge.vrapper.vim.modes.commandline.AbstractCommandParser;
 
 /**
  * This custom mode opens the mini-buffer to update a set of dynamic delimiters.
+ * 
  * @author Bert Jacobs
  */
 public class ReplaceDelimiterMode extends AbstractCommandLineMode {
@@ -21,7 +23,7 @@ public class ReplaceDelimiterMode extends AbstractCommandLineMode {
     private AbstractDynamicDelimiterHolder replacement;
     private Command leaveCommand;
     private DelimiterChangedListener listener;
-    
+
     public ReplaceDelimiterMode(EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
     }
@@ -30,9 +32,16 @@ public class ReplaceDelimiterMode extends AbstractCommandLineMode {
             DelimiterChangedListener listener, DelimitedText toWrap,
             AbstractDynamicDelimiterHolder dynamicDelimiter) throws CommandExecutionException {
 
-        DelimiterHint delimiterHint = new DelimiterHint(leaveCommand, listener, toWrap,
-                 dynamicDelimiter);
-        vim.changeMode(ReplaceDelimiterMode.class.getName(), delimiterHint);
+        ModeSwitchHint[] hints;
+        if (vim.getCurrentMode() instanceof AbstractVisualMode) {
+            hints = new ModeSwitchHint[2];
+            hints[1] = AbstractCommandLineMode.FROM_VISUAL;
+        } else {
+            hints = new ModeSwitchHint[1];
+        }
+        hints[0] = new DelimiterHint(leaveCommand, listener, toWrap,
+                dynamicDelimiter);
+        vim.changeMode(ReplaceDelimiterMode.class.getName(), hints);
     }
 
     static class DelimiterHint implements ModeSwitchHint {
@@ -42,14 +51,14 @@ public class ReplaceDelimiterMode extends AbstractCommandLineMode {
         protected AbstractDynamicDelimiterHolder replacement;
 
         public DelimiterHint(Command command, DelimiterChangedListener listener,
-                DelimitedText toWrap, AbstractDynamicDelimiterHolder replacement) {
+                             DelimitedText toWrap, AbstractDynamicDelimiterHolder replacement) {
             this.command = command;
             this.listener = listener;
             this.toWrap = toWrap;
             this.replacement = replacement;
         }
     }
-    
+
     @Override
     protected String getPrompt() {
         return replacement.getTemplate(editorAdaptor, toWrap);
