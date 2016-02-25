@@ -1568,8 +1568,28 @@ public class NormalModeTests extends CommandTestCase {
                 "<root>\r",' ',"   <property value=\"nill\"></property>\r</root>",
                 "<root>\r    ",'<',"ok type=\"String\"></ok>\r</root>");
     }
-	
-	@Test
+
+    @Test
+    public void testSurroundPlugin_visual_insertTag() {
+        SurroundStateProvider provider = new SurroundStateProvider();
+        provider.initializeProvider(adaptor.getTextObjectProvider());
+        when(platform.getPlatformSpecificStateProvider(Mockito.<TextObjectProvider>any()))
+                .thenReturn(provider);
+        when(platform.getPlatformSpecificModeProvider()).thenReturn(
+                (PlatformSpecificModeProvider) new SurroundModesProvider());
+        reloadEditorAdaptor();
+        // Simple replaces
+
+        checkCommand(forKeySeq("evbS<LT>ok<RETURN>"),
+                "<div>\r    this is some t",'e',"xt\r</div>",
+                "<div>\r    this is some ",'<',"ok>text</ok>\r</div>");
+
+        checkCommand(forKeySeq("viwS<LT>ok<RETURN>"),
+                "<div>\r    this is some t",'e',"xt\r</div>",
+                "<div>\r    this is some ",'<',"ok>text</ok>\r</div>");
+    }
+
+    @Test
     public void testSurroundPlugin_ys() {
         SurroundStateProvider provider = new SurroundStateProvider();
         provider.initializeProvider(adaptor.getTextObjectProvider());
