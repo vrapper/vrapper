@@ -9,12 +9,15 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.eclipse.ui.texteditor.ITextEditor;
-
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
-import org.eclipse.ui.internal.texteditor.HippieCompletionEngine;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IEditorReference;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.texteditor.IDocumentProvider;
+import org.eclipse.ui.texteditor.ITextEditor;
+
 import net.sourceforge.vrapper.eclipse.activator.VrapperPlugin;
 import net.sourceforge.vrapper.eclipse.interceptor.InputInterceptor;
 import net.sourceforge.vrapper.eclipse.interceptor.UnknownEditorException;
@@ -134,8 +137,7 @@ public class InsertExpandMode extends InsertMode {
      * @param lineNo - line number of 'line'
      */
     private void rebuildLineMatches(int cursorPos, String line, int lineNo) {
-		@SuppressWarnings("unchecked") // this API seems to have no generics built in
-        List<IDocument> hippieDocuments = HippieCompletionEngine.computeDocuments(textEditor);
+        List<IDocument> hippieDocuments = computeDocuments(textEditor);
 
     	Matcher matcher = indentPattern.matcher(line);
     	if(matcher.find()) {
@@ -175,6 +177,50 @@ public class InsertExpandMode extends InsertMode {
 		} catch (BadLocationException e) {
 			throw new VrapperPlatformException("Failed to find line completions", e);
 		}
+	}
+
+	/*
+	 * Based on org.eclipse.ui.internal.texteditor.HippieCompletionEngine
+	 */
+	private List<IDocument> computeDocuments(ITextEditor currentTextEditor) {
+		List<IDocument> documentsForSearch = new ArrayList<IDocument>();
+		if (currentTextEditor == null) {
+			return documentsForSearch;
+		}
+
+		IDocumentProvider provider = currentTextEditor.getDocumentProvider();
+		if (provider == null) {
+			return documentsForSearch;
+		}
+
+		IDocument currentDocument = provider.getDocument(currentTextEditor.getEditorInput());
+		if (currentDocument == null) {
+			return documentsForSearch;
+		}
+
+		List<IDocument> computedDocuments = new ArrayList<IDocument>();
+		IWorkbenchWindow window = currentTextEditor.getSite().getWorkbenchWindow();
+		IEditorReference editorsArray[] = window.getActivePage().getEditorReferences();
+
+		for (int i = 0; i < editorsArray.length; i++) {
+			IEditorPart realEditor = editorsArray[i].getEditor(false);
+			if (realEditor instanceof ITextEditor && !realEditor.equals(currentTextEditor)) {
+				ITextEditor textEditor = (ITextEditor) realEditor;
+				provider = textEditor.getDocumentProvider();
+				if (provider == null) {
+					continue;
+				}
+				IDocument doc = provider.getDocument(textEditor.getEditorInput());
+				if (doc == null) {
+					continue;
+				}
+				computedDocuments.add(doc);
+			}
+		}
+
+		// The first is always the one related to the passed currentTextEditor.
+		computedDocuments.add(0, currentDocument);
+		return computedDocuments;
 	}
 
 	private void clearLineMatches() {
