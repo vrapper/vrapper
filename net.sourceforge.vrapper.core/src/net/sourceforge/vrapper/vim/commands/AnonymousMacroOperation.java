@@ -10,6 +10,7 @@ import net.sourceforge.vrapper.utils.LineRange;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.SimpleLineRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.RemappedKeyStroke;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 
@@ -53,33 +54,33 @@ public class AnonymousMacroOperation extends AbstractLinewiseOperation {
 		// [NOTE] This is not safe when doing :<range>normal dd. ExCommandOperation (class behind
 		// the :g/<pattern>/ command) has code which guards against this, so users should prefer
 		// that one for destructive operations.
-		for (int i = lineRange.getStartLine(); i <= lineRange.getEndLine(); i++) {
-
-			if (resetPos) {
-				LineInformation lineInfo = model.getLineInformation(i);
-				Position lineStart = cursor.newPositionForModelOffset(lineInfo.getBeginOffset());
-				editorAdaptor.setPosition(lineStart, StickyColumnPolicy.NEVER);
-			}
-
-			ViewportService view = editorAdaptor.getViewportService();
-			try {
-				view.setRepaint(false);
-				view.lockRepaint(this);
-				editorAdaptor.getHistory().beginCompoundChange();
-				editorAdaptor.getHistory().lock("normal-command");
+		ViewportService view = editorAdaptor.getViewportService();
+		try {
+			view.setRepaint(false);
+			view.lockRepaint(this);
+			editorAdaptor.getHistory().beginCompoundChange();
+			editorAdaptor.getHistory().lock("normal-command");
+			for (int i = lineRange.getStartLine(); i <= lineRange.getEndLine(); i++) {
+				
+				if (resetPos) {
+					LineInformation lineInfo = model.getLineInformation(i);
+					Position lineStart = cursor.newPositionForModelOffset(lineInfo.getBeginOffset());
+					editorAdaptor.setPosition(lineStart, StickyColumnPolicy.NEVER);
+				}
+				
 				for (KeyStroke key : parsed) {
 					editorAdaptor.handleKeyOffRecord(key);
 				}
-			} finally {
-				editorAdaptor.getHistory().unlock("normal-command");
-				editorAdaptor.getHistory().endCompoundChange();
-				view.unlockRepaint(this);
-				view.setRepaint(true);
+				
+				if ( ! NormalMode.NAME.equals(editorAdaptor.getCurrentModeName())) {
+					editorAdaptor.changeModeSafely(NormalMode.NAME);
+				}
 			}
-
-			if ( ! NormalMode.NAME.equals(editorAdaptor.getCurrentModeName())) {
-				editorAdaptor.changeModeSafely(NormalMode.NAME);
-			}
+		} finally {
+			editorAdaptor.getHistory().unlock("normal-command");
+			editorAdaptor.getHistory().endCompoundChange();
+			view.unlockRepaint(this);
+			view.setRepaint(true);
 		}
 	}
 
