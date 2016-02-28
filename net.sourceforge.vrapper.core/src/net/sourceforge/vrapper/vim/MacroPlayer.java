@@ -60,7 +60,7 @@ public class MacroPlayer {
             view.setRepaint(false);
             view.lockRepaint(this);
             editorAdaptor.getHistory().beginCompoundChange();
-            editorAdaptor.getHistory().lock();
+            editorAdaptor.getHistory().lock(historyLock);
             while (! editorAdaptor.abortRecursion && ! playlist.isEmpty()) {
                 editorAdaptor.handleKeyOffRecord(playlist.poll());
             }
