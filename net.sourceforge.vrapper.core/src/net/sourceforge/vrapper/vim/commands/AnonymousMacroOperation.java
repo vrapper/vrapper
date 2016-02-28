@@ -69,7 +69,7 @@ public class AnonymousMacroOperation extends AbstractLinewiseOperation {
 				}
 				
 				for (KeyStroke key : parsed) {
-					editorAdaptor.handleKeyOffRecord(key);
+					editorAdaptor.handleKeyOffRecord(new RemappedKeyStroke(key, true));
 				}
 				
 				if ( ! NormalMode.NAME.equals(editorAdaptor.getCurrentModeName())) {
