@@ -249,7 +249,10 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
                     if (subPart == null || processedInfo.isProcessed(subPart)) {
                         continue;
                     }
-                    partClosed(nestingInfo.getChild(subPart), processedInfo.markPart(subPart));
+                    // No cleanup needed if this tab page is added later on. Seen in the wild.
+                    if (nestingInfo.getChild(subPart) != null) {
+                        partClosed(nestingInfo.getChild(subPart), processedInfo.markPart(subPart));
+                    }
                 }
             } catch (Exception exception) {
                 VrapperLog.error("Exception during closing MultiPageEditorPart",
@@ -281,7 +284,15 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
                         if (subPart == null || processedInfo.isProcessed(subPart)) {
                             continue;
                         }
-                        partActivated(editorInfo.getChild(subPart), processedInfo.markPart(subPart));
+                        // Nested editor might be added later on, as seen in the wild
+                        if (editorInfo.getChild(subPart) == null) {
+                            VrapperLog.info("Editor " + editorInfo.getTopLevelEditor()
+                                    + " dynamically added page " + subPart);
+                            interceptWorkbenchPart(editorInfo.createChildInfo(subPart),
+                                    processedInfo.markPart(subPart));
+                        } else {
+                            partActivated(editorInfo.getChild(subPart), processedInfo.markPart(subPart));
+                        }
                     }
                     if (activePage != -1) {
                         IEditorPart curEditor = (IEditorPart) METHOD_GET_EDITOR.invoke(mPart, activePage);
@@ -296,7 +307,15 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
                         if (subPart == null || processedInfo.isProcessed(subPart)) {
                             continue;
                         }
-                        partActivated(editorInfo.getChild(subPart), processedInfo.markPart(subPart));
+                        // Nested editor might be added later on, as seen in the wild
+                        if (editorInfo.getChild(subPart) == null) {
+                            VrapperLog.info("Editor " + editorInfo.getTopLevelEditor()
+                                    + " dynamically added page " + subPart);
+                            interceptWorkbenchPart(editorInfo.createChildInfo(subPart),
+                                    processedInfo.markPart(subPart));
+                        } else {
+                            partActivated(editorInfo.getChild(subPart), processedInfo.markPart(subPart));
+                        }
                     }
                     IEditorPart curEditor = mEditor.getActiveEditor();
                     if (curEditor != null) {
@@ -604,6 +623,9 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
                 }
                 if (innerEditor != null && innerEditor.getEditorInput().equals(buffer.input)) {
                     EditorInfo innerInfo = parentEditorInfo.getChild(innerEditor);
+                    if (innerInfo == null) {
+                        throw new VrapperPlatformException("Unknown child editor " + innerEditor);
+                    }
                     // Update active editor info because no listener was called.
                     ensureBufferService(multiPage).setCurrentEditor(innerInfo);
                     activated = true;
@@ -626,6 +648,9 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
                 editor.activateEditor(innerEditor);
                 // Explicitly set active editor because we don't have a listener here
                 EditorInfo innerInfo = parentEditorInfo.getChild(innerEditor);
+                if (innerInfo == null) {
+                    throw new VrapperPlatformException("Unknown child editor " + innerEditor);
+                }
                 partActivated(innerInfo, new ProcessedInfo(innerEditor));
                 ensureBufferService(editor).setCurrentEditor(innerInfo);
             }

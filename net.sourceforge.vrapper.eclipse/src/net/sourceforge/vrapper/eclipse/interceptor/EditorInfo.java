@@ -57,12 +57,7 @@ public class EditorInfo {
     }
 
     public EditorInfo getChild(IEditorPart subPart) {
-        EditorInfo childInfo = childEditors.get(subPart);
-        if (childInfo == null) {
-            throw new VrapperPlatformException("Corrupt editor info structure found for editor "
-                    + current);
-        }
-        return childInfo;
+        return childEditors.get(subPart);
     }
 
     public boolean isTopLevelEditor() {
