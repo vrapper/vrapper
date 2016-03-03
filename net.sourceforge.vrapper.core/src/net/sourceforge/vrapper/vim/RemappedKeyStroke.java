@@ -78,4 +78,11 @@ public class RemappedKeyStroke implements KeyStroke {
     public boolean isVirtual() {
         return true;
     }
+
+    public KeyStroke unwrap() {
+        if (delegate instanceof RemappedKeyStroke) {
+            return ((RemappedKeyStroke)delegate).unwrap();
+        }
+        return delegate;
+    }
 }
