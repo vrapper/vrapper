@@ -145,5 +145,13 @@
             provider-class="net.sourceforge.vrapper.eclipse.modes.EclipseSpecificModeProvider">
       </mode-provider>
    </extension>
+   <extension
+         point="net.sourceforge.vrapper.eclipse.pstop">
+      <textobject-provider
+            id="net.sourceforge.vrapper.eclipse.textobject-provider"
+            name="net.sourceforge.vrapper.eclipse.textobject-provider"
+            provider-class="net.sourceforge.vrapper.eclipse.keymap.EclipseTextObjectProvider">
+      </textobject-provider>
+   </extension>
 </plugin>
 

@@ -7,12 +7,12 @@ import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.motions.CountAwareMotion;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 
-public class EclipseMoveCommand extends CountAwareMotion {
+public class EclipseCommandMotion extends CountAwareMotion {
 
     private final String motionName;
     private final BorderPolicy borderPolicy;
 
-    public EclipseMoveCommand(String motionName, BorderPolicy borderPolicy) {
+    public EclipseCommandMotion(String motionName, BorderPolicy borderPolicy) {
         this.motionName = motionName;
         this.borderPolicy = borderPolicy;
     }
