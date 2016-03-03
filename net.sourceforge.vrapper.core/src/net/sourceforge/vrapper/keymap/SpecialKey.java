@@ -10,7 +10,11 @@ public enum SpecialKey {
 	 */
 	LEADER,
 	/**
-	 * <b>NOTE</b>: this is reserved for PlugKeyStroke instances, it should never be used by the
+	 * Special key which is always sent before a sequence of characters identifying a plugin
+	 * function.
+	 * <p>
+	 * <b>NOTE</b>: this is reserved for PlugKeyStroke instances, it should never be used
+	 * by the
 	 * input logic.
 	 */
 	PLUG;
