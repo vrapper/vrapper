@@ -5,16 +5,6 @@ import org.eclipse.core.expressions.Expression;
 import org.eclipse.core.expressions.ExpressionInfo;
 import org.eclipse.core.expressions.IEvaluationContext;
 import org.eclipse.core.runtime.CoreException;
-import net.sourceforge.vrapper.eclipse.commands.EclipseMotionPlugState;
-import net.sourceforge.vrapper.eclipse.commands.EclipsePlugState;
-import net.sourceforge.vrapper.eclipse.commands.EclipseTextObjectPlugState;
-import net.sourceforge.vrapper.keymap.vim.PlugKeyStroke;
-import net.sourceforge.vrapper.platform.SelectionService;
-import net.sourceforge.vrapper.utils.TextRange;
-import net.sourceforge.vrapper.vim.commands.Selection;
-import net.sourceforge.vrapper.vim.commands.SimpleSelection;
-import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
-import net.sourceforge.vrapper.vim.modes.commandline.AbstractCommandLineMode;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IExecutionListenerWithChecks;
@@ -24,7 +14,6 @@ import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.adaptor.EclipseStarter;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IPreferencesService;
 import org.eclipse.core.runtime.preferences.InstanceScope;
@@ -40,8 +29,8 @@ import org.eclipse.ui.IWindowListener;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchListener;
 import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.commands.ICommandService;
@@ -365,11 +354,9 @@ public class VrapperPlugin extends AbstractUIPlugin implements /*IStartup,*/ Log
     public static class CommandExecutionListener implements IExecutionListenerWithChecks {
 
         protected boolean needsCleanup;
-        protected Selection lastSelection;
 
         @Override
         public void notHandled(String commandId, NotHandledException exception) {
-            // TODO Auto-generated method stub
             VrapperLog.debug("Non-handled command: " + commandId + ". Ex: " + exception.getMessage());
             needsCleanup = false;
         }
@@ -377,9 +364,48 @@ public class VrapperPlugin extends AbstractUIPlugin implements /*IStartup,*/ Log
         @Override
         public void postExecuteFailure(String commandId,
                 ExecutionException exception) {
-            // TODO Auto-generated method stub
             VrapperLog.debug("Failed command: " + commandId + ". Ex: " + exception.getMessage());
             needsCleanup = false;
+        }
+
+        @Override
+        public void preExecute(final String commandId, ExecutionEvent event) {
+            IWorkbenchPart activePart = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActivePart();
+            VrapperLog.debug("PRE command: " + commandId + " in " + activePart + ". Event: " + event);
+            needsCleanup = true;
+            // Always reset this
+            if ( ! VrapperPlugin.isVrapperEnabled()) {
+                return;
+            }
+            IEditorPart activeEditor = HandlerUtil.getActiveEditor(event);
+            if (activeEditor == null) {
+                VrapperLog.debug("No active editor info in event!");
+                activeEditor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+            }
+            if (activeEditor == null) {
+                // No editor active, e.g. on a fresh start.
+                return;
+            }
+            InputInterceptor interceptor;
+            try {
+                interceptor = VrapperPlugin.getDefault().findActiveInterceptor(activeEditor);
+            } catch (VrapperPlatformException e) {
+                VrapperLog.error("Failed to grab current editor after running command " + commandId, e);
+                return;
+            } catch (UnknownEditorException e) {
+                // Might be some unsupported type.
+                VrapperLog.debug(e.getMessage());
+                return;
+            }
+            interceptor.getEclipseCommandHandler().beforeCommand(commandId);
+            Display.getCurrent().asyncExec(new Runnable() {
+                @Override
+                public void run() {
+                    // TODO Auto-generated method stub
+                    IWorkbenchPart activePart = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActivePart();
+                    VrapperLog.debug("PRE-scheduled async command: " + commandId + " in " + activePart + " Needs cleanup: " + needsCleanup);
+                }
+            });
         }
 
         @Override
@@ -404,119 +430,12 @@ public class VrapperPlugin extends AbstractUIPlugin implements /*IStartup,*/ Log
                 VrapperLog.debug(e.getMessage());
                 return;
             }
-            EditorAdaptor adaptor = interceptor.getEditorAdaptor();
-            // [TODO] Record that command was executed when recording a macro.
-            if ("org.eclipse.jdt.ui.edit.text.java.select.enclosing".equals(commandId)
-                    || "org.eclipse.jdt.ui.edit.text.java.select.last".equals(commandId)
-                    || "org.eclipse.jdt.ui.edit.text.java.select.next".equals(commandId)
-                    || "org.eclipse.jdt.ui.edit.text.java.select.previous".equals(commandId)
-                    || "org.eclipse.ui.edit.selectAll".equals(commandId)
-                    || "org.eclipse.ui.edit.text.moveLineUp".equals(commandId)
-                    || "org.eclipse.ui.edit.text.moveLineDown".equals(commandId)
-                    || "org.eclipse.ui.edit.text.select.wordPrevious".equals(commandId)
-                    || "org.eclipse.ui.edit.text.select.wordNext".equals(commandId)
-                ) {
-                // Only works for Eclipse text objects, Eclipse motions need some different logic
-                TextRange nativeSelection = interceptor.getPlatform().getSelectionService().getNativeSelection();
-                // Vrapper selection might be still active if command did not modify selection state
-                if (nativeSelection.getModelLength() > 0
-                        && nativeSelection != SelectionService.VRAPPER_SELECTION_ACTIVE
-                        && ! (adaptor.getCurrentMode() instanceof AbstractCommandLineMode)) {
-                    // Record action plug in current macro
-                    // [TODO] Don't do this when EclipseCommand is invoked from Vrapper
-                    adaptor.getMacroRecorder().handleKey(new PlugKeyStroke(EclipseTextObjectPlugState.TEXTOBJPREFIX + commandId + ')'));
-                    if (lastSelection == null) {
-                        lastSelection = new SimpleSelection(nativeSelection);
-                    }
-                    lastSelection = lastSelection.wrap(adaptor, nativeSelection);
-                    adaptor.setSelection(lastSelection);
-                    // Should not pose any problems if we are still in the same visual mode.
-                    adaptor.changeModeSafely(lastSelection.getModeName(), AbstractVisualMode.KEEP_SELECTION_HINT);
-                }
-            } else if ("org.eclipse.ui.edit.text.goto.lineStart".equals(commandId)
-                    || "org.eclipse.ui.edit.text.goto.lineEnd".equals(commandId)
-                    || "org.eclipse.ui.edit.text.goto.wordPrevious".equals(commandId)
-                    || "org.eclipse.ui.edit.text.goto.wordNext".equals(commandId)
-                    || "org.eclipse.jdt.ui.edit.text.java.goto.matching.bracket".equals(commandId)
-                    ) {
-                if (lastSelection != null) {
-                    if (adaptor.getCurrentMode() instanceof AbstractCommandLineMode) {
-                        // Restore selection to former state - Home / End will clear or mutilate sel
-                        // [TODO] Check for inclusive / exclusive!
-                        adaptor.setSelection(lastSelection);
-                    } else {
-                        // Record action plug in current macro
-                        // [TODO] Don't do this when EclipseCommand is invoked from Vrapper
-                        adaptor.getMacroRecorder().handleKey(new PlugKeyStroke(EclipseMotionPlugState.MOTIONPREFIX + commandId + ')'));
-                        // [TODO] Check for inclusive / exclusive!
-                        lastSelection = lastSelection.reset(adaptor, lastSelection.getFrom(), adaptor.getPosition());
-                        adaptor.setSelection(lastSelection);
-                        // Should not pose any problems if we are still in the same visual mode.
-                        adaptor.changeModeSafely(lastSelection.getModeName(), AbstractVisualMode.KEEP_SELECTION_HINT);
-                    }
-                }
-            }
+            interceptor.getEclipseCommandHandler().afterCommand(commandId);
             needsCleanup = false;
         }
 
         @Override
-        public void preExecute(final String commandId, ExecutionEvent event) {
-            // TODO Auto-generated method stub
-            IWorkbenchPart activePart = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActivePart();
-            VrapperLog.debug("PRE command: " + commandId + " in " + activePart + ". Event: " + event);
-            needsCleanup = true;
-            // Always reset this
-            lastSelection = null;
-            if ( ! VrapperPlugin.isVrapperEnabled()) {
-                return;
-            }
-            // [TODO] Eclipse motions don't know about inclusive mode; it's unable to change the
-            // selection to the left when Vrapper shows the cursor *on* a landing spot.
-            // Chop off that last character if selection is left-to-right and command is a motion.
-            IEditorPart activeEditor = HandlerUtil.getActiveEditor(event);
-            if (activeEditor == null) {
-                VrapperLog.debug("No active editor info in event!");
-                activeEditor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
-            }
-            if (activeEditor == null) {
-                // No editor active, e.g. on a fresh start.
-                return;
-            }
-            InputInterceptor interceptor;
-            try {
-                interceptor = VrapperPlugin.getDefault().findActiveInterceptor(activeEditor);
-            } catch (VrapperPlatformException e) {
-                VrapperLog.error("Failed to grab current editor after running command " + commandId, e);
-                return;
-            } catch (UnknownEditorException e) {
-                // Might be some unsupported type.
-                VrapperLog.debug(e.getMessage());
-                return;
-            }
-            TextRange selRange = interceptor.getPlatform().getSelectionService().getNativeSelection();
-            if (selRange.getModelLength() > 0 || selRange == SelectionService.VRAPPER_SELECTION_ACTIVE) {
-                if (selRange == SelectionService.VRAPPER_SELECTION_ACTIVE) {
-                    // This is the generic part: store Vrapper selection so that 'gv' works.
-                    interceptor.getEditorAdaptor().rememberLastActiveSelection();
-                    VrapperLog.debug("Stored Vrapper selection");
-                }
-                // Store current selection so that postExecuteSuccess can update it.
-                lastSelection = interceptor.getEditorAdaptor().getSelection();
-                VrapperLog.debug("Grabbed selection");
-            }
-            Display.getCurrent().asyncExec(new Runnable() {
-                @Override
-                public void run() {
-                    // TODO Auto-generated method stub
-                    IWorkbenchPart activePart = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActivePart();
-                    VrapperLog.debug("PRE-scheduled async command: " + commandId + " in " + activePart + " Needs cleanup: " + needsCleanup);
-                }
-            });
-        }
-
-        @Override
         public void notDefined(String commandId, NotDefinedException exception) {
-            // TODO Auto-generated method stub
             IWorkbenchPart activePart = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActivePart();
             VrapperLog.debug("Undefined command: " + commandId + " in " + activePart + ". Event: " + exception);
             needsCleanup = false;
@@ -524,7 +443,6 @@ public class VrapperPlugin extends AbstractUIPlugin implements /*IStartup,*/ Log
 
         @Override
         public void notEnabled(String commandId, NotEnabledException exception) {
-            // TODO Auto-generated method stub
             IWorkbenchPart activePart = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActivePart();
             VrapperLog.debug("Not enabled command: " + commandId + " in " + activePart + ". Exception: " + exception);
             needsCleanup = false;
