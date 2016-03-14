@@ -25,7 +25,6 @@ import net.sourceforge.vrapper.platform.PlatformSpecificModeProvider;
 import net.sourceforge.vrapper.platform.PlatformSpecificStateProvider;
 import net.sourceforge.vrapper.platform.PlatformSpecificTextObjectProvider;
 import net.sourceforge.vrapper.platform.SearchAndReplaceService;
-import net.sourceforge.vrapper.platform.ServiceProvider;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.platform.UnderlyingEditorSettings;
 import net.sourceforge.vrapper.platform.UserInterfaceService;
@@ -153,7 +152,7 @@ public class EclipsePlatform implements Platform {
     }
 
     @Override
-    public ServiceProvider getServiceProvider() {
+    public EclipseServiceProvider getServiceProvider() {
         return serviceProvider;
     }
 

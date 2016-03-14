@@ -260,6 +260,7 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
         InputInterceptor interceptor = createInterceptor(editorAdaptor);
         interceptor.setPlatform(platform);
         interceptor.setEditorInfo(partInfo);
+        platform.getServiceProvider().setInputInterceptor(interceptor);
 
         interceptor.setCaretPositionUndoHandler(new CaretPositionUndoHandler(editorAdaptor, textViewer));
         editorAdaptor.addVrapperEventListener(interceptor.getCaretPositionUndoHandler());
