@@ -1,5 +1,8 @@
 package net.sourceforge.vrapper.eclipse.interceptor;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import net.sourceforge.vrapper.eclipse.activator.VrapperPlugin;
 import net.sourceforge.vrapper.eclipse.commands.EclipseMotionPlugState;
 import net.sourceforge.vrapper.eclipse.commands.EclipseTextObjectPlugState;
@@ -18,9 +21,27 @@ public class EclipseCommandHandler {
     protected EditorAdaptor editorAdaptor;
     protected Selection lastSelection;
     protected boolean vrapperCommandActive;
+    protected Set<String> motions = new HashSet<String>();
+    protected Set<String> textObjects = new HashSet<String>();
 
     public EclipseCommandHandler(EditorAdaptor editorAdaptor) {
         this.editorAdaptor = editorAdaptor;
+
+        textObjects.add("org.eclipse.jdt.ui.edit.text.java.select.enclosing");
+        textObjects.add("org.eclipse.jdt.ui.edit.text.java.select.last");
+        textObjects.add("org.eclipse.jdt.ui.edit.text.java.select.next");
+        textObjects.add("org.eclipse.jdt.ui.edit.text.java.select.previous");
+        textObjects.add("org.eclipse.ui.edit.selectAll");
+        textObjects.add("org.eclipse.ui.edit.text.moveLineUp");
+        textObjects.add("org.eclipse.ui.edit.text.moveLineDown");
+        textObjects.add("org.eclipse.ui.edit.text.select.wordPrevious");
+        textObjects.add("org.eclipse.ui.edit.text.select.wordNext");
+
+        motions.add("org.eclipse.ui.edit.text.goto.lineStart");
+        motions.add("org.eclipse.ui.edit.text.goto.lineEnd");
+        motions.add("org.eclipse.ui.edit.text.goto.wordPrevious");
+        motions.add("org.eclipse.ui.edit.text.goto.wordNext");
+        motions.add("org.eclipse.jdt.ui.edit.text.java.goto.matching.bracket");
     }
 
     public void beforeCommand(final String commandId) {
@@ -49,17 +70,7 @@ public class EclipseCommandHandler {
         if ( ! VrapperPlugin.isVrapperEnabled() || vrapperCommandActive) {
             return;
         }
-        // [TODO] Record that command was executed when recording a macro.
-        if ("org.eclipse.jdt.ui.edit.text.java.select.enclosing".equals(commandId)
-                || "org.eclipse.jdt.ui.edit.text.java.select.last".equals(commandId)
-                || "org.eclipse.jdt.ui.edit.text.java.select.next".equals(commandId)
-                || "org.eclipse.jdt.ui.edit.text.java.select.previous".equals(commandId)
-                || "org.eclipse.ui.edit.selectAll".equals(commandId)
-                || "org.eclipse.ui.edit.text.moveLineUp".equals(commandId)
-                || "org.eclipse.ui.edit.text.moveLineDown".equals(commandId)
-                || "org.eclipse.ui.edit.text.select.wordPrevious".equals(commandId)
-                || "org.eclipse.ui.edit.text.select.wordNext".equals(commandId)
-            ) {
+        if (commandId != null && textObjects.contains(commandId)) {
             // Only works for Eclipse text objects, Eclipse motions need some different logic
             TextRange nativeSelection = editorAdaptor.getNativeSelection();
             // Vrapper selection might be still active if command did not modify selection state
@@ -77,12 +88,7 @@ public class EclipseCommandHandler {
                 // Should not pose any problems if we are still in the same visual mode.
                 editorAdaptor.changeModeSafely(lastSelection.getModeName(), AbstractVisualMode.KEEP_SELECTION_HINT);
             }
-        } else if ("org.eclipse.ui.edit.text.goto.lineStart".equals(commandId)
-                || "org.eclipse.ui.edit.text.goto.lineEnd".equals(commandId)
-                || "org.eclipse.ui.edit.text.goto.wordPrevious".equals(commandId)
-                || "org.eclipse.ui.edit.text.goto.wordNext".equals(commandId)
-                || "org.eclipse.jdt.ui.edit.text.java.goto.matching.bracket".equals(commandId)
-                ) {
+        } else if (commandId != null && motions.contains(commandId)) {
             if (lastSelection != null) {
                 if (editorAdaptor.getCurrentMode() instanceof AbstractCommandLineMode) {
                     // Restore selection to former state - Home / End will clear or mutilate sel
