@@ -13,6 +13,7 @@ import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
 import net.sourceforge.vrapper.vim.modes.commandline.AbstractCommandLineMode;
 
@@ -21,6 +22,7 @@ public class EclipseCommandHandler {
     protected EditorAdaptor editorAdaptor;
     protected Selection lastSelection;
     protected boolean vrapperCommandActive;
+    protected boolean recognizedCommandActive;
     protected Set<String> motions = new HashSet<String>();
     protected Set<String> textObjects = new HashSet<String>();
 
@@ -64,6 +66,21 @@ public class EclipseCommandHandler {
             lastSelection = editorAdaptor.getSelection();
             VrapperLog.debug("Grabbed selection");
         }
+        // Workaround for 
+        if (commandId != null && motions.contains(commandId)) {
+            if (lastSelection == null) {
+                // [TODO] Potentially compensate for Vim behaviour in normal mode: repeating an
+                // Eclipse motion might be a no-op because Eclipse wants to move to the end of the
+                // line. Normal mode will keep pulling the caret away from that line end. It's also
+                // possible that this needs to be done *after* the command has run.
+            } else {
+                // Reset selection so that Eclipse motion doesn't get confused. Eclipse motions look
+                // at the end of the selection which could be on the next line when the 'To'
+                // position sits on the previous end-of-line character.
+                editorAdaptor.setPosition(lastSelection.getTo(), StickyColumnPolicy.NEVER);
+                recognizedCommandActive = true;
+            }
+        }
     }
 
     public void afterCommand(String commandId) {
@@ -106,13 +123,14 @@ public class EclipseCommandHandler {
                 }
             }
         }
+        recognizedCommandActive = false;
     }
 
     public void cleanup() {
     }
 
     public boolean isVrapperCommandActive() {
-        return vrapperCommandActive;
+        return vrapperCommandActive || recognizedCommandActive;
     }
 
     public void setVrapperCommandActive(boolean eclipseCommandActive) {
