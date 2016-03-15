@@ -17,6 +17,7 @@ public class EclipseCommandHandler {
 
     protected EditorAdaptor editorAdaptor;
     protected Selection lastSelection;
+    protected boolean vrapperCommandActive;
 
     public EclipseCommandHandler(EditorAdaptor editorAdaptor) {
         this.editorAdaptor = editorAdaptor;
@@ -25,7 +26,7 @@ public class EclipseCommandHandler {
     public void beforeCommand(final String commandId) {
         // Always reset this
         lastSelection = null;
-        if ( ! VrapperPlugin.isVrapperEnabled()) {
+        if ( ! VrapperPlugin.isVrapperEnabled() || vrapperCommandActive) {
             return;
         }
         // [TODO] Eclipse motions don't know about inclusive mode; it's unable to change the
@@ -45,7 +46,7 @@ public class EclipseCommandHandler {
     }
 
     public void afterCommand(String commandId) {
-        if ( ! VrapperPlugin.isVrapperEnabled()) {
+        if ( ! VrapperPlugin.isVrapperEnabled() || vrapperCommandActive) {
             return;
         }
         // [TODO] Record that command was executed when recording a macro.
@@ -102,5 +103,13 @@ public class EclipseCommandHandler {
     }
 
     public void cleanup() {
+    }
+
+    public boolean isVrapperCommandActive() {
+        return vrapperCommandActive;
+    }
+
+    public void setVrapperCommandActive(boolean eclipseCommandActive) {
+        this.vrapperCommandActive = eclipseCommandActive;
     }
 }

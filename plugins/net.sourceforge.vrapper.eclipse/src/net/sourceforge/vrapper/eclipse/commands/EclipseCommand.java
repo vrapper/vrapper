@@ -1,5 +1,6 @@
 package net.sourceforge.vrapper.eclipse.commands;
 
+import net.sourceforge.vrapper.eclipse.interceptor.EclipseCommandHandler;
 import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.AbstractCommand;
@@ -62,6 +63,7 @@ public class EclipseCommand extends AbstractCommand {
     public static void doIt(final String action, EditorAdaptor editorAdaptor, boolean async) {
         final IHandlerService handlerService = editorAdaptor.getService(IHandlerService.class);
         final ICommandService commandService = editorAdaptor.getService(ICommandService.class);
+        final EclipseCommandHandler eclipseCommandHandler = editorAdaptor.getService(EclipseCommandHandler.class);
         if (handlerService != null && commandService != null) {
             if (async) {
                 //
@@ -70,11 +72,11 @@ public class EclipseCommand extends AbstractCommand {
                 getDisplay().asyncExec(new Runnable() {
                     @Override
                     public void run() {
-                        executeAction(action, handlerService, commandService);
+                        executeAction(action, handlerService, commandService, eclipseCommandHandler);
                     }
                 });
             } else {
-                executeAction(action, handlerService, commandService);
+                executeAction(action, handlerService, commandService, eclipseCommandHandler);
             }
         } else {
             VrapperLog.error("No handler service, cannot execute: " + action);
@@ -83,12 +85,15 @@ public class EclipseCommand extends AbstractCommand {
 
     private static void executeAction(final String action,
             final IHandlerService handlerService,
-            final ICommandService commandService) {
+            final ICommandService commandService, EclipseCommandHandler eclipseCommandHandler) {
+        eclipseCommandHandler.setVrapperCommandActive(true);
         try {
             final ParameterizedCommand command = commandService.deserialize(action);
             handlerService.executeCommand(command, null);
         } catch (CommandException e) {
             VrapperLog.error("Command not handled: " + action, e);
+        } finally {
+            eclipseCommandHandler.setVrapperCommandActive(false);
         }
     }
 

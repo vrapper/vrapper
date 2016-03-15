@@ -28,19 +28,22 @@ public class SelectionVisualHandler implements ISelectionChangedListener {
 
     private DefaultEditorAdaptor editorAdaptor;
     private EclipseCursorAndSelection selectionService;
+    private EclipseCommandHandler commandHandler;
     private ITextViewer textViewer;
     private int selectionResetOffset = -1;
 
     public SelectionVisualHandler(DefaultEditorAdaptor editorAdaptor,
-            EclipseCursorAndSelection selectionService, ITextViewer viewer) {
+            EclipseCursorAndSelection selectionService, ITextViewer viewer,
+            EclipseCommandHandler commandHandler) {
         this.editorAdaptor = editorAdaptor;
         this.textViewer = viewer;
         this.selectionService = selectionService;
+        this.commandHandler = commandHandler;
     }
 
     public void selectionChanged(SelectionChangedEvent event) {
         if (!VrapperPlugin.isVrapperEnabled() || !(event.getSelection() instanceof TextSelection)
-                || selectionService.isSelectionInProgress()) {
+                || selectionService.isSelectionInProgress() || commandHandler.isVrapperCommandActive()) {
             return;
         }
 
