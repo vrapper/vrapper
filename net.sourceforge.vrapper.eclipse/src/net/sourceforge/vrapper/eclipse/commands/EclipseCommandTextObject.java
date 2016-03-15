@@ -22,7 +22,12 @@ public class EclipseCommandTextObject extends AbstractTextObject {
     public TextRange getRegion(EditorAdaptor editorAdaptor, int count)
             throws CommandExecutionException {
         Position oldCarretOffset = editorAdaptor.getPosition();
-        EclipseCommand.doIt(count, commandName, editorAdaptor, false);
+        if (count == NO_COUNT_GIVEN) {
+            count = 1;
+        }
+        for (int i = 0; i < count; i++) {
+            EclipseCommand.doIt(commandName, editorAdaptor, false);
+        }
         Position newCarretOffset = editorAdaptor.getPosition();
         editorAdaptor.setPosition(oldCarretOffset, StickyColumnPolicy.ON_CHANGE);
         return new StartEndTextRange(oldCarretOffset, newCarretOffset);

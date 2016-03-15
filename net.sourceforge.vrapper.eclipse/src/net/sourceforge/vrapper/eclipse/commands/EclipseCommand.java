@@ -35,7 +35,7 @@ public class EclipseCommand extends AbstractCommand {
         if (fromVisualMode) {
             editorAdaptor.rememberLastActiveSelection();
         }
-        doIt(1, action, editorAdaptor, async);
+        doIt(action, editorAdaptor, async);
 
         if (fromVisualMode) {
             LeaveVisualModeCommand.doIt(editorAdaptor);
@@ -59,7 +59,7 @@ public class EclipseCommand extends AbstractCommand {
         return display;
     }
 
-    public static void doIt(int count, final String action, EditorAdaptor editorAdaptor, boolean async) {
+    public static void doIt(final String action, EditorAdaptor editorAdaptor, boolean async) {
         final IHandlerService handlerService = editorAdaptor.getService(IHandlerService.class);
         final ICommandService commandService = editorAdaptor.getService(ICommandService.class);
         if (handlerService != null && commandService != null) {

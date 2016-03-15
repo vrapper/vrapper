@@ -29,7 +29,12 @@ public class EclipseCommandMotion extends CountAwareMotion {
     @Override
     public Position destination(EditorAdaptor editorAdaptor, int count) {
         Position oldCarretOffset = editorAdaptor.getPosition();
-        EclipseCommand.doIt(count, motionName, editorAdaptor, false);
+        if (count == NO_COUNT_GIVEN) {
+            count = 1;
+        }
+        for (int i = 0; i < count; i++) {
+            EclipseCommand.doIt(motionName, editorAdaptor, false);
+        }
         Position newCarretOffset = editorAdaptor.getPosition();
         editorAdaptor.setPosition(oldCarretOffset, StickyColumnPolicy.ON_CHANGE);
         return newCarretOffset;
