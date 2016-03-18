@@ -49,6 +49,7 @@ public class EclipseCommandHandler {
     public void beforeCommand(final String commandId) {
         // Always reset this
         lastSelection = null;
+        recognizedCommandActive = false;
         if ( ! VrapperPlugin.isVrapperEnabled() || vrapperCommandActive) {
             return;
         }
