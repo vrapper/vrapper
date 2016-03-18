@@ -51,6 +51,11 @@ public class UnmodifiableTextContentDecorator implements TextContent {
     }
 
     @Override
+    public int getNumberOfLines(TextRange range) {
+        return textContent.getNumberOfLines(range);
+    }
+
+    @Override
     public void replace(int index, int length, String s) {
         if (allowChanges()) {
             textContent.replace(index, length, s);
@@ -69,6 +74,11 @@ public class UnmodifiableTextContentDecorator implements TextContent {
         if (allowChanges()) {
             textContent.smartInsert(s);
         }
+    }
+
+    @Override
+    public String getText() {
+        return textContent.getText();
     }
 
     @Override

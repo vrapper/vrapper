@@ -32,6 +32,11 @@ public interface TextContent {
     int getNumberOfLines();
 
     /**
+     * @return number of lines which are occupied by a given text range.
+     */
+    int getNumberOfLines(TextRange range);
+
+    /**
      * @param index
      *            start of the text to replace.
      * @param length
@@ -68,6 +73,13 @@ public interface TextContent {
      * @return the specified substring of the text.
      */
     String getText(int index, int length);
+
+    /**
+     * Retrieves the complete text.
+     *
+     * @return the text.
+     */
+    String getText();
 
     String getText(TextRange range);
 

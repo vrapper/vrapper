@@ -68,8 +68,22 @@ public class EclipseTextContent {
             return textViewer.getDocument().getNumberOfLines();
         }
 
+        public int getNumberOfLines(TextRange range) {
+            int offset = range.getStart().getModelOffset();
+            int length = range.getModelLength();
+            try {
+                return textViewer.getDocument().getNumberOfLines(offset, length);
+            } catch (BadLocationException e) {
+                throw new VrapperPlatformException("Failed to get number of lines for M " + offset + " lenght " + length, e);
+            }
+        }
+
         public int getTextLength() {
             return textViewer.getDocument().getLength();
+        }
+
+        public String getText() {
+            return textViewer.getDocument().get();
         }
 
         public String getText(int index, int length) {
@@ -145,8 +159,17 @@ public class EclipseTextContent {
             return textViewer.getTextWidget().getLineCount();
         }
 
+        public int getNumberOfLines(TextRange range) {
+            // TODO get viewSide number of lines
+            return modelSide.getNumberOfLines(range);
+        }
+
         public int getTextLength() {
             return textViewer.getTextWidget().getCharCount();
+        }
+
+        public String getText() {
+            return textViewer.getTextWidget().getText();
         }
 
         public String getText(int index, int length) {
