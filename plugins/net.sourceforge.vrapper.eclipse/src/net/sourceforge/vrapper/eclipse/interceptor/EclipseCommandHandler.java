@@ -9,21 +9,31 @@ import net.sourceforge.vrapper.eclipse.commands.EclipseTextObjectPlugState;
 import net.sourceforge.vrapper.keymap.vim.PlugKeyStroke;
 import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.SelectionService;
+import net.sourceforge.vrapper.platform.TextContent;
+import net.sourceforge.vrapper.utils.LineInformation;
+import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
+import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.modes.commandline.AbstractCommandLineMode;
 
 public class EclipseCommandHandler {
 
     protected EditorAdaptor editorAdaptor;
     protected Selection lastSelection;
+    protected Position lastPosition;
     protected boolean vrapperCommandActive;
     protected boolean recognizedCommandActive;
     protected Set<String> motions = new HashSet<String>();
+    /**
+     * These motions should never leave the line.
+     * Note that they should still be added to {@link #motions}.
+     */
+    protected Set<String> noWrapMotions = new HashSet<String>();
     protected Set<String> textObjects = new HashSet<String>();
 
     public EclipseCommandHandler(EditorAdaptor editorAdaptor) {
@@ -44,6 +54,10 @@ public class EclipseCommandHandler {
         motions.add("org.eclipse.ui.edit.text.goto.wordPrevious");
         motions.add("org.eclipse.ui.edit.text.goto.wordNext");
         motions.add("org.eclipse.jdt.ui.edit.text.java.goto.matching.bracket");
+
+        noWrapMotions.add("org.eclipse.ui.edit.text.goto.lineStart");
+        noWrapMotions.add("org.eclipse.ui.edit.text.goto.lineEnd");
+        noWrapMotions.add("org.eclipse.jdt.ui.edit.text.java.goto.matching.bracket");
     }
 
     public void beforeCommand(final String commandId) {
@@ -53,9 +67,6 @@ public class EclipseCommandHandler {
         if ( ! VrapperPlugin.isVrapperEnabled() || vrapperCommandActive) {
             return;
         }
-        // [TODO] Eclipse motions don't know about inclusive mode; it's unable to change the
-        // selection to the left when Vrapper shows the cursor *on* a landing spot.
-        // Chop off that last character if selection is left-to-right and command is a motion.
         TextRange selRange = editorAdaptor.getNativeSelection();
         if (selRange.getModelLength() > 0 || selRange == SelectionService.VRAPPER_SELECTION_ACTIVE) {
             if (selRange == SelectionService.VRAPPER_SELECTION_ACTIVE) {
@@ -67,14 +78,16 @@ public class EclipseCommandHandler {
             lastSelection = editorAdaptor.getSelection();
             VrapperLog.debug("Grabbed selection");
         }
-        // Workaround for 
+        lastPosition = editorAdaptor.getPosition();
+        // Workaround for motions
         if (commandId != null && motions.contains(commandId)) {
-            if (lastSelection == null) {
-                // [TODO] Potentially compensate for Vim behaviour in normal mode: repeating an
-                // Eclipse motion might be a no-op because Eclipse wants to move to the end of the
-                // line. Normal mode will keep pulling the caret away from that line end. It's also
-                // possible that this needs to be done *after* the command has run.
-            } else {
+            if (lastSelection == null && editorAdaptor.getCurrentMode() instanceof NormalMode) {
+                // Stops the SelectionHandler from running. This is a workaround for when
+                // Eclipse motions move the caret to the end of the line, we don't want Normal mode
+                // to move the caret back to be "on" the last character until we fix the situation
+                // in the afterCommand(..) function.
+                recognizedCommandActive = true;
+            } else if (lastSelection != null) {
                 // Reset selection so that Eclipse motion doesn't get confused. Eclipse motions look
                 // at the end of the selection which could be on the next line when the 'To'
                 // position sits on the previous end-of-line character.
@@ -96,7 +109,6 @@ public class EclipseCommandHandler {
                     && nativeSelection != SelectionService.VRAPPER_SELECTION_ACTIVE
                     && ! (editorAdaptor.getCurrentMode() instanceof AbstractCommandLineMode)) {
                 // Record action plug in current macro
-                // [TODO] Don't do this when EclipseCommand is invoked from Vrapper
                 editorAdaptor.getMacroRecorder().handleKey(new PlugKeyStroke(EclipseTextObjectPlugState.TEXTOBJPREFIX + commandId + ')'));
                 if (lastSelection == null) {
                     lastSelection = new SimpleSelection(nativeSelection);
@@ -107,14 +119,36 @@ public class EclipseCommandHandler {
                 editorAdaptor.changeModeSafely(lastSelection.getModeName(), AbstractVisualMode.KEEP_SELECTION_HINT);
             }
         } else if (commandId != null && motions.contains(commandId)) {
-            if (lastSelection != null) {
+            if (lastSelection == null && editorAdaptor.getCurrentMode() instanceof NormalMode) {
+                TextContent modelContent = editorAdaptor.getModelContent();
+                Position currentPosition = editorAdaptor.getPosition();
+                int currentOffset = currentPosition.getModelOffset();
+                // Check if caret offset is at line end, if so move the caret to the next line so
+                // so that Eclipse motions don't become a no-op.
+                LineInformation lineInfo = modelContent.getLineInformationOfOffset(currentOffset);
+                int lineEnd = lineInfo.getEndOffset();
+
+                // Shift cursor back to be "on" last character of line
+                if (lineEnd == currentOffset && lineInfo.getLength() > 0
+                        && noWrapMotions.contains(commandId)) {
+                    Position fixedPos = editorAdaptor.getCursorService().shiftPositionForViewOffset(
+                            currentPosition.getViewOffset(), -1, false);
+                    editorAdaptor.setPosition(fixedPos, StickyColumnPolicy.ON_CHANGE);
+
+                // Shift cursor to start of next line or simply back depending on direction
+                } else if (lineEnd == currentOffset && lineInfo.getLength() > 0) {
+                    int leftOrRightDelta = (lastPosition.getModelOffset() < currentOffset ? 1 : -1);
+                    Position fixedPos = editorAdaptor.getCursorService().shiftPositionForViewOffset(
+                            currentPosition.getViewOffset(), leftOrRightDelta, false);
+                    editorAdaptor.setPosition(fixedPos, StickyColumnPolicy.ON_CHANGE);
+                }
+            } else if (lastSelection != null) {
                 if (editorAdaptor.getCurrentMode() instanceof AbstractCommandLineMode) {
                     // Restore selection to former state - Home / End will clear or mutilate sel
-                    // [TODO] Check for inclusive / exclusive!
                     editorAdaptor.setSelection(lastSelection);
+                    // [TODO] Do something with Home and End keys
                 } else {
                     // Record action plug in current macro
-                    // [TODO] Don't do this when EclipseCommand is invoked from Vrapper
                     editorAdaptor.getMacroRecorder().handleKey(new PlugKeyStroke(EclipseMotionPlugState.MOTIONPREFIX + commandId + ')'));
                     // [TODO] Check for inclusive / exclusive!
                     lastSelection = lastSelection.reset(editorAdaptor, lastSelection.getFrom(), editorAdaptor.getPosition());
