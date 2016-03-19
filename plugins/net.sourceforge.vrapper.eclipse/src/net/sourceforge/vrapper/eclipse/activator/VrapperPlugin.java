@@ -41,6 +41,7 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.prefs.BackingStoreException;
 
+import net.sourceforge.vrapper.eclipse.interceptor.EclipseCommandRegistry;
 import net.sourceforge.vrapper.eclipse.interceptor.InputInterceptor;
 import net.sourceforge.vrapper.eclipse.interceptor.InputInterceptorManager;
 import net.sourceforge.vrapper.eclipse.interceptor.UnknownEditorException;
@@ -134,6 +135,10 @@ public class VrapperPlugin extends AbstractUIPlugin implements /*IStartup,*/ Log
 
     private void preShutdown() throws BackingStoreException {
     	storeVimEmulationOfActiveEditors();
+    }
+
+    void activateExtensions() {
+        EclipseCommandRegistry.INSTANCE.loadExtensionDeclarations();
     }
 
     void restoreVimEmulationInActiveEditors() {

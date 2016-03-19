@@ -6,6 +6,7 @@
    <extension-point id="net.sourceforge.vrapper.eclipse.psmp" name="Platform Specific Mode Provider" schema="schema/net.sourceforge.vrapper.eclipse.psmp.exsd"/>
    <extension-point id="net.sourceforge.vrapper.eclipse.pstop" name="Platform Specific TextObject provider" schema="schema/net.sourceforge.vrapper.eclipse.pstop.exsd"/>
    <extension-point id="net.sourceforge.vrapper.eclipse.lifecyclelistener" name="Vrapper Lifecycle Listener" schema="schema/net.sourceforge.vrapper.eclipse.lifecyclelistener.exsd"/>
+   <extension-point id="net.sourceforge.vrapper.eclipse.commandregistry" name="Eclipse Motions and TextObjects Command Registry" schema="schema/net.sourceforge.vrapper.eclipse.commandregistry.exsd"/>
 
    <extension point="org.eclipse.ui.commands">
     <category
@@ -469,7 +470,28 @@
       <key sequence="CTRL+0" commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut" contextId="net.sourceforge.vrapper.eclipse.active" schemeId="net.sourceforge.vrapper.keyscheme"/>
       <key sequence="CTRL+-" commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut" contextId="net.sourceforge.vrapper.eclipse.active" schemeId="net.sourceforge.vrapper.keyscheme"/>
       <key sequence="CTRL+=" commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut" contextId="net.sourceforge.vrapper.eclipse.active" schemeId="net.sourceforge.vrapper.keyscheme"/>
+   </extension>
 
-     </extension>
+   <extension point="net.sourceforge.vrapper.eclipse.commandregistry">
+      <textobject command-id="org.eclipse.jdt.ui.edit.text.java.select.enclosing" />
+      <textobject command-id="org.eclipse.jdt.ui.edit.text.java.select.last" />
+      <textobject command-id="org.eclipse.jdt.ui.edit.text.java.select.next" />
+      <textobject command-id="org.eclipse.jdt.ui.edit.text.java.select.previous" />
+      <textobject command-id="org.eclipse.ui.edit.selectAll" />
+      <textobject command-id="org.eclipse.ui.edit.text.moveLineUp" />
+      <textobject command-id="org.eclipse.ui.edit.text.moveLineDown" />
+      <textobject command-id="org.eclipse.ui.edit.text.select.wordPrevious" />
+      <textobject command-id="org.eclipse.ui.edit.text.select.wordNext" />
+      <textobject command-id="org.eclipse.ui.edit.text.select.lineStart" />
+      <textobject command-id="org.eclipse.ui.edit.text.select.lineEnd" />
+
+      <motion command-id="org.eclipse.ui.edit.text.goto.lineStart" restricted-to-line="true" />
+      <motion command-id="org.eclipse.ui.edit.text.goto.lineEnd" restricted-to-line="true" />
+      <motion command-id="org.eclipse.jdt.ui.edit.text.java.goto.matching.bracket" restricted-to-line="true" />
+      <motion command-id="org.eclipse.ui.edit.text.goto.wordPrevious" />
+      <motion command-id="org.eclipse.ui.edit.text.goto.wordNext" />
+      <motion command-id="org.eclipse.jdt.ui.edit.text.java.goto.next.member" />
+      <motion command-id="org.eclipse.jdt.ui.edit.text.java.goto.previous.member" />
+   </extension>
 </plugin>
 

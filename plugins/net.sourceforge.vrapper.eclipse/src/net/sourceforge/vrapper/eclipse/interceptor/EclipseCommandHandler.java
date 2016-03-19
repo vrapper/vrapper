@@ -1,10 +1,10 @@
 package net.sourceforge.vrapper.eclipse.interceptor;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import net.sourceforge.vrapper.eclipse.activator.VrapperPlugin;
 import net.sourceforge.vrapper.eclipse.commands.EclipseMotionPlugState;
+import net.sourceforge.vrapper.eclipse.commands.EclipsePlugState;
 import net.sourceforge.vrapper.eclipse.commands.EclipseTextObjectPlugState;
 import net.sourceforge.vrapper.keymap.vim.PlugKeyStroke;
 import net.sourceforge.vrapper.log.VrapperLog;
@@ -23,41 +23,30 @@ import net.sourceforge.vrapper.vim.modes.commandline.AbstractCommandLineMode;
 
 public class EclipseCommandHandler {
 
-    protected EditorAdaptor editorAdaptor;
-    protected Selection lastSelection;
-    protected Position lastPosition;
-    protected boolean vrapperCommandActive;
-    protected boolean recognizedCommandActive;
-    protected Set<String> motions = new HashSet<String>();
+    protected final EditorAdaptor editorAdaptor;
+    protected final Set<String> motions;
     /**
      * These motions should never leave the line.
      * Note that they should still be added to {@link #motions}.
      */
-    protected Set<String> noWrapMotions = new HashSet<String>();
-    protected Set<String> textObjects = new HashSet<String>();
+    protected final Set<String> noWrapMotions;
+    protected final Set<String> textObjects;
+    /**
+     * These are the commands which are not useful as textobject or motion but which we still want
+     * to see recorded in a macro.
+     */
+    protected final Set<String> commands;
+    protected Selection lastSelection;
+    protected Position lastPosition;
+    protected boolean vrapperCommandActive;
+    protected boolean recognizedCommandActive;
 
-    public EclipseCommandHandler(EditorAdaptor editorAdaptor) {
+    public EclipseCommandHandler(EditorAdaptor editorAdaptor, EclipseCommandRegistry registry) {
         this.editorAdaptor = editorAdaptor;
-
-        textObjects.add("org.eclipse.jdt.ui.edit.text.java.select.enclosing");
-        textObjects.add("org.eclipse.jdt.ui.edit.text.java.select.last");
-        textObjects.add("org.eclipse.jdt.ui.edit.text.java.select.next");
-        textObjects.add("org.eclipse.jdt.ui.edit.text.java.select.previous");
-        textObjects.add("org.eclipse.ui.edit.selectAll");
-        textObjects.add("org.eclipse.ui.edit.text.moveLineUp");
-        textObjects.add("org.eclipse.ui.edit.text.moveLineDown");
-        textObjects.add("org.eclipse.ui.edit.text.select.wordPrevious");
-        textObjects.add("org.eclipse.ui.edit.text.select.wordNext");
-
-        motions.add("org.eclipse.ui.edit.text.goto.lineStart");
-        motions.add("org.eclipse.ui.edit.text.goto.lineEnd");
-        motions.add("org.eclipse.ui.edit.text.goto.wordPrevious");
-        motions.add("org.eclipse.ui.edit.text.goto.wordNext");
-        motions.add("org.eclipse.jdt.ui.edit.text.java.goto.matching.bracket");
-
-        noWrapMotions.add("org.eclipse.ui.edit.text.goto.lineStart");
-        noWrapMotions.add("org.eclipse.ui.edit.text.goto.lineEnd");
-        noWrapMotions.add("org.eclipse.jdt.ui.edit.text.java.goto.matching.bracket");
+        this.motions = registry.motions;
+        this.noWrapMotions = registry.noWrapMotions;
+        this.textObjects = registry.textObjects;
+        this.commands = registry.commands;
     }
 
     public void beforeCommand(final String commandId) {
@@ -102,14 +91,15 @@ public class EclipseCommandHandler {
             return;
         }
         if (commandId != null && textObjects.contains(commandId)) {
+            // Record action plug in current macro
+            editorAdaptor.getMacroRecorder().handleKey(
+                    new PlugKeyStroke(EclipseTextObjectPlugState.TEXTOBJPREFIX + commandId + ')'));
             // Only works for Eclipse text objects, Eclipse motions need some different logic
             TextRange nativeSelection = editorAdaptor.getNativeSelection();
             // Vrapper selection might be still active if command did not modify selection state
             if (nativeSelection.getModelLength() > 0
                     && nativeSelection != SelectionService.VRAPPER_SELECTION_ACTIVE
                     && ! (editorAdaptor.getCurrentMode() instanceof AbstractCommandLineMode)) {
-                // Record action plug in current macro
-                editorAdaptor.getMacroRecorder().handleKey(new PlugKeyStroke(EclipseTextObjectPlugState.TEXTOBJPREFIX + commandId + ')'));
                 if (lastSelection == null) {
                     lastSelection = new SimpleSelection(nativeSelection);
                 }
@@ -119,6 +109,9 @@ public class EclipseCommandHandler {
                 editorAdaptor.changeModeSafely(lastSelection.getModeName(), AbstractVisualMode.KEEP_SELECTION_HINT);
             }
         } else if (commandId != null && motions.contains(commandId)) {
+            // Record action plug in current macro
+            editorAdaptor.getMacroRecorder().handleKey(
+                    new PlugKeyStroke(EclipseMotionPlugState.MOTIONPREFIX + commandId + ')'));
             if (lastSelection == null && editorAdaptor.getCurrentMode() instanceof NormalMode) {
                 TextContent modelContent = editorAdaptor.getModelContent();
                 Position currentPosition = editorAdaptor.getPosition();
@@ -148,8 +141,6 @@ public class EclipseCommandHandler {
                     editorAdaptor.setSelection(lastSelection);
                     // [TODO] Do something with Home and End keys
                 } else {
-                    // Record action plug in current macro
-                    editorAdaptor.getMacroRecorder().handleKey(new PlugKeyStroke(EclipseMotionPlugState.MOTIONPREFIX + commandId + ')'));
                     // [TODO] Check for inclusive / exclusive!
                     lastSelection = lastSelection.reset(editorAdaptor, lastSelection.getFrom(), editorAdaptor.getPosition());
                     editorAdaptor.setSelection(lastSelection);
@@ -157,6 +148,10 @@ public class EclipseCommandHandler {
                     editorAdaptor.changeModeSafely(lastSelection.getModeName(), AbstractVisualMode.KEEP_SELECTION_HINT);
                 }
             }
+        } else if (commandId != null && commands.contains(commandId)) {
+            // Record action plug in current macro
+            editorAdaptor.getMacroRecorder().handleKey(
+                    new PlugKeyStroke(EclipsePlugState.COMMANDPREFIX + commandId + ')'));
         }
         recognizedCommandActive = false;
     }
