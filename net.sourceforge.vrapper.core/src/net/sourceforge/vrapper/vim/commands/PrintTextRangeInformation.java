@@ -58,9 +58,13 @@ public class PrintTextRangeInformation implements Command {
         
         int selectedBytes = 0;
         int totalBytes = 0;
+        int selectedChars = 0;
+        int totalChars = 0;
         try {
             selectedBytes = rangeText.getBytes("UTF-8").length;
+            selectedChars = rangeText.toCharArray().length;
             totalBytes = contentText.getBytes("UTF-8").length;
+            totalChars = contentText.toCharArray().length;
         } catch (UnsupportedEncodingException e) {
             VrapperLog.info(e.getMessage());
         }
@@ -69,6 +73,7 @@ public class PrintTextRangeInformation implements Command {
         service.setLastCommandResultValue("Selected " 
                         + selectedLines + " of " + totalLines + " Lines; "
                         + selectedWords + " of " + totalWords + " Words; "
+                        + (totalChars != totalBytes ? (selectedChars + " of " + totalChars + " Chars; ") : "")
                         + selectedBytes + " of " + totalBytes + " Bytes");
     }
 

@@ -62,9 +62,13 @@ public class PrintOffsetInformation implements Command {
 
         int totalBytes = 0;
         int byteNumber = 0;
+        int totalChars = 0;
+        int charNumber = 0;
         try {
             totalBytes = modelText.getBytes("UTF-8").length;
+            totalChars = modelText.toCharArray().length;
             byteNumber = byteOffset.getBytes("UTF-8").length;
+            charNumber = byteOffset.toCharArray().length;
         } catch (UnsupportedEncodingException e) {
             VrapperLog.info(e.getMessage());
         }
@@ -77,6 +81,7 @@ public class PrintOffsetInformation implements Command {
                           "Col " + colNumber + " of " + lineLength + "; "
                         + "Line " + (modelLine.getNumber() + 1) + " of " + modelContent.getNumberOfLines() + "; "
                         + "Word " + wordNumber + " of " + totalWords + "; "
+                        + (totalChars != totalBytes ? ("Char " + charNumber + " of " + totalChars + "; ") : "")
                         + "Byte " + byteNumber + " of " + totalBytes + "; "
                         + "Position M " + modelOffset + " / " + position.getViewOffset() + " V; "
                         + "line " + modelLine.getNumber() + " / " + viewLine.getNumber() + " view line; "
