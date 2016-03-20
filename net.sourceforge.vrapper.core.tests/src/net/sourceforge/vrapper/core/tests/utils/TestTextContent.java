@@ -93,6 +93,12 @@ public class TestTextContent implements TextContent {
         return lines;
     }
 
+    @Override
+    public int getNumberOfLines(TextRange range) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("not yet implemented");
+    }
+
     public String getText(int index, int length) {
     	return buffer.substring(index, index + length);
     }
