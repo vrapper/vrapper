@@ -492,6 +492,10 @@
       <motion command-id="org.eclipse.ui.edit.text.goto.wordNext" />
       <motion command-id="org.eclipse.jdt.ui.edit.text.java.goto.next.member" />
       <motion command-id="org.eclipse.jdt.ui.edit.text.java.goto.previous.member" />
+
+      <command command-id="org.eclipse.ui.edit.copy" />
+      <command command-id="org.eclipse.ui.edit.cut" />
+      <command command-id="org.eclipse.ui.edit.paste" />
    </extension>
 </plugin>
 

@@ -14,6 +14,8 @@ import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
+import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
 import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
@@ -53,7 +55,7 @@ public class EclipseCommandHandler {
         // Always reset this
         lastSelection = null;
         recognizedCommandActive = false;
-        if ( ! VrapperPlugin.isVrapperEnabled() || vrapperCommandActive) {
+        if ( ! VrapperPlugin.isVrapperEnabled() || vrapperCommandActive || commandId == null) {
             return;
         }
         TextRange selRange = editorAdaptor.getNativeSelection();
@@ -69,7 +71,7 @@ public class EclipseCommandHandler {
         }
         lastPosition = editorAdaptor.getPosition();
         // Workaround for motions
-        if (commandId != null && motions.contains(commandId)) {
+        if (motions.contains(commandId)) {
             if (lastSelection == null && editorAdaptor.getCurrentMode() instanceof NormalMode) {
                 // Stops the SelectionHandler from running. This is a workaround for when
                 // Eclipse motions move the caret to the end of the line, we don't want Normal mode
@@ -83,14 +85,16 @@ public class EclipseCommandHandler {
                 editorAdaptor.setPosition(lastSelection.getTo(), StickyColumnPolicy.NEVER);
                 recognizedCommandActive = true;
             }
+        } else if (commands.contains(commandId)) {
+            recognizedCommandActive = true;
         }
     }
 
     public void afterCommand(String commandId) {
-        if ( ! VrapperPlugin.isVrapperEnabled() || vrapperCommandActive) {
+        if ( ! VrapperPlugin.isVrapperEnabled() || vrapperCommandActive || commandId == null) {
             return;
         }
-        if (commandId != null && textObjects.contains(commandId)) {
+        if (textObjects.contains(commandId)) {
             // Record action plug in current macro
             editorAdaptor.getMacroRecorder().handleKey(
                     new PlugKeyStroke(EclipseTextObjectPlugState.TEXTOBJPREFIX + commandId + ')'));
@@ -108,7 +112,7 @@ public class EclipseCommandHandler {
                 // Should not pose any problems if we are still in the same visual mode.
                 editorAdaptor.changeModeSafely(lastSelection.getModeName(), AbstractVisualMode.KEEP_SELECTION_HINT);
             }
-        } else if (commandId != null && motions.contains(commandId)) {
+        } else if (motions.contains(commandId)) {
             // Record action plug in current macro
             editorAdaptor.getMacroRecorder().handleKey(
                     new PlugKeyStroke(EclipseMotionPlugState.MOTIONPREFIX + commandId + ')'));
@@ -152,6 +156,14 @@ public class EclipseCommandHandler {
             // Record action plug in current macro
             editorAdaptor.getMacroRecorder().handleKey(
                     new PlugKeyStroke(EclipsePlugState.COMMANDPREFIX + commandId + ')'));
+            if (editorAdaptor.getCurrentMode() instanceof AbstractVisualMode) {
+                try {
+                    LeaveVisualModeCommand.doIt(editorAdaptor);
+                } catch (CommandExecutionException e) {
+                    VrapperLog.error("Failed to switch back to normal mode after command "
+                            + commandId + " executed.", e);
+                }
+            }
         }
         recognizedCommandActive = false;
     }
