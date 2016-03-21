@@ -16,6 +16,7 @@ import java.util.EnumSet;
 import net.sourceforge.vrapper.eclipse.commands.ChangeTabCommand;
 import net.sourceforge.vrapper.eclipse.commands.EclipseMotionPlugState;
 import net.sourceforge.vrapper.eclipse.commands.EclipsePlugState;
+import net.sourceforge.vrapper.eclipse.commands.EclipseTextObjectPlugState;
 import net.sourceforge.vrapper.eclipse.commands.GoToMarkCommand;
 import net.sourceforge.vrapper.eclipse.commands.ListTabsCommand;
 import net.sourceforge.vrapper.eclipse.commands.TabNewCommand;
@@ -30,6 +31,7 @@ import net.sourceforge.vrapper.keymap.StateUtils;
 import net.sourceforge.vrapper.keymap.vim.SimpleKeyStroke;
 import net.sourceforge.vrapper.keymap.vim.GoThereState;
 import net.sourceforge.vrapper.keymap.vim.VisualMotionState;
+import net.sourceforge.vrapper.keymap.vim.VisualTextObjectState;
 import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
@@ -103,6 +105,7 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
         State<Command> normalModeBindings = StateUtils.union(
             new GoThereState(EclipseMotionPlugState.INSTANCE),
             EclipsePlugState.INSTANCE,
+            new VisualTextObjectState(EclipseTextObjectPlugState.INSTANCE),
             state(
                 transitionBind('z',
                         leafBind('a', ToggleFoldingCommand.DEFAULTINSTANCE),
