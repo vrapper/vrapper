@@ -107,7 +107,7 @@ public class EclipseCommandHandler {
                 if (lastSelection == null) {
                     lastSelection = new SimpleSelection(nativeSelection);
                 }
-                lastSelection = lastSelection.wrap(editorAdaptor, nativeSelection);
+                lastSelection = lastSelection.syncToTextRange(editorAdaptor, nativeSelection);
                 editorAdaptor.setSelection(lastSelection);
                 // Should not pose any problems if we are still in the same visual mode.
                 editorAdaptor.changeModeSafely(lastSelection.getModeName(), AbstractVisualMode.KEEP_SELECTION_HINT);

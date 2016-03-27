@@ -163,11 +163,17 @@ public class SimpleSelection extends AbstractSelection {
     }
 
     @Override
-    public Selection wrap(EditorAdaptor adaptor, TextRange range) {
-        // [FIXME] This is incorrect for inc/exclusive mode.
-        CursorService cursorService = adaptor.getCursorService();
+    public Selection syncToTextRange(EditorAdaptor adaptor, TextRange range) {
         boolean isSelectionInclusive = Selection.INCLUSIVE.equals(
                 adaptor.getConfiguration().get(Options.SELECTION));
-        return new SimpleSelection(cursorService, isSelectionInclusive, range);
+        Position newTo = adaptor.getPosition();
+        // Selection might have shifted away from original 'from' position. Calculate new one.
+        Position newFrom = range.getStart();
+        // newTo is already adjusted for inclusive selection but 'from' might still need adjusting
+        if (isSelectionInclusive && range.isReversed()) {
+            CursorService cs = adaptor.getCursorService();
+            newFrom = cs.shiftPositionForViewOffset(range.getStart().getViewOffset(), -1, true);
+        }
+        return new SimpleSelection(newFrom, newTo, range);
     }
 }

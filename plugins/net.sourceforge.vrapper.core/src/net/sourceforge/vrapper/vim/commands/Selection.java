@@ -66,5 +66,5 @@ public interface Selection extends TextObject, TextRange {
      * Selection depends on the value of the <code>selection</code> setting.
      * <p> The caller is responsible for making the selection visible.
      */
-    public Selection wrap(EditorAdaptor adaptor, TextRange range);
+    public Selection syncToTextRange(EditorAdaptor adaptor, TextRange range);
 }

@@ -23,7 +23,14 @@ public class LineWiseSelection extends AbstractSelection {
         this.to = to;
         this.range = StartEndTextRange.lines(editor, from, to);
     }
-    
+
+    public LineWiseSelection(Position selectionStartCaretPos, Position selectionEndCaretPos,
+            TextRange range){
+        this.range = range;
+        this.from = selectionStartCaretPos;
+        this.to = selectionEndCaretPos;
+    }
+
     @Override
     public String getModeName() {
         return LinewiseVisualMode.NAME;
@@ -107,8 +114,30 @@ public class LineWiseSelection extends AbstractSelection {
     }
 
     @Override
-    public Selection wrap(EditorAdaptor adaptor, TextRange range) {
-        // [FIXME] This is incorrect for inc/exclusive mode.
-        return new LineWiseSelection(adaptor, range.getStart(), range.getEnd());
+    public Selection syncToTextRange(EditorAdaptor adaptor, TextRange range) {
+        CursorService cs = adaptor.getCursorService();
+        TextContent content = adaptor.getModelContent();
+        // [NOTE] There's no difference between exclusive or inclusive selecton in visual line mode
+        // Use range ends directly
+        Position newFrom = range.getStart();
+        Position newTo = range.getEnd();
+        LineInformation startLine = content.getLineInformationOfOffset(newFrom.getModelOffset());
+        LineInformation endLine = content.getLineInformationOfOffset(newTo.getModelOffset());
+
+        // Handle simple single-line case
+        if (startLine.getNumber() == endLine.getNumber()) {
+            Position temp = cs.newPositionForModelOffset(startLine.getBeginOffset());
+            Position offsetBehindEOL = cs.shiftPositionForModelOffset(startLine.getBeginOffset(),
+                    startLine.getLength() + 1, false);
+            return new LineWiseSelection(newFrom, newTo, new StartEndTextRange(temp, offsetBehindEOL));
+
+        } else if (range.isReversed() && startLine.getBeginOffset() == newFrom.getModelOffset()) {
+            // End-of-line included, the 'from' position is at the end of the previous line.
+            newFrom = cs.shiftPositionForViewOffset(newFrom.getViewOffset(), -1, true);
+        } else if (endLine.getBeginOffset() == newTo.getModelOffset()) {
+            // End-of-line included, the 'to' position is at the end of the previous line.
+            newTo = cs.shiftPositionForViewOffset(newTo.getViewOffset(), -1, true);
+        }
+        return new LineWiseSelection(adaptor, newFrom, newTo);
     }
 }

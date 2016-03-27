@@ -204,7 +204,7 @@ public class BlockWiseSelection extends AbstractSelection {
     }
 
     @Override
-    public Selection wrap(EditorAdaptor adaptor, TextRange range) {
+    public Selection syncToTextRange(EditorAdaptor adaptor, TextRange range) {
         // [FIXME] This is incorrect for inc/exclusive mode.
         return new BlockWiseSelection(adaptor, range.getStart(), range.getEnd());
     }
