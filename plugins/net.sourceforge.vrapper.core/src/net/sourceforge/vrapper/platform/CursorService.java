@@ -39,8 +39,8 @@ public interface CursorService {
     boolean shouldStickToEOL();
 
     /**
-     * @return the current position in the text, i.e. where the caret is
-     *         displayed.
+     * @return the current position in the text, i.e. where the caret is displayed. This position
+     * will be corrected for inclusive selection mode if a selection is present.
      */
     Position getPosition();
 
