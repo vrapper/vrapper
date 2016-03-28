@@ -43,7 +43,7 @@ public class SelectionVisualHandler implements ISelectionChangedListener {
 
     public void selectionChanged(SelectionChangedEvent event) {
         if (!VrapperPlugin.isVrapperEnabled() || !(event.getSelection() instanceof TextSelection)
-                || selectionService.isSelectionInProgress() || commandHandler.isVrapperCommandActive()) {
+                || selectionService.isSelectionInProgress() || commandHandler.isCommandActive()) {
             return;
         }
 

@@ -171,10 +171,23 @@ public class EclipseCommandHandler {
     public void cleanup() {
     }
 
-    public boolean isVrapperCommandActive() {
+    /**
+     * Returns whether the currently executing command is triggered through an Eclipse key or
+     * menu binding.
+     */
+    public boolean isEclipseTriggeredCommandActive() {
+        return recognizedCommandActive;
+    }
+
+    /**
+     * Returns whether Vrapper knows about a currently running Eclipse command. When true, the
+     * caller might want to skip certain cleanup steps lest it happen twice.
+     */
+    public boolean isCommandActive() {
         return vrapperCommandActive || recognizedCommandActive;
     }
 
+    /** Set whether a command is triggered by Vrapper through the ICommandService. */
     public void setVrapperCommandActive(boolean eclipseCommandActive) {
         this.vrapperCommandActive = eclipseCommandActive;
     }
