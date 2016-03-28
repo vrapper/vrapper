@@ -8,4 +8,9 @@ public abstract class AbstractTextObject implements TextObject {
     public int getCount() {
         return 1;
     }
+
+    @Override
+    public TextObject repetition() {
+        return this;
+    }
 }

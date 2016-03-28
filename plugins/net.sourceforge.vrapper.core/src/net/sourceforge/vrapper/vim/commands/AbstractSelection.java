@@ -9,6 +9,11 @@ import net.sourceforge.vrapper.vim.Options;
 public abstract class AbstractSelection implements Selection {
 
     @Override
+    public TextObject repetition() {
+        return this;
+    }
+
+    @Override
     public Selection reset(EditorAdaptor editorAdaptor, Position from, Position to) {
         boolean isSelectionInclusive = Selection.INCLUSIVE.equals(
                 editorAdaptor.getConfiguration().get(Options.SELECTION));

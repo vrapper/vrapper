@@ -38,6 +38,9 @@ public abstract class SelectionArea implements TextObject {
     public TextObject withCount(final int count) {
 		return this;
 	}
-    
 
+    @Override
+    public TextObject repetition() {
+        return this;
+    }
 }
