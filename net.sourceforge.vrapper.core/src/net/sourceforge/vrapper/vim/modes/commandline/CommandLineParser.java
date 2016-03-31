@@ -118,8 +118,8 @@ public class CommandLineParser extends AbstractCommandParser {
         Command ascii = AsciiCommand.INSTANCE;
         Command save = SaveCommand.INSTANCE;
         Command saveAll = SaveAllCommand.INSTANCE;
-        CloseCommand close = CloseCommand.CLOSE;
-        CloseCommand closeAll = CloseCommand.CLOSE_ALL;
+        Command close = CloseCommand.CLOSE;
+        Command closeAll = CloseCommand.CLOSE_ALL;
         Command saveAndClose = new VimCommandSequence(save, close);
         Command saveAndCloseAll = new VimCommandSequence(saveAll, closeAll);
         Evaluator quit = new EvaluatorWithExclaim(CloseCommand.CLOSE, CloseCommand.FORCED_CLOSE);

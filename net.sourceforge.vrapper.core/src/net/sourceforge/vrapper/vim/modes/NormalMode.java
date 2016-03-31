@@ -4,6 +4,7 @@ import static net.sourceforge.vrapper.keymap.StateUtils.union;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.changeCaret;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.convertKeyStroke;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.key;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.ctrlKey;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.shiftKey;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafCtrlBind;
@@ -251,6 +252,8 @@ public class NormalMode extends CommandBasedMode {
                                         VimConstants.PRINTABLE_KEYSTROKES)),
                         leafBind('u', undo),
                         leafCtrlBind('r', redo),
+                        transitionBind(ctrlKey('w'),
+                                leafBind('q', CloseCommand.CLOSE)),
                         leafCtrlBind('a', incrementNum),
                         leafCtrlBind('x', decrementNum),
                         transitionBind('Z',
