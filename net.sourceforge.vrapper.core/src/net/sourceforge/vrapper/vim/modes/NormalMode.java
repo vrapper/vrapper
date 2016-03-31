@@ -281,22 +281,25 @@ public class NormalMode extends CommandBasedMode {
      */
     @Override
     public void placeCursor(StickyColumnPolicy stickyColumnPolicy) {
-        final Position pos = editorAdaptor.getPosition();
-        final int offset = pos.getViewOffset();
-        final LineInformation line = editorAdaptor.getViewContent().getLineInformationOfOffset(offset);
-        if (isEnabled && line.getEndOffset() == offset && line.getLength() > 0) {
-            editorAdaptor.setPosition(pos.addViewOffset(-1), stickyColumnPolicy);
+        if (isEnabled) {
+            if (editorAdaptor.getNativeSelection().getModelLength() == 0) {
+                editorAdaptor.getCursorService().setCaret(CaretType.RECTANGULAR);
+            } else {
+                editorAdaptor.getCursorService().setCaret(CaretType.UNDERLINE);
+            }
+            final Position pos = editorAdaptor.getPosition();
+            final int offset = pos.getViewOffset();
+            final LineInformation line = editorAdaptor.getViewContent()
+                    .getLineInformationOfOffset(offset);
+            if (line.getEndOffset() == offset && line.getLength() > 0) {
+                editorAdaptor.setPosition(pos.addViewOffset(-1), stickyColumnPolicy);
+            } 
         }
     }
 
     @Override
     protected void commandDone() {
         super.commandDone();
-        if (editorAdaptor.getNativeSelection().getModelLength() == 0) {
-            editorAdaptor.getCursorService().setCaret(CaretType.RECTANGULAR);
-        } else {
-            editorAdaptor.getCursorService().setCaret(CaretType.UNDERLINE);
-        }
         editorAdaptor.getRegisterManager().activateDefaultRegister();
     }
 
@@ -304,7 +307,6 @@ public class NormalMode extends CommandBasedMode {
     public void enterMode(final ModeSwitchHint... args) throws CommandExecutionException {
         editorAdaptor.getCursorService().setCaret(CaretType.RECTANGULAR);
         super.enterMode(args);
-        placeCursor(StickyColumnPolicy.NEVER);
         if (args.length > 0) {
             if(args[0] instanceof ExecuteCommandHint) {
                 try {
@@ -315,6 +317,7 @@ public class NormalMode extends CommandBasedMode {
                 }
             }
         }
+        placeCursor(StickyColumnPolicy.NEVER);
         // Reset active register in case some operation was executed in a different mode
         editorAdaptor.getRegisterManager().activateDefaultRegister();
     }

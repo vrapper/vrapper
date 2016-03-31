@@ -11,17 +11,6 @@ import java.util.TreeMap;
 import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import net.sourceforge.vrapper.eclipse.activator.VrapperPlugin;
-import net.sourceforge.vrapper.eclipse.extractor.EditorExtractor;
-import net.sourceforge.vrapper.eclipse.platform.EclipseBufferAndTabService;
-import net.sourceforge.vrapper.eclipse.platform.EclipseCursorAndSelection;
-import net.sourceforge.vrapper.eclipse.utils.Utils;
-import net.sourceforge.vrapper.log.VrapperLog;
-import net.sourceforge.vrapper.platform.VrapperPlatformException;
-import net.sourceforge.vrapper.vim.EditorAdaptor;
-import net.sourceforge.vrapper.vim.Options;
-import net.sourceforge.vrapper.vim.modes.NormalMode;
-
 import org.eclipse.core.commands.operations.IOperationHistory;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
@@ -44,6 +33,18 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.MultiEditor;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
+
+import net.sourceforge.vrapper.eclipse.activator.VrapperPlugin;
+import net.sourceforge.vrapper.eclipse.extractor.EditorExtractor;
+import net.sourceforge.vrapper.eclipse.platform.EclipseBufferAndTabService;
+import net.sourceforge.vrapper.eclipse.platform.EclipseCursorAndSelection;
+import net.sourceforge.vrapper.eclipse.utils.Utils;
+import net.sourceforge.vrapper.log.VrapperLog;
+import net.sourceforge.vrapper.platform.VrapperPlatformException;
+import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.Options;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
+import net.sourceforge.vrapper.vim.modes.NormalMode;
 
 /**
  * Listener which adds an {@link InputInterceptor} from the underlying factory
@@ -334,6 +335,10 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
                     && vim.getConfiguration().get(Options.START_NORMAL_MODE)) {
                 vim.setSelection(null);
                 vim.changeModeSafely(NormalMode.NAME);
+                // Make sure caret is placed within line, reset caret shape for conflicted selection
+                if (vim.getCurrentMode() instanceof NormalMode) {
+                    ((NormalMode)vim.getCurrentMode()).placeCursor(StickyColumnPolicy.NEVER);
+                }
             }
             // Simple editors are marked as active here. Multi-page editors should set their
             // current editor once after calling recursively (see above).
