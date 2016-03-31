@@ -309,11 +309,14 @@ public class NormalMode extends CommandBasedMode {
             if(args[0] instanceof ExecuteCommandHint) {
                 try {
                     executeCommand(((ExecuteCommandHint.OnEnter) args[0]).getCommand());
+                    commandDone();
                 } catch (final CommandExecutionException e) {
                     editorAdaptor.getUserInterfaceService().setErrorMessage(e.getMessage());
                 }
             }
         }
+        // Reset active register in case some operation was executed in a different mode
+        editorAdaptor.getRegisterManager().activateDefaultRegister();
     }
 
     @Override
