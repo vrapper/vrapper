@@ -14,16 +14,19 @@ import net.sourceforge.vrapper.eclipse.commands.GoToMarkCommand;
 import net.sourceforge.vrapper.eclipse.commands.ListTabsCommand;
 import net.sourceforge.vrapper.eclipse.commands.TabNewCommand;
 import net.sourceforge.vrapper.eclipse.commands.ToggleFoldingCommand;
+import net.sourceforge.vrapper.eclipse.modes.InsertExpandMode;
 import net.sourceforge.vrapper.keymap.EmptyState;
 import net.sourceforge.vrapper.keymap.KeyMapInfo;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.StateUtils;
 import net.sourceforge.vrapper.vim.VimConstants;
+import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.DeselectAllCommand;
 import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
 import net.sourceforge.vrapper.vim.commands.TextObject;
+import net.sourceforge.vrapper.vim.modes.InsertMode;
 
 /**
  * Provides eclipse-specific bindings for command based modes.
@@ -121,6 +124,7 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
     @Override
     protected State<Command> insertModeBindings() {
     	return state(
+    		leafCtrlBind('x', dontRepeat(new ChangeModeCommand(InsertExpandMode.NAME, InsertMode.RESUME_ON_MODE_ENTER))),
     		leafCtrlBind('n', dontRepeat(editText("hippieCompletion"))),
     		leafCtrlBind('p', dontRepeat(editText("hippieCompletion")))
     	);
