@@ -4,6 +4,7 @@ import static net.sourceforge.vrapper.keymap.StateUtils.union;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.changeCaret;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.convertKeyStroke;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.key;
+import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.ctrlKey;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.shiftKey;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafCtrlBind;
@@ -251,6 +252,8 @@ public class NormalMode extends CommandBasedMode {
                                         VimConstants.PRINTABLE_KEYSTROKES)),
                         leafBind('u', undo),
                         leafCtrlBind('r', redo),
+                        transitionBind(ctrlKey('w'),
+                                leafBind('q', CloseCommand.CLOSE)),
                         leafCtrlBind('a', incrementNum),
                         leafCtrlBind('x', decrementNum),
                         transitionBind('Z',
@@ -281,22 +284,25 @@ public class NormalMode extends CommandBasedMode {
      */
     @Override
     public void placeCursor(StickyColumnPolicy stickyColumnPolicy) {
-        final Position pos = editorAdaptor.getPosition();
-        final int offset = pos.getViewOffset();
-        final LineInformation line = editorAdaptor.getViewContent().getLineInformationOfOffset(offset);
-        if (isEnabled && line.getEndOffset() == offset && line.getLength() > 0) {
-            editorAdaptor.setPosition(pos.addViewOffset(-1), stickyColumnPolicy);
+        if (isEnabled) {
+            if (editorAdaptor.getNativeSelection().getModelLength() == 0) {
+                editorAdaptor.getCursorService().setCaret(CaretType.RECTANGULAR);
+            } else {
+                editorAdaptor.getCursorService().setCaret(CaretType.UNDERLINE);
+            }
+            final Position pos = editorAdaptor.getPosition();
+            final int offset = pos.getViewOffset();
+            final LineInformation line = editorAdaptor.getViewContent()
+                    .getLineInformationOfOffset(offset);
+            if (line.getEndOffset() == offset && line.getLength() > 0) {
+                editorAdaptor.setPosition(pos.addViewOffset(-1), stickyColumnPolicy);
+            } 
         }
     }
 
     @Override
     protected void commandDone() {
         super.commandDone();
-        if (editorAdaptor.getNativeSelection().getModelLength() == 0) {
-            editorAdaptor.getCursorService().setCaret(CaretType.RECTANGULAR);
-        } else {
-            editorAdaptor.getCursorService().setCaret(CaretType.UNDERLINE);
-        }
         editorAdaptor.getRegisterManager().activateDefaultRegister();
     }
 
@@ -304,16 +310,19 @@ public class NormalMode extends CommandBasedMode {
     public void enterMode(final ModeSwitchHint... args) throws CommandExecutionException {
         editorAdaptor.getCursorService().setCaret(CaretType.RECTANGULAR);
         super.enterMode(args);
-        placeCursor(StickyColumnPolicy.NEVER);
         if (args.length > 0) {
             if(args[0] instanceof ExecuteCommandHint) {
                 try {
                     executeCommand(((ExecuteCommandHint.OnEnter) args[0]).getCommand());
+                    commandDone();
                 } catch (final CommandExecutionException e) {
                     editorAdaptor.getUserInterfaceService().setErrorMessage(e.getMessage());
                 }
             }
         }
+        placeCursor(StickyColumnPolicy.NEVER);
+        // Reset active register in case some operation was executed in a different mode
+        editorAdaptor.getRegisterManager().activateDefaultRegister();
     }
 
     @Override

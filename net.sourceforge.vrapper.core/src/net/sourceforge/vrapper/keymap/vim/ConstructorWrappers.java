@@ -313,6 +313,10 @@ public class ConstructorWrappers {
         return binding(k, transition(state(bindings)));
     }
 
+    public static<T> KeyBinding<T> transitionBind(KeyStroke k, KeyBinding<T>... bindings) {
+        return binding(k, transition(state(bindings)));
+    }
+
     @SuppressWarnings("unchecked")
     public static<T> State<T> leafState(char k, T value) {
         return state(leafBind(k, value));
