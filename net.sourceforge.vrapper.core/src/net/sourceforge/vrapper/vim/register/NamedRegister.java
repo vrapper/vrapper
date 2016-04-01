@@ -10,9 +10,11 @@ public class NamedRegister extends SimpleRegister {
     }
 
     @Override
-    public void setContent(RegisterContent content) {
-        super.setContent(content);
-        unnamed.setContent(content);
+    public void setContent(RegisterContent content, boolean copyToUnnamed) {
+        super.setContent(content, copyToUnnamed);
+        if (copyToUnnamed) {
+            unnamed.setContent(content);
+        }
     }
 
 }

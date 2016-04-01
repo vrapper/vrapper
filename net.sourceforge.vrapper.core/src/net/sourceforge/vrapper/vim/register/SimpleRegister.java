@@ -13,7 +13,13 @@ public class SimpleRegister implements Register {
         return content;
     }
 
-    public void setContent(RegisterContent content) {
+    
+    @Override
+    public void setContent(RegisterContent content, boolean copyToUnnamed) {
         this.content = content;
+    }
+
+    public void setContent(RegisterContent content) {
+        setContent(content, true);
     }
 }

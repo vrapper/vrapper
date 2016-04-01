@@ -133,7 +133,12 @@ public class SWTClipboardRegister implements Register {
         return new StringRegisterContent(ContentType.TEXT, s);
     }
 
+    @Override
     public void setContent(RegisterContent content) {
+        setContent(content, true);
+    }
+
+    public void setContent(RegisterContent content, boolean copyToUnnamed) {
         ContentType contentType = content.getPayloadType();
         if (contentType == ContentType.TEXT_RECTANGLE) {
             clipboard.setContents(new Object[] {content, content.getText()},

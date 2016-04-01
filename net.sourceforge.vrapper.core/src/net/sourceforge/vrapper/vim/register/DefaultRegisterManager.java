@@ -66,12 +66,14 @@ public class DefaultRegisterManager implements RegisterManager {
         
         // "_
         // (Unmodifiable register which will protect the default register from being updated)
-        Register blackholeRegister = new Register() {
+        Register blackholeRegister = new ReadOnlyRegister() {
+            @Override
             public RegisterContent getContent() {
                 return RegisterContent.DEFAULT_CONTENT;
             }
 
-            public void setContent(RegisterContent content) {
+            @Override
+            public void setContent(RegisterContent content, boolean copyToUnnamed) {
                 // This register shouldn't stay active, otherwise the first "default paste" returns
                 // nothing when it should simply return the content of the default register.
                 activateDefaultRegister();
