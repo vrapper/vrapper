@@ -137,7 +137,12 @@ public class EclipseTextContent {
         }
 
         public LineInformation getLineInformationOfOffset(int offset) {
-            int line = textViewer.getTextWidget().getLineAtOffset(offset);
+            int line;
+            try {
+                line = textViewer.getTextWidget().getLineAtOffset(offset);
+            } catch (IllegalArgumentException e) {
+                throw new VrapperPlatformException("Failed to get line info for V" + offset, e);
+            }
             return getLineInformation(line);
         }
 
