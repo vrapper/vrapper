@@ -285,10 +285,14 @@ public class NormalMode extends CommandBasedMode {
     @Override
     public void placeCursor(StickyColumnPolicy stickyColumnPolicy) {
         if (isEnabled) {
-            if (editorAdaptor.getNativeSelection().getModelLength() == 0) {
-                editorAdaptor.getCursorService().setCaret(CaretType.RECTANGULAR);
-            } else {
-                editorAdaptor.getCursorService().setCaret(CaretType.UNDERLINE);
+            // Don't fiddle with the caret type when we are in operator mode
+            if (currentState == initialState) {
+                if (editorAdaptor.getNativeSelection().getModelLength() == 0) {
+                    editorAdaptor.getCursorService().setCaret(CaretType.RECTANGULAR);
+                } else {
+                    // Don't fiddle with the caret type when we are in operator mode
+                    editorAdaptor.getCursorService().setCaret(CaretType.UNDERLINE);
+                }
             }
             final Position pos = editorAdaptor.getPosition();
             final int offset = pos.getViewOffset();
