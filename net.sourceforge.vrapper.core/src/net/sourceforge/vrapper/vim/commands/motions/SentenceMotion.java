@@ -202,10 +202,12 @@ public class SentenceMotion extends CountAwareMotion {
                 startPos = 0;
             }
 
-            int endPos = FORWARD.getSentenceBoundaryOffset(lineOrig, cursorIndex, modelContent, true);
+            int endPos = cursorIndex;
             line = lineOrig;
             //count only affects the endPos of a text object
             while (count > 0) {
+                endPos = FORWARD.getSentenceBoundaryOffset(line, endPos, modelContent, true);
+
                 while (endPos == -1 && line.getNumber() + 1 < modelContent.getNumberOfLines()) {
                     line = modelContent.getLineInformation(line.getNumber() + 1);
                     endPos = FORWARD.getSentenceBoundaryOffset(line, line.getBeginOffset(), modelContent, true);
@@ -219,10 +221,6 @@ public class SentenceMotion extends CountAwareMotion {
                 }
 
                 count--;
-                if(count > 0) {
-                    // prepare next iteration
-                    endPos = FORWARD.getSentenceBoundaryOffset(line, endPos, modelContent, true);
-                }
             }
 
             if (! outer) {
