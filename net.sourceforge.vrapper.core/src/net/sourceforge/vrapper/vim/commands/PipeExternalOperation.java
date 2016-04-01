@@ -59,6 +59,12 @@ public class PipeExternalOperation extends AbstractLinewiseOperation {
         if (externalCommand.isEmpty()) {
             editorAdaptor.getUserInterfaceService().setErrorMessage("syntax error for '!'");
         }
+
+        if(externalCommand.contains("%")) {
+            String currentfile = editorAdaptor.getFileService().getCurrentFileName();
+            externalCommand = externalCommand.replaceAll("%", currentfile);
+        }
+
         TextContent txt = editorAdaptor.getModelContent();
         int position = range.getLeftBound().getModelOffset();
         int length = range.getModelLength();
