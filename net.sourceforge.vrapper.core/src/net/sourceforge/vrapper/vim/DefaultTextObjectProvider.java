@@ -4,6 +4,7 @@ import static net.sourceforge.vrapper.keymap.StateUtils.union;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
+
 import net.sourceforge.vrapper.keymap.EmptyState;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.vim.CountingState;
@@ -27,6 +28,7 @@ import net.sourceforge.vrapper.vim.commands.motions.MoveWordRight;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordRightForUpdate;
 import net.sourceforge.vrapper.vim.commands.motions.ParagraphMotion.ParagraphTextObject;
 import net.sourceforge.vrapper.vim.commands.motions.SearchResultMotion;
+import net.sourceforge.vrapper.vim.commands.motions.SentenceMotion.SentenceTextObject;
 import net.sourceforge.vrapper.vim.modes.CommandBasedMode;
 
 public class DefaultTextObjectProvider implements TextObjectProvider {
@@ -81,6 +83,8 @@ public class DefaultTextObjectProvider implements TextObjectProvider {
         TextObject aWORD = new MotionPairTextObject(MoveBigWORDLeft.BAILS_OFF, MoveBigWORDRight.BAILS_OFF);
         TextObject innerParagraph = new ParagraphTextObject(false);
         TextObject aParagraph = new ParagraphTextObject(true);
+        TextObject innerSentence = new SentenceTextObject(false);
+        TextObject aSentence = new SentenceTextObject(true);
         @SuppressWarnings("unchecked")
         State<TextObject> textObjects = state(
                         transitionBind('g',
@@ -91,6 +95,7 @@ public class DefaultTextObjectProvider implements TextObjectProvider {
                             state(
                                 leafBind('w', innerWord),
                                 leafBind('W', innerWORD),
+                                leafBind('s', innerSentence),
                                 leafBind('p', innerParagraph),
                                 leafBind('`',  FindQuoteTextObject.inner('`')),
                                 leafBind('"',  FindQuoteTextObject.inner('"')),
@@ -100,6 +105,7 @@ public class DefaultTextObjectProvider implements TextObjectProvider {
                             state(
                                 leafBind('w', aWord),
                                 leafBind('W', aWORD),
+                                leafBind('s', aSentence),
                                 leafBind('p', aParagraph),
                                 leafBind('`',  FindQuoteTextObject.outer('`')),
                                 leafBind('"',  FindQuoteTextObject.outer('"')),

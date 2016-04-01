@@ -877,6 +877,48 @@ public class NormalModeTests extends CommandTestCase {
                 "1ac\n\n3ac\n",'4',"ac");
 	}
 	
+	@Test
+	public void test_das() {
+		checkCommand(forKeySeq("das"),
+				"this is a test.  this ",'i', "s a test? this is a test.",
+				"this is a test.  ",'t', "his is a test.");
+
+		checkCommand(forKeySeq("das"),
+				"this is a test.  ",'t',"his is a test? this is a test.",
+				"this is a test.  ",'t', "his is a test.");
+
+		checkCommand(forKeySeq("das"),
+				"this is a test.  this ",'i', "s a test?)])))  this is a test.",
+				"this is a test.  ",'t', "his is a test.");
+
+		checkCommand(forKeySeq("das"),
+				"this is a test.  this ",'i', "s a test?         this is a test.",
+				"this is a test.  ",'t', "his is a test.");
+
+		checkCommand(forKeySeq("das"),
+				"this is a test.  this ",'i', "s\n a\n test? this is a test.",
+				"this is a test.  ",'t', "his is a test.");
+
+		checkCommand(forKeySeq("dis"),
+				"this ",'i', "s a test",
+				"",EOF, "");
+	}
+	
+	@Test
+	public void test_d2as() {
+		checkCommand(forKeySeq("d2as"),
+				"this is a test.  this ",'i', "s a test? this is a test. and again.",
+				"this is a test.  ",'a', "nd again.");
+
+		checkCommand(forKeySeq("d2as"),
+				"this is a test.  this ",'i', "s a test? this\n is\n a test. and again.",
+				"this is a test.  ",'a', "nd again.");
+
+		checkCommand(forKeySeq("d9as"),
+				"this is a test.  this ",'i', "s a test? this is a test. and again.",
+				"this is a test. ",' ', "");
+	}
+	
 	@Test public void test_cit_inTag() {
 	    checkCommand(forKeySeq("cit"),
 	            "<tag>with",' ',"text in it</tag>",
@@ -1346,6 +1388,48 @@ public class NormalModeTests extends CommandTestCase {
         checkCommand(forKeySeq("2dip"),
                 "1ac\n\n3ac\n4ac\n\n  \n7ac\n",'\n',"  \n\n11ac\n12ac\n",
                 "1ac\n\n3ac\n4ac\n\n  \n7ac\n",EOF,"");
+	}
+	
+	@Test
+	public void test_dis() {
+		checkCommand(forKeySeq("dis"),
+				"this is a test.  this ",'i', "s a test? this is a test.",
+				"this is a test.  ",' ', "this is a test.");
+
+		checkCommand(forKeySeq("dis"),
+				"this is a test.  ",'t', "his is a test? this is a test.",
+				"this is a test.  ",' ', "this is a test.");
+
+		checkCommand(forKeySeq("dis"),
+				"this is a test.  this ",'i', "s a test?)]))) this is a test.",
+				"this is a test.  ",' ', "this is a test.");
+
+		checkCommand(forKeySeq("dis"),
+				"this is a test.  this ",'i', "s\n a\n test? this is a test.",
+				"this is a test.  ",' ', "this is a test.");
+
+		checkCommand(forKeySeq("dis"),
+				"this ",'i', "s a test",
+				"",EOF, "");
+	}
+	
+	@Test
+	public void test_2dis() {
+	    //This isn't actually Vim-compliant but I think it makes more sense.
+	    //In Vim, every other count matches the sentence delimiter itself and is a no-op.
+	    //So dis == d2is, d3is == d4is, and that's just stupid.
+	    //Our implementation counts sentences then i/a determines if the trailing spaces stay.
+		checkCommand(forKeySeq("d2is"),
+				"this is a test.  this ",'i', "s a test? this is a test. and again.",
+				"this is a test.  ",' ', "and again.");
+
+		checkCommand(forKeySeq("d2is"),
+				"this is a test.  this ",'i', "s a test? this\n is\n a test. and again.",
+				"this is a test.  ",' ', "and again.");
+
+		checkCommand(forKeySeq("d3is"),
+				"this is a test.  this ",'i', "s a test? this is a test. and again.",
+				"this is a test. ",' ', "");
 	}
 
 	@Test

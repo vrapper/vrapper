@@ -5,10 +5,15 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.sourceforge.vrapper.platform.Configuration;
 import net.sourceforge.vrapper.platform.TextContent;
+import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
+import net.sourceforge.vrapper.utils.StartEndTextRange;
+import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.AbstractTextObject;
 import net.sourceforge.vrapper.vim.commands.BorderPolicy;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 
@@ -29,9 +34,9 @@ public class SentenceMotion extends CountAwareMotion {
     public static final SentenceMotion BACKWARD = new SentenceMotion(false);
 
     //. ? or ! followed by an optional ) ] " or '
-    //followed by a number of spaces, followed by any non-whitespace char
+    //followed by a number of spaces, followed by any non-whitespace char (or end of string)
     //(grouping is on that non-whitespace char so we can get its index)
-    private static final Pattern pattern = Pattern.compile(".+?[.?!][)\\]\"']*\\s+(\\S).+?");
+    private static final Pattern pattern = Pattern.compile("(?<=[.?!])[)\\]\"']*\\s+(\\S|$)");
     
     private boolean forward;
     
@@ -86,8 +91,7 @@ public class SentenceMotion extends CountAwareMotion {
         			line = modelContent.getLineInformation(line.getNumber() - 1);
         			position = line.getEndOffset();
         			//empty lines are sentence boundaries too
-        			if(line.getLength() == 0 && lineTmp.getLength() != 0 ||
-        				line.getLength() != 0 && lineTmp.getLength() == 0) {
+        			if(line.getLength() == 0 && lineTmp.getLength() != 0) {
         				//if posTmp was already at the beginning of this line, go to previous line
         				//otherwise, go to beginning of this line
         				return posTmp == lineTmp.getBeginOffset() ? line.getBeginOffset() : lineTmp.getBeginOffset();
@@ -105,14 +109,18 @@ public class SentenceMotion extends CountAwareMotion {
         
         return offset;
 	}
-	
+
+    //convenience method since we only want to include the end of the string for text objects
 	private int getSentenceBoundaryOffset(LineInformation line, int position, TextContent modelContent) {
+	    return getSentenceBoundaryOffset(line, position, modelContent, false);
+	}
+	
+	private int getSentenceBoundaryOffset(LineInformation line, int position, TextContent modelContent, boolean includeEnd) {
         int begin = line.getBeginOffset();
         String text;
         if(forward) {
-        	int length = line.getLength() - (position - begin);
         	//start at cursor, get text to end of line
-        	text = modelContent.getText(position, length);
+        	text = modelContent.getText(position, line.getEndOffset() - position);
         }
         else {
         	//start at beginning of line, get text to cursor
@@ -122,7 +130,17 @@ public class SentenceMotion extends CountAwareMotion {
         //collect start index of each match
         List<Integer> matches = new ArrayList<Integer>();
         Matcher match = pattern.matcher(text);
-        while(match.find()) { matches.add(match.start(1)); }
+        while(match.find()) {
+            //when moving backwards, if the cursor is on the beginning of a sentence
+            //'(' should jump to the previous sentence, but 'is' should select this sentence.
+            
+            //if the match is not the end of the string, add it
+            //if the match *is* the end of the string *and* we want to include it, add it
+            //(includeEnd is only checked if first condition is false, meaning the match *is* the end)
+            if(match.start(1) != text.length() || includeEnd) {
+                matches.add(match.start(1));
+            }
+        }
         
         if(matches.size() > 0) {
         	//first match if forward, last match if backwards
@@ -146,4 +164,79 @@ public class SentenceMotion extends CountAwareMotion {
 	public boolean isJump() {
 	    return true;
 	}
+
+    public static class SentenceTextObject extends AbstractTextObject {
+
+        private final boolean outer;
+        
+        public SentenceTextObject(final boolean outer) {
+            super();
+            this.outer = outer;
+        }
+
+        @Override
+        public TextRange getRegion(final EditorAdaptor editorAdaptor, int count)
+                throws CommandExecutionException {
+            if (count == NO_COUNT_GIVEN) {
+                count = 1;
+            }
+
+            final TextContent modelContent = editorAdaptor.getModelContent();
+            final Position cursor = editorAdaptor.getPosition();
+            final int cursorIndex = cursor.getModelOffset();
+            final LineInformation lineOrig = modelContent.getLineInformationOfOffset(cursorIndex);
+
+            //try to find a sentence boundary on the current line.
+            //if no boundary is found, loop through adjacent lines.
+            //if still no boundary is found, we hit the end/beginning of the file
+            
+            //using cursorIndex+1 so we include the character under the cursor
+            int startPos = BACKWARD.getSentenceBoundaryOffset(lineOrig, cursorIndex+1, modelContent, true);
+            LineInformation line = lineOrig;
+            while(startPos == -1 && line.getNumber() > 0) {
+                line = modelContent.getLineInformation(line.getNumber() - 1);
+                startPos = BACKWARD.getSentenceBoundaryOffset(line, line.getEndOffset()+1, modelContent, true);
+            }
+            if(startPos == -1){
+                //we hit the beginning of the file
+                startPos = 0;
+            }
+
+            int endPos = FORWARD.getSentenceBoundaryOffset(lineOrig, cursorIndex, modelContent, true);
+            line = lineOrig;
+            //count only affects the endPos of a text object
+            while (count > 0) {
+                while (endPos == -1 && line.getNumber() + 1 < modelContent.getNumberOfLines()) {
+                    line = modelContent.getLineInformation(line.getNumber() + 1);
+                    endPos = FORWARD.getSentenceBoundaryOffset(line, line.getBeginOffset(), modelContent, true);
+                }
+
+                if (endPos == -1) {
+                    endPos = line.getEndOffset();
+                    //we hit the end of the file
+                    //any remaining counts are irrelevant
+                    break;
+                }
+
+                count--;
+                if(count > 0) {
+                    // prepare next iteration
+                    endPos = FORWARD.getSentenceBoundaryOffset(line, endPos, modelContent, true);
+                }
+            }
+
+            if (! outer) {
+                //strip trailing spaces that exist between sentences
+                String text = modelContent.getText(cursorIndex, endPos - cursorIndex);
+                endPos = cursorIndex + text.replaceFirst("\\s+$", "").length();
+            }
+            
+            return new StartEndTextRange(cursor.setModelOffset(startPos), cursor.setModelOffset(endPos));
+        }
+
+        @Override
+        public ContentType getContentType(final Configuration configuration) {
+            return ContentType.TEXT;
+        }
+    }
 }

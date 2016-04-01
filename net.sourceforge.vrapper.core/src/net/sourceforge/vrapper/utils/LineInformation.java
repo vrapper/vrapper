@@ -10,12 +10,14 @@ public class LineInformation {
 
     private final int number;
     private final int beginOffset;
+    private final int endOffset;
     private final int length;
 
     public LineInformation(int number, int beginOffset, int length) {
         super();
         this.number = number;
         this.beginOffset = beginOffset;
+        this.endOffset = beginOffset + length;
         this.length = length;
     }
 
@@ -42,7 +44,7 @@ public class LineInformation {
 
     /** Offset of the newline delimiter or possibly the last position in the editor. **/
     public int getEndOffset() {
-        return beginOffset+length;
+        return endOffset;
     }
 
     public String toString() {
