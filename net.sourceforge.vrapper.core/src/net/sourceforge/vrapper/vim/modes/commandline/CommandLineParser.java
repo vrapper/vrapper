@@ -343,7 +343,7 @@ public class CommandLineParser extends AbstractCommandParser {
                         HighlightSearch.HIGHLIGHT.evaluate(vim, new LinkedList<String>());
                     }
                 } else {
-                    registerManager.getRegister(registerName).setContent(content);
+                    registerManager.getRegister(registerName).setContent(content, false);
                 }
                 return null;
             }
