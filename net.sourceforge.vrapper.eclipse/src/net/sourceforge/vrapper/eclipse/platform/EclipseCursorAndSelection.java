@@ -134,7 +134,14 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
             textViewer.getTextWidget().removeCaretListener(caretListener);
             textViewer.getTextWidget().removePaintListener(visualCaretPainter);
             textViewer.getSelectionProvider().removeSelectionChangedListener(selectionChangeListener);
-            textViewer.getDocument().removePositionCategory(POSITION_CATEGORY_NAME);
+
+            // This extra check is necessary because the document we're operating on might be a
+            // different one from the one the textViewer contained during installHooks() invocation.
+            // This document swapping happens if the editor input changed, and we're only triggered
+            // *after* the textViewer changed its document instance.
+            if (textViewer.getDocument().containsPositionCategory(POSITION_CATEGORY_NAME)) {
+                textViewer.getDocument().removePositionCategory(POSITION_CATEGORY_NAME);
+            }
         } catch (RuntimeException e) {
             throw new VrapperPlatformException("Failed to unhook selection listeners", e);
         } catch (BadPositionCategoryException e) {
