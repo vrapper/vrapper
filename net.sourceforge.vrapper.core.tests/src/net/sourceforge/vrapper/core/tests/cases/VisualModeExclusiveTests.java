@@ -62,8 +62,14 @@ public class VisualModeExclusiveTests extends VisualTestCase {
         checkCommand(forKeySeq("llll"),
                 false, " k","t","ototaki ",
                 false, " k","totot","aki ");
+        checkCommand(forKeySeq("gE"),
+                true, "Alama kot", "a", " i psa",
+                true, "Alam", "a kota", " i psa");
+        checkCommand(forKeySeq("gE"),
+                false, "Alama kot", "a ", "i psa",
+                false,  "Alama kot", "", "a i psa");
     }
-    
+
     @Test
     public void testMotionWordForwardBackward() {
         checkCommand(forKeySeq("w"),
