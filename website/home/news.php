@@ -1,4 +1,33 @@
 <div class="newsbox">
+    <div class="date">2016-04-03</div>
+    <h4>0.66.0 Released</h4>
+    
+    <p>This new release of Vrapper is pretty sizable.  We received some
+    great help in the form of Pull Requests.  Thank you to all
+    our users and contributors keeping this project going!</p>
+    
+    <ul>
+		<li>Added support for Doxygen (//!) and C# (///) comments in `gq` command</li>
+		<li>Added support for 'is'/'as' sentence text object</li>
+		<li>Added support for &lt;C-n&gt; and &lt;C-p&gt; in Line Completion mode</li>
+		<li>Added '%' expansion to filename when using ':!' shell command</li>
+		<li>Add mapping for &lt;C-w&gt;_q to close current tab</li>
+		<li>Fixed g_&lt;C-g&gt; to match Vim output (rather than Vrapper debug info)</li>
+		<li>Fixed intermittent issue causing NullPointerExceptions when switching tabs</li>
+		<li>Fixed issue where a macro didn't have a single atomic undo</li>
+		<li>Fixed issue where :normal command didn't have a single atomic undo</li>
+		<li>Changed behavior to prevent recursive macros from executing</li>
+		<li>Fixed issue where deleting after yanking text to a register would clobber the register</li>
+		<li>Fixed issue with Position Categories which could render editor unusable</li>
+		<li>Fixed issue where setting 'let @x=""' in .vrapperrc would clobber that register every time a new file was opened</li>
+		<li>Fixed inconsistencies in Line Completion mode (&lt;C-x&gt;&lt;C-l&gt;)</li>
+		<li>Fixed issue using a visual selection with the Surround plugin</li>
+		<li>Fixed issue with Vrapper interacting with JasperSoft Studio</li>
+		<li>Shift-Arrow keys now enter Visual mode</li>
+		<li>Disable Eclipse's Overwrite mode if the user hits the 'Insert' key</li>
+    </ul>
+</div>
+<div class="newsbox">
     <div class="date">2016-02-01</div>
     <h4>0.64.0 Released</h4>
     
