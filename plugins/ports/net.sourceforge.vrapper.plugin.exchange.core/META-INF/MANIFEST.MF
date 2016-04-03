@@ -2,9 +2,9 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Vrapper exchange.vim Plug-in Core
 Bundle-SymbolicName: net.sourceforge.vrapper.plugin.exchange.core;singleton:=true
-Bundle-Version: 0.65.20160229
+Bundle-Version: 0.66.0
 Export-Package: net.sourceforge.vrapper.plugin.exchange.commands
-Require-Bundle: net.sourceforge.vrapper.core;bundle-version="0.65.20160229";visibility:=reexport,
+Require-Bundle: net.sourceforge.vrapper.core;bundle-version="0.66.0";visibility:=reexport,
  org.eclipse.text
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Eclipse-BuddyPolicy: dependent
