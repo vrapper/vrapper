@@ -51,6 +51,12 @@ public class ReadExternalOperation extends AbstractLinewiseOperation {
         if (externalCommand.isEmpty()) {
             editorAdaptor.getUserInterfaceService().setErrorMessage("syntax error for 'r!'");
         }
+
+        if(externalCommand.contains("%")) {
+            String currentfile = editorAdaptor.getFileService().getCurrentFileName();
+            externalCommand = externalCommand.replaceAll("%", currentfile);
+        }
+
         try {
             Process p = ProcessHelper.start(ProcessHelper.splitArgs(externalCommand));
             BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
