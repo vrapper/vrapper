@@ -64,7 +64,7 @@ public class MacroRecorder {
         strokes.remove(strokes.size()-1);
         String seq = ConstructorWrappers.keyStrokesToString(strokes);
         RegisterContent content = new StringRegisterContent(ContentType.KEY_SEQUENCE, seq);
-        registerManager.getRegister(macroName).setContent(content);
+        registerManager.getRegister(macroName).setContent(content, false);
         strokes = null;
         macroName = null;
         uiService.setRecording(false, macroName);
