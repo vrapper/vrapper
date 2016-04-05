@@ -3,12 +3,14 @@ package net.sourceforge.vrapper.utils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
 import net.sourceforge.vrapper.keymap.KeyStroke;
+import net.sourceforge.vrapper.keymap.KeyStroke.Modifier;
 import net.sourceforge.vrapper.keymap.vim.SimpleKeyStroke;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.SearchAndReplaceService;
@@ -405,11 +407,15 @@ public class VimUtils {
             return null;
         }
 
+        EnumSet<Modifier> modifiers = EnumSet.copyOf(key.getModifiers());
+        modifiers.remove(Modifier.ALT);
+        modifiers.remove(Modifier.CONTROL);
+
         // Turn off control and alt key bits.
         if (key.getSpecialKey() == null) {
-            return new SimpleKeyStroke(key.getCharacter(), key.withShiftKey(), false, false);
+            return new SimpleKeyStroke(key.getCharacter(), modifiers);
         } else {
-            return new SimpleKeyStroke(key.getSpecialKey(), key.withShiftKey(), false, false);
+            return new SimpleKeyStroke(key.getSpecialKey(), modifiers);
         }
     }
     

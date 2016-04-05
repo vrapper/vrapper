@@ -10,8 +10,11 @@ import static net.sourceforge.vrapper.vim.commands.CommandWrappers.dontRepeat;
 import static net.sourceforge.vrapper.vim.commands.CommandWrappers.repeat;
 import static net.sourceforge.vrapper.vim.commands.CommandWrappers.seq;
 
+import java.util.EnumSet;
+
 import net.sourceforge.vrapper.keymap.EmptyState;
 import net.sourceforge.vrapper.keymap.KeyStroke;
+import net.sourceforge.vrapper.keymap.KeyStroke.Modifier;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.Transition;
@@ -571,7 +574,7 @@ public class InsertMode extends AbstractMode {
             platformSpecificState,
             state(
                     // Alt+O - temporary go into command mode
-                    leafBind(new SimpleKeyStroke('o', false, true, false),
+                    leafBind(new SimpleKeyStroke('o', EnumSet.of(Modifier.ALT)),
                             (Command)new ChangeModeCommand(CommandLineMode.NAME, RESUME_ON_MODE_ENTER)),
             		leafCtrlBind('a', (Command)PasteRegisterCommand.PASTE_LAST_INSERT),
             		leafCtrlBind('e', (Command)InsertAdjacentCharacter.LINE_BELOW),

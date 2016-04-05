@@ -6,6 +6,7 @@ import static net.sourceforge.vrapper.vim.commands.BorderPolicy.LINE_WISE;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,7 @@ import net.sourceforge.vrapper.keymap.HashMapState;
 import net.sourceforge.vrapper.keymap.KeyBinding;
 import net.sourceforge.vrapper.keymap.KeyMapInfo;
 import net.sourceforge.vrapper.keymap.KeyStroke;
+import net.sourceforge.vrapper.keymap.KeyStroke.Modifier;
 import net.sourceforge.vrapper.keymap.SimpleKeyBinding;
 import net.sourceforge.vrapper.keymap.SimpleTransition;
 import net.sourceforge.vrapper.keymap.SpecialKey;
@@ -148,42 +150,47 @@ public class ConstructorWrappers {
      * @return KeyStroke representing key's Key
      */
     private static KeyStroke parseSpecialKey(String key) {
-    	KeyStroke stroke = null;
-    	//Sanity check for recursion.
-    	if (key.length() > 20 || key.length() == 0) {
-    		return null;
-    	}
-    	if(key.startsWith("S-")) { //Shift
-    		KeyStroke k = parseSpecialKey( key.substring(2) );
-    		if(k != null) {
-    			if (k.getSpecialKey() == null && ! k.withCtrlKey() && k.getCharacter() > ' ') {
-    				//for combinations like A-S-x. Never convert S-C-x to uppercase!
-    				stroke = new SimpleKeyStroke(Character.toUpperCase(k.getCharacter()),
-    						true, k.withAltKey(), k.withCtrlKey());
-    			} else {
-    				stroke = new SimpleKeyStroke(k, true, k.withAltKey(), k.withCtrlKey());
-    			}
-    		}
-    	} else if(key.startsWith("A-") || key.startsWith("M-")) { //Alt (Meta)
-    		KeyStroke k = parseSpecialKey(key.substring(2));
-    		if(k != null) {
-    			stroke = new SimpleKeyStroke(k, k.withShiftKey(), true, k.withCtrlKey());
-    		}
-    	} else if (key.startsWith("C-")) { //Control
-    		KeyStroke k = parseSpecialKey(key.substring(2));
-    		if (k != null) {
-    			stroke = new SimpleKeyStroke(k, k.withShiftKey(), k.withAltKey(), true);
-    		}
-    	} else if (keyNames.containsKey(key)) {
-    		stroke = keyNames.get(key);
+        KeyStroke stroke = null;
+        //Sanity check for recursion.
+        if (key.length() > 20 || key.length() == 0) {
+            return null;
+        }
+        if(key.startsWith("S-")) { //Shift
+            KeyStroke k = parseSpecialKey( key.substring(2) );
+            if(k != null) {
+                EnumSet<Modifier> modifiers = EnumSet.copyOf(k.getModifiers());
+                modifiers.add(Modifier.SHIFT);
+                if (k.getSpecialKey() == null && ! k.withCtrlKey() && k.getCharacter() > ' ') {
+                    //for combinations like A-S-x. Never convert S-C-x to uppercase!
+                    stroke = new SimpleKeyStroke(Character.toUpperCase(k.getCharacter()), modifiers);
+                } else {
+                    stroke = new SimpleKeyStroke(k, modifiers);
+                }
+            }
+        } else if(key.startsWith("A-") || key.startsWith("M-")) { //Alt (Meta)
+            KeyStroke k = parseSpecialKey(key.substring(2));
+            if(k != null) {
+                EnumSet<Modifier> modifiers = EnumSet.copyOf(k.getModifiers());
+                modifiers.add(Modifier.ALT);
+                stroke = new SimpleKeyStroke(k, modifiers);
+            }
+        } else if (key.startsWith("C-")) { //Control
+            KeyStroke k = parseSpecialKey(key.substring(2));
+            if (k != null) {
+                EnumSet<Modifier> modifiers = EnumSet.copyOf(k.getModifiers());
+                modifiers.add(Modifier.CONTROL);
+                stroke = new SimpleKeyStroke(k, modifiers);
+            }
+        } else if (keyNames.containsKey(key)) {
+            stroke = keyNames.get(key);
 
-    	} else if (key.length() == 1 && key.charAt(0) >= ' ') {
-    		//normal character, not special key (e.g., <A-x>)
-    		//force lower-case, let the shift modifier convert it back to uppercase if needed.
-    		stroke = new SimpleKeyStroke(key.toLowerCase().charAt(0));
-    	}
-    	// else we return null, maybe some unknown special key?
-    	return stroke;
+        } else if (key.length() == 1 && key.charAt(0) >= ' ') {
+            //normal character, not special key (e.g., <A-x>)
+            //force lower-case, let the shift modifier convert it back to uppercase if needed.
+            stroke = new SimpleKeyStroke(key.toLowerCase().charAt(0));
+        }
+        // else we return null, maybe some unknown special key?
+        return stroke;
     }
 
     public static <T extends KeyStroke> String keyStrokesToString(Iterable<T> strokes) {
@@ -223,12 +230,10 @@ public class ConstructorWrappers {
             keyName.insert(0, "S-");
             suppressAngleBrackets = false;
         }
-        if (stroke.withAltKey()) {
-            keyName.insert(0, "A-");
-            suppressAngleBrackets = false;
-        }
-        if (stroke.withCtrlKey()) {
-            keyName.insert(0, "C-");
+        EnumSet<Modifier> modifiers = EnumSet.copyOf(stroke.getModifiers());
+        modifiers.remove(Modifier.SHIFT);
+        for (Modifier modifier : modifiers) {
+            keyName.insert(0, modifier.getShortId());
             suppressAngleBrackets = false;
         }
         if ( ! suppressAngleBrackets) {
@@ -242,7 +247,7 @@ public class ConstructorWrappers {
     }
 
     public static KeyStroke ctrlKey(char key) {
-        return new SimpleKeyStroke(Character.toLowerCase(key), false, false, true);
+        return new SimpleKeyStroke(Character.toLowerCase(key), EnumSet.of(Modifier.CONTROL));
     }
 
     public static KeyStroke key(SpecialKey key) {
@@ -250,7 +255,7 @@ public class ConstructorWrappers {
     }
 
     public static KeyStroke shiftKey(SpecialKey key) {
-        return new SimpleKeyStroke(key, true, false, false);
+        return new SimpleKeyStroke(key, EnumSet.of(Modifier.SHIFT));
     }
 
     public static<T> KeyBinding<T> binding(char k, Transition<T> transition) {
@@ -492,40 +497,41 @@ public class ConstructorWrappers {
         map.put("LT",      key('<'));
         map.put("BAR",     key('|'));
         
+        Set<Modifier> modifiers = Collections.unmodifiableSet(EnumSet.of(Modifier.CONTROL));
         // add these ctrl keys to keep parseSpecialKey working
-        map.put("C-@", new SimpleKeyStroke('@', false, false, true));
-        map.put("C-A", new SimpleKeyStroke('a', false, false, true));
-        map.put("C-B", new SimpleKeyStroke('b', false, false, true));
-        map.put("C-C", new SimpleKeyStroke('c', false, false, true));
-        map.put("C-D", new SimpleKeyStroke('d', false, false, true));
-        map.put("C-E", new SimpleKeyStroke('e', false, false, true));
-        map.put("C-F", new SimpleKeyStroke('f', false, false, true));
-        map.put("C-G", new SimpleKeyStroke('g', false, false, true));
-        map.put("C-H", new SimpleKeyStroke('h', false, false, true));
-        map.put("C-I", new SimpleKeyStroke('i', false, false, true));
-        map.put("C-J", new SimpleKeyStroke('j', false, false, true));
-        map.put("C-K", new SimpleKeyStroke('k', false, false, true));
-        map.put("C-L", new SimpleKeyStroke('l', false, false, true));
-        map.put("C-M", new SimpleKeyStroke('m', false, false, true));
-        map.put("C-N", new SimpleKeyStroke('n', false, false, true));
-        map.put("C-O", new SimpleKeyStroke('o', false, false, true));
-        map.put("C-P", new SimpleKeyStroke('p', false, false, true));
-        map.put("C-Q", new SimpleKeyStroke('q', false, false, true));
-        map.put("C-R", new SimpleKeyStroke('r', false, false, true));
-        map.put("C-S", new SimpleKeyStroke('s', false, false, true));
-        map.put("C-T", new SimpleKeyStroke('t', false, false, true));
-        map.put("C-U", new SimpleKeyStroke('u', false, false, true));
-        map.put("C-V", new SimpleKeyStroke('v', false, false, true));
-        map.put("C-W", new SimpleKeyStroke('w', false, false, true));
-        map.put("C-X", new SimpleKeyStroke('x', false, false, true));
-        map.put("C-Y", new SimpleKeyStroke('y', false, false, true));
-        map.put("C-Z", new SimpleKeyStroke('z', false, false, true));
-        map.put("C-[", new SimpleKeyStroke('[', false, false, true));
-        map.put("C-\\",new SimpleKeyStroke('\\', false, false, true));
-        map.put("C-]", new SimpleKeyStroke(']', false, false, true));
-        map.put("C-^", new SimpleKeyStroke('^', false, false, true));
-        map.put("C-_", new SimpleKeyStroke('_', false, false, true));
-        map.put("C-SPACE", new SimpleKeyStroke(' ', false, false, true));
+        map.put("C-@", new SimpleKeyStroke('@', modifiers));
+        map.put("C-A", new SimpleKeyStroke('a', modifiers));
+        map.put("C-B", new SimpleKeyStroke('b', modifiers));
+        map.put("C-C", new SimpleKeyStroke('c', modifiers));
+        map.put("C-D", new SimpleKeyStroke('d', modifiers));
+        map.put("C-E", new SimpleKeyStroke('e', modifiers));
+        map.put("C-F", new SimpleKeyStroke('f', modifiers));
+        map.put("C-G", new SimpleKeyStroke('g', modifiers));
+        map.put("C-H", new SimpleKeyStroke('h', modifiers));
+        map.put("C-I", new SimpleKeyStroke('i', modifiers));
+        map.put("C-J", new SimpleKeyStroke('j', modifiers));
+        map.put("C-K", new SimpleKeyStroke('k', modifiers));
+        map.put("C-L", new SimpleKeyStroke('l', modifiers));
+        map.put("C-M", new SimpleKeyStroke('m', modifiers));
+        map.put("C-N", new SimpleKeyStroke('n', modifiers));
+        map.put("C-O", new SimpleKeyStroke('o', modifiers));
+        map.put("C-P", new SimpleKeyStroke('p', modifiers));
+        map.put("C-Q", new SimpleKeyStroke('q', modifiers));
+        map.put("C-R", new SimpleKeyStroke('r', modifiers));
+        map.put("C-S", new SimpleKeyStroke('s', modifiers));
+        map.put("C-T", new SimpleKeyStroke('t', modifiers));
+        map.put("C-U", new SimpleKeyStroke('u', modifiers));
+        map.put("C-V", new SimpleKeyStroke('v', modifiers));
+        map.put("C-W", new SimpleKeyStroke('w', modifiers));
+        map.put("C-X", new SimpleKeyStroke('x', modifiers));
+        map.put("C-Y", new SimpleKeyStroke('y', modifiers));
+        map.put("C-Z", new SimpleKeyStroke('z', modifiers));
+        map.put("C-[", new SimpleKeyStroke('[', modifiers));
+        map.put("C-\\",new SimpleKeyStroke('\\', modifiers));
+        map.put("C-]", new SimpleKeyStroke(']', modifiers));
+        map.put("C-^", new SimpleKeyStroke('^', modifiers));
+        map.put("C-_", new SimpleKeyStroke('_', modifiers));
+        map.put("C-SPACE", new SimpleKeyStroke(' ', modifiers));
         return map;
     }
 }

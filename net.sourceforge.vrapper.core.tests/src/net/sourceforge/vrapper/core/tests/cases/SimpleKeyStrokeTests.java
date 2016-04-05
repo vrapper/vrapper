@@ -11,9 +11,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
+import java.util.EnumSet;
 
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SpecialKey;
+import net.sourceforge.vrapper.keymap.KeyStroke.Modifier;
 import net.sourceforge.vrapper.keymap.vim.ConstructorWrappers;
 import net.sourceforge.vrapper.keymap.vim.PlugKeyStroke;
 import net.sourceforge.vrapper.keymap.vim.SimpleKeyStroke;
@@ -84,7 +86,7 @@ public class SimpleKeyStrokeTests {
         assertEquals(asList(new SimpleKeyStroke(SpecialKey.ESC)), parseKeyStrokes("<Esc>"));
         assertEquals(asList(new SimpleKeyStroke(SpecialKey.ESC)), parseKeyStrokes("<ESC>"));
         assertEquals(asList(new SimpleKeyStroke(SpecialKey.ARROW_DOWN)), parseKeyStrokes("<ARROW_DOWN>"));
-        assertEquals(asList(new SimpleKeyStroke(SpecialKey.F1, false, true, true)),
+        assertEquals(asList(new SimpleKeyStroke(SpecialKey.F1, EnumSet.of(Modifier.ALT, Modifier.CONTROL))),
                 parseKeyStrokes("<C-A-F1>"));
         assertEquals(asList(new SimpleKeyStroke('\''), new SimpleKeyStroke('\'')),
                 parseKeyStrokes("''"));
@@ -132,17 +134,17 @@ public class SimpleKeyStrokeTests {
                 new SimpleKeyStroke('v')),
                 parseKeyStrokes("<ESC>'<m`O<Esc>``gv"));
         // Make sure all special characters are handled.
-        assertEquals(asList(new SimpleKeyStroke(']', false, false, true)),
+        assertEquals(asList(new SimpleKeyStroke(']', EnumSet.of(Modifier.CONTROL))),
                 parseKeyStrokes("<C-]>"));
-        assertEquals(asList(new SimpleKeyStroke('[', false, false, true)),
+        assertEquals(asList(new SimpleKeyStroke('[', EnumSet.of(Modifier.CONTROL))),
                 parseKeyStrokes("<C-[>"));
-        assertEquals(asList(new SimpleKeyStroke('@', false, false, true)),
+        assertEquals(asList(new SimpleKeyStroke('@', EnumSet.of(Modifier.CONTROL))),
                 parseKeyStrokes("<C-@>"));
-        assertEquals(asList(new SimpleKeyStroke('\\', false, false, true)),
+        assertEquals(asList(new SimpleKeyStroke('\\', EnumSet.of(Modifier.CONTROL))),
                 parseKeyStrokes("<C-\\>"));
-        assertEquals(asList(new SimpleKeyStroke('^', false, false, true)),
+        assertEquals(asList(new SimpleKeyStroke('^', EnumSet.of(Modifier.CONTROL))),
                 parseKeyStrokes("<C-^>"));
-        assertEquals(asList(new SimpleKeyStroke('_', false, false, true)),
+        assertEquals(asList(new SimpleKeyStroke('_', EnumSet.of(Modifier.CONTROL))),
                 parseKeyStrokes("<C-_>"));
         // Test what happens in case of missing / mismatching parentheses.
         assertEquals(Collections.emptyList(),

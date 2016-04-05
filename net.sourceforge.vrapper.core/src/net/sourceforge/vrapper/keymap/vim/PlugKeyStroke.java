@@ -1,5 +1,8 @@
 package net.sourceforge.vrapper.keymap.vim;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 
@@ -54,6 +57,10 @@ public class PlugKeyStroke implements KeyStroke {
     @Override
     public boolean withCtrlKey() {
         return false;
+    }
+
+    public Set<Modifier> getModifiers() {
+        return EnumSet.noneOf(Modifier.class);
     }
 
     @Override

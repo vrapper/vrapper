@@ -2,6 +2,7 @@
 package net.sourceforge.vrapper.eclipse.interceptor;
 
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -10,6 +11,7 @@ import net.sourceforge.vrapper.eclipse.activator.VrapperPlugin;
 import net.sourceforge.vrapper.eclipse.platform.EclipsePlatform;
 import net.sourceforge.vrapper.eclipse.platform.SWTRegisterManager;
 import net.sourceforge.vrapper.keymap.KeyStroke;
+import net.sourceforge.vrapper.keymap.KeyStroke.Modifier;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.vim.SimpleKeyStroke;
 import net.sourceforge.vrapper.log.VrapperLog;
@@ -264,15 +266,23 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
                 return;
             }
             KeyStroke keyStroke;
-            boolean shiftKey = (event.stateMask & SWT.SHIFT) != 0;
-            boolean altKey   = (event.stateMask & SWT.ALT)   != 0;
-            boolean ctrlKey   = (event.stateMask & SWT.CONTROL | event.stateMask & SWT.COMMAND)   != 0;
+            EnumSet<Modifier> modifiers = EnumSet.noneOf(Modifier.class);
+            if ((event.stateMask & SWT.SHIFT) != 0) {
+                modifiers.add(Modifier.SHIFT);
+            }
+            if ((event.stateMask & SWT.ALT) != 0) {
+                modifiers.add(Modifier.ALT);
+            }
+            if ((event.stateMask & SWT.CONTROL) != 0) {
+                modifiers.add(Modifier.CONTROL);
+            }
+
             if(specialKeys.containsKey(event.keyCode)) {
-                keyStroke = new SimpleKeyStroke(specialKeys.get(event.keyCode), shiftKey, altKey, ctrlKey);
+                keyStroke = new SimpleKeyStroke(specialKeys.get(event.keyCode), modifiers);
             } else if (escapedChars.containsKey(event.character)) {
-                keyStroke = new SimpleKeyStroke(escapedChars.get(event.character), shiftKey, altKey, ctrlKey);
+                keyStroke = new SimpleKeyStroke(escapedChars.get(event.character), modifiers);
             } else {
-                keyStroke = new SimpleKeyStroke(event.character, shiftKey, altKey, ctrlKey);
+                keyStroke = new SimpleKeyStroke(event.character, modifiers);
             }
             event.doit = !editorAdaptor.handleKey(keyStroke);
         }
