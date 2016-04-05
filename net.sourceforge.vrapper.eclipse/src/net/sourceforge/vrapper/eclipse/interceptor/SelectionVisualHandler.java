@@ -75,8 +75,8 @@ public class SelectionVisualHandler implements ISelectionChangedListener {
         } else if ( ! VrapperPlugin.isMouseDown()
                 || !editorAdaptor.getConfiguration().get(Options.VISUAL_MOUSE)) {
             // Mark selection as "conflicted" - we're in Normal mode but somehow a selection exists
-            if (NormalMode.NAME.equals(editorAdaptor.getCurrentModeName())) {
-                editorAdaptor.getCursorService().setCaret(CaretType.UNDERLINE);
+            if (editorAdaptor.getCurrentMode() instanceof NormalMode) {
+                ((CommandBasedMode)editorAdaptor.getCurrentMode()).placeCursor(StickyColumnPolicy.NEVER);
             }
             return;
         // Detect if a reverse selection got its last character chopped off.
