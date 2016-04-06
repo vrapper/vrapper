@@ -1,18 +1,18 @@
 package net.sourceforge.vrapper.core.tests.cases;
 
+import org.junit.Test;
+
 import net.sourceforge.vrapper.core.tests.utils.CommandTestCase;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
-
-import org.junit.Test;
 
 public class MacroTests extends CommandTestCase {
 	
 	@Override
 	public void setUp() {
 		super.setUp();
-        registerManager = new DefaultRegisterManager();
-        reloadEditorAdaptor();
+		registerManager = new DefaultRegisterManager();
+		reloadEditorAdaptor();
 		adaptor.changeModeSafely(NormalMode.NAME);
 	};
 
@@ -96,7 +96,21 @@ public class MacroTests extends CommandTestCase {
 				"Ala ",'m', "a kota",
 				"Ala bla", 'h', " kota");
 	}
-	
+
+	@Test public void testRepeatedMacro() {
+		checkCommand(forKeySeq("qcxq10@c"),
+				"Ala ",'m', "a kota",
+				"", EOF, "");
+	}
+
+	@Test public void testRecursiveMacro() {
+		// This should simply abort with a CommandExecutionException.
+		// If it runs with infinite recursion that it would raise a StackOverFlowError.
+		checkCommand(forKeySeq("qch@aqqal@cq@c"),
+				"Ala ",'m', "a kota",
+				"Ala",' ', "ma kota");
+	}
+
 	@Test public void testYankMacro() {
 		//yank text into a register to be used later as a macro
 		checkCommand(forKeySeq("\"byW"),
