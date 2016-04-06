@@ -461,7 +461,6 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
             final MacroPlayer player = macroPlayer;
             macroPlayer = null;
             player.play(macroStack);
-            macroStack.pop();
         }
         return result;
     }
@@ -630,6 +629,9 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
 
     @Override
     public MacroPlayer getMacroPlayer(String macroName) throws CommandExecutionException {
+        if (macroName == null || macroName.trim().isEmpty()) {
+            throw new CommandExecutionException("Macro name is null or empty.");
+        }
         if (macroStack.contains(macroName)) {
             recursionErrorMessage = "Macro @" + macroName + " is called recursively,"
                     + " macro execution aborted.";
@@ -638,7 +640,9 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         }
         if (macroPlayer == null) {
             macroPlayer = new MacroPlayer(this, macroName);
-            macroStack.push(macroName);
+        } else if ( ! macroPlayer.getMacroName().equals(macroName)) {
+            throw new CommandExecutionException("Macro player mismatch: macro " + macroName
+                    + " requested when macro " + macroPlayer.getMacroName() + " is pending.");
         }
         return macroPlayer;
     }

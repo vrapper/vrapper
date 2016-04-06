@@ -31,6 +31,10 @@ public class MacroPlayer {
         playlist = new LinkedList<KeyStroke>();
     }
 
+    public String getMacroName() {
+        return macroName;
+    }
+
     /**
      * Adds a key stroke to the playlist. May be called by commands.
      */
@@ -55,6 +59,7 @@ public class MacroPlayer {
      */
     void play(Deque<String> macroStack) {
         ViewportService view = editorAdaptor.getViewportService();
+        macroStack.push(macroName);
         String historyLock = "macroplayback " + macroStack;
         try {
             view.setRepaint(false);
@@ -69,6 +74,7 @@ public class MacroPlayer {
             editorAdaptor.getHistory().endCompoundChange();
             view.unlockRepaint(this);
             view.setRepaint(true);
+            macroStack.pop();
         }
     }
 
