@@ -2,8 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Vrapper ipmotion Plug-in Core
 Bundle-SymbolicName: net.sourceforge.vrapper.plugin.ipmotion.core;singleton:=true
-Bundle-Version: 0.66.0
+Bundle-Version: 0.67.20160406
 Export-Package: net.sourceforge.vrapper.plugin.ipmotion.commands.motions
-Require-Bundle: net.sourceforge.vrapper.core;bundle-version="0.66.0";visibility:=reexport
+Require-Bundle: net.sourceforge.vrapper.core;bundle-version="0.67.20160406";visibility:=reexport
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Eclipse-BuddyPolicy: dependent
