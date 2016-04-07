@@ -65,6 +65,15 @@ public class SimpleKeyStrokeTests {
 	            asList(key(SpecialKey.ARROW_DOWN))));
 	    assertEquals("<Plug>(vrapper.window.moveUp)", ConstructorWrappers.keyStrokesToString(
 	            asList((KeyStroke) new PlugKeyStroke("(vrapper.window.moveUp)"))));
+        // Do these one by one, modifier order is not guaranteed
+        assertEquals("<S-F1>", ConstructorWrappers.keyStrokesToString(
+                asList((KeyStroke)new SimpleKeyStroke(SpecialKey.F1, EnumSet.of(Modifier.SHIFT)))));
+        assertEquals("<D-F1>", ConstructorWrappers.keyStrokesToString(
+                asList((KeyStroke)new SimpleKeyStroke(SpecialKey.F1, EnumSet.of(Modifier.COMMAND)))));
+        assertEquals("<C-F1>", ConstructorWrappers.keyStrokesToString(
+                asList((KeyStroke)new SimpleKeyStroke(SpecialKey.F1, EnumSet.of(Modifier.CONTROL)))));
+        assertEquals("<A-F1>", ConstructorWrappers.keyStrokesToString(
+                asList((KeyStroke)new SimpleKeyStroke(SpecialKey.F1, EnumSet.of(Modifier.ALT)))));
 	}
 
 	@Test
@@ -82,12 +91,18 @@ public class SimpleKeyStrokeTests {
 	}
 
     @Test
-    public void testPayseKeySeq() {
+    public void testParseKeySeq() {
         assertEquals(asList(new SimpleKeyStroke(SpecialKey.ESC)), parseKeyStrokes("<Esc>"));
         assertEquals(asList(new SimpleKeyStroke(SpecialKey.ESC)), parseKeyStrokes("<ESC>"));
         assertEquals(asList(new SimpleKeyStroke(SpecialKey.ARROW_DOWN)), parseKeyStrokes("<ARROW_DOWN>"));
         assertEquals(asList(new SimpleKeyStroke(SpecialKey.F1, EnumSet.of(Modifier.ALT, Modifier.CONTROL))),
                 parseKeyStrokes("<C-A-F1>"));
+        assertEquals(asList(new SimpleKeyStroke(SpecialKey.F1,
+                    EnumSet.of(Modifier.ALT, Modifier.CONTROL, Modifier.SHIFT, Modifier.COMMAND))),
+                parseKeyStrokes("<C-A-D-S-F1>"));
+        assertEquals(asList(new SimpleKeyStroke(SpecialKey.F1,
+                    EnumSet.of(Modifier.ALT, Modifier.CONTROL, Modifier.SHIFT, Modifier.COMMAND))),
+                parseKeyStrokes("<D-A-C-S-F1>"));
         assertEquals(asList(new SimpleKeyStroke('\''), new SimpleKeyStroke('\'')),
                 parseKeyStrokes("''"));
         assertEquals(asList(new SimpleKeyStroke('\''), new SimpleKeyStroke('<')),
