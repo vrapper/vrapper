@@ -276,6 +276,9 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
             if ((event.stateMask & SWT.CONTROL) != 0) {
                 modifiers.add(Modifier.CONTROL);
             }
+            if ((event.stateMask & SWT.COMMAND) != 0) {
+                modifiers.add(Modifier.COMMAND);
+            }
 
             if(specialKeys.containsKey(event.keyCode)) {
                 keyStroke = new SimpleKeyStroke(specialKeys.get(event.keyCode), modifiers);

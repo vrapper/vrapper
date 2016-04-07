@@ -5,7 +5,7 @@ import java.util.Set;
 public interface KeyStroke {
 	public static final char SPECIAL_KEY = 0;
 	public static enum Modifier {
-		CONTROL("C-"), ALT("A-"), SHIFT("S-");
+		CONTROL("C-"), ALT("A-"), SHIFT("S-"), COMMAND("D-");
 
 		private String shortId;
 

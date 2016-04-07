@@ -181,6 +181,13 @@ public class ConstructorWrappers {
                 modifiers.add(Modifier.CONTROL);
                 stroke = new SimpleKeyStroke(k, modifiers);
             }
+        } else if (key.startsWith("D-")) { //Command
+            KeyStroke k = parseSpecialKey(key.substring(2));
+            if (k != null) {
+                EnumSet<Modifier> modifiers = EnumSet.copyOf(k.getModifiers());
+                modifiers.add(Modifier.COMMAND);
+                stroke = new SimpleKeyStroke(k, modifiers);
+            }
         } else if (keyNames.containsKey(key)) {
             stroke = keyNames.get(key);
 
