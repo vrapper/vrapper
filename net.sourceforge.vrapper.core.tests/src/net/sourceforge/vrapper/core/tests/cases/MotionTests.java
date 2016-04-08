@@ -20,6 +20,7 @@ import net.sourceforge.vrapper.vim.commands.motions.MoveWordLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordRight;
 import net.sourceforge.vrapper.vim.commands.motions.ParagraphMotion;
 import net.sourceforge.vrapper.vim.commands.motions.ParenthesesMove;
+import net.sourceforge.vrapper.vim.commands.motions.SentenceMotion;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
 
@@ -714,6 +715,72 @@ public class MotionTests extends CommandTestCase {
 		checkMotion(moveWordEndLeft,
 				"whil",'e',"(true) ++aw3rs0meness;",
 				"",'w',"hile(true) ++aw3rs0meness;");
+	}
+	
+	@Test
+	public void testMoveSentenceForward() {
+	    Motion moveSentenceForward = SentenceMotion.FORWARD;
+	    
+	    checkMotion(moveSentenceForward,
+	            "this is a test. this ", 'i', "s a test. this is a test. this is a test.",
+	            "this is a test. this is a test. ", 't', "his is a test. this is a test.");
+	    
+	    checkMotion(moveSentenceForward,
+	            "this is a test. ",'t',"his is a test. this is a test. this is a test.",
+	            "this is a test. this is a test. ", 't', "his is a test. this is a test.");
+	    
+	    checkMotion(moveSentenceForward,
+	            "this is a test. ",'t',"his is a test.)))]]] this is a test. this is a test.",
+	            "this is a test. this is a test.)))]]] ", 't', "his is a test. this is a test.");
+	    
+	    checkMotion(moveSentenceForward,
+	            "this is a test. ",'t',"his is a test.       this is a test. this is a test.",
+	            "this is a test. this is a test.       ", 't', "his is a test. this is a test.");
+	    
+	    checkMotion(moveSentenceForward,
+	            "this is a test. ",'t',"his\n is\n a test. this is a test. this is a test.",
+	            "this is a test. this\n is\n a test. ", 't', "his is a test. this is a test.");
+	    
+	    checkMotion(moveSentenceForward,
+	            "this is a test. ",'t',"his is a test.\nthis is a test. this is a test.",
+	            "this is a test. this is a test.\n", 't', "his is a test. this is a test.");
+
+	    checkMotion(moveSentenceForward,
+	            "this ", 'i', "s a test.",
+	            "this is a test.",EOF, "");
+	}
+	
+	@Test
+	public void testMoveSentenceBackward() {
+	    Motion moveSentenceBackward = SentenceMotion.BACKWARD;
+	    
+	    checkMotion(moveSentenceBackward,
+	            "this is a test. this is a test. this ", 'i', "s a test. this is a test.",
+	            "this is a test. this is a test. ", 't', "his is a test. this is a test.");
+	    
+	    checkMotion(moveSentenceBackward,
+	            "this is a test. this is a test. ", 't', "his is a test. this is a test.",
+	            "this is a test. ",'t',"his is a test. this is a test. this is a test.");
+	    
+	    checkMotion(moveSentenceBackward,
+	            "this is a test. this is a test.)))]]] ", 't', "his is a test. this is a test.",
+	            "this is a test. ",'t',"his is a test.)))]]] this is a test. this is a test.");
+	    
+	    checkMotion(moveSentenceBackward,
+	            "this is a test. this is a test.       ", 't', "his is a test. this is a test.",
+	            "this is a test. ",'t',"his is a test.       this is a test. this is a test.");
+	    
+	    checkMotion(moveSentenceBackward,
+	            "this is a test. this\n is\n a test. ", 't', "his is a test. this is a test.",
+	            "this is a test. ",'t',"his\n is\n a test. this is a test. this is a test.");
+	    
+	    checkMotion(moveSentenceBackward,
+	            "this is a test. this is a test.\nthis ", 'i', "s a test. this is a test.",
+	            "this is a test. this is a test.\n", 't', "his is a test. this is a test.");
+
+	    checkMotion(moveSentenceBackward,
+	            "this ", 'i', "s a test.",
+	            "", 't', "his is a test.");
 	}
 
 	@Test

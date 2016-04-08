@@ -899,6 +899,13 @@ public class NormalModeTests extends CommandTestCase {
 				"this is a test.  this ",'i', "s\n a\n test? this is a test.",
 				"this is a test.  ",'t', "his is a test.");
 
+		//Oddly enough, this isn't Vim-compliant but I think it makes sense.
+		//When a sentence ends on a line boundary, in Vim dis == das.
+		//I think it makes more sense for das to remove that newline.
+		checkCommand(forKeySeq("das"),
+				"this is a test.  this ",'i', "s a test?\nthis is a test.",
+				"this is a test.  ",'t', "his is a test.");
+
 		checkCommand(forKeySeq("dis"),
 				"this ",'i', "s a test",
 				"",EOF, "");
@@ -1407,6 +1414,10 @@ public class NormalModeTests extends CommandTestCase {
 		checkCommand(forKeySeq("dis"),
 				"this is a test.  this ",'i', "s\n a\n test? this is a test.",
 				"this is a test.  ",' ', "this is a test.");
+
+		checkCommand(forKeySeq("dis"),
+				"this is a test.  this ",'i', "s a test?\nthis is a test.",
+				"this is a test. ",' ', "\nthis is a test.");
 
 		checkCommand(forKeySeq("dis"),
 				"this ",'i', "s a test",
