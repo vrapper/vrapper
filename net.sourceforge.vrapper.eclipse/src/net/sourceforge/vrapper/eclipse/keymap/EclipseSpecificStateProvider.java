@@ -9,6 +9,9 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
 import static net.sourceforge.vrapper.vim.commands.CommandWrappers.dontRepeat;
 import static net.sourceforge.vrapper.vim.commands.CommandWrappers.seq;
+
+import java.util.EnumSet;
+
 import net.sourceforge.vrapper.eclipse.commands.ChangeTabCommand;
 import net.sourceforge.vrapper.eclipse.commands.GoToMarkCommand;
 import net.sourceforge.vrapper.eclipse.commands.ListTabsCommand;
@@ -17,9 +20,11 @@ import net.sourceforge.vrapper.eclipse.commands.ToggleFoldingCommand;
 import net.sourceforge.vrapper.eclipse.modes.InsertExpandMode;
 import net.sourceforge.vrapper.keymap.EmptyState;
 import net.sourceforge.vrapper.keymap.KeyMapInfo;
+import net.sourceforge.vrapper.keymap.KeyStroke.Modifier;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.StateUtils;
+import net.sourceforge.vrapper.keymap.vim.SimpleKeyStroke;
 import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.ChangeModeCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
@@ -68,6 +73,12 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
         return state(
             leafBind('u', seq(editText("lowerCase"), leaveVisual)),
             leafBind('U', seq(editText("upperCase"), leaveVisual)),
+            leafBind(new SimpleKeyStroke('c', EnumSet.of(Modifier.COMMAND)),
+                    seq(dontRepeat(cmd("org.eclipse.ui.edit.copy")), leaveVisual)),
+            leafBind(new SimpleKeyStroke('x', EnumSet.of(Modifier.COMMAND)),
+                    seq(dontRepeat(cmd("org.eclipse.ui.edit.cut")), leaveVisual)),
+            leafBind(new SimpleKeyStroke('v', EnumSet.of(Modifier.COMMAND)),
+                    seq(dontRepeat(cmd("org.eclipse.ui.edit.paste")), leaveVisual)),
             transitionBind('g',
                     leafBind('U', seq(editText("upperCase"), leaveVisual)),
                     leafBind('u', seq(editText("lowerCase"), leaveVisual))));
@@ -105,7 +116,14 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
                         VimConstants.PRINTABLE_KEYSTROKES)),
                 transitionBind('`', convertKeyStroke(
                         GoToMarkCommand.CHARWISE_CONVERTER,
-                        VimConstants.PRINTABLE_KEYSTROKES))),
+                        VimConstants.PRINTABLE_KEYSTROKES)),
+                // These might be disabled when there is no selection
+                leafBind(new SimpleKeyStroke('c', EnumSet.of(Modifier.COMMAND)),
+                        dontRepeat(cmd("org.eclipse.ui.edit.copy"))),
+                leafBind(new SimpleKeyStroke('x', EnumSet.of(Modifier.COMMAND)),
+                        dontRepeat(cmd("org.eclipse.ui.edit.cut"))),
+                leafBind(new SimpleKeyStroke('v', EnumSet.of(Modifier.COMMAND)),
+                        dontRepeat(cmd("org.eclipse.ui.edit.paste")))),
             prefixedOperatorCmds('g', 'u', seq(editText("lowerCase"), DeselectAllCommand.INSTANCE), textObjects),
             prefixedOperatorCmds('g', 'U', seq(editText("upperCase"), DeselectAllCommand.INSTANCE), textObjects)
          );
@@ -126,8 +144,13 @@ public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStatePr
     	return state(
     		leafCtrlBind('x', dontRepeat(new ChangeModeCommand(InsertExpandMode.NAME, InsertMode.RESUME_ON_MODE_ENTER))),
     		leafCtrlBind('n', dontRepeat(editText("hippieCompletion"))),
-    		leafCtrlBind('p', dontRepeat(editText("hippieCompletion")))
-    	);
+    		leafCtrlBind('p', dontRepeat(editText("hippieCompletion"))),
+            leafBind(new SimpleKeyStroke('c', EnumSet.of(Modifier.COMMAND)),
+                    dontRepeat(cmd("org.eclipse.ui.edit.copy"))),
+            leafBind(new SimpleKeyStroke('x', EnumSet.of(Modifier.COMMAND)),
+                    dontRepeat(cmd("org.eclipse.ui.edit.cut"))),
+            leafBind(new SimpleKeyStroke('v', EnumSet.of(Modifier.COMMAND)),
+                    dontRepeat(cmd("org.eclipse.ui.edit.paste"))));
     }
     
     @Override
