@@ -13,10 +13,13 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
 
+import org.junit.Before;
+import org.junit.Test;
+
 import net.sourceforge.vrapper.core.tests.utils.DumbPosition;
-import net.sourceforge.vrapper.core.tests.utils.TestSearchService;
 import net.sourceforge.vrapper.core.tests.utils.VimTestCase;
 import net.sourceforge.vrapper.platform.Configuration.Option;
+import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.LineRange;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Search;
@@ -39,11 +42,10 @@ import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.modes.commandline.CommandLineMode;
 import net.sourceforge.vrapper.vim.modes.commandline.CommandLineParser;
 import net.sourceforge.vrapper.vim.modes.commandline.ComplexOptionEvaluator;
-import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
+import net.sourceforge.vrapper.vim.register.Register;
+import net.sourceforge.vrapper.vim.register.RegisterContent;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
-
-import org.junit.Before;
-import org.junit.Test;
+import net.sourceforge.vrapper.vim.register.StringRegisterContent;
 
 public class CommandLineTests extends VimTestCase {
 
@@ -79,9 +81,9 @@ public class CommandLineTests extends VimTestCase {
 
     @Test
     public void testSubstitution() throws CommandExecutionException {
-        registerManager = new DefaultRegisterManager();
-        when(platform.getSearchAndReplaceService()).thenReturn(new TestSearchService(content, configuration));
-        reloadEditorAdaptor();
+
+        super.installSaneRegisterManager();
+
         DummyTextObject defaultRange = new DummyTextObject(null);
 
         registerManager.setSearch(new Search("two", false, false, false));
@@ -522,6 +524,43 @@ public class CommandLineTests extends VimTestCase {
         assertEquals(CommandLineMode.NAME, adaptor.getCurrentModeName());
         type(parseKeyStrokes("<BS>"));
         assertEquals(NormalMode.NAME, adaptor.getCurrentModeName());
+    }
+
+    @Test
+    public void test_ModelessSelection_Operations() {
+
+        super.installSaneRegisterManager();
+        
+        RegisterManager registerManager = adaptor.getRegisterManager();
+
+        adaptor.changeModeSafely(CommandLineMode.NAME);
+        type(parseKeyStrokes("let @q=\"iOk<LT>CR<GT>\""));
+
+        adaptor.getCommandLine().setSelection(4, 16);
+        type(parseKeyStrokes("<C-Y>"));
+
+        Register clipboard = registerManager.getRegister(RegisterManager.REGISTER_NAME_CLIPBOARD);
+        final RegisterContent EMPTY = new StringRegisterContent(ContentType.TEXT, "");
+        assertEquals("@q=\"iOk<CR>\"", clipboard.getContent().getText());
+
+        clipboard.setContent(EMPTY);
+        adaptor.getCommandLine().setSelection(0, 16);
+        type(parseKeyStrokes("<D-C>"));
+        assertEquals("let @q=\"iOk<CR>\"", clipboard.getContent().getText());
+
+        clipboard.setContent(EMPTY);
+        adaptor.getCommandLine().setSelection(0, 16);
+        type(parseKeyStrokes("<D-X>"));
+        assertEquals("let @q=\"iOk<CR>\"", clipboard.getContent().getText());
+        assertEquals("", adaptor.getCommandLine().getContents());
+
+        type(parseKeyStrokes("<D-v>"));
+        assertEquals("let @q=\"iOk<CR>\"", clipboard.getContent().getText());
+        assertEquals("let @q=\"iOk<CR>\"", adaptor.getCommandLine().getContents());
+
+        clipboard.setContent(new StringRegisterContent(ContentType.TEXT, "jj"));
+        type(parseKeyStrokes("<D-v>"));
+        assertEquals("let @q=\"iOk<CR>\"jj", adaptor.getCommandLine().getContents());
     }
 
     private <T> void assertSetOption(Option<T> o, String invalid, T... values) {

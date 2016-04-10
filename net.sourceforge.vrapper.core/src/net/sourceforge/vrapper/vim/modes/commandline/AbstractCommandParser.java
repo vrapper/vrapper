@@ -4,9 +4,11 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.ctrlKey;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.key;
 import static net.sourceforge.vrapper.vim.commands.Utils.characterType;
 
+import java.util.EnumSet;
 import java.util.HashMap;
 
 import net.sourceforge.vrapper.keymap.KeyStroke;
+import net.sourceforge.vrapper.keymap.KeyStroke.Modifier;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.vim.SimpleKeyStroke;
 import net.sourceforge.vrapper.platform.CommandLineUI;
@@ -51,6 +53,9 @@ public abstract class AbstractCommandParser {
     protected static final KeyStroke KEY_END     = key(SpecialKey.END);
     protected static final SpecialKey KEY_TAB    = SpecialKey.TAB;
     protected static final SpecialKey KEY_INSERT = SpecialKey.INSERT;
+    protected static final KeyStroke KEY_CMD_C   = new SimpleKeyStroke('c', EnumSet.of(Modifier.COMMAND));
+    protected static final KeyStroke KEY_CMD_V   = new SimpleKeyStroke('v', EnumSet.of(Modifier.COMMAND));
+    protected static final KeyStroke KEY_CMD_X   = new SimpleKeyStroke('x', EnumSet.of(Modifier.COMMAND));
 
     protected final EditorAdaptor editor;
     private boolean pasteRegister = false;
@@ -124,12 +129,18 @@ public abstract class AbstractCommandParser {
             modified = true;
         }});
         editMap.put(KEY_CTRL_Y, new KeyHandler() { public void handleKey() {
+            copySelectionToClipboard();
+        }});
+        editMap.put(KEY_CMD_C, new KeyHandler() { public void handleKey() {
+            copySelectionToClipboard();
+        }});
+        editMap.put(KEY_CMD_V, new KeyHandler() { public void handleKey() {
+            pasteRegister(RegisterManager.REGISTER_NAME_CLIPBOARD);
+        }});
+        editMap.put(KEY_CMD_X, new KeyHandler() { public void handleKey() {
             if (commandLine.getSelectionLength() > 0) {
-                RegisterManager regMan = editor.getRegisterManager();
-                Register clipboard = regMan.getRegister(RegisterManager.REGISTER_NAME_CLIPBOARD);
-                String selected = commandLine.getContents(commandLine.getSelectionStart(),
-                        commandLine.getSelectionEnd());
-                clipboard.setContent(new StringRegisterContent(ContentType.TEXT, selected));
+                copySelectionToClipboard();
+                commandLine.delete();
             }
         }});
     }
@@ -174,10 +185,8 @@ public abstract class AbstractCommandParser {
                     }
                 }
                 if (e.getCharacter() != KeyStroke.SPECIAL_KEY && pasteRegister) {
-                    String text = editor.getRegisterManager().getRegister(Character.toString(e.getCharacter())).getContent().getText();
-                    text = VimUtils.stripLastNewline(text);
-                    text = VimUtils.replaceNewLines(text, " ");
-                    commandLine.type(text);
+                    String registerName = Character.toString(e.getCharacter());
+                    pasteRegister(registerName);
                     pasteRegister = false;
                     modified = true;
                 } else if (e.getCharacter() != KeyStroke.SPECIAL_KEY) {
@@ -206,6 +215,23 @@ public abstract class AbstractCommandParser {
             if ( ! pasteRegister) {
                 commandLine.setMode(CommandLineMode.DEFAULT);
             }
+        }
+    }
+
+    private void pasteRegister(String registerName) {
+        String text = editor.getRegisterManager().getRegister(registerName).getContent().getText();
+        text = VimUtils.stripLastNewline(text);
+        text = VimUtils.replaceNewLines(text, " ");
+        commandLine.type(text);
+    }
+
+    private void copySelectionToClipboard() {
+        if (commandLine.getSelectionLength() > 0) {
+            RegisterManager regMan = editor.getRegisterManager();
+            Register clipboard = regMan.getRegister(RegisterManager.REGISTER_NAME_CLIPBOARD);
+            String selected = commandLine.getContents(commandLine.getSelectionStart(),
+                    commandLine.getSelectionEnd());
+            clipboard.setContent(new StringRegisterContent(ContentType.TEXT, selected));
         }
     }
 
