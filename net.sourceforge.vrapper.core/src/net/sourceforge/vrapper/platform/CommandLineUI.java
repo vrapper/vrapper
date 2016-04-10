@@ -39,6 +39,24 @@ public interface CommandLineUI {
     /** Set the position of the caret in the contents - the prompt is not counted. */
     public void setPosition(int offset);
 
+    /** Returns the number of selected characters. */
+    public int getSelectionLength();
+
+    /**
+     * Returns the start of the selection or the current position if there is no selection.
+     * <p><b>NOTE</b>: Start can be &gt;= end when the selection is reversed.
+     */
+    public int getSelectionStart();
+
+    /**
+     * Returns the end of the selection or the current position if there is no selection.
+     * <p><b>NOTE</b>: Start can be &gt;= end when the selection is reversed.
+     */
+    public int getSelectionEnd();
+
+    /** Sets the commandline selection. Uses exclusive offsets, end can be smaller than start. */
+    public void setSelection(int start, int end);
+
     /** Moves the caret. Negative means characters to the left, positive means to the right. */
     public void addOffsetToPosition(int offset);
 
@@ -46,6 +64,11 @@ public interface CommandLineUI {
      * Returns the contents of the command line excluding prompt characters.
      */
     public String getContents();
+
+    /**
+     * Returns the contents of the command line excluding prompt characters.
+     */
+    public String getContents(int start, int end);
 
     /**
      * Returns the contents of the command line including the prompt characters.
@@ -57,8 +80,6 @@ public interface CommandLineUI {
      * <p>The command line will always revert to DEFAULT mode when this method is invoked!
      */
     public void type(String characters);
-
-    public void copySelectionToClipboard();
 
     public void open();
 

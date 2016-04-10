@@ -12,6 +12,7 @@ import net.sourceforge.vrapper.keymap.vim.SimpleKeyStroke;
 import net.sourceforge.vrapper.platform.CommandLineUI;
 import net.sourceforge.vrapper.platform.CommandLineUI.CommandLineMode;
 import net.sourceforge.vrapper.platform.Platform;
+import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
@@ -20,6 +21,9 @@ import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
 import net.sourceforge.vrapper.vim.modes.ExecuteCommandHint;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
+import net.sourceforge.vrapper.vim.register.Register;
+import net.sourceforge.vrapper.vim.register.RegisterManager;
+import net.sourceforge.vrapper.vim.register.StringRegisterContent;
 
 /**
  * Base class for modes which parse strings given by the user.<br>
@@ -120,7 +124,13 @@ public abstract class AbstractCommandParser {
             modified = true;
         }});
         editMap.put(KEY_CTRL_Y, new KeyHandler() { public void handleKey() {
-            commandLine.copySelectionToClipboard();
+            if (commandLine.getSelectionLength() > 0) {
+                RegisterManager regMan = editor.getRegisterManager();
+                Register clipboard = regMan.getRegister(RegisterManager.REGISTER_NAME_CLIPBOARD);
+                String selected = commandLine.getContents(commandLine.getSelectionStart(),
+                        commandLine.getSelectionEnd());
+                clipboard.setContent(new StringRegisterContent(ContentType.TEXT, selected));
+            }
         }});
     }
 

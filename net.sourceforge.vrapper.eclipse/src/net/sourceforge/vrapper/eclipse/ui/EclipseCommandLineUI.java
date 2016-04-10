@@ -1,16 +1,5 @@
 package net.sourceforge.vrapper.eclipse.ui;
 
-import net.sourceforge.vrapper.log.VrapperLog;
-import net.sourceforge.vrapper.platform.CommandLineUI;
-import net.sourceforge.vrapper.utils.CaretType;
-import net.sourceforge.vrapper.utils.ContentType;
-import net.sourceforge.vrapper.utils.VimUtils;
-import net.sourceforge.vrapper.vim.EditorAdaptor;
-import net.sourceforge.vrapper.vim.register.Register;
-import net.sourceforge.vrapper.vim.register.RegisterContent;
-import net.sourceforge.vrapper.vim.register.RegisterManager;
-import net.sourceforge.vrapper.vim.register.StringRegisterContent;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CaretEvent;
 import org.eclipse.swt.custom.CaretListener;
@@ -26,6 +15,17 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.services.IDisposable;
+
+import net.sourceforge.vrapper.log.VrapperLog;
+import net.sourceforge.vrapper.platform.CommandLineUI;
+import net.sourceforge.vrapper.utils.CaretType;
+import net.sourceforge.vrapper.utils.ContentType;
+import net.sourceforge.vrapper.utils.VimUtils;
+import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.register.Register;
+import net.sourceforge.vrapper.vim.register.RegisterContent;
+import net.sourceforge.vrapper.vim.register.RegisterManager;
+import net.sourceforge.vrapper.vim.register.StringRegisterContent;
 
 class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener, SelectionListener {
 
@@ -149,6 +149,25 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener,
     }
 
     @Override
+    public String getContents(int start, int end) {
+        int endPosition = getEndPosition();
+        if ((start > endPosition || start < 0)
+                && (end > endPosition || end < 0)) {
+            throw new IllegalArgumentException("Cannot get command line contents, start offset "
+                    + start + " and end offset " + end + " are out of commandline bounds");
+        } else if (start > endPosition || start < 0) {
+            throw new IllegalArgumentException("Cannot get command line contents, start offset "
+                    + start + " is out of commandline bounds");
+        } else if (end > endPosition || end < 0) {
+            throw new IllegalArgumentException("Cannot get command line contents, end offset "
+                    + end + " is out of commandline bounds");
+        }
+        int offset = Math.min(start, end) + contentsOffset;
+        int length = Math.abs(end - start);
+        return commandLineText.getTextRange(offset, length);
+    }
+
+    @Override
     public String getFullContents() {
         return commandLineText.getText();
     }
@@ -210,6 +229,45 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener,
         commandLineText.setCaretOffset(offset);
         //If the caret didn't move, no CaretEvent gets sent. Update manually.
         updateCaret();
+    }
+
+    @Override
+    public int getSelectionLength() {
+        return commandLineText.getSelectionCount();
+    }
+
+    @Override
+    public int getSelectionStart() {
+        Point selection = commandLineText.getSelection();
+        int caretOffset = commandLineText.getCaretOffset();
+        if (caretOffset == selection.x) {
+            return selection.y - contentsOffset;
+        } else {
+            return selection.x - contentsOffset;
+        }
+    }
+
+    @Override
+    public int getSelectionEnd() {
+        return getPosition();
+    }
+
+    @Override
+    public void setSelection(int start, int end) {
+        int startOffset = start + contentsOffset;
+        int endOffset = end + contentsOffset;
+        if ((startOffset > commandLineText.getCharCount() || start < 0)
+                && (endOffset > commandLineText.getCharCount() || end < 0)) {
+            throw new IllegalArgumentException("Cannot set command line selection, start offset "
+                    + start + " and end offset " + end + " are out of commandline bounds");
+        } else if (startOffset > commandLineText.getCharCount() || start < 0) {
+            throw new IllegalArgumentException("Cannot set command line selection, start offset "
+                    + start + " is out of commandline bounds");
+        } else if (endOffset > commandLineText.getCharCount() || end < 0) {
+            throw new IllegalArgumentException("Cannot set command line selection, end offset "
+                    + end + " is out of commandline bounds");
+        }
+        commandLineText.setSelection(startOffset, endOffset);
     }
 
     @Override

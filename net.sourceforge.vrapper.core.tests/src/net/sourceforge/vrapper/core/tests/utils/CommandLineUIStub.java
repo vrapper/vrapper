@@ -12,6 +12,8 @@ public class CommandLineUIStub implements CommandLineUI {
     protected String prompt = "";
     protected StringBuilder contents = new StringBuilder();
     protected int position;
+    protected int selectionLength;
+    protected int selectionStart;
 
     @Override
     public void setMode(CommandLineMode mode) {
@@ -49,6 +51,39 @@ public class CommandLineUIStub implements CommandLineUI {
     }
 
     @Override
+    public int getSelectionLength() {
+        return Math.abs(selectionLength);
+    }
+
+    @Override
+    public int getSelectionStart() {
+        return selectionStart;
+    }
+
+    @Override
+    public int getSelectionEnd() {
+        return selectionStart + selectionLength;
+    }
+
+    @Override
+    public void setSelection(int start, int end) {
+        if ((start > getEndPosition() || start < 0)
+                && (end > getEndPosition() || end < 0)) {
+            throw new IllegalArgumentException("Cannot set command line selection, start offset "
+                    + start + " and end offset " + end + " are out of commandline bounds");
+        } else if (start > getEndPosition() || start < 0) {
+            throw new IllegalArgumentException("Cannot set command line selection, start offset "
+                    + start + " is out of commandline bounds");
+        } else if (end > getEndPosition() || end < 0) {
+            throw new IllegalArgumentException("Cannot set command line selection, end offset "
+                    + end + " is out of commandline bounds");
+        }
+        selectionStart = start;
+        selectionLength = end - start;
+        position = end;
+    }
+
+    @Override
     public void addOffsetToPosition(int offset) {
         this.position += offset;
         if (position < 0) {
@@ -61,6 +96,26 @@ public class CommandLineUIStub implements CommandLineUI {
     @Override
     public String getContents() {
         return contents.toString();
+    }
+
+    @Override
+    public String getContents(int start, int end) {
+        if ((start > getEndPosition() || start < 0)
+                && (end > getEndPosition() || end < 0)) {
+            throw new IllegalArgumentException("Cannot get command line contents, start offset "
+                    + start + " and end offset " + end + " are out of commandline bounds");
+        } else if (start > getEndPosition() || start < 0) {
+            throw new IllegalArgumentException("Cannot get command line contents, start offset "
+                    + start + " is out of commandline bounds");
+        } else if (end > getEndPosition() || end < 0) {
+            throw new IllegalArgumentException("Cannot get command line contents, end offset "
+                    + end + " is out of commandline bounds");
+        }
+        if (start > end) {
+            return contents.substring(end, start);
+        } else {
+            return contents.substring(start, end);
+        }
     }
 
     @Override
@@ -97,7 +152,9 @@ public class CommandLineUIStub implements CommandLineUI {
 
     @Override
     public void erase() {
-        if (position > 0) {
+        if (getSelectionLength() > 0) {
+            delete();
+        } else if (position > 0) {
             contents.delete(position - 1, position);
             position--;
         }
@@ -105,7 +162,17 @@ public class CommandLineUIStub implements CommandLineUI {
 
     @Override
     public void delete() {
-        if (position < contents.length()) {
+        if (getSelectionLength() > 0) {
+            int newPosition = selectionStart;
+            if (selectionLength < 0) {
+                newPosition = selectionStart + selectionLength;
+            }
+            contents.delete(newPosition, Math.abs(selectionLength));
+            position = newPosition;
+            selectionStart = newPosition;
+            selectionLength = 0;
+
+        } else if (position < contents.length()) {
             contents.delete(position, position + 1);
         }
     }
@@ -118,11 +185,6 @@ public class CommandLineUIStub implements CommandLineUI {
     @Override
     public void replace(int start, int end, String string) {
         contents.replace(start, end, string);
-    }
-
-    @Override
-    public void copySelectionToClipboard() {
-        // Nothing to do here, stub doesn't know about selections.
     }
 
     @Override
