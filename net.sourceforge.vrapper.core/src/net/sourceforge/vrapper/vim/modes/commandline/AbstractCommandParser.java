@@ -22,7 +22,6 @@ import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
 import net.sourceforge.vrapper.vim.modes.ExecuteCommandHint;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
-import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
 import net.sourceforge.vrapper.vim.register.Register;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
 import net.sourceforge.vrapper.vim.register.StringRegisterContent;
@@ -51,8 +50,8 @@ public abstract class AbstractCommandParser {
     protected static final KeyStroke KEY_LEFT    = key(SpecialKey.ARROW_LEFT);
     protected static final KeyStroke KEY_HOME    = key(SpecialKey.HOME);
     protected static final KeyStroke KEY_END     = key(SpecialKey.END);
-    protected static final SpecialKey KEY_TAB    = SpecialKey.TAB;
-    protected static final SpecialKey KEY_INSERT = SpecialKey.INSERT;
+    protected static final KeyStroke KEY_CTRL_INS= new SimpleKeyStroke(SpecialKey.INSERT, EnumSet.of(Modifier.CONTROL));
+    protected static final KeyStroke KEY_SHFT_INS= new SimpleKeyStroke(SpecialKey.INSERT, EnumSet.of(Modifier.SHIFT));
     protected static final KeyStroke KEY_CMD_C   = new SimpleKeyStroke('c', EnumSet.of(Modifier.COMMAND));
     protected static final KeyStroke KEY_CMD_V   = new SimpleKeyStroke('v', EnumSet.of(Modifier.COMMAND));
     protected static final KeyStroke KEY_CMD_X   = new SimpleKeyStroke('x', EnumSet.of(Modifier.COMMAND));
@@ -128,15 +127,19 @@ public abstract class AbstractCommandParser {
             commandLine.setPosition(0);
             modified = true;
         }});
+
         editMap.put(KEY_CTRL_Y, new KeyHandler() { public void handleKey() {
             copySelectionToClipboard();
         }});
-        editMap.put(KEY_CMD_C, new KeyHandler() { public void handleKey() {
-            copySelectionToClipboard();
-        }});
-        editMap.put(KEY_CMD_V, new KeyHandler() { public void handleKey() {
+        editMap.put(KEY_CMD_C, editMap.get(KEY_CTRL_Y));
+        editMap.put(KEY_CTRL_INS, editMap.get(KEY_CTRL_Y));
+
+        editMap.put(KEY_CTRL_V, new KeyHandler() { public void handleKey() {
             pasteRegister(RegisterManager.REGISTER_NAME_CLIPBOARD);
         }});
+        editMap.put(KEY_SHFT_INS, editMap.get(KEY_CTRL_V));
+        editMap.put(KEY_CMD_V, editMap.get(KEY_CTRL_V));
+
         editMap.put(KEY_CMD_X, new KeyHandler() { public void handleKey() {
             if (commandLine.getSelectionLength() > 0) {
                 copySelectionToClipboard();
@@ -163,38 +166,29 @@ public abstract class AbstractCommandParser {
         KeyHandler mappedHandler = editMap.get(e);
         if (mappedHandler != null) {
             mappedHandler.handleKey();
-        } else {
-            if (e.equals(KEY_RETURN)) {
-                // Disable history if executed through a mapping (nmap X :foobar<CR>).
-                if (isHistoryEnabled() && e.isVirtual()) {
-                    setHistoryEnabled(false);
-                }
-                c = parseAndExecute();
-            } else {
-                if (e.equals(KEY_CTRL_V) || (e.getSpecialKey() == KEY_INSERT && e.withShiftKey())) {
-                    pasteRegister = true;
-                    e = new SimpleKeyStroke(DefaultRegisterManager.REGISTER_NAME_CLIPBOARD.charAt(0));
-                } else {
-                    if (e.getSpecialKey() == KEY_TAB) { //tab-completion for filenames
-                        String completed = completeArgument(commandLine.getContents(), e);
-                        if (completed != null) {
-                            commandLine.resetContents(completed);
-                        }
-                        pasteRegister = false;
-                        return;
-                    }
-                }
-                if (e.getCharacter() != KeyStroke.SPECIAL_KEY && pasteRegister) {
-                    String registerName = Character.toString(e.getCharacter());
-                    pasteRegister(registerName);
-                    pasteRegister = false;
-                    modified = true;
-                } else if (e.getCharacter() != KeyStroke.SPECIAL_KEY) {
-                    commandLine.type(Character.toString(e.getCharacter()));
-                    modified = true;
-                }
+        } else if (e.equals(KEY_RETURN)) {
+            // Disable history if executed through a mapping (nmap X :foobar<CR>).
+            if (isHistoryEnabled() && e.isVirtual()) {
+                setHistoryEnabled(false);
             }
+            c = parseAndExecute();
+        } else if (e.getSpecialKey() == SpecialKey.TAB) { //tab-completion for filenames
+            String completed = completeArgument(commandLine.getContents(), e);
+            if (completed != null) {
+                commandLine.resetContents(completed);
+            }
+            pasteRegister = false;
+            return;
+        } else if (e.getCharacter() != KeyStroke.SPECIAL_KEY && pasteRegister) {
+            String registerName = Character.toString(e.getCharacter());
+            pasteRegister(registerName);
+            pasteRegister = false;
+            modified = true;
+        } else if (e.getCharacter() != KeyStroke.SPECIAL_KEY) {
+            commandLine.type(Character.toString(e.getCharacter()));
+            modified = true;
         }
+
         //Exit register mode but not command line mode.
         if (pasteRegister && e.equals(KEY_ESCAPE)) {
             pasteRegister = false;
