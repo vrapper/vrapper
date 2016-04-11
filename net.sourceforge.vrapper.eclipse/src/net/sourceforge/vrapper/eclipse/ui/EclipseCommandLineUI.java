@@ -293,9 +293,9 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener,
             commandLineText.setEditable(true);
             if (registerModeSelection != null) {
                 commandLineText.replaceTextRange(registerModeSelection.x, 1, "");
-                commandLineText.setSelection(registerModeSelection);
+                commandLineText.setSelection(registerModeSelection.x);
                 registerModeSelection = null;
-            } else {
+            } else if (readOnly) {
                 //Reset any selection made in a readonly mode, otherwise we need to check if
                 // cut/copy needs to be enabled.
                 commandLineText.setSelection(commandLineText.getCaretOffset());
@@ -411,15 +411,22 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener,
     protected void clipSelection() {
         if (commandLineText.getSelectionCount() > 0) {
             Point sel = commandLineText.getSelection();
-            int leftOffset = Math.min(sel.x, sel.y);
-            int rightOffset = Math.max(sel.x, sel.y);
+            boolean isReversed = commandLineText.getCaretOffset() == sel.x;
+            int leftOffset = sel.x;
+            int rightOffset = sel.y;
             if (leftOffset < contentsOffset) {
                 leftOffset = contentsOffset;
             }
             if (rightOffset < contentsOffset) {
                 rightOffset = contentsOffset;
             }
-            commandLineText.setSelection(new Point(leftOffset, rightOffset));
+            Point newSel;
+            if (isReversed) {
+                newSel = new Point(rightOffset, leftOffset);
+            } else {
+                newSel = new Point(leftOffset, rightOffset);
+            }
+            commandLineText.setSelection(newSel);
         }
     }
 
