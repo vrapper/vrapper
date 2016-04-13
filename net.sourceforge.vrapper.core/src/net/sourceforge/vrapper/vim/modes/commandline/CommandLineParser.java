@@ -8,8 +8,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.sourceforge.vrapper.keymap.KeyStroke;
-import net.sourceforge.vrapper.platform.SelectionService;
 import net.sourceforge.vrapper.platform.Configuration.Option;
+import net.sourceforge.vrapper.platform.SelectionService;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.LineRange;
 import net.sourceforge.vrapper.utils.Search;
@@ -32,6 +32,7 @@ import net.sourceforge.vrapper.vim.commands.DummyCommand;
 import net.sourceforge.vrapper.vim.commands.DummyTextObject;
 import net.sourceforge.vrapper.vim.commands.EditFileCommand;
 import net.sourceforge.vrapper.vim.commands.ExCommandOperation;
+import net.sourceforge.vrapper.vim.commands.ExSearchCommand;
 import net.sourceforge.vrapper.vim.commands.FindFileCommand;
 import net.sourceforge.vrapper.vim.commands.LineRangeOperationCommand;
 import net.sourceforge.vrapper.vim.commands.ListBuffersCommand;
@@ -754,6 +755,12 @@ public class CommandLineParser extends AbstractCommandParser {
         	        return rangeOp;
         	    }
         	}
+        }
+        
+        //If starts with '/' or '?' but isn't a line range operation (checked above)
+        //then it must be a search request.  Perform search without switching modes.
+        if (command.startsWith("/") || command.startsWith("?")) {
+            return new ExSearchCommand(""+command.charAt(0), command.substring(1));
         }
         
         //might be a substitution definition
