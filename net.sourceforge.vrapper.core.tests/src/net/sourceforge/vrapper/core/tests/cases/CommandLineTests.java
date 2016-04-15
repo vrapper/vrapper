@@ -17,6 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import net.sourceforge.vrapper.core.tests.utils.DumbPosition;
+import net.sourceforge.vrapper.core.tests.utils.TestSearchService;
 import net.sourceforge.vrapper.core.tests.utils.VimTestCase;
 import net.sourceforge.vrapper.platform.Configuration.Option;
 import net.sourceforge.vrapper.utils.ContentType;
@@ -81,6 +82,8 @@ public class CommandLineTests extends VimTestCase {
 
     @Test
     public void testSubstitution() throws CommandExecutionException {
+
+        when(platform.getSearchAndReplaceService()).thenReturn(new TestSearchService(content, configuration));
 
         super.installSaneRegisterManager();
 
