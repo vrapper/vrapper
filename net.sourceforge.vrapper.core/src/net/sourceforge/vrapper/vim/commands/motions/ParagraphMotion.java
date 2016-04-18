@@ -1,7 +1,9 @@
 package net.sourceforge.vrapper.vim.commands.motions;
 
 import static net.sourceforge.vrapper.utils.VimUtils.isLineBlank;
+
 import net.sourceforge.vrapper.platform.Configuration;
+import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.LineInformation;
@@ -49,7 +51,7 @@ public class ParagraphMotion extends CountAwareMotion {
         if (step > 0 && ((lineNo + 1) == modelContent.getNumberOfLines())) {
             offset = modelContent.getLineInformation(lineNo).getEndOffset();
         }
-        return editorAdaptor.getPosition().setModelOffset(offset);
+        return editorAdaptor.getCursorService().newPositionForModelOffset(offset);
     }
 
     protected int moveMore(final TextContent modelContent, final int lineNo) {
@@ -239,8 +241,9 @@ public class ParagraphMotion extends CountAwareMotion {
                 endLineNo--;
             }
             
-            final Position startPos = editorAdaptor.getPosition().setModelOffset(content.getLineInformation(startLineNo).getBeginOffset());
-            final Position endPos = editorAdaptor.getPosition().setModelOffset(content.getLineInformation(endLineNo).getEndOffset()); ;
+            final CursorService cursorService = editorAdaptor.getCursorService();
+            final Position startPos = cursorService.newPositionForModelOffset(content.getLineInformation(startLineNo).getBeginOffset());
+            final Position endPos = cursorService.newPositionForModelOffset(content.getLineInformation(endLineNo).getEndOffset()); ;
             return new LineWiseSelection(editorAdaptor, startPos, endPos);
         }
 

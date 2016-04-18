@@ -91,7 +91,7 @@ public class JoinLinesCommand extends CountAwareCommand {
                 glue = "";
                 
             modelContent.replace(eolOffset, bolOffset - eolOffset, glue);
-            editorAdaptor.setPosition(editorAdaptor.getPosition().setModelOffset(eolOffset),
+            editorAdaptor.setPosition(editorAdaptor.getCursorService().newPositionForModelOffset(eolOffset),
                     StickyColumnPolicy.ON_CHANGE);
         }
     }

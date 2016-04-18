@@ -48,7 +48,7 @@ public class ExSearchCommand extends CountAwareCommand {
             int newPos = VimUtils.getFirstNonWhiteSpaceOffset(model, line);
 
             //move cursor to the beginning of the line of this first match
-            editorAdaptor.setPosition(editorAdaptor.getPosition().setModelOffset(newPos), StickyColumnPolicy.ON_CHANGE);
+            editorAdaptor.setPosition(cursor.setModelOffset(newPos), StickyColumnPolicy.ON_CHANGE);
         }
     }
 

@@ -52,12 +52,13 @@ public class SentenceMotion extends CountAwareMotion {
         if(count == NO_COUNT_GIVEN)
             count = 1;
         
-        int position = editorAdaptor.getPosition().getModelOffset();
+        Position cursor = editorAdaptor.getPosition();
+        int position = cursor.getModelOffset();
         for (int i = 0; i < count; i++) {
         	position = doIt(editorAdaptor, position);
         }
         
-        return editorAdaptor.getPosition().setModelOffset(position);
+        return cursor.setModelOffset(position);
 	}
 	
 	private int doIt(EditorAdaptor editorAdaptor, int position) {

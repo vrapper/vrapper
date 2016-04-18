@@ -4,6 +4,7 @@ import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
@@ -348,8 +349,9 @@ public class XmlTagDelimitedText implements DelimitedText {
     }
     
     private TextRange getRange(EditorAdaptor editorAdaptor, int start, int end) {
-        Position matchBegin = editorAdaptor.getPosition().setModelOffset(start);
-        Position matchEnd   = editorAdaptor.getPosition().setModelOffset(end);
+        CursorService cursorService = editorAdaptor.getCursorService();
+        Position matchBegin = cursorService.newPositionForModelOffset(start);
+        Position matchEnd   = cursorService.newPositionForModelOffset(end);
         return new StartEndTextRange(matchBegin, matchEnd);
     }
 }
