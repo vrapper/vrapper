@@ -10,7 +10,6 @@ import net.sourceforge.vrapper.keymap.vim.GoThereState;
 import net.sourceforge.vrapper.keymap.vim.VisualMotionState;
 import net.sourceforge.vrapper.plugin.subwordtextobj.commands.SubwordMotion;
 import net.sourceforge.vrapper.vim.commands.Command;
-import net.sourceforge.vrapper.vim.commands.motions.ContinueFindingMotion;
 import net.sourceforge.vrapper.vim.commands.motions.Motion;
 import net.sourceforge.vrapper.vim.commands.motions.MoveUpDownNonWhitespace;
 
@@ -19,21 +18,15 @@ public class SubwordProvider extends AbstractEclipseSpecificStateProvider {
     @SuppressWarnings("unchecked")
     @Override
     protected State<Command> normalModeBindings() {
-        //since I'm overriding the default ',' and '_' behavior
-        //add ',,' and '__' to access those default features
+        //since I'm overriding the default '_' behavior
+        //add '__' to access that default feature
         return new GoThereState(state(
                 transitionBind('_',
                         state(
-                                leafBind('b', SubwordMotion.SNAKE_BACK),
-                                leafBind('e', SubwordMotion.SNAKE_END),
-                                leafBind('w', SubwordMotion.SNAKE_WORD),
-                                leafBind('_', (Motion)MoveUpDownNonWhitespace.MOVE_DOWN_LESS_ONE))),
-                transitionBind(',',
-                        state(
-                                leafBind('b', SubwordMotion.CAMEL_BACK),
-                                leafBind('e', SubwordMotion.CAMEL_END),
-                                leafBind('w', SubwordMotion.CAMEL_WORD),
-                                leafBind(',', (Motion)ContinueFindingMotion.REVERSE)))
+                                leafBind('b', SubwordMotion.SUB_BACK),
+                                leafBind('e', SubwordMotion.SUB_END),
+                                leafBind('w', SubwordMotion.SUB_WORD),
+                                leafBind('_', (Motion)MoveUpDownNonWhitespace.MOVE_DOWN_LESS_ONE)))
                 ));
     }
 
@@ -44,16 +37,10 @@ public class SubwordProvider extends AbstractEclipseSpecificStateProvider {
                 state(
                 transitionBind('_',
                         state(
-                                leafBind('b', SubwordMotion.SNAKE_BACK),
-                                leafBind('e', SubwordMotion.SNAKE_END),
-                                leafBind('w', SubwordMotion.SNAKE_WORD),
-                                leafBind('_', (Motion)MoveUpDownNonWhitespace.MOVE_DOWN_LESS_ONE))),
-                transitionBind(',',
-                        state(
-                                leafBind('b', SubwordMotion.CAMEL_BACK),
-                                leafBind('e', SubwordMotion.CAMEL_END),
-                                leafBind('w', SubwordMotion.CAMEL_WORD),
-                                leafBind(',', (Motion)ContinueFindingMotion.REVERSE)))
+                                leafBind('b', SubwordMotion.SUB_BACK),
+                                leafBind('e', SubwordMotion.SUB_END),
+                                leafBind('w', SubwordMotion.SUB_WORD),
+                                leafBind('_', (Motion)MoveUpDownNonWhitespace.MOVE_DOWN_LESS_ONE)))
                 ));
     }
 

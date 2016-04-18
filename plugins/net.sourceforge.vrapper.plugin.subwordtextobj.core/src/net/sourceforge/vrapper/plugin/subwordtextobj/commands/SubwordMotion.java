@@ -36,23 +36,17 @@ public class SubwordMotion extends CountAwareMotion {
 
     private static enum Limit { BACK, END, WORD };
 
-    public static final Motion SNAKE_BACK = new SubwordMotion(false, Limit.BACK);
-    public static final Motion SNAKE_END = new SubwordMotion(false, Limit.END);
-    public static final Motion SNAKE_WORD = new SubwordMotion(false, Limit.WORD);
-
-    public static final Motion CAMEL_BACK = new SubwordMotion(true, Limit.BACK);
-    public static final Motion CAMEL_END = new SubwordMotion(true, Limit.END);
-    public static final Motion CAMEL_WORD = new SubwordMotion(true, Limit.WORD);
+    public static final Motion SUB_BACK = new SubwordMotion(Limit.BACK);
+    public static final Motion SUB_END = new SubwordMotion(Limit.END);
+    public static final Motion SUB_WORD = new SubwordMotion(Limit.WORD);
     
     private final Pattern camelPattern = Pattern.compile("(?<=[^A-Z])([A-Z]+)([^A-Z]|$)");
     private final Pattern snakePattern = Pattern.compile("[_]([^_])");
     private final Pattern snakePatternEnd = Pattern.compile("[^_]([_])");
 
-    private final boolean camel;
     private final Limit limit;
     
-    private SubwordMotion(boolean camel, Limit limit) {
-        this.camel = camel;
+    private SubwordMotion(Limit limit) {
         this.limit = limit;
     }
 
@@ -82,7 +76,7 @@ public class SubwordMotion extends CountAwareMotion {
         String word = model.getText(wordRange);
         
         Matcher matcher;
-        if(camel) { //camelCase doesn't have a delimiter so all limits are the same
+        if( ! word.contains("_")) { //camelCase doesn't have a delimiter so WORD == END
             matcher = camelPattern.matcher(word);
         }
         else if(limit == Limit.END) {
@@ -120,15 +114,12 @@ public class SubwordMotion extends CountAwareMotion {
 
     public static class SubwordTextObject extends AbstractTextObject {
 
-        public static final TextObject SNAKE = new SubwordTextObject(false, false);
-        public static final TextObject SNAKE_OUTER = new SubwordTextObject(false, true);
-        public static final TextObject CAMEL = new SubwordTextObject(true, false);
+        public static final TextObject INSTANCE = new SubwordTextObject(false);
+        public static final TextObject INSTANCE_OUTER = new SubwordTextObject(true);
 
-        private final boolean camel;
         private final boolean outer;
 
-        private SubwordTextObject(boolean camel, boolean outer) {
-            this.camel = camel;
+        private SubwordTextObject(boolean outer) {
             this.outer = outer;
         }
 
@@ -137,14 +128,8 @@ public class SubwordMotion extends CountAwareMotion {
             Motion startMotion;
             Motion endMotion;
 
-            if(camel) {
-                startMotion = SubwordMotion.CAMEL_BACK;
-                endMotion = SubwordMotion.CAMEL_END;
-            }
-            else {
-                startMotion = SubwordMotion.SNAKE_BACK;
-                endMotion = outer ? SubwordMotion.SNAKE_WORD : SubwordMotion.SNAKE_END;
-            }
+            startMotion = SubwordMotion.SUB_BACK;
+            endMotion = outer ? SubwordMotion.SUB_WORD : SubwordMotion.SUB_END;
             
             //offset+1 to include the character under the cursor
             int offset = ((SubwordMotion)startMotion).doIt(editorAdaptor, editorAdaptor.getPosition().getModelOffset() + 1);
