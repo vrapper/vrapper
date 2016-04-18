@@ -41,8 +41,9 @@ public class SubwordMotion extends CountAwareMotion {
     public static final Motion SUB_WORD = new SubwordMotion(Limit.WORD);
     
     private final Pattern camelPattern = Pattern.compile("(?<=[^A-Z])([A-Z]+)([^A-Z]|$)");
+    private final Pattern camelPatternEnd = Pattern.compile("([^A-Z])[A-Z]+([^A-Z]|$)");
     private final Pattern snakePattern = Pattern.compile("[_]([^_])");
-    private final Pattern snakePatternEnd = Pattern.compile("[^_]([_])");
+    private final Pattern snakePatternEnd = Pattern.compile("([^_])[_]");
 
     private final Limit limit;
     
@@ -55,9 +56,17 @@ public class SubwordMotion extends CountAwareMotion {
         if(count == NO_COUNT_GIVEN)
             count = 1;
         
-        int position = editorAdaptor.getPosition().getModelOffset();
+        int positionOrig = editorAdaptor.getPosition().getModelOffset();
+        int position = positionOrig;
+
         for (int i = 0; i < count; i++) {
+            positionOrig = position;
         	position = doIt(editorAdaptor, position);
+
+        	if(limit == Limit.END && position == positionOrig && position < editorAdaptor.getModelContent().getTextLength()) {
+        	    //if we matched on our self, increase and try again
+        	    position = doIt(editorAdaptor, ++position);
+        	}
         }
         
         return editorAdaptor.getCursorService().newPositionForModelOffset(position);
@@ -76,27 +85,37 @@ public class SubwordMotion extends CountAwareMotion {
         String word = model.getText(wordRange);
         
         Matcher matcher;
-        if( ! word.contains("_")) { //camelCase doesn't have a delimiter so WORD == END
-            matcher = camelPattern.matcher(word);
+        if(word.contains("_")) {
+            matcher = limit == Limit.END ? snakePatternEnd.matcher(word) : snakePattern.matcher(word);
         }
-        else if(limit == Limit.END) {
-            matcher = snakePatternEnd.matcher(word);
-        }
-        else { //Limit.BACK and Limit.WORD
-            matcher = snakePattern.matcher(word);
+        else {
+            matcher = limit == Limit.END ? camelPatternEnd.matcher(word) : camelPattern.matcher(word);
         }
 
+        //collect all matches
+        //(I can't believe Java doesn't have a better way to do this)
         List<Integer> matches = new ArrayList<Integer>();
         while(matcher.find()) { matches.add(matcher.start(1)); }
 
-        int offset;
+        int offset = 0;
         if(matches.size() > 0) {
             //if moving backwards get last match, if moving forwards get first match
             offset = limit == Limit.BACK ? matches.get( matches.size() -1) : matches.get(0);
         }
         else { //no sub-words found, match on word boundary (beginning/end of the string)
-            //using trim() to ignore any trailing newlines (don't jump to next line)
-            offset = limit == Limit.BACK ? 0 : word.trim().length();
+            switch(limit) {
+            case BACK:
+                offset = 0;
+                break;
+            case END:
+                //add trim() in case the string ends in a newline, don't jump to next line
+                offset = word.trim().length();
+                break;
+            case WORD:
+                //potentially jump to next line
+                offset = word.length();
+                break;
+            }
         }
         
         return wordRange.getLeftBound().getModelOffset() + offset;
@@ -136,6 +155,11 @@ public class SubwordMotion extends CountAwareMotion {
             Position start = editorAdaptor.getCursorService().newPositionForModelOffset(offset);
 
             Position end = ((SubwordMotion)endMotion).destination(editorAdaptor, count);
+            if(! outer) {
+                //inclusive vs. exclusive in motion vs. text object
+                //motion is exclusive, inner text object is inclusive
+                end = end.addModelOffset(1);
+            }
             return new StartEndTextRange(start, end);
         }
 

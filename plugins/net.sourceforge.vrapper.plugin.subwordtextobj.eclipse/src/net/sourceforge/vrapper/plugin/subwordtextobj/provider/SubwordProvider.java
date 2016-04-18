@@ -10,23 +10,18 @@ import net.sourceforge.vrapper.keymap.vim.GoThereState;
 import net.sourceforge.vrapper.keymap.vim.VisualMotionState;
 import net.sourceforge.vrapper.plugin.subwordtextobj.commands.SubwordMotion;
 import net.sourceforge.vrapper.vim.commands.Command;
-import net.sourceforge.vrapper.vim.commands.motions.Motion;
-import net.sourceforge.vrapper.vim.commands.motions.MoveUpDownNonWhitespace;
 
 public class SubwordProvider extends AbstractEclipseSpecificStateProvider {
 
     @SuppressWarnings("unchecked")
     @Override
     protected State<Command> normalModeBindings() {
-        //since I'm overriding the default '_' behavior
-        //add '__' to access that default feature
         return new GoThereState(state(
-                transitionBind('_',
+                transitionBind('\\',
                         state(
                                 leafBind('b', SubwordMotion.SUB_BACK),
                                 leafBind('e', SubwordMotion.SUB_END),
-                                leafBind('w', SubwordMotion.SUB_WORD),
-                                leafBind('_', (Motion)MoveUpDownNonWhitespace.MOVE_DOWN_LESS_ONE)))
+                                leafBind('w', SubwordMotion.SUB_WORD)))
                 ));
     }
 
@@ -35,12 +30,11 @@ public class SubwordProvider extends AbstractEclipseSpecificStateProvider {
     protected State<Command> visualModeBindings() {
         return new VisualMotionState(
                 state(
-                transitionBind('_',
+                transitionBind('\\',
                         state(
                                 leafBind('b', SubwordMotion.SUB_BACK),
                                 leafBind('e', SubwordMotion.SUB_END),
-                                leafBind('w', SubwordMotion.SUB_WORD),
-                                leafBind('_', (Motion)MoveUpDownNonWhitespace.MOVE_DOWN_LESS_ONE)))
+                                leafBind('w', SubwordMotion.SUB_WORD)))
                 ));
     }
 

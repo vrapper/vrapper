@@ -22,9 +22,9 @@ public class SubwordTextObjectProvider extends AbstractPlatformSpecificTextObjec
         @SuppressWarnings("unchecked")
         final State<TextObject> argObjects = state(
                 transitionBind('i',
-                    state( leafBind('_', SubwordTextObject.INSTANCE))),
+                    state( leafBind('\\', SubwordTextObject.INSTANCE))),
                 transitionBind('a',
-                    state( leafBind('_', SubwordTextObject.INSTANCE_OUTER))));
+                    state( leafBind('\\', SubwordTextObject.INSTANCE_OUTER))));
         return argObjects;
     }
 
