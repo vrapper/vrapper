@@ -190,6 +190,10 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         }
     }
 
+    @Override
+    public void close() {
+    }
+
     public String getLastModeName() {
         return lastModeName;
     }

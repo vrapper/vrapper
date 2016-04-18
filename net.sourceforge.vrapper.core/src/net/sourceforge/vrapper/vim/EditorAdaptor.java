@@ -26,7 +26,14 @@ import net.sourceforge.vrapper.vim.modes.EditorMode;
 import net.sourceforge.vrapper.vim.modes.ModeSwitchHint;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
 
+/**
+ * This facade gives access to all Vrapper functionality of the platform (i.e. the editor and IDE
+ * infrastructure) while holding Vrapper's general state for the current editor.
+ */
 public interface EditorAdaptor {
+    /** Called when the editor is about to close. */
+    void close() throws CommandExecutionException;
+
     void changeMode(String modeName, ModeSwitchHint... args) throws CommandExecutionException;
     void changeModeSafely(String name, ModeSwitchHint... args);
     String getCurrentModeName();

@@ -218,6 +218,11 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
         // remove the listener in case the editor gets cached
         if (interceptor != null) {
             try {
+                interceptor.getEditorAdaptor().close();
+            } catch (Exception exception) {
+                VrapperLog.error("Exception while closing EditorAdaptor.", exception);
+            }
+            try {
                 Method me = AbstractTextEditor.class.getDeclaredMethod("getSourceViewer");
                 me.setAccessible(true);
                 Object viewer = me.invoke(part);
