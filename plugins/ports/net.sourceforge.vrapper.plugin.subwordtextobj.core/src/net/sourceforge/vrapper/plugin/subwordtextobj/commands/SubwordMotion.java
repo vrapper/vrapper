@@ -11,7 +11,6 @@ import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
-import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.AbstractTextObject;
 import net.sourceforge.vrapper.vim.commands.BorderPolicy;
@@ -19,6 +18,7 @@ import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.TextObject;
 import net.sourceforge.vrapper.vim.commands.motions.CountAwareMotion;
 import net.sourceforge.vrapper.vim.commands.motions.Motion;
+import net.sourceforge.vrapper.vim.commands.motions.MoveWordEndRight;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordLeft;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordRight;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
@@ -75,7 +75,19 @@ public class SubwordMotion extends CountAwareMotion {
         TextContent model = editorAdaptor.getModelContent();
         Position cursor = editorAdaptor.getCursorService().newPositionForModelOffset(position);
 
-        Motion wordMotion = limit == Limit.BACK ? MoveWordLeft.INSTANCE : MoveWordRight.INSTANCE;
+        Motion wordMotion;
+        switch(limit) {
+        case BACK:
+            wordMotion = MoveWordLeft.INSTANCE;
+            break;
+        case END:
+            wordMotion = MoveWordEndRight.INSTANCE;
+            break;
+        case WORD:
+        default: //<-- not needed, just makes the compiler happy
+            wordMotion = MoveWordRight.INSTANCE;
+            break;
+        }
         Position dest = wordMotion.destination(editorAdaptor);
         
         //StartEndTextRange can handle cursor < dest
@@ -102,19 +114,7 @@ public class SubwordMotion extends CountAwareMotion {
             offset = limit == Limit.BACK ? matches.get( matches.size() -1) : matches.get(0);
         }
         else { //no sub-words found, match on word boundary (beginning/end of the string)
-            switch(limit) {
-            case BACK:
-                offset = 0;
-                break;
-            case END:
-                //if string ends in a newline, don't jump to next line
-                offset = VimUtils.containsNewLine(word) ? word.trim().length() : word.length() -1;
-                break;
-            case WORD:
-                //potentially jump to next line
-                offset = word.length();
-                break;
-            }
+            offset = limit == Limit.BACK ? 0 : word.length();
         }
         
         return wordRange.getLeftBound().getModelOffset() + offset;
