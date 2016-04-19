@@ -11,6 +11,7 @@ import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
+import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.AbstractTextObject;
 import net.sourceforge.vrapper.vim.commands.BorderPolicy;
@@ -24,10 +25,8 @@ import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 
 /**
  * Define Motions (and TextObjects) for navigating camelCase and snake_case words.
- * ',b' ',e' ',w' moves between words of a camelCase name.
- * '_b' '_e' '_w' moves between words of a snake_case name.
- * Text objects 'i,' and 'a,' are identical since camelCase words don't have delimiters.
- * Text objects 'i_' and 'a_' determines whether the '_' after the word will be included.
+ * '\b' '\e' '\w' moves between words of a camelCase or snake_case name.
+ * Text objects 'i\' and 'a\' determine whether the '_' after the word will be included.
  * 
  * All these Motions are based on the moveWordLeft/Right Motion so the behavior is the
  * same as 'b' 'e' 'w' if no camelCase or snake_case boundaries are found.
@@ -40,10 +39,10 @@ public class SubwordMotion extends CountAwareMotion {
     public static final Motion SUB_END = new SubwordMotion(Limit.END);
     public static final Motion SUB_WORD = new SubwordMotion(Limit.WORD);
     
-    private final Pattern camelPattern = Pattern.compile("(?<=[^A-Z])([A-Z]+)([^A-Z]|$)");
-    private final Pattern camelPatternEnd = Pattern.compile("([^A-Z])[A-Z]+([^A-Z]|$)");
-    private final Pattern snakePattern = Pattern.compile("[_]([^_])");
-    private final Pattern snakePatternEnd = Pattern.compile("([^_])[_]");
+    private final Pattern camelPattern = Pattern.compile("(?<=[0-9a-z])([A-Z]+)([0-9a-z]|$)");
+    private final Pattern camelPatternEnd = Pattern.compile("([0-9a-z])[A-Z]+([0-9a-z]|$)");
+    private final Pattern snakePattern = Pattern.compile("[_]+([0-9a-zA-Z])");
+    private final Pattern snakePatternEnd = Pattern.compile("([0-9a-zA-Z])[_]");
 
     private final Limit limit;
     
@@ -108,8 +107,8 @@ public class SubwordMotion extends CountAwareMotion {
                 offset = 0;
                 break;
             case END:
-                //add trim() in case the string ends in a newline, don't jump to next line
-                offset = word.trim().length();
+                //if string ends in a newline, don't jump to next line
+                offset = VimUtils.containsNewLine(word) ? word.trim().length() : word.length() -1;
                 break;
             case WORD:
                 //potentially jump to next line
