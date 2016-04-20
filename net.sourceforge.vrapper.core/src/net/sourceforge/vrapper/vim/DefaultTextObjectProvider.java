@@ -11,6 +11,7 @@ import net.sourceforge.vrapper.keymap.vim.CountingState;
 import net.sourceforge.vrapper.keymap.vim.DelimitedTextObjectState;
 import net.sourceforge.vrapper.keymap.vim.MatchAdHocDelimitedTextState;
 import net.sourceforge.vrapper.keymap.vim.TextObjectState;
+import net.sourceforge.vrapper.vim.commands.CommentTextObject;
 import net.sourceforge.vrapper.vim.commands.DelimitedText;
 import net.sourceforge.vrapper.vim.commands.MotionPairTextObject;
 import net.sourceforge.vrapper.vim.commands.QuoteDelimitedText;
@@ -97,6 +98,8 @@ public class DefaultTextObjectProvider implements TextObjectProvider {
                                 leafBind('W', innerWORD),
                                 leafBind('s', innerSentence),
                                 leafBind('p', innerParagraph),
+                                leafBind('c', CommentTextObject.INNER),
+                                leafBind('C', CommentTextObject.INNER_LINE),
                                 leafBind('`',  FindQuoteTextObject.inner('`')),
                                 leafBind('"',  FindQuoteTextObject.inner('"')),
                                 leafBind('\'', FindQuoteTextObject.inner('\''))
@@ -107,6 +110,8 @@ public class DefaultTextObjectProvider implements TextObjectProvider {
                                 leafBind('W', aWORD),
                                 leafBind('s', aSentence),
                                 leafBind('p', aParagraph),
+                                leafBind('c', CommentTextObject.OUTER),
+                                leafBind('C', CommentTextObject.OUTER_LINE),
                                 leafBind('`',  FindQuoteTextObject.outer('`')),
                                 leafBind('"',  FindQuoteTextObject.outer('"')),
                                 leafBind('\'', FindQuoteTextObject.outer('\''))
