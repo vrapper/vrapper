@@ -1,6 +1,7 @@
 package net.sourceforge.vrapper.plugin.subwordtextobj.commands;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -84,10 +85,11 @@ public class SubwordMotion extends CountAwareMotion {
             wordMotion = MoveWordEndRight.INSTANCE;
             break;
         case WORD:
-        default: //<-- not needed, just makes the compiler happy
+        default: //<-- won't happen but it makes the compiler happy
             wordMotion = MoveWordRight.INSTANCE;
             break;
         }
+        //find where the regular word motion would take us
         Position dest = wordMotion.destination(editorAdaptor);
         
         //StartEndTextRange can handle cursor < dest
@@ -95,18 +97,32 @@ public class SubwordMotion extends CountAwareMotion {
         TextRange wordRange = new StartEndTextRange(dest, cursor);
         String word = model.getText(wordRange);
         
+        List<Integer> matches = new ArrayList<Integer>();
+        boolean matchBoth = false;
         Matcher matcher;
+
+        //if snake_case
         if(word.contains("_")) {
             matcher = limit == Limit.END ? snakePatternEnd.matcher(word) : snakePattern.matcher(word);
-        }
-        else {
-            matcher = limit == Limit.END ? camelPatternEnd.matcher(word) : camelPattern.matcher(word);
+            while(matcher.find()) { matches.add(matcher.start(1)); }
         }
 
-        //collect all matches
-        //(I can't believe Java doesn't have a better way to do this)
-        List<Integer> matches = new ArrayList<Integer>();
-        while(matcher.find()) { matches.add(matcher.start(1)); }
+        //if a mix of lower-case and upper-case, camelCase (ignore ALL_CAPS and all_lower)
+        if( !word.equals(word.toLowerCase()) && !word.equals(word.toUpperCase())) {
+            if(matches.size() > 0) {
+                //handle the corner case of both snake_case and camelCase in the same word
+                //but really, who does that??
+                matchBoth = true;
+            }
+            matcher = limit == Limit.END ? camelPatternEnd.matcher(word) : camelPattern.matcher(word);
+            while(matcher.find()) { matches.add(matcher.start(1)); }
+        }
+
+        if(matchBoth) {
+            //re-order if this word has both camelCase and snake_case
+            //(this will ensure we get the first index of whichever format came first)
+            Collections.sort(matches);
+        }
 
         int offset = 0;
         if(matches.size() > 0) {
