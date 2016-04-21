@@ -2,7 +2,7 @@
 <feature
       id="net.sourceforge.vrapper.plugin.splitEditor"
       label="Vrapper - Split Editor Plugin (Optional, requires Eclipse 4+)"
-      version="0.67.20160419"
+      version="0.67.20160420"
       provider-name="Vrapper Team">
 
    <description url="http://vrapper.sourceforge.net/documentation/">
@@ -860,8 +860,8 @@ Public License instead of this License.  But first, please read
    </license>
 
    <requires>
-      <import plugin="net.sourceforge.vrapper.eclipse" version="0.67.20160419" match="greaterOrEqual"/>
-      <import feature="net.sourceforge.vrapper" version="0.67.20160419"/>
+      <import plugin="net.sourceforge.vrapper.eclipse" version="0.67.20160420" match="greaterOrEqual"/>
+      <import feature="net.sourceforge.vrapper" version="0.67.20160420"/>
    </requires>
 
    <plugin
