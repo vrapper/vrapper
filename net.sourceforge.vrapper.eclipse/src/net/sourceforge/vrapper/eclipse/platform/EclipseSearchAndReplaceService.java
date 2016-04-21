@@ -16,7 +16,6 @@ import net.sourceforge.vrapper.platform.Configuration;
 import net.sourceforge.vrapper.platform.HighlightingService;
 import net.sourceforge.vrapper.platform.SearchAndReplaceService;
 import net.sourceforge.vrapper.platform.VrapperPlatformException;
-import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Search;
 import net.sourceforge.vrapper.utils.SearchResult;
@@ -59,9 +58,7 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
         }
     }
     
-    public int replace(LineInformation line, String toFind, String replace, String flags) {
-        int start = line.getBeginOffset();
-        int end = line.getEndOffset();
+    public int replace(int start, int end, String toFind, String replace, String flags) {
         final boolean replaceAll = flags.contains("g");
         final boolean reportMatches = flags.contains("n");
         final boolean caseSensitive = isCaseSensitive(toFind, flags);
@@ -94,7 +91,7 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
                         toFind, true, caseSensitive, false, true);
             }
         } catch (BadLocationException e) {
-            VrapperLog.error("Failed to replace for " + line, e);
+            VrapperLog.error("Failed to replace '" + toFind + "'", e);
         }
         
         return numReplaces;

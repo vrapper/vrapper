@@ -5,7 +5,6 @@ import java.util.regex.Pattern;
 
 import net.sourceforge.vrapper.platform.Configuration;
 import net.sourceforge.vrapper.platform.SearchAndReplaceService;
-import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Search;
 import net.sourceforge.vrapper.utils.SearchResult;
@@ -56,11 +55,12 @@ public class TestSearchService implements SearchAndReplaceService {
     /**
      * Test replace stub.
      */
-    public int replace(LineInformation line, String toFind, String replace, String flags) {
+    public int replace(int start, int end, String toFind, String replace, String flags) {
         int nMatches = 0;
+        int length = end - start;
 
         StringBuilder result = new StringBuilder();
-        String lineContent = content.getText().substring(line.getBeginOffset(), line.getLength());
+        String lineContent = content.getText().substring(start, length);
         int patternFlags = 0;
         boolean doReplace = ! flags.contains("n");
         boolean allMatches = flags.contains("g");
@@ -85,7 +85,7 @@ public class TestSearchService implements SearchAndReplaceService {
         }
         result.append(lineContent.substring(lastMatchEnd, lineContent.length()));
         if (doReplace) {
-            content.replace(line.getBeginOffset(), line.getLength(), result.toString());
+            content.replace(start, length, result.toString());
         }
         return nMatches;
     }

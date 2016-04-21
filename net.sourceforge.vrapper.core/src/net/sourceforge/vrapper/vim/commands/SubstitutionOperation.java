@@ -107,9 +107,19 @@ public class SubstitutionOperation extends AbstractLinewiseOperation {
 			return 1;
 		}
 		else {
+		    int start = line.getBeginOffset();
+		    int end = line.getEndOffset();
+		    if(find.contains("\\%V")) { //select only within visual area (not lines)
+		        find = find.replaceAll("\\\\%V", "");
+		        Selection selection = editorAdaptor.getSelection();
+		        if(selection != null) {
+		            start = selection.getLeftBound().getModelOffset();
+		            end = selection.getRightBound().getModelOffset();
+		        }
+		    }
 			//let Eclipse handle the regex
 			SearchAndReplaceService searchAndReplace = editorAdaptor.getSearchAndReplaceService();
-			return searchAndReplace.replace(line, find, replace, flags);
+			return searchAndReplace.replace(start, end, find, replace, flags);
 		}
     }
 
