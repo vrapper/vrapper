@@ -3,11 +3,10 @@ package net.sourceforge.vrapper.plugin.argtextobj.provider;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
-import net.sourceforge.vrapper.keymap.EmptyState;
+
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.platform.AbstractPlatformSpecificTextObjectProvider;
 import net.sourceforge.vrapper.plugin.argtextobj.commands.ArgumentTextObject;
-import net.sourceforge.vrapper.vim.commands.DelimitedText;
 import net.sourceforge.vrapper.vim.commands.TextObject;
 
 public class ArgumentTextObjectProvider extends AbstractPlatformSpecificTextObjectProvider {
@@ -21,11 +20,6 @@ public class ArgumentTextObjectProvider extends AbstractPlatformSpecificTextObje
     @Override
     public String getName() {
         return name;
-    }
-
-    @Override
-    public State<DelimitedText> delimitedTexts() {
-        return EmptyState.getInstance();
     }
 
     @Override

@@ -3,11 +3,10 @@ package net.sourceforge.vrapper.plugin.methodtextobj.provider;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.leafBind;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.state;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionBind;
-import net.sourceforge.vrapper.keymap.EmptyState;
+
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.platform.AbstractPlatformSpecificTextObjectProvider;
 import net.sourceforge.vrapper.plugin.methodtextobj.commands.MethodTextObject;
-import net.sourceforge.vrapper.vim.commands.DelimitedText;
 import net.sourceforge.vrapper.vim.commands.TextObject;
 
 public class MethodTextObjectProvider extends AbstractPlatformSpecificTextObjectProvider {
@@ -28,10 +27,5 @@ public class MethodTextObjectProvider extends AbstractPlatformSpecificTextObject
                 transitionBind('a',
                         state(leafBind('f', outerArgument))));
         return argObjects;
-    }
-
-    @Override
-    public State<DelimitedText> delimitedTexts() {
-        return EmptyState.getInstance();
     }
 }
