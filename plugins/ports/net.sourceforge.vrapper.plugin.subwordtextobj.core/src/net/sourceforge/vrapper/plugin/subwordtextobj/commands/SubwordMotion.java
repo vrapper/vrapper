@@ -138,7 +138,7 @@ public class SubwordMotion extends CountAwareMotion {
 
     @Override
     public BorderPolicy borderPolicy() {
-        return BorderPolicy.EXCLUSIVE;
+        return limit == Limit.END ? BorderPolicy.INCLUSIVE : BorderPolicy.EXCLUSIVE;
     }
 
     @Override
