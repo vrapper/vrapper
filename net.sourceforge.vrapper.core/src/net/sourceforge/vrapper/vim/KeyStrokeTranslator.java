@@ -8,8 +8,11 @@ import java.util.Queue;
 import net.sourceforge.vrapper.keymap.KeyMap;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.Remapping;
+import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.State;
+import net.sourceforge.vrapper.keymap.StateUtils;
 import net.sourceforge.vrapper.keymap.Transition;
+import net.sourceforge.vrapper.keymap.vim.SimpleKeyStroke;
 import net.sourceforge.vrapper.utils.CollectionUtils;
 
 /**
@@ -19,6 +22,9 @@ import net.sourceforge.vrapper.utils.CollectionUtils;
  * @author Matthias Radig
  */
 public class KeyStrokeTranslator {
+
+    private static KeyStroke LEADER_KEY_SETTING = new SimpleKeyStroke('\\');
+    private static KeyStroke LEADER_KEY = new SimpleKeyStroke(SpecialKey.LEADER);
 
     private State<Remapping> currentState;
     private Remapping lastValue;
@@ -32,10 +38,18 @@ public class KeyStrokeTranslator {
     }
 
     public boolean processKeyStroke(KeyMap keymap, KeyStroke key) {
+        Transition<Remapping> leaderTrans = null;
+        if (LEADER_KEY_SETTING.equals(key)) {
+            if (currentState == null) {
+                leaderTrans = keymap.press(LEADER_KEY);
+            } else {
+                leaderTrans = currentState.press(LEADER_KEY);
+            }
+        }
         Transition<Remapping> trans;
         if (currentState == null) {
             trans = keymap.press(key);
-            if (trans == null) {
+            if (trans == null && leaderTrans == null) {
                 //no mapping begins with this key
                 return false;
             }
@@ -46,6 +60,8 @@ public class KeyStrokeTranslator {
         } else {
             trans = currentState.press(key);
         }
+        // Merge transitions for LEADER and plain key, this helper function will perform null checks
+        trans = StateUtils.transitionUnion(trans, leaderTrans);
         if (trans != null) {
             // mapping exists
             if (trans.getValue() != null) {

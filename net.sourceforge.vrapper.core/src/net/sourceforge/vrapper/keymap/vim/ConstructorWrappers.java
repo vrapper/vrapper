@@ -503,6 +503,7 @@ public class ConstructorWrappers {
         map.put("GT",      key('>'));
         map.put("LT",      key('<'));
         map.put("BAR",     key('|'));
+        map.put("LEADER",  key(SpecialKey.LEADER));
         
         Set<Modifier> modifiers = Collections.unmodifiableSet(EnumSet.of(Modifier.CONTROL));
         // add these ctrl keys to keep parseSpecialKey working
