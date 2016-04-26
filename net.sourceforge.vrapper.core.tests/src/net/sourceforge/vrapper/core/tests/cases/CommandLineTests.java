@@ -89,7 +89,7 @@ public class CommandLineTests extends VimTestCase {
 
         DummyTextObject defaultRange = new DummyTextObject(null);
 
-        registerManager.setSearch(new Search("two", false, false, false));
+        registerManager.setSearch(new Search("two", false, false));
 
         content.setText("one Two three two but two and Two");
         makeSubstitution("s/one/four/Ig").execute(adaptor, 0, defaultRange);
@@ -104,7 +104,7 @@ public class CommandLineTests extends VimTestCase {
         makeSubstitution("s!one!\\=@/!Ig").execute(adaptor, 0, defaultRange);
         assertEquals("two Two three two but two and Two", content.getText());
 
-        registerManager.setSearch(new Search("two", false, false, false));
+        registerManager.setSearch(new Search("two", false, false));
 
         content.setText("one Two three two");
         // Do last search again, replace with empty string, minding case.
@@ -121,7 +121,7 @@ public class CommandLineTests extends VimTestCase {
         makeSubstitution("s///Ig").execute(adaptor, 0, defaultRange);
         assertEquals("one Two three  but  and Two", content.getText());
 
-        registerManager.setSearch(new Search("Two", false, false, false));
+        registerManager.setSearch(new Search("Two", false, false));
 
         content.setText("one Two three two");
         // Special case: do last search again, replace with empty string

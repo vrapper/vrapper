@@ -332,12 +332,10 @@ public class CommandLineParser extends AbstractCommandParser {
                     } else {
                         Search newSearch;
                         if (lastSearch == null) {
-                            newSearch = SearchCommandParser.createSearch(vim, textContent, false,
-                                    false, null);
+                            newSearch = SearchCommandParser.createSearch(vim, textContent, false, null);
                         } else {
                             newSearch = SearchCommandParser.createSearch(vim, textContent,
-                                    lastSearch.isBackward(), lastSearch.isWholeWord(),
-                                    lastSearch.getSearchOffset());
+                                    lastSearch.isBackward(), lastSearch.getSearchOffset());
                         }
                         registerManager.setSearch(newSearch);
                         vim.setLastSearchResult(null);

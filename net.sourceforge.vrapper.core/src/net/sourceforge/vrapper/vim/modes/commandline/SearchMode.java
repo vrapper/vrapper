@@ -44,8 +44,7 @@ public class SearchMode extends AbstractCommandLineMode {
                 // Update the search settings for the last/active search.
                 if (lastSearch != null) {
                     lastSearch = SearchCommandParser.createSearch(vim, lastSearch.getKeyword(),
-                            lastSearch.isBackward(), lastSearch.isWholeWord(),
-                            lastSearch.getSearchOffset());
+                            lastSearch.isBackward(), lastSearch.getSearchOffset());
                     vim.getRegisterManager().setSearch(lastSearch);
                     
                     if (Options.SEARCH_HIGHLIGHT.equals(option) && Boolean.FALSE.equals(newValue)) {
@@ -134,7 +133,7 @@ public class SearchMode extends AbstractCommandLineMode {
 
     private void doIncSearch() {
         String keyword = searchParser.getKeyWord();
-        Search s = SearchCommandParser.createSearch(editorAdaptor, keyword, !forward, false, SearchOffset.NONE);
+        Search s = SearchCommandParser.createSearch(editorAdaptor, keyword, !forward, SearchOffset.NONE);
         CursorService cursorService = editorAdaptor.getCursorService();
         int fixedPos = startPos.getModelOffset() + (forward ? 1 : -1);
         Position startSearchPos = cursorService.newPositionForModelOffset(fixedPos, startPos, true);

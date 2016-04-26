@@ -37,8 +37,7 @@ public class WordSearchMotion extends SearchResultMotion {
             // SearchCommandParser may use 'smartcase', but we don't want that.
             keyword = keyword.toLowerCase(Locale.ENGLISH);
         }
-        Search search = SearchCommandParser.createSearch(editorAdaptor, keyword, reverse, wholeWord,
-                SearchOffset.NONE);
+        Search search = SearchCommandParser.createSearch(editorAdaptor, keyword, reverse, SearchOffset.NONE);
         editorAdaptor.getRegisterManager().setSearch(search);
         editorAdaptor.setLastSearchResult(null);
         //add '*' and '#' searches to command-line history for search mode

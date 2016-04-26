@@ -27,8 +27,7 @@ public class RangeSearchMotion implements Motion {
 	
     public Position destination(EditorAdaptor editorAdaptor)
     		throws CommandExecutionException {
-        Search search = SearchCommandParser.createSearch(editorAdaptor, toFind,
-        		reverse, false, SearchOffset.NONE);
+        Search search = SearchCommandParser.createSearch(editorAdaptor, toFind, reverse, SearchOffset.NONE);
         SearchResult result = editorAdaptor.getSearchAndReplaceService().find(search, start);
         return result == null || result.getStart() == null ? null : result.getLeftBound();
     }

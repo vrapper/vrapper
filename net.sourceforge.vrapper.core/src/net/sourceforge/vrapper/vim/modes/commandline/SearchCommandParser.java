@@ -58,8 +58,7 @@ public class SearchCommandParser extends AbstractCommandParser {
     }
 
     /** Create a {@link Search} instance based on the given parameters and configuration.*/
-    public static Search createSearch(EditorAdaptor editor, String keyword, boolean backward,
-            boolean wholeWord, SearchOffset offset) {
+    public static Search createSearch(EditorAdaptor editor, String keyword, boolean backward, SearchOffset offset) {
         boolean caseSensitive = ! editor.getConfiguration().get(Options.IGNORE_CASE)
             || (editor.getConfiguration().get(Options.SMART_CASE)
                 && StringUtils.containsUppercase(keyword));
@@ -76,14 +75,12 @@ public class SearchCommandParser extends AbstractCommandParser {
         	caseSensitive = true;
         	keyword = keyword.substring(0, index) + keyword.substring(index+2);
         }
-        //can't mix wholeWord and regex search, Eclipse chokes
-        //(if we're searching for wholeWord it isn't a regex anyway)
-        boolean useRegExp = !wholeWord && editor.getConfiguration().get(Options.SEARCH_REGEX);
+        boolean useRegExp = editor.getConfiguration().get(Options.SEARCH_REGEX);
         if (offset == null) {
             // Sanity checking. Passing null is bad style though.
             offset = SearchOffset.NONE;
         }
-        return new Search(keyword, backward, wholeWord, caseSensitive, offset, useRegExp);
+        return new Search(keyword, backward, caseSensitive, offset, useRegExp);
     }
 
 	private Search parseSearchCommand(String first, String command) {
@@ -107,7 +104,7 @@ public class SearchCommandParser extends AbstractCommandParser {
         } else {
             searchOffset = SearchOffset.NONE;
         }
-        Search search = createSearch(editor, keyword, backward, false, searchOffset);
+        Search search = createSearch(editor, keyword, backward, searchOffset);
         return search;
     }
 

@@ -130,10 +130,13 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
         }
         IRegion result;
         try {
+            //Hardcoding wholeWord to false.  If we're doing a wholeWord search,
+            //we'll use regex so we have more control over what we consider a
+            //"word" (using the iskeyword setting).
             result = adapter.find(
                         begin, search.getKeyword(),
                         !search.isBackward(), search.isCaseSensitive(),
-                        search.isWholeWord(), search.isRegExSearch());
+                        false, search.isRegExSearch());
         } catch (BadLocationException e) {
             throw new VrapperPlatformException("Failed to find '" + search.getKeyword() + "' at "
                     + "offset" + begin + ", offset is invalid.", e);
@@ -154,13 +157,20 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
     private Search convertRegexSearch(Search search) {
         String keyword = search.getKeyword();
         keyword = convertRegexSearch(keyword);
-        return new Search(keyword, search.isBackward(), search.isWholeWord(),
-            search.isCaseSensitive(), search.getSearchOffset(), search.isRegExSearch());
+        return new Search(keyword, search.isBackward(), search.isCaseSensitive(), search.getSearchOffset(), search.isRegExSearch());
     }
     private String convertRegexSearch(String keyword) {
-        //in Vim, '\<' and '\>' are word boundaries
-        //in Eclipse, '\b' is word boundaries
-        return keyword.replaceAll("\\\\<|\\\\>", "\\\\b");
+        //In Vim, '\<' and '\>' is the regex for word boundaries. We need to
+        //replace this with valid regex for the Java regex engine.
+        //We *could* just use '\b' for the Java equivalent 'word boundaries'
+        //regex flag but we need to use the 'iskeyword' setting in case
+        //it doesn't match any default word boundary behavior.
+        
+        //using look-aheads and look-behinds to make sure we don't select
+        //the word boundary as part of the match
+        String boundaries = configuration.get(Options.KEYWORDS);
+        keyword = keyword.replaceAll("\\\\<", "(?<!["+boundaries+"])");
+        return keyword.replaceAll("\\\\>", "(?!["+boundaries+"])");
     }
 
     public void removeHighlighting() {
@@ -172,8 +182,7 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
     public void highlight(Search search) {
 
         if (lastHighlightedSearch != null && lastHighlightedSearch.getKeyword().equals(search.getKeyword())
-                && lastHighlightedSearch.isCaseSensitive() == search.isCaseSensitive()
-                && lastHighlightedSearch.isWholeWord() == search.isWholeWord()) {
+                && lastHighlightedSearch.isCaseSensitive() == search.isCaseSensitive()) {
             return;
         }
         removeHighlighting();

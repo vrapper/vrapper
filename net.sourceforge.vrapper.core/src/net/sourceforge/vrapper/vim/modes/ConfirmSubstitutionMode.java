@@ -123,7 +123,7 @@ public class ConfirmSubstitutionMode extends AbstractMode {
         }
     
         SearchOffset afterSearch = new SearchOffset.Begin(startOffset);
-        Search search = new Search(subDef.find, false, false, caseSensitive, afterSearch, useRegex);
+        Search search = new Search(subDef.find, false, caseSensitive, afterSearch, useRegex);
         SearchAndReplaceService searchService = editorAdaptor.getSearchAndReplaceService();
         Position start = editorAdaptor.getCursorService().newPositionForModelOffset(startOffset);
         SearchResult result = searchService.find(search, start);
