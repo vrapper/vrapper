@@ -76,7 +76,16 @@ public class SubstitutionDefinition {
 		    Pattern.compile(find);
 		}
 		catch(PatternSyntaxException e) {
-		    throw new IllegalArgumentException(e.getDescription());
+		    //** UGLY HACK **
+            //Vim uses '\k' to insert the 'iskeyword' value into a regex.
+            //Unfortunately, Java's regex has reserved '\k' for named capturing groups.
+		    //If we hit an error about '\k' being used outside of capturing groups
+		    //just ignore it and pretend we passed the validation check.
+		    //Hopefully the user didn't have any *other* regex errors...
+
+		    if( ! e.getDescription().startsWith("\\k")) {
+                throw new IllegalArgumentException(e.getDescription());
+		    }
 		}
     }
 

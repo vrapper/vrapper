@@ -160,15 +160,19 @@ public class EclipseSearchAndReplaceService implements SearchAndReplaceService {
         return new Search(keyword, search.isBackward(), search.isCaseSensitive(), search.getSearchOffset(), search.isRegExSearch());
     }
     private String convertRegexSearch(String keyword) {
+        String boundaries = configuration.get(Options.KEYWORDS);
+        
+        //'\k' inserts the character class of the 'iskeyword' setting
+        keyword = keyword.replaceAll("\\\\k", "["+boundaries+"]");
+
         //In Vim, '\<' and '\>' is the regex for word boundaries. We need to
         //replace this with valid regex for the Java regex engine.
         //We *could* just use '\b' for the Java equivalent 'word boundaries'
         //regex flag but we need to use the 'iskeyword' setting in case
         //it doesn't match any default word boundary behavior.
-        
+
         //using look-aheads and look-behinds to make sure we don't select
         //the word boundary as part of the match
-        String boundaries = configuration.get(Options.KEYWORDS);
         keyword = keyword.replaceAll("\\\\<", "(?<!["+boundaries+"])");
         return keyword.replaceAll("\\\\>", "(?!["+boundaries+"])");
     }
