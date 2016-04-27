@@ -1,13 +1,6 @@
 package net.sourceforge.vrapper.vim;
 
-import static net.sourceforge.vrapper.platform.Configuration.Option.bool;
-import static net.sourceforge.vrapper.platform.Configuration.Option.globalBool;
-import static net.sourceforge.vrapper.platform.Configuration.Option.globalString;
-import static net.sourceforge.vrapper.platform.Configuration.Option.globalStringSet;
-import static net.sourceforge.vrapper.platform.Configuration.Option.integer;
-import static net.sourceforge.vrapper.platform.Configuration.Option.localBool;
-import static net.sourceforge.vrapper.platform.Configuration.Option.string;
-import static net.sourceforge.vrapper.platform.Configuration.Option.stringNoConstraint;
+import static net.sourceforge.vrapper.platform.Configuration.Option.*;
 import static net.sourceforge.vrapper.utils.VimUtils.set;
 
 import java.util.Set;
@@ -65,6 +58,10 @@ public interface Options {
     public static final Option<String> GVIM_PATH = stringNoConstraint("gvimpath", "/usr/bin/gvim", "gvp");
     public static final Option<String> GVIM_ARGS = stringNoConstraint("gvimargs", "");
     public static final Option<String> KEYWORDS  = stringNoConstraint("iskeyword", "a-zA-Z0-9_\u00C0-\u017F", "isk");
+
+    // [NOTE] This is not added to the list of string options because it can't be changed using :set
+    public static final Option<String> MAPLEADER = globalStringNoConstraint("mapleader", "\\");
+
     @SuppressWarnings("unchecked")
     public static final Set<Option<String>> STRING_OPTIONS = set(SELECTION, SEARCH_HL_SCOPE, PATH,
             GVIM_PATH, GVIM_ARGS, KEYWORDS, SYNC_MODIFIABLE);
