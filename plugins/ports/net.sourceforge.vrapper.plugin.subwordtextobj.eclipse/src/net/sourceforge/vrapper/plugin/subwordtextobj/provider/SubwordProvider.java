@@ -13,6 +13,10 @@ import net.sourceforge.vrapper.vim.commands.Command;
 
 public class SubwordProvider extends AbstractEclipseSpecificStateProvider {
 
+    public SubwordProvider() {
+        commands.add("subwordmappings", new SubwordMappingsSetupEvaluator());
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     protected State<Command> normalModeBindings() {

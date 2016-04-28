@@ -1,7 +1,9 @@
 package net.sourceforge.vrapper.utils;
 
 import java.util.AbstractQueue;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.NoSuchElementException;
 import java.util.Queue;
 
@@ -11,6 +13,12 @@ public class CollectionUtils {
         return new EmptyQueue<T>();
     }
     
+    public static <T> Queue<T> asQueue(T...contents) {
+        LinkedList<T> result = new LinkedList<T>();
+        Collections.addAll(result, contents);
+        return result;
+    }
+
     protected static class EmptyQueue<T> extends AbstractQueue<T> {
 
         @Override
