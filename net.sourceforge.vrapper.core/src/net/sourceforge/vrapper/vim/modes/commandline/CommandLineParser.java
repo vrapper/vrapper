@@ -12,7 +12,6 @@ import net.sourceforge.vrapper.platform.Configuration.Option;
 import net.sourceforge.vrapper.platform.SelectionService;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.LineRange;
-import net.sourceforge.vrapper.utils.Search;
 import net.sourceforge.vrapper.utils.SimpleLineRange;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.SubstitutionDefinition;
@@ -65,9 +64,6 @@ import net.sourceforge.vrapper.vim.modes.InsertMode;
 import net.sourceforge.vrapper.vim.modes.KeyMapResolver;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.modes.VisualMode;
-import net.sourceforge.vrapper.vim.register.RegisterContent;
-import net.sourceforge.vrapper.vim.register.RegisterManager;
-import net.sourceforge.vrapper.vim.register.StringRegisterContent;
 
 /**
  * Command Line Mode, activated with ':'.
@@ -287,66 +283,7 @@ public class CommandLineParser extends AbstractCommandParser {
                 return null;
             }
         };
-        Evaluator let = new Evaluator() {
-            public Object evaluate(EditorAdaptor vim, Queue<String> command) throws CommandExecutionException {
-                if(command.isEmpty()) {
-                    vim.getUserInterfaceService().setErrorMessage("Argument required");
-                    return null;
-                }
-                String args = "";
-                while(command.size() > 0)
-                    args += command.poll();
-
-                if( ! args.startsWith("@")) {
-                    vim.getUserInterfaceService().setErrorMessage("Can only set register contents (@<char>)");
-                    return null;
-                }
-
-                String[] expr = args.split("=", 2);
-                if(expr.length != 2) {
-                    vim.getUserInterfaceService().setErrorMessage("Could not parse " + args);
-                    return null;
-                }
-                if(expr[0].length() < 2) {
-                    vim.getUserInterfaceService().setErrorMessage("No register name given.");
-                    return null;
-                }
-
-                RegisterManager registerManager = vim.getRegisterManager();
-
-                String registerName = expr[0].substring(1, 2);
-                String textContent = expr[1];
-                if(expr[1].startsWith("'") && expr[1].endsWith("'") || 
-                       expr[1].startsWith("\"") && expr[1].endsWith("\"")) {
-                    textContent = expr[1].substring(1, expr[1].length() - 1);
-                }
-                else if(textContent.startsWith("@") && textContent.length() > 1) {
-                	textContent = registerManager.getRegister(textContent.substring(1, 2)).getContent().getText();
-                }
-                RegisterContent content = new StringRegisterContent(ContentType.TEXT, textContent);
-                if (registerName.equals(RegisterManager.REGISTER_NAME_SEARCH)) {
-                    Search lastSearch = registerManager.getSearch();
-                    if (textContent.length() == 0) {
-                        registerManager.setSearch(null);
-                        HighlightSearch.CLEAR_HIGHLIGHT.evaluate(vim, new LinkedList<String>());
-                    } else {
-                        Search newSearch;
-                        if (lastSearch == null) {
-                            newSearch = SearchCommandParser.createSearch(vim, textContent, false, null);
-                        } else {
-                            newSearch = SearchCommandParser.createSearch(vim, textContent,
-                                    lastSearch.isBackward(), lastSearch.getSearchOffset());
-                        }
-                        registerManager.setSearch(newSearch);
-                        vim.setLastSearchResult(null);
-                        HighlightSearch.HIGHLIGHT.evaluate(vim, new LinkedList<String>());
-                    }
-                } else {
-                    registerManager.getRegister(registerName).setContent(content, false);
-                }
-                return null;
-            }
-        };
+        Evaluator let = new LetExpressionEvaluator();
         Evaluator userCommand = new Evaluator() {
             public Object evaluate(EditorAdaptor vim, Queue<String> command) {
                 if(command.isEmpty()) {

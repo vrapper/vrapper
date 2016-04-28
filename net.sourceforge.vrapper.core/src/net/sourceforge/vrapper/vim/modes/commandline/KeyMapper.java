@@ -71,6 +71,13 @@ public abstract class KeyMapper implements Evaluator {
         protected static Iterable<KeyStroke> replaceLeader(Iterable<KeyStroke> inputKeys,
                 Collection<KeyStroke> leaderKeys) {
 
+            // No use checking for <Leader> when 'mapleader' is empty. This behavior mimicks Vim:
+            // :nmap <Leader>b B won't do anything unless you also have :nmap b <Leader>b .
+
+            if ( ! leaderKeys.iterator().hasNext()) {
+                return inputKeys;
+            }
+
             List<KeyStroke> result = new ArrayList<KeyStroke>();
             for (KeyStroke keystroke : inputKeys) {
                 if (keystroke != null) {
