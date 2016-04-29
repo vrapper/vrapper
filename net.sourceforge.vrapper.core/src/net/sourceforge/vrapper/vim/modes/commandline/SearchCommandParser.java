@@ -62,6 +62,7 @@ public class SearchCommandParser extends AbstractCommandParser {
         boolean caseSensitive = ! editor.getConfiguration().get(Options.IGNORE_CASE)
             || (editor.getConfiguration().get(Options.SMART_CASE)
                 && StringUtils.containsUppercase(keyword));
+        boolean searchInSelection = false;
         
         //special case to override global 'ignorecase' property (see :help \c)
         if(keyword.contains("\\c")) {
@@ -75,12 +76,17 @@ public class SearchCommandParser extends AbstractCommandParser {
         	caseSensitive = true;
         	keyword = keyword.substring(0, index) + keyword.substring(index+2);
         }
+        if(keyword.contains("\\%V")) {
+        	int index = keyword.indexOf("\\%V");
+        	searchInSelection = true;
+        	keyword = keyword.substring(0, index) + keyword.substring(index+3);
+        }
         boolean useRegExp = editor.getConfiguration().get(Options.SEARCH_REGEX);
         if (offset == null) {
             // Sanity checking. Passing null is bad style though.
             offset = SearchOffset.NONE;
         }
-        return new Search(keyword, backward, caseSensitive, offset, useRegExp);
+        return new Search(keyword, backward, caseSensitive, offset, useRegExp, searchInSelection);
     }
 
 	private Search parseSearchCommand(String first, String command) {

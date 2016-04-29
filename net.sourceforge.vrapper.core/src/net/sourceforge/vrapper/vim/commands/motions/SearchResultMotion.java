@@ -145,7 +145,13 @@ public class SearchResultMotion extends CountAwareMotion {
         } else {
             position = cursorService.shiftPositionForModelOffset(position.getModelOffset(), 1, true);
         }
-        return VimUtils.wrapAroundSearch(vim, search, position);
+        
+        if(search.isSelectionSearch()) {
+            return VimUtils.wrapSelectionSearch(vim, search, position);
+        }
+        else {
+            return VimUtils.wrapAroundSearch(vim, search, position);
+        }
     }
 
     @Override

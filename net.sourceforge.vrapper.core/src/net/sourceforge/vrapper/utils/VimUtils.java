@@ -19,6 +19,7 @@ import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.VimConstants;
+import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.Utils;
 
 
@@ -348,6 +349,50 @@ public class VimUtils {
             final TextContent p = vim.getModelContent();
             final int index = search.isBackward() ? p.getLineInformation(p.getNumberOfLines()-1).getEndOffset()-1 : 0;
             result = searcher.find(search, position.setModelOffset(index));
+        }
+        return result;
+    }
+
+    /**
+     * Similar to wrapAroundSearch but only searches within last selection
+     */
+    public static SearchResult wrapSelectionSearch(final EditorAdaptor vim, final Search search,
+            Position position) {
+        Selection selection = vim.getLastActiveSelection();
+                
+        //if the cursor is inside the selection, use it as our starting point
+        //otherwise, use selection boundaries
+        //(this is to ensure 'n' will actually go to the next match
+        // rather than constantly starting at the same position)
+        if(search.isBackward()) {
+            position = selection.getRightBound().compareTo(position) > 0 ? position : selection.getRightBound();
+        }
+        else {
+            position = selection.getLeftBound().compareTo(position) < 0 ? position : selection.getLeftBound();
+        }
+        
+        SearchAndReplaceService searcher = vim.getSearchAndReplaceService();
+        SearchResult result = searcher.find(search, position);
+        if (result.isFound()) {
+            if(result.getLeftBound().compareTo(selection.getLeftBound()) < 0 ||
+                    result.getRightBound().compareTo(selection.getRightBound()) > 0) {
+                //a match was found outside the selection, force a 'not found'
+                result = new SearchResult(null, null);
+            }
+        }
+
+        if (!result.isFound() && vim.getConfiguration().get(Options.WRAP_SCAN)) {
+            //wrap to top/bottom of selection and try again
+            Position newStart = search.isBackward() ? selection.getRightBound() : selection.getLeftBound();
+            result = searcher.find(search, newStart);
+
+            if (result.isFound()) {
+                if(result.getLeftBound().compareTo(selection.getLeftBound()) < 0 ||
+                        result.getRightBound().compareTo(selection.getRightBound()) > 0) {
+                    //a match was found outside the selection, force a 'not found'
+                    result = new SearchResult(null, null);
+                }
+            }
         }
         return result;
     }
