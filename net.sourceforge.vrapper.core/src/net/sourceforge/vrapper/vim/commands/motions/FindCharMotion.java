@@ -5,6 +5,7 @@ import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.Function;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
+import net.sourceforge.vrapper.utils.Reversible;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.BorderPolicy;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
@@ -15,7 +16,7 @@ import net.sourceforge.vrapper.vim.commands.Repeatable;
  * 
  * @author Krzysiek Goj
  */
-public class FindCharMotion extends FindBalancedMotion implements Repeatable<FindCharMotion> {
+public class FindCharMotion extends FindBalancedMotion implements Repeatable<FindCharMotion>, Reversible<FindCharMotion> {
 
     public static Function<Motion, KeyStroke> keyConverter(final boolean upToTarget, final boolean reversed) {
         return new Function<Motion, KeyStroke>() {
@@ -37,6 +38,16 @@ public class FindCharMotion extends FindBalancedMotion implements Repeatable<Fin
         FindCharMotion repetition = new FindCharMotion(target, upToTarget, backwards);
         repetition.isRepetition = true;
         return repetition;
+    }
+
+    @Override
+    public FindCharMotion reverse() {
+        return new FindCharMotion(target, upToTarget, !backwards);
+    }
+
+    @Override
+    public boolean isBackward() {
+        return backwards;
     }
 
     @Override
@@ -72,10 +83,6 @@ public class FindCharMotion extends FindBalancedMotion implements Repeatable<Fin
         return dest;
     }
 
-    public FindCharMotion reversed() {
-        return new FindCharMotion(target, upToTarget, !backwards);
-    }
-    
     private Motion registrator = new CountAwareMotion() {
         @Override
         public Position destination(EditorAdaptor editorAdaptor, int count)

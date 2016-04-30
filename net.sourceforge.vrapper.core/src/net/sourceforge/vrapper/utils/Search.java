@@ -1,6 +1,6 @@
 package net.sourceforge.vrapper.utils;
 
-public class Search {
+public class Search implements Reversible<Search> {
 
     private final String keyword;
     private final boolean backward;
@@ -27,6 +27,7 @@ public class Search {
         this.searchInSelection = searchInSelection;
     }
 
+    @Override
     public Search reverse() {
         return new Search(keyword, !backward, caseSensitive, afterSearch, regexSearch, searchInSelection);
     }
@@ -35,6 +36,7 @@ public class Search {
         return keyword;
     }
 
+    @Override
     public boolean isBackward() {
         return backward;
     }

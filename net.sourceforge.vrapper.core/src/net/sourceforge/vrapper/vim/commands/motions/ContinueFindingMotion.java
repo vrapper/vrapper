@@ -26,10 +26,10 @@ public class ContinueFindingMotion extends CountAwareMotion {
             throw new CommandExecutionException("no find to repeat");
         }
         if (reverse) {
-            findCharMotion = findCharMotion.reversed();
+            findCharMotion = findCharMotion.reverse();
         }
         borderPolicy = findCharMotion.borderPolicy();
-        Position dest = findCharMotion.destination(editorAdaptor, count);
+        Position dest = findCharMotion.withCount(count).destination(editorAdaptor);
         return dest;
     }
 
