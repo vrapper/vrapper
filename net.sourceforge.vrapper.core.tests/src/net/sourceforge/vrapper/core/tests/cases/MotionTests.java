@@ -1,7 +1,7 @@
 package net.sourceforge.vrapper.core.tests.cases;
 
 import net.sourceforge.vrapper.core.tests.utils.CommandTestCase;
-import net.sourceforge.vrapper.vim.commands.motions.FindMotion;
+import net.sourceforge.vrapper.vim.commands.motions.FindCharMotion;
 import net.sourceforge.vrapper.vim.commands.motions.GoToLineMotion;
 import net.sourceforge.vrapper.vim.commands.motions.MethodDeclarationMotion;
 import net.sourceforge.vrapper.vim.commands.motions.Motion;
@@ -785,7 +785,7 @@ public class MotionTests extends CommandTestCase {
 
 	@Test
 	public void test_f_motionWorks() {
-	    Motion fa = new FindMotion('a', true, false);
+	    Motion fa = new FindCharMotion('a', true, false);
 	    checkMotion(fa,
 	            "",'A',"la ma kota",
 	            "Al",'a'," ma kota");
@@ -807,7 +807,7 @@ public class MotionTests extends CommandTestCase {
 
 	@Test
 	public void test_t_motionWorks() {
-	    Motion ta = new FindMotion('a', false, false);
+	    Motion ta = new FindCharMotion('a', false, false);
 	    checkMotion(ta,
 	            "",'A',"la ma kota",
 	            "A",'l',"a ma kota");
@@ -825,7 +825,7 @@ public class MotionTests extends CommandTestCase {
 
 	@Test
 	public void test_F_motionWorks() {
-	    Motion Fa = new FindMotion('a', true, true);
+	    Motion Fa = new FindCharMotion('a', true, true);
 	    checkMotion(Fa,
 	            "Ala ",'m',"a kota",
 	            "Al",'a'," ma kota");

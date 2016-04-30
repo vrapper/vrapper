@@ -14,18 +14,18 @@ import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
  * 
  * @author Krzysiek Goj
  */
-public class FindMotion extends FindBalancedMotion {
+public class FindCharMotion extends FindBalancedMotion {
 
     public static Function<Motion, KeyStroke> keyConverter(final boolean upToTarget, final boolean reversed) {
         return new Function<Motion, KeyStroke>() {
             public Motion call(KeyStroke keyStroke) {
-                return new FindMotion(keyStroke.getCharacter(), upToTarget, reversed).registrator;
+                return new FindCharMotion(keyStroke.getCharacter(), upToTarget, reversed).registrator;
             }
         };
 
     }
 
-    public FindMotion(char target, boolean upToTarget, boolean reversed) {
+    public FindCharMotion(char target, boolean upToTarget, boolean reversed) {
         super(target, '\0', upToTarget, reversed, true);
     }
 
@@ -36,24 +36,24 @@ public class FindMotion extends FindBalancedMotion {
         return end;
     }
 
-    public FindMotion reversed() {
-        return new FindMotion(target, upToTarget, !backwards);
+    public FindCharMotion reversed() {
+        return new FindCharMotion(target, upToTarget, !backwards);
     }
     
     private Motion registrator = new CountAwareMotion() {
         @Override
         public Position destination(EditorAdaptor editorAdaptor, int count)
                 throws CommandExecutionException {
-            editorAdaptor.getRegisterManager().setLastFindMotion(FindMotion.this);
-            return FindMotion.this.destination(editorAdaptor, count);
+            editorAdaptor.getRegisterManager().setLastFindCharMotion(FindCharMotion.this);
+            return FindCharMotion.this.destination(editorAdaptor, count);
         }
 
         public BorderPolicy borderPolicy() {
-            return FindMotion.this.borderPolicy();
+            return FindCharMotion.this.borderPolicy();
         }
 
         public StickyColumnPolicy stickyColumnPolicy() {
-            return FindMotion.this.stickyColumnPolicy();
+            return FindCharMotion.this.stickyColumnPolicy();
         }
     };
 

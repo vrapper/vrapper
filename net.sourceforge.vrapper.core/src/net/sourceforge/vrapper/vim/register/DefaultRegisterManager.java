@@ -12,7 +12,7 @@ import net.sourceforge.vrapper.utils.StringUtils;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.SubstitutionOperation;
-import net.sourceforge.vrapper.vim.commands.motions.FindMotion;
+import net.sourceforge.vrapper.vim.commands.motions.FindCharMotion;
 
 
 /**
@@ -31,7 +31,7 @@ public class DefaultRegisterManager implements RegisterManager {
     private Search search;
     private Command lastEdit, lastInsertion;
     private SubstitutionOperation lastSubstitution;
-    private FindMotion findMotion;
+    private FindCharMotion findCharMotion;
 	private SelectionArea lastActiveSelectionArea;
 	private String cwd = "/";
 	private String lastCommand;
@@ -151,12 +151,12 @@ public class DefaultRegisterManager implements RegisterManager {
         this.lastEdit = lastEdit;
     }
 
-    public FindMotion getLastFindMotion() {
-        return findMotion;
+    public FindCharMotion getLastFindCharMotion() {
+        return findCharMotion;
     }
 
-    public void setLastFindMotion(FindMotion motion) {
-        findMotion = motion;
+    public void setLastFindCharMotion(FindCharMotion motion) {
+        findCharMotion = motion;
     }
 
     public void setActiveRegister(Register register) {

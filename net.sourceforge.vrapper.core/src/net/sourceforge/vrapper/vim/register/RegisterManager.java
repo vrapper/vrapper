@@ -6,7 +6,7 @@ import net.sourceforge.vrapper.utils.Search;
 import net.sourceforge.vrapper.utils.SelectionArea;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.SubstitutionOperation;
-import net.sourceforge.vrapper.vim.commands.motions.FindMotion;
+import net.sourceforge.vrapper.vim.commands.motions.FindCharMotion;
 
 /**
  * Provides access to different registers.
@@ -49,8 +49,8 @@ public interface RegisterManager {
     SubstitutionOperation getLastSubstitution();
     void setLastYank(RegisterContent register);
     void setLastDelete(RegisterContent register);
-    void setLastFindMotion(FindMotion motion);
-    FindMotion getLastFindMotion();
+    void setLastFindCharMotion(FindCharMotion motion);
+    FindCharMotion getLastFindCharMotion();
     Search getSearch();
     void setSearch(Search search);
     boolean isDefaultRegisterActive();

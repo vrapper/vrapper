@@ -27,7 +27,7 @@ import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.SwitchRegisterCommand;
 import net.sourceforge.vrapper.vim.commands.VimCommandSequence;
 import net.sourceforge.vrapper.vim.commands.motions.ContinueFindingMotion;
-import net.sourceforge.vrapper.vim.commands.motions.FindMotion;
+import net.sourceforge.vrapper.vim.commands.motions.FindCharMotion;
 import net.sourceforge.vrapper.vim.commands.motions.GoToEditLocation;
 import net.sourceforge.vrapper.vim.commands.motions.GoToLineMotion;
 import net.sourceforge.vrapper.vim.commands.motions.GoToMarkMotion;
@@ -187,16 +187,16 @@ public abstract class CommandBasedMode extends AbstractMode {
                     leafBind(SpecialKey.PAGE_UP, PageScrollMotion.SCROLL_PGUP),
                     leafBind(';', findForward),
                     leafBind(',', findBackward),
-                    transitionBind('t', convertKeyStroke(FindMotion
+                    transitionBind('t', convertKeyStroke(FindCharMotion
                             .keyConverter(false, false),
                             VimConstants.PRINTABLE_KEYSTROKES)),
-                    transitionBind('T', convertKeyStroke(FindMotion
+                    transitionBind('T', convertKeyStroke(FindCharMotion
                             .keyConverter(false, true),
                             VimConstants.PRINTABLE_KEYSTROKES)),
-                    transitionBind('f', convertKeyStroke(FindMotion
+                    transitionBind('f', convertKeyStroke(FindCharMotion
                             .keyConverter(true, false),
                             VimConstants.PRINTABLE_KEYSTROKES)),
-                    transitionBind('F', convertKeyStroke(FindMotion
+                    transitionBind('F', convertKeyStroke(FindCharMotion
                             .keyConverter(true, true),
                             VimConstants.PRINTABLE_KEYSTROKES)),
                     transitionBind('\'', convertKeyStroke(
