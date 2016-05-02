@@ -39,12 +39,6 @@ public class CPreProcessorMove extends AbstractModelSideMotion {
                 if( (offset - line.getBeginOffset()) <= matcher.end()) {
                     return true;
                 }
-                else {
-                    return false;
-                }
-            }
-            else {
-                return false;
             }
         }
 
