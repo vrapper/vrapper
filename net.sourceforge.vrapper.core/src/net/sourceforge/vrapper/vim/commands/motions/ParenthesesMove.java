@@ -25,9 +25,11 @@ public class ParenthesesMove extends AbstractModelSideMotion {
         op.put("(", new ParenthesesPair("(", ")", false));
         op.put("{", new ParenthesesPair("{", "}", false));
         op.put("[", new ParenthesesPair("[", "]", false));
+        op.put("/*", new ParenthesesPair("/*", "*/", false));
         op.put(")", new ParenthesesPair("(", ")", true ));
         op.put("}", new ParenthesesPair("{", "}", true ));
         op.put("]", new ParenthesesPair("[", "]", true ));
+        op.put("*/", new ParenthesesPair("/*", "*/", true));
         PARENTHESES = Collections.unmodifiableMap(op);
     }
     
@@ -46,7 +48,12 @@ public class ParenthesesMove extends AbstractModelSideMotion {
                 break;
             }
         }
+        //it isn't a simple one-character pair, look for alternatives
         if (pair == null) {
+            pair = getBlockComment(offset, content);
+            if(pair != null) {
+                return findBlockMatch(offset, pair, content);
+            }
             if(CPreProcessorMove.containsPreProcessor(content, info, offset)) {
                 return new CPreProcessorMove().destination(offset, content, count);
             }
@@ -56,6 +63,43 @@ public class ParenthesesMove extends AbstractModelSideMotion {
         }
 
         return findMatch(index, pair, content, count);
+    }
+    
+    /**
+     * In Vim, the '%' feature for block comments requires the cursor to be on
+     * either the '/' or the '*' character.  So, look at the character under the
+     * cursor and the character before/after the cursor to see if it matches
+     * that two-character string.  This is different from other matching pairs where
+     * the cursor can be anywhere before the open character on that line.
+     */
+    private ParenthesesPair getBlockComment(int offset, TextContent content) {
+        String underCursor = content.getText(offset, 1);
+        //first check, is the cursor on one of these two characters?
+        if(underCursor.equals("*") || underCursor.equals("/")) {
+            //make sure we don't go past file boundaries when looking before/after cursor
+            int start = Math.max(0, offset - 1);
+            //index is exclusive, so +2 to get character after cursor
+            int end = Math.min(offset + 2, content.getTextLength());
+
+            String multiChar = content.getText(start, end - start);
+            //if cursor is on file boundary, length = 2
+            //otherwise, we should have 3 characters
+            if(multiChar.length() == 2 && PARENTHESES.containsKey(multiChar)) {
+                return PARENTHESES.get(multiChar);
+            }
+            else if(multiChar.length() > 2) {
+                //look at chars before and under cursor
+                if(PARENTHESES.containsKey(multiChar.substring(0, 2))) {
+                    return PARENTHESES.get(multiChar.substring(0, 2));
+                }
+                //look at chars under and after cursor
+                else if(PARENTHESES.containsKey(multiChar.substring(1, 3))) {
+                    return PARENTHESES.get(multiChar.substring(1, 3));
+                }
+            }
+        }
+
+        return null;
     }
     
     public static final ParenthesesMove MATCH_OPEN_PAREN = new ParenthesesMove() {
@@ -98,6 +142,49 @@ public class ParenthesesMove extends AbstractModelSideMotion {
     	}
     };
     
+    /**
+     * Find matching block comment open/close token.  We don't have to worry
+     * about nesting levels since block comments can't be nested.
+     */
+    private int findBlockMatch(int offset, ParenthesesPair pair, TextContent content) {
+    	int index = offset;
+        int limit, indexModifier;
+        String match;
+        if (pair.backwards) {
+            limit = 0;
+            indexModifier = -1;
+            match = pair.left;
+        } else {
+            limit = content.getTextLength() -1;
+            indexModifier = 1;
+            match = pair.right;
+        }
+        
+        //trying not to assume we have a two-character comment
+        //....even though we do
+        int matchLength = match.length();
+        while(index != limit) {
+            index += indexModifier;
+            String c;
+            try {
+                c = content.getText(index, matchLength);
+            } catch(Exception e) {
+                return offset;
+            }
+            
+            if(c.equals(match)) {
+                //should the cursor go to the beginning or end of the match?
+                return pair.backwards ? index : index + matchLength ;
+            }
+        }
+
+        return offset;
+    }
+    
+    /**
+     * Find matching open/close character.  Keep track of nesting levels
+     * so we match the correct pair.
+     */
     private static int findMatch(int offset, ParenthesesPair pair, TextContent content, int count) {
     	int index = offset;
         int depth = count;
@@ -113,6 +200,7 @@ public class ParenthesesMove extends AbstractModelSideMotion {
             limit = content.getLineInformation(content.getNumberOfLines()-1).getEndOffset();
             indexModifier = 1;
         }
+
         while (index != limit && count > 0) {
             index += indexModifier;
             String c;
