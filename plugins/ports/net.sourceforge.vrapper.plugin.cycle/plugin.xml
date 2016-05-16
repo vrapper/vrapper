@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="net.sourceforge.vrapper.eclipse.pssp">
+      <keymap-provider
+            id="net.sourceforge.vrapper.plugin.cycle.provider.CycleProvider"
+            name="Cycle Provider"
+            priority="20"
+            provider-class="net.sourceforge.vrapper.plugin.cycle.provider.CycleProvider">
+      </keymap-provider>
+   </extension>
+
+</plugin>

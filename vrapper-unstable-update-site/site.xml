@@ -45,6 +45,9 @@
    <feature url="features/net.sourceforge.vrapper.plugin.subwordtextobj_0.67.20160429.jar" id="net.sourceforge.vrapper.plugin.subwordtextobj" version="0.67.20160429">
       <category name="Optional Vimscript Plugins"/>
    </feature>
+   <feature url="features/net.sourceforge.vrapper.plugin.cycle_0.67.20160429.jar" id="net.sourceforge.vrapper.plugin.cycle" version="0.67.20160429">
+      <category name="Optional Vimscript Plugins"/>
+   </feature>
    <category-def name="Vrapper Unstable" label="Vrapper Unstable">
       <description>
          Unstable releases of Vrapper.
