@@ -867,14 +867,7 @@ Public License instead of this License.  But first, please read
    </requires>
 
    <plugin
-         id="net.sourceforge.vrapper.plugin.subwordtextobj.core"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="net.sourceforge.vrapper.plugin.subwordtextobj.eclipse"
+         id="net.sourceforge.vrapper.plugin.subwordtextobj"
          download-size="0"
          install-size="0"
          version="0.0.0"

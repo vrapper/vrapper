@@ -867,7 +867,7 @@ Public License instead of this License.  But first, please read
    </requires>
 
    <plugin
-         id="net.sourceforge.vrapper.plugin.linetextobj.core"
+         id="net.sourceforge.vrapper.plugin.linetextobj"
          download-size="0"
          install-size="0"
          version="0.0.0"
