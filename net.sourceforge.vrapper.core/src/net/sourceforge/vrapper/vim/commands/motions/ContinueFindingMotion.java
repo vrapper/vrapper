@@ -5,6 +5,10 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.BorderPolicy;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 
+/**
+ * Motion responsible for repeating <code>t</code>, <code>T</code>, <code>f</code> and
+ * <code>F</code> motions. Finds next occurrence of a character in current line.
+ */
 public class ContinueFindingMotion extends CountAwareMotion {
 
     public static final ContinueFindingMotion NORMAL = new ContinueFindingMotion(false);

@@ -11,13 +11,13 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.Command;
+import net.sourceforge.vrapper.vim.commands.motions.SearchResultMotion;
 import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
 import net.sourceforge.vrapper.vim.modes.ExecuteCommandHint;
 
 /**
- * Mode for input of search parameters (keyword and offset).
- *
- * @author Matthias Radig
+ * Parser for input of search parameters (keyword and offset). This class is used together with
+ * {@link SearchResultMotion} to implement the search functionality.
  */
 public class SearchCommandParser extends AbstractCommandParser {
 
@@ -28,7 +28,7 @@ public class SearchCommandParser extends AbstractCommandParser {
         super(vim);
         this.commandToExecute = commandToExecute;
     }
-    
+
     /**
      * Parses and executes a search.
      *
@@ -40,6 +40,7 @@ public class SearchCommandParser extends AbstractCommandParser {
         editor.getRegisterManager().setSearch(search);
         editor.setLastSearchResult(null);
         editor.getSearchAndReplaceService().removeHighlighting();
+        // This is typically an instance of MotionCommand containing a SearchResultMotion instance.
         return commandToExecute;
     }
 
@@ -68,7 +69,7 @@ public class SearchCommandParser extends AbstractCommandParser {
             || (editor.getConfiguration().get(Options.SMART_CASE)
                 && StringUtils.containsUppercase(keyword));
         boolean searchInSelection = false;
-        
+
         //special case to override global 'ignorecase' property (see :help \c)
         if(keyword.contains("\\c")) {
         	int index = keyword.indexOf("\\c");
