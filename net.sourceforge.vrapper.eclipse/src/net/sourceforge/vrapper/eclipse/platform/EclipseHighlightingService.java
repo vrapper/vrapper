@@ -1,7 +1,7 @@
 package net.sourceforge.vrapper.eclipse.platform;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,7 +34,7 @@ public class EclipseHighlightingService implements HighlightingService {
         final IAnnotationModel am = getAnnotationModel();
         if (am instanceof IAnnotationModelExtension) {
             IAnnotationModelExtension ame = (IAnnotationModelExtension) am;
-            Map temp = new HashMap(regions.size());
+            Map temp = new LinkedHashMap(regions.size());
             for (TextRange region : regions) {
                 Annotation annotation = new Annotation(type, false, name);
                 int offset = region.getLeftBound().getModelOffset();
