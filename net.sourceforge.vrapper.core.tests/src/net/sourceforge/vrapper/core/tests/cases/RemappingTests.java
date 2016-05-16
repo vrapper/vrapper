@@ -3,15 +3,15 @@ package net.sourceforge.vrapper.core.tests.cases;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.parseKeyStrokes;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import net.sourceforge.vrapper.core.tests.utils.CommandTestCase;
-import net.sourceforge.vrapper.utils.Position;
-import net.sourceforge.vrapper.utils.VimUtils;
-import net.sourceforge.vrapper.vim.modes.NormalMode;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import net.sourceforge.vrapper.core.tests.utils.CommandTestCase;
+import net.sourceforge.vrapper.utils.Position;
+import net.sourceforge.vrapper.vim.modes.NormalMode;
 
 /**
  * Tests for remapping in different modes.

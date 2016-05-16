@@ -2,18 +2,17 @@ package net.sourceforge.vrapper.eclipse.ui;
 
 import java.util.Locale;
 
-import net.sourceforge.vrapper.platform.UserInterfaceService;
-
 import org.eclipse.jface.action.ContributionItem;
 import org.eclipse.jface.action.StatusLineLayoutData;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+
+import net.sourceforge.vrapper.platform.UserInterfaceService;
 
 public class ModeContributionItem extends ContributionItem {
 

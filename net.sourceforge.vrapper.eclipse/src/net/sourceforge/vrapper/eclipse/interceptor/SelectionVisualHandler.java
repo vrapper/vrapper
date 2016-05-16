@@ -10,7 +10,6 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import net.sourceforge.vrapper.eclipse.activator.VrapperPlugin;
 import net.sourceforge.vrapper.eclipse.platform.EclipseCursorAndSelection;
 import net.sourceforge.vrapper.log.VrapperLog;
-import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.vim.DefaultEditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;

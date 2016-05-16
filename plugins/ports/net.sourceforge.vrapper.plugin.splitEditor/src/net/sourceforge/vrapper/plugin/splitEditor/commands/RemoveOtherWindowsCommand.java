@@ -2,13 +2,9 @@ package net.sourceforge.vrapper.plugin.splitEditor.commands;
 
 import java.util.ArrayList;
 
-import net.sourceforge.vrapper.vim.EditorAdaptor;
-import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
-
 import org.eclipse.e4.ui.model.application.ui.MElementContainer;
 import org.eclipse.e4.ui.model.application.ui.MUIElement;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
-import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorReference;
@@ -17,8 +13,9 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.PartInitException;
 
-// Eclipse 4 API version 0.10.1 bundled with Eclipse 4.2.1 is considered provisional.
-@SuppressWarnings("restriction")
+import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
+
 /**
  * Removes all splits except the current by moving/closing editors from other
  * splits.
@@ -37,7 +34,6 @@ public class RemoveOtherWindowsCommand extends AbstractWindowCommand {
             throws CommandExecutionException {
         IWorkbenchPartSite site = getEditorSite();
         final EPartService psvc = (EPartService) site.getService(EPartService.class);
-        EModelService svc = (EModelService) site.getService(EModelService.class);
         final MPart activePart = (MPart) site.getService(MPart.class);
         final MElementContainer<MUIElement> editorStack = activePart.getParent();
         final IWorkbenchPage page = site.getPage();

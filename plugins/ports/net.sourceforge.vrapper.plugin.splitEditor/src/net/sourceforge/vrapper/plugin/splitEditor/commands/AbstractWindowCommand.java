@@ -31,8 +31,6 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
 
-// Eclipse 4 API version 0.10.1 bundled with Eclipse 4.2.1 is considered provisional.
-@SuppressWarnings("restriction")
 public abstract class AbstractWindowCommand extends CountIgnoringNonRepeatableCommand {
 
     protected static IWorkbenchPartSite getEditorSite() {

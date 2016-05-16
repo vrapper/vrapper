@@ -14,8 +14,6 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.PartInitException;
 
-// Eclipse 4 API version 0.10.1 bundled with Eclipse 4.2.1 is considered provisional.
-@SuppressWarnings("restriction")
 public class MoveEditorCommand extends AbstractWindowCommand {
     private WindowDirection direction;
     private SplitMode mode;

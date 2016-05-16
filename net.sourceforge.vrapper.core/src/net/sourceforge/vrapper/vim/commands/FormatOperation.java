@@ -2,7 +2,6 @@ package net.sourceforge.vrapper.vim.commands;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import net.sourceforge.vrapper.utils.LineRange;
 import net.sourceforge.vrapper.utils.Position;

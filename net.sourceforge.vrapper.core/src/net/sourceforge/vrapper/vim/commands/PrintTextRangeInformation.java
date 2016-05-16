@@ -5,14 +5,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.sourceforge.vrapper.log.VrapperLog;
+import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.platform.UserInterfaceService;
-import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
-import net.sourceforge.vrapper.vim.Options;
 
 public class PrintTextRangeInformation implements Command {
 
@@ -81,7 +80,7 @@ public class PrintTextRangeInformation implements Command {
         CursorService cs = editorAdaptor.getCursorService();
         TextContent modelContent = editorAdaptor.getModelContent();
 
-        boolean selectionInclusive = Selection.INCLUSIVE.equals(editorAdaptor.getConfiguration().get(Options.SELECTION));
+        //boolean selectionInclusive = Selection.INCLUSIVE.equals(editorAdaptor.getConfiguration().get(Options.SELECTION));
         Position regionStart = region.getStart();
         Position regionEnd = region.getEnd();
         LineInformation startLine = modelContent.getLineInformationOfOffset(regionStart.getModelOffset());

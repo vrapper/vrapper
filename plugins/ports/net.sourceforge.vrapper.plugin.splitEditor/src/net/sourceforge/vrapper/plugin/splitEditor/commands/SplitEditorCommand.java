@@ -22,8 +22,6 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.PartInitException;
 
-// Eclipse 4 API version 0.10.1 bundled with Eclipse 4.2.1 is considered provisional.
-@SuppressWarnings("restriction")
 public class SplitEditorCommand extends AbstractWindowCommand {
     public static final AbstractWindowCommand VSPLIT = new SplitEditorCommand(SplitDirection.VERTICALLY, SplitMode.CLONE, SplitContainer.SHARED_AREA);
     public static final AbstractWindowCommand HSPLIT = new SplitEditorCommand(SplitDirection.HORIZONTALLY, SplitMode.CLONE, SplitContainer.SHARED_AREA);

@@ -5,8 +5,6 @@ import java.util.Comparator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.sourceforge.vrapper.platform.SimpleConfiguration;
-
 /**
  * Numeric comparator for the sort command.
  * @author Brian Detweiler

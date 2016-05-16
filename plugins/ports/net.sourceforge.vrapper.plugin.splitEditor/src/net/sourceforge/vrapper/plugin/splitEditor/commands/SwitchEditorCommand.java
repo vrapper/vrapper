@@ -8,8 +8,6 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.ui.IWorkbenchPartSite;
 
-// Eclipse 4 API version 0.10.1 bundled with Eclipse 4.2.1 is considered provisional.
-@SuppressWarnings("restriction")
 public class SwitchEditorCommand extends AbstractWindowCommand {
     private WindowDirection direction;
     public static final SwitchEditorCommand SWITCH_UP = new SwitchEditorCommand(WindowDirection.UP);
