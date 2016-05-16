@@ -12,6 +12,7 @@ import net.sourceforge.vrapper.platform.PlatformSpecificStateProvider;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.TextObjectProvider;
 import net.sourceforge.vrapper.vim.commands.Command;
+import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
 import net.sourceforge.vrapper.vim.modes.ContentAssistMode;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
@@ -113,7 +114,7 @@ public class AbstractEclipseSpecificStateProvider implements
             this.async = async;
         }
 
-        public Object evaluate(EditorAdaptor vim, Queue<String> command) {
+        public Object evaluate(EditorAdaptor vim, Queue<String> command) throws CommandExecutionException {
             String name = command.poll();
             if("!".equals(name)) {
             	//we made a change where the '!' is separated from the command name
@@ -123,8 +124,7 @@ public class AbstractEclipseSpecificStateProvider implements
             }
             String action = command.poll();
             if (name != null && action != null) {
-                CommandLineMode mode = (CommandLineMode) vim
-                        .getMode(CommandLineMode.NAME);
+                CommandLineMode mode = (CommandLineMode) vim.getMode(CommandLineMode.NAME);
                 mode.addCommand(name, new EclipseCommand(action, async), force);
             }
             return null;

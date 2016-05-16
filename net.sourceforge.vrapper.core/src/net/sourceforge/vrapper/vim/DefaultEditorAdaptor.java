@@ -386,23 +386,8 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     public void changeMode(final String modeName, final ModeSwitchHint... args) throws CommandExecutionException {
         EditorMode newMode = modeMap.get(modeName);
         if (newMode == null) {
-            // Load extension modes
-            List<EditorMode> modes = platformSpecificModeProvider.getModes(this);
-            for (final EditorMode mode : modes) {
-                if (modeMap.containsKey(mode.getName())) {
-                    VrapperLog.error(format("Mode '%s' was already loaded! Mode in registry '%s',"
-                                + "conflicting mode '%s'", mode.getName(),
-                                modeMap.get(mode.getName()).getClass().getName(),
-                                mode.getClass().getName()));
-                } else {
-                    modeMap.put(mode.getName(), mode);
-                }
-            }
-            newMode = modeMap.get(modeName);
-            if (newMode == null) {
-                VrapperLog.error(format("There is no mode named '%s'",  modeName));
-                return;
-            }
+            // Check extension modes
+            newMode = getMode(modeName);
         }
         if (currentMode != newMode) {
             listeners.fireModeAboutToSwitch(newMode);
@@ -596,8 +581,33 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     }
 
     @Override
-    public EditorMode getMode(final String name) {
-        return modeMap.get(name);
+    public EditorMode getMode(final String modeName) {
+        EditorMode result =  modeMap.get(modeName);
+        if (modeName != null && result == null) {
+            try {
+                // Load extension modes
+                List<EditorMode> modes = platformSpecificModeProvider.getModes(this);
+                for (final EditorMode mode : modes) {
+                    if (modeMap.containsKey(mode.getName())) {
+                        VrapperLog.error(format("Mode '%s' was already loaded! Mode in registry '%s',"
+                                + " conflicting mode '%s'", mode.getName(),
+                                modeMap.get(mode.getName()).getClass().getName(),
+                                mode.getClass().getName()));
+                    } else {
+                        modeMap.put(mode.getName(), mode);
+                    }
+                }
+                result = modeMap.get(modeName);
+                if (result == null) {
+                    String message = format("There is no mode named '%s'", modeName);
+                    throw new CommandExecutionException(message);
+                }
+            } catch (CommandExecutionException e) {
+                VrapperLog.error("Failed to get mode '" + modeName + "'", e);
+                throw new VrapperPlatformException(e.getMessage(), e);
+            }
+        }
+        return result;
     }
 
     @Override
