@@ -103,7 +103,7 @@ public class SimpleKeyStroke implements KeyStroke {
         for (Modifier modifier : modifiers) {
             key = modifier.getShortId() + key;
         }
-        return "SimpleKeyStroke(" + key + ")";
+        return "Key(" + key + ")";
     }
 
     @Override
