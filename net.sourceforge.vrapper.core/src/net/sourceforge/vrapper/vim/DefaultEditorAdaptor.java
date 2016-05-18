@@ -32,6 +32,7 @@ import net.sourceforge.vrapper.platform.Platform;
 import net.sourceforge.vrapper.platform.PlatformSpecificModeProvider;
 import net.sourceforge.vrapper.platform.PlatformSpecificStateProvider;
 import net.sourceforge.vrapper.platform.PlatformSpecificTextObjectProvider;
+import net.sourceforge.vrapper.platform.PlatformVrapperLifecycleListener;
 import net.sourceforge.vrapper.platform.SearchAndReplaceService;
 import net.sourceforge.vrapper.platform.SelectionService;
 import net.sourceforge.vrapper.platform.ServiceProvider;
@@ -124,7 +125,8 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     private int cursorBeforeMapping = -1;
 
 
-    public DefaultEditorAdaptor(final Platform editor, final RegisterManager registerManager, final boolean isActive) {
+    public DefaultEditorAdaptor(final Platform editor, final RegisterManager registerManager,
+            final boolean isActive, List<PlatformVrapperLifecycleListener> lifecycleListeners) {
         this.configuration = editor.getConfiguration();
         userInterfaceService = editor.getUserInterfaceService();
         this.modelContent = new UnmodifiableTextContentDecorator(editor.getModelContent(),
@@ -169,6 +171,16 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         // NOTE: Read the config _after_ changing mode to allow default keys
         //       remapping.
         readConfiguration();
+
+        for (PlatformVrapperLifecycleListener listener : lifecycleListeners) {
+            try {
+                listener.editorConfigured(this, isActive);
+            } catch (Exception e) {
+                VrapperLog.error("Lifecycle listener " + listener.getClass() + " threw exception "
+                        + " for file '" + fileService.getCurrentFilePath() + "' when firing "
+                        + "'editorConfigured' method.", e);
+            }
+        }
 
         // Set 'modifiable' flag if not done so by an autocmnd in .vrapperc
         if ("matchreadonly".equals(configuration.get(Options.SYNC_MODIFIABLE))

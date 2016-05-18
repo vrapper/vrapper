@@ -40,6 +40,7 @@ import net.sourceforge.vrapper.eclipse.platform.EclipseBufferAndTabService;
 import net.sourceforge.vrapper.eclipse.platform.EclipseCursorAndSelection;
 import net.sourceforge.vrapper.eclipse.utils.Utils;
 import net.sourceforge.vrapper.log.VrapperLog;
+import net.sourceforge.vrapper.platform.PlatformVrapperLifecycleListener;
 import net.sourceforge.vrapper.platform.VrapperPlatformException;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
@@ -103,6 +104,8 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
     protected WeakHashMap<IEditorInput,BufferInfo> activeBufferIdMapping =
             new WeakHashMap<IEditorInput, BufferInfo>();
 
+    protected List<PlatformVrapperLifecycleListener> lifecycleListeners = Collections.emptyList();
+
     /** Buffer ID generator. */
     protected final static AtomicInteger BUFFER_ID_SEQ = new AtomicInteger();
 
@@ -111,6 +114,21 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
         this.bufferAndTabServices = new WeakHashMap<IWorkbenchWindow, EclipseBufferAndTabService>();
         this.interceptors = new WeakHashMap<IWorkbenchPart, InputInterceptor>();
         this.toplevelEditorInfo = new WeakHashMap<IWorkbenchPart, EditorInfo>();
+
+        IExtensionRegistry registry = org.eclipse.core.runtime.Platform.getExtensionRegistry();
+        IConfigurationElement[] elements = registry
+                .getConfigurationElementsFor("net.sourceforge.vrapper.eclipse.lifecyclelistener");
+        List<PlatformVrapperLifecycleListener> matched = new ArrayList<PlatformVrapperLifecycleListener>();
+        for (final IConfigurationElement element : elements) {
+            String listenerClass = element.getAttribute("listener-class");
+            try {
+                matched.add((PlatformVrapperLifecycleListener)
+                        element.createExecutableExtension("listener-class"));
+            } catch (final Exception e) {
+                VrapperLog.error("error while building vrapper lifecycle listener " + listenerClass, e);
+            }
+        }
+        lifecycleListeners = matched;
     }
 
     public EclipseBufferAndTabService ensureBufferService(IEditorPart editor) {
@@ -190,7 +208,7 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
                 ITextViewerExtension textViewerExt = (ITextViewerExtension) viewer;
                 EclipseBufferAndTabService batService = ensureBufferService(editor);
                 InputInterceptor interceptor = factory.createInterceptor(editor, srcViewer,
-                        partInfo, batService);
+                        partInfo, batService, lifecycleListeners);
                 CaretPositionHandler caretPositionHandler = interceptor.getCaretPositionHandler();
                 CaretPositionUndoHandler caretPositionUndoHandler = interceptor.getCaretPositionUndoHandler();
                 SelectionVisualHandler visualHandler = interceptor.getSelectionVisualHandler();
@@ -203,6 +221,18 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
                 IOperationHistory operationHistory = PlatformUI.getWorkbench().getOperationSupport().getOperationHistory();
                 operationHistory.addOperationHistoryListener(caretPositionUndoHandler);
                 selectionSvc.installHooks();
+
+                for (PlatformVrapperLifecycleListener listener : lifecycleListeners) {
+                    try {
+                        listener.editorInitialized(interceptor.getEditorAdaptor(),
+                                VrapperPlugin.isVrapperEnabled());
+                    } catch (Exception e) {
+                        String currentFilePath = interceptor.getPlatform().getFileService().getCurrentFilePath();
+                        VrapperLog.error("Lifecycle listener " + listener.getClass() + "' threw "
+                                + "exception for file '" + currentFilePath + "' when firing "
+                                        + "'editorInitialized' method.", e);
+                    }
+                }
                 interceptors.put(editor, interceptor);
             }
         } catch (Exception exception) {
@@ -217,6 +247,17 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
         InputInterceptor interceptor = interceptors.remove(part);
         // remove the listener in case the editor gets cached
         if (interceptor != null) {
+            for (PlatformVrapperLifecycleListener listener : lifecycleListeners) {
+                try {
+                    listener.editorClosing(interceptor.getEditorAdaptor(),
+                            VrapperPlugin.isVrapperEnabled());
+                } catch (Exception e) {
+                    String currentFilePath = interceptor.getPlatform().getFileService().getCurrentFilePath();
+                    VrapperLog.error("Lifecycle listener " + listener.getClass() + "' threw "
+                            + "exception for file '" + currentFilePath + "' when firing "
+                            + "editorClosing' method.", e);
+                }
+            }
             try {
                 interceptor.getEditorAdaptor().close();
             } catch (Exception exception) {
