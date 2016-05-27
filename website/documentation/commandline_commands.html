@@ -152,7 +152,7 @@ Vrapper allows abbreviated commands only when there are no conflicts (e.g. custo
     </tr>
     <tr>
         <td>:source &lt;filename&gt;</td>
-        <td>Include another config file (e.g. <code>:source .vimrc</code>) to extend current configuration</td>
+        <td>Include another config file (e.g. <code>:source .vimrc</code>) to extend current configuration.</td>
     </tr>
     <tr>
         <td>:let @&lt;char&gt;=&lt;register contents&gt;</td>
@@ -172,6 +172,10 @@ Vrapper allows abbreviated commands only when there are no conflicts (e.g. custo
                 updated (when <code>hlsearch</code> is enabled).
             </p>
         </td>
+    </tr>
+    <tr>
+        <td>:let mapleader=&lt;character&gt;</td>
+        <td>Set the value of <code>&lt;Leader&gt;</code> for use in mappings.</td>
     </tr>
     <tr>
         <td>:command &lt;name&gt; &lt;command&gt;</td>
@@ -225,9 +229,11 @@ Vrapper allows abbreviated commands only when there are no conflicts (e.g. custo
             The famous substitution feature.
             <ul>
                 <li>Supports flags <code>g</code> for global (all matches), <code>c</code> for confirmation, <code>i</code> for case-insensitive</li>
+                <li>Supports <code>\%V</code> to search within visually-selected area only (useful when selection is not line-based)</li>
                 <li>Supports <code>%</code> for performing substitution on all lines<br/>(e.g., <code>:%s/foo/bar/</code>)</li>
                 <li>Whatever non-alphanumeric character is after <code>:s</code> will be the delimiter<br/>(e.g., <code>:s_foo_bar_</code>)</li>
                 <li>Uses Eclipse's flavor of regex<br/>(e.g., <code>:s/foo(.+)foo/bar$1bar/</code>)</li>
+                <li>Supports <code>\k</code> regex class for <code>iskeyword</code> property</li>
             </ul>
         </td>
     </tr>

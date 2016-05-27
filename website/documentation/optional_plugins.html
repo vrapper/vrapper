@@ -21,6 +21,8 @@
             <li><a href="#linetext">Line Text Object (textobj-line.vim)</a></li>
             <li><a href="#methodtext">Method Text Object (methodtextobj.vim)</a></li>
             <li><a href="#indenttext">Indent Text Object (vim-indent-object.vim)</a></li>
+            <li><a href="#subword">Sub-Word Text Object (camelcasemotion.vim)</a></li>
+            <li><a href="#cycle">Cycle (cycle.vim)</a></li>
             <li><a href="#exchange">Exchange (exchange.vim)</a></li>
             <li><a href="#surround">Surround (surround.vim)</a></li>
         </ol>
@@ -284,9 +286,79 @@
     declared the indentation block and the closing <code>endif</code> line.
 </p>
 
+<a name="subword"><h3>Sub-Word Text Object (camelcasemotion.vim) Plugin</h3></a>
+<p>
+    camelcasemotion.vim is a vim plugin defined here:<br/>
+    <a href="https://github.com/bkad/CamelCaseMotion">https://github.com/bkad/CamelCaseMotion</a><br/>
+    <br/>
+    Our Sub-Word Text Object plugin is based loosely on camelcasemotion.vim.  Our plugin
+    defines new motions and text objects for moving between words in snake_case_format and camelCaseFormat.
+    It provides the following commands to be mapped:
+    <ul>
+        <li>&lt;Plug&gt;(subword-back)</li>
+        <li>&lt;Plug&gt;(subword-end)</li>
+        <li>&lt;Plug&gt;(subword-word)</li>
+    </ul>
+    <ul>
+        <li>&lt;Plug&gt;(subword-inner)</li>
+        <li>&lt;Plug&gt;(subword-outer)</li>
+    </ul>
+    <code>(subword-back)</code>, <code>(subword-end)</code>, and <code>(subword-word)</code> motions are equivalent to the standard
+    <code>b</code>, <code>e</code>, and <code>w</code> word motions. <code>(subword-inner)</code> will select the word between
+    two <code>_</code> characters of a snake_case_word.  <code>(subword-outer)</code> will select the word between two
+    <code>_</code> characters and include the <code>_</code> character(s) after that word.  There is no difference between <code>(subword-inner)</code> and
+    <code>(subword-outer)</code> for camelCaseWords.
+</p>
+<p>
+    A convenience command <code>:subwordmappings</code> will automatically configure the mappings:
+    <ul>
+        <li>map &lt;Leader&gt;b &lt;Plug&gt;(subword-back)</li>
+        <li>map &lt;Leader&gt;e &lt;Plug&gt;(subword-end)</li>
+        <li>map &lt;Leader&gt;w &lt;Plug&gt;(subword-word)</li>
+    </ul>
+    <ul>
+        <li>map i&lt;Leader&gt; &lt;Plug&gt;(subword-inner)</li>
+        <li>map a&lt;Leader&gt; &lt;Plug&gt;(subword-outer)</li>
+    </ul>
+    By default, the value of <code>&lt;Leader&gt;</code> is <code>\</code> but can be modified with the <code>:let mapleader=</code> command.
+    Or, you can just define your mappings using whatever keys you want.
+</p>
+
+
+<a name="cycle"><h3>Cycle (cycle.vim) Plugin</h3></a>
+<p>
+    cycle.vim is a vim plugin defined here:<br/>
+    <a href="https://github.com/zef/vim-cycle">https://github.com/zef/vim-cycle</a><br/>
+    <br/>
+    It provides the functionality to quickly replace the word under the cursor by cycling through a list of alternatives.
+    It uses the keys <code>&lt;C-a&gt;</code> and <code>&lt;C-x&gt;</code>.  As with all Ctrl key commands, you must
+    Unbind <code>&lt;C-a&gt;</code> and <code>&lt;C-x&gt;</code> from Eclipse before Vrapper can use them.
+    By default, this plugin defines the following cycles:
+    <ul>
+        <li>yes, no</li>
+        <li>true, false</li>
+        <li>Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday</li>
+        <li>January, February, March, April, May, June, July, August, September, October, November, December</li>
+    </ul>
+    If you put the cursor over the word <code>true</code> and hit <code>&lt;C-a&gt;</code> it will change the word to <code>false</code>.
+    Hit <code>&lt;C-a&gt;</code> again and it will change <code>false</code> to <code>true</code>.<br/>
+    If the cursor is over the word <code>Wednesday</code> and you hit <code>&lt;C-a&gt;</code> it will change the word to <code>Thursday</code>.
+    If the cursor is over the word <code>Wednesday</code> and you hit <code>&lt;C-x&gt;</code> it will change the word to <code>Tuesday</code>.
+    If the cursor is over the word <code>Wednesday</code> and you hit <code>3&lt;C-a&gt;</code> it will change the word to <code>Saturday</code>.
+</p>
+<p>    
+    You can define your own custom cycles using the <code>:AddCycleGroup</code> command.  For example:
+    <ul>
+        <li>:AddCycleGroup foo bar baz</li>
+    </ul>
+    Will create a new cycle such that putting the cursor over the word <code>foo</code> and hitting <code>&lt;C-a&gt;</code> will change
+    it to <code>bar</code>.  Note that this plugin can only replace the single word under the cursor.
+    It does not support replacing multiple words.  Also, the word matching is case-sensitive.
+</p>
+
 <a name="exchange"><h3>Exchange (exchange.vim) Plugin</h3></a>
 <p>
-    exchange.vim is a vim plugin defined here:<br>
+    exchange.vim is a vim plugin defined here:<br/>
     <a href="https://github.com/tommcdo/vim-exchange">https://github.com/tommcdo/vim-exchange</a><br/>
     <br/>
     Easy text exchange operator for Vim.  Perform <code>cx&lt;text object&gt;</code> once to

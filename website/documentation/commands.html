@@ -113,6 +113,12 @@
         <code>m&lt;char&gt;</code> allows you to define any arbitrary <code>&lt;char&gt;</code> as the delimiter.  For example,
         <code>vim*</code> will select (in visual mode) text between two <code>*</code> characters.
     </li>
+    <li>
+        Comment text object <code>c</code> will select lines that start with single-line
+        comments (<code>//</code>, <code>#</code>, <code>--</code>) or block comments
+        (<code>/* */</code>, <code>&lt;!-- --&gt;</code>).
+        Comment text object <code>C</code> will select multiple contiguous lines of single-line comments.
+    </li>
 </ul>
 <br/>
 <ul class="commands">
@@ -134,6 +140,8 @@
     <li>s</li>
     <li>p</li>
     <li>t</li>
+    <li>c</li>
+    <li>C</li>
     <li>m&lt;char&gt;</li>
     <li>gn</li>
     <li>gN</li>
