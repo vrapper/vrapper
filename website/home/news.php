@@ -1,4 +1,64 @@
 <div class="newsbox">
+    <div class="date">2016-06-04</div>
+    <h4>0.68.0 Released</h4>
+    <p>I was able to find some time this month to work on new Vrapper features, including
+    some plugin requests that have been sitting around for a while.  Of course, this project
+    is so mature now that we're looking at the more obscure features in Vim but all of
+    these were requested by users filing Issues on our GitHub page.  We hope you continue to enjoy
+    Vrapper!</p>
+
+    <ul>
+        <li>Fixed issue where recording a macro would overwrite the unnamed register</li>
+        <li>Fixed issue executing a macro with a count</li>
+        <li>Fixed issue where `*` search wasn't using iskeyword value to determine word boundaries</li>
+        <li>Fixed sentence motions '( )' and text object `s` when sentence ends on a newline</li>
+    </ul>
+
+    <ul>
+        <li>Added support for Mac command key mappings `&lt;D-`</li>
+        <li>Added support for `%` to jump between block comment `/* */` tokens</li>
+        <li>Added support for `\%V` in command-line substitutions and search for limiting to visually selected area</li>
+        <ul>
+            <li>useful when selection isn't line-based</li>
+        </ul>
+        <li>Added support for `\k` regex class for iskeyword value</li>
+        <li>Added support for searching from command-line (ex) mode `:/` and `:?`</li>
+        <li>Added support for `&lt;Leader&gt;` and `:let mapleader=`</li>
+        <li>Added support for comment text objects `ic`/`ac` and `iC`/`aC`</li>
+        <ul>
+            <li>supports single line comments `//`, `#`, `--`</li>
+            <li>supports block comments `/* */`, `&lt;!-- --&gt;`</li>
+            <li>See <a href="https://github.com/vrapper/vrapper/issues/586#issuecomment-211575385">this comment</a> for more details</li>
+        </ul>
+    </ul>
+
+    <ul>
+        <li>Created a new optional plugin for sub-word motions</li>
+        <ul>
+            <li>Moves over words within snake_case and camelCase names</li>
+            <li>Based loosely on <a href="https://github.com/bkad/CamelCaseMotion">https://github.com/bkad/CamelCaseMotion</a></li>
+            <li>Details here: <a href="http://vrapper.sourceforge.net/documentation/?topic=optional_plugins#subword">Sub-Word Plugin</a></li>
+            <li>Convenience command `:subwordmappings` will setup default mappings:</li>
+        </ul>
+        <li>map \b &lt;Plug&gt;(subword-back)</li>
+        <li>map \e &lt;Plug&gt;(subword-end)</li>
+        <li>map \w &lt;Plug&gt;(subword-word)</li>
+        <li>map i\ &lt;Plug&gt;(subword-inner)</li>
+        <li>map a\ &lt;Plug&gt;(subword-outer)</li>
+    </ul>
+
+    <ul>
+        <li>Created a new optional plugin to "cycle" through word replacements</li>
+        <ul>
+            <li>Based on <a href="https://github.com/zef/vim-cycle">https://github.com/zef/vim-cycle</a></li>
+            <li>Details here: <a href="http://vrapper.sourceforge.net/documentation/?topic=optional_plugins#cycle">Cycle Plugin</a></li>
+            <li>`&lt;C-a&gt;`/`&lt;C-x&gt;` will replace word under cursor with next item in cycle</li>
+            <li>`:AddCycleGroup foo bar baz` = foo-&gt;bar-&gt;baz-&gt;foo-&gt;...</li>
+            <li>Default cycle true-&gt;false will toggle "true" to "false" with a single keystroke</li>
+        </ul>
+    </ul>
+</div>
+<div class="newsbox">
     <div class="date">2016-04-03</div>
     <h4>0.66.0 Released</h4>
     
