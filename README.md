@@ -9,7 +9,7 @@ Vrapper is an Eclipse plugin which acts as a wrapper for Eclipse text editors to
 
 **Unstable Update Site:** http://vrapper.sourceforge.net/update-site/unstable
 
-License: [GPL v3 or later](LICENSE.md)
+License: [GPL v3 or any later version](LICENSE.md)
 
 Home Page: http://vrapper.sourceforge.net/home/
 
