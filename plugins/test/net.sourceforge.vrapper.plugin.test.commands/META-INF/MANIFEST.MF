@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Vrapper Test Commands Plug-in Core
+Bundle-SymbolicName: net.sourceforge.vrapper.plugin.test.commands;singleton:=true
+Bundle-Version: 0.68.0
+Export-Package: net.sourceforge.vrapper.plugin.test.commands
+Require-Bundle: net.sourceforge.vrapper.core;bundle-version="0.68.0";visibility:=reexport,
+ net.sourceforge.vrapper.eclipse,
+ org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ org.eclipse.ui,
+ org.eclipse.ui.ide,
+ org.eclipse.ui.workbench.texteditor
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Eclipse-BuddyPolicy: dependent

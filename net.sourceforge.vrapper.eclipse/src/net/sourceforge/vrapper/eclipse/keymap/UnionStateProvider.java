@@ -1,23 +1,88 @@
 package net.sourceforge.vrapper.eclipse.keymap;
 
-import static net.sourceforge.vrapper.keymap.StateUtils.union;
+import static net.sourceforge.vrapper.keymap.StateUtils.*;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import net.sourceforge.vrapper.keymap.KeyMapInfo;
 import net.sourceforge.vrapper.keymap.State;
+import net.sourceforge.vrapper.platform.PlatformSpecificStateProvider;
+import net.sourceforge.vrapper.platform.PlatformSpecificVolatileStateProvider;
+import net.sourceforge.vrapper.vim.TextObjectProvider;
+import net.sourceforge.vrapper.vim.commands.Command;
+import net.sourceforge.vrapper.vim.modes.commandline.EvaluatorMapping;
 
-public class UnionStateProvider extends AbstractEclipseSpecificStateProvider {
+public class UnionStateProvider implements PlatformSpecificStateProvider {
+    private String name;
+    private AbstractEclipseSpecificStateProvider fixedUnionProvider;
+    private Collection<PlatformSpecificVolatileStateProvider> volatileProviders;
     
-    public UnionStateProvider(String name, Iterable<AbstractEclipseSpecificStateProvider> bases) {
+    public UnionStateProvider(String name,
+                              Iterable<AbstractEclipseSpecificStateProvider> fixedProviders,
+                              Collection<PlatformSpecificVolatileStateProvider> volatileProviders) {
         this.name = name;
-        for (AbstractEclipseSpecificStateProvider base: bases) {
-            updateStateMap(states, base.states);
-            updateStateMap(keyMaps, base.keyMaps);
-            commands.addAll(base.commands);
+        this.volatileProviders = volatileProviders;
+
+        fixedUnionProvider = new AbstractEclipseSpecificStateProvider() {};
+        for (AbstractEclipseSpecificStateProvider base : fixedProviders) {
+            updateStateMap(fixedUnionProvider.states, base.states);
+            updateStateMap(fixedUnionProvider.keyMaps, base.keyMaps);
+            fixedUnionProvider.commands.addAll(base.commands);
         }
     }
     
+    @Override
+    public void initializeProvider(TextObjectProvider textObjProvider) {
+        // This is never called on UnionStateProvider
+    }
+
+    @Override
+    public State<Command> getState(String modeName) {
+        // TODO:vgrechka Support volatile states?
+        return fixedUnionProvider.getState(modeName);
+    }
+
+    @Override
+    public State<KeyMapInfo> getKeyMaps(String name) {
+        // TODO:vgrechka Support volatile key maps?
+        return fixedUnionProvider.getKeyMaps(name);
+    }
+
+    @Override
+    public EvaluatorMapping getCommands() {
+        // No overhead if no volatile providers
+        if (!volatileProviders.iterator().hasNext()) return fixedUnionProvider.getCommands();
+
+        // Volatile priorities can change at any time, so sorting them here
+        ArrayList<PlatformSpecificVolatileStateProvider> prioritized = new ArrayList<PlatformSpecificVolatileStateProvider>(
+            volatileProviders);
+        Collections.sort(prioritized, new Comparator<PlatformSpecificVolatileStateProvider>() {
+            @Override
+            public int compare(PlatformSpecificVolatileStateProvider left, PlatformSpecificVolatileStateProvider right) {
+                return -Integer.compare(left.getVolatilePriority(), right.getVolatilePriority());
+            }
+        });
+
+        EvaluatorMapping res = new EvaluatorMapping();
+        // Volatile commands first, as they can decide to override built-ins
+        for (PlatformSpecificVolatileStateProvider provider : prioritized) {
+            res.addAll(provider.getVolatileCommands());
+        }
+        res.addAll(fixedUnionProvider.commands);
+
+        return res;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
     @SuppressWarnings("unchecked")
     private static<T> void updateStateMap(Map<String, State<T>> old, Map<String, State<T>> update) {
         for (Entry<String, ? extends State<T>> entry: update.entrySet()) {

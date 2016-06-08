@@ -7,6 +7,15 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.jface.text.ITextViewerExtension6;
+import org.eclipse.jface.text.IUndoManager;
+import org.eclipse.jface.text.source.ISourceViewer;
+import org.eclipse.ui.IWorkbenchPartSite;
+import org.eclipse.ui.part.MultiPageEditorSite;
+import org.eclipse.ui.texteditor.AbstractTextEditor;
+
 import net.sourceforge.vrapper.eclipse.interceptor.EditorInfo;
 import net.sourceforge.vrapper.eclipse.keymap.AbstractEclipseSpecificStateProvider;
 import net.sourceforge.vrapper.eclipse.keymap.UnionStateProvider;
@@ -24,6 +33,7 @@ import net.sourceforge.vrapper.platform.Platform;
 import net.sourceforge.vrapper.platform.PlatformSpecificModeProvider;
 import net.sourceforge.vrapper.platform.PlatformSpecificStateProvider;
 import net.sourceforge.vrapper.platform.PlatformSpecificTextObjectProvider;
+import net.sourceforge.vrapper.platform.PlatformSpecificVolatileStateProvider;
 import net.sourceforge.vrapper.platform.SearchAndReplaceService;
 import net.sourceforge.vrapper.platform.ServiceProvider;
 import net.sourceforge.vrapper.platform.TextContent;
@@ -35,15 +45,6 @@ import net.sourceforge.vrapper.vim.DefaultConfigProvider;
 import net.sourceforge.vrapper.vim.LocalConfiguration;
 import net.sourceforge.vrapper.vim.SimpleLocalConfiguration;
 import net.sourceforge.vrapper.vim.TextObjectProvider;
-
-import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.IExtensionRegistry;
-import org.eclipse.jface.text.ITextViewerExtension6;
-import org.eclipse.jface.text.IUndoManager;
-import org.eclipse.jface.text.source.ISourceViewer;
-import org.eclipse.ui.IWorkbenchPartSite;
-import org.eclipse.ui.part.MultiPageEditorSite;
-import org.eclipse.ui.texteditor.AbstractTextEditor;
 
 public class EclipsePlatform implements Platform {
 
@@ -212,16 +213,21 @@ public class EclipsePlatform implements Platform {
         final IConfigurationElement[] elements = registry
                 .getConfigurationElementsFor("net.sourceforge.vrapper.eclipse.pssp");
         final List<AbstractEclipseSpecificStateProvider> matched = new ArrayList<AbstractEclipseSpecificStateProvider>();
+        final List<PlatformSpecificVolatileStateProvider> matchedVolatile = new ArrayList<PlatformSpecificVolatileStateProvider>();
         for (final IConfigurationElement element : elements) {
             try {
-                final AbstractEclipseSpecificStateProvider provider = (AbstractEclipseSpecificStateProvider) Utils
+                final Object gizmo = Utils
                         .createGizmoForElementConditionally(
                                 underlyingEditor, "editor-must-subclass",
                                 element, "provider-class");
-                if (provider != null) {
+                if (gizmo instanceof AbstractEclipseSpecificStateProvider) {
+                    AbstractEclipseSpecificStateProvider provider = (AbstractEclipseSpecificStateProvider)gizmo;
                     provider.configure(element);
                     provider.initializeProvider(textObjectProvider);
                     matched.add(provider);
+                }
+                if (gizmo instanceof PlatformSpecificVolatileStateProvider) {
+                    matchedVolatile.add((PlatformSpecificVolatileStateProvider)gizmo);
                 }
             } catch (Exception e) {
                 VrapperLog.error("Failed to initialize state provider " + element, e);
@@ -229,7 +235,7 @@ public class EclipsePlatform implements Platform {
         }
         Collections.sort(matched);
         return new UnionStateProvider("extensions for "
-                + underlyingEditor.getClass().getName(), matched);
+                + underlyingEditor.getClass().getName(), matched, matchedVolatile);
     }
 
     private PlatformSpecificModeProvider buildPlatformSpecificModeProvider() {
