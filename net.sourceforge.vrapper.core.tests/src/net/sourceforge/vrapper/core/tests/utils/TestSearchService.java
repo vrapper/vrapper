@@ -29,6 +29,11 @@ public class TestSearchService implements SearchAndReplaceService {
         if ( ! search.isRegExSearch()) {
             patternFlags = Pattern.LITERAL;
         }
+        else {
+            //fake out word-boundary regex for '*' and '#' tests
+            //(real service replaces with 'iskeyword' value)
+            needle = needle.replaceAll("\\\\<", "\\\\b").replaceAll("\\\\>", "\\\\b");
+        }
         if ( ! search.isCaseSensitive()) {
             patternFlags |= Pattern.CASE_INSENSITIVE;
         }

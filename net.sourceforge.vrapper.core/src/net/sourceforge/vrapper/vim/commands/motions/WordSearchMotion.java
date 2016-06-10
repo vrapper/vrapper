@@ -37,17 +37,18 @@ public class WordSearchMotion extends SearchResultMotion {
             // SearchCommandParser may use 'smartcase', but we don't want that.
             keyword = keyword.toLowerCase(Locale.ENGLISH);
         }
-        Search search = SearchCommandParser.createSearch(editorAdaptor, keyword, reverse, SearchOffset.NONE);
-        editorAdaptor.getRegisterManager().setSearch(search);
-        editorAdaptor.setLastSearchResult(null);
-        //add '*' and '#' searches to command-line history for search mode
-        CommandLineHistory history = CommandLineHistory.INSTANCE;
-        history.setMode(SearchMode.NAME);
         if(this.wholeWord) {
             //these will be converted to '\b' before the search actually runs
             //but we want '\<' and '\>' to appear in the search history
             keyword = "\\<" + keyword + "\\>";
         }
+        //if this.wholeWord, force regexSearch to be used for this search
+        Search search = SearchCommandParser.createSearch(editorAdaptor, keyword, reverse, SearchOffset.NONE, this.wholeWord);
+        editorAdaptor.getRegisterManager().setSearch(search);
+        editorAdaptor.setLastSearchResult(null);
+        //add '*' and '#' searches to command-line history for search mode
+        CommandLineHistory history = CommandLineHistory.INSTANCE;
+        history.setMode(SearchMode.NAME);
         history.append(keyword);
 
         return super.destination(editorAdaptor, count);

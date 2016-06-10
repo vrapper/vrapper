@@ -70,7 +70,7 @@ public class SearchResultMotion extends CountAwareMotion {
         if (search == null) {
             throw new CommandExecutionException("no search string given");
         }
-        if(editorAdaptor.getConfiguration().get(Options.SEARCH_REGEX)) {
+        if(search.isRegExSearch()) {
             //before attempting search, is this regex even valid?
             try {
                 Pattern.compile(search.getKeyword());

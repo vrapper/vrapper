@@ -59,6 +59,11 @@ public class SearchCommandParser extends AbstractCommandParser {
 
     /** Create a {@link Search} instance based on the given parameters and configuration.*/
     public static Search createSearch(EditorAdaptor editor, String keyword, boolean backward, SearchOffset offset) {
+        return createSearch(editor, keyword, backward, offset, editor.getConfiguration().get(Options.SEARCH_REGEX));
+    }
+
+    // convenience method to override regexsearch setting
+    public static Search createSearch(EditorAdaptor editor, String keyword, boolean backward, SearchOffset offset, boolean useRegExp) {
         boolean caseSensitive = ! editor.getConfiguration().get(Options.IGNORE_CASE)
             || (editor.getConfiguration().get(Options.SMART_CASE)
                 && StringUtils.containsUppercase(keyword));
@@ -81,7 +86,6 @@ public class SearchCommandParser extends AbstractCommandParser {
         	searchInSelection = true;
         	keyword = keyword.substring(0, index) + keyword.substring(index+3);
         }
-        boolean useRegExp = editor.getConfiguration().get(Options.SEARCH_REGEX);
         if (offset == null) {
             // Sanity checking. Passing null is bad style though.
             offset = SearchOffset.NONE;
