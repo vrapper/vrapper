@@ -13,6 +13,7 @@ import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.CountAwareCommand;
 import net.sourceforge.vrapper.vim.commands.IncrementDecrementCommand;
+import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.commandline.Evaluator;
 
 public class CycleCommand extends CountAwareCommand {
@@ -26,6 +27,7 @@ public class CycleCommand extends CountAwareCommand {
     private CycleCommand(boolean forward) {
         this.forward = forward;
         groups = new ArrayList<List<String>>();
+        //hardcoded list of default cycles
         addGroup(groups, "true", "false");
         addGroup(groups, "yes", "no");
         addGroup(groups, "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday");
@@ -64,6 +66,8 @@ public class CycleCommand extends CountAwareCommand {
                 int index = list.indexOf(word);
                 int next = (index + list.size() + modifier) % list.size(); 
                 editorAdaptor.getModelContent().replace(start, word.length(), list.get(next));
+                //move cursor to the beginning of the changed word
+                editorAdaptor.setPosition(editorAdaptor.getCursorService().newPositionForModelOffset(start), StickyColumnPolicy.ON_CHANGE);
                 //stop looping and don't run default IncrementDecrementCommand
                 return;
             }
