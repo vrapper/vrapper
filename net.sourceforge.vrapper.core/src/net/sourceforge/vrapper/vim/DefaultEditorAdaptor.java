@@ -297,8 +297,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         			//*** skip over everything in a .vimrc file that we don't support ***//
         			trimmed = line.trim().toLowerCase();
         			//ignore comments and key mappings we don't support
-        			if(trimmed.equals("") || trimmed.startsWith("\"") 
-        			        || trimmed.contains("<leader>") || trimmed.contains("<silent>")) {
+        			if(trimmed.equals("") || trimmed.startsWith("\"") || trimmed.contains("<silent>")) {
         				continue;
         			}
         			if(trimmed.startsWith("if")) {
