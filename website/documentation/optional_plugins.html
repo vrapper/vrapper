@@ -312,13 +312,15 @@
 <p>
     A convenience command <code>:subwordmappings</code> will automatically configure the mappings:
     <ul>
-        <li>map &lt;Leader&gt;b &lt;Plug&gt;(subword-back)</li>
-        <li>map &lt;Leader&gt;e &lt;Plug&gt;(subword-end)</li>
-        <li>map &lt;Leader&gt;w &lt;Plug&gt;(subword-word)</li>
+        <li>noremap &lt;Leader&gt;b &lt;Plug&gt;(subword-back)</li>
+        <li>noremap &lt;Leader&gt;e &lt;Plug&gt;(subword-end)</li>
+        <li>noremap &lt;Leader&gt;w &lt;Plug&gt;(subword-word)</li>
     </ul>
     <ul>
-        <li>map i&lt;Leader&gt; &lt;Plug&gt;(subword-inner)</li>
-        <li>map a&lt;Leader&gt; &lt;Plug&gt;(subword-outer)</li>
+        <li>vnoremap i&lt;Leader&gt; &lt;Plug&gt;(subword-inner)</li>
+        <li>onoremap i&lt;Leader&gt; &lt;Plug&gt;(subword-inner)</li>
+        <li>vnoremap a&lt;Leader&gt; &lt;Plug&gt;(subword-outer)</li>
+        <li>onoremap a&lt;Leader&gt; &lt;Plug&gt;(subword-outer)</li>
     </ul>
     By default, the value of <code>&lt;Leader&gt;</code> is <code>\</code> but can be modified with the <code>:let mapleader=</code> command.
     Or, you can just define your mappings using whatever keys you want.
@@ -330,7 +332,7 @@
     cycle.vim is a vim plugin defined here:<br/>
     <a href="https://github.com/zef/vim-cycle">https://github.com/zef/vim-cycle</a><br/>
     <br/>
-    It provides the functionality to quickly replace the word under the cursor by cycling through a list of alternatives.
+    Our cycle plugin provides the functionality to quickly replace the word under the cursor by cycling through a list of alternatives.
     It uses the keys <code>&lt;C-a&gt;</code> and <code>&lt;C-x&gt;</code>.  As with all Ctrl key commands, you must
     Unbind <code>&lt;C-a&gt;</code> and <code>&lt;C-x&gt;</code> from Eclipse before Vrapper can use them.
     By default, this plugin defines the following cycles:
