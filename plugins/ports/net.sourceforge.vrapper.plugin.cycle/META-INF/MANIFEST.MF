@@ -2,9 +2,9 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Vrapper cycle Plug-in Core
 Bundle-SymbolicName: net.sourceforge.vrapper.plugin.cycle;singleton:=true
-Bundle-Version: 0.69.20160610
+Bundle-Version: 0.69.20160613
 Export-Package: net.sourceforge.vrapper.plugin.cycle.commands
-Require-Bundle: net.sourceforge.vrapper.core;bundle-version="0.69.20160610";visibility:=reexport,
+Require-Bundle: net.sourceforge.vrapper.core;bundle-version="0.69.20160613";visibility:=reexport,
  net.sourceforge.vrapper.eclipse
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Eclipse-BuddyPolicy: dependent
