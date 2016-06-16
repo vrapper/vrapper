@@ -487,12 +487,15 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         StyledText styledText = textViewer.getTextWidget();
         if (this.caretType != caretType) {
             Caret old = styledText.getCaret();
+            Rectangle oldBounds = old.getBounds();
             Caret newCaret = CaretUtils.createCaret(caretType, styledText);
             // old caret is not disposed automatically
             old.dispose();
             this.caretType = caretType;
             this.caretCachedSize = newCaret.getSize();
             styledText.setCaret(newCaret);
+            // Repaint region to make sure that VisualCaretPainter operates correctly
+            styledText.redraw(oldBounds.x, oldBounds.y, oldBounds.width, oldBounds.height, true);
         } else {
             // Reset caret size without disposing - sometimes Eclipse switches to an Insert cursor.
             Caret caret = styledText.getCaret();
@@ -579,8 +582,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
             StyledText text = textViewer.getTextWidget();
             // Never move caret somewhere else in Insert / Select mode
             if (text.getSelectionCount() == 0
-                    || (vrapperModeRecorder.getCurrentMode() instanceof InsertMode)
-                    || (vrapperModeRecorder.getCurrentMode() instanceof NormalMode)) {
+                    || (vrapperModeRecorder.getCurrentMode() instanceof InsertMode)) {
                 return;
             }
             // Forces caret visibility for blockwise mode: normally it is disabled all the time.
