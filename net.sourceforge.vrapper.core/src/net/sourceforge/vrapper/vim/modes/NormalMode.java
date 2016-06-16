@@ -285,20 +285,23 @@ public class NormalMode extends CommandBasedMode {
     @Override
     public void placeCursor(StickyColumnPolicy stickyColumnPolicy) {
         if (isEnabled) {
+            int selectionLength = editorAdaptor.getNativeSelection().getViewLength();
+            Position pos = editorAdaptor.getPosition();
+            int offset = pos.getViewOffset();
+            LineInformation line = editorAdaptor.getViewContent()
+                    .getLineInformationOfOffset(offset);
+
             // Don't fiddle with the caret type when we are in operator mode
             if (currentState == initialState) {
-                if (editorAdaptor.getNativeSelection().getModelLength() == 0) {
+                if (selectionLength == 0) {
                     editorAdaptor.getCursorService().setCaret(CaretType.RECTANGULAR);
                 } else {
-                    // Don't fiddle with the caret type when we are in operator mode
+                    // Use special cursor to signal "selection conflict" - this isn't Visual mode!
                     editorAdaptor.getCursorService().setCaret(CaretType.UNDERLINE);
                 }
             }
-            final Position pos = editorAdaptor.getPosition();
-            final int offset = pos.getViewOffset();
-            final LineInformation line = editorAdaptor.getViewContent()
-                    .getLineInformationOfOffset(offset);
-            if (line.getEndOffset() == offset && line.getLength() > 0) {
+            // Change position when we hit the line end and no selection exists (we don't clear it)
+            if (line.getEndOffset() == offset && line.getLength() > 0 && selectionLength <= 0) {
                 editorAdaptor.setPosition(pos.addViewOffset(-1), stickyColumnPolicy);
             } 
         }
