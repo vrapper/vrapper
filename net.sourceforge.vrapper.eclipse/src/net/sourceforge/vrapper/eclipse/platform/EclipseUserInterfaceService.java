@@ -1,16 +1,22 @@
 package net.sourceforge.vrapper.eclipse.platform;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Map;
+
+import org.eclipse.jface.action.IStatusLineManager;
+import org.eclipse.jface.text.ITextViewer;
+import org.eclipse.swt.events.VerifyEvent;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IPartListener;
+import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.PlatformUI;
+
 import net.sourceforge.vrapper.eclipse.ui.CommandLineUIFactory;
 import net.sourceforge.vrapper.eclipse.ui.ModeContributionItem;
 import net.sourceforge.vrapper.platform.CommandLineUI;
 import net.sourceforge.vrapper.platform.UserInterfaceService;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
-
-import org.eclipse.jface.action.IStatusLineManager;
-import org.eclipse.jface.text.ITextViewer;
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IPartListener;
-import org.eclipse.ui.IWorkbenchPart;
 
 public class EclipseUserInterfaceService implements UserInterfaceService {
 
@@ -141,6 +147,16 @@ public class EclipseUserInterfaceService implements UserInterfaceService {
     public void setRecording(final boolean b, final String macroName) {
         setEditorMode(currentModeName);
         vimInputModeItem.setRecording(b, macroName);
+        
+        IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+        try {
+            Map<String, Object> vimState = (Map<String, Object>)editor.getClass().getField("vimState").get(editor);
+            vimState.put("isRecordingMacro", b);
+        } catch (NoSuchFieldException e) {
+            // OK
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
