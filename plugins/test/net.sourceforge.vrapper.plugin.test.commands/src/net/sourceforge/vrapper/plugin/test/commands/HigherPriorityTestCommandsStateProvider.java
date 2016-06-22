@@ -1,7 +1,11 @@
 package net.sourceforge.vrapper.plugin.test.commands;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Queue;
 
+import net.sourceforge.vrapper.keymap.KeyMapInfo;
+import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.platform.PlatformSpecificVolatileStateProvider;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
@@ -25,5 +29,10 @@ public class HigherPriorityTestCommandsStateProvider implements PlatformSpecific
             }
         });
         return res;
+    }
+
+    @Override
+    public Map<String, State<KeyMapInfo>> getVolatileKeyMaps() {
+        return new HashMap<String, State<KeyMapInfo>>();
     }
 }

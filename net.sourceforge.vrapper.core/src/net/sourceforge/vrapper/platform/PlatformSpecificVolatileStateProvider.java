@@ -1,5 +1,9 @@
 package net.sourceforge.vrapper.platform;
 
+import java.util.Map;
+
+import net.sourceforge.vrapper.keymap.KeyMapInfo;
+import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.vim.modes.commandline.EvaluatorMapping;
 
 public interface PlatformSpecificVolatileStateProvider {
@@ -13,4 +17,6 @@ public interface PlatformSpecificVolatileStateProvider {
     int getVolatilePriority();
     
     EvaluatorMapping getVolatileCommands();
+
+    Map<String, State<KeyMapInfo>> getVolatileKeyMaps();
 }

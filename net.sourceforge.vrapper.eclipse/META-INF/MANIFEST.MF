@@ -18,6 +18,7 @@ Export-Package: net.sourceforge.vrapper.eclipse.commands;
    net.sourceforge.vrapper.utils,
    net.sourceforge.vrapper.vim",
  net.sourceforge.vrapper.eclipse.extractor;uses:="org.eclipse.ui",
+ net.sourceforge.vrapper.eclipse.interceptor,
  net.sourceforge.vrapper.eclipse.keymap;
   uses:="net.sourceforge.vrapper.vim.modes.commandline,
    org.eclipse.core.runtime,
@@ -26,8 +27,6 @@ Export-Package: net.sourceforge.vrapper.eclipse.commands;
    net.sourceforge.vrapper.eclipse.commands,
    net.sourceforge.vrapper.platform,
    net.sourceforge.vrapper.vim",
- net.sourceforge.vrapper.eclipse.mode;
-  uses:="net.sourceforge.vrapper.vim.modes,
-   net.sourceforge.vrapper.platform"
+ net.sourceforge.vrapper.eclipse.mode;uses:="net.sourceforge.vrapper.vim.modes,net.sourceforge.vrapper.platform"
 Eclipse-BuddyPolicy: dependent
 Bundle-ActivationPolicy: lazy

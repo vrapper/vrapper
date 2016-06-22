@@ -1,5 +1,7 @@
 package net.sourceforge.vrapper.plugin.test.commands;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Queue;
 
 import org.eclipse.ui.IEditorInput;
@@ -7,6 +9,8 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
 
+import net.sourceforge.vrapper.keymap.KeyMapInfo;
+import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.platform.PlatformSpecificVolatileStateProvider;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
@@ -45,5 +49,10 @@ public class TSSpecificTestCommandsStateProvider implements PlatformSpecificVola
     private void showVimMessage(EditorAdaptor vim, String msg) throws CommandExecutionException {
         ModeSwitchHint[] hints = new ModeSwitchHint[] {new MessageMode.MessagesHint(msg)};
         vim.changeMode(MessageMode.NAME, hints);
+    }
+
+    @Override
+    public Map<String, State<KeyMapInfo>> getVolatileKeyMaps() {
+        return new HashMap<String, State<KeyMapInfo>>();
     }
 }

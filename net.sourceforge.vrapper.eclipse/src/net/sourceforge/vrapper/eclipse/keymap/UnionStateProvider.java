@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -49,8 +50,17 @@ public class UnionStateProvider implements PlatformSpecificStateProvider {
 
     @Override
     public State<KeyMapInfo> getKeyMaps(String name) {
-        // TODO:vgrechka Support volatile key maps?
-        return fixedUnionProvider.getKeyMaps(name);
+        // No overhead if no volatile providers
+        if (!volatileProviders.iterator().hasNext()) return fixedUnionProvider.getKeyMaps(name);
+        
+        HashMap<String, State<KeyMapInfo>> res = new HashMap<String, State<KeyMapInfo>>();
+        // Volatile key maps first, as they can decide to override built-ins
+        for (PlatformSpecificVolatileStateProvider provider : getPrioritizedVolatileProviders()) {
+            updateStateMap(res, provider.getVolatileKeyMaps());
+        }
+        updateStateMap(res, fixedUnionProvider.keyMaps);
+
+        return res.get(name);
     }
 
     @Override
@@ -58,7 +68,18 @@ public class UnionStateProvider implements PlatformSpecificStateProvider {
         // No overhead if no volatile providers
         if (!volatileProviders.iterator().hasNext()) return fixedUnionProvider.getCommands();
 
-        // Volatile priorities can change at any time, so sorting them here
+        EvaluatorMapping res = new EvaluatorMapping();
+        // Volatile commands first, as they can decide to override built-ins
+        for (PlatformSpecificVolatileStateProvider provider : getPrioritizedVolatileProviders()) {
+            res.addAll(provider.getVolatileCommands());
+        }
+        res.addAll(fixedUnionProvider.commands);
+
+        return res;
+    }
+
+    private Iterable<PlatformSpecificVolatileStateProvider> getPrioritizedVolatileProviders() {
+        // Volatile priorities can change at any time, so sorting them here every time
         ArrayList<PlatformSpecificVolatileStateProvider> prioritized = new ArrayList<PlatformSpecificVolatileStateProvider>(
             volatileProviders);
         Collections.sort(prioritized, new Comparator<PlatformSpecificVolatileStateProvider>() {
@@ -67,15 +88,7 @@ public class UnionStateProvider implements PlatformSpecificStateProvider {
                 return -Integer.compare(left.getVolatilePriority(), right.getVolatilePriority());
             }
         });
-
-        EvaluatorMapping res = new EvaluatorMapping();
-        // Volatile commands first, as they can decide to override built-ins
-        for (PlatformSpecificVolatileStateProvider provider : prioritized) {
-            res.addAll(provider.getVolatileCommands());
-        }
-        res.addAll(fixedUnionProvider.commands);
-
-        return res;
+        return prioritized;
     }
 
     @Override

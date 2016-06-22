@@ -3,6 +3,8 @@ package net.sourceforge.vrapper.plugin.test.commands;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Queue;
@@ -13,6 +15,8 @@ import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
 
 import net.sourceforge.vrapper.eclipse.keymap.AbstractEclipseSpecificStateProvider;
+import net.sourceforge.vrapper.keymap.KeyMapInfo;
+import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.PlatformSpecificVolatileStateProvider;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
@@ -89,6 +93,11 @@ public class MixedTestCommandsStateProvider extends AbstractEclipseSpecificState
         } finally {
             reader.close();
         }
+    }
+
+    @Override
+    public Map<String, State<KeyMapInfo>> getVolatileKeyMaps() {
+        return new HashMap<String, State<KeyMapInfo>>();
     }
 
 }
