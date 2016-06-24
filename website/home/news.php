@@ -1,4 +1,22 @@
 <div class="newsbox">
+    <div class="date">2016-06-23</div>
+    <h4>0.68.1 Released</h4>
+    <p>We had a regression in the 0.68.0 release and I debated whether it was
+    critical enough to release a 0.68.1 to fix it.  The defect isn't major but
+    it's in a common enough feature ('*' and '#') that a lot of people have
+    noticed it. Given that Eclipse Neon was just released, I'm guessing a lot of
+    people will be re-installing the current stable build of Vrapper with it.  I
+    figured it's best to have a solid release for those people.  So here's a
+    quick release with a couple issues we've fixed in the last month.  They are:</p>
+    <ul>
+		<li>Fixed regression where '*' and '#' behaved like 'g*' and 'g#'</li>
+		<li>Fixed stupid mistake which prevented you from setting &lt;leader&gt; in .vrapperrc</li>
+		<li>Fixed issue with Vrapper resetting an Eclipse selection when using 'select all'</li>
+		<li>Fixed regression which broke the ':set &lt;option&gt;?' feature to display value</li>
+		<li>Changed cycle plugin so cursor stays at beginning of changed word</li>
+    </ul>
+</div>
+<div class="newsbox">
     <div class="date">2016-06-04</div>
     <h4>0.68.0 Released</h4>
     <p>I was able to find some time this month to work on new Vrapper features, including
