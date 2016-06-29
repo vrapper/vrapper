@@ -7,16 +7,19 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.sourceforge.vrapper.platform.Configuration;
+import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.AbstractTextObject;
 import net.sourceforge.vrapper.vim.commands.BorderPolicy;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.TextObject;
+import net.sourceforge.vrapper.vim.commands.Utils;
 import net.sourceforge.vrapper.vim.commands.motions.CountAwareMotion;
 import net.sourceforge.vrapper.vim.commands.motions.Motion;
 import net.sourceforge.vrapper.vim.commands.motions.MoveWordEndRight;
@@ -159,17 +162,48 @@ public class SubwordMotion extends CountAwareMotion {
 
         @Override
         public TextRange getRegion(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
-            Motion startMotion;
-            Motion endMotion;
+        	TextContent model = editorAdaptor.getModelContent();
+        	CursorService cursorService = editorAdaptor.getCursorService();
 
-            startMotion = SubwordMotion.SUB_BACK;
-            endMotion = outer ? SubwordMotion.SUB_WORD : SubwordMotion.SUB_END;
+            Motion startMotion = SubwordMotion.SUB_BACK;
+            Motion endMotion = outer ? SubwordMotion.SUB_WORD : SubwordMotion.SUB_END;
+
+            String wordRegex = editorAdaptor.getConfiguration().get(Options.KEYWORDS);
+            int cursorOffset = editorAdaptor.getPosition().getModelOffset();
+
+            int startOffset;
+            String startChars = cursorOffset > 0 ? model.getText(cursorOffset -1, 2) : "";
+            if (startChars.length() == 2
+            		&& Utils.characterType(startChars.charAt(0), wordRegex) != Utils.WORD
+            		&& Utils.characterType(startChars.charAt(1), wordRegex) == Utils.WORD) {
+            	//If the cursor is on the beginning of a word, the 'b'ack motion will jump to the previous word.
+            	//This is the correct behavior for motion, but not what we want for text object.
+            	startOffset = cursorOffset;
+            }
+            else {
+            	//offset+1 to include the character under the cursor
+            	//(this operation will search backwards)
+            	startOffset = ((SubwordMotion)startMotion).doIt(editorAdaptor, cursorOffset + 1);
+            }
+            Position start = cursorService.newPositionForModelOffset(startOffset);
             
-            //offset+1 to include the character under the cursor
-            int offset = ((SubwordMotion)startMotion).doIt(editorAdaptor, editorAdaptor.getPosition().getModelOffset() + 1);
-            Position start = editorAdaptor.getCursorService().newPositionForModelOffset(offset);
 
-            Position end = ((SubwordMotion)endMotion).destination(editorAdaptor, count);
+            int endOffset;
+            String endChars = cursorOffset < model.getTextLength() - 1 ? model.getText(cursorOffset, 2) : "";
+            if(endChars.length() == 2
+            		&& Utils.characterType(endChars.charAt(0), wordRegex) == Utils.WORD
+            		&& Utils.characterType(endChars.charAt(1), wordRegex) != Utils.WORD) {
+            	//if the cursor is on the last character of a word
+            	//don't jump to the next word
+            	endOffset = cursorOffset;
+            }
+            else {
+            	//using doIt rather than destination so we don't try "fixing" when we match on self
+            	endOffset = ((SubwordMotion)endMotion).doIt(editorAdaptor, cursorOffset);
+
+            }
+            Position end = cursorService.newPositionForModelOffset(endOffset);
+
             if(! outer) {
                 //inclusive vs. exclusive in motion vs. text object
                 //motion is exclusive, inner text object is inclusive
