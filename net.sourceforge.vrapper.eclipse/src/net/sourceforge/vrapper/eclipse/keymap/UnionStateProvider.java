@@ -44,7 +44,6 @@ public class UnionStateProvider implements PlatformSpecificStateProvider {
 
     @Override
     public State<Command> getState(String modeName) {
-        // TODO:vgrechka Support volatile states?
         return fixedUnionProvider.getState(modeName);
     }
 

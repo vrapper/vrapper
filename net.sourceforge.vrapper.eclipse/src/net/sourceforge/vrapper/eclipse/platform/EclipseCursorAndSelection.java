@@ -606,6 +606,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
 
     @Override
     public void updateLastPosition() {
+        // System.out.println("updateLastPosition");
         INavigationHistory history = editorInfo.getCurrent().getSite().getPage().getNavigationHistory();
         INavigationLocation currentLocation = history.getCurrentLocation();
         if (currentLocation != null) {
@@ -615,6 +616,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
 
     @Override
     public void markCurrentPosition() {
+        // System.out.println("markCurrentPosition");
         IEditorPart editorPart = editorInfo.getCurrent();
         // Store current location in Eclipse
         editorPart.getSite().getPage().getNavigationHistory().markLocation(editorPart);

@@ -8,6 +8,7 @@ import net.sourceforge.vrapper.keymap.KeyMapInfo;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.platform.PlatformSpecificVolatileStateProvider;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.modes.commandline.Evaluator;
 import net.sourceforge.vrapper.vim.modes.commandline.EvaluatorMapping;
@@ -58,5 +59,10 @@ public class OverridingTestCommandsStateProvider implements PlatformSpecificVola
     @Override
     public Map<String, State<KeyMapInfo>> getVolatileKeyMaps() {
         return new HashMap<String, State<KeyMapInfo>>();
+    }
+
+    @Override
+    public Map<String, State<Command>> getVolatileState(String modeName) {
+        return new HashMap<String, State<Command>>();
     }
 }
