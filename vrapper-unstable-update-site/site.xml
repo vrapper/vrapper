@@ -48,6 +48,9 @@
    <feature url="features/net.sourceforge.vrapper.plugin.cycle_0.69.20160629.jar" id="net.sourceforge.vrapper.plugin.cycle" version="0.69.20160629">
       <category name="Optional Vimscript Plugins"/>
    </feature>
+   <feature url="features/net.sourceforge.vrapper.plugin.expandregion_0.69.20160629.jar" id="net.sourceforge.vrapper.plugin.expandregion" version="0.69.20160629">
+      <category name="Optional Vimscript Plugins"/>
+   </feature>
    <category-def name="Vrapper Unstable" label="Vrapper Unstable">
       <description>
          Unstable releases of Vrapper.

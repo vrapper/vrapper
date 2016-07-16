@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Vrapper expandregion Plug-in Core
+Bundle-SymbolicName: net.sourceforge.vrapper.plugin.expandregion;singleton:=true
+Bundle-Version: 0.69.20160629
+Export-Package: net.sourceforge.vrapper.plugin.expandregion.commands
+Require-Bundle: net.sourceforge.vrapper.core;bundle-version="0.69.20160629";visibility:=reexport,
+ net.sourceforge.vrapper.eclipse;bundle-version="0.69.20160629"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Eclipse-BuddyPolicy: dependent
