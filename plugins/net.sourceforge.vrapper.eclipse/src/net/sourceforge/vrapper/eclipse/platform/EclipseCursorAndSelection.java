@@ -319,6 +319,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
 
     @Override
     public void setSelection(final Selection newSel) {
+        VrapperLog.debug("Updated selection " + newSel);
         selectionInProgress = true;
         selection = newSel;
         ContentType contentType = newSel == null ? null: newSel.getContentType(configuration);
