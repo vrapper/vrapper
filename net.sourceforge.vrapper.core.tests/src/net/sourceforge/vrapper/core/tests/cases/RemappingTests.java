@@ -1,8 +1,13 @@
 package net.sourceforge.vrapper.core.tests.cases;
 
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.parseKeyStrokes;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
@@ -10,17 +15,101 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import net.sourceforge.vrapper.core.tests.utils.CommandTestCase;
+import net.sourceforge.vrapper.keymap.KeyStroke;
+import net.sourceforge.vrapper.keymap.SpecialKey;
+import net.sourceforge.vrapper.keymap.vim.ConstructorWrappers;
+import net.sourceforge.vrapper.keymap.vim.SimpleKeyStroke;
+import net.sourceforge.vrapper.platform.AbstractPlatformSpecificModeProvider;
+import net.sourceforge.vrapper.platform.PlatformSpecificModeProvider;
 import net.sourceforge.vrapper.utils.Position;
+import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
+import net.sourceforge.vrapper.vim.modes.AbstractMode;
+import net.sourceforge.vrapper.vim.modes.EditorMode;
+import net.sourceforge.vrapper.vim.modes.InsertMode;
+import net.sourceforge.vrapper.vim.modes.ModeSwitchHint;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
+import net.sourceforge.vrapper.vim.modes.VisualMode;
 
 /**
  * Tests for remapping in different modes.
  */
 public class RemappingTests extends CommandTestCase {
 
+    /**
+     * Special EditorMode implementation which decorates another mode so as to record mapped keys.
+     */
+    public static class KeyStrokeRecordingMode extends AbstractMode {
+        public static final List<KeyStroke> INPUT = new ArrayList<KeyStroke>();
+        protected String fakeName;
+        protected EditorMode originalMode;
+
+        public KeyStrokeRecordingMode(EditorAdaptor editorAdaptor, EditorMode originalMode,
+                String fakeName) {
+            super(editorAdaptor);
+            this.fakeName = fakeName;
+            this.originalMode = originalMode;
+        }
+        @Override
+        public String getName() {
+            return fakeName;
+        }
+        @Override
+        public String getDisplayName() {
+            return "";
+        }
+        @Override
+        public void enterMode(ModeSwitchHint... hints) throws CommandExecutionException {
+            super.enterMode(hints);
+            originalMode.enterMode(hints);
+        }
+        @Override
+        public void leaveMode(ModeSwitchHint... hints) throws CommandExecutionException {
+            super.leaveMode(hints);
+            originalMode.leaveMode(hints);
+        }
+        @Override
+        public boolean handleKey(KeyStroke stroke) {
+            INPUT.add(stroke);
+            return originalMode.handleKey(stroke);
+        }
+        @Override
+        public String resolveKeyMap(KeyStroke stroke) {
+            // Use resolver from original mode. More or less a hack, but it works.
+            return originalMode.resolveKeyMap(stroke);
+        }
+        @Override
+        public boolean isRemapBacktracking() {
+            return originalMode.isRemapBacktracking();
+        }
+    }
+
+    public static final String NAME_PREFIX = "keystrokestub.";
+    public static final String TEST_NORMAL = NAME_PREFIX + NormalMode.NAME;
+    public static final String TEST_VISUAL = NAME_PREFIX + VisualMode.NAME;
+    public static final String TEST_INSERT = NAME_PREFIX + InsertMode.NAME;
+
+    public static class KeyStrokeRecordingModeProvider extends AbstractPlatformSpecificModeProvider{
+        public final static PlatformSpecificModeProvider INSTANCE = new KeyStrokeRecordingModeProvider("keyrecordingstub");
+
+        public KeyStrokeRecordingModeProvider(String name) {
+            super(name);
+        }
+        @Override
+        public List<EditorMode> getModes(EditorAdaptor editorAdaptor) throws CommandExecutionException {
+            return Arrays.asList(new EditorMode[]{
+                    new KeyStrokeRecordingMode(editorAdaptor, editorAdaptor.getMode(NormalMode.NAME), TEST_NORMAL),
+                    new KeyStrokeRecordingMode(editorAdaptor, editorAdaptor.getMode(InsertMode.NAME), TEST_INSERT),
+                    new KeyStrokeRecordingMode(editorAdaptor, editorAdaptor.getMode(VisualMode.NAME), TEST_VISUAL)
+                });
+        }
+    }
+
     @Override
     public void setUp() {
         super.setUp();
+        Mockito.when(platform.getPlatformSpecificModeProvider()).thenReturn(KeyStrokeRecordingModeProvider.INSTANCE);
+        reloadEditorAdaptor();
         adaptor.changeModeSafely(NormalMode.NAME);
     }
 
@@ -376,5 +465,30 @@ public class RemappingTests extends CommandTestCase {
         checkCommand(forKeySeq("gz"),
                 "    h", 'e', "ey\noldMcDonnaLD had some $\nia\nia\no",
                 "    ", 'e', "e\noldMcDonnaLD had some $\nia\nia\no");
+    }
+
+    public void checkRemap(String fakeMode, String inputKeyStrokes, String outputKeyStrokes) {
+        try {
+            super.adaptor.changeModeSafely(fakeMode);
+            KeyStrokeRecordingMode.INPUT.clear();
+
+            Iterable<KeyStroke> inputCollection = parseKeyStrokes(inputKeyStrokes);
+            // Do a round-trip to make sure that all keys can be represented
+            Iterable<KeyStroke> outputCollection = parseKeyStrokes(outputKeyStrokes);
+            if ( ! outputKeyStrokes.equals(ConstructorWrappers.keyStrokesToString(outputCollection))) {
+                throw new IllegalArgumentException("Could not convert [" + outputKeyStrokes
+                        + "] to keystrokes, round-trip failed.");
+            }
+            // Set content to some gibberish scratch space
+            content.setText("a\nb\nc\nd\ne\nf\ng\nh\ni\nj\nk\nl\n");
+
+            type(inputCollection);
+
+            String capturedKeys = ConstructorWrappers.keyStrokesToString(KeyStrokeRecordingMode.INPUT);
+            assertEquals("Remap input [" + inputKeyStrokes + "] did not give expected result",
+                    outputKeyStrokes, capturedKeys);
+        } finally {
+            adaptor.changeModeSafely(NormalMode.NAME);
+        }
     }
 }
