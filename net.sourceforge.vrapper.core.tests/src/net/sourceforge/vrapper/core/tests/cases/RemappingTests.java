@@ -16,9 +16,7 @@ import org.mockito.Mockito;
 
 import net.sourceforge.vrapper.core.tests.utils.CommandTestCase;
 import net.sourceforge.vrapper.keymap.KeyStroke;
-import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.vim.ConstructorWrappers;
-import net.sourceforge.vrapper.keymap.vim.SimpleKeyStroke;
 import net.sourceforge.vrapper.platform.AbstractPlatformSpecificModeProvider;
 import net.sourceforge.vrapper.platform.PlatformSpecificModeProvider;
 import net.sourceforge.vrapper.utils.Position;
@@ -133,177 +131,113 @@ public class RemappingTests extends CommandTestCase {
     @Test
     public void testCountingRemap() {
         type(parseKeyStrokes(":nmap L dd<CR>"));
-        checkCommand(forKeySeq("3L"),
-                "a", 'b', "c\ndef\nghi\njkl",
-                "", 'j', "kl");
+        checkRemap(TEST_NORMAL, "3L", "3dd");
     }
 
     @Test
     public void testOmap() {
         // Sanity checks
-        checkCommand(forKeySeq("d$"),
-                "a", 'b', "c\ndef\nghi\njkl\nm",
-                "", 'a', "\ndef\nghi\njkl\nm");
-        checkCommand(forKeySeq("g~$"),
-                "a", 'b', "c\ndef\nghi\njkl\nm",
-                "aB", 'C', "\ndef\nghi\njkl\nm");
+        checkRemap(TEST_NORMAL, "d$", "d$");
+        checkRemap(TEST_NORMAL, "g~$", "g~$");
 
         type(parseKeyStrokes(":onoremap L $<CR>"));
-        checkCommand(forKeySeq("dL"),
-                "a", 'b', "c\ndef\nghi\njkl\nm",
-                "", 'a', "\ndef\nghi\njkl\nm");
-        checkCommand(forKeySeq("g~L"),
-                "a", 'b', "c\ndef\nghi\njkl\nm",
-                "aB", 'C', "\ndef\nghi\njkl\nm");
+        checkRemap(TEST_NORMAL, "dL", "d$");
+        checkRemap(TEST_NORMAL, "g~L", "g~$");
     }
 
     @Test
     public void testCountingOmap() {
         // Sanity check
-        checkCommand(forKeySeq("2\"_2d$"),
-                "a", 'b', "c\ndef\nghi\njkl\nm",
-                "", 'a', "\nm");
-        checkCommand(forKeySeq("2g~2$"),
-                "a", 'b', "c\ndef\nghi\njkl\nm",
-                "aBC\nDEF\nGHI\nJK", 'L', "\nm");
+        checkRemap(TEST_NORMAL, "2\"_2d$", "2\"_2d$");
+        checkRemap(TEST_NORMAL, "2g~2$", "2g~2$");
 
         type(parseKeyStrokes(":onoremap L $<CR>"));
-        checkCommand(forKeySeq("2\"_2dL"),
-                "a", 'b', "c\ndef\nghi\njkl\nm",
-                "", 'a', "\nm");
-        checkCommand(forKeySeq("d4L"),
-                "a", 'b', "c\ndef\nghi\njkl\nm",
-                "", 'a', "\nm");
-        checkCommand(forKeySeq("\"_d4L"),
-                "a", 'b', "c\ndef\nghi\njkl\nm",
-                "", 'a', "\nm");
-        checkCommand(forKeySeq("2g~2L"),
-                "a", 'b', "c\ndef\nghi\njkl\nm",
-                "aBC\nDEF\nGHI\nJK", 'L', "\nm");
+        checkRemap(TEST_NORMAL, "2\"_2dL", "2\"_2d$");
+        checkRemap(TEST_NORMAL, "d4L", "d4$");
+        checkRemap(TEST_NORMAL, "\"_d4L", "\"_d4$");
+        checkRemap(TEST_NORMAL, "2g~2L", "2g~2$");
     }
 
     @Test
     public void testBlackHoleRegisterRemap() {
 
         // Sanity check
-        checkCommand(forKeySeq("\"_dd"),
-                "a", 'b', "c\ndef\nghi\njkl",
-                "", 'd', "ef\nghi\njkl");
+        checkRemap(TEST_NORMAL, "\"_dd", "\"_dd");
+
         type(parseKeyStrokes(":nnoremap R \"_dd<CR>"));
-        checkCommand(forKeySeq("R"),
-                "a", 'b', "c\ndef\nghi\njkl",
-                "", 'd', "ef\nghi\njkl");
+        checkRemap(TEST_NORMAL, "R", "\"_dd");
 
         type(parseKeyStrokes(":nnoremap D \"_d$<CR>"));
-        checkCommand(forKeySeq("D"),
-                "a", 'b', "c\ndef\nghi\njkl",
-                "", 'a', "\ndef\nghi\njkl");
+        checkRemap(TEST_NORMAL, "D", "\"_d$");
+
+        type(parseKeyStrokes(":nnoremap C d$<CR>"));
+        checkRemap(TEST_NORMAL, "\"_C", "\"_d$");
     }
 
     @Test
     public void testBlackHoleRegisterCountingRemap() {
         // Sanity checks
-        checkCommand(forKeySeq("\"_3dd"),
-                "a", 'b', "c\ndef\nghi\njkl",
-                "", 'j', "kl");
-        checkCommand(forKeySeq("3\"_dd"),
-                "a", 'b', "c\ndef\nghi\njkl",
-                "", 'j', "kl");
+        checkRemap(TEST_NORMAL, "\"_3dd", "\"_3dd");
+        checkRemap(TEST_NORMAL, "3\"_dd", "3\"_dd");
 
         type(parseKeyStrokes(":noremap dd \"_dd<CR>"));
-        checkCommand(forKeySeq("3dd"),
-                "a", 'b', "c\ndef\nghi\njkl",
-                "", 'j', "kl");
+        checkRemap(TEST_NORMAL, "3dd", "3\"_dd");
+
         type(parseKeyStrokes(":noremap dd \"_2dd<CR>"));
-        checkCommand(forKeySeq("2dd"),
-                "a", 'b', "c\ndef\nghi\njkl\nm",
-                "", 'm', "");
+        checkRemap(TEST_NORMAL, "2dd", "2\"_2dd");
 
         type(parseKeyStrokes(":nnoremap D \"_d$<CR>"));
-        checkCommand(forKeySeq("D"),
-                "a", 'b', "c\ndef\nghi\njkl",
-                "", 'a', "\ndef\nghi\njkl");
-        checkCommand(forKeySeq("2D"),
-                "a", 'b', "c\ndef\nghi\njkl",
-                "", 'a', "\nghi\njkl");
+        checkRemap(TEST_NORMAL, "D", "\"_d$");
+        checkRemap(TEST_NORMAL, "2D", "2\"_d$");
     }
 
     @Test
     public void testPrefixTextObject() {
-        checkCommand(forKeySeq("di)"),
-                "(", 'a', "bc\ndef\ngh)\njkl",
-                "(", ')', "\njkl");
+        // Sanity checks
+        checkRemap(TEST_NORMAL, "di)", "di)");
+
         type(parseKeyStrokes(":nnoremap )) j<CR>"));
-        checkCommand(forKeySeq("di)"),
-                "(", 'a', "bc\ndef\ngh)\njkl",
-                "(", ')', "\njkl");
+        checkRemap(TEST_NORMAL, "di)", "di)");
+
         type(parseKeyStrokes(":omap )) j<CR>"));
-        checkCommand(forKeySeq("d))"),
-                "(", 'a', "bc\ndef\ngh)\njkl",
-                "", 'g', "h)\njkl");
-        checkCommand(forKeySeq("di)"),
-                "(", 'a', "bc\ndef\ngh)\njkl",
-                "(", ')', "\njkl");
+        checkRemap(TEST_NORMAL, "d))", "dj");
+        checkRemap(TEST_NORMAL, "di)", "di)");
     }
 
     @Test
     public void testEndOfLineRemap() {
         // Original bug report used 'L', but that is too difficult to test as L is 'jump to middle'
         type(parseKeyStrokes(":nnoremap l $<CR>"));
-        checkCommand(forKeySeq("l"),
-                "[", 'a', "bc\ndef\ngh]\njkl",
-                "[ab", 'c', "\ndef\ngh]\njkl");
+        checkRemap(TEST_NORMAL, "l", "$");
 
-        // Should use omap, but 'l' isn't defined yet so it should delete just one char at first.
-        checkCommand(forKeySeq("dl"),
-                "[", 'a', "bc\ndef\ngh]\njkl",
-                "[", 'b', "c\ndef\ngh]\njkl");
+        // 'l' isn't defined with omap yet so it should delete just one char at first.
+        checkRemap(TEST_NORMAL, "dl", "dl");
+
         type(parseKeyStrokes(":onoremap l $<CR>"));
         // Try again now that l is in omap.
-        checkCommand(forKeySeq("dl"),
-                "[", 'a', "bc\ndef\ngh]\njkl",
-                "", '[', "\ndef\ngh]\njkl");
+        checkRemap(TEST_NORMAL, "dl", "d$");
         // Deletes till end of current line and next line.
-        checkCommand(forKeySeq("d2l"),
-                "[", 'a', "bc\ndef\ngh]\njkl",
-                "", '[', "\ngh]\njkl");
-        checkCommand(forKeySeq("2dl"),
-                "[", 'a', "bc\ndef\ngh]\njkl",
-                "", '[', "\ngh]\njkl");
+        checkRemap(TEST_NORMAL, "d2l", "d2$");
+        checkRemap(TEST_NORMAL, "2dl", "2d$");
         // Should delete till end of current line + 7 more lines
-        checkCommand(forKeySeq("2\"_2d2l"),
-                "[", 'a', "bc\ndef\ngh\njkl\nmno\npqr\nstu\nvwx\nyza\nbcd\nefg",
-                "", '[', "\nyza\nbcd\nefg");
+        checkRemap(TEST_NORMAL, "2\"_2d2l", "2\"_2d2$");
 
         // 'l' isn't remapped yet in visual mode. Try before / after.
-        checkCommand(forKeySeq("vld"),
-                "[", 'a', "bc\ndef\ngh]\njkl",
-                "[", 'c', "\ndef\ngh]\njkl");
+        checkRemap(TEST_VISUAL, "ld", "ld");
         type(parseKeyStrokes(":vnoremap l $<CR>"));
-        checkCommand(forKeySeq("vld"),
-                "[", 'a', "bc\ndef\ngh]\njkl",
-                "[", 'd', "ef\ngh]\njkl");
+        checkRemap(TEST_VISUAL, "ld", "$d");
     }
 
     @Test
     public void testMotionsWithoutOMap() {
         // Check that no omap binds are mixed in with the prefixed motions: f,F,t,T,`,',i,a
-        checkCommand(forKeySeq("fL"),
-                "old", ' ', "McDonnaLD had some $",
-                "old McDonna", 'L', "D had some $");
+        checkRemap(TEST_NORMAL, "fL", "fL");
+
         type(parseKeyStrokes(":noremap L $<CR>"));
-        checkCommand(forKeySeq("L"),
-                "[", 'a', "bc\ndef\ngh]\njkl",
-                "[ab", 'c', "\ndef\ngh]\njkl");
-        checkCommand(forKeySeq("fL"),
-                "old", ' ', "McDonnaLD had some $",
-                "old McDonna", 'L', "D had some $");
-        checkCommand(forKeySeq("dfL"),
-                "old", ' ', "McDonnaLD had some $LLaz",
-                "old", 'D', " had some $LLaz");
-        checkCommand(forKeySeq("d2fL"),
-                "old", ' ', "McDonnaLD had some $LLaz",
-                "old", 'L', "az");
+        checkRemap(TEST_NORMAL, "L", "$");
+        checkRemap(TEST_NORMAL, "fL", "fL");
+        checkRemap(TEST_NORMAL, "dfL", "dfL");
+        checkRemap(TEST_NORMAL, "d2fL", "d2fL");
 
         // Test cursor service doesn't support marks, just check if they're set and get.
         type(parseKeyStrokes(":noremap s \"_s<CR>"));
@@ -312,159 +246,89 @@ public class RemappingTests extends CommandTestCase {
         type(parseKeyStrokes("'s"));
         verify(cursorAndSelection, times(1)).getMark("s");
 
-        checkCommand(forKeySeq("dams"),
-                "so old", ' ', "McDonnaLD had some $LLaz",
-                "", 'o', "me $LLaz");
+        // Delete "all matching/paired 's' chars"
+        checkRemap(TEST_NORMAL, "dams", "dams");
 
         // sanity check
-        checkCommand(forKeySeq("df0"),
-                "so old", ' ', "McD0nnaLD had some $LLaz",
-                "so old", 'n', "naLD had some $LLaz");
+        checkRemap(TEST_NORMAL, "df0", "df0");
 
         type(parseKeyStrokes(":onoremap 0 0x<CR>"));
-        checkCommand(forKeySeq("d0"),
-                "so old", ' ', "McD0nnaLD had some $LLaz",
-                "", 'M', "cD0nnaLD had some $LLaz");
-        checkCommand(forKeySeq("df0"),
-                "so old", ' ', "McD0nnaLD had some $LLaz",
-                "so old", 'n', "naLD had some $LLaz");
+        checkRemap(TEST_NORMAL, "d0", "d0x");
+        checkRemap(TEST_NORMAL, "df0", "df0");
     }
-    
+
     @Test
     public void testPrefixCommandMap() {
         // Sanity check
-        checkCommand(forKeySeq("gq2j"),
-                "    h", 'e', "ey\noldMcDonnaLD had some $\nia\nia\no",
-                "", ' ', "   heey oldMcDonnaLD had some $ ia\nia\no");
+        checkRemap(TEST_NORMAL, "gq2j", "gq2j");
 
         // 'q' mapping should only be invoked in operator mode or at start of command.
         type(parseKeyStrokes(":noremap q 2j<CR>"));
-        checkCommand(forKeySeq("gq2j"),
-                "    h", 'e', "ey\noldMcDonnaLD had some $\nia\nia\no",
-                "", ' ', "   heey oldMcDonnaLD had some $ ia\nia\no");
-        checkCommand(forKeySeq("gqq"),
-                "    h", 'e', "ey\noldMcDonnaLD had some $\nia\nia\no",
-                "", ' ', "   heey oldMcDonnaLD had some $ ia\nia\no");
-        checkCommand(forKeySeq("q"),
-                "    h", 'e', "ey\noldMcDonnaLD had some $\nia\nia\no",
-                "    heey\noldMcDonnaLD had some $\ni", 'a', "\nia\no");
+        checkRemap(TEST_NORMAL, "gq2j", "gq2j");
+        checkRemap(TEST_NORMAL, "gqq", "gq2j");
+        checkRemap(TEST_NORMAL, "q", "2j");
     }
     
     @Test
     public void testRemapShouldNotShadeOriginalCommand() {
         // Sanity check
-        checkCommand(forKeySeq("gg"),
-                "    h", 'e', "ey oldMcDonnaLD had some $\nia\nia\no",
-                "    ", 'h', "eey oldMcDonnaLD had some $\nia\nia\no");
-        checkCommand(forKeySeq("G"),
-                "    h", 'e', "ey oldMcDonnaLD had some $\nia\nia\no",
-                "    heey oldMcDonnaLD had some $\nia\nia\n", 'o', "");
+        checkRemap(TEST_NORMAL, "gg", "gg");
+        checkRemap(TEST_NORMAL, "G", "G");
 
         // Both commands should work
         type(parseKeyStrokes(":noremap gr G<CR>"));
-        checkCommand(forKeySeq("gg<ESC>"),
-                "    h", 'e', "ey oldMcDonnaLD had some $\nia\nia\no",
-                "    ", 'h', "eey oldMcDonnaLD had some $\nia\nia\no");
-        checkCommand(forKeySeq("gr<ESC>"),
-                "    h", 'e', "ey oldMcDonnaLD had some $\nia\nia\no",
-                "    heey oldMcDonnaLD had some $\nia\nia\n", 'o', "");
-        checkCommand(forKeySeq("gg<ESC>"),
-                "    h", 'e', "ey oldMcDonnaLD had some $\nia\nia\no",
-                "    ", 'h', "eey oldMcDonnaLD had some $\nia\nia\no");
-        checkCommand(forKeySeq("grgg<ESC>"),
-                "    h", 'e', "ey oldMcDonnaLD had some $\nia\nia\no",
-                "    ", 'h', "eey oldMcDonnaLD had some $\nia\nia\no");
-        checkCommand(forKeySeq("grgggr<ESC>"),
-                "    h", 'e', "ey oldMcDonnaLD had some $\nia\nia\no",
-                "    heey oldMcDonnaLD had some $\nia\nia\n", 'o', "");
-        checkCommand(forKeySeq("grxggxgr<ESC>"),
-                "    h", 'e', "ey oldMcDonnaLD had some $\nia\nia\no",
-                "    eey oldMcDonnaLD had some $\nia\nia\n", EOF, "");
+        checkRemap(TEST_NORMAL, "gg<ESC>", "gg<ESC>");
+        checkRemap(TEST_NORMAL, "gr<ESC>", "G<ESC>");
+        checkRemap(TEST_NORMAL, "ggrb<ESC>", "ggrb<ESC>");
+        checkRemap(TEST_NORMAL, "gg<ESC>", "gg<ESC>");
+        checkRemap(TEST_NORMAL, "grgg<ESC>", "Ggg<ESC>");
+        checkRemap(TEST_NORMAL, "grgggr<ESC>", "GggG<ESC>");
+        checkRemap(TEST_NORMAL, "grxggxgr<ESC>", "GxggxG<ESC>");
     }
 
     @Test
     public void testRemapZero() {
         // Sanity checks
-        checkCommand(forKeySeq("d0"),
-                "    so old", ' ', "McD0nnaLD had some $LLaz",
-                "", ' ', "McD0nnaLD had some $LLaz");
-        checkCommand(forKeySeq("d^"),
-                "    so old", ' ', "McD0nnaLD had some $LLaz",
-                "    ", ' ', "McD0nnaLD had some $LLaz");
+        checkRemap(TEST_NORMAL, "d0", "d0");
+        checkRemap(TEST_NORMAL, "d^", "d^");
 
         type(parseKeyStrokes(":map 0 ^<CR>"));
-        checkCommand(forKeySeq("d0"),
-                "so old", ' ', "McD0nnaLD had some $LLaz",
-                "", ' ', "McD0nnaLD had some $LLaz");
-        checkCommand(forKeySeq("d0"),
-                "    so old", ' ', "McD0nnaLD had some $LLaz",
-                "    ", ' ', "McD0nnaLD had some $LLaz");
-        checkCommand(forKeySeq("df0"),
-                "so old", ' ', "McD0nnaLD had some $LLaz",
-                "so old", 'n', "naLD had some $LLaz");
-        checkCommand(forKeySeq("d10l"),
-                "so old", ' ', "McD0nnaLD had some $LLaz",
-                "so old", ' ', "had some $LLaz");
+        checkRemap(TEST_NORMAL, "d0", "d^");
+        checkRemap(TEST_NORMAL, "df0", "df0");
+        checkRemap(TEST_NORMAL, "d10l", "d10l");
 
         /*
          * Copied from NormalModeTests.testPercent
          */
-        // Shouldn't do anything
-        checkCommand(forKeySeq("500%"),
-                "1\n",'2',"\n3\n4\n5\n6\n7\n8\n9\n10\n",
-                "1\n",'2',"\n3\n4\n5\n6\n7\n8\n9\n10\n");
-        checkCommand(forKeySeq("100%"),
-                "1\n",'2',"\n3\n4\n5\n6\n7\n8\n9\n10",
-                "1\n2\n3\n4\n5\n6\n7\n8\n9\n",'1',"0");
-        // Should go to first non-whitespace character
-        checkCommand(forKeySeq("100%"),
-                "1\n",'2',"\n3\n4\n5\n6\n7\n8\n9\n    10",
-                "1\n2\n3\n4\n5\n6\n7\n8\n9\n    ",'1',"0");
-        checkCommand(forKeySeq("%"),
-                "fun",'(',"call);",
-                "fun(call",')',";");
-        checkCommand(forKeySeq("%"),
-                "fun(call",')',";",
-                "fun",'(',"call);");
-
-        checkCommand(forKeySeq("df0"),
-                "so old", ' ', "McD0nnaLD had some $LLaz",
-                "so old", 'n', "naLD had some $LLaz");
+        // Shouldn't do anything with regards to remaps
+        checkRemap(TEST_NORMAL, "500%", "500%");
+        checkRemap(TEST_NORMAL, "100%", "100%");
     }
 
     @Test
     public void testInsertModeRemap() {
         // Quick sanity check
-        checkCommand(forKeySeq("aya<esc>"),
-                "    h", 'e', "ey\noldMcDonnaLD had some $\nia\nia\no",
-                "    hey", 'a', "ey\noldMcDonnaLD had some $\nia\nia\no");
+        checkRemap(TEST_INSERT, "ya<esc>", "ya<ESC>");
 
         // Test that 'jj' quits (only after remapping)
-        checkCommand(forKeySeq("ijkjjlh<ESC>"),
-                "    h", 'e', "ey\noldMcDonnaLD had some $\nia\nia\no",
-                "    hjkjjl", 'h', "eey\noldMcDonnaLD had some $\nia\nia\no");
-        type(parseKeyStrokes(":inoremap jj <LT>ESC<GT><CR>")); // Double escaping for test key parse
-        checkCommand(forKeySeq("ijkjjlh<ESC>"),
-                "    h", 'e', "ey\noldMcDonnaLD had some $\nia\nia\no",
-                "    hj", 'k', "eey\noldMcDonnaLD had some $\nia\nia\no");
+        checkRemap(TEST_INSERT, "jkjjlh<ESC>", "jkjjlh<ESC>");
 
-        // Test that initially failed 'jj' mapping allows kk mapping to be detected by backtracking
-        checkCommand(forKeySeq("ijkklhjjlh"),
-                "    h", 'e', "ey\noldMcDonnaLD had some $\nia\nia\no",
-                "    hjkkl", 'h', "eey\noldMcDonnaLD had some $\nia\nia\no");
+        type(parseKeyStrokes(":inoremap jj <LT>ESC<GT><CR>")); // Double escaping for test key parse
+        checkRemap(TEST_INSERT, "jkjj", "jk<ESC>");
+
+        // Sanity check
+        checkRemap(TEST_INSERT, "jkklhjj", "jkklh<ESC>");
+
         type(parseKeyStrokes(":inoremap kk <LT>ESC<GT><CR>"));
-        checkCommand(forKeySeq("ijkklh<ESC>"),
-                "    h", 'e', "ey\noldMcDonnaLD had some $\nia\nia\no",
-                "    h", 'j', "eey\noldMcDonnaLD had some $\nia\nia\no");
+        // Test that initially failed 'jj' mapping allows kk mapping to be detected by backtracking
+        checkRemap(TEST_INSERT, "jkk", "j<ESC>");
     }
 
     @Test
     public void testRecursiveRemap() {
         type(parseKeyStrokes(":nnoremap Z ex<CR>"));
         type(parseKeyStrokes(":nmap gz ggZbx<CR>"));
-        checkCommand(forKeySeq("gz"),
-                "    h", 'e', "ey\noldMcDonnaLD had some $\nia\nia\no",
-                "    ", 'e', "e\noldMcDonnaLD had some $\nia\nia\no");
+        checkRemap(TEST_NORMAL, "gz", "ggexbx");
     }
 
     public void checkRemap(String fakeMode, String inputKeyStrokes, String outputKeyStrokes) {
