@@ -331,6 +331,31 @@ public class RemappingTests extends CommandTestCase {
         checkRemap(TEST_NORMAL, "gz", "ggexbx");
     }
 
+    @Test
+    public void testRecursiveRemapStops() {
+        type(parseKeyStrokes(":nmap Z lxgz<CR>"));
+        type(parseKeyStrokes(":nmap gz g_xZ<CR>"));
+        checkRemap(TEST_NORMAL, "gz", "g_xlx");
+    }
+
+    @Test
+    public void testPrefixKeys() {
+        type(parseKeyStrokes(":nnoremap ,s gg<CR>"));
+        type(parseKeyStrokes(":nnoremap ,ss G<CR>"));
+        checkRemap(TEST_NORMAL, ",ss", "G");
+        checkRemap(TEST_NORMAL, ",s<SPACE>", "gg<SPACE>");
+    }
+
+    @Test
+    public void testPrefixKeysInsert() {
+        // Use ',' key as leader for easier testing
+        type(parseKeyStrokes(":inoremap ,s start<CR>"));
+        type(parseKeyStrokes(":inoremap ,ss session<CR>"));
+        checkRemap(TEST_INSERT, ",ss", "session");
+        checkRemap(TEST_INSERT, ",s<SPACE>", "start<SPACE>");
+    }
+
+
     public void checkRemap(String fakeMode, String inputKeyStrokes, String outputKeyStrokes) {
         try {
             super.adaptor.changeModeSafely(fakeMode);

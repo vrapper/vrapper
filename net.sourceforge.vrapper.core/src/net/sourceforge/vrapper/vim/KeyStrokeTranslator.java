@@ -23,11 +23,13 @@ public class KeyStrokeTranslator {
     private State<Remapping> currentState;
     private Remapping lastValue;
     private final List<RemappedKeyStroke> unconsumedKeyStrokes;
+    private final List<RemappedKeyStroke> originalKeyStrokes;
     private final LinkedList<RemappedKeyStroke> resultingKeyStrokes;
     private boolean mappingSucceeded = false;
 
     public KeyStrokeTranslator() {
         unconsumedKeyStrokes = new LinkedList<RemappedKeyStroke>();
+        originalKeyStrokes = new LinkedList<RemappedKeyStroke>();
         resultingKeyStrokes  = new LinkedList<RemappedKeyStroke>();
     }
 
@@ -42,16 +44,18 @@ public class KeyStrokeTranslator {
             //begin new mapping, make sure values are reset
             resultingKeyStrokes.clear();
             unconsumedKeyStrokes.clear();
+            originalKeyStrokes.clear();
             mappingSucceeded = false;
         } else {
             trans = currentState.press(key);
         }
         if (trans != null) {
             // mapping exists
+            originalKeyStrokes.add(new RemappedKeyStroke(key, false));
             if (trans.getValue() != null) {
                 //mapping completed successfully
                 lastValue = trans.getValue();
-                unconsumedKeyStrokes.add(new RemappedKeyStroke(key, false));
+                unconsumedKeyStrokes.clear();
                 mappingSucceeded = true;
             } else { //mapping pending
                 // as long as no preliminary result is found, keystrokes
@@ -80,10 +84,10 @@ public class KeyStrokeTranslator {
 
     public Queue<RemappedKeyStroke> originalKeyStrokes() {
         // This is unlikely to happen
-        if (unconsumedKeyStrokes.isEmpty()) {
+        if (originalKeyStrokes.isEmpty()) {
             return CollectionUtils.emptyQueue();
         } else {
-            return new LinkedList<RemappedKeyStroke>(unconsumedKeyStrokes);
+            return new LinkedList<RemappedKeyStroke>(originalKeyStrokes);
         }
     }
 
