@@ -1,4 +1,19 @@
 <div class="newsbox">
+    <div class="date">2016-08-07</div>
+    <h4>0.70.0 Released</h4>
+    <p>This is a very small release and I probably could've just waited longer
+    until there were more changes worth releasing, but I think it's good to have
+    a reliable release cycle and we've been doing two-month releases for awhile now.
+    Of course I rushed out 0.68.1 a little more than a month ago and we've only had
+    two changes since then.  So I do 0.xx.0 releases every two months and 0.xx.1 releases
+    when needed.  It makes sense to me at least.  Anyway, these are the only changes between
+    0.68.1 and 0.70.0:</p>
+    <ul>
+    	<li>Fixed behavior when one custom mapping is a subset of another custom mapping</li>
+		<li>Fixed behavior in subword text object plugin when cursor is on word boundary</li>
+    </ul>
+</div>
+<div class="newsbox">
     <div class="date">2016-06-23</div>
     <h4>0.68.1 Released</h4>
     <p>We had a regression in the 0.68.0 release and I debated whether it was
@@ -192,153 +207,6 @@
     </ul>
     
     <p>Thank you to all the users who have used and enjoyed Vrapper throughout the years!</p>
-</div>
-<div class="newsbox">
-    <div class="date">2015-06-07</div>
-    <h4>0.56.0 Released</h4>
-
-    <p>It's been a bit of a slow month for us.  There weren't many changes
-    but it's been two months so I might as well do another release.
-    Here are the changes since my last update</p>
-    
-    <ul>
-        <li>Fixed issue where some jumps weren't added to Eclipse history and &lt;C-O&gt;/&lt;C-I&gt;</li>
-        <li>Fixed issue where setting a string option to "" wouldn't clear the value</li>
-        <li>Fixed issue where `:s//` wouldn't clear previous search</li>
-    </ul>
-</div>
-<div class="newsbox">
-    <div class="date">2015-05-10</div>
-    <h4>Updates to unstable update site</h4>
-
-    <p>Here's your monthly status update on recent changes to Vrapper's
-    unstable update site:</p>
-    
-    <ul>
-        <li>Added support for fold commands (za, zo, zc, zR, zM) in optional PyDev plugin</li>
-        <li>Fixed issue so ex commands will reuse last search if no pattern is provided</li>
-        <li>Fixed issue with Ctrl- keys when replaying a macro</li>
-        <li>Fixed issue where switching visual modes reset selection</li>
-        <li>Fixed issue with switching to search mode from a visual mode</li>
-        <li>Fixed issue which required whitespace when defining a :move range</li>
-        <li>Fixed issue with :d, :y, and :retab requiring line ranges</li>
-        <li>Fixed issue with Ctrl-A incrementing numbers larger than 32-bits</li>
-        <li>Other various refactoring (not tied to any specific defect)</li>
-    </ul>
-</div>
-<div class="newsbox">
-    <div class="date">2015-04-05</div>
-    <h4>0.54.0 Released</h4>
-
-    <p>Another two months, another Vrapper release.  We've now received over
-    50,000 installs via the Eclipse Marketplace, which puts us at number 42 out
-    of all 1,800+ plugins available in the Marketplace.  Thank you everyone who
-    continues to use and support Vrapper!</p>
-
-    <p>We now have over 60 issues on our GitHub repository but I noticed
-    something recently: there are only 11 defects.  Of course, since I'm the one
-    who labels these items there are another 10 "annoyances", which are items
-    that don't really prevent you from doing anything but would be nice to have.
-    The reason I bring this up is because we have 35 feature requests.  Once
-    again, it seems like Vrapper is at the point where we can meet the majority
-    of user's use cases and we're down to the really obscure and difficult
-    features that only power users even know exist.  Also, I don't think we have
-    any feature requests which have a "me too!" comment in them; I think all of
-    our feature requests each have one person waiting on them.  I may be a
-    little biased, but I think Vrapper is one of the best Vim emulation plugins
-    for any text editor. I'm not aware of any other Vim emulator that has
-    support for additional (ported) vimscript plugins.  I think we're doing
-    pretty good!</p>
-    
-    <p>Anyway, down to business.  0.54.0 includes the following changes since my
-    last status update:</p>
-
-    <ul>
-        <li>Added support for counts before an ex command (4:s/foo/bar/g)</li>
-        <li>Added support for setting a register to the contents of another register (:let @*=@3)</li>
-        <li>Fixed issue where indenting a block selection indented the beginning of the line</li>
-        <li>Fixed issue with potential off-by-one when indenting a block selection</li>
-        <li>Fixed issue with ':source' not interpreting '~' as '$HOME'</li>
-        <li>Fixed issue with copying a block selection to the clipboard</li>
-        <li>Fixed issue with restoring selection after toggling between visual mode and linewise visual mode</li>
-        <li>Fixed issue with reverse search of a single character</li>
-        <li>Fixed issue with stale selections potentially throwing an exception</li>
-    </ul>
-</div>
-<div class="newsbox">
-    <div class="date">2015-03-09</div>
-    <h4>Updates to unstable update site</h4>
-    <p>I'm still sticking with our monthly status updates.
-    Here are the changes which are currently on our unstable update site:</p>
-
-    <ul>
-        <li>Added new optional plugin for indent text object</li>
-        <ul>
-          <li>Useful with Python and other whitespace languages</li>
-          <li>'ii' for indent block, 'ai' for indent block plus line above</li>
-          <li><a href="http://www.vim.org/scripts/script.php?script_id=3037">http://www.vim.org/scripts/script.php?script_id=3037</a></li>
-        </ul>
-        <li>Added support for ':let @/ = ""' to clear search highlight</li>
-        <li>Introduced config property 'hlscope' to determine search highlight scope</li>
-        <ul>
-          <li>Only valid when ':set hlsearch' is active</li>
-          <li>'window' - highlight the same keyword in all editors</li>
-          <li>'clear' - only one editor will have a highlight at a time</li>
-          <li>'local' - each editor has its own search highlight</li>
-          <li>Default is 'clear'</li>
-        </ul>
-        <li>Fixed issue with 'c' and 's' in visual-block mode</li>
-        <li>Fixed issue with XML editor provided by ADT</li>
-        <li>Fixed issue with unintentionally recursive mappings</li>
-        <li>Fixed issue with drawing command-line when no scrollbars present in certain editors</li>
-    </ul>
-</div>
-<div class="newsbox">
-    <div class="date">2015-02-11</div>
-    <h4>0.52.1 Released</h4>
-    <p>I just released 0.52.0 a couple days ago but a number of people quickly
-    hit the same problem.  Certain command-line commands (such as :w and any
-    mappings to an :eclipseaction) caused the editor to lose focus.  This meant
-    you had to click your mouse within the editor to regain focus.  As Vim
-    users, we all know how frustrating it is when your hands have to leave the
-    keyboard to use the mouse.  So we fixed this issue and released 0.52.1 as
-    quickly as we could. We apologize for any inconvenience.</p>
-    
-    <p>The only difference between 0.52.0 and 0.52.1 is that single defect fix:</p>
-
-    <ul>
-        <li>Fixed issue where some command-line commands would cause the editor to lose focus</li>
-    </ul>
-</div>
-<div class="newsbox">
-    <div class="date">2015-02-08</div>
-    <h4>0.52.0 Released</h4>
-    <p>While December was extremely slow for us, we did have some code changes
-    in January so I'm sticking with our two-month release cycle and releasing
-    0.52.0 today.  The following changes are in 0.52.0:</p>
-
-    <ul>
-        <li>Added support for 'gn' and 'gN'</li>
-        <li>Added support for ':buffer#' command and Ctrl-^</li>
-        <li>Added support for 'C' in visual mode (alias for 'c' or 's')</li>
-        <li>Changed ':ls' command to be ':files'</li>
-        <li>Changed ':buffers' and ':ls' to be more vim-like</li>
-        <li>Fixed issue where '/e' in search didn't work with regex</li>
-        <li>Fixed issue where '&lt;c-=&gt;' couldn't be used in a mapping</li>
-        <li>Fixed issue where canceling a search would also clear the visual selection</li>
-    </ul>
-</div>
-<div class="newsbox">
-    <div class="date">2015-01-04</div>
-    <h4>(Lack of) Status Update</h4>
-    <p>It's been a month since 0.50.0 was released so I figured I should stick
-    with my monthly status updates and tell you about the recent changes.
-    However, there is nothing to report. Since 0.50.0 was released there hasn't
-    been a single line of code changed and there hasn't been a single defect
-    filed.  December is usually a slow month for us anyway, but I'm surprised we
-    haven't had any defects filed either. I guess 0.50.0 must be a rock-solid
-    release (or you guys must all be busy during December too).</p>
-    <p>I hope you all enjoy Vrapper 0.50.0!</p>
 </div>
 
 <a href="old_index.php">Older Posts &gt;&gt;</a><br/>
