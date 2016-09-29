@@ -32,6 +32,6 @@ public class TabNewCommand extends EclipseCommand {
     }
     
     public void execute(EditorAdaptor editorAdaptor) {
-        doIt(1, getCommandName(), editorAdaptor, true);
+        doIt(getCommandName(), editorAdaptor, true);
     }
 }

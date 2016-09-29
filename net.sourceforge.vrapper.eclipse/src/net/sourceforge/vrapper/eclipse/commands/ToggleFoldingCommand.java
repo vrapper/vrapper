@@ -24,10 +24,10 @@ public class ToggleFoldingCommand extends CountIgnoringNonRepeatableCommand {
 	public void execute(EditorAdaptor editorAdaptor)
 			throws CommandExecutionException {
 		int before = editorAdaptor.getViewContent().getNumberOfLines();
-		EclipseCommand.doIt(Command.NO_COUNT_GIVEN, expandCmdId, editorAdaptor, false);
+		EclipseCommand.doIt(expandCmdId, editorAdaptor, false);
 		int after = editorAdaptor.getViewContent().getNumberOfLines();
 		if (before == after) {
-			EclipseCommand.doIt(Command.NO_COUNT_GIVEN, collapseCmdId, editorAdaptor, false);
+			EclipseCommand.doIt(collapseCmdId, editorAdaptor, false);
 		}
 	}
 

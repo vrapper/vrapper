@@ -7,12 +7,12 @@ import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.motions.CountAwareMotion;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 
-public class EclipseMoveCommand extends CountAwareMotion {
+public class EclipseCommandMotion extends CountAwareMotion {
 
     private final String motionName;
     private final BorderPolicy borderPolicy;
 
-    public EclipseMoveCommand(String motionName, BorderPolicy borderPolicy) {
+    public EclipseCommandMotion(String motionName, BorderPolicy borderPolicy) {
         this.motionName = motionName;
         this.borderPolicy = borderPolicy;
     }
@@ -29,7 +29,12 @@ public class EclipseMoveCommand extends CountAwareMotion {
     @Override
     public Position destination(EditorAdaptor editorAdaptor, int count) {
         Position oldCarretOffset = editorAdaptor.getPosition();
-        EclipseCommand.doIt(count, motionName, editorAdaptor, false);
+        if (count == NO_COUNT_GIVEN) {
+            count = 1;
+        }
+        for (int i = 0; i < count; i++) {
+            EclipseCommand.doIt(motionName, editorAdaptor, false);
+        }
         Position newCarretOffset = editorAdaptor.getPosition();
         editorAdaptor.setPosition(oldCarretOffset, StickyColumnPolicy.ON_CHANGE);
         return newCarretOffset;

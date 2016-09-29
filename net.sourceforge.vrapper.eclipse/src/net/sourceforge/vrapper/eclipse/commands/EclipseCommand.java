@@ -4,6 +4,8 @@ import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.AbstractCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
+import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
+import net.sourceforge.vrapper.vim.commands.LeaveVisualModeCommand;
 import net.sourceforge.vrapper.vim.commands.MultipleExecutionCommand;
 
 import org.eclipse.core.commands.ParameterizedCommand;
@@ -17,6 +19,7 @@ public class EclipseCommand extends AbstractCommand {
 
     private final String action;
     private final boolean async;
+    private boolean fromVisualMode;
 
     public EclipseCommand(String action) {
         this.action = action;
@@ -28,8 +31,15 @@ public class EclipseCommand extends AbstractCommand {
         this.async = async;
     }
 
-    public void execute(EditorAdaptor editorAdaptor) {
-        doIt(1, action, editorAdaptor, async);
+    public void execute(EditorAdaptor editorAdaptor) throws CommandExecutionException {
+        if (fromVisualMode) {
+            editorAdaptor.rememberLastActiveSelection();
+        }
+        doIt(action, editorAdaptor, async);
+
+        if (fromVisualMode) {
+            LeaveVisualModeCommand.doIt(editorAdaptor);
+        }
     }
 
     public String getCommandName() {
@@ -49,7 +59,7 @@ public class EclipseCommand extends AbstractCommand {
         return display;
     }
 
-    public static void doIt(int count, final String action, EditorAdaptor editorAdaptor, boolean async) {
+    public static void doIt(final String action, EditorAdaptor editorAdaptor, boolean async) {
         final IHandlerService handlerService = editorAdaptor.getService(IHandlerService.class);
         final ICommandService commandService = editorAdaptor.getService(ICommandService.class);
         if (handlerService != null && commandService != null) {
@@ -84,6 +94,16 @@ public class EclipseCommand extends AbstractCommand {
 
     public Command withCount(int count) {
         return new MultipleExecutionCommand(count, this);
+    }
+
+    /**
+     * Mark this command as being executed in visual mode.
+     * Note that this does not need to be called when running a command from command line mode, in
+     * such a case the command line mode and normal mode will handle all the extra logic.
+     */
+    public Command fromVisualMode(boolean fromVisualMode) {
+        this.fromVisualMode = fromVisualMode;
+        return this;
     }
 
     public String toString() {
