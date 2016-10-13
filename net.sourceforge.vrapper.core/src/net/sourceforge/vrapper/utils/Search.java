@@ -57,4 +57,49 @@ public class Search implements Reversible<Search> {
     public SearchOffset getSearchOffset() {
         return afterSearch;
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (backward ? 1231 : 1237);
+        result = prime * result + (caseSensitive ? 1231 : 1237);
+        result = prime * result + ((keyword == null) ? 0 : keyword.hashCode());
+        result = prime * result + (regexSearch ? 1231 : 1237);
+        result = prime * result + (searchInSelection ? 1231 : 1237);
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Search other = (Search) obj;
+        if (backward != other.backward)
+            return false;
+
+        // Check other fields
+        return equalsIgnoreDirection(other);
+    }
+
+    public boolean equalsIgnoreDirection(Search other) {
+        if (other == null)
+            return false;
+        if (caseSensitive != other.caseSensitive)
+            return false;
+        if (keyword == null) {
+            if (other.keyword != null)
+                return false;
+        } else if (!keyword.equals(other.keyword))
+            return false;
+        if (regexSearch != other.regexSearch)
+            return false;
+        if (searchInSelection != other.searchInSelection)
+            return false;
+        return true;
+    }
 }
