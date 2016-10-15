@@ -158,7 +158,6 @@ public class SneakInputMode extends AbstractMode {
     }
 
     protected void startSneaking(String searchString) {
-        // [TODO] Implement sneak column mode search, in which case we need to pass a count value
 
         Search searchKeyword = constructSearchKeyword(editorAdaptor, searchString, sneakBackwards);
 

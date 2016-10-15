@@ -8,12 +8,16 @@ import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.HighlightingService;
 import net.sourceforge.vrapper.platform.SearchAndReplaceService;
+import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.plugin.sneak.commands.motions.SneakMotion;
+import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.Search;
 import net.sourceforge.vrapper.utils.SearchResult;
+import net.sourceforge.vrapper.utils.StringUtils;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.VrapperEventListener;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
@@ -230,16 +234,17 @@ public class SneakState {
                 offsetShift, true);
 
         SearchResult searchResult = searchAndReplaceService.find(sneakSearch, position);
-
-        // [TODO] Implement sneak's "column search"
+        ColumnFilter columnFilter = new ColumnFilter(editorAdaptor, columnLeft, columnRight);
 
         int countResults = 0;
         while (searchResult.isFound() && countResults < additionalItemCount) {
-            searchHits.add(searchResult);
+            if (columnFilter.considerMatch(searchResult)) {
+                searchHits.add(searchResult);
+                countResults++;
+            }
             position = cursorService.shiftPositionForModelOffset(
                     searchResult.getLeftBound().getModelOffset(), offsetShift, true);
             searchResult = searchAndReplaceService.find(sneakSearch, position);
-            countResults++;
         }
         storeAdditionalMatches(searchResult, searchHits);
         highlightAdditionalMatches(searchHits, editorAdaptor.getHighlightingService());
@@ -306,7 +311,7 @@ public class SneakState {
         }
         clearHighlights(editorAdaptor.getHighlightingService(), 0, count);
     }
-    
+
     private void trimNextMatchesCache(EditorAdaptor editorAdaptor) {
         // This can happen when we just did a jump like 500;
         if (nextMatches.size() > MAX_SNEAK_CACHE_SIZE) {
@@ -315,12 +320,51 @@ public class SneakState {
             editorAdaptor.getHighlightingService().removeHighlights(highlightsToTrim);
             highlightsToTrim.clear();
             itemsToTrim.clear();
-            
+
             allNextMatchesFound = false;
         }
         if (previousMatches.size() > MAX_SNEAK_CACHE_SIZE) {
             List<TextRange> itemsToTrim = previousMatches.subList(MAX_SNEAK_CACHE_SIZE, previousMatches.size());
             itemsToTrim.clear();
+        }
+    }
+
+    protected static class ColumnFilter {
+        protected EditorAdaptor editorAdaptor;
+        protected TextContent textContent;
+        private int columnLeft;
+        private int columnRight;
+        private Integer tabstopSetting;
+        protected LineInformation lastLineInfo;
+        protected int[] lastLineOffsets;
+
+        public ColumnFilter(EditorAdaptor editorAdaptor, int columnLeft, int columnRight) {
+            this.editorAdaptor = editorAdaptor;
+            this.columnRight = columnRight;
+            this.columnLeft = columnLeft;
+            textContent = editorAdaptor.getModelContent();
+            tabstopSetting = editorAdaptor.getConfiguration().get(Options.TAB_STOP);
+        }
+
+        public boolean considerMatch(TextRange match) {
+            if (columnLeft == -1 || columnRight == -1) {
+                return true;
+            }
+
+            int matchOffset = match.getLeftBound().getModelOffset();
+            LineInformation matchLineInfo = textContent.getLineInformationOfOffset(matchOffset);
+
+            if (lastLineInfo == null || lastLineInfo.getNumber() != matchLineInfo.getNumber()) {
+                String currentLineContent = textContent.getText(matchLineInfo.getBeginOffset(),
+                        matchLineInfo.getLength());
+                lastLineInfo = matchLineInfo;
+                lastLineOffsets = StringUtils.calculateVisualOffsets(currentLineContent,
+                        currentLineContent.length(), tabstopSetting);
+            } // else the last line is the same as the current line, reuse info
+
+            int currentOffsetInLine = matchOffset - lastLineInfo.getBeginOffset();
+            int currentColumn = lastLineOffsets[currentOffsetInLine];
+            return currentColumn >= columnLeft && currentColumn <= columnRight;
         }
     }
 }
