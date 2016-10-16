@@ -4,7 +4,7 @@ import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 
-public abstract class CountAwareMotion implements Motion {
+public abstract class CountAwareMotion extends AbstractMotion {
 
     public abstract Position destination(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException;
 

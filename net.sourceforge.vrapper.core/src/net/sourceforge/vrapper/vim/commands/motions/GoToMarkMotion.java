@@ -11,7 +11,7 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.BorderPolicy;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 
-public class GoToMarkMotion implements Motion {
+public class GoToMarkMotion extends AbstractMotion {
 
     public static final Function<Motion, KeyStroke> LINEWISE_CONVERTER = new Function<Motion, KeyStroke>() {
         public Motion call(KeyStroke arg) {
@@ -68,5 +68,4 @@ public class GoToMarkMotion implements Motion {
     public boolean isJump() {
         return true;
     }
-
 }

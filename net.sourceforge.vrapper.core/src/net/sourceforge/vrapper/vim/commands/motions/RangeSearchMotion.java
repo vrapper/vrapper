@@ -13,7 +13,7 @@ import net.sourceforge.vrapper.vim.modes.commandline.SearchCommandParser;
  * Find a string the user entered as a start or end to a range.
  * (no need to bring up SearchMode or track this as the last search)
  */
-public class RangeSearchMotion implements Motion {
+public class RangeSearchMotion extends AbstractMotion {
 	
 	private String toFind;
 	private Position start;

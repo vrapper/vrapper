@@ -13,7 +13,7 @@ import net.sourceforge.vrapper.vim.commands.BorderPolicy;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.Selection;
 
-public class BlockSelectionMotion implements Motion {
+public class BlockSelectionMotion extends AbstractMotion {
 
     public static final BlockSelectionMotion COLUMN_START = new BlockSelectionMotion(true);
     public static final BlockSelectionMotion COLUMN_END = new BlockSelectionMotion(false);
@@ -32,11 +32,6 @@ public class BlockSelectionMotion implements Motion {
     @Override
     public Motion withCount(final int count) {
         return this;
-    }
-
-    @Override
-    public int getCount() {
-        return NO_COUNT_GIVEN;
     }
 
     @Override
@@ -77,5 +72,4 @@ public class BlockSelectionMotion implements Motion {
     public boolean isJump() {
         return false;
     }
-
 }
