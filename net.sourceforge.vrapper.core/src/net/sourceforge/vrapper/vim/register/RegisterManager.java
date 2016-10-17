@@ -7,6 +7,7 @@ import net.sourceforge.vrapper.utils.SelectionArea;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.SubstitutionOperation;
 import net.sourceforge.vrapper.vim.commands.motions.FindCharMotion;
+import net.sourceforge.vrapper.vim.commands.motions.NavigatingMotion;
 
 /**
  * Provides access to different registers.
@@ -51,6 +52,10 @@ public interface RegisterManager {
     void setLastDelete(RegisterContent register);
     void setLastFindCharMotion(FindCharMotion motion);
     FindCharMotion getLastFindCharMotion();
+    /** Used to differentiate between f/t used in dfx vs plain fx. */
+    void setLastNavigatingMotion(NavigatingMotion motion);
+    /** Used to differentiate between f/t used in dfx vs plain fx. */
+    NavigatingMotion getLastNavigatingMotion();
     Search getSearch();
     void setSearch(Search search);
     boolean isDefaultRegisterActive();

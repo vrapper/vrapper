@@ -11,30 +11,46 @@ import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
  */
 public class ContinueFindingMotion extends CountAwareMotion {
 
-    public static final ContinueFindingMotion NORMAL = new ContinueFindingMotion(false);
-    public static final ContinueFindingMotion REVERSE = new ContinueFindingMotion(true);
+    public static final ContinueFindingMotion NORMAL = new ContinueFindingMotion(false, false);
+    public static final ContinueFindingMotion REVERSE = new ContinueFindingMotion(true, false);
+
+    public static final ContinueFindingMotion NORMAL_NAVIGATING = new ContinueFindingMotion(false, true);
+    public static final ContinueFindingMotion REVERSE_NAVIGATING = new ContinueFindingMotion(true, true);
 
     private final boolean reverse;
-    // XXX: this is so evil
+    private final boolean useLastNavigatingMotion;
+    // XXX: this is evil, motions shouldn't keep state. This depends on destination(..) always being
+    // called before borderPolicy()
     private BorderPolicy borderPolicy = BorderPolicy.INCLUSIVE;
 
-    private ContinueFindingMotion(boolean reverse) {
+    private ContinueFindingMotion(boolean reverse, boolean useLastNavigatingMotion) {
         this.reverse = reverse;
+        this.useLastNavigatingMotion = useLastNavigatingMotion;
     }
 
     @Override
     public Position destination(EditorAdaptor editorAdaptor, int count)
             throws CommandExecutionException {
-        FindCharMotion findCharMotion = editorAdaptor.getRegisterManager().getLastFindCharMotion();
-        if (findCharMotion == null) {
+        NavigatingMotion navigatingMotion = getLastNavigatingMotion(editorAdaptor);
+        if (navigatingMotion == null) {
             throw new CommandExecutionException("no find to repeat");
         }
-        if (reverse) {
-            findCharMotion = findCharMotion.reverse();
-        }
-        borderPolicy = findCharMotion.borderPolicy();
-        Position dest = findCharMotion.withCount(count).destination(editorAdaptor);
+        borderPolicy = navigatingMotion.borderPolicy();
+        Position dest = navigatingMotion.withCount(count).destination(editorAdaptor);
         return dest;
+    }
+
+    protected NavigatingMotion getLastNavigatingMotion(EditorAdaptor editorAdaptor) {
+        NavigatingMotion navigatingMotion;
+        if (useLastNavigatingMotion) {
+            navigatingMotion = editorAdaptor.getRegisterManager().getLastNavigatingMotion();
+        } else {
+            navigatingMotion = editorAdaptor.getRegisterManager().getLastFindCharMotion();
+        }
+        if (navigatingMotion != null && reverse) {
+            navigatingMotion = navigatingMotion.reverse();
+        }
+        return navigatingMotion;
     }
 
     public BorderPolicy borderPolicy() {
@@ -44,5 +60,4 @@ public class ContinueFindingMotion extends CountAwareMotion {
     public StickyColumnPolicy stickyColumnPolicy() {
         return StickyColumnPolicy.ON_CHANGE;
     }
-
 }

@@ -5,18 +5,16 @@ import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.utils.Function;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
-import net.sourceforge.vrapper.utils.Reversible;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.BorderPolicy;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
-import net.sourceforge.vrapper.vim.commands.Repeatable;
 
 /** Motion responsible for 't', 'T', 'f' and 'F' motions.
  * Finds next occurrence of a character in current line.
  * 
  * @author Krzysiek Goj
  */
-public class FindCharMotion extends FindBalancedMotion implements Repeatable<FindCharMotion>, Reversible<FindCharMotion> {
+public class FindCharMotion extends FindBalancedMotion implements NavigatingMotion {
 
     public static Function<Motion, KeyStroke> keyConverter(final boolean upToTarget, final boolean reversed) {
         return new Function<Motion, KeyStroke>() {
@@ -83,6 +81,17 @@ public class FindCharMotion extends FindBalancedMotion implements Repeatable<Fin
         return dest;
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T getAdapter(Class<T> type) {
+        if (NavigatingMotion.class.equals(type)) {
+            return (T) this;
+        } else if (FindCharMotion.class.equals(type)) {
+            return (T) this;
+        }
+        return super.getAdapter(type);
+    }
+
     private Motion registrator = new CountAwareMotion() {
         @Override
         public Position destination(EditorAdaptor editorAdaptor, int count)
@@ -97,6 +106,11 @@ public class FindCharMotion extends FindBalancedMotion implements Repeatable<Fin
 
         public StickyColumnPolicy stickyColumnPolicy() {
             return FindCharMotion.this.stickyColumnPolicy();
+        }
+
+        @Override
+        public <T> T getAdapter(Class<T> type) {
+            return FindCharMotion.this.getAdapter(type);
         }
     };
 
