@@ -168,6 +168,10 @@ public class SneakState {
 
         sneakSearch = sneakSearch.reverse();
 
+        // Never stick around on the same spot when reversing (the first "previous match" is where
+        // we landed last time) by immediately transferring that match to the other list.
+        transferCurrentMatchToFuturePreviousMatches(editorAdaptor.getPosition());
+
         LinkedList<TextRange> tempForReversal = previousMatches;
         previousMatches = nextMatches;
         nextMatches = tempForReversal;
@@ -179,8 +183,25 @@ public class SneakState {
         highlightAdditionalMatches(nextMatches, highlightingService);
     }
 
+    private void transferCurrentMatchToFuturePreviousMatches(Position currentPosition) {
+
+        if (previousMatches.size() > 0) {
+            Position lastDestination = previousMatches.getFirst().getLeftBound();
+            int currentPositionOffset = currentPosition.getModelOffset();
+            int distanceToLastDestination = currentPositionOffset - lastDestination.getModelOffset();
+
+            // Tolerate a slight difference, the f/t motions might have shifted the current position
+            if (Math.abs(distanceToLastDestination) <= 1) {
+                // Add it to next matches list, the next and previous lists will be swapped later
+                // so we don't need to modify any highlights on this spot
+                nextMatches.addFirst(previousMatches.remove());
+            }
+        } // else there is no current match
+    }
+
     public void runNewSearch(EditorAdaptor editorAdaptor, int count, Search searchKeyword,
             int columnLeft, int columnRight) {
+
         HighlightingService highlightingService = editorAdaptor.getHighlightingService();
         deactivateSneak(highlightingService);
 
@@ -239,7 +260,7 @@ public class SneakState {
         nextHighlights.addAll(highlights);
     }
 
-    public Position sneakToNextMatch(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
+    public TextRange sneakToNextMatch(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
 
         prepareNextMatches(editorAdaptor, count);
 
@@ -251,7 +272,7 @@ public class SneakState {
             // Simply jump to last possible match
             count = nextMatches.size();
         }
-        Position result = nextMatches.get(count - 1).getLeftBound();
+        TextRange result = nextMatches.get(count - 1);
         transferNextMatchesToPreviousMatches(editorAdaptor, count);
 
         isSneaking = true;
@@ -275,12 +296,6 @@ public class SneakState {
             int prefillFetchCount = MIN_SNEAK_CACHE_PREFILL - nextMatches.size() + count;
             int itemsToAddCount = Math.max(count, prefillFetchCount);
             findNextMatches(editorAdaptor, searchStartPosition, itemsToAddCount);
-        }
-
-        // Transfer current position if it is the next match (this happens when reversing)
-        if (nextMatches.size() > 0
-                && editorAdaptor.getPosition().equals(nextMatches.getFirst().getLeftBound())) {
-            transferNextMatchesToPreviousMatches(editorAdaptor, 1);
         }
     }
 

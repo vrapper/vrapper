@@ -9,6 +9,7 @@ import net.sourceforge.vrapper.platform.TextContent;
 import net.sourceforge.vrapper.plugin.sneak.commands.motions.JumpMotionDecorator;
 import net.sourceforge.vrapper.plugin.sneak.commands.motions.SneakMotion;
 import net.sourceforge.vrapper.plugin.sneak.commands.utils.EditorAdaptorStateManager;
+import net.sourceforge.vrapper.plugin.sneak.commands.utils.SneakCharOffset;
 import net.sourceforge.vrapper.plugin.sneak.commands.utils.SneakState;
 import net.sourceforge.vrapper.plugin.sneak.commands.utils.SneakStateManager;
 import net.sourceforge.vrapper.utils.LineInformation;
@@ -35,6 +36,38 @@ public class SneakInputMode extends AbstractMode {
     public static final ModeSwitchHint SNEAK_BACKWARDS = new ModeSwitchHint() {};
     public static final ModeSwitchHint FROM_VISUAL = new ModeSwitchHint() {};
 
+    public static class InputCharsLimitHint implements ModeSwitchHint {
+        public static final InputCharsLimitHint ONE = new InputCharsLimitHint(1);
+
+        private final int count;
+
+        public InputCharsLimitHint(int count) {
+            this.count = count;
+        }
+
+        public int getInputLimit() {
+            return count;
+        }
+    }
+
+    public static class CharOffsetHint implements ModeSwitchHint {
+        public static final CharOffsetHint F_CHARS = new CharOffsetHint(SneakCharOffset.NONE);
+        public static final CharOffsetHint T_CHAR_FORWARD =
+                new CharOffsetHint(new SneakCharOffset(-1));
+        public static final CharOffsetHint T_CHAR_BACKWARD =
+                new CharOffsetHint(new SneakCharOffset(1));
+
+        private final SneakCharOffset offset;
+
+        protected CharOffsetHint(SneakCharOffset offset) {
+            this.offset = offset;
+        }
+
+        public SneakCharOffset getOffset() {
+            return offset;
+        }
+    }
+
     public static final SneakStateManager STATEMANAGER = new EditorAdaptorStateManager();
 
     protected static final KeyStroke KEY_RETURN = ConstructorWrappers.key(SpecialKey.RETURN);
@@ -56,6 +89,7 @@ public class SneakInputMode extends AbstractMode {
     protected SneakState previousState;
     private int countValue;
     private int motionCountValue;
+    private SneakCharOffset charOffset;
 
     public SneakInputMode(EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
@@ -124,6 +158,7 @@ public class SneakInputMode extends AbstractMode {
     }
 
     protected void startSneaking(String searchString) {
+        // [TODO] Implement sneak column mode search, in which case we need to pass a count value
 
         Search searchKeyword = constructSearchKeyword(editorAdaptor, searchString, sneakBackwards);
 
@@ -137,9 +172,15 @@ public class SneakInputMode extends AbstractMode {
             previousState.deactivateSneak(editorAdaptor.getHighlightingService());
         }
 
-        // The initial sneak invocation is treated as a jump but following invocations shouldn't.
-        // This decorator lets MotionCommand adjust the jump list and last jump mark.
-        Motion motion = new JumpMotionDecorator(sneakMotion);
+        Motion motion;
+        if (isFfTtMode()) {
+            // Do not touch the last jump mark ''
+            motion = sneakMotion;
+        } else {
+            // The initial sneak invocation is treated as a jump but following invocations shouldn't.
+            // This decorator lets MotionCommand adjust the jump list and last jump mark.
+            motion = new JumpMotionDecorator(sneakMotion);
+        }
 
         executeMotionInLastMode(motion, searchString);
     }
@@ -149,7 +190,7 @@ public class SneakInputMode extends AbstractMode {
         int columnRight = -1;
 
         //calculate columns
-        if (countValue != Command.NO_COUNT_GIVEN && countValue > 1) {
+        if (countValue != Command.NO_COUNT_GIVEN && countValue > 1 && ! isFfTtMode()) {
             int currentOffset = editorAdaptor.getPosition().getModelOffset();
             TextContent textContent = editorAdaptor.getModelContent();
             LineInformation currentLine = textContent.getLineInformationOfOffset(currentOffset);
@@ -163,7 +204,7 @@ public class SneakInputMode extends AbstractMode {
             columnLeft = Math.max(0, currentColumn - countValue);
             columnRight = currentColumn + countValue;
         }
-        return new SneakMotion(STATEMANAGER, searchKeyword, columnLeft, columnRight);
+        return new SneakMotion(STATEMANAGER, searchKeyword, columnLeft, columnRight, charOffset);
     }
 
     public static Search constructSearchKeyword(EditorAdaptor editorAdaptor, String searchString,
@@ -213,6 +254,7 @@ public class SneakInputMode extends AbstractMode {
         fromVisual = false;
         countValue = 0;
         motionCountValue = 0;
+        charOffset = null;
 
         for (ModeSwitchHint hint : hints) {
             if (hint == SNEAK_BACKWARDS) {
@@ -221,7 +263,15 @@ public class SneakInputMode extends AbstractMode {
                 fromVisual = true;
             } else if (hint instanceof WithCountHint) {
                 countValue = ((WithCountHint) hint).getCount();
+            } else if (hint instanceof InputCharsLimitHint) {
+                sneakInputLength = ((InputCharsLimitHint) hint).getInputLimit();
+            } else if (hint instanceof CharOffsetHint) {
+                charOffset = ((CharOffsetHint) hint).getOffset();
             }
+        }
+        if (countValue > 1 && isFfTtMode()) {
+            // We're in f/F/t/T mode, treat count value as repeat value
+            motionCountValue = countValue;
         }
 
         // If sneak is active, keep it active until the user forcefully quits this mode
@@ -252,6 +302,13 @@ public class SneakInputMode extends AbstractMode {
     @Override
     public String resolveKeyMap(KeyStroke stroke) {
         return null;
+    }
+
+    /**
+     * @return <code>true</code> when we're dealing with sneak_f/F/t/T.
+     */
+    private boolean isFfTtMode() {
+        return charOffset != null;
     }
 
     private void saveSneakMotion(SneakMotion motion) {
