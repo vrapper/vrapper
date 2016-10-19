@@ -123,24 +123,7 @@ public class SneakInputMode extends AbstractMode {
             }
 
         } else if (stroke.equals(KEY_RETURN)) {
-            if (commandLine.getContents().length() > 0) {
-                startSneaking(commandLine.getContents());
-            } else {
-                // Check if we can reuse an existing SneakMotion stored in the last motion field.
-                // This way we sync the last sneak keyword from a different editor to this one.
-                SneakMotion sneakMotion = LAST_SNEAK_MOTION;
-                if (sneakMotion != null) {
-                    if (sneakMotion.isBackward() != sneakBackwards) {
-                        sneakMotion = sneakMotion.reverse();
-                        saveSneakMotion(sneakMotion);
-                    }
-                    executeMotionInLastMode(sneakMotion, previousState.getSneakSearch().getKeyword());
-                } else if (previousState == null) {
-                    editorAdaptor.changeModeSafely(editorAdaptor.getLastModeName());
-                } else {
-                    startSneaking(previousState.getSneakSearch().getKeyword());
-                }
-            }
+            handleReturnKey();
 
         } else if (stroke.getCharacter() == KeyStroke.SPECIAL_KEY) {
             editorAdaptor.getUserInterfaceService().setErrorMessage("Sneak only accepts printable "
@@ -155,6 +138,38 @@ public class SneakInputMode extends AbstractMode {
             }
         }
         return true;
+    }
+
+    private void handleReturnKey() {
+        if (commandLine.getContents().length() > 0) {
+            startSneaking(commandLine.getContents());
+
+        } else {
+            // Check if we can reuse an existing SneakMotion stored in the last motion field.
+            // This way we sync the last sneak keyword from a different editor to this one.
+            SneakMotion sneakMotion = LAST_SNEAK_MOTION;
+            if (sneakMotion != null) {
+                if (sneakMotion.isBackward() != sneakBackwards) {
+                    sneakMotion = sneakMotion.reverse();
+                    saveSneakMotion(sneakMotion);
+                }
+                String searchStringForLogging = previousState.getSneakSearch().getKeyword();
+
+                if (STATEMANAGER.getSneakState(editorAdaptor).isSneaking()) {
+                    executeMotionInLastMode(sneakMotion, searchStringForLogging);
+
+                } else {
+                    //Surprisingly, we should only add to the jump list when we activate sneak
+                    Motion jumpMotion = new JumpMotionDecorator(sneakMotion);
+                    executeMotionInLastMode(jumpMotion, previousState.getSneakSearch().getKeyword());
+                }
+
+            } else if (previousState == null) {
+                editorAdaptor.changeModeSafely(editorAdaptor.getLastModeName());
+            } else {
+                startSneaking(previousState.getSneakSearch().getKeyword());
+            }
+        }
     }
 
     protected void startSneaking(String searchString) {
