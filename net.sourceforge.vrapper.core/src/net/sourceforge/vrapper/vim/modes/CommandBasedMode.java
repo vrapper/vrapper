@@ -87,6 +87,8 @@ public abstract class CommandBasedMode extends AbstractMode {
     public void enterMode(ModeSwitchHint... hints) throws CommandExecutionException {
         super.enterMode(hints);
         commandBufferRemapIndex = -1;
+        // Clean up state from previous time in case we left through a non-leaf state
+        reset();
     }
 
     /** Reset cursor position if it is at the end of the line and the current mode won't allow it. 
