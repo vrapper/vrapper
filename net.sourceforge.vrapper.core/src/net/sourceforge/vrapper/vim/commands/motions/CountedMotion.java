@@ -39,4 +39,8 @@ public class CountedMotion implements Motion {
         return motion.isJump();
     }
 
+    @Override
+    public <T> T getAdapter(Class<T> type) {
+        return motion.getAdapter(type);
+    }
 }

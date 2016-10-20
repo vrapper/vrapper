@@ -32,6 +32,7 @@ import net.sourceforge.vrapper.platform.Platform;
 import net.sourceforge.vrapper.platform.PlatformSpecificModeProvider;
 import net.sourceforge.vrapper.platform.PlatformSpecificStateProvider;
 import net.sourceforge.vrapper.platform.PlatformSpecificTextObjectProvider;
+import net.sourceforge.vrapper.platform.PlatformVrapperLifecycleListener;
 import net.sourceforge.vrapper.platform.SearchAndReplaceService;
 import net.sourceforge.vrapper.platform.SelectionService;
 import net.sourceforge.vrapper.platform.ServiceProvider;
@@ -124,7 +125,8 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     private int cursorBeforeMapping = -1;
 
 
-    public DefaultEditorAdaptor(final Platform editor, final RegisterManager registerManager, final boolean isActive) {
+    public DefaultEditorAdaptor(final Platform editor, final RegisterManager registerManager,
+            final boolean isActive, List<PlatformVrapperLifecycleListener> lifecycleListeners) {
         this.configuration = editor.getConfiguration();
         userInterfaceService = editor.getUserInterfaceService();
         this.modelContent = new UnmodifiableTextContentDecorator(editor.getModelContent(),
@@ -169,6 +171,16 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
         // NOTE: Read the config _after_ changing mode to allow default keys
         //       remapping.
         readConfiguration();
+
+        for (PlatformVrapperLifecycleListener listener : lifecycleListeners) {
+            try {
+                listener.editorConfigured(this, isActive);
+            } catch (Exception e) {
+                VrapperLog.error("Lifecycle listener " + listener.getClass() + " threw exception "
+                        + " for file '" + fileService.getCurrentFilePath() + "' when firing "
+                        + "'editorConfigured' method.", e);
+            }
+        }
 
         // Set 'modifiable' flag if not done so by an autocmnd in .vrapperc
         if ("matchreadonly".equals(configuration.get(Options.SYNC_MODIFIABLE))
@@ -374,23 +386,8 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     public void changeMode(final String modeName, final ModeSwitchHint... args) throws CommandExecutionException {
         EditorMode newMode = modeMap.get(modeName);
         if (newMode == null) {
-            // Load extension modes
-            List<EditorMode> modes = platformSpecificModeProvider.getModes(this);
-            for (final EditorMode mode : modes) {
-                if (modeMap.containsKey(mode.getName())) {
-                    VrapperLog.error(format("Mode '%s' was already loaded! Mode in registry '%s',"
-                                + "conflicting mode '%s'", mode.getName(),
-                                modeMap.get(mode.getName()).getClass().getName(),
-                                mode.getClass().getName()));
-                } else {
-                    modeMap.put(mode.getName(), mode);
-                }
-            }
-            newMode = modeMap.get(modeName);
-            if (newMode == null) {
-                VrapperLog.error(format("There is no mode named '%s'",  modeName));
-                return;
-            }
+            // Check extension modes
+            newMode = getMode(modeName);
         }
         if (currentMode != newMode) {
             listeners.fireModeAboutToSwitch(newMode);
@@ -584,8 +581,33 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
     }
 
     @Override
-    public EditorMode getMode(final String name) {
-        return modeMap.get(name);
+    public EditorMode getMode(final String modeName) {
+        EditorMode result =  modeMap.get(modeName);
+        if (modeName != null && result == null) {
+            try {
+                // Load extension modes
+                List<EditorMode> modes = platformSpecificModeProvider.getModes(this);
+                for (final EditorMode mode : modes) {
+                    if (modeMap.containsKey(mode.getName())) {
+                        VrapperLog.error(format("Mode '%s' was already loaded! Mode in registry '%s',"
+                                + " conflicting mode '%s'", mode.getName(),
+                                modeMap.get(mode.getName()).getClass().getName(),
+                                mode.getClass().getName()));
+                    } else {
+                        modeMap.put(mode.getName(), mode);
+                    }
+                }
+                result = modeMap.get(modeName);
+                if (result == null) {
+                    String message = format("There is no mode named '%s'", modeName);
+                    throw new CommandExecutionException(message);
+                }
+            } catch (CommandExecutionException e) {
+                VrapperLog.error("Failed to get mode '" + modeName + "'", e);
+                throw new VrapperPlatformException(e.getMessage(), e);
+            }
+        }
+        return result;
     }
 
     @Override

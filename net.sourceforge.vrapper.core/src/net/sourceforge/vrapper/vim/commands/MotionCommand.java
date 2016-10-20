@@ -12,6 +12,7 @@ import net.sourceforge.vrapper.utils.ViewPortInformation;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.motions.Motion;
+import net.sourceforge.vrapper.vim.commands.motions.NavigatingMotion;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 
 public class MotionCommand extends CountAwareCommand {
@@ -41,6 +42,11 @@ public class MotionCommand extends CountAwareCommand {
         Position previousPosition = editorAdaptor.getPosition();
         if (motion.isJump()) {
             cursorService.updateLastPosition();
+        }
+        // Store motion in case it's a more advanced next / reverse motion
+        NavigatingMotion navigatingMotion = motion.getAdapter(NavigatingMotion.class);
+        if (navigatingMotion != null) {
+            editorAdaptor.getRegisterManager().setLastNavigatingMotion(navigatingMotion.repetition());
         }
         final Position destination = motion.destination(editorAdaptor);
         gotoAndChangeViewPort(editorAdaptor, destination, motion.stickyColumnPolicy());

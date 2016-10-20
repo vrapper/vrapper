@@ -213,6 +213,9 @@ public class EclipsePlatform implements Platform {
                 .getConfigurationElementsFor("net.sourceforge.vrapper.eclipse.pssp");
         final List<AbstractEclipseSpecificStateProvider> matched = new ArrayList<AbstractEclipseSpecificStateProvider>();
         for (final IConfigurationElement element : elements) {
+            if (VrapperLog.isDebugEnabled()) {
+                VrapperLog.debug("Loading Vrapper state provider " + element.getAttribute("name"));
+            }
             try {
                 final AbstractEclipseSpecificStateProvider provider = (AbstractEclipseSpecificStateProvider) Utils
                         .createGizmoForElementConditionally(
@@ -222,6 +225,10 @@ public class EclipsePlatform implements Platform {
                     provider.configure(element);
                     provider.initializeProvider(textObjectProvider);
                     matched.add(provider);
+                    if (VrapperLog.isDebugEnabled()) {
+                        VrapperLog.debug("Vrapper state provider " + element.getAttribute("name")
+                                + " configured");
+                    }
                 }
             } catch (Exception e) {
                 VrapperLog.error("Failed to initialize state provider " + element, e);

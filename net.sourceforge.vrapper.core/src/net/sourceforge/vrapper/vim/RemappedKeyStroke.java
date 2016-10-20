@@ -19,6 +19,8 @@ public class RemappedKeyStroke implements KeyStroke {
 
     public RemappedKeyStroke(KeyStroke delegate, boolean recursive) {
         super();
+        if (delegate == null)
+            throw new NullPointerException("Delegate cannot be null");
         this.delegate = delegate;
         this.recursive = recursive;
     }
@@ -53,16 +55,7 @@ public class RemappedKeyStroke implements KeyStroke {
 
     @Override
     public String toString() {
-        String key = getSpecialKey() == null ? Character.toString(getCharacter()) : getSpecialKey().toString();
-        EnumSet<Modifier> modifiers = EnumSet.copyOf(getModifiers());
-        modifiers.remove(Modifier.SHIFT);
-        if ((getSpecialKey() != null || getCharacter() == ' ') && withShiftKey()) {
-            key = "S-" + key;
-        }
-        for (Modifier modifier : modifiers) {
-            key = modifier.getShortId() + key;
-        }
-        return "RemappedKeyStroke(" + key + ")";
+        return "RemapKey(" + delegate.toString() + ")";
     }
 
     @Override

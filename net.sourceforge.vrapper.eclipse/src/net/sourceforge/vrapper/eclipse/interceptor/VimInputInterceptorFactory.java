@@ -18,6 +18,7 @@ import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.BufferAndTabService;
 import net.sourceforge.vrapper.platform.Configuration.Option;
 import net.sourceforge.vrapper.platform.GlobalConfiguration;
+import net.sourceforge.vrapper.platform.PlatformVrapperLifecycleListener;
 import net.sourceforge.vrapper.vim.ConfigurationListener;
 import net.sourceforge.vrapper.vim.DefaultConfigProvider;
 import net.sourceforge.vrapper.vim.DefaultEditorAdaptor;
@@ -202,13 +203,13 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
 
     @Override
     public InputInterceptor createInterceptor(AbstractTextEditor abstractTextEditor,
-            ISourceViewer textViewer, EditorInfo partInfo, BufferAndTabService bufferAndTabService) {
+            ISourceViewer textViewer, EditorInfo partInfo, BufferAndTabService bufferAndTabService,
+            List<PlatformVrapperLifecycleListener> lifecycleListeners) {
 
         EclipsePlatform platform = new EclipsePlatform(partInfo, abstractTextEditor, textViewer,
                 sharedConfiguration, bufferAndTabService);
-        DefaultEditorAdaptor editorAdaptor = new DefaultEditorAdaptor(
-                platform,
-                globalRegisterManager, VrapperPlugin.isVrapperEnabled());
+        DefaultEditorAdaptor editorAdaptor = new DefaultEditorAdaptor(platform,
+                globalRegisterManager, VrapperPlugin.isVrapperEnabled(), lifecycleListeners);
         editorAdaptor.addVrapperEventListener(platform.getModeRecorder());
         InputInterceptor interceptor = createInterceptor(editorAdaptor);
         interceptor.setPlatform(platform);

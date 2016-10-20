@@ -21,6 +21,7 @@ import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.Utils;
+import net.sourceforge.vrapper.vim.modes.ModeSwitchHint;
 
 
 /**
@@ -488,5 +489,27 @@ public class VimUtils {
         CursorService cursorService = adaptor.getCursorService();
         int originalPos = original.getModelOffset();
         return cursorService.shiftPositionForModelOffset(originalPos, delta, allowPastLastChar);
+    }
+
+    /**
+     * Find a mode switch hint of a specific type. Note that it is more efficient to simply loop
+     * over the arguments and write a tree of nested <code>if (x instanceof Y)</code> blocks when
+     * one wants to find multiple types of hints.
+     * @return the mode hint or <code>null</code>.
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T findModeHint(Class<T> typeToFind, ModeSwitchHint...args) {
+        T result = null;
+        if (args.length >= 1 && typeToFind.isInstance(args[0])) {
+            result = (T) args[0];
+        }
+        int i = 1;
+        while (i < args.length && result == null) {
+            if (typeToFind.isInstance(args[i])) {
+                result = (T) args[i];
+            }
+            i++;
+        }
+        return result;
     }
 }

@@ -46,6 +46,8 @@ public interface HighlightingService {
     /**
      * Highlights given regions using Eclipse annotation type. This is faster than repeatedly
      * calling {@link #highlightRegion(String, String, TextRange)}.
+     * The implementation should do its best to make the order of the return value match the order
+     * of the input values.
      * @param type Eclipse annotation type.
      * @param name highlighting name.
      * @param region range of text to highlight.

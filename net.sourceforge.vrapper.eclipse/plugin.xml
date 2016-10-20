@@ -5,6 +5,7 @@
    <extension-point id="net.sourceforge.vrapper.eclipse.extractor" name="Text Editor Extractor" schema="schema/net.sourceforge.vrapper.eclipse.extractor.exsd"/>
    <extension-point id="net.sourceforge.vrapper.eclipse.psmp" name="Platform Specific Mode Provider" schema="schema/net.sourceforge.vrapper.eclipse.psmp.exsd"/>
    <extension-point id="net.sourceforge.vrapper.eclipse.pstop" name="Platform Specific TextObject provider" schema="schema/net.sourceforge.vrapper.eclipse.pstop.exsd"/>
+   <extension-point id="net.sourceforge.vrapper.eclipse.lifecyclelistener" name="Vrapper Lifecycle Listener" schema="schema/net.sourceforge.vrapper.eclipse.lifecyclelistener.exsd"/>
   <extension
        point="org.eclipse.ui.commands">
     <category

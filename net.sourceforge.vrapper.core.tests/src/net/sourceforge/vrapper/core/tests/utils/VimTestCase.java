@@ -18,6 +18,7 @@ import net.sourceforge.vrapper.platform.HistoryService;
 import net.sourceforge.vrapper.platform.KeyMapProvider;
 import net.sourceforge.vrapper.platform.Platform;
 import net.sourceforge.vrapper.platform.PlatformSpecificStateProvider;
+import net.sourceforge.vrapper.platform.PlatformVrapperLifecycleListener;
 import net.sourceforge.vrapper.platform.ServiceProvider;
 import net.sourceforge.vrapper.platform.UnderlyingEditorSettings;
 import net.sourceforge.vrapper.platform.UserInterfaceService;
@@ -131,7 +132,8 @@ public class VimTestCase {
     }
 
     protected void reloadEditorAdaptor() {
-        DefaultEditorAdaptor unwrapped = new DefaultEditorAdaptor(platform, registerManager, false);
+        DefaultEditorAdaptor unwrapped = new DefaultEditorAdaptor(platform, registerManager, false,
+                Collections.<PlatformVrapperLifecycleListener>emptyList());
         DefaultEditorAdaptor wrapped = spy(unwrapped);
         wrapped.__set_modes(wrapped);
         adaptor = wrapped;

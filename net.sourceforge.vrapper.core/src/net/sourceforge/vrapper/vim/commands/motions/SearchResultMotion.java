@@ -26,6 +26,10 @@ import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.TextObject;
 import net.sourceforge.vrapper.vim.modes.commandline.HighlightSearch;
 
+/**
+ * This motion is used to back search mode. Not to be confused with {@link ContinueFindingMotion},
+ * which is used for in-line searches like <code>f</code>/<code>t</code>.
+ */
 public class SearchResultMotion extends CountAwareMotion {
 
     public static final SearchResultMotion REPEAT = new SearchResultMotion(false);

@@ -23,6 +23,10 @@ import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.ExecuteCommandHint;
 import net.sourceforge.vrapper.vim.modes.ModeSwitchHint;
 
+/**
+ * Mode for input of search parameters (keyword and offset). This class is used together with
+ * {@link SearchResultMotion} to implement the search functionality.
+ */
 public class SearchMode extends AbstractCommandLineMode {
 
     protected class SearchConfigurationListener implements

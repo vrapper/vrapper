@@ -5,7 +5,7 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.BorderPolicy;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 
-public class PercentMotion implements Motion {
+public class PercentMotion extends AbstractMotion {
 
     public static final Motion INSTANCE = new PercentMotion();
 

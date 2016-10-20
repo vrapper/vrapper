@@ -12,7 +12,7 @@ import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
  * Motion to go to the line closest to <i>count</i> percent of the file.
  * Also see <code>N%</code> in the Vim help document.
  */
-public class PercentOfFileMotion implements Motion {
+public class PercentOfFileMotion extends AbstractMotion {
 
     protected int count;
 

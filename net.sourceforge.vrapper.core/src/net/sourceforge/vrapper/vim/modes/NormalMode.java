@@ -26,6 +26,7 @@ import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.utils.CaretType;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
+import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.AsciiCommand;
@@ -317,13 +318,13 @@ public class NormalMode extends CommandBasedMode {
     public void enterMode(final ModeSwitchHint... args) throws CommandExecutionException {
         editorAdaptor.getCursorService().setCaret(CaretType.RECTANGULAR);
         super.enterMode(args);
-        if (args.length > 0) {
-            if(args[0] instanceof ExecuteCommandHint) {
-                try {
-                    executeCommand(((ExecuteCommandHint.OnEnter) args[0]).getCommand());
-                } catch (final CommandExecutionException e) {
-                    editorAdaptor.getUserInterfaceService().setErrorMessage(e.getMessage());
-                }
+        // Check OnEnter hint
+        ExecuteCommandHint hint = VimUtils.findModeHint(ExecuteCommandHint.OnEnter.class, args);
+        if (hint != null) {
+            try {
+                executeCommand(hint.getCommand());
+            } catch (final CommandExecutionException e) {
+                editorAdaptor.getUserInterfaceService().setErrorMessage(e.getMessage());
             }
         }
         placeCursor(StickyColumnPolicy.NEVER);
