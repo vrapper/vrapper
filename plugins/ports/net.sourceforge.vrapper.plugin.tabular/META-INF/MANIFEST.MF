@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Vrapper tabular Plug-in Core
+Bundle-SymbolicName: net.sourceforge.vrapper.plugin.tabular;singleton:=true
+Bundle-Version: 0.71.20160927
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Export-Package: net.sourceforge.vrapper.plugin.tabular.commands;uses:="net.sourceforge.vrapper.vim,net.sourceforge.vrapper.vim.commands",
+ net.sourceforge.vrapper.plugin.tabular.evaluator;uses:="net.sourceforge.vrapper.vim,net.sourceforge.vrapper.vim.modes.commandline",
+ net.sourceforge.vrapper.plugin.tabular.platform;uses:="net.sourceforge.vrapper.eclipse.keymap"
+Require-Bundle: net.sourceforge.vrapper.eclipse;visibility:=reexport
+Eclipse-BuddyPolicy: dependent
