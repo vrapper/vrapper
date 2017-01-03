@@ -27,6 +27,7 @@ import net.sourceforge.vrapper.vim.commands.CloseCommand;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.ConfigCommand;
+import net.sourceforge.vrapper.vim.commands.DeleteMarksCommand;
 import net.sourceforge.vrapper.vim.commands.DummyCommand;
 import net.sourceforge.vrapper.vim.commands.DummyTextObject;
 import net.sourceforge.vrapper.vim.commands.EditFileCommand;
@@ -283,6 +284,22 @@ public class CommandLineParser extends AbstractCommandParser {
                 return null;
             }
         };
+        Evaluator delmarks = new Evaluator() {
+            public Object evaluate(EditorAdaptor vim, Queue<String> command) {
+            	if(command.isEmpty()) {
+            		vim.getUserInterfaceService().setErrorMessage("Argument required");
+            	}
+
+                try {
+                    new DeleteMarksCommand(command).execute(vim);
+				}
+                catch (CommandExecutionException e) {
+            		vim.getUserInterfaceService().setErrorMessage(e.getMessage());
+				}
+
+                return null;
+            }
+        };
         Evaluator let = new LetExpressionEvaluator();
         Evaluator userCommand = new Evaluator() {
             public Object evaluate(EditorAdaptor vim, Queue<String> command) {
@@ -449,6 +466,7 @@ public class CommandLineParser extends AbstractCommandParser {
         mapping.add("registers", registers);
         mapping.add("display", registers);
         mapping.add("marks", marks);
+        mapping.add("delmarks", delmarks);
         mapping.add("ls", new CommandWrapper(ListBuffersCommand.INSTANCE));
         mapping.add("buffers", new CommandWrapper(ListBuffersCommand.INSTANCE));
         return mapping;
