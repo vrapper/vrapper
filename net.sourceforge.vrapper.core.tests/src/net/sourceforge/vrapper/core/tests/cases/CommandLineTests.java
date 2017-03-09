@@ -139,6 +139,10 @@ public class CommandLineTests extends VimTestCase {
     	CommandLineMode commandLineMode = new CommandLineMode(adaptor);
     	CommandLineParser parser = commandLineMode.createParser();
     	Command command;
+
+    	command = parser.parseAndExecute(":", "se nohlsearch");
+    	assertNotNull(command);
+    	assertTrue(command instanceof CommandLineParser.RunEvaluatorCommand);
     	
     	command = parser.parseAndExecute(":", "set nohlsearch");
     	assertNotNull(command);
