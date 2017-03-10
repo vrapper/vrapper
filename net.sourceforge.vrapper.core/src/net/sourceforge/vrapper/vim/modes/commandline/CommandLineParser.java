@@ -369,6 +369,7 @@ public class CommandLineParser extends AbstractCommandParser {
         
         EvaluatorMapping mapping = new EvaluatorMapping();
         // options
+        mapping.add("se", buildConfigEvaluator(/*local=*/false));
         mapping.add("set", buildConfigEvaluator(/*local=*/false));
         mapping.add("setlocal", buildConfigEvaluator(/*local=*/true));
         mapping.add("so", sourceConfigFile);
