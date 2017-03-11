@@ -1,4 +1,21 @@
 <div class="newsbox">
+    <div class="date">2017-03-11</div>
+    <h4>0.72.0 Released</h4>
+    <p>This project has been quiet for a while.  We only have
+    2 main developers and neither of us use Eclipse in our daily
+    job anymore.  But, people are still submitting Pull Requests
+    so I'll keep merging them in and doing releases as long as
+    people are still interested.</p>
+    <p>Changes since 0.70.0 are:</p>
+    <ul>
+		<li>Added a port of justinmk's <a href="https://github.com/vrapper/vrapper/pull/764">Sneak plugin</a></li>
+		<li>Added ability to set custom .vrapperrc location with `vrapper.vrapperrc` system property</li>
+		<li>Added ability to map eclipse motions with <a href="https://github.com/vrapper/vrapper/pull/762">&lt;Plug&gt;()</a></li>
+		<li>Added support for `:delmarks` command</li>
+		<li>Added `:se` shortcut for `:set` command</li>
+    </ul>
+</div>
+<div class="newsbox">
     <div class="date">2016-08-07</div>
     <h4>0.70.0 Released</h4>
     <p>This is a very small release and I probably could've just waited longer
