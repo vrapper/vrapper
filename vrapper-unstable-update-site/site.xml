@@ -51,6 +51,9 @@
    <feature url="features/net.sourceforge.vrapper.plugin.sneak_0.73.20170320.jar" id="net.sourceforge.vrapper.plugin.sneak" version="0.73.20170320">
       <category name="Optional Vimscript Plugins"/>
    </feature>
+   <feature url="features/net.sourceforge.vrapper.plugin.bindingkeeper_0.71.20170105.jar" id="net.sourceforge.vrapper.plugin.bindingkeeper" version="0.71.20170105">
+      <category name="Optional Vimscript Plugins"/>
+   </feature>
    <category-def name="Vrapper Unstable" label="Vrapper Unstable">
       <description>
          Unstable releases of Vrapper.

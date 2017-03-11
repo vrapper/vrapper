@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="net.sourceforge.vrapper.eclipse.lifecyclelistener">
+      <lifecycle-listener
+            id="net.sourceforge.vrapper.plugin.bindingkeeper.eclipse.lifecycle-listener"
+            listener-class="net.sourceforge.vrapper.plugin.bindingkeeper.provider.BindingKeeperLifecycleListener">
+      </lifecycle-listener>
+   </extension>
+</plugin>

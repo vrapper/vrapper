@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Vrapper exchange.vim Plug-in Core
+Bundle-SymbolicName: net.sourceforge.vrapper.plugin.bindingkeeper;singleton:=true
+Bundle-Version: 0.71.20170105
+Export-Package: net.sourceforge.vrapper.plugin.bindingkeeper.commands
+Require-Bundle: net.sourceforge.vrapper.core;bundle-version="0.71.20170105";visibility:=reexport,
+ org.eclipse.ui,
+ org.eclipse.core.runtime
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Eclipse-BuddyPolicy: dependent
