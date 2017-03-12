@@ -135,6 +135,27 @@ Vrapper allows abbreviated commands only when there are no conflicts (e.g. custo
         <td>Close current editor (tab)</td>
     </tr>
     <tr>
+        <td>:registers</td>
+        <td>List current registers and their contents</td>
+    </tr>
+    <tr>
+        <td>:marks</td>
+        <td>List current marks and their locations</td>
+    </tr>
+    <tr>
+        <td>:delmarks[!][marks]</td>
+        <td>
+        	<p>Delete specified mark, or delete all marks with <code>:delmarks!</code></p>
+        	<p>Formats supported:</p>
+        	<ul>
+        		<li><code>:delmarks a</code></li>
+        		<li><code>:delmarks a b c</code></li>
+        		<li><code>:delmarks abc</code></li>
+        		<li><code>:delmarks a-e</code></li>
+        	</ul>
+        </td>
+    </tr>
+    <tr>
         <td>:only<br/>:tabonly</td>
         <td>Close all "other" Eclipse editors (close other tabs)</td>
     </tr>

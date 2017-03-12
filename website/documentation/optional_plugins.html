@@ -24,6 +24,7 @@
             <li><a href="#subword">Sub-Word Text Object (camelcasemotion.vim)</a></li>
             <li><a href="#cycle">Cycle (cycle.vim)</a></li>
             <li><a href="#exchange">Exchange (exchange.vim)</a></li>
+            <li><a href="#sneak">Sneak (sneak.vim)</a></li>
             <li><a href="#surround">Surround (surround.vim)</a></li>
         </ol>
     </ol>
@@ -385,9 +386,64 @@
 
 <p>NOTE: Block-wise visual selection is not implemented.</p>
 
+<a name="sneak"><h3>Sneak (Sneak.vim) Plugin</h3></a>
+<p>
+	Sneak.vim is a vim plugin defined here:<br/>
+	<a href="https://github.com/justinmk/vim-sneak">https://github.com/justinmk/vim-sneak</a>
+</p>
+<p>
+	This plugin defines a two-character search, faster than a <code>/</code>
+	search but more versatile than a <code>f</code> or <code>t</code>
+	single-character jump.  To activate, type <code>s</code> followed by two
+	characters that you want to search for.  You can then go to the next/previous
+	match with <code>;</code> and <code>,</code> just like with <code>f</code>
+	and <code>t</code>.  Please see <a href="https://github.com/justinmk/vim-sneak">Sneak.vim's</a>
+	homepage for a better explanation of why this is beneficial.
+</p>
+<p>Configuring this plugin requires mapping various <code>&lt;Plug&gt;()</code>
+	commands.  Here are the recommended mappings for your <code>.vrapperrc</code>:</p>
+<ul>
+	<li><code>nmap s &lt;Plug&gt;(sneak_s)</code></li>
+	<li><code>nmap S &lt;Plug&gt;(sneak_S)</code></li>
+</ul>
+
+<ul>
+	<li><code>nmap ; &lt;Plug&gt;(sneak-next)</code></li>
+	<li><code>nmap , &lt;Plug&gt;(sneak-prev)</code></li>
+</ul>
+
+<ul>
+	<li><code>vmap s &lt;Plug&gt;(sneak_s)</code></li>
+	<li><code>vmap Z &lt;Plug&gt;(sneak_S)</code></li>
+</ul>
+
+<ul>
+	<li><code>vmap ; &lt;Plug&gt;(sneak-next)</code></li>
+	<li><code>vmap , &lt;Plug&gt;(sneak-prev)</code></li>
+</ul>
+
+<ul>
+	<li><code>nmap f &lt;Plug&gt;(sneak_f)</code></li>
+	<li><code>nmap F &lt;Plug&gt;(sneak_F)</code></li>
+	<li><code>nmap t &lt;Plug&gt;(sneak_t)</code></li>
+	<li><code>nmap T &lt;Plug&gt;(sneak_T)</code></li>
+</ul>
+
+<ul>
+	<li><code>vmap f &lt;Plug&gt;(sneak_f)</code></li>
+	<li><code>vmap F &lt;Plug&gt;(sneak_F)</code></li>
+	<li><code>vmap t &lt;Plug&gt;(sneak_t)</code></li>
+	<li><code>vmap T &lt;Plug&gt;(sneak_T)</code></li>
+</ul>
+
+<ul>
+	<li><code>omap z &lt;Plug>(sneak_s)</code></li>
+	<li><code>omap Z &lt;Plug>(sneak_S)</code></li>
+</ul>
+
 <a name="surround"><h3>Surround (surround.vim) Plugin</h3></a>
 <p>
-    Surround.vim is a vim plugin defined here:<br>
+    Surround.vim is a vim plugin defined here:<br/>
     <a href="http://www.vim.org/scripts/script.php?script_id=1697">http://www.vim.org/scripts/script.php?script_id=1697</a><br/>
     The Vrapper Surround plugin is a partial port of this script. The Vrapper Surround plugin
     can be invoked as the <code>cs</code>, <code>ds</code> and <code>ys</code> commands in normal mode, or as <code>S</code> and <code>gS</code> in

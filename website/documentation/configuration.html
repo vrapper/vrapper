@@ -506,6 +506,21 @@
     </dt>
 </dl>
 
+<h5>Defining maps for Eclipse operations</h5>
+<p>
+	You can define maps to execute Eclipse operations using <code>:eclipseaction</code> and <code>:eclipseuiaction</code>
+	as described on the <a href="/documentation/?topic=commandline_commands">Commandline Commands</a> page.  You can also
+	use the <code>&lt;Plug&gt;()</code> syntax, though this is typically only used in a <code>.vrapperrc</code>
+	file (see the <a href="#config">Configuration File</a> section below).
+</p>
+<p>Here are some examples using the <code>&lt;Plug&gt;()</code> syntax:</p>
+<ul>
+	<li><code>noremap \w &lt;Plug&gt;(eclipse-motion:org.eclipse.ui.edit.text.goto.wordNext)</code></li>
+	<li><code>noremap \b &lt;Plug&gt;(eclipse-motion:org.eclipse.ui.edit.text.goto.wordPrevious)</code></li>
+	<li><code>noremap \e &lt;Plug&gt;(eclipse-textobj:org.eclipse.jdt.ui.edit.text.java.select.enclosing)</code></li>
+	<li><code>noremap \l &lt;Plug&gt;(eclipse-textobj:org.eclipse.jdt.ui.edit.text.java.select.last)</code></li>
+</ul>
+
 <h4>Collisions between Vrapper and Eclipse bindings</h4>
 <p>
     If a key combination is already mapped by Eclipse (e.g. <code>Ctrl-P</code> on Windows and
@@ -520,10 +535,17 @@
 
 <a name="config"><h3>Configuration File</h3></a>
 <p>
-    The options described above only change the behaviour of the editor in which they are set.
-    To change the default configuration, a file is used. When a new editor is opened, the plugin checks for a file called <b><code>.vrapperrc</code></b>
-    in the user's home directory (or <b><code>_vrapperrc</code></b> to make it easier for Windows people). If found, the commands in the file are executed. You may use any
-    configuration command in this file. As with <code>.vimrc</code> files, the leading <code>:</code> is omitted in the configuration file.
+    The options described above only change the behaviour of the editor in which
+    they are set. To change the default configuration, a file is used. When a
+    new editor is opened, the plugin checks for a file called
+    <b><code>.vrapperrc</code></b> (or <b><code>_vrapperrc</code></b> to make it
+    easier for Windows people). This file is expected to be in the user's
+    <code>HOME</code> directory but may be overridden by setting the system
+    property <code>vrapper.vrapperrc</code> when launching Eclipse
+    (<code>-Dvrapper.vrapperrc=&lt;file&gt;</code>).  If this file is found, the
+    commands in the file are executed. You may use any configuration command in
+    this file. As with <code>.vimrc</code> files, the leading <code>:</code> may
+    be omitted in the configuration file.
 </p>
 <p>This is an example of the contents of a configuration file:</p>
 <pre>
