@@ -5,7 +5,27 @@
          point="net.sourceforge.vrapper.eclipse.lifecyclelistener">
       <lifecycle-listener
             id="net.sourceforge.vrapper.plugin.bindingkeeper.eclipse.lifecycle-listener"
-            listener-class="net.sourceforge.vrapper.plugin.bindingkeeper.provider.BindingKeeperLifecycleListener">
+            listener-class="net.sourceforge.vrapper.plugin.bindingkeeper.listener.VrapperLifecycleListener">
       </lifecycle-listener>
+   </extension>
+   <extension
+         point="org.eclipse.ui.startup">
+      <startup
+            class="net.sourceforge.vrapper.plugin.bindingkeeper.BindingKeeper">
+      </startup>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="net.sourceforge.vrapper.plugin.bindingkeeper.preferences.BindingkeeperPreferencePage"
+            id="net.sourceforge.vrapper.plugin.bindingkeeper.preferences.BindingkeeperPreferencePage"
+            name="Vrapper Preferences">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="net.sourceforge.vrapper.plugin.bindingkeeper.preferences.PreferenceInitializer">
+      </initializer>
    </extension>
 </plugin>
