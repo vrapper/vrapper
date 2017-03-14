@@ -85,7 +85,7 @@ public class BindingkeeperPreferencePage extends FieldEditorPreferencePage imple
 				GridData.FILL_HORIZONTAL);
 		Composite spacer = SWTFactory.createComposite(group, 1, 1, GridData.FILL_HORIZONTAL);
 
-		disableConflictingShortcutsField = new BooleanFieldEditor(PreferenceConstants.P_DISABLE_CONFLICTING_SHORTCUTS,
+		disableConflictingShortcutsField = new BooleanFieldEditor(PreferenceConstants.P_DISABLE_UNWANTED_CONFLICTS,
 				"&Disable Eclipse's shortcuts when Vrapper is enabled", spacer);
 		addField(disableConflictingShortcutsField);
 
@@ -125,7 +125,7 @@ public class BindingkeeperPreferencePage extends FieldEditorPreferencePage imple
 		removeButton.addSelectionListener(new RemoveShortcut());
 		setButtonLayoutData(removeButton);
 
-		updateConflictUI(getPreferenceStore().getBoolean(PreferenceConstants.P_DISABLE_CONFLICTING_SHORTCUTS));
+		updateConflictUI(getPreferenceStore().getBoolean(PreferenceConstants.P_DISABLE_UNWANTED_CONFLICTS));
 	}
 
 	@Override
@@ -175,13 +175,13 @@ public class BindingkeeperPreferencePage extends FieldEditorPreferencePage imple
 		public TableConflicts() {
 			conflicts = new HashSet<String>();
 			conflicts.clear();
-			conflicts.addAll(Arrays.asList(getPreferenceStore().getString(PreferenceConstants.P_CONFLICTING_SHORTCUTS).split(":")));
+			conflicts.addAll(Arrays.asList(getPreferenceStore().getString(PreferenceConstants.P_UNWANTED_CONFLICTS).split(":")));
 		}
 
 		public void performDefaults() {
 			conflictViewer.remove(getSorted());
 			conflicts.clear();
-			conflicts.addAll(Arrays.asList(getPreferenceStore().getDefaultString(PreferenceConstants.P_CONFLICTING_SHORTCUTS).split(":")));
+			conflicts.addAll(Arrays.asList(getPreferenceStore().getDefaultString(PreferenceConstants.P_UNWANTED_CONFLICTS).split(":")));
 			conflictViewer.add(getSorted());
 		}
 
@@ -193,7 +193,7 @@ public class BindingkeeperPreferencePage extends FieldEditorPreferencePage imple
 					commaSeparated.append(":");
 			}
 
-			getPreferenceStore().setValue(PreferenceConstants.P_CONFLICTING_SHORTCUTS, commaSeparated.toString());
+			getPreferenceStore().setValue(PreferenceConstants.P_UNWANTED_CONFLICTS, commaSeparated.toString());
 		}
 
 		void add(String shortcut) {

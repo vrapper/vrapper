@@ -18,8 +18,8 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 	 */
 	public void initializeDefaultPreferences() {
 		IPreferenceStore store = BindingKeeper.getDefault().getPreferenceStore();
-		store.setDefault(PreferenceConstants.P_DISABLE_CONFLICTING_SHORTCUTS, false);
-		store.setDefault(PreferenceConstants.P_CONFLICTING_SHORTCUTS,
+		store.setDefault(PreferenceConstants.P_DISABLE_UNWANTED_CONFLICTS, false);
+		store.setDefault(PreferenceConstants.P_UNWANTED_CONFLICTS,
 				"CTRL+A:CTRL+X:CTRL+E:CTRL+Y:CTRL+D:CTRL+U:CTRL+F:CTRL+B:CTRL+P:CTRL+N:CTRL+V:CTRL+R:CTRL+H:CTRL+W:CTRL+U:CTRL+J:CTRL+M");
 	}
 }
