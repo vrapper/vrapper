@@ -38,31 +38,35 @@ public class ParenthesesMove extends AbstractModelSideMotion {
     //default match algorithm, find match for character under cursor
     @Override
     protected int destination(int offset, TextContent content, int count) throws CommandExecutionException {
-        LineInformation info = content.getLineInformationOfOffset(offset);
-        ParenthesesPair pair = null;
-        int index;
-        for(index=offset; index<info.getEndOffset(); index++) {
+        LineInformation line = content.getLineInformationOfOffset(offset);
+
+        // Check for one-character pairs.
+        int startIndex = offset;
+        if (offset == line.getEndOffset() && line.getLength() > 0) {
+            // Special case in visual mode: if the cursor is past the end of
+            // line (on top of the line break), we should start looking at the
+            // character before.
+            startIndex--;
+        }
+        for (int index = startIndex; index < line.getEndOffset(); index++) {
             String c = content.getText(index, 1);
             if (PARENTHESES.containsKey(c)) {
-                pair = PARENTHESES.get(c);
-                break;
-            }
-        }
-        //it isn't a simple one-character pair, look for alternatives
-        if (pair == null) {
-            pair = getBlockComment(offset, content);
-            if(pair != null) {
-                return findBlockMatch(offset, pair, content);
-            }
-            if(CPreProcessorMove.containsPreProcessor(content, info, offset)) {
-                return new CPreProcessorMove().destination(offset, content, count);
-            }
-            else {
-                throw new CommandExecutionException("no parentheses to jump found");
+                return findMatch(index, PARENTHESES.get(c), content, count);
             }
         }
 
-        return findMatch(index, pair, content, count);
+        // Check for a block comment.
+        ParenthesesPair pair = getBlockComment(offset, content);
+        if (pair != null) {
+            return findBlockMatch(offset, pair, content);
+        }
+        
+        // Check for C Pre-processor conditionals.
+        if (CPreProcessorMove.containsPreProcessor(content, line, offset)) {
+            return new CPreProcessorMove().destination(offset, content, count);
+        }
+
+        throw new CommandExecutionException("no parentheses to jump found");
     }
     
     /**
