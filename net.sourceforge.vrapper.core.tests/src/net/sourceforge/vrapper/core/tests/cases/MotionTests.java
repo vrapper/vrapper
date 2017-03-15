@@ -1047,7 +1047,7 @@ public class MotionTests extends CommandTestCase {
 	@Test
 	public void testPercentMatch() {
 		Motion parenthesesMove = ParenthesesMove.INSTANCE;
-		
+
 		//basic case
 		checkMotion(parenthesesMove,
 			"(match",')',"",
@@ -1072,6 +1072,11 @@ public class MotionTests extends CommandTestCase {
 		checkMotion(parenthesesMove,
 			"",'[',"match]",
 			"[match",']',"");
+		
+		//cursor at the line break
+		checkMotion(parenthesesMove,
+			"mat(",'\n',"ch)",
+			"mat(\nch",')',"");
 		
 		//with nesting
 		checkMotion(parenthesesMove,
