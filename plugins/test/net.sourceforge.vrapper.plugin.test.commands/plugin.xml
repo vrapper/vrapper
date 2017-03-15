@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <!-- Mix of fixed and volatile commands in one provider -->
+   
+   <extension
+         point="net.sourceforge.vrapper.eclipse.pssp">
+      <keymap-provider
+            id="net.sourceforge.vrapper.plugin.test.commands.MixedTestCommandsStateProvider"
+            name="Test Commands State Provider"
+            priority="20"
+            provider-class="net.sourceforge.vrapper.plugin.test.commands.MixedTestCommandsStateProvider">
+      </keymap-provider>
+   </extension>
+   
+   <!-- Context-specific volatile commands with same name -->
+   
+   <extension
+         point="net.sourceforge.vrapper.eclipse.pssp">
+      <keymap-provider
+            id="net.sourceforge.vrapper.plugin.test.commands.JSSpecificTestCommandsStateProvider"
+            name="JavaScript-Specific Test Commands State Provider"
+            provider-class="net.sourceforge.vrapper.plugin.test.commands.JSSpecificTestCommandsStateProvider">
+      </keymap-provider>
+   </extension>
+   <extension
+         point="net.sourceforge.vrapper.eclipse.pssp">
+      <keymap-provider
+            id="net.sourceforge.vrapper.plugin.test.commands.TSSpecificTestCommandsStateProvider"
+            name="TypeScript-Specific Test Commands State Provider"
+            provider-class="net.sourceforge.vrapper.plugin.test.commands.TSSpecificTestCommandsStateProvider">
+      </keymap-provider>
+   </extension>
+   
+   <!-- Volatile commands with same name but different priority -->
+   
+   <extension
+         point="net.sourceforge.vrapper.eclipse.pssp">
+      <keymap-provider
+            id="net.sourceforge.vrapper.plugin.test.commands.LowPriorityTestCommandsStateProvider"
+            name="Low-Priority Test Commands State Provider"
+            provider-class="net.sourceforge.vrapper.plugin.test.commands.LowPriorityTestCommandsStateProvider">
+      </keymap-provider>
+   </extension>
+   <extension
+         point="net.sourceforge.vrapper.eclipse.pssp">
+      <keymap-provider
+            id="net.sourceforge.vrapper.plugin.test.commands.HigherPriorityTestCommandsStateProvider"
+            name="Higher-Priority Test Commands State Provider"
+            provider-class="net.sourceforge.vrapper.plugin.test.commands.HigherPriorityTestCommandsStateProvider">
+      </keymap-provider>
+   </extension>
+   <extension
+         point="net.sourceforge.vrapper.eclipse.pssp">
+      <keymap-provider
+            id="net.sourceforge.vrapper.plugin.test.commands.HighestPriorityTestCommandsStateProvider"
+            name="Highest-Priority Test Commands State Provider"
+            provider-class="net.sourceforge.vrapper.plugin.test.commands.HighestPriorityTestCommandsStateProvider">
+      </keymap-provider>
+   </extension>
+   
+   <!-- Choosing to override built-in commands based on runtime context -->
+   
+   <extension
+         point="net.sourceforge.vrapper.eclipse.pssp">
+      <keymap-provider
+            id="net.sourceforge.vrapper.plugin.test.commands.OverridingTestCommandsStateProvider"
+            name="Overriding Test Commands State Provider"
+            provider-class="net.sourceforge.vrapper.plugin.test.commands.OverridingTestCommandsStateProvider">
+      </keymap-provider>
+   </extension>
+   
+</plugin>

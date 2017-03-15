@@ -1,5 +1,6 @@
 package net.sourceforge.vrapper.vim;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 

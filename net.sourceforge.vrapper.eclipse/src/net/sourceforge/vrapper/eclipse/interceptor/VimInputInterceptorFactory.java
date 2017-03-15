@@ -1,11 +1,23 @@
 
 package net.sourceforge.vrapper.eclipse.interceptor;
 
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+
+import org.eclipse.jface.text.source.ContentAssistantFacade;
+import org.eclipse.jface.text.source.ISourceViewer;
+import org.eclipse.jface.text.source.SourceViewer;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.VerifyEvent;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.editors.text.EditorsUI;
+import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
+import org.eclipse.ui.texteditor.AbstractTextEditor;
 
 import net.sourceforge.vrapper.eclipse.activator.VrapperPlugin;
 import net.sourceforge.vrapper.eclipse.platform.EclipsePlatform;
@@ -26,16 +38,6 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.SimpleGlobalConfiguration;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
-
-import org.eclipse.jface.text.source.ContentAssistantFacade;
-import org.eclipse.jface.text.source.ISourceViewer;
-import org.eclipse.jface.text.source.SourceViewer;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.VerifyEvent;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.editors.text.EditorsUI;
-import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
-import org.eclipse.ui.texteditor.AbstractTextEditor;
 
 /**
  * A factory for interceptors which route input events to a {@link EditorAdaptor}
@@ -263,6 +265,20 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
             if (!VrapperPlugin.isVrapperEnabled()) {
                 return;
             }
+            
+            IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+            try {
+                Method interceptVimVerifyKey = editor.getClass().getMethod("interceptVimVerifyKey", VerifyEvent.class);
+                try {
+                    interceptVimVerifyKey.invoke(editor, event);
+                    if (!event.doit) return;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } catch (NoSuchMethodException e) {
+                // OK
+            }
+            
             if (ignoredKeyCodes.contains(event.keyCode)) {
                 return;
             }
@@ -289,6 +305,7 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
                 keyStroke = new SimpleKeyStroke(event.character, modifiers);
             }
             event.doit = !editorAdaptor.handleKey(keyStroke);
+            // System.out.println("doit = " + event.doit);
         }
 
         public EditorAdaptor getEditorAdaptor() {
