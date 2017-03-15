@@ -2,9 +2,10 @@ package net.sourceforge.vrapper.plugin.bindingkeeper.listener;
 
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.events.ShellListener;
-import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.internal.Workbench;
 
 import net.sourceforge.vrapper.plugin.bindingkeeper.BindingKeeper;
@@ -15,7 +16,8 @@ import net.sourceforge.vrapper.plugin.bindingkeeper.BindingKeeper;
  */
 public class ViewPartListener implements IPartListener, ShellListener, Runnable {
 
-	private boolean activeWindow;
+	private boolean activeWindow = true;
+	private Shell editorShell;
 
 	public boolean isInsideActiveShell() {
 		return activeWindow;
@@ -27,13 +29,15 @@ public class ViewPartListener implements IPartListener, ShellListener, Runnable 
 	@Override
 	public void run() {
 		Workbench.getInstance().getActiveWorkbenchWindow().getPartService().addPartListener(this);
-		Display.getDefault().getActiveShell().addShellListener(this);
-		activeWindow = true;
+		editorShell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+		editorShell.addShellListener(this);
+
 	}
 
 	// IPartListener
 	@Override
 	public void partActivated(IWorkbenchPart part) {
+		activeWindow = true;
 		BindingKeeper.getDefault().setupBindings();
 	}
 

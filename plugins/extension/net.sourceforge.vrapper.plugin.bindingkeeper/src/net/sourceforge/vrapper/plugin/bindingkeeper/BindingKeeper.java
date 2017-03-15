@@ -56,14 +56,11 @@ public class BindingKeeper extends AbstractUIPlugin implements IStartup {
 	@Override
 	public void earlyStartup() {
 		PlatformUI.getWorkbench().getDisplay().asyncExec(viewListener);
+		setupBindings();
 	}
 
 	public void setupBindings() {
-		IWorkbench wb = PlatformUI.getWorkbench();
-		IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-		IWorkbenchPage page = win.getActivePage();
-		// TODO test for AbstractTextEditor inside multi part editors
-		boolean activeEditor = page.getActivePart() instanceof AbstractTextEditor;
+		boolean activeEditor = hasActiveEditorView();
 		boolean bindingKeeperEnabled = getPreferenceStore().getBoolean(PreferenceConstants.P_DISABLE_UNWANTED_CONFLICTS);
 		boolean insideActiveShell = viewListener.isInsideActiveShell();
 
@@ -72,6 +69,16 @@ public class BindingKeeper extends AbstractUIPlugin implements IStartup {
 		else
 			removeConflictingBindings();
 
+	}
+
+	private boolean hasActiveEditorView() {
+		IWorkbench wb = PlatformUI.getWorkbench();
+		IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+		if (win == null)
+			return false;
+		IWorkbenchPage page = win.getActivePage();
+		// TODO test for AbstractTextEditor inside multi part editors
+		return page != null && page.getActivePart() instanceof AbstractTextEditor;
 	}
 
 	private void removeConflictingBindings() {

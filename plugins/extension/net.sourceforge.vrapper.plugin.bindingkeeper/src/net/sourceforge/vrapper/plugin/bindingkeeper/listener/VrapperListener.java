@@ -13,7 +13,10 @@ public class VrapperListener extends VrapperEventAdapter {
 	@Override
 	public void vrapperToggled(boolean enabled) {
 		vrapperEnabled = enabled;
-		BindingKeeper.getDefault().setupBindings();
+		BindingKeeper bindingKeeper = BindingKeeper.getDefault();
+		if (bindingKeeper != null)
+			bindingKeeper.setupBindings();
+
 	}
 
 }
