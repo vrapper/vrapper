@@ -36,6 +36,7 @@ public interface Options {
     public static final Option<Boolean> DEBUGLOG        = globalBool("debuglog",     false);
     public static final Option<Boolean> LINE_NUMBERS    = globalBool("number",       false, "nu");
     public static final Option<Boolean> SHOW_WHITESPACE = globalBool("list",         false, "l");
+    public static final Option<Boolean> SPELL           = globalBool("spell",        true);
     public static final Option<Boolean> HIGHLIGHT_CURSOR_LINE = globalBool("cursorline",   false, "cul");
 
     public static final Option<Boolean> MODIFIABLE       = localBool("modifiable", true, "ma");
@@ -48,7 +49,7 @@ public interface Options {
             INCREMENTAL_SEARCH, LINE_NUMBERS, SHOW_WHITESPACE, IM_DISABLE,
             VISUAL_MOUSE, EXIT_LINK_MODE, CLEAN_INDENT, AUTO_CHDIR, HIGHLIGHT_CURSOR_LINE,
             CONTENT_ASSIST_MODE, START_NORMAL_MODE, UNDO_MOVES_CURSOR, DEBUGLOG, MODIFIABLE,
-            GLOBAL_REGISTERS, WRAP_SCAN);
+            GLOBAL_REGISTERS, WRAP_SCAN, SPELL);
 
     // String options:
     public static final Option<String> SYNC_MODIFIABLE = globalString("syncmodifiable", "nosync", "nosync, matchreadonly", "syncma");

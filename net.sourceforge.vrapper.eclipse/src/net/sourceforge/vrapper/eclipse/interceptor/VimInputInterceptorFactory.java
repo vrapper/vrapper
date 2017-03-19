@@ -36,6 +36,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
+import org.eclipse.ui.texteditor.spelling.SpellingService;
 
 /**
  * A factory for interceptors which route input events to a {@link EditorAdaptor}
@@ -86,6 +87,10 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
                     Boolean highlight = EditorsUI.getPreferenceStore().getBoolean(
                             AbstractDecoratedTextEditorPreferenceConstants.EDITOR_CURRENT_LINE);
                     return (T) highlight;
+                } else if (Options.SPELL.equals(option)) {
+                    Boolean enable = EditorsUI.getPreferenceStore()
+                            .getBoolean(SpellingService.PREFERENCE_SPELLING_ENABLED);
+                    return (T) enable;
                 } else {
                     return null;
                 }
@@ -111,6 +116,10 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
                     EditorsUI.getPreferenceStore().setValue(
                             AbstractDecoratedTextEditorPreferenceConstants.EDITOR_CURRENT_LINE,
                             highlight);
+                } else if (Options.SPELL.equals(option)) {
+                    Boolean enable = (Boolean) newValue;
+                    EditorsUI.getPreferenceStore()
+                            .setValue(SpellingService.PREFERENCE_SPELLING_ENABLED, enable);
                 }
             }
         };
