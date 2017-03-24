@@ -21,12 +21,14 @@ import org.eclipse.ui.internal.WorkbenchPlugin;
 import org.eclipse.ui.internal.registry.IWorkbenchRegistryConstants;
 import org.eclipse.ui.keys.IBindingService;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 
 import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.plugin.bindingkeeper.listener.ViewPartListener;
 import net.sourceforge.vrapper.plugin.bindingkeeper.listener.VrapperListener;
 import net.sourceforge.vrapper.plugin.bindingkeeper.preferences.PreferenceConstants;
+import net.sourceforge.vrapper.plugin.bindingkeeper.preferences.PluginPreferenceStore;
 
 /**
  * @author Pedro Santos
@@ -37,8 +39,8 @@ public class BindingKeeper extends AbstractUIPlugin implements IStartup {
 	private static BindingKeeper instance;
 	private IBindingService bindingService;
 	private ICommandService commandService;
+	private PluginPreferenceStore preferenceStore;
 	private IPreferenceStore workbenchPreferenceStore;
-	private IPreferenceStore bindingkeeperPreferenceStore;
 	private ViewPartListener viewListener = new ViewPartListener();
 
 	public BindingKeeper() {
@@ -46,7 +48,7 @@ public class BindingKeeper extends AbstractUIPlugin implements IStartup {
 		bindingService = (IBindingService) PlatformUI.getWorkbench().getService(IBindingService.class);
 		commandService = (ICommandService) PlatformUI.getWorkbench().getService(ICommandService.class);
 		workbenchPreferenceStore = WorkbenchPlugin.getDefault().getPreferenceStore();
-		bindingkeeperPreferenceStore = getPreferenceStore();
+		preferenceStore = new PluginPreferenceStore( (ScopedPreferenceStore) BindingKeeper.getDefault(). getPreferenceStore());
 	}
 
 	public static BindingKeeper getDefault() {
@@ -65,9 +67,9 @@ public class BindingKeeper extends AbstractUIPlugin implements IStartup {
 		boolean insideActiveShell = viewListener.isInsideActiveShell();
 
 		if (!VrapperListener.vrapperEnabled || !bindingKeeperEnabled || !activeEditor || !insideActiveShell)
-			restoreUserBindings();
+			PlatformUI.getWorkbench().getDisplay().syncExec(new RestoreUserBindings());
 		else
-			removeConflictingBindings();
+			PlatformUI.getWorkbench().getDisplay().syncExec(new RemoveConflictingBindings());
 
 	}
 
@@ -81,63 +83,69 @@ public class BindingKeeper extends AbstractUIPlugin implements IStartup {
 		return page != null && page.getActivePart() instanceof AbstractTextEditor;
 	}
 
-	private void removeConflictingBindings() {
+	class RemoveConflictingBindings implements Runnable {
+		@Override
+		public void run() {
 
-		String storedUserBindings = getPreferenceStore().getString(PreferenceConstants.P_USER_BINDINGS);
+			String storedUserBindings = preferenceStore.getUserBindings();
 
-		if (storedUserBindings != null && !storedUserBindings.isEmpty())
-			return;// conflicting keys already removed
+			if (storedUserBindings != null && !storedUserBindings.isEmpty())
+				return;// conflicting keys already removed
 
-		storedUserBindings = workbenchPreferenceStore.getString(IWorkbenchRegistryConstants.EXTENSION_COMMANDS);
-		bindingkeeperPreferenceStore.setValue(PreferenceConstants.P_USER_BINDINGS, storedUserBindings);
+			storedUserBindings = workbenchPreferenceStore.getString(IWorkbenchRegistryConstants.EXTENSION_COMMANDS);
+			preferenceStore.saveUserBindings(storedUserBindings);
 
-		ArrayList<Binding> bindings = new ArrayList<Binding>(Arrays.asList(bindingService.getBindings()));
+			ArrayList<Binding> bindings = new ArrayList<Binding>(Arrays.asList(bindingService.getBindings()));
 
-		String configuredBlacklist = bindingkeeperPreferenceStore.getString(PreferenceConstants.P_UNWANTED_CONFLICTS);
-		Collection<String> blacklist = Arrays.asList(configuredBlacklist.split(":"));
+			String configuredBlacklist = preferenceStore.getUnwantedConflicts();
+			Collection<String> blacklist = Arrays.asList(configuredBlacklist.split(":"));
 
-		for (Iterator<Binding> i = bindings.iterator(); i.hasNext();)
-			if (blacklist.contains(i.next().getTriggerSequence().toString()))
-				i.remove();
+			for (Iterator<Binding> i = bindings.iterator(); i.hasNext();)
+				if (blacklist.contains(i.next().getTriggerSequence().toString()))
+					i.remove();
 
-		try {
-			bindingService.savePreferences(bindingService.getActiveScheme(), bindings.toArray(new Binding[0]));
-		} catch (IOException e) {
-			VrapperLog.error("Binding keeper plugin were unable to clean conflicting key bindings", e);
+			try {
+				bindingService.savePreferences(bindingService.getActiveScheme(), bindings.toArray(new Binding[0]));
+			} catch (IOException e) {
+				VrapperLog.error("Binding keeper plugin were unable to clean conflicting key bindings", e);
+			}
+			VrapperLog.debug("Conflicting key bindings removed");
 		}
-		VrapperLog.debug("Conflicting key bindings removed");
 	}
 
-	private void restoreUserBindings() {
+	class RestoreUserBindings implements Runnable {
+		@Override
+		public void run() {
 
-		String storedUserBindings = getPreferenceStore().getString(PreferenceConstants.P_USER_BINDINGS);
+			String storedUserBindings = preferenceStore.getUserBindings();
 
-		if (storedUserBindings == null || storedUserBindings.trim().isEmpty())
-			return;// current bindings were already set by user
+			if (storedUserBindings == null || storedUserBindings.trim().isEmpty())
+				return;// current bindings were already set by user
 
-		Set<Binding> newUserBindings = new HashSet<Binding>();
-		for (Binding b : bindingService.getBindings())
-			if (b.getType() == Binding.USER)
-				newUserBindings.add(b);
+			Set<Binding> newUserBindings = new HashSet<Binding>();
+			for (Binding b : bindingService.getBindings())
+				if (b.getType() == Binding.USER)
+					newUserBindings.add(b);
 
-		workbenchPreferenceStore.setValue(IWorkbenchRegistryConstants.EXTENSION_COMMANDS, storedUserBindings);
-		bindingkeeperPreferenceStore.setValue(PreferenceConstants.P_USER_BINDINGS, "");
+			workbenchPreferenceStore.setValue(IWorkbenchRegistryConstants.EXTENSION_COMMANDS, storedUserBindings);
+			preferenceStore.cleanUserBindings();
 
-		bindingService.readRegistryAndPreferences(commandService);
+			bindingService.readRegistryAndPreferences(commandService);
 
-		List<Binding> restoredBindinds = Arrays.asList(bindingService.getBindings());
-		if (!restoredBindinds.containsAll(newUserBindings)) {
-			Set<Binding> union = new HashSet<Binding>();
-			union.addAll(newUserBindings);
-			union.addAll(restoredBindinds);
-			try {
-				bindingService.savePreferences(bindingService.getActiveScheme(), union.toArray(new Binding[0]));
-			} catch (IOException e) {
-				VrapperLog.error("Unable to restore Users key bindings", e);
+			List<Binding> restoredBindinds = Arrays.asList(bindingService.getBindings());
+			if (!restoredBindinds.containsAll(newUserBindings)) {
+				Set<Binding> union = new HashSet<Binding>();
+				union.addAll(newUserBindings);
+				union.addAll(restoredBindinds);
+				try {
+					bindingService.savePreferences(bindingService.getActiveScheme(), union.toArray(new Binding[0]));
+				} catch (IOException e) {
+					VrapperLog.error("Unable to restore Users key bindings", e);
+				}
 			}
-		}
 
-		VrapperLog.debug("User's keybinding restored");
+			VrapperLog.debug("User's keybinding restored");
+		}
 	}
 
 }
