@@ -9,6 +9,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.bindings.Binding;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.IStartup;
@@ -27,8 +31,8 @@ import org.eclipse.ui.texteditor.AbstractTextEditor;
 import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.plugin.bindingkeeper.listener.ViewPartListener;
 import net.sourceforge.vrapper.plugin.bindingkeeper.listener.VrapperListener;
-import net.sourceforge.vrapper.plugin.bindingkeeper.preferences.PreferenceConstants;
 import net.sourceforge.vrapper.plugin.bindingkeeper.preferences.PluginPreferenceStore;
+import net.sourceforge.vrapper.plugin.bindingkeeper.preferences.PreferenceConstants;
 
 /**
  * @author Pedro Santos
@@ -48,7 +52,7 @@ public class BindingKeeper extends AbstractUIPlugin implements IStartup {
 		bindingService = (IBindingService) PlatformUI.getWorkbench().getService(IBindingService.class);
 		commandService = (ICommandService) PlatformUI.getWorkbench().getService(ICommandService.class);
 		workbenchPreferenceStore = WorkbenchPlugin.getDefault().getPreferenceStore();
-		preferenceStore = new PluginPreferenceStore( (ScopedPreferenceStore) BindingKeeper.getDefault(). getPreferenceStore());
+		preferenceStore = new PluginPreferenceStore((ScopedPreferenceStore) BindingKeeper.getDefault().getPreferenceStore());
 	}
 
 	public static BindingKeeper getDefault() {
@@ -61,12 +65,17 @@ public class BindingKeeper extends AbstractUIPlugin implements IStartup {
 		setupBindings();
 	}
 
+	public void setupAfterDelay() {
+		new DelayedSetup().schedule(2000);
+	}
+
 	public void setupBindings() {
 		boolean activeEditor = hasActiveEditorView();
 		boolean bindingKeeperEnabled = getPreferenceStore().getBoolean(PreferenceConstants.P_DISABLE_UNWANTED_CONFLICTS);
 		boolean insideActiveShell = viewListener.isInsideActiveShell();
+		boolean showingPreferences = viewListener.isShowingPreferences();
 
-		if (!VrapperListener.vrapperEnabled || !bindingKeeperEnabled || !activeEditor || !insideActiveShell)
+		if (!VrapperListener.vrapperEnabled || !bindingKeeperEnabled || !activeEditor || !insideActiveShell || showingPreferences)
 			PlatformUI.getWorkbench().getDisplay().syncExec(new RestoreUserBindings());
 		else
 			PlatformUI.getWorkbench().getDisplay().syncExec(new RemoveConflictingBindings());
@@ -77,16 +86,29 @@ public class BindingKeeper extends AbstractUIPlugin implements IStartup {
 		IWorkbench wb = PlatformUI.getWorkbench();
 		IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
 		if (win == null)
-			return false;
+			win = wb.getWorkbenchWindows()[0];
 		IWorkbenchPage page = win.getActivePage();
 		// TODO test for AbstractTextEditor inside multi part editors
 		return page != null && page.getActivePart() instanceof AbstractTextEditor;
 	}
 
+	class DelayedSetup extends Job {
+		public DelayedSetup() {
+			super("Setup key bindings");
+		}
+
+		@Override
+		protected IStatus run(IProgressMonitor monitor) {
+			setupBindings();
+			return Status.OK_STATUS;
+		}
+
+	}
+
 	class RemoveConflictingBindings implements Runnable {
+
 		@Override
 		public void run() {
-
 			String storedUserBindings = preferenceStore.getUserBindings();
 
 			if (storedUserBindings != null && !storedUserBindings.isEmpty())
@@ -114,9 +136,9 @@ public class BindingKeeper extends AbstractUIPlugin implements IStartup {
 	}
 
 	class RestoreUserBindings implements Runnable {
+
 		@Override
 		public void run() {
-
 			String storedUserBindings = preferenceStore.getUserBindings();
 
 			if (storedUserBindings == null || storedUserBindings.trim().isEmpty())
