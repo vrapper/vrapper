@@ -97,13 +97,15 @@ public class SubstitutionOperation extends AbstractLinewiseOperation {
     	//Eclipse regex doesn't handle '^' and '$' like Vim does.
     	//Time for some special cases!
 		if(find.equals("^")) {
-			//insert the text at the beginning of the line
-            editorAdaptor.getModelContent().replace(line.getBeginOffset(), 0, replace);
+			replace = convertToPlatformNewline(editorAdaptor, replace);
+			// insert the text at the beginning of the line
+			editorAdaptor.getModelContent().replace(line.getBeginOffset(), 0, replace);
 			return 1;
 		}
 		else if(find.equals("$")) {
-			//insert the text at the end of the line
-            editorAdaptor.getModelContent().replace(line.getEndOffset(), 0, replace);
+			replace = convertToPlatformNewline(editorAdaptor, replace);
+			// insert the text at the end of the line
+			editorAdaptor.getModelContent().replace(line.getEndOffset(), 0, replace);
 			return 1;
 		}
 		else {
@@ -122,6 +124,22 @@ public class SubstitutionOperation extends AbstractLinewiseOperation {
 			return searchAndReplace.replace(start, end, find, replace, flags);
 		}
     }
+
+	/**
+	 * Replace Eclipse's platform independent newline ("\R") with a platform
+	 * specific newline.
+	 * 
+	 * This is useful when a string needs to be used by non-Eclipse code.
+	 */
+	private String convertToPlatformNewline(EditorAdaptor editorAdaptor, String inputString) {
+		String platformNewline = editorAdaptor.getConfiguration().getNewLine();
+		/*
+		 * Change "\R" to platform newline only if it is preceded by zero or an even number of
+		 * backslashes.
+		 */
+		String result = inputString.replaceAll("((^|[^\\\\])(\\\\\\\\)*)(\\\\R)", "$1" + platformNewline);
+		return result;
+	}
 
 	public TextOperation repetition() {
 		return this;

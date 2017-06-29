@@ -127,9 +127,58 @@ public class CommandLineTests extends VimTestCase {
         // Special case: do last search again, replace with empty string
         makeSubstitution("s//").execute(adaptor, 0, defaultRange);
         assertEquals("one  three two", content.getText());
-    }
-    
-    private SubstitutionOperation makeSubstitution(String command) {
+	}
+
+	@Test
+	public void testSubstitutionStartAndEndOfLine() throws CommandExecutionException {
+		when(platform.getSearchAndReplaceService()).thenReturn(new TestSearchService(content, configuration));
+		super.installSaneRegisterManager();
+
+		DummyTextObject defaultRange = new DummyTextObject(null);
+
+		content.setText("one Two three two");
+		makeSubstitution("s/^/\\r/").execute(adaptor, 0, defaultRange);
+		assertEquals("\none Two three two", content.getText());
+
+		content.setText("one Two three two");
+		makeSubstitution("s/$/\\r/").execute(adaptor, 0, defaultRange);
+		assertEquals("one Two three two\n", content.getText());
+	}
+
+	@Test
+	public void testSubstitutionStartAndEndOfLineWithText() throws CommandExecutionException {
+		when(platform.getSearchAndReplaceService()).thenReturn(new TestSearchService(content, configuration));
+		super.installSaneRegisterManager();
+
+		/*
+		 * NOTE: These tests use a TestSearchService instead of the real Eclipse
+		 * one, so expect \R instead of real newlines in the content strings.
+		 */
+		
+		DummyTextObject defaultRange = new DummyTextObject(null);
+		content.setText("one Two three two");
+		makeSubstitution("s/^one/\\r/").execute(adaptor, 0, defaultRange);
+		assertEquals("\\R Two three two", content.getText());
+
+		content.setText("one Two three two");
+		makeSubstitution("s/two$/\\r/").execute(adaptor, 0, defaultRange);
+		assertEquals("one Two three \\R", content.getText());
+
+		content.setText("one Two three two");
+		makeSubstitution("s/Two/\\r/").execute(adaptor, 0, defaultRange);
+		assertEquals("one \\R three two", content.getText());
+
+		content.setText("one Two three two");
+		makeSubstitution("s/Two/\\r/ig").execute(adaptor, 0, defaultRange);
+		assertEquals("one \\R three \\R", content.getText());
+
+		// Do not find this pattern
+		content.setText("one Two three two");
+		makeSubstitution("s/^ one/\\r/").execute(adaptor, 0, defaultRange);
+		assertEquals("one Two three two", content.getText());
+	}
+
+	private SubstitutionOperation makeSubstitution(String command) {
         SubstitutionDefinition definition = new SubstitutionDefinition(command, registerManager);
         return new SubstitutionOperation(definition);
     }
