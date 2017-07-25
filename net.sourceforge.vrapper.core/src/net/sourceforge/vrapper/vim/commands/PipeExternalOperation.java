@@ -25,6 +25,7 @@ import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 public class PipeExternalOperation extends AbstractLinewiseOperation {
 
     private static final Pattern PIPE_RE = Pattern.compile("^\\s*!\\s*(\\S.*)");
+    private static final Pattern FILENAME_RE = Pattern.compile("(?<!\\\\)%");
     private String externalCommand;
 
     public PipeExternalOperation(String cmdLine) {
@@ -60,9 +61,17 @@ public class PipeExternalOperation extends AbstractLinewiseOperation {
             editorAdaptor.getUserInterfaceService().setErrorMessage("syntax error for '!'");
         }
 
+        // replace '%' with current filename unless it is escaped
         if(externalCommand.contains("%")) {
-            String currentfile = editorAdaptor.getFileService().getCurrentFileName();
-            externalCommand = externalCommand.replaceAll("%", currentfile);
+        	Matcher matcher = FILENAME_RE.matcher(externalCommand);
+        	String currentfile = editorAdaptor.getFileService().getCurrentFileName();
+        	if(matcher.find()) {
+        		externalCommand = externalCommand.replaceAll("%", currentfile);
+        	}
+        	else {
+        		// change '\%' to '%' (remove backslash)
+        		externalCommand = externalCommand.replaceAll("\\\\%", "%");
+        	}
         }
 
         TextContent txt = editorAdaptor.getModelContent();
