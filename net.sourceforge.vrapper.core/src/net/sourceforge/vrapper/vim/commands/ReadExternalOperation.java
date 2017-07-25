@@ -56,8 +56,8 @@ public class ReadExternalOperation extends AbstractLinewiseOperation {
         // replace '%' with current filename unless it is escaped
         if(externalCommand.contains("%")) {
         	Matcher matcher = FILENAME_RE.matcher(externalCommand);
-        	String currentfile = editorAdaptor.getFileService().getCurrentFileName();
         	if(matcher.find()) {
+                String currentfile = editorAdaptor.getFileService().getCurrentFileName();
         		externalCommand = externalCommand.replaceAll("%", currentfile);
         	}
         	else {
