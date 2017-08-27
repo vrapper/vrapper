@@ -1,5 +1,6 @@
 package net.sourceforge.vrapper.eclipse.platform;
 
+import java.util.Map;
 import java.util.Set;
 
 import net.sourceforge.vrapper.platform.Configuration.Option;
@@ -14,13 +15,17 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.widgets.Display;
 
+/**
+ * This class extends {@link DefaultRegisterManager} in such a way that the system clipboard can be
+ * accessed and even set as the default register.
+ */
 public class SWTRegisterManager extends DefaultRegisterManager {
 
     protected SWTClipboardRegister clipboardRegister;
     protected SWTClipboardRegister selectionClipboardRegister;
 
-    public SWTRegisterManager(Display d, GlobalConfiguration globalConfig) {
-        super();
+    public SWTRegisterManager(Display d, GlobalConfiguration globalConfig, Map<String, Register> platformRegisters) {
+        super(platformRegisters);
         clipboardRegister = new SWTClipboardRegister(d, DND.CLIPBOARD);
         registers.put(RegisterManager.REGISTER_NAME_CLIPBOARD, clipboardRegister);
 

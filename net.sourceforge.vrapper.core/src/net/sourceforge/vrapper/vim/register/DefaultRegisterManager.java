@@ -39,6 +39,10 @@ public class DefaultRegisterManager implements RegisterManager {
 	private String lastCommand;
 
     public DefaultRegisterManager() {
+        this(null);
+    }
+
+    public DefaultRegisterManager(Map<String, Register> platformRegisters) {
         this.registers = new HashMap<String, Register>();
         this.unnamedRegister = new SimpleRegister();
         this.defaultRegister = unnamedRegister;
@@ -90,6 +94,10 @@ public class DefaultRegisterManager implements RegisterManager {
                 return new StringRegisterContent(ContentType.TEXT, lastCommand);
             }
         });
+        
+        if (platformRegisters != null) {
+            registers.putAll(platformRegisters);
+        }
     }
     
     public Set<String> getRegisterNames() {

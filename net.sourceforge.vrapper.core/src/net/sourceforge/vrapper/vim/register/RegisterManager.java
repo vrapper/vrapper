@@ -25,8 +25,11 @@ public interface RegisterManager {
     public static final String REGISTER_NAME_SEARCH    = "/";
     public static final String REGISTER_SMALL_DELETE   = "-";
     public static final String REGISTER_NAME_BLACKHOLE = "_";
+    /** Name of last executed macro. */
     public static final String REGISTER_NAME_LAST      = "@";
     public static final String REGISTER_NAME_COMMAND   = ":";
+    /** Absolute path of the current file, if available. */
+    public static final String REGISTER_NAME_CURRENT_FILE = "%";
     public static final String CLIPBOARD_VALUE_UNNAMED = "unnamed";
     public static final String CLIPBOARD_VALUE_UNNAMEDPLUS = "unnamedplus";
     public static final String CLIPBOARD_VALUE_AUTOSELECT = "autoselect";

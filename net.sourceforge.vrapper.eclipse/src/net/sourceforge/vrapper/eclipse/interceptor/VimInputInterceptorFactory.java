@@ -1,11 +1,13 @@
 
 package net.sourceforge.vrapper.eclipse.interceptor;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import net.sourceforge.vrapper.eclipse.activator.VrapperPlugin;
 import net.sourceforge.vrapper.eclipse.platform.EclipsePlatform;
@@ -19,13 +21,19 @@ import net.sourceforge.vrapper.platform.BufferAndTabService;
 import net.sourceforge.vrapper.platform.Configuration.Option;
 import net.sourceforge.vrapper.platform.GlobalConfiguration;
 import net.sourceforge.vrapper.platform.PlatformVrapperLifecycleListener;
+import net.sourceforge.vrapper.platform.VrapperPlatformException;
+import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.vim.ConfigurationListener;
 import net.sourceforge.vrapper.vim.DefaultConfigProvider;
 import net.sourceforge.vrapper.vim.DefaultEditorAdaptor;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.SimpleGlobalConfiguration;
+import net.sourceforge.vrapper.vim.register.ReadOnlyRegister;
+import net.sourceforge.vrapper.vim.register.Register;
+import net.sourceforge.vrapper.vim.register.RegisterContent;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
+import net.sourceforge.vrapper.vim.register.StringRegisterContent;
 
 import org.eclipse.jface.text.source.ContentAssistantFacade;
 import org.eclipse.jface.text.source.ISourceViewer;
@@ -58,8 +66,7 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
 
     private static final GlobalConfiguration sharedConfiguration = setupGlobalConfiguration();
 
-    private static final RegisterManager globalRegisterManager = new SWTRegisterManager(
-            PlatformUI.getWorkbench().getDisplay(), sharedConfiguration);
+    private static final RegisterManager globalRegisterManager;
 
     static {
         specialKeys = createSpecialKeys();
@@ -67,6 +74,36 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
         escapedChars = createEscapedChars();
 
         ignoredKeyCodes = createIgnoredKeyCodes();
+
+        Map<String, Register> platformRegisters = new HashMap<String, Register>();
+
+        platformRegisters.put(RegisterManager.REGISTER_NAME_CURRENT_FILE, new ReadOnlyRegister() {
+            @Override
+            public RegisterContent getContent() {
+                InputInterceptor interceptor;
+                try {
+                    interceptor = VrapperPlugin.getDefault().findActiveInterceptor();
+                    if (interceptor == null) {
+                        return RegisterContent.DEFAULT_CONTENT;
+                    }
+                } catch (VrapperPlatformException e) {
+                    VrapperLog.error("Failed to find active editor even though Vrapper was active", e);
+                    return RegisterContent.DEFAULT_CONTENT;
+                } catch (UnknownEditorException e) {
+                    VrapperLog.error("Failed to find active editor even though Vrapper was active");
+                    return RegisterContent.DEFAULT_CONTENT;
+                }
+                try {
+                    return new StringRegisterContent(ContentType.TEXT,
+                                interceptor.getPlatform().getFileService().getCurrentFileLocation());
+                } catch (IOException e) {
+                    VrapperLog.info("Current editor has no file associated with it");
+                    return RegisterContent.DEFAULT_CONTENT;
+                }
+            }
+        });
+        globalRegisterManager = new SWTRegisterManager(PlatformUI.getWorkbench().getDisplay(),
+                sharedConfiguration, platformRegisters);
     }
 
     /** Initialize default configuration where it needs to be overridden by environment. */
