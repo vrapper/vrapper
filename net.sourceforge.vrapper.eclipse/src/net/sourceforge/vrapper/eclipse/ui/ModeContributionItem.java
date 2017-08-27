@@ -1,7 +1,5 @@
 package net.sourceforge.vrapper.eclipse.ui;
 
-import java.util.Locale;
-
 import org.eclipse.jface.action.ContributionItem;
 import org.eclipse.jface.action.StatusLineLayoutData;
 import org.eclipse.jface.resource.JFaceResources;
@@ -28,34 +26,6 @@ public class ModeContributionItem extends ContributionItem {
 
     public ModeContributionItem(String id) {
         super(id);
-    }
-
-    //XXX Extending an SWT Widget is not recommended but we want custom text shortening.
-    // [NOTE] According to https://bugs.eclipse.org/bugs/show_bug.cgi?id=391675 override should work
-    protected static class ModeLabel extends CLabel {
-
-        private String modeName;
-
-        public ModeLabel(Composite parent, int style) {
-            super(parent, style);
-        }
-
-        @Override
-        protected String shortenText(GC gc, String t, int width) {
-            // Drop the "--" at the ends if the current text is too long.
-            String shorter = modeName;
-            // If set to e.g. "(insert) VISUAL LINE", make it even shorter.
-            if (gc.textExtent(shorter).x > width
-                    && shorter.toUpperCase(Locale.ENGLISH).contains("VISUAL")) {
-                shorter = shorter.replace("VISUAL", "VIS");
-            }
-            return shorter;
-        }
-
-        public void setText(String modeName) {
-            this.modeName = modeName;
-            super.setText("-- " + modeName + " --");
-        }
     }
 
     @Override
@@ -94,7 +64,7 @@ public class ModeContributionItem extends ContributionItem {
         sep.setLayoutData(layoutData);
 
         if (isRecording) {
-            recordingText = new CLabel(parent, SWT.SHADOW_NONE | SWT.CENTER);
+            recordingText = new org.eclipse.swt.custom.CLabel(parent, SWT.SHADOW_NONE | SWT.CENTER);
             recordingText.setText(getRecordingLabelText());
             recordingText.setVisible(isRecording);
             recordingText.setFont(boldFont);
@@ -102,7 +72,11 @@ public class ModeContributionItem extends ContributionItem {
             layoutData.widthHint = recordingLabelWidth;
             recordingText.setLayoutData(layoutData);
         }
-        modeText = new ModeLabel(parent, SWT.SHADOW_NONE | SWT.CENTER);
+        // Setting the CSS class is not enough for CSS to apply because it needs to be refreshed.
+        // Since that gives an unwanted dependency on Eclipse 4.x we fool the Class.getSimpleName()
+        // detection method by defining our own custom CLabel class.
+        modeText = new net.sourceforge.vrapper.eclipse.ui.CLabel(parent, SWT.SHADOW_NONE | SWT.CENTER);
+        //modeText.setData("org.eclipse.e4.ui.css.CssClassName", "CLabel org.eclipse.swt.custom.CLabel ModeLabel");
         modeText.setText(mode);
         modeText.setFont(regularFont);
         StatusLineLayoutData modeLayoutData = new StatusLineLayoutData();
