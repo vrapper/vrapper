@@ -5,11 +5,19 @@ import net.sourceforge.vrapper.utils.CaretType;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Caret;
 
 public class CaretUtils {
 
+    /**
+     * Creates a new caret of the given display type.
+     * @param caretType Display type.
+     * @param styledText Text widget which is the parent of the caret.
+     * @return a Caret instance.
+     */
     public static Caret createCaret(CaretType caretType, StyledText styledText) {
         GC gc = new GC(styledText);
         final int width = gc.getFontMetrics().getAverageCharWidth();
@@ -61,6 +69,23 @@ public class CaretUtils {
             // Caret is placed top-left above a character but underline and half-block need to be
             // at the bottom. Fix this by offsetting with textHeight and correcting by size.
             super.setLocation(x, y + textHeight - getSize().y);
+        }
+
+        @Override
+        public void setLocation(Point location) {
+            this.setLocation(location.x, location.y);
+        }
+
+        @Override
+        public void setBounds(int x, int y, int width, int height) {
+            super.setSize(width, height);
+            this.setLocation(x, y);
+        }
+
+        @Override
+        public void setBounds(Rectangle rect) {
+            super.setSize(rect.width, rect.height);
+            this.setLocation(rect.x, rect.y);
         }
 
         private void setShiftLeft(boolean shift) {
