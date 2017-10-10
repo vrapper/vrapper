@@ -6,7 +6,7 @@ public abstract class ExecuteCommandHint implements ModeSwitchHint {
 
     private final Command command;
 
-    public ExecuteCommandHint(Command command) {
+    protected ExecuteCommandHint(Command command) {
         this.command = command;
     }
 

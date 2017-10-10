@@ -5,9 +5,13 @@ import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
+import net.sourceforge.vrapper.vim.modes.commandline.PasteRegisterMode;
 import net.sourceforge.vrapper.vim.register.Register;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
 
+/**
+ * Pastes the contents of a named register. Used by {@link PasteRegisterMode} for its logic.
+ */
 public class PasteRegisterCommand extends CountIgnoringNonRepeatableCommand {
 	
 	public static final PasteRegisterCommand PASTE_LAST_INSERT =
