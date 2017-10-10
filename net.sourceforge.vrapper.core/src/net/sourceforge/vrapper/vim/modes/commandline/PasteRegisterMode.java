@@ -4,11 +4,13 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.key;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.platform.CommandLineUI;
+import net.sourceforge.vrapper.utils.VimUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.PasteRegisterCommand;
 import net.sourceforge.vrapper.vim.modes.AbstractMode;
+import net.sourceforge.vrapper.vim.modes.ExecuteCommandHint.OnLeave;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
 import net.sourceforge.vrapper.vim.modes.ModeSwitchHint;
 
@@ -21,6 +23,9 @@ import net.sourceforge.vrapper.vim.modes.ModeSwitchHint;
  * command line will appear with '"' and the user enters a single character. As
  * soon as that character is entered, we dump the contents of that register
  * without waiting for the user to hit 'enter' or anything else.
+ * 
+ * Entering the mode with an instance of ExecuteCommandHint.{@link OnLeave} will make sure
+ * that this hint gets passed back to Insert (needed for block edit mode).
  */
 public class PasteRegisterMode extends AbstractMode {
 
@@ -32,6 +37,7 @@ public class PasteRegisterMode extends AbstractMode {
     protected static final KeyStroke KEY_BACKSP = key(SpecialKey.BACKSPACE);
 
     protected CommandLineUI commandLine;
+    protected OnLeave onLeaveCommandHint;
 
     public String getDisplayName() {
         return DISPLAY_NAME;
@@ -54,6 +60,7 @@ public class PasteRegisterMode extends AbstractMode {
     public void enterMode(ModeSwitchHint... hints)
             throws CommandExecutionException {
         super.enterMode(hints);
+        onLeaveCommandHint = VimUtils.findModeHint(OnLeave.class, hints);
         commandLine = editorAdaptor.getCommandLine();
         commandLine.setPrompt("\"");
         commandLine.open();
@@ -70,7 +77,7 @@ public class PasteRegisterMode extends AbstractMode {
     public boolean handleKey(KeyStroke e) {
         if (e.equals(KEY_RETURN) || e.equals(KEY_ESCAPE)
                 || e.equals(KEY_BACKSP)) {
-            editorAdaptor.changeModeSafely(InsertMode.NAME);
+            changeBackToInsertMode();
             return true;
         }
 
@@ -80,9 +87,17 @@ public class PasteRegisterMode extends AbstractMode {
         } catch (CommandExecutionException err) {
             editorAdaptor.getUserInterfaceService().setErrorMessage(err.getMessage());
         }
-        // return to insert mode, continuing the previous insert operation
-        editorAdaptor.changeModeSafely(InsertMode.NAME, InsertMode.RESUME_ON_MODE_ENTER);
+        changeBackToInsertMode();
         return true;
     }
 
+    /** Return to insert mode, continuing the previous insert operation. */
+    protected void changeBackToInsertMode() {
+        if (onLeaveCommandHint != null) {
+            editorAdaptor.changeModeSafely(InsertMode.NAME,
+                    InsertMode.RESUME_ON_MODE_ENTER, onLeaveCommandHint);
+        } else {
+            editorAdaptor.changeModeSafely(InsertMode.NAME, InsertMode.RESUME_ON_MODE_ENTER);
+        }
+    }
 }

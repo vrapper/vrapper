@@ -358,7 +358,7 @@ public class InsertMode extends AbstractMode {
         } else if (stroke.equals(CTRL_R)) {
             // move to "paste register" mode, but don't actually perform the
             // "leave insert mode" operations
-            editorAdaptor.changeModeSafely(PasteRegisterMode.NAME, RESUME_ON_MODE_ENTER);
+            editorAdaptor.changeModeSafely(PasteRegisterMode.NAME, RESUME_ON_MODE_ENTER, mOnLeaveHint);
             return true;
         } else if (stroke.equals(CTRL_O)) {
             // perform a single NormalMode command then return to InsertMode
