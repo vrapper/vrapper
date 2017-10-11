@@ -729,7 +729,8 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
                     // Check if we should do backtracking: a multi-character mapping failed after
                     // the user entered two or more characters. The first few characters can be
                     // passed to the current mode whereas the later ones might be another mapping.
-                    boolean doBackTrack = ! keyStrokeTranslator.didMappingSucceed()
+                    boolean didMappingSucceed = keyStrokeTranslator.didMappingSucceed();
+                    boolean doBackTrack = ! didMappingSucceed
                             && resultingKeyStrokes.size() > 1 && currentMode.isRemapBacktracking();
                     // Insert mode uses no map buffer, pending characters are inserted by Eclipse.
                     if (currentMode instanceof InsertMode) {
@@ -749,7 +750,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
                         else if (cursorService.getPosition().getModelOffset() - cursorBeforeMapping > 0) {
 
                             try {
-                                if (keyStrokeTranslator.didMappingSucceed() || doBackTrack) {
+                                if (didMappingSucceed || doBackTrack) {
                                     int pendingChars = cursorService.getPosition().getModelOffset() - cursorBeforeMapping;
                                     //delete all the pending characters we had displayed
                                     for (int i=0; i < pendingChars; i++) {
@@ -781,7 +782,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
                     } else if (resultingKeyStrokes.isEmpty()) {
                         currentMode.addKeyToMapBuffer(key);
                     } else {
-                        currentMode.cleanMapBuffer(keyStrokeTranslator.didMappingSucceed());
+                        currentMode.cleanMapBuffer(didMappingSucceed);
                     }
                     // Backtrack remap
                     if (doBackTrack) {
@@ -794,7 +795,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
                         }
                     } else {
                         // play all key strokes, either the pending characters or the successful map
-                        if (keyStrokeTranslator.didMappingSucceed()) {
+                        if (didMappingSucceed) {
                             String mappingId = '[' + map.getMapId() + "] "
                                     + ConstructorWrappers.keyStrokesToString(
                                             keyStrokeTranslator.originalKeyStrokes());
@@ -817,7 +818,7 @@ public class DefaultEditorAdaptor implements EditorAdaptor {
                                 }
                             }
                         } finally {
-                            if (keyStrokeTranslator.didMappingSucceed()) {
+                            if (didMappingSucceed && ! mappingStack.isEmpty()) {
                                 mappingStack.pop();
                             }
                         }
