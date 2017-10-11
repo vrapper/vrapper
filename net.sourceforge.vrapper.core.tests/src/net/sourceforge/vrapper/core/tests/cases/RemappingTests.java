@@ -355,6 +355,16 @@ public class RemappingTests extends CommandTestCase {
         checkRemap(TEST_INSERT, ",s<SPACE>", "start<SPACE>");
     }
 
+    @Test
+    public void testBacktrackingTriggersRemap() {
+        // This will only match partially
+        type(parseKeyStrokes(":nnoremap v- v$<CR>"));
+        // Remap in visual mode: indent and go to end of line
+        type(parseKeyStrokes(":vnoremap > >$<CR>"));
+
+        // This should invoke the '>' visual mapping without any errors or weirdness
+        checkCommand(forKeySeq("v>"), "", 's', "tart\n", "\tstar", 't', "\n");
+    }
 
     public void checkRemap(String fakeMode, String inputKeyStrokes, String outputKeyStrokes) {
         try {
