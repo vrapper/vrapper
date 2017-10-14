@@ -52,10 +52,19 @@ public class CaretUtils {
     private static final class EvilCaret extends Caret {
         private final int textHeight;
         private boolean shiftLeft;
+        private boolean shiftTop;
+
+        /**
+         * Set to true when a function higher up the call stack is one of the other methods below.
+         * In a true multi-threaded application this should have been a ThreadLocal, but here it's
+         * no issue since Eclipse only allows the singleton UI thread to manipulate widgets.
+         */
+        private boolean isReentrant;
 
         private EvilCaret(Canvas parent, int style, int textHeight) {
             super(parent, style);
             this.textHeight = textHeight;
+            this.shiftTop = true;
         }
 
         @Override
@@ -63,33 +72,86 @@ public class CaretUtils {
 
         @Override
         public void setLocation(int x, int y) {
+            boolean temp = isReentrant;
+            try {
+                if ( ! isReentrant) {
+                    Point p = shift(new Point(x, y));
+                    x = p.x;
+                    y = p.y;
+                    isReentrant = true;
+                }
+                super.setLocation(x, y);
+            } finally {
+                isReentrant = temp;
+            }
+        }
+
+        @Override
+        public void setLocation(Point location) {
+            boolean temp = isReentrant;
+            try {
+                Point p = location;
+                if ( ! isReentrant) {
+                    p = shift(location);
+                    isReentrant = true;
+                }
+                super.setLocation(p);
+            } finally {
+                isReentrant = temp;
+            }
+        }
+
+        @Override
+        public void setBounds(int x, int y, int width, int height) {
+            boolean temp = isReentrant;
+            try {
+                if ( ! isReentrant) {
+                    Point p = shift(new Point(x, y));
+                    x = p.x;
+                    y = p.y;
+                    isReentrant = true;
+                }
+                super.setBounds(x, y, width, height);
+            } finally {
+                isReentrant = temp;
+            }
+        }
+
+        @Override
+        public void setBounds(Rectangle rect) {
+            boolean temp = isReentrant;
+            try {
+                Point p = new Point(rect.x, rect.y);
+                if ( ! isReentrant) {
+                    p = shift(p);
+                    isReentrant = true;
+                }
+                super.setBounds(new Rectangle(p.x, p.y, rect.width, rect.height));
+            } finally {
+                isReentrant = temp;
+            }
+        }
+
+        private Point shift(Point p) {
+            int x = p.x;
+            int y = p.y;
             if (shiftLeft) {
                 x -= getSize().x;
             }
             // Caret is placed top-left above a character but underline and half-block need to be
             // at the bottom. Fix this by offsetting with textHeight and correcting by size.
-            super.setLocation(x, y + textHeight - getSize().y);
-        }
-
-        @Override
-        public void setLocation(Point location) {
-            this.setLocation(location.x, location.y);
-        }
-
-        @Override
-        public void setBounds(int x, int y, int width, int height) {
-            super.setSize(width, height);
-            this.setLocation(x, y);
-        }
-
-        @Override
-        public void setBounds(Rectangle rect) {
-            super.setSize(rect.width, rect.height);
-            this.setLocation(rect.x, rect.y);
+            if (shiftTop) {
+                y += textHeight - getSize().y;
+            }
+            return new Point(x, y);
         }
 
         private void setShiftLeft(boolean shift) {
             shiftLeft = shift;
+        }
+
+        private void setShiftTop(boolean shift) {
+            shiftTop = shift;
         }
     }
 }
