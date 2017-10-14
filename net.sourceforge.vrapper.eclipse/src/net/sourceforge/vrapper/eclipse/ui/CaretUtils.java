@@ -43,6 +43,10 @@ public class CaretUtils {
         case UNDERLINE:
             caret.setSize(width, 3);
             break;
+        case OVERLINE:
+            caret.setSize(width, 3);
+            caret.setShiftTop(false);
+            break;
         }
 
         return caret;

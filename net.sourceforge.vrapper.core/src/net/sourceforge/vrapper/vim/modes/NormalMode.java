@@ -298,7 +298,7 @@ public class NormalMode extends CommandBasedMode {
                     editorAdaptor.getCursorService().setCaret(CaretType.RECTANGULAR);
                 } else {
                     // Use special cursor to signal "selection conflict" - this isn't Visual mode!
-                    editorAdaptor.getCursorService().setCaret(CaretType.UNDERLINE);
+                    editorAdaptor.getCursorService().setCaret(CaretType.OVERLINE);
                 }
             }
             // Change position when we hit the line end and no selection exists (we don't clear it)
