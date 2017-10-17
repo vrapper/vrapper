@@ -67,7 +67,6 @@ import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
-import net.sourceforge.vrapper.vim.modes.NormalMode;
 
 @SuppressWarnings("restriction")
 public class EclipseCursorAndSelection implements CursorService, SelectionService {
@@ -624,30 +623,24 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
 
     @Override
     public Set<String> getAllMarks() {
-    	//the easy part, get all local marks
-    	Set<String> allMarks = new HashSet<String>(marks.keySet());
+        //the easy part, get all local marks
+        Set<String> allMarks = new HashSet<String>(marks.keySet());
 
-    	//now iterate every open editor and look for global marks
-        final WorkbenchPage page = (WorkbenchPage) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-        final IEditorReference[] editorReferences = page.getSortedEditors();
-        for (final IEditorReference e : editorReferences) {
-        	try {
-        		IEditorInput editorInput = e.getEditorInput();
-        		if (editorInput instanceof IFileEditorInput) {
-        			final IFileEditorInput fileInput = (IFileEditorInput)editorInput;
-        			final IMarker[] markers = fileInput.getFile().findMarkers(GLOBAL_MARK_TYPE, true, IResource.DEPTH_INFINITE);
-        			for (final IMarker m: markers) {
-        				String name = m.getAttribute(IMarker.MESSAGE, "--");
-        				allMarks.add(name);
-        			}
-        		}
-            } catch (PartInitException ex) {
-            } catch (CoreException ex) {
-                VrapperLog.error("Couldn't get marks for editor " + e, ex);
+        IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+        // recursively find all markers in workspace root
+        try {
+            final IMarker[] markers = root.findMarkers(GLOBAL_MARK_TYPE, true, IResource.DEPTH_INFINITE);
+            for (final IMarker m: markers) {
+                String markName = m.getAttribute(IMarker.MESSAGE, "--");
+                if ( ! markName.equals("--")) {
+                    allMarks.add(markName);
+                }
             }
+        } catch (CoreException e) {
+            VrapperLog.error("Failed to find markers in resource root " + root, e);
         }
 
-    	return allMarks;
+        return allMarks;
     }
 
     @Override
