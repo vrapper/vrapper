@@ -34,13 +34,10 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Caret;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.INavigationHistory;
 import org.eclipse.ui.INavigationLocation;
-import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.internal.WorkbenchPage;
 import org.eclipse.ui.texteditor.AbstractMarkerAnnotationModel;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 import org.eclipse.ui.texteditor.MarkerUtilities;
@@ -68,7 +65,6 @@ import net.sourceforge.vrapper.vim.commands.SimpleSelection;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
 
-@SuppressWarnings("restriction")
 public class EclipseCursorAndSelection implements CursorService, SelectionService {
 
     public static final String POSITION_CATEGORY_NAME = "net.sourceforge.vrapper.position";
@@ -627,7 +623,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         Set<String> allMarks = new HashSet<String>(marks.keySet());
 
         IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-        // recursively find all markers in workspace root
+        // recursively find all markers in project root
         try {
             final IMarker[] markers = root.findMarkers(GLOBAL_MARK_TYPE, true, IResource.DEPTH_INFINITE);
             for (final IMarker m: markers) {
@@ -805,29 +801,6 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
                 VrapperLog.error("Failed to set marker in editor input " + editorInput, e);
             }
         }
-    }
-
-    /**
-     * Finds an editor associated with the specified mark.
-     * @param name mark name
-     * @return IEditorPart or null if not found.
-     */
-    static public IEditorPart getGlobalMarkEditor(String name) {
-        final WorkbenchPage page = (WorkbenchPage) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-        final IEditorReference[] editorReferences = page.getSortedEditors();
-        for (final IEditorReference e : editorReferences) {
-            try {
-                IEditorInput editorInput = e.getEditorInput();
-                if (editorInput instanceof IFileEditorInput) {
-                    final IFileEditorInput fileInput = (IFileEditorInput)editorInput;
-                    if (getGlobalMarker(name, fileInput.getFile()) != null) {
-                        return (IEditorPart) e.getPart(true);
-                    }
-                }
-            } catch (PartInitException e1) {
-            }
-        }
-        return null;
     }
 
     private Position getGlobalMarkerPosition(IMarker marker) {
