@@ -2,8 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Vrapper Sneak Plug-in
 Bundle-SymbolicName: net.sourceforge.vrapper.plugin.sneak;singleton:=true
-Bundle-Version: 0.73.20171010
-Require-Bundle: net.sourceforge.vrapper.core;bundle-version="0.73.20171010",
- net.sourceforge.vrapper.eclipse;bundle-version="0.73.20171010"
+Bundle-Version: 0.73.20171016
+Require-Bundle: net.sourceforge.vrapper.core;bundle-version="0.73.20171016",
+ net.sourceforge.vrapper.eclipse;bundle-version="0.73.20171016"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Eclipse-BuddyPolicy: dependent
