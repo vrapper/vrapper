@@ -8,7 +8,10 @@ Require-Bundle: net.sourceforge.vrapper.core,
  org.eclipse.core.runtime,
  org.eclipse.ui,
  org.eclipse.ui.workbench.texteditor,
- org.eclipse.debug.ui
+ org.eclipse.debug.ui,
+ org.eclipse.e4.ui.model.workbench,
+ org.eclipse.e4.ui.workbench,
+ org.eclipse.e4.core.contexts
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Eclipse-BuddyPolicy: dependent
 Bundle-Activator: net.sourceforge.vrapper.plugin.bindingkeeper.BindingKeeper
