@@ -36,26 +36,31 @@ public class ViewPartListener implements Runnable {
 	}
 
 	/*
-	 * During 'Keys preference page' initialization, it's important that there
-	 * are no key bindings change. Unfortunately it's impossible to detect 'Keys
-	 * preference page' initialization due two Eclipse's bugs. Given this
-	 * barrier, this plugin tries it best to detect that this preference page is
-	 * about to be opened .
+	 * During 'Keys preference page' initialization, it's important that there are
+	 * no key bindings change made by this plugin. Unfortunately it's impossible to
+	 * detect 'Keys preference page' initialization at the right time due two
+	 * Eclipse bugs. Given this barrier, this plugin tries it best to detect that
+	 * the preference page is about to be opened .
 	 * 
 	 * FIRST BUG: Eclipse doesn't use the 'Preferences' shell to initialize Keys
-	 * preference page, so the 'Workbench' shell listener don't detect that a
-	 * new shell was add in the Display
+	 * preference page, so it's impossible to register a listener remove any key
+	 * bindings changed by this pluging before the keys preference page is loaded.
 	 * 
-	 * Workaround: If by some reason the 'Workbench' shell got quickly
-	 * deactivated and activated in sequence, Eclipse is possibly initializing
-	 * 'Preferences shell' UI due a quick focus gained by 'Workbench' shell when
-	 * a quick access item offering an preference page is clicked.
+	 * Context: just before the 'Keys preference page' is about to be opened by it
+	 * PreferenceElement action registered in the QuickAccessContents, the shell
+	 * 'Quick Access' will quickly be activated due a mouse click on its menu.
+	 * 
+	 * Workaround: To cleanup pluging key bindings changes when some shell, other
+	 * than 'Preferences' is active. If by some reason the 'Workbench' shell got
+	 * quickly deactivated and activated in sequence, Eclipse is possibly
+	 * initializing 'Preferences shell' UI due a quick focus gained by 'Workbench'
+	 * shell when a quick access item offering an preference page is clicked.
 	 */
 	private long lastDeactivated;// tracks shell activation time
 	/*
 	 * SECOND BUG: Eclipse didn't assigned an ID for OpenPreferencsAction (as
-	 * annotated in its code, line 50), so there's no way to access this action
-	 * and to listen that 'Keys preference page' is about to be initialized
+	 * annotated in its code, line 50), so there's no way to access this action and
+	 * to listen that 'Keys preference page' is about to be initialized
 	 * (ExternalActionManager.IExecuteCallback would do the job).
 	 * 
 	 * Workaround: to wrap OpenPreferencesAction and to add a execution listener
@@ -88,7 +93,8 @@ public class ViewPartListener implements Runnable {
 		// wrap the Preferences menu item and installs its listener
 		MenuManager menuManager = ((WorkbenchWindow) activeWorkbenchWindow).getMenuManager();
 		IMenuManager windowMenu = menuManager.findMenuUsingPath("window");
-		ActionContributionItem preferencesItem = (ActionContributionItem) menuManager.findUsingPath("window/preferences");
+		ActionContributionItem preferencesItem = (ActionContributionItem) menuManager
+				.findUsingPath("window/preferences");
 		ActionContributionItem wrapped = new ActionContributionItem(new ActionWrapper(preferencesItem.getAction()));
 		wrapped.setVisible(preferencesItem.isVisible());
 		windowMenu.remove(preferencesItem);
@@ -158,6 +164,8 @@ public class ViewPartListener implements Runnable {
 
 			boolean delay = downtime < 2000;
 			if (delay)
+				// delay the possible erroneous removal of user key bindings
+				// since the key preference can be about to open
 				BindingKeeper.getDefault().setupAfterDelay();
 			else
 				BindingKeeper.getDefault().setupBindings();
