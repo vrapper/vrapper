@@ -8,15 +8,24 @@ import net.sourceforge.vrapper.log.VrapperLog;
 
 public class PluginPreferenceStore {
 	private ScopedPreferenceStore preferenceStore;
+	private String persistedConfiguration;
 
 	public PluginPreferenceStore(ScopedPreferenceStore preferenceStore) {
 		this.preferenceStore = preferenceStore;
+		this.persistedConfiguration = getUserBindings();
 	}
 
-	public void saveUserBindings(String storedUserBindings) {
-		preferenceStore.setValue(PreferenceConstants.P_USER_BINDINGS, storedUserBindings);
+	public void saveUserBindings(String userBindings) {
+		preferenceStore.setValue(PreferenceConstants.P_USER_BINDINGS, userBindings);
+
+		if (persistedConfiguration != null && !persistedConfiguration.equals(userBindings))
+			persist();
+	}
+
+	private void persist() {
 		try {
 			preferenceStore.save();
+			persistedConfiguration = getUserBindings();
 		} catch (IOException e) {
 			VrapperLog.error("Can't save user bindings", e);
 		}
@@ -31,7 +40,7 @@ public class PluginPreferenceStore {
 	}
 
 	public void cleanUserBindings() {
-		saveUserBindings("");
+		preferenceStore.setValue(PreferenceConstants.P_USER_BINDINGS, "");
 	}
 
 }
