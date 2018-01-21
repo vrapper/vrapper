@@ -9,12 +9,6 @@
       </lifecycle-listener>
    </extension>
    <extension
-         point="org.eclipse.ui.startup">
-      <startup
-            class="net.sourceforge.vrapper.plugin.bindingkeeper.BindingKeeper">
-      </startup>
-   </extension>
-   <extension
          point="org.eclipse.ui.preferencePages">
       <page
             class="net.sourceforge.vrapper.plugin.bindingkeeper.preferences.BindingkeeperPreferencePage"

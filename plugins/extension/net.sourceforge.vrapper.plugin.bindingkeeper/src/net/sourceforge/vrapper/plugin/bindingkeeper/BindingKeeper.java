@@ -5,16 +5,11 @@ import static net.sourceforge.vrapper.plugin.bindingkeeper.listener.VrapperListe
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 
 import org.eclipse.jface.bindings.Binding;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.ui.IStartup;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -26,6 +21,7 @@ import org.eclipse.ui.keys.IBindingService;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
+import org.osgi.framework.BundleContext;
 
 import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.plugin.bindingkeeper.listener.ViewPartListener;
@@ -36,7 +32,7 @@ import net.sourceforge.vrapper.plugin.bindingkeeper.preferences.PreferenceConsta
  * @author Pedro Santos
  * 
  */
-public class BindingKeeper extends AbstractUIPlugin implements IStartup {
+public class BindingKeeper extends AbstractUIPlugin {
 
 	private static BindingKeeper instance;
 	private IBindingService bindingService;
@@ -60,9 +56,18 @@ public class BindingKeeper extends AbstractUIPlugin implements IStartup {
 	}
 
 	@Override
-	public void earlyStartup() {
+	public void start(BundleContext context) throws Exception {
+		super.start(context);
 		PlatformUI.getWorkbench().getDisplay().asyncExec(viewListener);
-		setupBindings();
+	}
+
+	@Override
+	public void stop(BundleContext context) throws Exception {
+		try {
+			restoreUserBindings();
+		} finally {
+			super.stop(context);
+		}
 	}
 
 	public void setupBindings() {
@@ -127,31 +132,13 @@ public class BindingKeeper extends AbstractUIPlugin implements IStartup {
 		if (!active)
 			return;// plugin changes were already reverted
 
-		// in case new bindings were add via preference page
-		Set<Binding> newUserBindings = new HashSet<Binding>();
-		for (Binding b : bindingService.getBindings())
-			if (b.getType() == Binding.USER)
-				newUserBindings.add(b);
-
 		workbenchPreferenceStore.setValue(IWorkbenchRegistryConstants.EXTENSION_COMMANDS,
 				preferenceStore.getUserBindings());
 
 		bindingService.readRegistryAndPreferences(commandService);
 
-		List<Binding> restoredBindinds = Arrays.asList(bindingService.getBindings());
-		if (!restoredBindinds.containsAll(newUserBindings)) {
-			Set<Binding> union = new HashSet<Binding>();
-			union.addAll(newUserBindings);
-			union.addAll(restoredBindinds);
-			try {
-				bindingService.savePreferences(bindingService.getActiveScheme(), union.toArray(new Binding[0]));
-				active = false;
-				VrapperLog.debug("User's keybinding restored");
-			} catch (IOException e) {
-				VrapperLog.error("Unable to restore Users key bindings", e);
-			}
-		}
-
+		active = false;
+		VrapperLog.debug("User's keybinding restored");
 	}
 
 }
