@@ -32,7 +32,7 @@ import net.sourceforge.vrapper.plugin.bindingkeeper.preferences.PreferenceConsta
  * @author Pedro Santos
  * 
  */
-public class BindingKeeper extends AbstractUIPlugin {
+public class BindingKeeper extends AbstractUIPlugin implements Runnable {
 
 	private static BindingKeeper instance;
 	private IBindingService bindingService;
@@ -71,19 +71,16 @@ public class BindingKeeper extends AbstractUIPlugin {
 	}
 
 	public void setupBindings() {
-		PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
-			public void run() {
-				setupBindingsOnUiThread();
-			}
-		});
+		PlatformUI.getWorkbench().getDisplay().syncExec(this);
 	}
 
-	public void setupBindingsOnUiThread() {
+	@Override
+	public void run() {
 		boolean activeEditor = hasActiveEditorView();
 		boolean bindingKeeperEnabled = getPreferenceStore()
 				.getBoolean(PreferenceConstants.P_DISABLE_UNWANTED_CONFLICTS);
 		boolean insideActiveShell = viewListener.isInsideActiveShell();
-		boolean showingPreferences = viewListener.isShowingPreferences();
+		boolean showingPreferences = viewListener.isShowingPreferencesOrQuickAccess();
 
 		if (vrapperEnabled && bindingKeeperEnabled && activeEditor && insideActiveShell && !showingPreferences)
 			removeConflictingBindings();

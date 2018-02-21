@@ -42,12 +42,13 @@ public class ViewPartListener implements Runnable {
 	}
 
 	private boolean showingPreferences;
+	private boolean showingQuickAccess;
 
 	/**
 	 * @return signalizes that preferences page is opened in a dialog
 	 */
-	public boolean isShowingPreferences() {
-		return showingPreferences;
+	public boolean isShowingPreferencesOrQuickAccess() {
+		return showingPreferences || showingQuickAccess;
 	}
 
 	/**
@@ -58,7 +59,7 @@ public class ViewPartListener implements Runnable {
 		IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 		MWindow mWindow = ((WorkbenchWindow) activeWorkbenchWindow).getModel();
 		EModelService modelService = mWindow.getContext().get(EModelService.class);
-		MToolControl searchField = (MToolControl) modelService.find("SearchField", mWindow); //$NON-NLS-1$
+		MToolControl searchField = (MToolControl) modelService.find("SearchField", mWindow);
 		SearchField field = (SearchField) searchField.getObject();
 
 		// workbench listeners
@@ -90,17 +91,27 @@ public class ViewPartListener implements Runnable {
 		((ActionWrapper) wrapped.getAction()).setExecutionListener(new WindowPreferencesListener());
 	}
 
+	/*
+	 * Eclipse don't use 'Preferences' shell to initialize Keys preference page, so
+	 * it's impossible to register a shell listener to remove any key bindings
+	 * changed by this pluging before the keys preference page is loaded.
+	 *
+	 * To ensure that no keybinds are changed by this plugin while Keys preference
+	 * page is being initialized by the command 'Keys - general', this listener
+	 * flags the BindingKeeper to restore user's key bindings while the quick access
+	 * field is focused and offering the 'Keys - general' command
+	 */
 	class SearchFieldFocusListener implements FocusListener {
 
 		@Override
 		public void focusLost(FocusEvent e) {
-			showingPreferences = false;
+			showingQuickAccess = false;
 			BindingKeeper.getDefault().setupBindings();
 		}
 
 		@Override
 		public void focusGained(FocusEvent e) {
-			showingPreferences = true;
+			showingQuickAccess = true;
 			BindingKeeper.getDefault().setupBindings();
 		}
 	}
