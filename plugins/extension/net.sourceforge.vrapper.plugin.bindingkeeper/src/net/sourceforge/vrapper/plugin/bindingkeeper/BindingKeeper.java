@@ -5,8 +5,11 @@ import static net.sourceforge.vrapper.plugin.bindingkeeper.listener.VrapperListe
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jface.bindings.Binding;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -33,7 +36,7 @@ import net.sourceforge.vrapper.plugin.bindingkeeper.preferences.PreferenceConsta
  * 
  */
 public class BindingKeeper extends AbstractUIPlugin implements Runnable {
-
+	private static final Map<CacheKey, Binding[]> CACHE = new HashMap<CacheKey, Binding[]>();
 	private static BindingKeeper instance;
 	private IBindingService bindingService;
 	private ICommandService commandService;
@@ -107,21 +110,33 @@ public class BindingKeeper extends AbstractUIPlugin implements Runnable {
 		preferenceStore
 				.saveUserBindings(workbenchPreferenceStore.getString(IWorkbenchRegistryConstants.EXTENSION_COMMANDS));
 
-		ArrayList<Binding> bindings = new ArrayList<Binding>(asList(bindingService.getBindings()));
-
-		Collection<String> blacklist = preferenceStore.getUnwantedConflicts();
-
-		for (Iterator<Binding> i = bindings.iterator(); i.hasNext();)
-			if (blacklist.contains(i.next().getTriggerSequence().toString()))
-				i.remove();
-
 		try {
-			bindingService.savePreferences(bindingService.getActiveScheme(), bindings.toArray(new Binding[0]));
+			Binding[] currentBindings = bindingService.getBindings();
+			List<String> blacklist = preferenceStore.getUnwantedConflicts();
+
+			Binding[] nonConflictingBindings = tmp(currentBindings, blacklist);
+			bindingService.savePreferences(bindingService.getActiveScheme(), nonConflictingBindings);
+
 			active = true;
 			VrapperLog.debug("Conflicting key bindings removed");
 		} catch (IOException e) {
 			VrapperLog.error("Binding keeper plugin were unable to clean conflicting key bindings", e);
 		}
+	}
+
+	private Binding[] tmp(Binding[] currentBindings, List<String> blacklist) throws IOException {
+		CacheKey key = new CacheKey(currentBindings, blacklist);
+
+		if (CACHE.containsKey(key))
+			return CACHE.get(key);
+
+		ArrayList<Binding> bindings = new ArrayList<Binding>(asList(currentBindings));
+
+		for (Iterator<Binding> i = bindings.iterator(); i.hasNext();)
+			if (blacklist.contains(i.next().getTriggerSequence().toString()))
+				i.remove();
+
+		return CACHE.put(key, bindings.toArray(new Binding[0]));
 	}
 
 	private void restoreUserBindings() {
@@ -138,4 +153,42 @@ public class BindingKeeper extends AbstractUIPlugin implements Runnable {
 		VrapperLog.debug("User's keybinding restored");
 	}
 
+	static private class CacheKey {
+		private Binding[] current;
+		private List<String> blacklist;
+
+		CacheKey(Binding[] current, List<String> blacklist) {
+			this.current = current;
+			this.blacklist = blacklist;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((blacklist == null) ? 0 : blacklist.hashCode());
+			result = prime * result + Arrays.hashCode(current);
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			CacheKey other = (CacheKey) obj;
+			if (blacklist == null) {
+				if (other.blacklist != null)
+					return false;
+			} else if (!blacklist.equals(other.blacklist))
+				return false;
+			if (!Arrays.equals(current, other.current))
+				return false;
+			return true;
+		}
+
+	}
 }

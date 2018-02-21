@@ -2,7 +2,7 @@ package net.sourceforge.vrapper.plugin.bindingkeeper.preferences;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.List;
 
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
@@ -37,7 +37,7 @@ public class PluginPreferenceStore {
 		return preferenceStore.getString(PreferenceConstants.P_USER_BINDINGS);
 	}
 
-	public Collection<String> getUnwantedConflicts() {
+	public List<String> getUnwantedConflicts() {
 		String configuredBlacklist = preferenceStore.getString(PreferenceConstants.P_UNWANTED_CONFLICTS);
 		return Arrays.asList(configuredBlacklist.split(":"));
 	}
