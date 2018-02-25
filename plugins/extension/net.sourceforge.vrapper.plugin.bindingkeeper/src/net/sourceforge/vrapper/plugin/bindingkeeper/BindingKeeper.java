@@ -15,12 +15,14 @@ import org.eclipse.jface.bindings.Binding;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.internal.WorkbenchPlugin;
 import org.eclipse.ui.internal.registry.IWorkbenchRegistryConstants;
 import org.eclipse.ui.keys.IBindingService;
+import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
@@ -98,8 +100,9 @@ public class BindingKeeper extends AbstractUIPlugin implements Runnable {
 		if (win == null)
 			win = wb.getWorkbenchWindows()[0];
 		IWorkbenchPage page = win.getActivePage();
-		// TODO test for AbstractTextEditor inside multi part editors
-		return page != null && page.getActivePart() instanceof AbstractTextEditor;
+		IWorkbenchPart activePart = unwrap(page.getActivePart());
+
+		return page != null && activePart instanceof AbstractTextEditor;
 	}
 
 	private void removeConflictingBindings() {
@@ -114,7 +117,7 @@ public class BindingKeeper extends AbstractUIPlugin implements Runnable {
 			Binding[] currentBindings = bindingService.getBindings();
 			List<String> blacklist = preferenceStore.getUnwantedConflicts();
 
-			Binding[] nonConflictingBindings = tmp(currentBindings, blacklist);
+			Binding[] nonConflictingBindings = disjointUnion(currentBindings, blacklist);
 			bindingService.savePreferences(bindingService.getActiveScheme(), nonConflictingBindings);
 
 			active = true;
@@ -122,21 +125,6 @@ public class BindingKeeper extends AbstractUIPlugin implements Runnable {
 		} catch (IOException e) {
 			VrapperLog.error("Binding keeper plugin were unable to clean conflicting key bindings", e);
 		}
-	}
-
-	private Binding[] tmp(Binding[] currentBindings, List<String> blacklist) throws IOException {
-		CacheKey key = new CacheKey(currentBindings, blacklist);
-
-		if (CACHE.containsKey(key))
-			return CACHE.get(key);
-
-		ArrayList<Binding> bindings = new ArrayList<Binding>(asList(currentBindings));
-
-		for (Iterator<Binding> i = bindings.iterator(); i.hasNext();)
-			if (blacklist.contains(i.next().getTriggerSequence().toString()))
-				i.remove();
-
-		return CACHE.put(key, bindings.toArray(new Binding[0]));
 	}
 
 	private void restoreUserBindings() {
@@ -151,6 +139,35 @@ public class BindingKeeper extends AbstractUIPlugin implements Runnable {
 
 		active = false;
 		VrapperLog.debug("User's keybinding restored");
+	}
+
+	private IWorkbenchPart unwrap(IWorkbenchPart part) {
+		if (part == null)
+			return null;
+		if (part instanceof MultiPageEditorPart) {
+			Object selectedPage = ((MultiPageEditorPart) part).getSelectedPage();
+			if (selectedPage instanceof IWorkbenchPart)
+				return (IWorkbenchPart) selectedPage;
+			else
+				return null;
+		} else {
+			return part;
+		}
+	}
+
+	private Binding[] disjointUnion(Binding[] currentBindings, List<String> blacklist) throws IOException {
+		CacheKey key = new CacheKey(currentBindings, blacklist);
+
+		if (CACHE.containsKey(key))
+			return CACHE.get(key);
+
+		ArrayList<Binding> bindings = new ArrayList<Binding>(asList(currentBindings));
+
+		for (Iterator<Binding> i = bindings.iterator(); i.hasNext();)
+			if (blacklist.contains(i.next().getTriggerSequence().toString()))
+				i.remove();
+
+		return CACHE.put(key, bindings.toArray(new Binding[0]));
 	}
 
 	static private class CacheKey {
