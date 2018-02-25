@@ -1,7 +1,6 @@
 package net.sourceforge.vrapper.plugin.bindingkeeper;
 
 import static java.util.Arrays.asList;
-import static net.sourceforge.vrapper.plugin.bindingkeeper.listener.VrapperListener.vrapperEnabled;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,6 +29,7 @@ import org.osgi.framework.BundleContext;
 
 import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.plugin.bindingkeeper.listener.ViewPartListener;
+import net.sourceforge.vrapper.plugin.bindingkeeper.listener.VrapperListener;
 import net.sourceforge.vrapper.plugin.bindingkeeper.preferences.PluginPreferenceStore;
 import net.sourceforge.vrapper.plugin.bindingkeeper.preferences.PreferenceConstants;
 
@@ -81,6 +81,7 @@ public class BindingKeeper extends AbstractUIPlugin implements Runnable {
 
 	@Override
 	public void run() {
+		boolean vrapperEnabled = VrapperListener.isVrapperEnabled();
 		boolean activeEditor = hasActiveEditorView();
 		boolean bindingKeeperEnabled = getPreferenceStore()
 				.getBoolean(PreferenceConstants.P_DISABLE_UNWANTED_CONFLICTS);

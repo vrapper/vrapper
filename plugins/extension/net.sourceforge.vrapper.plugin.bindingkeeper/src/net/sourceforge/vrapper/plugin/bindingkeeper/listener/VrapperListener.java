@@ -8,7 +8,15 @@ import net.sourceforge.vrapper.vim.VrapperEventAdapter;
  * 
  */
 public class VrapperListener extends VrapperEventAdapter {
-	public static boolean vrapperEnabled;
+	private static boolean vrapperEnabled;
+
+	public VrapperListener(boolean enabled) {
+		vrapperEnabled = enabled;
+	}
+
+	public static boolean isVrapperEnabled() {
+		return vrapperEnabled;
+	}
 
 	@Override
 	public void vrapperToggled(boolean enabled) {

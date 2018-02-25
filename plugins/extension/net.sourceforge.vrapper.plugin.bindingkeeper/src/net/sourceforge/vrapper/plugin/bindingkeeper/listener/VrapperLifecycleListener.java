@@ -11,7 +11,7 @@ public class VrapperLifecycleListener extends PlatformVrapperLifecycleAdapter {
 
 	@Override
 	public void editorConfigured(EditorAdaptor editorAdaptor, boolean enabled) {
-		editorAdaptor.addVrapperEventListener(new VrapperListener());
+		editorAdaptor.addVrapperEventListener(new VrapperListener(enabled));
 
 	}
 }
