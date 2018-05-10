@@ -257,6 +257,10 @@ public class ConstructorWrappers {
         return new SimpleKeyStroke(Character.toLowerCase(key), EnumSet.of(Modifier.CONTROL));
     }
 
+    public static KeyStroke ctrlKey(SpecialKey key) {
+        return new SimpleKeyStroke(key, EnumSet.of(Modifier.CONTROL));
+    }
+
     public static KeyStroke key(SpecialKey key) {
         return new SimpleKeyStroke(key);
     }
@@ -306,6 +310,10 @@ public class ConstructorWrappers {
     }
 
     public static<T> KeyBinding<T> leafCtrlBind(char k, T value) {
+        return binding(ctrlKey(k), leaf(value));
+    }
+
+    public static<T> KeyBinding<T> leafCtrlBind(SpecialKey k, T value) {
         return binding(ctrlKey(k), leaf(value));
     }
 

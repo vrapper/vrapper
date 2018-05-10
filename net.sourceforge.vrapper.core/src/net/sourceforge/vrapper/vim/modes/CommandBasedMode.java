@@ -143,7 +143,6 @@ public abstract class CommandBasedMode extends AbstractMode {
                                                                  // INCLUSIVE;
                                                                  // bug in Vim
                                                                  // documentation
-            final Motion lastCharacter = LastCharacterMotion.INSTANCE;
             final Motion percentMotion = PercentMotion.INSTANCE;
             final Motion matchOpenParen = ParenthesesMove.MATCH_OPEN_PAREN;
             final Motion matchCloseParen = ParenthesesMove.MATCH_CLOSE_PAREN;
@@ -231,6 +230,8 @@ public abstract class CommandBasedMode extends AbstractMode {
                     leafBind(SpecialKey.END, lineEnd),
                     leafBind('%', percentMotion),
                     leafBind('^', lineStart),
+                    leafCtrlBind(SpecialKey.HOME, GoToLineMotion.FIRST_LINE),
+                    leafCtrlBind(SpecialKey.END, LastCharacterMotion.FILE),
                     transitionBind('[', 
                     		leafBind('m', methodPrevStart),
                     		leafBind('M', methodPrevEnd),
@@ -249,7 +250,7 @@ public abstract class CommandBasedMode extends AbstractMode {
                             leafBind('g', GoToLineMotion.FIRST_LINE),
                             leafBind('*', findWordForwardLenient),
                             leafBind('#', findWordBackwardLenient),
-                            leafBind('_', lastCharacter),
+                            leafBind('_', LastCharacterMotion.LINE),
                             leafBind(';', GoToEditLocation.BACKWARDS),
                             leafBind(',', GoToEditLocation.FORWARD),
                             leafBind('e', wordEndLeft),

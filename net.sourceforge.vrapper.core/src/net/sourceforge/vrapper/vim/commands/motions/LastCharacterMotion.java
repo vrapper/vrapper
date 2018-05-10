@@ -8,7 +8,13 @@ import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 
 public class LastCharacterMotion extends AbstractModelSideMotion {
 
-    public static final Motion INSTANCE = new LastCharacterMotion();
+    public static final Motion LINE = new LastCharacterMotion();
+    public static final Motion FILE = new LastCharacterMotion() {
+    	@Override
+        protected int destination(int offset, TextContent content, int count) throws CommandExecutionException {
+    		return content.getTextLength() == 0 ? 0 : content.getTextLength() -1;
+        }
+    };
 
     @Override
     public BorderPolicy borderPolicy() {
@@ -16,8 +22,7 @@ public class LastCharacterMotion extends AbstractModelSideMotion {
     }
 
     @Override
-    protected int destination(int offset, TextContent content, int count)
-            throws CommandExecutionException {
+    protected int destination(int offset, TextContent content, int count) throws CommandExecutionException {
         LineInformation lineInfo = content.getLineInformationOfOffset(offset);
         return VimUtils.getLastNonWhiteSpaceOffset(content, lineInfo);
     }
