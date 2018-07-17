@@ -162,53 +162,66 @@ public class SubwordMotion extends CountAwareMotion {
 
         @Override
         public TextRange getRegion(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
+            if(count == NO_COUNT_GIVEN)
+                count = 1;
+
         	TextContent model = editorAdaptor.getModelContent();
         	CursorService cursorService = editorAdaptor.getCursorService();
 
             Motion startMotion = SubwordMotion.SUB_BACK;
-            Motion endMotion = outer ? SubwordMotion.SUB_WORD : SubwordMotion.SUB_END;
+            Motion endMotion = SubwordMotion.SUB_WORD;
+            Motion lastEndMotion = outer ? SubwordMotion.SUB_WORD : SubwordMotion.SUB_END;
 
             String wordRegex = editorAdaptor.getConfiguration().get(Options.KEYWORDS);
             int cursorOffset = editorAdaptor.getPosition().getModelOffset();
 
+            // VIM-camelcasemotion plugin is able to move [count]subwords backwards.
+            // This feature is not yet supported by this implementation.
             int startOffset;
             String startChars = cursorOffset > 0 ? model.getText(cursorOffset -1, 2) : "";
             if (startChars.length() == 2
-            		&& Utils.characterType(startChars.charAt(0), wordRegex) != Utils.WORD
-            		&& Utils.characterType(startChars.charAt(1), wordRegex) == Utils.WORD) {
-            	//If the cursor is on the beginning of a word, the 'b'ack motion will jump to the previous word.
-            	//This is the correct behavior for motion, but not what we want for text object.
-            	startOffset = cursorOffset;
+                    && Utils.characterType(startChars.charAt(0), wordRegex) != Utils.WORD
+                    && Utils.characterType(startChars.charAt(1), wordRegex) == Utils.WORD) {
+                //If the cursor is on the beginning of a word, the 'b'ack motion will jump to the previous word.
+                //This is the correct behavior for motion, but not what we want for text object.
+                startOffset = cursorOffset;
             }
             else {
-            	//offset+1 to include the character under the cursor
-            	//(this operation will search backwards)
-            	startOffset = ((SubwordMotion)startMotion).doIt(editorAdaptor, cursorOffset + 1);
+                //offset+1 to include the character under the cursor
+                //(this operation will search backwards)
+                startOffset = ((SubwordMotion)startMotion).doIt(editorAdaptor, cursorOffset + 1);
             }
             Position start = cursorService.newPositionForModelOffset(startOffset);
-            
+			int endOffset = cursorOffset;
+			
+			//find where the regular end-word motion would take us
+			MoveWordEndRight wordMotion = MoveWordEndRight.INSTANCE;
+			Position endWord = wordMotion.destination(editorAdaptor);
+			int endWordOffset = endWord.getModelOffset();
 
-            int endOffset;
-            String endChars = cursorOffset < model.getTextLength() - 1 ? model.getText(cursorOffset, 2) : "";
-            if(endChars.length() == 2
-            		&& Utils.characterType(endChars.charAt(0), wordRegex) == Utils.WORD
-            		&& Utils.characterType(endChars.charAt(1), wordRegex) != Utils.WORD) {
-            	//if the cursor is on the last character of a word
-            	//don't jump to the next word
-            	endOffset = cursorOffset;
-            }
-            else {
-            	//using doIt rather than destination so we don't try "fixing" when we match on self
-            	endOffset = ((SubwordMotion)endMotion).doIt(editorAdaptor, cursorOffset);
+			boolean hitEndOfTheWord = false;
+			for (int i = count; i != 0; i--) {
+			    //using doIt rather than destination so we don't try "fixing" when we match on self
+			    if (i > 1) {
+			        endOffset = ((SubwordMotion)endMotion).doIt(editorAdaptor, endOffset);
+			    } else {
+			        endOffset = ((SubwordMotion)lastEndMotion).doIt(editorAdaptor, endOffset);
+			    }
+			    if (endOffset > endWordOffset) {
+			        endOffset = endWordOffset;
+			        hitEndOfTheWord = true;
+			        break;
+			    }
+			}
 
-            }
-            Position end = cursorService.newPositionForModelOffset(endOffset);
+			Position end = cursorService.newPositionForModelOffset(endOffset);
+			
+			if(! outer || hitEndOfTheWord) {
+			    //inclusive vs. exclusive in motion vs. text object
+			    //motion is exclusive, inner text object is inclusive
+			    end = end.addModelOffset(1);
+			}
 
-            if(! outer) {
-                //inclusive vs. exclusive in motion vs. text object
-                //motion is exclusive, inner text object is inclusive
-                end = end.addModelOffset(1);
-            }
             return new StartEndTextRange(start, end);
         }
 
