@@ -72,20 +72,20 @@ public class SearchCommandParser extends AbstractCommandParser {
 
         //special case to override global 'ignorecase' property (see :help \c)
         if(keyword.contains("\\c")) {
-        	int index = keyword.indexOf("\\c");
-        	caseSensitive = false;
-        	//replaceAll doesn't like \\c, so cut out the characters this way
-        	keyword = keyword.substring(0, index) + keyword.substring(index+2);
+            int index = keyword.indexOf("\\c");
+            caseSensitive = false;
+            //replaceAll doesn't like \\c, so cut out the characters this way
+            keyword = keyword.substring(0, index) + keyword.substring(index+2);
         }
         if(keyword.contains("\\C")) {
-        	int index = keyword.indexOf("\\C");
-        	caseSensitive = true;
-        	keyword = keyword.substring(0, index) + keyword.substring(index+2);
+            int index = keyword.indexOf("\\C");
+            caseSensitive = true;
+            keyword = keyword.substring(0, index) + keyword.substring(index+2);
         }
         if(keyword.contains("\\%V")) {
-        	int index = keyword.indexOf("\\%V");
-        	searchInSelection = true;
-        	keyword = keyword.substring(0, index) + keyword.substring(index+3);
+            int index = keyword.indexOf("\\%V");
+            searchInSelection = true;
+            keyword = keyword.substring(0, index) + keyword.substring(index+3);
         }
         if (offset == null) {
             // Sanity checking. Passing null is bad style though.
@@ -94,13 +94,10 @@ public class SearchCommandParser extends AbstractCommandParser {
         return new Search(keyword, backward, caseSensitive, offset, useRegExp, searchInSelection);
     }
 
-	private Search parseSearchCommand(String first, String command) {
+    private Search parseSearchCommand(String first, String command) {
         boolean backward = first.equals(VimConstants.BACKWARD_SEARCH_CHAR);
-        // split on the delimiter, unless that delimiter is escaped with a backslash (/foo\/bar/e+2)
-        // backwards search delimiter '?' needs extra escaping in this split
-        // because it is a reserved character in regex.
-        String[] fields = command.split("(?<!\\\\)"+(backward ? '\\' + first : first));
-        String keyword = fields[0].replace("\\"+first, first);
+        String[] searchFields = splitSearchCommand(first, command);
+        String keyword = searchFields[0];
         Search lastSearch = editor.getRegisterManager().getSearch();
         // if keyword is empty, last keyword is used
         boolean useLastKeyword = keyword.length() == 0 && lastSearch != null;
@@ -108,8 +105,8 @@ public class SearchCommandParser extends AbstractCommandParser {
             keyword = lastSearch.getKeyword();
         }
         SearchOffset searchOffset;
-        if (fields.length > 1) {
-            searchOffset = createSearchOffset(keyword, fields[1]);
+        if (searchFields.length > 1) {
+            searchOffset = createSearchOffset(searchFields[1]);
         } else if (useLastKeyword) {
             searchOffset = lastSearch.getSearchOffset();
         } else {
@@ -119,18 +116,44 @@ public class SearchCommandParser extends AbstractCommandParser {
         return search;
     }
 
-	/** Parses the (partial) buffer and returns only the keyword part. */
-	public String getKeyWord() {
+    /** Parses the (partial) buffer and returns only the keyword part. */
+    public String getKeyWord() {
         String first = commandLine.getPrompt();
         String command = commandLine.getContents();
-        return command.split("(?<!\\\\)\\"+first)[0];
-	}
+        return splitSearchCommand(first, command)[0];
+    }
 
-    private SearchOffset createSearchOffset(String keyword, String afterSearch) {
+    private String[] splitSearchCommand(String first, String command) {
+        if (command.length() == 0) {
+            // User pressed <Enter> in search mode to repeat search
+            return new String[] {""};
+        } else {
+            // backwards search delimiter '?' needs extra escaping in the following split
+            // because it is a reserved character in regex.
+            boolean delimNeedsEscaping = first.equals(VimConstants.BACKWARD_SEARCH_CHAR);
+            String delimiter = delimNeedsEscaping ? '\\' + first : first;
+
+            // split on the delimiter, unless that delimiter is escaped with a backslash (/foo\/bar/e+2)
+            String[] fields = command.split("(?<!\\\\)"+delimiter, -1);
+            if (fields.length == 0) {
+                fields = new String[] {""};
+            }
+
+            // The user might have escaped a / or ? with a backslash (see split above).
+            // Unescape it now so that regex search doesn't get confused.
+            fields[0] = fields[0].replace("\\"+first, first);
+            return fields;
+        }
+    }
+
+    private SearchOffset createSearchOffset(String afterSearch) {
+        if (VimUtils.isBlank(afterSearch)) {
+            return SearchOffset.NONE;
+        }
         Matcher m = AFTER_SEARCH_PATTERN.matcher(afterSearch);
         String group;
-        if(!m.find() || VimUtils.isBlank(afterSearch)) {
-            return null;
+        if(!m.find()) {
+            return SearchOffset.NONE;
         }
         group = m.group(2);
         int offset = VimUtils.isBlank(group) ? 0 : Integer.parseInt(group);

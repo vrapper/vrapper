@@ -47,6 +47,31 @@ public class SearchModeTests extends VisualTestCase {
     }
 
     @Test
+    public void testForwardsSearchWithOffset() {
+        checkCommand(forKeySeq("/th/e<CR>"),
+                "I ", 'c', "ouldn't live without this\nfull-range three-linear variable.",
+                "I couldn't live wit", 'h', "out this\nfull-range three-linear variable.");
+        checkCommand(forKeySeq("n"),
+                "I couldn't live wit", 'h', "out this\nfull-range three-linear variable.",
+                "I couldn't live without t", 'h', "is\nfull-range three-linear variable.");
+        checkCommand(forKeySeq("N"),
+                "I couldn't live without t", 'h', "is\nfull-range three-linear variable.",
+                "I couldn't live wit", 'h', "out this\nfull-range three-linear variable.");
+
+        checkCommand(forKeySeq("/th/e+2<CR>"),
+                "I ", 'c', "ouldn't live without this\nfull-range three-linear variable.",
+                "I couldn't live witho", 'u', "t this\nfull-range three-linear variable.");
+
+        checkCommand(forKeySeq("/th/+1<CR>"),
+                "I ", 'c', "ouldn't live without this\nfull-range three-linear variable.",
+                "I couldn't live without this\n", 'f', "ull-range three-linear variable.");
+
+        checkCommand(forKeySeq("/th/b-2<CR>"),
+                "I ", 'c', "ouldn't live without this\nfull-range three-linear variable.",
+                "I couldn't live ", 'w', "ithout this\nfull-range three-linear variable.");
+    }
+
+    @Test
     public void testRepeatSearch() {
         checkCommand(forKeySeq("/th<CR>"),
                 "I ", 'c', "ouldn't live without this\nfull-range three-linear variable.",
@@ -56,6 +81,28 @@ public class SearchModeTests extends VisualTestCase {
                 "I couldn't live without ", 't', "his\nfull-range three-linear variable.");
         checkCommand(forKeySeq("?<CR>"),
                 "I couldn't live without ", 't', "his\nfull-range three-linear variable.",
+                "I couldn't live wi", 't', "hout this\nfull-range three-linear variable.");
+    }
+
+    @Test
+    public void testRepeatSearchWithNewOffset() {
+        checkCommand(forKeySeq("/th/e<CR>"),
+                "I ", 'c', "ouldn't live without this\nfull-range three-linear variable.",
+                "I couldn't live wit", 'h', "out this\nfull-range three-linear variable.");
+        // Repeat search, once without new offset. Should go to end of match
+        checkCommand(forKeySeq("/<CR>"),
+                "I couldn't live wit", 'h', "out this\nfull-range three-linear variable.",
+                "I couldn't live without t", 'h', "is\nfull-range three-linear variable.");
+        // Should go to beginning of match as this means 'repeat with no offset'
+        checkCommand(forKeySeq("//<CR>"),
+                "I couldn't live without t", 'h', "is\nfull-range three-linear variable.",
+                "I couldn't live without this\nfull-range ", 't', "hree-linear variable.");
+        checkCommand(forKeySeq("??b-2<CR>"),
+                "I couldn't live without this\nfull-range ", 't', "hree-linear variable.",
+                "I couldn't live withou", 't', " this\nfull-range three-linear variable.");
+        // Repeat backwards without offset
+        checkCommand(forKeySeq("??<CR>"),
+                "I couldn't live withou", 't', " this\nfull-range three-linear variable.",
                 "I couldn't live wi", 't', "hout this\nfull-range three-linear variable.");
     }
 
