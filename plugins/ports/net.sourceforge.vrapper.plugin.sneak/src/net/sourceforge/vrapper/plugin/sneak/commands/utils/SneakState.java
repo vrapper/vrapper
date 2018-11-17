@@ -236,12 +236,17 @@ public class SneakState {
         SearchResult searchResult = searchAndReplaceService.find(sneakSearch, position);
         ColumnFilter columnFilter = new ColumnFilter(editorAdaptor, columnLeft, columnRight);
 
+        // Remember previous position so that we will visit offset 0 or End-of-File only once
+        Position previousPosition = startPosition;
+
         int countResults = 0;
-        while (searchResult.isFound() && countResults < additionalItemCount) {
+        while (searchResult.isFound() && countResults < additionalItemCount
+        		&& ! previousPosition.equals(position)) {
             if (columnFilter.considerMatch(searchResult)) {
                 searchHits.add(searchResult);
                 countResults++;
             }
+            previousPosition = position;
             position = cursorService.shiftPositionForModelOffset(
                     searchResult.getLeftBound().getModelOffset(), offsetShift, true);
             searchResult = searchAndReplaceService.find(sneakSearch, position);
