@@ -2,7 +2,7 @@
 <feature
       id="net.sourceforge.vrapper.plugin.sneak"
       label="Vrapper - Sneak Plugin (Optional)"
-      version="0.73.20181117"
+      version="0.73.20181120"
       provider-name="Vrapper Team">
 
    <description url="http://vrapper.sourceforge.net/documentation/">
