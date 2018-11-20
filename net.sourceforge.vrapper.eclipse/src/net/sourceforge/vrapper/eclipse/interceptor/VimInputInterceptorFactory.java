@@ -191,7 +191,7 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
         int skStart = SpecialKey.F1.ordinal();
         //SWT has up to F20
         for (int i=0; i < 20; ++i)
-        	specialKeys.put(swtStart+i, values[skStart+i]);
+            specialKeys.put(swtStart+i, values[skStart+i]);
         return specialKeys;
     }
 
@@ -309,9 +309,14 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
             if (!VrapperPlugin.isVrapperEnabled()) {
                 return;
             }
+            // Ignore event when modifier is held down before other key gets pressed
+            if ((event.keyCode & SWT.MODIFIER_MASK) != 0) {
+                return;
+            }
             if (ignoredKeyCodes.contains(event.keyCode)) {
                 return;
             }
+
             KeyStroke keyStroke;
             EnumSet<Modifier> modifiers = EnumSet.noneOf(Modifier.class);
             if ((event.stateMask & SWT.SHIFT) != 0) {
@@ -320,18 +325,30 @@ public class VimInputInterceptorFactory implements InputInterceptorFactory {
             if ((event.stateMask & SWT.ALT) != 0) {
                 modifiers.add(Modifier.ALT);
             }
-            if ((event.stateMask & SWT.CONTROL) != 0) {
-                modifiers.add(Modifier.CONTROL);
-            }
             if ((event.stateMask & SWT.COMMAND) != 0) {
                 modifiers.add(Modifier.COMMAND);
             }
+            boolean includesCtrlKey = (event.stateMask & SWT.CONTROL) != 0;
+            if (includesCtrlKey) {
+                modifiers.add(Modifier.CONTROL);
+            }
+            // No AltGr check here, we don't support it as a modifier
 
-            if(specialKeys.containsKey(event.keyCode)) {
+            // The keys where this bit is set should never be checked against the escapedChars set
+            // because it's possible that event.character == 0, which would be confused with Ctrl+@
+            boolean isPotentiallyEscapedKey = (event.keyCode & SWT.KEYCODE_BIT) == 0;
+
+            if (specialKeys.containsKey(event.keyCode)) {
                 keyStroke = new SimpleKeyStroke(specialKeys.get(event.keyCode), modifiers);
-            } else if (escapedChars.containsKey(event.character)) {
+            } else if (isPotentiallyEscapedKey && includesCtrlKey
+                    && escapedChars.containsKey(event.character)) {
+                // Ctrl + A, B, ... gets received as 0x01, 0x02. Translate this to proper characters
                 keyStroke = new SimpleKeyStroke(escapedChars.get(event.character), modifiers);
             } else {
+                if (event.character == 0 && VrapperLog.isDebugEnabled()) {
+                    VrapperLog.debug("Unrecognized key. Keycode: " + event.keyCode
+                            + ", state: " + event.stateMask + ", modifiers: " + modifiers);
+                }
                 keyStroke = new SimpleKeyStroke(event.character, modifiers);
             }
             event.doit = !editorAdaptor.handleKey(keyStroke);
