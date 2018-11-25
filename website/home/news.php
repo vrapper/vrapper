@@ -1,4 +1,32 @@
 <div class="newsbox">
+    <div class="date">2018-11-24</div>
+    <h4>0.74.0 Released</h4>
+    <p>You guys just won't let this project die.  It's been well over a year
+    since our last release but people still submit issues and code changes.  We
+    just recently found an issue in the current version of Eclipse which causes
+    lots of headaches for anyone with an ALT_GR key.  This issue seemed drastic
+    enough to justify another stable release.  This new version includes all
+    code changes submitted in the 20 months since 0.72.0.</p>
+    <p>Changes since 0.72.0 are:</p>
+    <ul>
+		<li>Fixed issues with ALT_GR handling</li>
+		<li>Fixed behavior of '%' when cursor is on EOL</li>
+		<li>Fixed newline replacement when using :g/[pattern]/s/^/...</li>
+		<li>Fixed mode indicator when using dark theme</li>
+		<li>Fixed issue with pasting a register from visual-block mode</li>
+		<li>Fixed issue with recursive mapping loop detection</li>
+		<li>Fixed potential stack overflow when setting caret location</li>
+		<li>Fixed ':marks' to include marks from closed files</li>
+		<li>Fixed issue with '//' to repeat last search (rather than just '/')</li>
+		<li>Fixed infinite loop with sneak plugin when the first characters of a file matched search string</li>
+		<li>Added support for &lt;c-home&gt; and &lt;c-end&gt; to go to first, last character of file</li>
+		<li>Added ':set spell' command</li>
+		<li>Added '"%' register to get current filename</li>
+		<li>Added ability to escape '\%' when using ':r!'</li>
+		<li>Added support for counts when manipulating camelCase objects</li>
+    </ul>
+</div>
+<div class="newsbox">
     <div class="date">2017-03-11</div>
     <h4>0.72.0 Released</h4>
     <p>This project has been quiet for a while.  We only have
