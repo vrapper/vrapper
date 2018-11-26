@@ -1,5 +1,8 @@
 package net.sourceforge.vrapper.eclipse.ui;
 
+import java.text.NumberFormat;
+import java.util.concurrent.TimeUnit;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CaretEvent;
 import org.eclipse.swt.custom.CaretListener;
@@ -199,15 +202,18 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener,
     }
 
     public void open() {
-        Composite parent = commandLineText.getParent();
+        final Composite parent = commandLineText.getParent();
         commandLineText.setForeground(parent.getForeground());
         commandLineText.setBackground(parent.getBackground());
         commandLineText.setVisible(true);
-        commandLineText.getParent().redraw();
+        commandLineText.moveAbove(parent);
+        parent.redraw();
         //The expected size of the command line is only known when the parent is drawn, paint async
         Display.getCurrent().asyncExec(new Runnable() {
             @Override
             public void run() {
+                // Force parent to be drawn now (although this might still be a no-op on GTK)
+                parent.update();
                 updateUISize();
                 commandLineText.setFocus();
             }
@@ -463,6 +469,16 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener,
             VrapperLog.error("Command line UI is already disposed or nulled.");
             return;
         }
+        Composite parent = commandLineText.getParent();
+        int width = this.width;
+        int maxHeight = this.maxHeight;
+        // GTK weirdness: rarely the paint listener on the parent just won't run. Estimate bounds
+        if (width == 0) {
+            width = parent.getBounds().width;
+        }
+        if (maxHeight == 0) {
+            maxHeight = parent.getBounds().height / 2;
+        }
         Point preferredSize = commandLineText.computeSize(width, SWT.DEFAULT, true);
         int selHeight = Math.min(preferredSize.y, maxHeight);
         commandLineText.setSize(width, selHeight);
@@ -472,7 +488,7 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener,
         }
         commandLineText.redraw();
     }
-    
+
     public boolean isLastLineShown() {
         int bottomLine = commandLineText.getLineIndex(commandLineText.getBounds().y);
         // -1: getLineIndex will always return 0 to getLineCount() - 1.
