@@ -88,7 +88,7 @@ public class CommandLineParser extends AbstractCommandParser {
                     + "(split|sp)"
                     + "\\s+");
     public static final Pattern VSPLIT_CMD_PATTERN = Pattern.compile("^"
-                    + "(vsplit|vs)"
+                    + "(vsplit|vs|vsp)"
                     + "\\s+");
 
 	private Matcher matcher;
