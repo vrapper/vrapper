@@ -79,6 +79,13 @@ public class VrapperPlugin extends AbstractUIPlugin implements IStartup, Log {
         return InputInterceptorManager.INSTANCE.findActiveInterceptor(activeEditor);
     }
 
+    /**
+     * Returns the currently active Vrapper instance (InputInterceptor) for the given editor.
+     * @param toplevelEditor IEditorPart to look for.
+     * @return an InputInterceptor instance.
+     * @throws VrapperPlatformException if Vrapper triggered errors while querying toplevelEditor.
+     * @throws UnknownEditorException when this part did not have a corresponding Vrapper instance.
+     */
     public InputInterceptor findActiveInterceptor(IEditorPart toplevelEditor)
             throws VrapperPlatformException, UnknownEditorException {
         return InputInterceptorManager.INSTANCE.findActiveInterceptor(toplevelEditor);

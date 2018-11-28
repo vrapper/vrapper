@@ -15,8 +15,7 @@ import org.eclipse.ui.menus.UIElement;
  * The action which is available in the menu and toolbar to activate the
  * vim-like behaviour on newly created editors.
  */
-public class VrapperToggleHandler extends AbstractHandler implements
-        IElementUpdater {
+public class VrapperToggleHandler extends AbstractHandler implements IElementUpdater {
     /**
      * adds / removes the listener and sets the actions "checked" status
      * accordingly.
