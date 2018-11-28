@@ -6,7 +6,7 @@
    <extension-point id="net.sourceforge.vrapper.eclipse.psmp" name="Platform Specific Mode Provider" schema="schema/net.sourceforge.vrapper.eclipse.psmp.exsd"/>
    <extension-point id="net.sourceforge.vrapper.eclipse.pstop" name="Platform Specific TextObject provider" schema="schema/net.sourceforge.vrapper.eclipse.pstop.exsd"/>
    <extension-point id="net.sourceforge.vrapper.eclipse.lifecyclelistener" name="Vrapper Lifecycle Listener" schema="schema/net.sourceforge.vrapper.eclipse.lifecyclelistener.exsd"/>
-  <extension
+   <extension
        point="org.eclipse.ui.commands">
     <category
           description="Commands for Vrapper"
@@ -18,10 +18,16 @@
           defaultHandler="net.sourceforge.vrapper.eclipse.actions.VrapperToggleHandler"
           description="Toggles Vrapper"
           id="net.sourceforge.vrapper.eclipse.commands.toggle"
-          name="Toggle Vrapper">
+          name="Toggle Vrapper"/>
 
-    </command>
-    </extension>
+    <command
+          categoryId="net.sourceforge.vrapper.eclipse.commands"
+          defaultHandler="net.sourceforge.vrapper.eclipse.actions.ActivateEditorAndTypeHandler"
+          description="Activates the editor, focuses it and sends the bound key to it (handler is active also if Vrapper is disabled)"
+          id="net.sourceforge.vrapper.eclipse.commands.activateEditorAndType"
+          name="Activate Editor and Type"/>
+
+   </extension>
 
 
     <extension
