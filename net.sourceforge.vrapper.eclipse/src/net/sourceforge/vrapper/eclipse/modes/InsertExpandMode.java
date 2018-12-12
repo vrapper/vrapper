@@ -27,7 +27,6 @@ import net.sourceforge.vrapper.platform.VrapperPlatformException;
 import net.sourceforge.vrapper.utils.LineInformation;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
-import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
 
@@ -49,24 +48,8 @@ public class InsertExpandMode extends InsertMode {
     private int lastIndex = 0;
     private int lastLineNo = 0;
 
-    public InsertExpandMode(EditorAdaptor editorAdaptor) throws CommandExecutionException {
+    public InsertExpandMode(EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
-        InputInterceptor interceptor;
-        try {
-            interceptor = VrapperPlugin.getDefault().findActiveInterceptor();
-        } catch (VrapperPlatformException e) {
-            CommandExecutionException e2 =  new CommandExecutionException(
-                    "Failed to initialize InsertExpandMode.");
-            e2.initCause(e);
-            throw e2;
-        } catch (UnknownEditorException e) {
-            CommandExecutionException e2 = new CommandExecutionException(
-                    "Failed to initialize InsertExpandMode.");
-            e2.initCause(e);
-            throw e2;
-        }
-        assert editorAdaptor.equals(interceptor.getEditorAdaptor());
-        textEditor = interceptor.getPlatform().getUnderlyingEditor();
     }
 
     @Override
@@ -137,7 +120,7 @@ public class InsertExpandMode extends InsertMode {
      * @param lineNo - line number of 'line'
      */
     private void rebuildLineMatches(int cursorPos, String line, int lineNo) {
-        List<IDocument> hippieDocuments = computeDocuments(textEditor);
+        List<IDocument> hippieDocuments = computeDocuments(getCurrentTextEditor());
 
     	Matcher matcher = indentPattern.matcher(line);
     	if(matcher.find()) {
@@ -232,4 +215,29 @@ public class InsertExpandMode extends InsertMode {
 		lastPrefix = "";
 		lastSuffix = "";
 	}
+
+    private ITextEditor getCurrentTextEditor() {
+        if (textEditor == null) {
+            InputInterceptor interceptor;
+            try {
+                interceptor = VrapperPlugin.getDefault().findActiveInterceptor();
+            } catch (VrapperPlatformException e) {
+                VrapperPlatformException e2 =  new VrapperPlatformException(
+                        "Failed to get current text editor for InsertExpandMode.");
+                e2.initCause(e);
+                throw e2;
+            } catch (UnknownEditorException e) {
+                VrapperPlatformException e2 = new VrapperPlatformException(
+                        "Failed to get current text editor for InsertExpandMode.");
+                e2.initCause(e);
+                throw e2;
+            }
+            // Check that the currently active interceptor is the one which owns this mode instance
+            if ( ! editorAdaptor.equals(interceptor.getEditorAdaptor())) {
+                throw new VrapperPlatformException("Encountered invalid EditorAdaptor");
+            }
+            textEditor = interceptor.getPlatform().getUnderlyingEditor();
+        }
+        return textEditor;
+    }
 }
