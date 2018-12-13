@@ -160,5 +160,11 @@
             provider-class="net.sourceforge.vrapper.eclipse.keymap.EclipseTextObjectProvider">
       </textobject-provider>
    </extension>
+
+   <extension point="org.eclipse.ui.services">
+      <sourceProvider provider="net.sourceforge.vrapper.eclipse.activator.VrapperStatusSourceProvider">
+         <variable name="net.sourceforge.vrapper.source.status" priorityLevel="activeSite"/>
+      </sourceProvider>
+   </extension>
 </plugin>
 

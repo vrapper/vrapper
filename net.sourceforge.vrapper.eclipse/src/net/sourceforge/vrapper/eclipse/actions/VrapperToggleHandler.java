@@ -3,13 +3,16 @@ package net.sourceforge.vrapper.eclipse.actions;
 import java.util.Map;
 
 import net.sourceforge.vrapper.eclipse.activator.VrapperPlugin;
+import net.sourceforge.vrapper.eclipse.activator.VrapperStatusSourceProvider;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
+import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.commands.IElementUpdater;
 import org.eclipse.ui.menus.UIElement;
+import org.eclipse.ui.services.ISourceProviderService;
 
 /**
  * The action which is available in the menu and toolbar to activate the
@@ -21,12 +24,20 @@ public class VrapperToggleHandler extends AbstractHandler implements IElementUpd
      * accordingly.
      */
     public Object execute(ExecutionEvent event) {
-        if (!VrapperPlugin.isVrapperEnabled())
-            VrapperPlugin.setVrapperEnabled(true);
-        else
-            VrapperPlugin.setVrapperEnabled(false);
 
-        ICommandService service = (ICommandService) PlatformUI.getWorkbench().getService(ICommandService.class);
+        boolean targetEnabledFlag = !VrapperPlugin.isVrapperEnabled();
+        VrapperPlugin.setVrapperEnabled(targetEnabledFlag);
+
+        IWorkbench workbench = PlatformUI.getWorkbench();
+
+        // Fire listeners on source provider so they know the enabled status was changed
+        ISourceProviderService sourceProviderService =
+                (ISourceProviderService) workbench.getService(ISourceProviderService.class);
+        VrapperStatusSourceProvider sourceProvider = (VrapperStatusSourceProvider)
+                sourceProviderService.getSourceProvider(VrapperStatusSourceProvider.SOURCE_ENABLED);
+        sourceProvider.fireVrapperEnabledChange(targetEnabledFlag);
+
+        ICommandService service = (ICommandService) workbench.getService(ICommandService.class);
         service.refreshElements(event.getCommand().getId(), null);
         return null;
     }
