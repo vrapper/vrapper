@@ -246,5 +246,71 @@
            </activeWhen>
        </handler>
    </extension>
+
+   <extension
+         point="org.eclipse.ui.contexts">
+      <!-- XXX These only exist to boost Vrapper's importance but are never activated. -->
+      <context
+            description="Dummy context for Vrapper"
+            id="net.sourceforge.vrapper.eclipse.dummy1"
+            name="ZZ Vrapper's Dummy Contexts"
+            parentId="org.eclipse.ui.textEditorScope">
+      </context>
+      <context
+            description="Dummy context for Vrapper"
+            id="net.sourceforge.vrapper.eclipse.dummy2"
+            name="ZZ Vrapper's Dummy Contexts"
+            parentId="net.sourceforge.vrapper.eclipse.dummy1">
+      </context>
+      <context
+            description="Dummy context for Vrapper"
+            id="net.sourceforge.vrapper.eclipse.dummy3"
+            name="ZZ Vrapper's Dummy Contexts"
+            parentId="net.sourceforge.vrapper.eclipse.dummy2">
+      </context>
+      <context
+            description="Dummy context for Vrapper"
+            id="net.sourceforge.vrapper.eclipse.dummy4"
+            name="ZZ Vrapper's Dummy Contexts"
+            parentId="net.sourceforge.vrapper.eclipse.dummy3">
+      </context>
+      <context
+            description="Dummy context for Vrapper"
+            id="net.sourceforge.vrapper.eclipse.dummy5"
+            name="ZZ Vrapper's Dummy Contexts"
+            parentId="net.sourceforge.vrapper.eclipse.dummy4">
+      </context>
+      <!-- Vrapper contexts proper -->
+      <context
+            description="Shortcuts are used when Vrapper is focused and enabled"
+            id="net.sourceforge.vrapper.eclipse.active"
+            name="Vrapper Active"
+            parentId="net.sourceforge.vrapper.eclipse.dummy5">
+      </context>
+      <context
+            description="Shortcuts are used when Vrapper is focused and in normal mode"
+            id="net.sourceforge.vrapper.eclipse.active.normal"
+            name="Vrapper Normal mode Active"
+            parentId="net.sourceforge.vrapper.eclipse.active">
+      </context>
+      <context
+            description="Shortcuts are used when Vrapper is focused and in commandline or search mode"
+            id="net.sourceforge.vrapper.eclipse.active.command"
+            name="Vrapper Commandline Opened"
+            parentId="net.sourceforge.vrapper.eclipse.active">
+      </context>
+      <context
+            description="Shortcuts are used when Vrapper is focused and in visual or select mode"
+            id="net.sourceforge.vrapper.eclipse.active.visual"
+            name="Vrapper Visual mode Active"
+            parentId="net.sourceforge.vrapper.eclipse.active">
+      </context>
+      <context
+            description="Shortcuts are used when Vrapper is focused and in insert mode"
+            id="net.sourceforge.vrapper.eclipse.active.insert"
+            name="Vrapper Insert mode Active"
+            parentId="net.sourceforge.vrapper.eclipse.active">
+      </context>
+   </extension>
 </plugin>
 
