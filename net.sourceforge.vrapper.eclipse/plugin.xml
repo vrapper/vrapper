@@ -166,5 +166,85 @@
          <variable name="net.sourceforge.vrapper.source.status" priorityLevel="activeSite"/>
       </sourceProvider>
    </extension>
+
+   <!-- Re-usable activation expressions. -->
+   <extension point="org.eclipse.core.expressions.definitions">
+       <!-- Evaluates to true when Vrapper is active, a Vrapper instance is focused and command line is open. -->
+       <definition id="net.sourceforge.vrapper.expr.commandlinemode">
+            <and>
+               <!-- Check that we're even on an editor -->
+               <with variable="activePart">
+                   <instanceof value="org.eclipse.ui.IEditorPart" />
+               </with>
+               <!-- Technically redundant as mode of disabled vrapper would be 'insert mode' -->
+               <with variable="net.sourceforge.vrapper.source.enabled">
+                  <equals value="true"/>
+               </with>
+               <with variable="net.sourceforge.vrapper.source.currentmode">
+                  <equals value="command mode"/>
+               </with>
+               <!-- XXX Only here to increase Vrapper's priority score. -->
+               <with variable="selection">
+                   <iterate ifEmpty="true" operator="or">
+                       <instanceof value="java.lang.Object" />
+                   </iterate>
+               </with>
+            </and>
+       </definition>
+   </extension>
+
+   <!-- Override default HOME / END / Ctrl + Arrow / Past / ... commands in command line. -->
+   <extension
+       point="org.eclipse.ui.handlers">
+       <handler
+           class="net.sourceforge.vrapper.eclipse.actions.VrapperCommandLineMotionHandler"
+           commandId="org.eclipse.ui.edit.text.goto.lineStart">
+           <activeWhen>
+               <reference definitionId="net.sourceforge.vrapper.expr.commandlinemode"/>
+           </activeWhen>
+       </handler>
+       <handler
+           class="net.sourceforge.vrapper.eclipse.actions.VrapperCommandLineMotionHandler"
+           commandId="org.eclipse.ui.edit.text.goto.lineEnd">
+           <activeWhen>
+               <reference definitionId="net.sourceforge.vrapper.expr.commandlinemode"/>
+           </activeWhen>
+       </handler>
+       <handler
+           class="net.sourceforge.vrapper.eclipse.actions.VrapperCommandLineMotionHandler"
+           commandId="org.eclipse.ui.edit.text.goto.wordNext">
+           <activeWhen>
+               <reference definitionId="net.sourceforge.vrapper.expr.commandlinemode"/>
+           </activeWhen>
+       </handler>
+       <handler
+           class="net.sourceforge.vrapper.eclipse.actions.VrapperCommandLineMotionHandler"
+           commandId="org.eclipse.ui.edit.text.goto.wordPrevious">
+           <activeWhen>
+               <reference definitionId="net.sourceforge.vrapper.expr.commandlinemode"/>
+           </activeWhen>
+       </handler>
+       <handler
+           class="net.sourceforge.vrapper.eclipse.actions.VrapperCommandLineMotionHandler"
+           commandId="org.eclipse.ui.edit.cut">
+           <activeWhen>
+               <reference definitionId="net.sourceforge.vrapper.expr.commandlinemode"/>
+           </activeWhen>
+       </handler>
+       <handler
+           class="net.sourceforge.vrapper.eclipse.actions.VrapperCommandLineMotionHandler"
+           commandId="org.eclipse.ui.edit.copy">
+           <activeWhen>
+               <reference definitionId="net.sourceforge.vrapper.expr.commandlinemode"/>
+           </activeWhen>
+       </handler>
+       <handler
+           class="net.sourceforge.vrapper.eclipse.actions.VrapperCommandLineMotionHandler"
+           commandId="org.eclipse.ui.edit.paste">
+           <activeWhen>
+               <reference definitionId="net.sourceforge.vrapper.expr.commandlinemode"/>
+           </activeWhen>
+       </handler>
+   </extension>
 </plugin>
 
