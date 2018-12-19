@@ -6,13 +6,13 @@
    <extension-point id="net.sourceforge.vrapper.eclipse.psmp" name="Platform Specific Mode Provider" schema="schema/net.sourceforge.vrapper.eclipse.psmp.exsd"/>
    <extension-point id="net.sourceforge.vrapper.eclipse.pstop" name="Platform Specific TextObject provider" schema="schema/net.sourceforge.vrapper.eclipse.pstop.exsd"/>
    <extension-point id="net.sourceforge.vrapper.eclipse.lifecyclelistener" name="Vrapper Lifecycle Listener" schema="schema/net.sourceforge.vrapper.eclipse.lifecyclelistener.exsd"/>
-   <extension
-       point="org.eclipse.ui.commands">
+
+   <extension point="org.eclipse.ui.commands">
     <category
           description="Commands for Vrapper"
           id="net.sourceforge.vrapper.eclipse.commands"
-          name="Vrapper">
-    </category>
+          name="Vrapper"/>
+
     <command
           categoryId="net.sourceforge.vrapper.eclipse.commands"
           defaultHandler="net.sourceforge.vrapper.eclipse.actions.VrapperToggleHandler"
@@ -23,17 +23,21 @@
     <command
           categoryId="net.sourceforge.vrapper.eclipse.commands"
           defaultHandler="net.sourceforge.vrapper.eclipse.actions.ActivateEditorAndTypeHandler"
-          description="Activates the editor, focuses it and sends the bound key to it (handler is active also if Vrapper is disabled)"
+          description="Activates the editor, focuses it and sends the bound key to it (handler is active even if Vrapper is disabled)"
           id="net.sourceforge.vrapper.eclipse.commands.activateEditorAndType"
           name="Activate Editor and Type"/>
+
+    <command
+          categoryId="net.sourceforge.vrapper.eclipse.commands"
+          description="Sends the bound key directly to Vrapper when Vrapper is focused and active"
+          id="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut"
+          name="Send to Vrapper"/>
 
    </extension>
 
 
-    <extension
-         point="org.eclipse.ui.menus">
-      <menuContribution
-            locationURI="menu:edit?after=additions">
+    <extension point="org.eclipse.ui.menus">
+      <menuContribution locationURI="menu:edit?after=additions">
          <command
                commandId="net.sourceforge.vrapper.eclipse.commands.toggle"
                icon="icons/icon.png"
@@ -41,10 +45,8 @@
                style="toggle">
          </command>
       </menuContribution>
-       <menuContribution
-            locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
-         <toolbar
-               id="net.sourceforge.vrapper.Vrapper">
+       <menuContribution locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
+         <toolbar id="net.sourceforge.vrapper.Vrapper">
             <command
                   commandId="net.sourceforge.vrapper.eclipse.commands.toggle"
                   icon="icons/icon.png"
@@ -56,8 +58,8 @@
             </separator>
          </toolbar>
       </menuContribution>
-
     </extension>
+
     <extension point="org.eclipse.ui.startup">
 		<startup class="net.sourceforge.vrapper.eclipse.activator.VrapperStartup"/>
 	</extension>
@@ -169,6 +171,25 @@
 
    <!-- Re-usable activation expressions. -->
    <extension point="org.eclipse.core.expressions.definitions">
+       <!-- Evaluates to true when Vrapper is active and a Vrapper instance is focused -->
+       <definition id="net.sourceforge.vrapper.expr.activeanymode">
+            <and>
+               <!-- Check that we're even on an editor -->
+               <with variable="activePart">
+                   <instanceof value="org.eclipse.ui.IEditorPart" />
+               </with>
+               <!-- Check that Vrapper is enabled -->
+               <with variable="net.sourceforge.vrapper.source.enabled">
+                  <equals value="true"/>
+               </with>
+               <!-- Check that current mode is not the unknown mode (happens when non-Vrapper editor is open) -->
+               <not>
+                  <with variable="net.sourceforge.vrapper.source.currentmode">
+                     <equals value="(unknown mode)"/>
+                  </with>
+               </not>
+            </and>
+       </definition>
        <!-- Evaluates to true when Vrapper is active, a Vrapper instance is focused and command line is open. -->
        <definition id="net.sourceforge.vrapper.expr.commandlinemode">
             <and>
@@ -193,9 +214,17 @@
        </definition>
    </extension>
 
-   <!-- Override default HOME / END / Ctrl + Arrow / Past / ... commands in command line. -->
-   <extension
-       point="org.eclipse.ui.handlers">
+   <extension point="org.eclipse.ui.handlers">
+       <!-- Our own key handler which only fires when a Vrapper-specific command is bound. -->
+       <handler
+           class="net.sourceforge.vrapper.eclipse.actions.VrapperShortcutHandler"
+           commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut">
+           <activeWhen>
+               <reference definitionId="net.sourceforge.vrapper.expr.activeanymode"/>
+           </activeWhen>
+       </handler>
+
+       <!-- Override default HOME / END / Ctrl + Arrow / Past / ... commands in command line. -->
        <handler
            class="net.sourceforge.vrapper.eclipse.actions.VrapperCommandLineMotionHandler"
            commandId="org.eclipse.ui.edit.text.goto.lineStart">
@@ -280,6 +309,7 @@
             name="ZZ Vrapper's Dummy Contexts"
             parentId="net.sourceforge.vrapper.eclipse.dummy4">
       </context>
+
       <!-- Vrapper contexts proper -->
       <context
             description="Shortcuts are used when Vrapper is focused and enabled"
