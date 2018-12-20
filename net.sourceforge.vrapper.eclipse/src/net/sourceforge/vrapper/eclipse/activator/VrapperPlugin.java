@@ -17,6 +17,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.ISources;
+import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWindowListener;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchListener;
@@ -179,12 +180,32 @@ public class VrapperPlugin extends AbstractUIPlugin implements /*IStartup,*/ Log
 
     void activateVrapperShortcutContexts() {
         final IContextService contextService = (IContextService) getWorkbench().getService(IContextService.class);
-        
+
+        contextService.activateContext("net.sourceforge.vrapper.eclipse.enabledOnView", vrapperEnabledOnViewExpression(), true);
+
         contextService.activateContext("net.sourceforge.vrapper.eclipse.active", vrapperEnabledInAnyModeExpression(), true);
         contextService.activateContext("net.sourceforge.vrapper.eclipse.active.normal", vrapperEnabledInModeExpression(NormalMode.NAME), true);
         contextService.activateContext("net.sourceforge.vrapper.eclipse.active.command", vrapperEnabledInModeExpression(CommandLineMode.NAME), true);
         contextService.activateContext("net.sourceforge.vrapper.eclipse.active.visual", vrapperEnabledInModeExpression(VisualMode.NAME), true);
         contextService.activateContext("net.sourceforge.vrapper.eclipse.active.insert", vrapperEnabledInModeExpression(InsertMode.NAME), true);
+    }
+
+    private static Expression vrapperEnabledOnViewExpression() {
+        return new Expression() {
+            @Override
+            public EvaluationResult evaluate(IEvaluationContext context) throws CoreException {
+                Object currentlyActivePart = context.getVariable(ISources.ACTIVE_PART_NAME);
+                boolean onAView = currentlyActivePart instanceof IViewPart;
+                boolean vrapperEnabled = (Boolean) context.getVariable(VrapperStatusSourceProvider.SOURCE_ENABLED);
+                return EvaluationResult.valueOf(vrapperEnabled && onAView);
+            }
+
+            @Override
+            public void collectExpressionInfo(ExpressionInfo info) {
+                info.addVariableNameAccess(ISources.ACTIVE_PART_NAME);
+                info.addVariableNameAccess(VrapperStatusSourceProvider.SOURCE_ENABLED);
+            }
+        };
     }
 
     private static Expression vrapperEnabledInAnyModeExpression() {

@@ -33,6 +33,30 @@
           id="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut"
           name="Send to Vrapper"/>
 
+    <command
+          categoryId="net.sourceforge.vrapper.eclipse.commands"
+          description="Translates a given key into a press of the Up arrow"
+          id="net.sourceforge.vrapper.eclipse.commands.arrowMap.up"
+          name="Vrapper Up Arrow Map"/>
+
+    <command
+          categoryId="net.sourceforge.vrapper.eclipse.commands"
+          description="Translates a given key into a press of the Down arrow"
+          id="net.sourceforge.vrapper.eclipse.commands.arrowMap.down"
+          name="Vrapper Down Arrow Map"/>
+
+    <command
+          categoryId="net.sourceforge.vrapper.eclipse.commands"
+          description="Translates a given key into a press of the Left arrow"
+          id="net.sourceforge.vrapper.eclipse.commands.arrowMap.left"
+          name="Vrapper Left Arrow Map"/>
+
+    <command
+          categoryId="net.sourceforge.vrapper.eclipse.commands"
+          description="Translates a given key into a press of the Right arrow"
+          id="net.sourceforge.vrapper.eclipse.commands.arrowMap.right"
+          name="Vrapper Right Arrow Map"/>
+
    </extension>
 
 
@@ -171,7 +195,14 @@
 
    <!-- Re-usable activation expressions. -->
    <extension point="org.eclipse.core.expressions.definitions">
-       <!-- Evaluates to true when Vrapper is active and a Vrapper instance is focused -->
+       <!-- Evaluates to true when Vrapper is enabled -->
+       <definition id="net.sourceforge.vrapper.expr.enabled">
+           <!-- Check that Vrapper is enabled -->
+           <with variable="net.sourceforge.vrapper.source.enabled">
+              <equals value="true"/>
+           </with>
+       </definition>
+       <!-- Evaluates to true when Vrapper is enabled and a Vrapper instance is focused -->
        <definition id="net.sourceforge.vrapper.expr.activeanymode">
             <and>
                <!-- Check that we're even on an editor -->
@@ -190,7 +221,7 @@
                </not>
             </and>
        </definition>
-       <!-- Evaluates to true when Vrapper is active, a Vrapper instance is focused and command line is open. -->
+       <!-- Evaluates to true when Vrapper is enabled, a Vrapper instance is focused and command line is open. -->
        <definition id="net.sourceforge.vrapper.expr.commandlinemode">
             <and>
                <!-- Check that we're even on an editor -->
@@ -221,6 +252,36 @@
            commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut">
            <activeWhen>
                <reference definitionId="net.sourceforge.vrapper.expr.activeanymode"/>
+           </activeWhen>
+       </handler>
+
+       <!-- Remaps H/J/K/L (or whatever is bound) to Left/Down/Up/Right keypresses which views understand. -->
+       <handler
+             class="net.sourceforge.vrapper.eclipse.actions.VrapperArrowMapHandler"
+             commandId="net.sourceforge.vrapper.eclipse.commands.arrowMap.up">
+           <activeWhen>
+               <reference definitionId="net.sourceforge.vrapper.expr.enabled"/>
+           </activeWhen>
+       </handler>
+       <handler
+             class="net.sourceforge.vrapper.eclipse.actions.VrapperArrowMapHandler"
+             commandId="net.sourceforge.vrapper.eclipse.commands.arrowMap.down">
+           <activeWhen>
+               <reference definitionId="net.sourceforge.vrapper.expr.enabled"/>
+           </activeWhen>
+       </handler>
+       <handler
+             class="net.sourceforge.vrapper.eclipse.actions.VrapperArrowMapHandler"
+             commandId="net.sourceforge.vrapper.eclipse.commands.arrowMap.left">
+           <activeWhen>
+               <reference definitionId="net.sourceforge.vrapper.expr.enabled"/>
+           </activeWhen>
+       </handler>
+       <handler
+             class="net.sourceforge.vrapper.eclipse.actions.VrapperArrowMapHandler"
+             commandId="net.sourceforge.vrapper.eclipse.commands.arrowMap.right">
+           <activeWhen>
+               <reference definitionId="net.sourceforge.vrapper.expr.enabled"/>
            </activeWhen>
        </handler>
 
@@ -311,6 +372,12 @@
       </context>
 
       <!-- Vrapper contexts proper -->
+      <context
+            description="Shortcuts are used when Vrapper is enabled but not focused (e.g. on a view)"
+            id="net.sourceforge.vrapper.eclipse.enabledOnView"
+            name="Vrapper Enabled on a View"
+            parentId="net.sourceforge.vrapper.eclipse.dummy5">
+      </context>
       <context
             description="Shortcuts are used when Vrapper is focused and enabled"
             id="net.sourceforge.vrapper.eclipse.active"
