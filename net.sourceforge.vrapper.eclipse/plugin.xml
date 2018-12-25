@@ -285,7 +285,7 @@
            </activeWhen>
        </handler>
 
-       <!-- Override default HOME / END / Ctrl + Arrow / Past / ... commands in command line. -->
+       <!-- Override default HOME / END / Ctrl + Arrow / Paste / ... commands in command line. -->
        <handler
            class="net.sourceforge.vrapper.eclipse.actions.VrapperCommandLineMotionHandler"
            commandId="org.eclipse.ui.edit.text.goto.lineStart">
@@ -331,6 +331,13 @@
        <handler
            class="net.sourceforge.vrapper.eclipse.actions.VrapperCommandLineMotionHandler"
            commandId="org.eclipse.ui.edit.paste">
+           <activeWhen>
+               <reference definitionId="net.sourceforge.vrapper.expr.commandlinemode"/>
+           </activeWhen>
+       </handler>
+       <handler
+           class="net.sourceforge.vrapper.eclipse.actions.VrapperCommandLineMotionHandler"
+           commandId="org.eclipse.ui.edit.selectAll">
            <activeWhen>
                <reference definitionId="net.sourceforge.vrapper.expr.commandlinemode"/>
            </activeWhen>

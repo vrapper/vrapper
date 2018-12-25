@@ -35,22 +35,30 @@ public class VrapperCommandLineMotionHandler extends AbstractHandler {
             EclipseCommandLineUI commandLine = 
                     (EclipseCommandLineUI) interceptor.getEditorAdaptor().getCommandLine();
 
+            // Detect which of the commands bound in plugin.xml was used to trigger this handler:
             if (commandId.endsWith(".lineStart")) {
                 commandLine.setPosition(0);
 
             } else if (commandId.endsWith(".lineEnd")) {
-                int lastPos = commandLine.getEndPosition();
-                commandLine.setPosition(lastPos);
+                commandLine.setPosition(commandLine.getEndPosition());
+
             } else if (commandId.endsWith(".wordNext")) {
                 commandLine.getWidget().invokeAction(ST.WORD_NEXT);
+
             } else if (commandId.endsWith(".wordPrevious")) {
                 commandLine.getWidget().invokeAction(ST.WORD_PREVIOUS);
+
             } else if (commandId.endsWith(".paste")) {
                 commandLine.getWidget().invokeAction(ST.PASTE);
+
             } else if (commandId.endsWith(".cut")) {
                 commandLine.getWidget().invokeAction(ST.CUT);
+
             } else if (commandId.endsWith(".copy")) {
                 commandLine.getWidget().invokeAction(ST.COPY);
+
+            } else if (commandId.endsWith(".selectAll")) {
+                commandLine.setSelection(0, commandLine.getEndPosition());
             }
             // Make sure caret remains after prompt characters
             commandLine.clipSelection();
