@@ -12,7 +12,7 @@ public class LastCharacterMotion extends AbstractModelSideMotion {
     public static final Motion FILE = new LastCharacterMotion() {
     	@Override
         protected int destination(int offset, TextContent content, int count) throws CommandExecutionException {
-    		return content.getTextLength() == 0 ? 0 : content.getTextLength() -1;
+    		return content.getTextLength() == 0 ? 0 : content.getTextLength();
         }
     };
 
