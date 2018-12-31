@@ -2572,7 +2572,7 @@ public class NormalModeTests extends CommandTestCase {
 	            "a", 'j', "klm");
 	    assertEquals("Black hole register was not used!", "", defaultReg.getContent().getText());
 	}
-	
+
 	@Test
 	public void testSwitchRegister() {
 	    installSaneRegisterManager();
@@ -2582,7 +2582,7 @@ public class NormalModeTests extends CommandTestCase {
 	    assertEquals("F register had incorrect contents", "1\n\n", registerManager.getRegister("f").getContent().getText());
 	    assertEquals("Last edit register had incorrect contents", "2\n", registerManager.getRegister("\"").getContent().getText());
 	}
-	
+
     @Test
     public void testPasteBeforeCommandPosition() {
         //yank a word into the "a" register and Paste it 2 times
@@ -2605,5 +2605,24 @@ public class NormalModeTests extends CommandTestCase {
         checkCommand(forKeySeq("yy2P"),
                 "Ala ",'m', "a kota",
                 "",'A', "la ma kota\nAla ma kota\nAla ma kota");
+    }
+
+    @Test
+    public void testChangeOperationOnLineWiseMotions() {
+        checkCommand(forKeySeq("cj<Esc>"),
+                "abc\nd", 'e', "f\nghi\njkl\n\n\n",
+                "abc\n", '\n', "jkl\n\n\n");
+
+        checkCommand(forKeySeq("c<Return><Esc>"),
+                "abc\nd", 'e', "f\nghi\njkl\n\n\n",
+                "abc\n", '\n', "jkl\n\n\n");
+
+        checkCommand(forKeySeq("c-<Esc>"),
+                "abc\nd", 'e', "f\nghi\njkl\n\n\n",
+                "", '\n', "ghi\njkl\n\n\n");
+
+        checkCommand(forKeySeq("c+<Esc>"),
+                "abc\nd", 'e', "f\nghi\njkl\n\n\n",
+                "abc\n", '\n', "jkl\n\n\n");
     }
 }
