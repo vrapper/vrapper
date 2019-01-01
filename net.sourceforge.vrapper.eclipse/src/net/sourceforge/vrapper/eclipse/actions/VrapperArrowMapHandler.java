@@ -40,10 +40,16 @@ public class VrapperArrowMapHandler extends AbstractHandler {
                 String input = new StringBuilder().appendCodePoint(triggerEvent.keyCode).toString();
                 if (widget instanceof Text) {
                     Text textBox = (Text) widget;
-                    textBox.insert(input);
+
+                    if (textBox.getEditable()) {
+                        textBox.insert(input);
+                    }
                 } else if (widget instanceof StyledText) {
                     StyledText styledText = (StyledText) widget;
-                    styledText.insert(input);
+
+                    if (styledText.getEditable()) {
+                        insertIntoStyledTextWidget(styledText, input);
+                    }
                 }
             }
         } else {
@@ -65,6 +71,24 @@ public class VrapperArrowMapHandler extends AbstractHandler {
         }
 
         return null;
+    }
+
+    private void insertIntoStyledTextWidget(StyledText styledText, String input) {
+        // SWT does not move the caret after the freshly inserted text. Handle it ourselves
+        int charsFromEnd = styledText.getCharCount() - styledText.getCaretOffset();
+
+        if (charsFromEnd == 0) {
+            // Caret is at end of text. Insert text, then move to new end of text.
+            styledText.replaceTextRange(styledText.getCaretOffset(), 0, input);
+            styledText.setCaretOffset(styledText.getCharCount());
+
+        } else {
+            // Caret is somewhere in text. Record how far away we are from end of text, insert input
+            // and then jump to point after insertion by calculating new offset starting from end.
+            styledText.replaceTextRange(styledText.getCaretOffset(), 0, input);
+            int newOffset = styledText.getCharCount() - charsFromEnd;
+            styledText.setCaretOffset(newOffset);
+        }
     }
 
     private static Event keyEvent(int keyCode) {
