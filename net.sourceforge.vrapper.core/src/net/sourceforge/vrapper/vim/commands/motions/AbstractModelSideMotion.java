@@ -13,9 +13,8 @@ public abstract class AbstractModelSideMotion extends CountAwareMotion {
     protected void setCurrentState(EditorAdaptor editorAdaptor) {}
 
     @Override
-    public Position destination(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
-        return destination(editorAdaptor.getCursorService().getPosition().getModelOffset(), 
-                editorAdaptor, count);
+    public Position destination(EditorAdaptor editorAdaptor, int count, Position fromPosition) throws CommandExecutionException {
+        return destination(fromPosition.getModelOffset(), editorAdaptor, count);
     }
 
     public Position destination(int modelOffset, EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {

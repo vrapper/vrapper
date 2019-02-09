@@ -33,7 +33,7 @@ public class GoToMarkMotion extends AbstractMotion {
         this.id = id;
     }
 
-    public Position destination(EditorAdaptor editorAdaptor)
+    public Position destination(EditorAdaptor editorAdaptor, Position fromPosition)
             throws CommandExecutionException {
         Position markPos = editorAdaptor.getCursorService().getMark(id);
         if (markPos == null) {

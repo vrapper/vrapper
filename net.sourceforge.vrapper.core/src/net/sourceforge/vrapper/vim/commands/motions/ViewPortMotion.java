@@ -24,7 +24,7 @@ public class ViewPortMotion extends GoToLineMotion {
     }
 
     @Override
-    public Position destination(EditorAdaptor editorAdaptor, int count)
+    public Position destination(EditorAdaptor editorAdaptor, int count, Position fromPosition)
             throws CommandExecutionException {
         if (count == NO_COUNT_GIVEN) {
             count = 1;
@@ -38,7 +38,7 @@ public class ViewPortMotion extends GoToLineMotion {
         result = Math.min(result, view.getBottomLine());
         // add 1 to result as GoToLineMotion is 1-based
         int dest = editorAdaptor.getViewportService().viewLine2ModelLine(result);
-        return super.destination(editorAdaptor, dest+1);
+        return super.destination(editorAdaptor, dest+1, fromPosition);
     }
 
     public enum Type {

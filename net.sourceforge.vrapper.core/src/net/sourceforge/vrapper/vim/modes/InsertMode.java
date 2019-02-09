@@ -378,11 +378,11 @@ public class InsertMode extends AbstractMode {
                 } else {
                     motion = MoveWordLeft.INSTANCE;
                 }
-                pos = motion.destination(editorAdaptor);
+                pos = motion.destination(editorAdaptor, cur.getPosition());
                 if (pos.getModelOffset() < line.getBeginOffset()
                         || pos.getModelOffset() == cursorPos) {
                     motion = LineStartMotion.COLUMN0;
-                    pos = motion.destination(editorAdaptor);
+                    pos = motion.destination(editorAdaptor, cur.getPosition());
                 }
                 int position = pos.getModelOffset();
                 if (cursorPos == line.getBeginOffset()) {
@@ -521,7 +521,7 @@ public class InsertMode extends AbstractMode {
                 throw new RuntimeException("No matching direction!");
             }
             try {
-                Position destination = direction.destination(editorAdaptor);
+                Position destination = direction.destination(editorAdaptor, editorAdaptor.getPosition());
                 editorAdaptor.setPosition(destination, direction.stickyColumnPolicy());
             } catch (CommandExecutionException e) {
                 VrapperLog.error("Failed to navigate in editor", e);

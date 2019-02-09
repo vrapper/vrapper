@@ -6,10 +6,10 @@ import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 
 public abstract class CountAwareMotion extends AbstractMotion {
 
-    public abstract Position destination(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException;
+    public abstract Position destination(EditorAdaptor editorAdaptor, int count, Position fromPosition) throws CommandExecutionException;
 
-    public Position destination(EditorAdaptor editorAdaptor) throws CommandExecutionException {
-        return destination(editorAdaptor, getCount());
+    public Position destination(EditorAdaptor editorAdaptor, Position fromPosition) throws CommandExecutionException {
+        return destination(editorAdaptor, getCount(), fromPosition);
     }
 
     public int getCount() {

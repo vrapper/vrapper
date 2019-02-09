@@ -19,7 +19,7 @@ public class MotionTextObject extends AbstractTextObject {
     public TextRange getRegion(EditorAdaptor editorMode, int count) throws CommandExecutionException {
         Position from = editorMode.getPosition();
         Motion motion = this.motion.withCount(count);
-        Position to = motion.destination(editorMode);
+        Position to = motion.destination(editorMode, from);
         return applyBorderPolicy(editorMode, from, to, motion);
     };
 

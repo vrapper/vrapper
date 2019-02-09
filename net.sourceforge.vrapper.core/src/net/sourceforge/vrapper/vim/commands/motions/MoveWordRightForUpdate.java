@@ -42,15 +42,15 @@ public class MoveWordRightForUpdate extends CountAwareMotion {
     }
 
     @Override
-    public Position destination(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
-        int originalOffset = editorAdaptor.getPosition().getModelOffset();
-        Position delegatePosition = delegate.destination(editorAdaptor,count);
-        
+    public Position destination(EditorAdaptor editorAdaptor, int count, Position fromPosition) throws CommandExecutionException {
+        Position delegatePosition = delegate.destination(editorAdaptor,count, fromPosition);
+
         //take length of Windows newlines (\r\n) into account
         int newlineLength = editorAdaptor.getConfiguration().getNewLine().length();
         //differ from the delegate in that we trim the last newline where appropriate
+        int originalOffset = fromPosition.getModelOffset();
         int newOffset = offsetWithoutLastNewline(newlineLength, originalOffset, delegatePosition.getModelOffset(), editorAdaptor.getModelContent());
-        
+
         return editorAdaptor.getCursorService().newPositionForModelOffset(newOffset);
     }
     

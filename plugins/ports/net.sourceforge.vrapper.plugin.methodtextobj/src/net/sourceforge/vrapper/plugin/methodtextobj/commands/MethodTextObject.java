@@ -27,27 +27,28 @@ public class MethodTextObject extends AbstractTextObject {
 
     @Override
     public TextRange getRegion(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
-    	Position start = MethodDeclarationMotion.PREV_START.destination(editorAdaptor);
-    	Position end = MethodDeclarationMotion.NEXT_END.destination(editorAdaptor);
-    	//if start == end, no method was found
-    	if(start.getModelOffset() < end.getModelOffset()) {
-    		TextContent model = editorAdaptor.getModelContent();
-    		LineInformation lineStart = model.getLineInformationOfOffset(start.getModelOffset());
-    		LineInformation lineEnd = model.getLineInformationOfOffset(end.getModelOffset());
-    		if(outer) {
-    			//go line-wise for outer (hopefully this will include the method declaration)
-    			start = editorAdaptor.getCursorService().newPositionForModelOffset(lineStart.getBeginOffset());
-    			end = editorAdaptor.getCursorService().newPositionForModelOffset(lineEnd.getEndOffset());
-    		}
-    		else {
-    			//inner text ranges in Vim don't start on a newline
-    			//or end with only whitespace.  Fix Position if either
-    			//of those cases are true here.
-    			CursorService cursor = editorAdaptor.getCursorService();
-    			start = VimUtils.fixLeftDelimiter(model, cursor, start);
-    			end = VimUtils.fixRightDelimiter(model, cursor, end);
-    		}
-    	}
+        Position currentOffset = editorAdaptor.getPosition();
+        Position start = MethodDeclarationMotion.PREV_START.destination(editorAdaptor, currentOffset);
+        Position end = MethodDeclarationMotion.NEXT_END.destination(editorAdaptor, currentOffset);
+        //if start == end, no method was found
+        if(start.getModelOffset() < end.getModelOffset()) {
+            TextContent model = editorAdaptor.getModelContent();
+            LineInformation lineStart = model.getLineInformationOfOffset(start.getModelOffset());
+            LineInformation lineEnd = model.getLineInformationOfOffset(end.getModelOffset());
+            if(outer) {
+                //go line-wise for outer (hopefully this will include the method declaration)
+                start = editorAdaptor.getCursorService().newPositionForModelOffset(lineStart.getBeginOffset());
+                end = editorAdaptor.getCursorService().newPositionForModelOffset(lineEnd.getEndOffset());
+            }
+            else {
+                //inner text ranges in Vim don't start on a newline
+                //or end with only whitespace.  Fix Position if either
+                //of those cases are true here.
+                CursorService cursor = editorAdaptor.getCursorService();
+                start = VimUtils.fixLeftDelimiter(model, cursor, start);
+                end = VimUtils.fixRightDelimiter(model, cursor, end);
+            }
+        }
         return new StartEndTextRange(start, end);
     }
 

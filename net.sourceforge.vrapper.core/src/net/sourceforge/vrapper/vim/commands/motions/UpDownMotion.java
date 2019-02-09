@@ -8,12 +8,12 @@ import net.sourceforge.vrapper.vim.commands.BorderPolicy;
 public abstract class UpDownMotion extends CountAwareMotion {
 
     @Override
-    public Position destination(EditorAdaptor editorAdaptor, int count) {
+    public Position destination(EditorAdaptor editorAdaptor, int count, Position fromPosition) {
         if (count == NO_COUNT_GIVEN) {
             count = 1;
         }
         TextContent content = editorAdaptor.getViewContent();
-        int oldOffset = editorAdaptor.getPosition().getViewOffset();
+        int oldOffset = fromPosition.getViewOffset();
 
         int lineNo = content.getLineInformationOfOffset(oldOffset).getNumber() + getJump() * count;
         lineNo = Math.max(lineNo, 0);

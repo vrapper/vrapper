@@ -26,7 +26,7 @@ public class GoToLineMotion extends CountAwareMotion {
     protected GoToLineMotion() { /* NOP */ }
 
     @Override
-    public Position destination(EditorAdaptor editorAdaptor, int count)
+    public Position destination(EditorAdaptor editorAdaptor, int count, Position fromPosition)
             throws CommandExecutionException {
         TextContent content = editorAdaptor.getModelContent();
         int lineNo = count == NO_COUNT_GIVEN ? defaultLineNo(content) : count - 1;

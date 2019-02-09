@@ -30,7 +30,7 @@ public class WordSearchMotion extends SearchResultMotion {
     }
 
     @Override
-    public Position destination(EditorAdaptor editorAdaptor, int count)
+    public Position destination(EditorAdaptor editorAdaptor, int count, Position fromPosition)
             throws CommandExecutionException {
         String keyword = VimUtils.getWordUnderCursor(editorAdaptor, false);
         if (editorAdaptor.getConfiguration().get(Options.IGNORE_CASE)) {
@@ -51,7 +51,7 @@ public class WordSearchMotion extends SearchResultMotion {
         history.setMode(SearchMode.NAME);
         history.append(keyword);
 
-        return super.destination(editorAdaptor, count);
+        return super.destination(editorAdaptor, count, fromPosition);
     }
 
 }

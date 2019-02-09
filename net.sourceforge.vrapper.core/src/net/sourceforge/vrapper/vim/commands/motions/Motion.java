@@ -8,7 +8,7 @@ import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.Counted;
 
 public interface Motion extends Counted<Motion>, Adaptable {
-    Position destination(EditorAdaptor editorAdaptor) throws CommandExecutionException;
+    Position destination(EditorAdaptor editorAdaptor, Position fromPosition) throws CommandExecutionException;
     BorderPolicy borderPolicy();
     StickyColumnPolicy stickyColumnPolicy();
     boolean isJump();

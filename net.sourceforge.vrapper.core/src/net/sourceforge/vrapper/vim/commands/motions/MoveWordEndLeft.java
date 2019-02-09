@@ -23,11 +23,6 @@ public class MoveWordEndLeft extends MoveLeftWithBounds {
     public static final Motion INSTANCE_VISUAL = new MoveWordEndLeft(true, true);
 
     @Override
-    public Position destination(EditorAdaptor editorAdaptor, int count) {
-        return super.destination(editorAdaptor, count);
-    }
-
-    @Override
     protected boolean atBoundary(char c1, char c2) {
         return !Character.isWhitespace(c1) && characterType(c1, keywords) != characterType(c2, keywords);
     }

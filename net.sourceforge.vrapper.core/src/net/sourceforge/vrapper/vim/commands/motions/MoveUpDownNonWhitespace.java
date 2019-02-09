@@ -1,6 +1,5 @@
 package net.sourceforge.vrapper.vim.commands.motions;
 
-import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.BorderPolicy;
@@ -24,26 +23,14 @@ public class MoveUpDownNonWhitespace extends CountAwareMotion {
     }
 
     @Override
-    public Position destination(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
-        Position originalPosition = editorAdaptor.getPosition();
-
-        try {
-            int linesToMove = count + defaultAmount;
-            if (linesToMove > 0) {
-                Motion upDownMotion = down ? MoveDown.INSTANCE : MoveUp.INSTANCE;
-                Position destination = upDownMotion.withCount(linesToMove - 1).destination(editorAdaptor);
-                editorAdaptor.setPosition(destination, StickyColumnPolicy.NEVER);
-            }
-            return LineStartMotion.NON_WHITESPACE.destination(editorAdaptor);
-
-        } finally {
-            // Restore original position in case destionation(...) is called twice.
-            try {
-                editorAdaptor.setPosition(originalPosition, StickyColumnPolicy.NEVER);
-            } catch (Exception e) {
-                VrapperLog.error("Failed to restore position to " + originalPosition, e);
-            }
+    public Position destination(EditorAdaptor editorAdaptor, int count, Position fromPosition) throws CommandExecutionException {
+        int linesToMove = count + defaultAmount;
+        Position destinationInLine = fromPosition;
+        if (linesToMove > 0) {
+            Motion upDownMotion = down ? MoveDown.INSTANCE : MoveUp.INSTANCE;
+            destinationInLine = upDownMotion.withCount(linesToMove - 1).destination(editorAdaptor, fromPosition);
         }
+        return LineStartMotion.NON_WHITESPACE.destination(editorAdaptor, destinationInLine);
     }
 
     public BorderPolicy borderPolicy() {

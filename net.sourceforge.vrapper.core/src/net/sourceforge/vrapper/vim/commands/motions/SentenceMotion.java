@@ -48,16 +48,16 @@ public class SentenceMotion extends CountAwareMotion {
     }
 
 	@Override
-	public Position destination(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
+	public Position destination(EditorAdaptor editorAdaptor, int count, Position fromPosition) throws CommandExecutionException {
         if(count == NO_COUNT_GIVEN)
             count = 1;
-        
-        Position cursor = editorAdaptor.getPosition();
+
+        Position cursor = fromPosition;
         int position = cursor.getModelOffset();
         for (int i = 0; i < count; i++) {
-        	position = doIt(editorAdaptor, position);
+            position = doIt(editorAdaptor, position);
         }
-        
+
         return cursor.setModelOffset(position);
 	}
 	
@@ -201,8 +201,8 @@ public class SentenceMotion extends CountAwareMotion {
 
             final Position cursor = editorAdaptor.getPosition();
             
-            int startPos = new SentenceMotion(false, true).destination(editorAdaptor).getModelOffset();
-            int endPos = new SentenceMotion(true, true).destination(editorAdaptor, count).getModelOffset();
+            int startPos = new SentenceMotion(false, true).destination(editorAdaptor, cursor).getModelOffset();
+            int endPos = new SentenceMotion(true, true).destination(editorAdaptor, count, cursor).getModelOffset();
 
             if (! outer) {
                 final TextContent modelContent = editorAdaptor.getModelContent();

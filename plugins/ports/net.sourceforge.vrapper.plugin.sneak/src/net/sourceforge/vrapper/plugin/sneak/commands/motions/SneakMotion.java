@@ -49,7 +49,7 @@ public class SneakMotion extends CountAwareMotion implements NavigatingMotion {
     }
 
     @Override
-    public Position destination(EditorAdaptor editorAdaptor, int count)
+    public Position destination(EditorAdaptor editorAdaptor, int count, Position fromPosition)
             throws CommandExecutionException {
 
         TextRange match = null;

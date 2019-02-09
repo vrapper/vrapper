@@ -25,7 +25,7 @@ public class RangeSearchMotion extends AbstractMotion {
 		this.reverse = reverse;
 	}
 	
-    public Position destination(EditorAdaptor editorAdaptor)
+    public Position destination(EditorAdaptor editorAdaptor, Position fromPosition)
     		throws CommandExecutionException {
         Search search = SearchCommandParser.createSearch(editorAdaptor, toFind, reverse, SearchOffset.NONE);
         SearchResult result = editorAdaptor.getSearchAndReplaceService().find(search, start);

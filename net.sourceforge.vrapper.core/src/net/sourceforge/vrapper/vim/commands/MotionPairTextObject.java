@@ -19,10 +19,11 @@ public class MotionPairTextObject extends AbstractTextObject {
     }
 
     public TextRange getRegion(EditorAdaptor editorMode, int count) throws CommandExecutionException {
+        Position currentPosition = editorMode.getPosition();
         Motion leftMotion = toBeginning;
         Motion rightMotion = toEnd.withCount(count);
-        Position from = leftMotion.destination(editorMode);
-        Position to = rightMotion.destination(editorMode);
+        Position from = leftMotion.destination(editorMode, currentPosition);
+        Position to = rightMotion.destination(editorMode, currentPosition);
         if (toEnd.borderPolicy() == BorderPolicy.INCLUSIVE) {
             to = to.addModelOffset(1);
         }

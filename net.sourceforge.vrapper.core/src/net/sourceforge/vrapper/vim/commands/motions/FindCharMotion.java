@@ -56,27 +56,18 @@ public class FindCharMotion extends FindBalancedMotion implements NavigatingMoti
     }
 
     @Override
-    public Position destination(EditorAdaptor editorAdaptor, int count)
+    public Position destination(EditorAdaptor editorAdaptor, int count, Position fromPosition)
             throws CommandExecutionException {
 
-        Position dest = super.destination(editorAdaptor, count);
+        Position dest = super.destination(editorAdaptor, count, fromPosition);
 
         // If repeating 't' / 'T' and the cursor is before the last match, destination() will think
         // this position is the next match and not move the cursor. If this happens, move the cursor
         // forward or back so it's on top of the last match and run destination() again.
-        if (isRepetition && ! upToTarget
-                && editorAdaptor.getPosition().getModelOffset() == dest.getModelOffset()) {
+        if (isRepetition && ! upToTarget && fromPosition.getModelOffset() == dest.getModelOffset()) {
 
-            Position originalPos = dest;
             Position tweakPos = dest.addModelOffset(backwards ? -1 : 1);
-            try {
-                editorAdaptor.setPosition(tweakPos, StickyColumnPolicy.NEVER);
-                dest = super.destination(editorAdaptor, count);
-            }
-            catch(CommandExecutionException e) {
-                //no match, un-tweak the cursor position
-                editorAdaptor.setPosition(originalPos, StickyColumnPolicy.NEVER);
-            }
+            dest = super.destination(editorAdaptor, count, tweakPos);
         }
         return dest;
     }
@@ -94,10 +85,10 @@ public class FindCharMotion extends FindBalancedMotion implements NavigatingMoti
 
     private Motion registrator = new CountAwareMotion() {
         @Override
-        public Position destination(EditorAdaptor editorAdaptor, int count)
+        public Position destination(EditorAdaptor editorAdaptor, int count, Position fromPosition)
                 throws CommandExecutionException {
             editorAdaptor.getRegisterManager().setLastFindCharMotion(FindCharMotion.this.repetition());
-            return FindCharMotion.this.destination(editorAdaptor, count);
+            return FindCharMotion.this.destination(editorAdaptor, count, fromPosition);
         }
 
         public BorderPolicy borderPolicy() {

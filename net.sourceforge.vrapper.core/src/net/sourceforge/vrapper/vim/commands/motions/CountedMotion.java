@@ -15,8 +15,8 @@ public class CountedMotion implements Motion {
         this.motion = motion;
     }
 
-    public Position destination(EditorAdaptor editorAdaptor) throws CommandExecutionException {
-        return motion.destination(editorAdaptor, count);
+    public Position destination(EditorAdaptor editorAdaptor, Position fromPosition) throws CommandExecutionException {
+        return motion.destination(editorAdaptor, count, fromPosition);
     }
 
     public StickyColumnPolicy stickyColumnPolicy() {

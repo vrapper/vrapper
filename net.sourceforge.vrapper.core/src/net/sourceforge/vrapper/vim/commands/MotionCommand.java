@@ -48,7 +48,7 @@ public class MotionCommand extends CountAwareCommand {
         if (navigatingMotion != null) {
             editorAdaptor.getRegisterManager().setLastNavigatingMotion(navigatingMotion.repetition());
         }
-        final Position destination = motion.destination(editorAdaptor);
+        final Position destination = motion.destination(editorAdaptor, previousPosition);
         gotoAndChangeViewPort(editorAdaptor, destination, motion.stickyColumnPolicy());
         if (motion.isJump()) {
             cursorService.markCurrentPosition();

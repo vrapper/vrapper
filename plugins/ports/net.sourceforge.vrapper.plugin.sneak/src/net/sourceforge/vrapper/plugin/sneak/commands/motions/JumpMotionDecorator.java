@@ -26,8 +26,8 @@ public class JumpMotionDecorator extends AbstractMotion implements Motion {
         return delegate.getCount();
     }
 
-    public Position destination(EditorAdaptor editorAdaptor) throws CommandExecutionException {
-        return delegate.destination(editorAdaptor);
+    public Position destination(EditorAdaptor editorAdaptor, Position fromPosition) throws CommandExecutionException {
+        return delegate.destination(editorAdaptor, fromPosition);
     }
 
     public BorderPolicy borderPolicy() {

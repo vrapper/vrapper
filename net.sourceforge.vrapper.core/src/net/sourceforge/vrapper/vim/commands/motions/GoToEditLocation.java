@@ -17,7 +17,7 @@ public class GoToEditLocation extends CountAwareMotion {
 	}
 
 	@Override
-	public Position destination(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
+	public Position destination(EditorAdaptor editorAdaptor, int count, Position fromPosition) throws CommandExecutionException {
 		if(count == NO_COUNT_GIVEN) {
 			count = 1;
 		}

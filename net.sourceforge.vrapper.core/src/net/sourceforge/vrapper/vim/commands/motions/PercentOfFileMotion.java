@@ -36,7 +36,7 @@ public class PercentOfFileMotion extends AbstractMotion {
     }
 
     @Override
-    public Position destination(EditorAdaptor editorAdaptor)
+    public Position destination(EditorAdaptor editorAdaptor, Position fromPosition)
             throws CommandExecutionException {
         TextContent content = editorAdaptor.getModelContent();
         if (count <= 0 || count > 100) {

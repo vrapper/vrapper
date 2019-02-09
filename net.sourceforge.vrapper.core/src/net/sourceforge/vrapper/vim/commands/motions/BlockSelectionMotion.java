@@ -13,6 +13,11 @@ import net.sourceforge.vrapper.vim.commands.BorderPolicy;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.Selection;
 
+/**
+ * Jumps to first or last column on the first line of a block selection.
+ * This is a helper for the implementation of Visual Block mode so that the logic in MotionCommand
+ * could be reused.
+ */
 public class BlockSelectionMotion extends AbstractMotion {
 
     public static final BlockSelectionMotion COLUMN_START = new BlockSelectionMotion(true);
@@ -35,7 +40,7 @@ public class BlockSelectionMotion extends AbstractMotion {
     }
 
     @Override
-    public Position destination(final EditorAdaptor editorAdaptor)
+    public Position destination(final EditorAdaptor editorAdaptor, Position fromPosition)
             throws CommandExecutionException {
         final Selection selection = editorAdaptor.getSelection();
         if (selection == null)

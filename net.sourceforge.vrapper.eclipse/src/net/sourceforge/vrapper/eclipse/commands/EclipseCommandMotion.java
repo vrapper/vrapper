@@ -22,13 +22,14 @@ public class EclipseCommandMotion extends CountAwareMotion {
     }
 
     @Override
-    public Position destination(EditorAdaptor editorAdaptor) {
-        return destination(editorAdaptor, 1);
+    public Position destination(EditorAdaptor editorAdaptor, Position fromPosition) {
+        return destination(editorAdaptor, 1, fromPosition);
     }
 
     @Override
-    public Position destination(EditorAdaptor editorAdaptor, int count) {
+    public Position destination(EditorAdaptor editorAdaptor, int count, Position fromPosition) {
         Position oldCarretOffset = editorAdaptor.getPosition();
+        editorAdaptor.setPosition(fromPosition, StickyColumnPolicy.NEVER);
         if (count == NO_COUNT_GIVEN) {
             count = 1;
         }

@@ -55,29 +55,29 @@ public class SubwordMotion extends CountAwareMotion {
     }
 
     @Override
-    public Position destination(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
+    public Position destination(EditorAdaptor editorAdaptor, int count, Position fromPosition) throws CommandExecutionException {
         if(count == NO_COUNT_GIVEN)
             count = 1;
-        
-        int positionOrig = editorAdaptor.getPosition().getModelOffset();
-        int position = positionOrig;
+
+        int positionOrig = fromPosition.getModelOffset();
+        int toOffset = positionOrig;
 
         for (int i = 0; i < count; i++) {
-            positionOrig = position;
-        	position = doIt(editorAdaptor, position);
+            positionOrig = toOffset;
+        	toOffset = doIt(editorAdaptor, fromPosition, toOffset);
 
-        	if(limit == Limit.END && position == positionOrig && position < editorAdaptor.getModelContent().getTextLength()) {
+        	if(limit == Limit.END && toOffset == positionOrig && toOffset < editorAdaptor.getModelContent().getTextLength()) {
         	    //if we matched on our self, increase and try again
-        	    position = doIt(editorAdaptor, ++position);
+        	    toOffset = doIt(editorAdaptor, fromPosition, ++toOffset);
         	}
         }
-        
-        return editorAdaptor.getCursorService().newPositionForModelOffset(position);
+
+        return editorAdaptor.getCursorService().newPositionForModelOffset(toOffset);
     }
     
-    private int doIt(EditorAdaptor editorAdaptor, int position) throws CommandExecutionException {
+    private int doIt(EditorAdaptor editorAdaptor, Position fromPosition, int toOffset) throws CommandExecutionException {
         TextContent model = editorAdaptor.getModelContent();
-        Position cursor = editorAdaptor.getCursorService().newPositionForModelOffset(position);
+        Position cursor = editorAdaptor.getCursorService().newPositionForModelOffset(toOffset);
 
         Motion wordMotion;
         switch(limit) {
@@ -93,7 +93,7 @@ public class SubwordMotion extends CountAwareMotion {
             break;
         }
         //find where the regular word motion would take us
-        Position dest = wordMotion.destination(editorAdaptor);
+        Position dest = wordMotion.destination(editorAdaptor, fromPosition);
         
         //StartEndTextRange can handle cursor < dest
         //I just use getLeftBound() when returning so I don't have to check which is bigger
@@ -173,7 +173,8 @@ public class SubwordMotion extends CountAwareMotion {
             Motion lastEndMotion = outer ? SubwordMotion.SUB_WORD : SubwordMotion.SUB_END;
 
             String wordRegex = editorAdaptor.getConfiguration().get(Options.KEYWORDS);
-            int cursorOffset = editorAdaptor.getPosition().getModelOffset();
+            Position fromPosition = editorAdaptor.getPosition();
+            int cursorOffset = fromPosition.getModelOffset();
 
             // VIM-camelcasemotion plugin is able to move [count]subwords backwards.
             // This feature is not yet supported by this implementation.
@@ -189,23 +190,23 @@ public class SubwordMotion extends CountAwareMotion {
             else {
                 //offset+1 to include the character under the cursor
                 //(this operation will search backwards)
-                startOffset = ((SubwordMotion)startMotion).doIt(editorAdaptor, cursorOffset + 1);
+                startOffset = ((SubwordMotion)startMotion).doIt(editorAdaptor, fromPosition, cursorOffset + 1);
             }
             Position start = cursorService.newPositionForModelOffset(startOffset);
 			int endOffset = cursorOffset;
-			
+
 			//find where the regular end-word motion would take us
 			MoveWordEndRight wordMotion = MoveWordEndRight.INSTANCE;
-			Position endWord = wordMotion.destination(editorAdaptor);
+			Position endWord = wordMotion.destination(editorAdaptor, fromPosition);
 			int endWordOffset = endWord.getModelOffset();
 
 			boolean hitEndOfTheWord = false;
 			for (int i = count; i != 0; i--) {
 			    //using doIt rather than destination so we don't try "fixing" when we match on self
 			    if (i > 1) {
-			        endOffset = ((SubwordMotion)endMotion).doIt(editorAdaptor, endOffset);
+			        endOffset = ((SubwordMotion)endMotion).doIt(editorAdaptor, fromPosition, endOffset);
 			    } else {
-			        endOffset = ((SubwordMotion)lastEndMotion).doIt(editorAdaptor, endOffset);
+			        endOffset = ((SubwordMotion)lastEndMotion).doIt(editorAdaptor, fromPosition, endOffset);
 			    }
 			    if (endOffset > endWordOffset) {
 			        endOffset = endWordOffset;

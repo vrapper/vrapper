@@ -66,7 +66,7 @@ public class SearchResultMotion extends CountAwareMotion {
     }
 
     @Override
-    public Position destination(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
+    public Position destination(EditorAdaptor editorAdaptor, int count, Position fromPosition) throws CommandExecutionException {
         if (count == NO_COUNT_GIVEN) {
             count = 1;
         }
@@ -97,9 +97,9 @@ public class SearchResultMotion extends CountAwareMotion {
 
         Position position;
         if (result == null || ! result.isFound()) {
-            position = editorAdaptor.getPosition();
+            position = fromPosition;
         } else {
-            position = offset.unapply(modelContent, editorAdaptor.getPosition(), result);
+            position = offset.unapply(modelContent, fromPosition, result);
         }
         if (restoreHighlighting && editorAdaptor.getConfiguration().get(Options.SEARCH_HIGHLIGHT)) {
             HighlightSearch.HIGHLIGHT.evaluate(editorAdaptor, new LinkedList<String>());

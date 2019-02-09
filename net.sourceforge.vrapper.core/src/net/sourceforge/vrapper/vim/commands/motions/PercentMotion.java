@@ -26,9 +26,9 @@ public class PercentMotion extends AbstractMotion {
     }
 
     @Override
-    public Position destination(EditorAdaptor editorAdaptor)
+    public Position destination(EditorAdaptor editorAdaptor, Position fromPosition)
             throws CommandExecutionException {
-        return ParenthesesMove.INSTANCE.destination(editorAdaptor);
+        return ParenthesesMove.INSTANCE.destination(editorAdaptor, fromPosition);
     }
 
     @Override

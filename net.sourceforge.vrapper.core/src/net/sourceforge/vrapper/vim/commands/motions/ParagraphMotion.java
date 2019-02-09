@@ -27,13 +27,13 @@ public class ParagraphMotion extends CountAwareMotion {
     }
 
     @Override
-    public Position destination(final EditorAdaptor editorAdaptor, int count)
+    public Position destination(final EditorAdaptor editorAdaptor, int count, Position fromPosition)
             throws CommandExecutionException {
         if (count == NO_COUNT_GIVEN)
             count = 1;
         
         final TextContent modelContent = editorAdaptor.getModelContent();
-        final LineInformation currentLine = modelContent.getLineInformationOfOffset(editorAdaptor.getPosition().getModelOffset());
+        final LineInformation currentLine = modelContent.getLineInformationOfOffset(fromPosition.getModelOffset());
         
         int lineNo = currentLine.getNumber();
         for (int i = 0; i < count; i++) {

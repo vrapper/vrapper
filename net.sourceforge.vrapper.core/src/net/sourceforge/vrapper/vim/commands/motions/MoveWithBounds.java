@@ -25,14 +25,14 @@ public abstract class MoveWithBounds extends CountAwareMotion {
     }
     
     @Override
-    public Position destination(EditorAdaptor editorAdaptor, int count) {
+    public Position destination(EditorAdaptor editorAdaptor, int count, Position fromPosition) {
         //used for calls to Utils.characterType in child classes
         keywords = editorAdaptor.getConfiguration().get(Options.KEYWORDS);
 
         if (count == NO_COUNT_GIVEN)
             count = 1;
 
-        int offset = editorAdaptor.getPosition().getModelOffset();
+        int offset = fromPosition.getModelOffset();
 
         for (int i = 0; i < count; i++)
             offset = destination(offset, editorAdaptor.getModelContent(), bailOff && i == 0, i != count-1);

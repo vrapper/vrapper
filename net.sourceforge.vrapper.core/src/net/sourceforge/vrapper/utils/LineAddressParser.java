@@ -183,7 +183,7 @@ public class LineAddressParser {
     	//chop off the leading and trailing '/' or '?'
     	String search = searchDef.substring(1, searchDef.length()-1);
     	try {
-			Position pos = new RangeSearchMotion(search, start, reverse).destination(editorAdaptor);
+			Position pos = new RangeSearchMotion(search, start, reverse).destination(editorAdaptor, start);
 			if(pos == null) {
 				editorAdaptor.getUserInterfaceService().setErrorMessage("'"+search+"' not found");
 			}

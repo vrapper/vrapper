@@ -82,7 +82,7 @@ public class PageScrollMotion extends CountAwareMotion {
     }
 
     @Override
-    public Position destination(EditorAdaptor editorAdaptor, int count)
+    public Position destination(EditorAdaptor editorAdaptor, int count, Position fromPosition)
             throws CommandExecutionException {
         TextContent viewContent = editorAdaptor.getViewContent();
         if (viewContent.getTextLength() == 0)
@@ -119,7 +119,6 @@ public class PageScrollMotion extends CountAwareMotion {
         }
         Position newpos = editorAdaptor.getCursorService().stickyColumnAtModelLine(newModelLine);
         return newpos;
-//        editorAdaptor.getCursorService().setPosition(newpos, false);
     }
 
 

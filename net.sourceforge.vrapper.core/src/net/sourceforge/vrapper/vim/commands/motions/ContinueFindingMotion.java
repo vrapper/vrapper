@@ -29,14 +29,14 @@ public class ContinueFindingMotion extends CountAwareMotion {
     }
 
     @Override
-    public Position destination(EditorAdaptor editorAdaptor, int count)
+    public Position destination(EditorAdaptor editorAdaptor, int count, Position fromPosition)
             throws CommandExecutionException {
         NavigatingMotion navigatingMotion = getLastNavigatingMotion(editorAdaptor);
         if (navigatingMotion == null) {
             throw new CommandExecutionException("no find to repeat");
         }
         borderPolicy = navigatingMotion.borderPolicy();
-        Position dest = navigatingMotion.withCount(count).destination(editorAdaptor);
+        Position dest = navigatingMotion.withCount(count).destination(editorAdaptor, fromPosition);
         return dest;
     }
 
