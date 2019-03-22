@@ -1,5 +1,7 @@
 package net.sourceforge.vrapper.vim.commands;
 
+import java.util.regex.Pattern;
+
 import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.TextContent;
@@ -105,6 +107,7 @@ public class ExCommandOperation extends AbstractLinewiseOperation {
 				throw new CommandExecutionException("No search pattern given and no active search!");
 			}
 		}
+		Pattern regex = Pattern.compile(pattern);
 
 		if (definition.length() <= patternEnd + 1) {
 			// pattern was defined, but no command
@@ -117,7 +120,7 @@ public class ExCommandOperation extends AbstractLinewiseOperation {
 		LineWiseOperation operation = buildExCommand(definition, editorAdaptor);
 
 		if(operation != null) {
-			executeExCommand(lineRange, findMatch, pattern, operation, editorAdaptor);
+			executeExCommand(lineRange, findMatch, regex, operation, editorAdaptor);
 		}
 	}
 
@@ -155,7 +158,7 @@ public class ExCommandOperation extends AbstractLinewiseOperation {
 	}
 
 	private void executeExCommand(LineRange lineRange, boolean findMatch,
-			String pattern, LineWiseOperation operation, EditorAdaptor editorAdaptor) {
+			Pattern regex, LineWiseOperation operation, EditorAdaptor editorAdaptor) {
 
 		/** Starting line, inclusive. */
 		int startLine = lineRange.getStartLine();
@@ -168,10 +171,10 @@ public class ExCommandOperation extends AbstractLinewiseOperation {
 		editorAdaptor.getHistory().lock("ex-command");
 		try {
 			if (startLine == endLine) {
-				processLine(pattern, findMatch, operation, line, editorAdaptor);
+				processLine(regex, findMatch, operation, line, editorAdaptor);
 			}
 			else {
-				processMultipleLines(findMatch, pattern, operation, editorAdaptor, line, startLine,
+				processMultipleLines(regex, findMatch, operation, line, editorAdaptor, startLine,
 						endLine, modelContent);
 			}
 		} finally {
@@ -180,8 +183,8 @@ public class ExCommandOperation extends AbstractLinewiseOperation {
 		}
 	}
 
-	private void processMultipleLines(boolean findMatch, String pattern,
-			LineWiseOperation operation, EditorAdaptor editorAdaptor, LineInformation line,
+	private void processMultipleLines(Pattern regex, boolean findMatch,
+			LineWiseOperation operation, LineInformation line, EditorAdaptor editorAdaptor, 
 			int startLine, int endLine, TextContent modelContent) {
 		int linesProcessed = 0;
 		int nLines = modelContent.getNumberOfLines();
@@ -198,7 +201,7 @@ public class ExCommandOperation extends AbstractLinewiseOperation {
 				// Remove mark for exit condition
 				cs.deleteMark(NEXTLINE_MARK);
 			}
-			processLine(pattern, findMatch, operation, line, editorAdaptor);
+			processLine(regex, findMatch, operation, line, editorAdaptor);
 			Position nextLineStart = cs.getMark(NEXTLINE_MARK);
 			// Try to guess our position if user ran something like 2d and removed next line
 			int updatedNLines = modelContent.getNumberOfLines();
@@ -224,23 +227,12 @@ public class ExCommandOperation extends AbstractLinewiseOperation {
 		cs.deleteMark(NEXTLINE_MARK);
 	}
 
-	private boolean processLine(String pattern, boolean findMatch, LineWiseOperation operation,
+	private boolean processLine(Pattern regex, boolean findMatch, LineWiseOperation operation,
 			LineInformation line, EditorAdaptor editorAdaptor) {
 		boolean operationPerformed = false;
 		String text = editorAdaptor.getModelContent().getText(line.getBeginOffset(), line.getLength());
-		//Java's matches() method expects to match the entire string.
-		//If the user isn't explicitly matching beginning or end of
-		//a String, fake it out so Java is happy.
-		if( ! pattern.startsWith("^")) {
-			//line can start with anything
-			pattern = ".*" + pattern;
-		}
-		if( ! pattern.endsWith("$")) {
-			//line can end with anything
-			pattern += ".*";
-		}
 
-		boolean matches = text.matches(pattern);
+		boolean matches = regex.matcher(text).find();
 		if( (findMatch && matches) || (!findMatch && !matches) ) {
 			try {
 				LineRange singleLine = SimpleLineRange.singleLineInModel(editorAdaptor, line);
