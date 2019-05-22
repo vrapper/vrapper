@@ -30,6 +30,7 @@ import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.DummyTextObject;
+import net.sourceforge.vrapper.vim.commands.ExCommandOperation;
 import net.sourceforge.vrapper.vim.commands.LineRangeOperationCommand;
 import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.commands.RetabOperation;
@@ -519,6 +520,21 @@ public class CommandLineTests extends VimTestCase {
     	
     	new SortOperation("n").execute(adaptor, 0, range);
     	assertEquals("a\nb\nc\n3\n1\n2\n10", content.getText());
+    }
+    
+    @Test
+    public void testExCommand() throws CommandExecutionException {
+    	content.setText("one two\ntwo three\nfour five");
+    	new ExCommandOperation("g/one/d").execute(adaptor, SimpleLineRange.entireFile(adaptor));
+    	assertEquals("two three\nfour five", content.getText());
+
+    	content.setText("one two\ntwo three\nfour five");
+    	new ExCommandOperation("g/two/d").execute(adaptor, SimpleLineRange.entireFile(adaptor));
+    	assertEquals("four five", content.getText());
+
+    	content.setText("one two\ntwo three\nfour five");
+    	new ExCommandOperation("g/one|four/d").execute(adaptor, SimpleLineRange.entireFile(adaptor));
+    	assertEquals("two three", content.getText());
     }
 
     @Test
