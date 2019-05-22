@@ -1,13 +1,10 @@
 package net.sourceforge.vrapper.eclipse.activator;
 
-import net.sourceforge.vrapper.eclipse.interceptor.InputInterceptor;
-import net.sourceforge.vrapper.eclipse.interceptor.InputInterceptorManager;
-import net.sourceforge.vrapper.eclipse.interceptor.UnknownEditorException;
-import net.sourceforge.vrapper.log.Log;
-import net.sourceforge.vrapper.log.VrapperLog;
-import net.sourceforge.vrapper.platform.VrapperPlatformException;
-import net.sourceforge.vrapper.vim.EditorAdaptor;
-
+import org.eclipse.core.expressions.EvaluationResult;
+import org.eclipse.core.expressions.Expression;
+import org.eclipse.core.expressions.ExpressionInfo;
+import org.eclipse.core.expressions.IEvaluationContext;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
@@ -19,7 +16,8 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
-import org.eclipse.ui.IStartup;
+import org.eclipse.ui.ISources;
+import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWindowListener;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchListener;
@@ -27,15 +25,28 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.contexts.IContextService;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.prefs.BackingStoreException;
 
+import net.sourceforge.vrapper.eclipse.interceptor.InputInterceptor;
+import net.sourceforge.vrapper.eclipse.interceptor.InputInterceptorManager;
+import net.sourceforge.vrapper.eclipse.interceptor.UnknownEditorException;
+import net.sourceforge.vrapper.log.Log;
+import net.sourceforge.vrapper.log.VrapperLog;
+import net.sourceforge.vrapper.platform.VrapperPlatformException;
+import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.modes.InsertMode;
+import net.sourceforge.vrapper.vim.modes.NormalMode;
+import net.sourceforge.vrapper.vim.modes.VisualMode;
+import net.sourceforge.vrapper.vim.modes.commandline.CommandLineMode;
+
 /**
  * The activator class controls the plug-in life cycle
  */
-public class VrapperPlugin extends AbstractUIPlugin implements IStartup, Log {
+public class VrapperPlugin extends AbstractUIPlugin implements /*IStartup,*/ Log {
 
     // The plug-in ID
     public static final String PLUGIN_ID = "net.sourceforge.vrapper.eclipse";
@@ -79,6 +90,13 @@ public class VrapperPlugin extends AbstractUIPlugin implements IStartup, Log {
         return InputInterceptorManager.INSTANCE.findActiveInterceptor(activeEditor);
     }
 
+    /**
+     * Returns the currently active Vrapper instance (InputInterceptor) for the given editor.
+     * @param toplevelEditor IEditorPart to look for.
+     * @return an InputInterceptor instance.
+     * @throws VrapperPlatformException if Vrapper triggered errors while querying toplevelEditor.
+     * @throws UnknownEditorException when this part did not have a corresponding Vrapper instance.
+     */
     public InputInterceptor findActiveInterceptor(IEditorPart toplevelEditor)
             throws VrapperPlatformException, UnknownEditorException {
         return InputInterceptorManager.INSTANCE.findActiveInterceptor(toplevelEditor);
@@ -91,8 +109,8 @@ public class VrapperPlugin extends AbstractUIPlugin implements IStartup, Log {
         VrapperLog.setImplementation(this);
     }
 
-    public void earlyStartup() {
-    }
+//    public void earlyStartup() {
+//    }
 
     @Override
     public void stop(BundleContext context) throws Exception {
@@ -158,6 +176,80 @@ public class VrapperPlugin extends AbstractUIPlugin implements IStartup, Log {
                 return true;
             }
         });
+    }
+
+    void activateVrapperShortcutContexts() {
+        final IContextService contextService = (IContextService) getWorkbench().getService(IContextService.class);
+
+        contextService.activateContext("net.sourceforge.vrapper.eclipse.enabledOnView", vrapperEnabledOnViewExpression(), true);
+
+        contextService.activateContext("net.sourceforge.vrapper.eclipse.active", vrapperEnabledInAnyModeExpression(), true);
+        contextService.activateContext("net.sourceforge.vrapper.eclipse.active.normal", vrapperEnabledInModeExpression(NormalMode.NAME), true);
+        contextService.activateContext("net.sourceforge.vrapper.eclipse.active.command", vrapperEnabledInModeExpression(CommandLineMode.NAME), true);
+        contextService.activateContext("net.sourceforge.vrapper.eclipse.active.visual", vrapperEnabledInModeExpression(VisualMode.NAME), true);
+        contextService.activateContext("net.sourceforge.vrapper.eclipse.active.insert", vrapperEnabledInModeExpression(InsertMode.NAME), true);
+    }
+
+    private static Expression vrapperEnabledOnViewExpression() {
+        return new Expression() {
+            @Override
+            public EvaluationResult evaluate(IEvaluationContext context) throws CoreException {
+                Object currentlyActivePart = context.getVariable(ISources.ACTIVE_PART_NAME);
+                boolean onAView = currentlyActivePart instanceof IViewPart;
+                boolean vrapperEnabled = (Boolean) context.getVariable(VrapperStatusSourceProvider.SOURCE_ENABLED);
+                return EvaluationResult.valueOf(vrapperEnabled && onAView);
+            }
+
+            @Override
+            public void collectExpressionInfo(ExpressionInfo info) {
+                info.addVariableNameAccess(ISources.ACTIVE_PART_NAME);
+                info.addVariableNameAccess(VrapperStatusSourceProvider.SOURCE_ENABLED);
+            }
+        };
+    }
+
+    private static Expression vrapperEnabledInAnyModeExpression() {
+        return new Expression() {
+            @Override
+            public EvaluationResult evaluate(IEvaluationContext context) throws CoreException {
+                Object currentlyActivePart = context.getVariable(ISources.ACTIVE_PART_NAME);
+                if ( ! (currentlyActivePart instanceof IEditorPart)) {
+                    return EvaluationResult.FALSE;
+                }
+                Boolean vrapperEnabled = (Boolean) context.getVariable(VrapperStatusSourceProvider.SOURCE_ENABLED);
+                String vrapperMode = (String) context.getVariable(VrapperStatusSourceProvider.SOURCE_CURRENTMODE);
+                return EvaluationResult.valueOf(vrapperEnabled && ! VrapperStatusSourceProvider.MODE_UNKNOWN.equals(vrapperMode));
+            }
+
+            @Override
+            public void collectExpressionInfo(ExpressionInfo info) {
+                info.addVariableNameAccess(ISources.ACTIVE_PART_NAME);
+                info.addVariableNameAccess(VrapperStatusSourceProvider.SOURCE_CURRENTMODE);
+                info.addVariableNameAccess(VrapperStatusSourceProvider.SOURCE_ENABLED);
+            }
+        };
+    }
+
+    private static Expression vrapperEnabledInModeExpression(final String expectedModeName) {
+        return new Expression() {
+            @Override
+            public EvaluationResult evaluate(IEvaluationContext context) throws CoreException {
+                Object currentlyActivePart = context.getVariable(ISources.ACTIVE_PART_NAME);
+                if ( ! (currentlyActivePart instanceof IEditorPart)) {
+                    return EvaluationResult.FALSE;
+                }
+                Boolean vrapperEnabled = (Boolean) context.getVariable(VrapperStatusSourceProvider.SOURCE_ENABLED);
+                String vrapperMode = (String) context.getVariable(VrapperStatusSourceProvider.SOURCE_CURRENTMODE);
+                return EvaluationResult.valueOf(vrapperEnabled && expectedModeName.equals(vrapperMode));
+            }
+
+            @Override
+            public void collectExpressionInfo(ExpressionInfo info) {
+                info.addVariableNameAccess(ISources.ACTIVE_PART_NAME);
+                info.addVariableNameAccess(VrapperStatusSourceProvider.SOURCE_CURRENTMODE);
+                info.addVariableNameAccess(VrapperStatusSourceProvider.SOURCE_ENABLED);
+            }
+        };
     }
 
     private static void storeVimEmulationOfActiveEditors() throws BackingStoreException {

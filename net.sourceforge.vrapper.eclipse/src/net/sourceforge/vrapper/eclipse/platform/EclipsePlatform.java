@@ -58,6 +58,7 @@ public class EclipsePlatform implements Platform {
     private final UnderlyingEditorSettings underlyingEditorSettings;
     private final LocalConfiguration localConfiguration;
     private final AbstractTextEditor underlyingEditor;
+    private final ISourceViewer underlyingSourceViewer;
     private final HighlightingService highlightingService;
     private final SearchAndReplaceService searchAndReplaceService;
     private final VrapperModeRecorder vrapperModeRecorder;
@@ -71,6 +72,7 @@ public class EclipsePlatform implements Platform {
             BufferAndTabService bufferAndTabService) {
         vrapperModeRecorder = new VrapperModeRecorder();
         underlyingEditor = abstractTextEditor;
+        underlyingSourceViewer = sourceViewer;
         underlyingEditorSettings = new AbstractTextEditorSettings(abstractTextEditor, sourceViewer);
         List<DefaultConfigProvider> configProviders =
                 Collections.singletonList((DefaultConfigProvider)underlyingEditorSettings);
@@ -104,6 +106,10 @@ public class EclipsePlatform implements Platform {
 
     public AbstractTextEditor getUnderlyingEditor() {
         return underlyingEditor;
+    }
+
+    public ISourceViewer getUnderlyingSourceViewer() {
+        return underlyingSourceViewer;
     }
 
     @Override

@@ -6,28 +6,62 @@
    <extension-point id="net.sourceforge.vrapper.eclipse.psmp" name="Platform Specific Mode Provider" schema="schema/net.sourceforge.vrapper.eclipse.psmp.exsd"/>
    <extension-point id="net.sourceforge.vrapper.eclipse.pstop" name="Platform Specific TextObject provider" schema="schema/net.sourceforge.vrapper.eclipse.pstop.exsd"/>
    <extension-point id="net.sourceforge.vrapper.eclipse.lifecyclelistener" name="Vrapper Lifecycle Listener" schema="schema/net.sourceforge.vrapper.eclipse.lifecyclelistener.exsd"/>
-  <extension
-       point="org.eclipse.ui.commands">
+
+   <extension point="org.eclipse.ui.commands">
     <category
           description="Commands for Vrapper"
           id="net.sourceforge.vrapper.eclipse.commands"
-          name="Vrapper">
-    </category>
+          name="Vrapper"/>
+
     <command
           categoryId="net.sourceforge.vrapper.eclipse.commands"
           defaultHandler="net.sourceforge.vrapper.eclipse.actions.VrapperToggleHandler"
           description="Toggles Vrapper"
           id="net.sourceforge.vrapper.eclipse.commands.toggle"
-          name="Toggle Vrapper">
+          name="Toggle Vrapper"/>
 
-    </command>
-    </extension>
+    <command
+          categoryId="net.sourceforge.vrapper.eclipse.commands"
+          defaultHandler="net.sourceforge.vrapper.eclipse.actions.ActivateEditorAndTypeHandler"
+          description="Activates the editor, focuses it and sends the bound key to it (handler is active even if Vrapper is disabled)"
+          id="net.sourceforge.vrapper.eclipse.commands.activateEditorAndType"
+          name="Activate Editor and Type"/>
+
+    <command
+          categoryId="net.sourceforge.vrapper.eclipse.commands"
+          description="Sends the bound key directly to Vrapper when Vrapper is focused and active"
+          id="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut"
+          name="Send to Vrapper"/>
+
+    <command
+          categoryId="net.sourceforge.vrapper.eclipse.commands"
+          description="Translates a given key into a press of the Up arrow"
+          id="net.sourceforge.vrapper.eclipse.commands.arrowMap.up"
+          name="Vrapper Up Arrow Map"/>
+
+    <command
+          categoryId="net.sourceforge.vrapper.eclipse.commands"
+          description="Translates a given key into a press of the Down arrow"
+          id="net.sourceforge.vrapper.eclipse.commands.arrowMap.down"
+          name="Vrapper Down Arrow Map"/>
+
+    <command
+          categoryId="net.sourceforge.vrapper.eclipse.commands"
+          description="Translates a given key into a press of the Left arrow"
+          id="net.sourceforge.vrapper.eclipse.commands.arrowMap.left"
+          name="Vrapper Left Arrow Map"/>
+
+    <command
+          categoryId="net.sourceforge.vrapper.eclipse.commands"
+          description="Translates a given key into a press of the Right arrow"
+          id="net.sourceforge.vrapper.eclipse.commands.arrowMap.right"
+          name="Vrapper Right Arrow Map"/>
+
+   </extension>
 
 
-    <extension
-         point="org.eclipse.ui.menus">
-      <menuContribution
-            locationURI="menu:edit?after=additions">
+    <extension point="org.eclipse.ui.menus">
+      <menuContribution locationURI="menu:edit?after=additions">
          <command
                commandId="net.sourceforge.vrapper.eclipse.commands.toggle"
                icon="icons/icon.png"
@@ -35,10 +69,8 @@
                style="toggle">
          </command>
       </menuContribution>
-       <menuContribution
-            locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
-         <toolbar
-               id="net.sourceforge.vrapper.Vrapper">
+       <menuContribution locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
+         <toolbar id="net.sourceforge.vrapper.Vrapper">
             <command
                   commandId="net.sourceforge.vrapper.eclipse.commands.toggle"
                   icon="icons/icon.png"
@@ -50,30 +82,12 @@
             </separator>
          </toolbar>
       </menuContribution>
-
     </extension>
+
     <extension point="org.eclipse.ui.startup">
 		<startup class="net.sourceforge.vrapper.eclipse.activator.VrapperStartup"/>
 	</extension>
 
-
-   <extension point="org.eclipse.ui.bindings">
-      <key
-            sequence="ESC CTRL+C"
-            contextId="org.eclipse.jdt.ui.javaEditorScope"
-            commandId=""
-            schemeId="kg.totality.core.insert_mode"/>
-      <key
-            sequence="ESC CTRL+F"
-            contextId="org.eclipse.jdt.ui.javaEditorScope"
-            commandId=""
-            schemeId="kg.totality.core.insert_mode"/>
-	  <scheme
-          description="Vim&apos;s insert mode emulation"
-          id="kg.totality.core.insert_mode"
-          name="Vim&apos;s key bindings"
-          parentId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
-     </extension>
    <extension
          point="net.sourceforge.vrapper.eclipse.pssp">
       <keymap-provider
@@ -154,5 +168,308 @@
             provider-class="net.sourceforge.vrapper.eclipse.keymap.EclipseTextObjectProvider">
       </textobject-provider>
    </extension>
+
+   <extension point="org.eclipse.ui.services">
+      <sourceProvider provider="net.sourceforge.vrapper.eclipse.activator.VrapperStatusSourceProvider">
+         <variable name="net.sourceforge.vrapper.source.status" priorityLevel="activeSite"/>
+      </sourceProvider>
+   </extension>
+
+   <!-- Re-usable activation expressions. -->
+   <extension point="org.eclipse.core.expressions.definitions">
+       <!-- Evaluates to true when Vrapper is enabled -->
+       <definition id="net.sourceforge.vrapper.expr.enabled">
+           <!-- Check that Vrapper is enabled -->
+           <with variable="net.sourceforge.vrapper.source.enabled">
+              <equals value="true"/>
+           </with>
+       </definition>
+       <!-- Evaluates to true when Vrapper is enabled and a Vrapper instance is focused -->
+       <definition id="net.sourceforge.vrapper.expr.activeanymode">
+            <and>
+               <!-- Check that we're even on an editor -->
+               <with variable="activePart">
+                   <instanceof value="org.eclipse.ui.IEditorPart" />
+               </with>
+               <!-- Check that Vrapper is enabled -->
+               <with variable="net.sourceforge.vrapper.source.enabled">
+                  <equals value="true"/>
+               </with>
+               <!-- Check that current mode is not the unknown mode (happens when non-Vrapper editor is open) -->
+               <not>
+                  <with variable="net.sourceforge.vrapper.source.currentmode">
+                     <equals value="(unknown mode)"/>
+                  </with>
+               </not>
+            </and>
+       </definition>
+       <!-- Evaluates to true when Vrapper is enabled, a Vrapper instance is focused and command line is open. -->
+       <definition id="net.sourceforge.vrapper.expr.commandlinemode">
+            <and>
+               <!-- Check that we're even on an editor -->
+               <with variable="activePart">
+                   <instanceof value="org.eclipse.ui.IEditorPart" />
+               </with>
+               <!-- Technically redundant as mode of disabled vrapper would be 'insert mode' -->
+               <with variable="net.sourceforge.vrapper.source.enabled">
+                  <equals value="true"/>
+               </with>
+               <with variable="net.sourceforge.vrapper.source.currentmode">
+                  <equals value="command mode"/>
+               </with>
+               <!-- XXX Only here to increase Vrapper's priority score. -->
+               <with variable="selection">
+                   <iterate ifEmpty="true" operator="or">
+                       <instanceof value="java.lang.Object" />
+                   </iterate>
+               </with>
+            </and>
+       </definition>
+   </extension>
+
+   <extension point="org.eclipse.ui.handlers">
+       <!-- Our own key handler which only fires when a Vrapper-specific command is bound. -->
+       <handler
+           class="net.sourceforge.vrapper.eclipse.actions.VrapperShortcutHandler"
+           commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut">
+           <activeWhen>
+               <reference definitionId="net.sourceforge.vrapper.expr.activeanymode"/>
+           </activeWhen>
+       </handler>
+
+       <!-- Remaps H/J/K/L (or whatever is bound) to Left/Down/Up/Right keypresses which views understand. -->
+       <handler
+             class="net.sourceforge.vrapper.eclipse.actions.VrapperArrowMapHandler"
+             commandId="net.sourceforge.vrapper.eclipse.commands.arrowMap.up">
+           <activeWhen>
+               <reference definitionId="net.sourceforge.vrapper.expr.enabled"/>
+           </activeWhen>
+       </handler>
+       <handler
+             class="net.sourceforge.vrapper.eclipse.actions.VrapperArrowMapHandler"
+             commandId="net.sourceforge.vrapper.eclipse.commands.arrowMap.down">
+           <activeWhen>
+               <reference definitionId="net.sourceforge.vrapper.expr.enabled"/>
+           </activeWhen>
+       </handler>
+       <handler
+             class="net.sourceforge.vrapper.eclipse.actions.VrapperArrowMapHandler"
+             commandId="net.sourceforge.vrapper.eclipse.commands.arrowMap.left">
+           <activeWhen>
+               <reference definitionId="net.sourceforge.vrapper.expr.enabled"/>
+           </activeWhen>
+       </handler>
+       <handler
+             class="net.sourceforge.vrapper.eclipse.actions.VrapperArrowMapHandler"
+             commandId="net.sourceforge.vrapper.eclipse.commands.arrowMap.right">
+           <activeWhen>
+               <reference definitionId="net.sourceforge.vrapper.expr.enabled"/>
+           </activeWhen>
+       </handler>
+
+       <!-- Override default HOME / END / Ctrl + Arrow / Paste / ... commands in command line. -->
+       <handler
+           class="net.sourceforge.vrapper.eclipse.actions.VrapperCommandLineMotionHandler"
+           commandId="org.eclipse.ui.edit.text.goto.lineStart">
+           <activeWhen>
+               <reference definitionId="net.sourceforge.vrapper.expr.commandlinemode"/>
+           </activeWhen>
+       </handler>
+       <handler
+           class="net.sourceforge.vrapper.eclipse.actions.VrapperCommandLineMotionHandler"
+           commandId="org.eclipse.ui.edit.text.goto.lineEnd">
+           <activeWhen>
+               <reference definitionId="net.sourceforge.vrapper.expr.commandlinemode"/>
+           </activeWhen>
+       </handler>
+       <handler
+           class="net.sourceforge.vrapper.eclipse.actions.VrapperCommandLineMotionHandler"
+           commandId="org.eclipse.ui.edit.text.goto.wordNext">
+           <activeWhen>
+               <reference definitionId="net.sourceforge.vrapper.expr.commandlinemode"/>
+           </activeWhen>
+       </handler>
+       <handler
+           class="net.sourceforge.vrapper.eclipse.actions.VrapperCommandLineMotionHandler"
+           commandId="org.eclipse.ui.edit.text.goto.wordPrevious">
+           <activeWhen>
+               <reference definitionId="net.sourceforge.vrapper.expr.commandlinemode"/>
+           </activeWhen>
+       </handler>
+       <handler
+           class="net.sourceforge.vrapper.eclipse.actions.VrapperCommandLineMotionHandler"
+           commandId="org.eclipse.ui.edit.cut">
+           <activeWhen>
+               <reference definitionId="net.sourceforge.vrapper.expr.commandlinemode"/>
+           </activeWhen>
+       </handler>
+       <handler
+           class="net.sourceforge.vrapper.eclipse.actions.VrapperCommandLineMotionHandler"
+           commandId="org.eclipse.ui.edit.copy">
+           <activeWhen>
+               <reference definitionId="net.sourceforge.vrapper.expr.commandlinemode"/>
+           </activeWhen>
+       </handler>
+       <handler
+           class="net.sourceforge.vrapper.eclipse.actions.VrapperCommandLineMotionHandler"
+           commandId="org.eclipse.ui.edit.paste">
+           <activeWhen>
+               <reference definitionId="net.sourceforge.vrapper.expr.commandlinemode"/>
+           </activeWhen>
+       </handler>
+       <handler
+           class="net.sourceforge.vrapper.eclipse.actions.VrapperCommandLineMotionHandler"
+           commandId="org.eclipse.ui.edit.selectAll">
+           <activeWhen>
+               <reference definitionId="net.sourceforge.vrapper.expr.commandlinemode"/>
+           </activeWhen>
+       </handler>
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.contexts">
+      <!-- XXX These only exist to boost Vrapper's importance but are never activated. -->
+      <context
+            description="Dummy context for Vrapper"
+            id="net.sourceforge.vrapper.eclipse.dummy1"
+            name="ZZ Vrapper's Dummy Contexts"
+            parentId="org.eclipse.ui.textEditorScope">
+      </context>
+      <context
+            description="Dummy context for Vrapper"
+            id="net.sourceforge.vrapper.eclipse.dummy2"
+            name="ZZ Vrapper's Dummy Contexts"
+            parentId="net.sourceforge.vrapper.eclipse.dummy1">
+      </context>
+      <context
+            description="Dummy context for Vrapper"
+            id="net.sourceforge.vrapper.eclipse.dummy3"
+            name="ZZ Vrapper's Dummy Contexts"
+            parentId="net.sourceforge.vrapper.eclipse.dummy2">
+      </context>
+      <context
+            description="Dummy context for Vrapper"
+            id="net.sourceforge.vrapper.eclipse.dummy4"
+            name="ZZ Vrapper's Dummy Contexts"
+            parentId="net.sourceforge.vrapper.eclipse.dummy3">
+      </context>
+      <context
+            description="Dummy context for Vrapper"
+            id="net.sourceforge.vrapper.eclipse.dummy5"
+            name="ZZ Vrapper's Dummy Contexts"
+            parentId="net.sourceforge.vrapper.eclipse.dummy4">
+      </context>
+
+      <!-- Vrapper contexts proper -->
+      <context
+            description="Shortcuts are used when Vrapper is enabled but not focused (e.g. on a view)"
+            id="net.sourceforge.vrapper.eclipse.enabledOnView"
+            name="Vrapper Enabled on a View"
+            parentId="net.sourceforge.vrapper.eclipse.dummy5">
+      </context>
+      <context
+            description="Shortcuts are used when Vrapper is focused and enabled"
+            id="net.sourceforge.vrapper.eclipse.active"
+            name="Vrapper Active"
+            parentId="net.sourceforge.vrapper.eclipse.dummy5">
+      </context>
+      <context
+            description="Shortcuts are used when Vrapper is focused and in normal mode"
+            id="net.sourceforge.vrapper.eclipse.active.normal"
+            name="Vrapper Normal mode Active"
+            parentId="net.sourceforge.vrapper.eclipse.active">
+      </context>
+      <context
+            description="Shortcuts are used when Vrapper is focused and in commandline or search mode"
+            id="net.sourceforge.vrapper.eclipse.active.command"
+            name="Vrapper Commandline Opened"
+            parentId="net.sourceforge.vrapper.eclipse.active">
+      </context>
+      <context
+            description="Shortcuts are used when Vrapper is focused and in visual or select mode"
+            id="net.sourceforge.vrapper.eclipse.active.visual"
+            name="Vrapper Visual mode Active"
+            parentId="net.sourceforge.vrapper.eclipse.active">
+      </context>
+      <context
+            description="Shortcuts are used when Vrapper is focused and in insert mode"
+            id="net.sourceforge.vrapper.eclipse.active.insert"
+            name="Vrapper Insert mode Active"
+            parentId="net.sourceforge.vrapper.eclipse.active">
+      </context>
+   </extension>
+
+   <extension point="org.eclipse.ui.bindings">
+
+      <!-- Bind sample shortcuts in default scheme so user can use the pre-set context. -->
+      <key sequence="F15 F4" commandId="net.sourceforge.vrapper.eclipse.commands.toggle" contextId="org.eclipse.ui.contexts.window" schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <key sequence="F15 ESC" commandId="net.sourceforge.vrapper.eclipse.commands.activateEditorAndType" contextId="org.eclipse.ui.contexts.window" schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <key sequence="F15 CTRL+A" commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut" contextId="net.sourceforge.vrapper.eclipse.active" schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <key sequence="F15 K" commandId="net.sourceforge.vrapper.eclipse.commands.arrowMap.up" contextId="net.sourceforge.vrapper.eclipse.enabledOnView" schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <key sequence="F15 J" commandId="net.sourceforge.vrapper.eclipse.commands.arrowMap.down" contextId="net.sourceforge.vrapper.eclipse.enabledOnView" schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <key sequence="F15 H" commandId="net.sourceforge.vrapper.eclipse.commands.arrowMap.left" contextId="net.sourceforge.vrapper.eclipse.enabledOnView" schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <key sequence="F15 L" commandId="net.sourceforge.vrapper.eclipse.commands.arrowMap.right" contextId="net.sourceforge.vrapper.eclipse.enabledOnView" schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+
+      <!-- Scheme to binds frequent key combinations to Vrapper input. -->
+      <scheme
+          description="Binds all keys to Vrapper (when enabled)"
+          id="net.sourceforge.vrapper.keyscheme"
+          name="Vim&apos;s key bindings"
+          parentId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+
+      <key sequence="ESC" commandId="net.sourceforge.vrapper.eclipse.commands.activateEditorAndType" contextId="org.eclipse.ui.contexts.window" schemeId="net.sourceforge.vrapper.keyscheme"/>
+
+      <key sequence="J" commandId="net.sourceforge.vrapper.eclipse.commands.arrowMap.up" contextId="net.sourceforge.vrapper.eclipse.enabledOnView" schemeId="net.sourceforge.vrapper.keyscheme"/>
+      <key sequence="K" commandId="net.sourceforge.vrapper.eclipse.commands.arrowMap.down" contextId="net.sourceforge.vrapper.eclipse.enabledOnView" schemeId="net.sourceforge.vrapper.keyscheme"/>
+      <key sequence="H" commandId="net.sourceforge.vrapper.eclipse.commands.arrowMap.left" contextId="net.sourceforge.vrapper.eclipse.enabledOnView" schemeId="net.sourceforge.vrapper.keyscheme"/>
+      <key sequence="L" commandId="net.sourceforge.vrapper.eclipse.commands.arrowMap.right" contextId="net.sourceforge.vrapper.eclipse.enabledOnView" schemeId="net.sourceforge.vrapper.keyscheme"/>
+
+	  <!-- These bindings might be removed later once we can listen to the default Eclipse commands associated with them -->
+      <key sequence="HOME" commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut" contextId="net.sourceforge.vrapper.eclipse.active" schemeId="net.sourceforge.vrapper.keyscheme"/>
+      <key sequence="END" commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut" contextId="net.sourceforge.vrapper.eclipse.active" schemeId="net.sourceforge.vrapper.keyscheme"/>
+      <key sequence="CTRL+HOME" commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut" contextId="net.sourceforge.vrapper.eclipse.active" schemeId="net.sourceforge.vrapper.keyscheme"/>
+      <key sequence="CTRL+END" commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut" contextId="net.sourceforge.vrapper.eclipse.active" schemeId="net.sourceforge.vrapper.keyscheme"/>
+
+      <key sequence="CTRL+A" commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut" contextId="net.sourceforge.vrapper.eclipse.active" schemeId="net.sourceforge.vrapper.keyscheme"/>
+      <key sequence="CTRL+B" commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut" contextId="net.sourceforge.vrapper.eclipse.active" schemeId="net.sourceforge.vrapper.keyscheme"/>
+      <key sequence="CTRL+C" commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut" contextId="net.sourceforge.vrapper.eclipse.active" schemeId="net.sourceforge.vrapper.keyscheme"/>
+      <key sequence="CTRL+D" commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut" contextId="net.sourceforge.vrapper.eclipse.active" schemeId="net.sourceforge.vrapper.keyscheme"/>
+      <key sequence="CTRL+E" commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut" contextId="net.sourceforge.vrapper.eclipse.active" schemeId="net.sourceforge.vrapper.keyscheme"/>
+      <key sequence="CTRL+F" commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut" contextId="net.sourceforge.vrapper.eclipse.active" schemeId="net.sourceforge.vrapper.keyscheme"/>
+      <key sequence="CTRL+G" commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut" contextId="net.sourceforge.vrapper.eclipse.active" schemeId="net.sourceforge.vrapper.keyscheme"/>
+      <key sequence="CTRL+H" commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut" contextId="net.sourceforge.vrapper.eclipse.active" schemeId="net.sourceforge.vrapper.keyscheme"/>
+      <key sequence="CTRL+I" commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut" contextId="net.sourceforge.vrapper.eclipse.active" schemeId="net.sourceforge.vrapper.keyscheme"/>
+      <key sequence="CTRL+J" commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut" contextId="net.sourceforge.vrapper.eclipse.active" schemeId="net.sourceforge.vrapper.keyscheme"/>
+      <key sequence="CTRL+K" commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut" contextId="net.sourceforge.vrapper.eclipse.active" schemeId="net.sourceforge.vrapper.keyscheme"/>
+      <key sequence="CTRL+L" commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut" contextId="net.sourceforge.vrapper.eclipse.active" schemeId="net.sourceforge.vrapper.keyscheme"/>
+      <key sequence="CTRL+M" commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut" contextId="net.sourceforge.vrapper.eclipse.active" schemeId="net.sourceforge.vrapper.keyscheme"/>
+      <key sequence="CTRL+N" commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut" contextId="net.sourceforge.vrapper.eclipse.active" schemeId="net.sourceforge.vrapper.keyscheme"/>
+      <key sequence="CTRL+O" commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut" contextId="net.sourceforge.vrapper.eclipse.active" schemeId="net.sourceforge.vrapper.keyscheme"/>
+      <key sequence="CTRL+P" commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut" contextId="net.sourceforge.vrapper.eclipse.active" schemeId="net.sourceforge.vrapper.keyscheme"/>
+      <key sequence="CTRL+R" commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut" contextId="net.sourceforge.vrapper.eclipse.active" schemeId="net.sourceforge.vrapper.keyscheme"/>
+      <key sequence="CTRL+Q" commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut" contextId="net.sourceforge.vrapper.eclipse.active" schemeId="net.sourceforge.vrapper.keyscheme"/>
+      <key sequence="CTRL+S" commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut" contextId="net.sourceforge.vrapper.eclipse.active" schemeId="net.sourceforge.vrapper.keyscheme"/>
+      <key sequence="CTRL+T" commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut" contextId="net.sourceforge.vrapper.eclipse.active" schemeId="net.sourceforge.vrapper.keyscheme"/>
+      <key sequence="CTRL+U" commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut" contextId="net.sourceforge.vrapper.eclipse.active" schemeId="net.sourceforge.vrapper.keyscheme"/>
+      <key sequence="CTRL+V" commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut" contextId="net.sourceforge.vrapper.eclipse.active" schemeId="net.sourceforge.vrapper.keyscheme"/>
+      <key sequence="CTRL+W" commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut" contextId="net.sourceforge.vrapper.eclipse.active" schemeId="net.sourceforge.vrapper.keyscheme"/>
+      <key sequence="CTRL+X" commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut" contextId="net.sourceforge.vrapper.eclipse.active" schemeId="net.sourceforge.vrapper.keyscheme"/>
+      <key sequence="CTRL+Y" commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut" contextId="net.sourceforge.vrapper.eclipse.active" schemeId="net.sourceforge.vrapper.keyscheme"/>
+      <key sequence="CTRL+Z" commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut" contextId="net.sourceforge.vrapper.eclipse.active" schemeId="net.sourceforge.vrapper.keyscheme"/>
+
+      <key sequence="CTRL+1" commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut" contextId="net.sourceforge.vrapper.eclipse.active" schemeId="net.sourceforge.vrapper.keyscheme"/>
+      <key sequence="CTRL+2" commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut" contextId="net.sourceforge.vrapper.eclipse.active" schemeId="net.sourceforge.vrapper.keyscheme"/>
+      <key sequence="CTRL+3" commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut" contextId="net.sourceforge.vrapper.eclipse.active" schemeId="net.sourceforge.vrapper.keyscheme"/>
+      <key sequence="CTRL+4" commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut" contextId="net.sourceforge.vrapper.eclipse.active" schemeId="net.sourceforge.vrapper.keyscheme"/>
+      <key sequence="CTRL+5" commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut" contextId="net.sourceforge.vrapper.eclipse.active" schemeId="net.sourceforge.vrapper.keyscheme"/>
+      <key sequence="CTRL+6" commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut" contextId="net.sourceforge.vrapper.eclipse.active" schemeId="net.sourceforge.vrapper.keyscheme"/>
+      <key sequence="CTRL+7" commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut" contextId="net.sourceforge.vrapper.eclipse.active" schemeId="net.sourceforge.vrapper.keyscheme"/>
+      <key sequence="CTRL+8" commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut" contextId="net.sourceforge.vrapper.eclipse.active" schemeId="net.sourceforge.vrapper.keyscheme"/>
+      <key sequence="CTRL+9" commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut" contextId="net.sourceforge.vrapper.eclipse.active" schemeId="net.sourceforge.vrapper.keyscheme"/>
+      <key sequence="CTRL+0" commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut" contextId="net.sourceforge.vrapper.eclipse.active" schemeId="net.sourceforge.vrapper.keyscheme"/>
+      <key sequence="CTRL+-" commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut" contextId="net.sourceforge.vrapper.eclipse.active" schemeId="net.sourceforge.vrapper.keyscheme"/>
+      <key sequence="CTRL+=" commandId="net.sourceforge.vrapper.eclipse.commands.vrapperShortcut" contextId="net.sourceforge.vrapper.eclipse.active" schemeId="net.sourceforge.vrapper.keyscheme"/>
+
+     </extension>
 </plugin>
 

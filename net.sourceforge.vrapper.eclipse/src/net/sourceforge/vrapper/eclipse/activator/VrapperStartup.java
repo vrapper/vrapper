@@ -13,6 +13,7 @@ public class VrapperStartup implements IStartup {
                 plugin.restoreVimEmulationInActiveEditors();
                 plugin.addEditorListeners();
                 plugin.addShutdownListener();
+                plugin.activateVrapperShortcutContexts();
                 plugin.toggleVrapper();
             }
         });

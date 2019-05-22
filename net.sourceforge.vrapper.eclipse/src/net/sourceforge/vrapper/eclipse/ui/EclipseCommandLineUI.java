@@ -1,8 +1,5 @@
 package net.sourceforge.vrapper.eclipse.ui;
 
-import java.text.NumberFormat;
-import java.util.concurrent.TimeUnit;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CaretEvent;
 import org.eclipse.swt.custom.CaretListener;
@@ -30,7 +27,7 @@ import net.sourceforge.vrapper.vim.register.RegisterContent;
 import net.sourceforge.vrapper.vim.register.RegisterManager;
 import net.sourceforge.vrapper.vim.register.StringRegisterContent;
 
-class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener, SelectionListener {
+public class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener, SelectionListener {
 
     private StyledText commandLineText;
     private Register clipboard;
@@ -116,6 +113,10 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener,
                 EclipseCommandLineUI.this.widgetSelected(new SelectionEvent(e2));
             }
         });
+    }
+
+    public StyledText getWidget() {
+        return commandLineText;
     }
 
     public boolean isOpen() {
@@ -412,9 +413,9 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener,
             commandLineText.setCaret(defaultCaret);
         }
     }
-    
-    /** Makes sure that the prompt characters don't get erased when selected. */
-    protected void clipSelection() {
+
+    /** Makes sure that the caret or selection never move into the prompt characters. */
+    public void clipSelection() {
         if (commandLineText.getSelectionCount() > 0) {
             Point sel = commandLineText.getSelection();
             boolean isReversed = commandLineText.getCaretOffset() == sel.x;
@@ -433,6 +434,11 @@ class EclipseCommandLineUI implements CommandLineUI, IDisposable, CaretListener,
                 newSel = new Point(leftOffset, rightOffset);
             }
             commandLineText.setSelection(newSel);
+        } else {
+            int offset = commandLineText.getCaretOffset();
+            if (offset < contentsOffset) {
+                commandLineText.setCaretOffset(contentsOffset);
+            }
         }
     }
 

@@ -24,6 +24,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IPartListener2;
+import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchPartReference;
@@ -32,9 +33,11 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.MultiEditor;
 import org.eclipse.ui.part.MultiPageEditorPart;
+import org.eclipse.ui.services.ISourceProviderService;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 
 import net.sourceforge.vrapper.eclipse.activator.VrapperPlugin;
+import net.sourceforge.vrapper.eclipse.activator.VrapperStatusSourceProvider;
 import net.sourceforge.vrapper.eclipse.extractor.EditorExtractor;
 import net.sourceforge.vrapper.eclipse.platform.EclipseBufferAndTabService;
 import net.sourceforge.vrapper.eclipse.platform.EclipseCursorAndSelection;
@@ -45,6 +48,7 @@ import net.sourceforge.vrapper.platform.VrapperPlatformException;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
+import net.sourceforge.vrapper.vim.modes.EditorMode;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 
 /**
@@ -344,7 +348,9 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
                     if (activePage != -1) {
                         IEditorPart curEditor = (IEditorPart) METHOD_GET_EDITOR.invoke(mPart, activePage);
                         if (curEditor != null) {
-                            ensureBufferService(mPart).setCurrentEditor(editorInfo.getChild(curEditor));
+                            EditorInfo child = editorInfo.getChild(curEditor);
+                            ensureBufferService(mPart).setCurrentEditor(child);
+                            syncActiveEditorModeWithEclipse(child);
                         }
                     }
                 }
@@ -366,7 +372,9 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
                     }
                     IEditorPart curEditor = mEditor.getActiveEditor();
                     if (curEditor != null) {
-                        ensureBufferService(mEditor).setCurrentEditor(editorInfo.getChild(curEditor));
+                        EditorInfo child = editorInfo.getChild(curEditor);
+                        ensureBufferService(mEditor).setCurrentEditor(child);
+                        syncActiveEditorModeWithEclipse(child);
                     }
                 }
             }
@@ -381,8 +389,9 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
                     && vim.getConfiguration().get(Options.START_NORMAL_MODE)) {
                 vim.setSelection(null);
                 vim.changeModeSafely(NormalMode.NAME);
+                EditorMode currentMode = vim.getCurrentMode();
                 // Make sure caret is placed within line, reset caret shape for conflicted selection
-                if (vim.getCurrentMode() instanceof NormalMode) {
+                if (currentMode instanceof NormalMode) {
                     ((NormalMode)vim.getCurrentMode()).placeCursor(StickyColumnPolicy.NEVER);
                 }
             }
@@ -391,8 +400,34 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
             if (editorInfo.isSimpleEditor()) {
                 IEditorPart editor = (IEditorPart) part;
                 ensureBufferService(editor).setCurrentEditor(editorInfo);
+                // Trigger mode listeners
+                syncActiveEditorModeWithEclipse(vim);
             }
         }
+    }
+
+    /**
+     * Triggers the Eclipse workbench to enable / disable shortcuts based on the mode the currently
+     * selected Vrapper instance is in.
+     */
+    private void syncActiveEditorModeWithEclipse(EditorInfo currentEditor) {
+        // Find Vrapper instance for editor
+        InputInterceptor input = interceptors.get(currentEditor.getCurrent());
+        syncActiveEditorModeWithEclipse(input.getEditorAdaptor());
+    }
+
+    private void syncActiveEditorModeWithEclipse(EditorAdaptor currentEditor) {
+        EditorMode currentMode = null;
+        // currentEditor could be null when we couldn't create a Vrapper instance for an editor
+        if (currentEditor != null) {
+            currentMode = currentEditor.getCurrentMode();
+        }
+        IWorkbench workbench = PlatformUI.getWorkbench();
+        ISourceProviderService sourceProviderService =
+                (ISourceProviderService) workbench.getService(ISourceProviderService.class);
+        VrapperStatusSourceProvider sourceProvider = (VrapperStatusSourceProvider)
+                sourceProviderService.getSourceProvider(VrapperStatusSourceProvider.SOURCE_CURRENTMODE);
+        sourceProvider.fireEditorModeChange(currentMode);
     }
 
     private static Method getMultiPartEditorMethod(String name,
@@ -493,31 +528,43 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
         if ( ! activationListenerEnabled) {
             return;
         }
-        if (event.getPageChangeProvider() instanceof IEditorPart
-                && event.getSelectedPage() instanceof IEditorPart) {
+        if (event.getPageChangeProvider() instanceof IEditorPart) {
             IEditorPart toplevelEditor = (IEditorPart) event.getPageChangeProvider();
-            IEditorPart editor = (IEditorPart) event.getSelectedPage();
-            InputInterceptor interceptor = interceptors.get(editor);
+            InputInterceptor interceptor = null;
 
-            // This can happen for some rare, dynamic editors which replace editor pages later on.
-            // They tend to do this upon changing pages in which case they're called before.
-            if (interceptor == null) {
-                EditorInfo topPageEditorInfo = toplevelEditorInfo.get(toplevelEditor);
-                if (topPageEditorInfo != null && editor instanceof AbstractTextEditor) {
-                    AbstractTextEditor abstractTextEditor = (AbstractTextEditor) editor;
-                    EditorInfo childInfo = topPageEditorInfo.createChildInfo(editor);
+            if (event.getSelectedPage() instanceof IEditorPart) {
+                IEditorPart editor = (IEditorPart) event.getSelectedPage();
+                interceptor = interceptors.get(editor);
 
-                    // Calling partActivated below will update the 'lastSeen' info, pass false.
-                    registerEditorPart(childInfo, false);
-                    interceptAbstractTextEditor(abstractTextEditor, childInfo);
-                    interceptor = interceptors.get(editor);
+                // This can happen for some rare, dynamic editors which replace editor pages later on.
+                // They tend to do this upon changing pages in which case they're called before.
+                if (interceptor == null) {
+                    EditorInfo topPageEditorInfo = toplevelEditorInfo.get(toplevelEditor);
+                    if (topPageEditorInfo != null && editor instanceof AbstractTextEditor) {
+                        AbstractTextEditor abstractTextEditor = (AbstractTextEditor) editor;
+                        EditorInfo childInfo = topPageEditorInfo.createChildInfo(editor);
+
+                        // Calling partActivated below will update the 'lastSeen' info, pass false.
+                        registerEditorPart(childInfo, false);
+                        interceptAbstractTextEditor(abstractTextEditor, childInfo);
+                        interceptor = interceptors.get(editor);
+                    }
                 }
             }
 
             if (interceptor != null) {
                 EditorInfo info = interceptor.getEditorInfo();
-                partActivated(info, new ProcessedInfo(editor));
-                ensureBufferService(editor).setCurrentEditor(info);
+                partActivated(info, new ProcessedInfo(info.getCurrent()));
+                ensureBufferService(info.getCurrent()).setCurrentEditor(info);
+                syncActiveEditorModeWithEclipse(info);
+            } else {
+                // Focused page inside editor is not something running Vrapper, disable mode shortcuts
+                IWorkbench workbench = PlatformUI.getWorkbench();
+                ISourceProviderService sourceProviderService =
+                        (ISourceProviderService) workbench.getService(ISourceProviderService.class);
+                VrapperStatusSourceProvider sourceProvider = (VrapperStatusSourceProvider)
+                        sourceProviderService.getSourceProvider(VrapperStatusSourceProvider.SOURCE_CURRENTMODE);
+                sourceProvider.fireEditorModeChange(null);
             }
         }
     }
