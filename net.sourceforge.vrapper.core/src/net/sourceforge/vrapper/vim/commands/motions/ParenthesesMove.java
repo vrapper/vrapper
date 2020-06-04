@@ -1,6 +1,5 @@
 package net.sourceforge.vrapper.vim.commands.motions;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,22 +17,32 @@ import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
  * @author Matthias Radig
  */
 public class ParenthesesMove extends AbstractModelSideMotion {
-    private static final Map<String, ParenthesesPair> PARENTHESES;
+    private static final Map<String, ParenthesesPair> PARENTHESES = new HashMap<String, ParenthesesPair>();
 
     static {
-        Map<String, ParenthesesPair> op = new HashMap<String, ParenthesesPair>();
-        op.put("(", new ParenthesesPair("(", ")", false));
-        op.put("{", new ParenthesesPair("{", "}", false));
-        op.put("[", new ParenthesesPair("[", "]", false));
-        op.put("/*", new ParenthesesPair("/*", "*/", false));
-        op.put(")", new ParenthesesPair("(", ")", true ));
-        op.put("}", new ParenthesesPair("{", "}", true ));
-        op.put("]", new ParenthesesPair("[", "]", true ));
-        op.put("*/", new ParenthesesPair("/*", "*/", true));
-        PARENTHESES = Collections.unmodifiableMap(op);
+    	//default values for "matchpairs" setting
+        PARENTHESES.put("(", new ParenthesesPair("(", ")", false));
+        PARENTHESES.put("{", new ParenthesesPair("{", "}", false));
+        PARENTHESES.put("[", new ParenthesesPair("[", "]", false));
+        PARENTHESES.put(")", new ParenthesesPair("(", ")", true ));
+        PARENTHESES.put("}", new ParenthesesPair("{", "}", true ));
+        PARENTHESES.put("]", new ParenthesesPair("[", "]", true ));
+        //hack to support multi-char pairs
+        PARENTHESES.put("/*", new ParenthesesPair("/*", "*/", false));
+        PARENTHESES.put("*/", new ParenthesesPair("/*", "*/", true));
     }
     
     public static final ParenthesesMove INSTANCE = new ParenthesesMove();
+    
+    public void addParentheses(String open, String close) {
+    	PARENTHESES.put(open, new ParenthesesPair(open, close, false));
+    	PARENTHESES.put(close, new ParenthesesPair(open, close, true));
+    }
+    
+    public void removeParentheses(String open, String close) {
+    	PARENTHESES.remove(open);
+    	PARENTHESES.remove(close);
+    }
 
     //default match algorithm, find match for character under cursor
     @Override

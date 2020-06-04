@@ -4,6 +4,7 @@ import static net.sourceforge.vrapper.platform.Configuration.Option.*;
 import static net.sourceforge.vrapper.utils.VimUtils.set;
 
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import net.sourceforge.vrapper.platform.Configuration.Option;
 import net.sourceforge.vrapper.vim.commands.Selection;
@@ -75,8 +76,9 @@ public interface Options {
                 + RegisterManager.CLIPBOARD_VALUE_AUTOSELECTPLUS + ", "
                 + "exclude:", // Used by default in Vim on Linux, ignored by Vrapper.
             "cb");
+    public static final Option<Set<String>> MATCHPAIRS = globalStringSet("matchpairs", "(:),{:},[:]", Pattern.compile(".:."), "mps");
     @SuppressWarnings("unchecked")
-    public static final Set<Option<Set<String>>> STRINGSET_OPTIONS = set(CLIPBOARD);
+    public static final Set<Option<Set<String>>> STRINGSET_OPTIONS = set(CLIPBOARD, MATCHPAIRS);
 
     // Int options:
     public static final Option<Integer> SCROLL_OFFSET = integer("scrolloff",   0, "so");

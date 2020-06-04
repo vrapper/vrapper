@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.sourceforge.vrapper.platform.SimpleConfiguration.NewLine;
 
@@ -54,11 +56,22 @@ public interface Configuration {
         private final String[] alias;
         private final T defaultValue;
         private final List<String> allNames;
-        private final Set<String> legalValues;
+        private Set<String> legalValues = null;
+        private Pattern legalRegexPattern;
         private final OptionScope scope;
 
         private Option(String id, T defaultValue, Set<String> legalValues, String...alias) {
             this(id, OptionScope.DEFAULT, defaultValue, legalValues, alias);
+        }
+
+        private Option(String id, OptionScope scope, T defaultValue, String...alias) {
+            this.id = id;
+            this.defaultValue = defaultValue;
+            this.alias = alias;
+            this.allNames = new ArrayList<String>();
+            allNames.add(id);
+            allNames.addAll(Arrays.asList(alias));
+            this.scope = scope;
         }
 
         private Option(String id, OptionScope scope, T defaultValue,
@@ -73,18 +86,28 @@ public interface Configuration {
             this.scope = scope;
         }
 
-        public static final Option<Boolean> bool(String id, boolean defaultValue, String... alias) {
+        private Option(String id, OptionScope scope, T defaultValue,
+        		Pattern legalRegexPattern, String...alias) {
+            this.id = id;
+            this.defaultValue = defaultValue;
+            this.legalRegexPattern = legalRegexPattern;
+            this.alias = alias;
+            this.allNames = new ArrayList<String>();
+            allNames.add(id);
+            allNames.addAll(Arrays.asList(alias));
+            this.scope = scope;
+        }
+
+		public static final Option<Boolean> bool(String id, boolean defaultValue, String... alias) {
             return new Option<Boolean>(id, Boolean.valueOf(defaultValue), null, alias);
         }
 
         public static final Option<Boolean> localBool(String id, boolean defaultValue, String... alias) {
-            return new Option<Boolean>(id, OptionScope.LOCAL, Boolean.valueOf(defaultValue), null,
-                    alias);
+            return new Option<Boolean>(id, OptionScope.LOCAL, Boolean.valueOf(defaultValue), alias);
         }
 
         public static final Option<Boolean> globalBool(String id, boolean defaultValue, String... alias) {
-            return new Option<Boolean>(id, OptionScope.GLOBAL, Boolean.valueOf(defaultValue), null,
-                    alias);
+            return new Option<Boolean>(id, OptionScope.GLOBAL, Boolean.valueOf(defaultValue), alias);
         }
 
         public static final Option<String> string(String id, String defaultValue, String csv, String... alias) {
@@ -122,8 +145,19 @@ public interface Configuration {
             return new Option<Set<String>>(id, OptionScope.GLOBAL, defaultValues, legalValues, alias);
         }
 
+        public static final Option<Set<String>> globalStringSet(String id, String defaultValueStr, Pattern regex, String... alias) {
+            Set<String> defaultValues = new HashSet<String>();
+            for (String value : defaultValueStr.split(Option.SET_DELIMITER)) {
+            	Matcher matcher = regex.matcher(value);
+                if (matcher.find()) {
+                    defaultValues.add(value);
+                }
+            }
+            return new Option<Set<String>>(id, OptionScope.GLOBAL, defaultValues, regex, alias);
+        }
+
         public static final Option<String> globalStringNoConstraint(String id, String defaultValue, String... alias) {
-            return new Option<String>(id, OptionScope.GLOBAL, defaultValue, null, alias);
+            return new Option<String>(id, OptionScope.GLOBAL, defaultValue, alias);
         }
 
         public static final Option<String> stringNoConstraint(String id, String defaultValue, String... alias) {
@@ -155,6 +189,13 @@ public interface Configuration {
          */
         public Set<String> getLegalValues() {
             return legalValues;
+        }
+
+        /**
+         * @return Pattern that matches all legal values or <code>null</code> if there are no constraints on values of this option
+         */
+        public Pattern getLegalRegexPattern() {
+            return legalRegexPattern;
         }
 
         /** Whether the option is local, default or global scope. */

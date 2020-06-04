@@ -60,11 +60,31 @@ public class ComplexOptionEvaluator implements Evaluator {
             }
             else if ((stringSetOpt = find(Options.STRINGSET_OPTIONS, optName)) != null) {
                 Set<String> newValue = new HashSet<String>();
-                if (value.trim().length() > 0) {
+                if(additive) { //append ( += )
+                	newValue.addAll(vim.getConfiguration().get(stringSetOpt));
+
+                    String[] toAdd = value.split(Option.SET_DELIMITER);
+                    newValue.addAll(Arrays.asList(toAdd));
+
+                    validateSet(stringSetOpt, newValue);
+                }
+                else if(subtractive) { //remove ( -= )
+                	newValue.addAll(vim.getConfiguration().get(stringSetOpt));
+
+                    String[] toRemove = value.split(Option.SET_DELIMITER);
+                    for(String item : toRemove) {
+                    	newValue.remove(item);
+                    }
+                	
+                    validateSet(stringSetOpt, newValue);
+                }
+                else if (value.trim().length() > 0) { // resetting the value ( = )
                     String[] values = value.split(Option.SET_DELIMITER);
                     newValue.addAll(Arrays.asList(values));
                     validateSet(stringSetOpt, newValue);
                 }
+                //else: no value, wipe out setting
+
                 set(vim, stringSetOpt, newValue);
             }
             else if ((intOpt = find(Options.INT_OPTIONS, optName)) != null) {
@@ -101,17 +121,27 @@ public class ComplexOptionEvaluator implements Evaluator {
     }
 
     protected void validateSet(Option<Set<String>> opt, Set<String> values) throws ValueException {
-        Set<String> cleanedValues = new HashSet<String>();
-        for (String value : values) {
-            int valueDelimIndex = value.indexOf(Option.SET_VALUE_ITEM);
-            if (valueDelimIndex != -1) {
-                cleanedValues.add(value.substring(0, valueDelimIndex + 1));
-            } else {
-                cleanedValues.add(value);
-            }
+        if (opt.getLegalRegexPattern() != null) {
+        	for(String item : values) {
+        		if(!opt.getLegalRegexPattern().matcher(item).find()) {
+                    throw new ValueException();
+        		}
+        	}
         }
-        if (opt.getLegalValues() == null || !opt.getLegalValues().containsAll(cleanedValues)) {
-            throw new ValueException();
+        else if(opt.getLegalValues() != null) {
+            Set<String> cleanedValues = new HashSet<String>();
+            for (String value : values) {
+                //for "clipboard" settting, ignore anything after "exclude:"
+                int valueDelimIndex = value.indexOf(Option.SET_VALUE_ITEM);
+                if (valueDelimIndex != -1) {
+                    cleanedValues.add(value.substring(0, valueDelimIndex + 1));
+                } else {
+                    cleanedValues.add(value);
+                }
+            }
+            if (!opt.getLegalValues().containsAll(cleanedValues)) {
+                throw new ValueException();
+            }
         }
     }
 

@@ -1,7 +1,7 @@
 package net.sourceforge.vrapper.core.tests.cases;
 
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.parseKeyStrokes;
-import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -71,6 +71,9 @@ public class CommandLineTests extends VimTestCase {
                 RegisterManager.CLIPBOARD_VALUE_AUTOSELECT);
         assertThat(actual, hasItems(RegisterManager.CLIPBOARD_VALUE_AUTOSELECT));
 
+        actual = doSetOption(Options.CLIPBOARD, "clipboard", "exclude:console");
+        assertThat(actual, hasItems("exclude:console"));
+
         actual = doSetOption(Options.CLIPBOARD, "clipboard", "");
         assertTrue("Setting string-set option to empty string didn't clear it!", actual.isEmpty());
 
@@ -79,6 +82,32 @@ public class CommandLineTests extends VimTestCase {
                     + RegisterManager.CLIPBOARD_VALUE_UNNAMED);
         assertThat(actual, hasItems(RegisterManager.CLIPBOARD_VALUE_AUTOSELECT,
                 RegisterManager.CLIPBOARD_VALUE_UNNAMED));
+
+        actual = doSetOption(Options.MATCHPAIRS, "matchpairs", "foo");
+        assertThat(actual, hasItems("(:)", "{:}", "[:]"));
+
+        actual = doSetOption(Options.MATCHPAIRS, "matchpairs+", "<:>");
+        assertThat(actual, hasItems("<:>", "(:)"));
+
+        actual = doSetOption(Options.MATCHPAIRS, "matchpairs-", "<:>");
+        assertThat(actual, hasItems("(:)"));
+        assertThat(actual, not(hasItems("<:>")));
+
+        actual = doSetOption(Options.MATCHPAIRS, "matchpairs+", "<:>,=:;");
+        assertThat(actual, hasItems("<:>", "=:;", "(:)"));
+
+        actual = doSetOption(Options.MATCHPAIRS, "matchpairs-", "<:>,=:;");
+        assertThat(actual, not(hasItems("<:>", "=:;")));
+        assertThat(actual, hasItems("(:)", "{:}"));
+
+        actual = doSetOption(Options.MATCHPAIRS, "matchpairs", "<:>");
+        assertThat(actual, hasItems("<:>"));
+
+        actual = doSetOption(Options.MATCHPAIRS, "matchpairs", "<:>,(:)");
+        assertThat(actual, hasItems("<:>", "(:)"));
+
+        actual = doSetOption(Options.MATCHPAIRS, "mps-", "<:>,(:)");
+        assertThat(actual, not(hasItems("<:>", "(:)")));
     }
 
     @Test

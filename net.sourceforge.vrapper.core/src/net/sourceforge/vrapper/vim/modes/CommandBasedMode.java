@@ -8,7 +8,9 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionB
 import static net.sourceforge.vrapper.vim.commands.BorderPolicy.EXCLUSIVE;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import net.sourceforge.vrapper.keymap.EmptyState;
 import net.sourceforge.vrapper.keymap.KeyStroke;
@@ -17,10 +19,13 @@ import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.Transition;
 import net.sourceforge.vrapper.keymap.vim.ConstructorWrappers;
 import net.sourceforge.vrapper.log.VrapperLog;
+import net.sourceforge.vrapper.platform.Configuration.Option;
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.PlatformSpecificStateProvider;
 import net.sourceforge.vrapper.utils.VimUtils;
+import net.sourceforge.vrapper.vim.ConfigurationListener;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
@@ -67,6 +72,35 @@ import net.sourceforge.vrapper.vim.register.RegisterManager;
 /** Base class for normal and visual modes. */
 public abstract class CommandBasedMode extends AbstractMode {
 
+    protected class CommandConfigurationListener implements ConfigurationListener {
+
+        public CommandConfigurationListener(EditorAdaptor vim) { }
+
+        @SuppressWarnings({ "unchecked", "serial" })
+		public <T> void optionChanged(Option<T> option, T oldValue, T newValue) {
+            if(option.equals(Options.MATCHPAIRS)) {
+            	final Set<String> oldSet = (Set<String>)oldValue;
+            	final Set<String> newSet = (Set<String>)newValue;
+
+            	// both 'if' statements run if matchpairs is overwritten ( = )
+            	if(! oldSet.containsAll(newSet)) { //append ( += )
+            		Set<String> toAdd = new HashSet<String>(newSet) {{ removeAll(oldSet); }};
+            		for(String newPair : toAdd) {
+            			String[] pair = newPair.split(":", 2);
+            			ParenthesesMove.INSTANCE.addParentheses(pair[0], pair[1]);
+            		}
+            	}
+            	if(! newSet.containsAll(oldSet)) { //remove ( -= )
+            		Set<String> toRemove = new HashSet<String>(oldSet) {{ removeAll(newSet); }};
+            		for(String oldPair : toRemove) {
+            			String[] pair = oldPair.split(":", 2);
+            			ParenthesesMove.INSTANCE.removeParentheses(pair[0], pair[1]);
+            		}
+            	}
+            }
+        }
+    }
+
     private static State<Motion> motions;
 
     protected final State<Command> initialState;
@@ -78,6 +112,7 @@ public abstract class CommandBasedMode extends AbstractMode {
 
     public CommandBasedMode(EditorAdaptor editorAdaptor) {
         super(editorAdaptor);
+        editorAdaptor.getConfiguration().addListener(new CommandConfigurationListener(editorAdaptor));
         currentState = initialState = getInitialState();
         keyMapResolver = buildKeyMapResolver();
         commandBuffer = new StringBuilder();
