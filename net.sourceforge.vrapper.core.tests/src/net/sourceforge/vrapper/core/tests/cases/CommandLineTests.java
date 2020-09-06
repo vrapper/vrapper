@@ -36,6 +36,7 @@ import net.sourceforge.vrapper.vim.commands.MotionCommand;
 import net.sourceforge.vrapper.vim.commands.RetabOperation;
 import net.sourceforge.vrapper.vim.commands.SortOperation;
 import net.sourceforge.vrapper.vim.commands.SubstitutionOperation;
+import net.sourceforge.vrapper.vim.commands.SwitchBufferCommand;
 import net.sourceforge.vrapper.vim.commands.TextObject;
 import net.sourceforge.vrapper.vim.commands.TextOperation;
 import net.sourceforge.vrapper.vim.commands.TextOperationTextObjectCommand;
@@ -346,6 +347,14 @@ public class CommandLineTests extends VimTestCase {
     	command = parser.parseAndExecute(":", "yank A");
     	assertNotNull(command);
     	assertTrue(command instanceof LineRangeOperationCommand);
+    	
+    	command = parser.parseAndExecute(":", "b1");
+    	assertNotNull(command);
+    	assertTrue(command instanceof SwitchBufferCommand);
+    	
+    	command = parser.parseAndExecute(":", "b fileName");
+    	assertNotNull(command);
+    	assertTrue(command instanceof SwitchBufferCommand);
     }
     
     @Test

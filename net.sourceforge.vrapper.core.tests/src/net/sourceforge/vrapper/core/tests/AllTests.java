@@ -7,11 +7,13 @@ import net.sourceforge.vrapper.core.tests.cases.KeyMapTests;
 import net.sourceforge.vrapper.core.tests.cases.MacroTests;
 import net.sourceforge.vrapper.core.tests.cases.MotionTests;
 import net.sourceforge.vrapper.core.tests.cases.NormalModeTests;
+import net.sourceforge.vrapper.core.tests.cases.PatternUtilsTests;
 import net.sourceforge.vrapper.core.tests.cases.RemappingTests;
 import net.sourceforge.vrapper.core.tests.cases.SearchModeTests;
 import net.sourceforge.vrapper.core.tests.cases.SimpleKeyStrokeTests;
 import net.sourceforge.vrapper.core.tests.cases.SnapshotTests;
 import net.sourceforge.vrapper.core.tests.cases.StateAndTransitionTests;
+import net.sourceforge.vrapper.core.tests.cases.SwitchBufferCommandTests;
 import net.sourceforge.vrapper.core.tests.cases.UtilityTests;
 import net.sourceforge.vrapper.core.tests.cases.VisualModeTests;
 import net.sourceforge.vrapper.core.tests.cases.VisualModeExclusiveTests;
@@ -38,6 +40,8 @@ import org.junit.runners.Suite;
 	VisualModeExclusiveTests.class,
 	BlockwiseVisualModeTests.class,
 	UtilityTests.class,
+	SwitchBufferCommandTests.class,
+	PatternUtilsTests.class,
 //	VrapperRCTests.class,
 //	TextObjectsUnitTests.class,
 //	CommandUnitTests.class,
