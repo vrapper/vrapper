@@ -186,9 +186,9 @@ public class EclipseBufferAndTabService implements BufferAndTabService {
                 continue;
             }
             EclipseBuffer eclipseBuffer = new EclipseBuffer(editorInfo);
-            if (currentInput != null && currentInput.equals(editorInfo.input)) {
+            if (currentInput != null && currentInput.equals(editorInfo.getInput())) {
                 eclipseBuffer.markActive();
-            } else if (previousInput != null && previousInput.equals(editorInfo.input)) {
+            } else if (previousInput != null && previousInput.equals(editorInfo.getInput())) {
                 eclipseBuffer.markAlternate();
             }
             result.add(eclipseBuffer);

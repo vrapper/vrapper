@@ -2,3 +2,4 @@ bin
 net.sourceforge.vrapper.update-site/*.jar
 net.sourceforge.vrapper.update-site/features/
 net.sourceforge.vrapper.update-site/plugins/
+.DS_Store

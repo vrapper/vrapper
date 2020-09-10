@@ -624,7 +624,8 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
                 if (editorInfo.isSimpleEditor()) {
                     bufferInfo.parentInput = null;
                 } else {
-                    bufferInfo.parentInput = editorInfo.getParentInfo().getCurrent().getEditorInput();
+					bufferInfo.parentInput = new WeakReference<IEditorInput>(
+							editorInfo.getParentInfo().getCurrent().getEditorInput());
                 }
                 bufferInfo.editorType = editorInfo.getTopLevelEditor().getEditorSite().getId();
                 bufferInfo.lastSeenEditor = new WeakReference<IEditorPart>(editorPart);
@@ -661,7 +662,7 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
 
         } else if (buffer.input != null && buffer.parentInput == null) {
             try {
-                page.openEditor(buffer.input, buffer.editorType, true,
+                page.openEditor(buffer.getInput(), buffer.editorType, true,
                         IWorkbenchPage.MATCH_ID | IWorkbenchPage.MATCH_INPUT);
             } catch (PartInitException e) {
                 throw new VrapperPlatformException("Failed to activate editor for input "
@@ -673,7 +674,7 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
             // partActivated listeners only clobbers the current editor status.
             activationListenerEnabled = false;
             try {
-                IEditorReference[] editors = page.findEditors(buffer.parentInput, buffer.editorType,
+                IEditorReference[] editors = page.findEditors(buffer.getParentInput(), buffer.editorType,
                         IWorkbenchPage.MATCH_ID | IWorkbenchPage.MATCH_INPUT);
                 // Directly activate existing editors as some editor implementations tend to reset
                 // the cursor when "re-opened".
@@ -681,7 +682,7 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
                     parentEditor = editors[0].getEditor(true);
                     page.activate(parentEditor);
                 } else {
-                    parentEditor = page.openEditor(buffer.parentInput, buffer.editorType, true,
+                    parentEditor = page.openEditor(buffer.getParentInput(), buffer.editorType, true,
                         IWorkbenchPage.MATCH_ID | IWorkbenchPage.MATCH_INPUT);
                 }
             } catch (PartInitException e) {
@@ -702,7 +703,7 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
         IEditorPart parentEditor = parentEditorInfo.getCurrent();
         if (parentEditor instanceof MultiPageEditorPart) {
             MultiPageEditorPart multiPage = (MultiPageEditorPart) parentEditor;
-            IEditorPart[] foundEditors = multiPage.findEditors(buffer.input);
+            IEditorPart[] foundEditors = multiPage.findEditors(buffer.getInput());
             if (foundEditors.length < 1) {
                 throw new VrapperPlatformException("Failed to find inner editor for "
                         + buffer.input + " in parent editor " + parentEditor);
