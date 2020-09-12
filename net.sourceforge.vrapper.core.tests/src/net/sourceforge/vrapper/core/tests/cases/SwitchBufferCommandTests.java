@@ -29,7 +29,7 @@ public class SwitchBufferCommandTests extends VimTestCase {
     }
 
     /**
-     * Test that ":buffer 2" switch to buffer whose ID is 2
+     * Test that ":buffer 2" switches to buffer with ID 2
      * 
      * @throws CommandExecutionException
      */
@@ -52,7 +52,7 @@ public class SwitchBufferCommandTests extends VimTestCase {
     }
 
     /**
-     * Test that ":buffer buffer2" switch to the buffer whose is buffer2
+     * Test that ":buffer fer2" switches to the buffer whose name is "buffer2"
      * 
      * @throws CommandExecutionException
      */
@@ -73,7 +73,7 @@ public class SwitchBufferCommandTests extends VimTestCase {
     }
 
     /**
-     * Test that ":buffer folder/buffer2" switch to the buffer whose is buffer2
+     * Test that ":buffer folder/buffer2" switches to the buffer whose name is "folder/buffer2"
      * 
      * @throws CommandExecutionException
      */
@@ -94,7 +94,7 @@ public class SwitchBufferCommandTests extends VimTestCase {
     }
 
     /**
-     * Test that ":buffer ^buffer2$" switch to the buffer whose is buffer2
+     * Test that ":buffer ^buffer2$" switches to the buffer whose name is "buffer2"
      * 
      * @throws CommandExecutionException
      */
@@ -114,7 +114,7 @@ public class SwitchBufferCommandTests extends VimTestCase {
         verify(bufferAndTabsService).switchBuffer(buffer2);
     }
 
-    /** Test that ":buffer ^ffer2" does not switch to the buffer whose is buffer2 */
+    /** Test that ":buffer ^ffer2" does not switch to the buffer whose name is "buffer2" */
     @Test
     public void testSwitchPatternKoCircumflex() {
         final String input = "^ffer2";
@@ -133,11 +133,11 @@ public class SwitchBufferCommandTests extends VimTestCase {
             cmd.execute(adaptor);
             fail("Exception expected");
         } catch (final CommandExecutionException ex) {
-            assertEquals("E94: No matching buffer for " + input, ex.getMessage());
+            assertEquals("No matching buffer for " + input, ex.getMessage());
         }
     }
 
-    /** Test that ":buffer buff$" does not switch to the buffer whose is buffer2 */
+    /** Test that ":buffer buff$" does not switch to the buffer whose name is "buffer2" */
     @Test
     public void testSwitchPatternKoDollar() {
         final String input = "buff$";
@@ -156,7 +156,7 @@ public class SwitchBufferCommandTests extends VimTestCase {
             cmd.execute(adaptor);
             fail("Exception expected");
         } catch (final CommandExecutionException ex) {
-            assertEquals("E94: No matching buffer for " + input, ex.getMessage());
+            assertEquals("No matching buffer for " + input, ex.getMessage());
         }
     }
 
@@ -179,11 +179,11 @@ public class SwitchBufferCommandTests extends VimTestCase {
             cmd.execute(adaptor);
             fail("Exception expected");
         } catch (final CommandExecutionException ex) {
-            assertEquals("E94: No matching buffer for " + input, ex.getMessage());
+            assertEquals("No matching buffer for " + input, ex.getMessage());
         }
     }
 
-    /** Test that an exception is raised if there is multiple matches */
+    /** Test that an exception is raised if there are multiple matches */
     @Test
     public void testSwitchPatternKoMultipleMatch() {
         final String input = "ffer";
@@ -202,7 +202,7 @@ public class SwitchBufferCommandTests extends VimTestCase {
             cmd.execute(adaptor);
             fail("Exception expected");
         } catch (final CommandExecutionException exception) {
-            assertEquals("E93: More than one match for " + input, exception.getMessage());
+            assertEquals("More than one match for " + input, exception.getMessage());
         }
     }
 }

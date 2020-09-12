@@ -11,11 +11,11 @@ public class PatternUtils {
      * <br>
      * If this method throw a PatternSyntaxException, then there is a problem to fix in the callee, here.
      * 
-     * @param pShellPattern The shell pattern
+     * @param shellPattern The shell pattern
      * @return A regex pattern
      */
-    public static Pattern shellPatternToRegex(final String pShellPattern) {
-        final String regex = "^.*" + shellPatternToRegexString(pShellPattern) + ".*$";
+    public static Pattern shellPatternToRegex(final String shellPattern) {
+        final String regex = "^.*" + shellPatternToRegexString(shellPattern) + ".*$";
         return Pattern.compile(regex);
     }
     
@@ -32,11 +32,11 @@ public class PatternUtils {
      * <li>{a,b} is replaced by \{a,b\} and not by \(a|b\) (Vim behaviour)</li>
      * </ul>
      * 
-     * @param pShellPattern The shell pattern
+     * @param shellPattern The shell pattern
      * @return A regex pattern
      */
-    public static String shellPatternToRegexString(final String pShellPattern) {        
-        String escapedPattern = pShellPattern
+    public static String shellPatternToRegexString(final String shellPattern) {        
+        String escapedPattern = shellPattern
             .replaceAll("\\*{2,}", "*")
             .replace("\\", "\\\\")            
             .replace("|", "\\|")

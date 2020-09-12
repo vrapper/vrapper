@@ -38,7 +38,7 @@ public class PatternUtilsTests {
     
     /** Test that the braces {} alone are escaped */
     @Test
-    public void shellPatternToRegexBracese() {
+    public void shellPatternToRegexBraces() {
         test("fi{le}", "fi\\{le\\}");
     }
     
@@ -66,7 +66,7 @@ public class PatternUtilsTests {
         test("^file$", "^file$");
     }
     
-    /** Test that characters of start/end of line are escaped */
+    /** Test that the pipes characters are escaped */
     @Test
     public void shellPatternToRegexPipe() {
         test("file|", "file\\|");
@@ -75,13 +75,13 @@ public class PatternUtilsTests {
     /**
      * Assert that a converted shell pattern is equals to an expected output 
      * 
-     * @param pInputShellPattern The shell pattern as input of the test method
-     * @param pExpectedRegexPattern The expected regex pattern as output
+     * @param inputShellPattern The shell pattern as input of the test method
+     * @param expectedRegexPattern The expected regex pattern as output
      */
-    private void test(String pInputShellPattern, String pExpectedRegexPattern) {
-        final String actualRegexPattern = PatternUtils.shellPatternToRegexString(pInputShellPattern);
+    private void test(String inputShellPattern, String expectedRegexPattern) {
+        final String actualRegexPattern = PatternUtils.shellPatternToRegexString(inputShellPattern);
         
-        assertEquals(pExpectedRegexPattern, actualRegexPattern);
+        assertEquals(expectedRegexPattern, actualRegexPattern);
         
     }
 }

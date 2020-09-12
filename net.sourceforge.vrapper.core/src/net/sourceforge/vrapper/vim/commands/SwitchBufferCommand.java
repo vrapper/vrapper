@@ -72,36 +72,36 @@ public class SwitchBufferCommand extends CountAwareCommand {
     }
     
     /** Switch to a buffer number
-     * @param pBufferService Service to use for buffer switching
-     * @param pTargetBufferId Buffer ID to switch to
+     * @param bufferService Service to use for buffer switching
+     * @param targetBufferId Buffer ID to switch to
      * @throws CommandExecutionException In case of buffer ID not found
      */
-    private void switchBufferNumber(BufferAndTabService pBufferService, int pTargetBufferId) throws CommandExecutionException {
+    private void switchBufferNumber(BufferAndTabService bufferService, int targetBufferId) throws CommandExecutionException {
         int i = 0;
-        List<Buffer> buffers = pBufferService.getBuffers();
-        while (i < buffers.size() && ! new Integer(pTargetBufferId).equals(buffers.get(i).getId())) {
+        List<Buffer> buffers = bufferService.getBuffers();
+        while (i < buffers.size() && targetBufferId != buffers.get(i).getId()) {
             i++;
         }
         
         if (i == buffers.size()) {
-            throw new CommandExecutionException("No buffer found with id " + pTargetBufferId);
+            throw new CommandExecutionException("No buffer found with id " + targetBufferId);
         }
         
         Buffer buffer = buffers.get(i);
-        pBufferService.switchBuffer(buffer);
+        bufferService.switchBuffer(buffer);
     }
     
     /** Switch to a buffer whose name matches the command argument (a substring)<br>
      * Source Vim: src/buffer.c
-     * @param pBufferService Service to use for buffer switching
+     * @param bufferService Service to use for buffer switching
      * @throws CommandExecutionException In case of non unique or inexistant buffer name
      */
-    private void switchBufferName(BufferAndTabService pBufferService) throws CommandExecutionException {
+    private void switchBufferName(BufferAndTabService bufferService) throws CommandExecutionException {
         final Pattern pattern = PatternUtils.shellPatternToRegex(targetBuffer);
         
         final List<Buffer> matchingBuffers = new ArrayList<Buffer>();
         
-        for (Buffer currentBuffer : pBufferService.getBuffers()) {
+        for (Buffer currentBuffer : bufferService.getBuffers()) {
             final String bufferName = currentBuffer.getDisplayName();
             if (pattern.matcher(bufferName).matches()) {
                 matchingBuffers.add(currentBuffer);
@@ -109,12 +109,12 @@ public class SwitchBufferCommand extends CountAwareCommand {
         }
         
         if (matchingBuffers.isEmpty()) {
-            throw new CommandExecutionException("E94: No matching buffer for " + targetBuffer);
+            throw new CommandExecutionException("No matching buffer for " + targetBuffer);
         } else if (matchingBuffers.size() >= 2) {
-            throw new CommandExecutionException("E93: More than one match for " + targetBuffer);
+            throw new CommandExecutionException("More than one match for " + targetBuffer);
         }
         
-        pBufferService.switchBuffer(matchingBuffers.get(0));
+        bufferService.switchBuffer(matchingBuffers.get(0));
     }
 
     @Override

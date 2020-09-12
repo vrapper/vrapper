@@ -186,10 +186,10 @@ public class StringUtils {
     }
     
     /** Is the parameter integer?
-     * @param pString String to test
+     * @param potentialInteger String to test
      * @return true if the parameter can be parsed to integer
      */
-    public static boolean isInteger(String pString) {
-        return INTEGER_PATTERN.matcher(pString).matches();
+    public static boolean isInteger(String potentialInteger) {
+        return INTEGER_PATTERN.matcher(potentialInteger).matches();
     }
 }
