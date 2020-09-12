@@ -12,11 +12,18 @@ public class PatternUtils {
      * If this method throw a PatternSyntaxException, then there is a problem to fix in the callee, here.
      * 
      * @param shellPattern The shell pattern
+     * @param isCaseSensitive Is the pattern must be case sensitive?
      * @return A regex pattern
      */
-    public static Pattern shellPatternToRegex(final String shellPattern) {
+    public static Pattern shellPatternToRegex(String shellPattern, boolean isCaseSensitive) {
         final String regex = "^.*" + shellPatternToRegexString(shellPattern) + ".*$";
-        return Pattern.compile(regex);
+        
+        int flags = 0;
+        if (isCaseSensitive) {
+            flags |= Pattern.CASE_INSENSITIVE;
+        }
+        
+        return Pattern.compile(regex, flags);
     }
     
     /**
@@ -35,7 +42,7 @@ public class PatternUtils {
      * @param shellPattern The shell pattern
      * @return A regex pattern
      */
-    public static String shellPatternToRegexString(final String shellPattern) {        
+    public static String shellPatternToRegexString(String shellPattern) {        
         String escapedPattern = shellPattern
             .replaceAll("\\*{2,}", "*")
             .replace("\\", "\\\\")            

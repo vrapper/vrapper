@@ -1,17 +1,15 @@
 package net.sourceforge.vrapper.vim.commands;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 import net.sourceforge.vrapper.platform.Buffer;
 import net.sourceforge.vrapper.platform.BufferAndTabService;
 import net.sourceforge.vrapper.utils.PatternUtils;
 import net.sourceforge.vrapper.utils.StringUtils;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
+import net.sourceforge.vrapper.vim.Options;
 
 
 public class SwitchBufferCommand extends CountAwareCommand {
@@ -67,7 +65,8 @@ public class SwitchBufferCommand extends CountAwareCommand {
             }
             
         } else {
-            switchBufferName(batService);
+            final boolean isCaseSensitive = editorAdaptor.getConfiguration().get(Options.FILE_IGNORE_CASE);
+            switchBufferName(batService, isCaseSensitive);
         }
     }
     
@@ -94,10 +93,11 @@ public class SwitchBufferCommand extends CountAwareCommand {
     /** Switch to a buffer whose name matches the command argument (a substring)<br>
      * Source Vim: src/buffer.c
      * @param bufferService Service to use for buffer switching
+     * @param isCaseSensitive Is the buffer searching is case sensitive?
      * @throws CommandExecutionException In case of non unique or inexistant buffer name
      */
-    private void switchBufferName(BufferAndTabService bufferService) throws CommandExecutionException {
-        final Pattern pattern = PatternUtils.shellPatternToRegex(targetBuffer);
+    private void switchBufferName(BufferAndTabService bufferService, boolean isCaseSensitive) throws CommandExecutionException {
+        final Pattern pattern = PatternUtils.shellPatternToRegex(targetBuffer, isCaseSensitive);
         
         final List<Buffer> matchingBuffers = new ArrayList<Buffer>();
         

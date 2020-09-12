@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import net.sourceforge.vrapper.core.tests.utils.VimTestCase;
 import net.sourceforge.vrapper.platform.Buffer;
+import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.SwitchBufferCommand;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
@@ -181,6 +182,28 @@ public class SwitchBufferCommandTests extends VimTestCase {
         } catch (final CommandExecutionException ex) {
             assertEquals("No matching buffer for " + input, ex.getMessage());
         }
+    }
+
+    /** Test that buffer is found if bad case and case insensitivity is set 
+     * @throws CommandExecutionException */
+    @Test
+    public void testSwitchPatternOkCaseInsensitive() throws CommandExecutionException {
+        final String input = "FeR2";
+
+        when(configuration.get(Options.FILE_IGNORE_CASE)).thenReturn(true);
+        
+        final Buffer buffer1 = mock(Buffer.class);
+        when(buffer1.getDisplayName()).thenReturn("buffer1");
+        
+        final Buffer buffer2 = mock(Buffer.class);
+        when(buffer2.getDisplayName()).thenReturn("buffer2");
+        
+        when(bufferAndTabsService.getBuffers()).thenReturn(Arrays.asList(buffer1, buffer2));
+        
+        final SwitchBufferCommand cmd = new SwitchBufferCommand(input);
+        cmd.execute(adaptor);
+        
+        verify(bufferAndTabsService).switchBuffer(buffer2);
     }
 
     /** Test that an exception is raised if there are multiple matches */
