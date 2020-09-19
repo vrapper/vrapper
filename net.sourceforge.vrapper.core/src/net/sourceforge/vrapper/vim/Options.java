@@ -13,19 +13,20 @@ import net.sourceforge.vrapper.vim.register.RegisterManager;
 
 public interface Options {
     // Boolean options:
-    public static final Option<Boolean> SMART_INDENT          = bool("smartindent",  true,  "si");
-    public static final Option<Boolean> AUTO_INDENT           = bool("autoindent",   false, "ai");
-    public static final Option<Boolean> ATOMIC_INSERT         = bool("atomicinsert", true,  "ati");
-    public static final Option<Boolean> IGNORE_CASE           = bool("ignorecase",   false, "ic");
-    public static final Option<Boolean> SMART_CASE            = bool("smartcase",    false, "scs");
-    public static final Option<Boolean> SEARCH_HIGHLIGHT= globalBool("hlsearch",     false, "hls");
-    public static final Option<Boolean> SEARCH_REGEX          = bool("regexsearch",  true,  "rxs");
-    public static final Option<Boolean> INCREMENTAL_SEARCH    = bool("incsearch",    false, "is");
-    public static final Option<Boolean> IM_DISABLE            = bool("imdisable",    false, "imd");
-    public static final Option<Boolean> VISUAL_MOUSE          = bool("visualmouse",  true,  "vm");
-    public static final Option<Boolean> EXIT_LINK_MODE        = bool("exitlinkmode", true,  "elm");
-    public static final Option<Boolean> CLEAN_INDENT          = bool("cleanindent",  true);
-    public static final Option<Boolean> AUTO_CHDIR            = bool("autochdir",    false, "acd");
+    public static final Option<Boolean> SMART_INDENT          = bool("smartindent",    true,  "si");
+    public static final Option<Boolean> AUTO_INDENT           = bool("autoindent",     false, "ai");
+    public static final Option<Boolean> ATOMIC_INSERT         = bool("atomicinsert",   true,  "ati");
+    public static final Option<Boolean> IGNORE_CASE           = bool("ignorecase",     false, "ic");
+    public static final Option<Boolean> FILE_IGNORE_CASE      = bool("fileignorecase", false, "fic");
+    public static final Option<Boolean> SMART_CASE            = bool("smartcase",      false, "scs");
+    public static final Option<Boolean> SEARCH_HIGHLIGHT= globalBool("hlsearch",       false, "hls");
+    public static final Option<Boolean> SEARCH_REGEX          = bool("regexsearch",    true,  "rxs");
+    public static final Option<Boolean> INCREMENTAL_SEARCH    = bool("incsearch",      false, "is");
+    public static final Option<Boolean> IM_DISABLE            = bool("imdisable",      false, "imd");
+    public static final Option<Boolean> VISUAL_MOUSE          = bool("visualmouse",    true,  "vm");
+    public static final Option<Boolean> EXIT_LINK_MODE        = bool("exitlinkmode",   true,  "elm");
+    public static final Option<Boolean> CLEAN_INDENT          = bool("cleanindent",    true);
+    public static final Option<Boolean> AUTO_CHDIR            = bool("autochdir",      false, "acd");
     // TODO: This is an Eclipse setting under Window->Preferences->Editors->Text Editors->"Insert spaces for tabs"
     //       Changing this value should change the Eclipse configuration too. -- BRD
     public static final Option<Boolean> EXPAND_TAB            = bool("expandtab",    true,  "et");
@@ -46,7 +47,7 @@ public interface Options {
     @SuppressWarnings("unchecked")
     public static final Set<Option<Boolean>> BOOLEAN_OPTIONS = set(
             EXPAND_TAB, SHIFT_ROUND, SMART_INDENT, AUTO_INDENT, ATOMIC_INSERT, IGNORE_CASE,
-            SMART_CASE, SEARCH_HIGHLIGHT, SEARCH_REGEX,
+            FILE_IGNORE_CASE, SMART_CASE, SEARCH_HIGHLIGHT, SEARCH_REGEX,
             INCREMENTAL_SEARCH, LINE_NUMBERS, SHOW_WHITESPACE, IM_DISABLE,
             VISUAL_MOUSE, EXIT_LINK_MODE, CLEAN_INDENT, AUTO_CHDIR, HIGHLIGHT_CURSOR_LINE,
             CONTENT_ASSIST_MODE, START_NORMAL_MODE, UNDO_MOVES_CURSOR, DEBUGLOG, MODIFIABLE,

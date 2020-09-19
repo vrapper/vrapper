@@ -3,8 +3,13 @@ package net.sourceforge.vrapper.utils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class StringUtils {
+    
+    /** Pattern to identify an integer as a string */
+    private static Pattern INTEGER_PATTERN = Pattern.compile("^-?\\d+$");
+    
     public static String multiply(String str, int count) {
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < count; i++) {
@@ -178,5 +183,13 @@ public class StringUtils {
             currentPatternNum++;
         }
         return result;
+    }
+    
+    /** Is the parameter integer?
+     * @param potentialInteger String to test
+     * @return true if the parameter can be parsed to integer
+     */
+    public static boolean isInteger(String potentialInteger) {
+        return INTEGER_PATTERN.matcher(potentialInteger).matches();
     }
 }
