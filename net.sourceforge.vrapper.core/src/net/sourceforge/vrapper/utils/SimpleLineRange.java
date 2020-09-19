@@ -50,7 +50,8 @@ public class SimpleLineRange implements LineRange {
         CursorService cs = editorAdaptor.getCursorService();
         // Shift past line end into next line. When at EOF, we get back what we started with.
         Position nextLineStart = cs.shiftPositionForModelOffset(modelLine.getEndOffset(), 1, false);
-        result.modelLength = nextLineStart.getModelOffset() - modelLine.getBeginOffset();
+        //if nextLineStart goes beyond EOF, it's coming back as less than modelLine.getEndOffset.  Compensate for that scenario
+        result.modelLength = Math.max(nextLineStart.getModelOffset(), modelLine.getEndOffset()) - modelLine.getBeginOffset();
         result.from = result.to = cs.newPositionForModelOffset(modelLine.getBeginOffset());
         return result;
     }

@@ -210,6 +210,11 @@ public class ExCommandOperation extends AbstractLinewiseOperation {
 				if (line.getNumber() >= updatedNLines) {
 					line = null;
 				}
+				else {
+					//this line only runs in unit tests because we've mocked out the setMark functionality
+					//(fix CommandLineTests.testExCommand by refreshing current line length)
+					line = modelContent.getLineInformation(line.getNumber());
+				}
 			} else if (nextLineStart == null) {
 				// Either we ran out of lines or somebody replaced the contents of the next
 				// line (and the mark) without the file getting shorter
