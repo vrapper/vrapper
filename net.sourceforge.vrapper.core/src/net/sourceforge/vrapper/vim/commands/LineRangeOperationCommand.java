@@ -211,7 +211,8 @@ public class LineRangeOperationCommand extends CountIgnoringNonRepeatableCommand
     		return new CopyMoveLinesOperation(operationStr, true);
     	}
     	else if(operation == 'n' && operationStr.startsWith("norm")) {
-    		return new AnonymousMacroOperation(operationStr);
+    		//slice off the operation part of the string
+    		return new AnonymousMacroOperation(operationStr.substring(operationStr.indexOf(' ')).trim());
     	}
     	else if(operation == '!') {
     		return new PipeExternalOperation(operationStr);
