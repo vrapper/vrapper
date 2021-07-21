@@ -168,12 +168,32 @@ public class CommandLineTests extends VimTestCase {
 		DummyTextObject defaultRange = new DummyTextObject(null);
 
 		content.setText("one Two three two");
+		makeSubstitution("s/^/foo /").execute(adaptor, 0, defaultRange);
+		assertEquals("foo one Two three two", content.getText());
+
+		content.setText("one Two three two");
+		makeSubstitution("s/$/ foo/").execute(adaptor, 0, defaultRange);
+		assertEquals("one Two three two foo", content.getText());
+
+		content.setText("one Two three two");
 		makeSubstitution("s/^/\\r/").execute(adaptor, 0, defaultRange);
 		assertEquals("\none Two three two", content.getText());
 
 		content.setText("one Two three two");
 		makeSubstitution("s/$/\\r/").execute(adaptor, 0, defaultRange);
 		assertEquals("one Two three two\n", content.getText());
+
+		content.setText("one Two three two");
+		makeSubstitution("s/$/\\/\\/-/").execute(adaptor, 0, defaultRange);
+		assertEquals("one Two three two//-", content.getText());
+
+		content.setText("one Two three two");
+		makeSubstitution("s/^/\\/\\/-/").execute(adaptor, 0, defaultRange);
+		assertEquals("//-one Two three two", content.getText());
+
+		content.setText("one Two three two");
+		makeSubstitution("s,$,//-,").execute(adaptor, 0, defaultRange);
+		assertEquals("one Two three two//-", content.getText());
 	}
 
 	@Test

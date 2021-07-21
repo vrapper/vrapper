@@ -96,16 +96,12 @@ public class SubstitutionOperation extends AbstractLinewiseOperation {
     		String replace, String flags, EditorAdaptor editorAdaptor) {
     	//Eclipse regex doesn't handle '^' and '$' like Vim does.
     	//Time for some special cases!
-		if(find.equals("^")) {
+		if(find.equals("^") || find.equals("$")) {
 			replace = convertToPlatformNewline(editorAdaptor, replace);
-			// insert the text at the beginning of the line
-			editorAdaptor.getModelContent().replace(line.getBeginOffset(), 0, replace);
-			return 1;
-		}
-		else if(find.equals("$")) {
-			replace = convertToPlatformNewline(editorAdaptor, replace);
-			// insert the text at the end of the line
-			editorAdaptor.getModelContent().replace(line.getEndOffset(), 0, replace);
+			// remove any escape characters since we're inserting this string literally (not using regex)
+            replace = replace.replaceAll("((^|[^\\\\])(\\\\\\\\)*)(\\\\)", "$1");
+			// insert the text at the beginning (or end) of the line
+			editorAdaptor.getModelContent().replace(find.equals("^") ? line.getBeginOffset() : line.getEndOffset(), 0, replace);
 			return 1;
 		}
 		else {
