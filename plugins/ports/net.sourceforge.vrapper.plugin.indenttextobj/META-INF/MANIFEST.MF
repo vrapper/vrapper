@@ -2,9 +2,9 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Vrapper indenttextobj Plug-in Core
 Bundle-SymbolicName: net.sourceforge.vrapper.plugin.indenttextobj;singleton:=true
-Bundle-Version: 0.75.20200919
+Bundle-Version: 0.75.20210730
 Export-Package: net.sourceforge.vrapper.plugin.indenttextobj.commands,
  net.sourceforge.vrapper.plugin.indenttextobj.platform
-Require-Bundle: net.sourceforge.vrapper.core;bundle-version="0.75.20200919";visibility:=reexport
+Require-Bundle: net.sourceforge.vrapper.core;bundle-version="0.75.20210730";visibility:=reexport
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Eclipse-BuddyPolicy: dependent

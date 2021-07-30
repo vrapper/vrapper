@@ -2,8 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Vrapper Split Editor Plug-in Eclipse integration
 Bundle-SymbolicName: net.sourceforge.vrapper.plugin.splitEditor;singleton:=true
-Bundle-Version: 0.75.20200919
-Require-Bundle: net.sourceforge.vrapper.eclipse;bundle-version="0.75.20200919",
+Bundle-Version: 0.75.20210730
+Require-Bundle: net.sourceforge.vrapper.eclipse;bundle-version="0.75.20210730",
  org.eclipse.e4.ui.model.workbench;bundle-version="0.10.1",
  org.eclipse.e4.ui.services;bundle-version="0.10.1",
  org.eclipse.e4.ui.workbench;bundle-version="0.10.1",
