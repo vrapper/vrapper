@@ -690,7 +690,13 @@ public class EclipseFileService implements FileService {
         if (currentFile == null) {
             throw new IOException("Current editor did not have an associated IFile.");
     	}
-        return currentFile.getRawLocation().makeAbsolute().toOSString();
+        try {
+            return currentFile.getRawLocation().makeAbsolute().toOSString();
+        }
+        catch(Exception e) {
+        	// if Eclipse can't determine filename (or file is remote)
+        	return "";
+        }
     }
 
 }
