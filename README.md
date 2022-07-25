@@ -21,12 +21,6 @@ Vrapper is neither able nor intended to be a replacement for Vim. It is meant to
 
 If you are a Vim user who is using Eclipse because of some specific features or want a faster way of editing text in Eclipse, Vrapper might be just what you are looking for. On the other hand, if you are a long-time Vim user and do not need any features of Eclipse editors, the alternatives below might suit you better.
 
-Alternatives to Vrapper
-----------
-There are two nice pieces of software with different approaches to the problem of combining Vim and Eclipse: [Vimplugin](http://vimplugin.org/), which completely embeds Vim as on OLE component, and [Eclim](http://eclim.sourceforge.net/), which lets you use a GUI-less Eclipse from Vim.
-
-And of course, there is always the possibility to just use Vim as an external editor in Eclipse.
-
 Links
 ----------
 For more details visit:
