@@ -10,6 +10,9 @@ import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.transitionB
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+
+import org.junit.Test;
+
 import net.sourceforge.vrapper.keymap.ConvertingState;
 import net.sourceforge.vrapper.keymap.EmptyState;
 import net.sourceforge.vrapper.keymap.HashMapState;
@@ -24,8 +27,6 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.CountAwareCommand;
-
-import org.junit.Test;
 
 public class StateAndTransitionTests {
 

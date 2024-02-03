@@ -6,9 +6,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import net.sourceforge.vrapper.core.tests.utils.CommandTestCase;
+
+import org.junit.Test;
+import org.mockito.Mockito;
+
 import net.sourceforge.vrapper.platform.CursorService;
 import net.sourceforge.vrapper.platform.SelectionService;
+import net.sourceforge.vrapper.testutil.CommandTestCase;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.Options;
@@ -18,9 +22,6 @@ import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.BlockwiseVisualMode;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
-
-import org.junit.Test;
-import org.mockito.Mockito;
 
 // FIXME: needs testing with different values of 'selection' variable
 // (it affects most of the tests)

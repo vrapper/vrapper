@@ -13,14 +13,14 @@ import static org.junit.Assert.assertTrue;
 import java.util.Collections;
 import java.util.EnumSet;
 
+import org.junit.Test;
+
 import net.sourceforge.vrapper.keymap.KeyStroke;
-import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.KeyStroke.Modifier;
+import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.vim.ConstructorWrappers;
 import net.sourceforge.vrapper.keymap.vim.PlugKeyStroke;
 import net.sourceforge.vrapper.keymap.vim.SimpleKeyStroke;
-
-import org.junit.Test;
 
 public class SimpleKeyStrokeTests {
 

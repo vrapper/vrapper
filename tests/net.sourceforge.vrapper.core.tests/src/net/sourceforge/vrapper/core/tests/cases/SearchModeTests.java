@@ -1,13 +1,13 @@
 package net.sourceforge.vrapper.core.tests.cases;
 
-import static org.mockito.Mockito.*;
 import static net.sourceforge.vrapper.keymap.vim.ConstructorWrappers.parseKeyStrokes;
+import static org.mockito.Mockito.when;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import net.sourceforge.vrapper.core.tests.utils.TestSearchService;
-import net.sourceforge.vrapper.core.tests.utils.VisualTestCase;
+import net.sourceforge.vrapper.testutil.TestSearchService;
+import net.sourceforge.vrapper.testutil.VisualTestCase;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;

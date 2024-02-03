@@ -6,6 +6,8 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
+
 import junit.framework.TestCase;
 import net.sourceforge.vrapper.keymap.KeyMap;
 import net.sourceforge.vrapper.keymap.KeyStroke;
@@ -13,8 +15,6 @@ import net.sourceforge.vrapper.keymap.Remapping;
 import net.sourceforge.vrapper.keymap.SimpleRemapping;
 import net.sourceforge.vrapper.keymap.State;
 import net.sourceforge.vrapper.keymap.Transition;
-
-import org.junit.Test;
 
 /**
  * White-box tests for the {@link KeyMap} class.

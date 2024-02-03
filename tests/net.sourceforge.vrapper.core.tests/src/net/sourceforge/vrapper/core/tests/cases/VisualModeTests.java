@@ -4,10 +4,13 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import net.sourceforge.vrapper.core.tests.utils.VisualTestCase;
+
+import org.junit.Test;
+
 import net.sourceforge.vrapper.keymap.SpecialKey;
 import net.sourceforge.vrapper.keymap.vim.SimpleKeyStroke;
 import net.sourceforge.vrapper.platform.CursorService;
+import net.sourceforge.vrapper.testutil.VisualTestCase;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.vim.Options;
@@ -17,8 +20,6 @@ import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.modes.VisualMode;
 import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
 import net.sourceforge.vrapper.vim.register.StringRegisterContent;
-
-import org.junit.Test;
 
 public class VisualModeTests extends VisualTestCase {
 

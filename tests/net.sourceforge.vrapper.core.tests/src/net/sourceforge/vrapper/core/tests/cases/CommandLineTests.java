@@ -17,10 +17,10 @@ import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Test;
 
-import net.sourceforge.vrapper.core.tests.utils.DumbPosition;
-import net.sourceforge.vrapper.core.tests.utils.TestSearchService;
-import net.sourceforge.vrapper.core.tests.utils.VimTestCase;
 import net.sourceforge.vrapper.platform.Configuration.Option;
+import net.sourceforge.vrapper.testutil.DumbPosition;
+import net.sourceforge.vrapper.testutil.TestSearchService;
+import net.sourceforge.vrapper.testutil.VimTestCase;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.LineRange;
 import net.sourceforge.vrapper.utils.Position;

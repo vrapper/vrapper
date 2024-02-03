@@ -4,16 +4,16 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
-import net.sourceforge.vrapper.core.tests.utils.SnapshotTestsExecutor;
-import net.sourceforge.vrapper.core.tests.utils.VimTestCase;
+import org.junit.Test;
+import org.mockito.Mockito;
+
+import net.sourceforge.vrapper.testutil.SnapshotTestsExecutor;
+import net.sourceforge.vrapper.testutil.VimTestCase;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.vim.VimConstants;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
 import net.sourceforge.vrapper.vim.register.StringRegisterContent;
-
-import org.junit.Test;
-import org.mockito.Mockito;
 
 /**
  * Run a number of commands on a test buffer and compare the contents of the buffer with a

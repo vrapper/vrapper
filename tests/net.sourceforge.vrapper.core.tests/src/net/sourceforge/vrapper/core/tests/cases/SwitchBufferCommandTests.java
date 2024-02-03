@@ -11,8 +11,8 @@ import java.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
 
-import net.sourceforge.vrapper.core.tests.utils.VimTestCase;
 import net.sourceforge.vrapper.platform.Buffer;
+import net.sourceforge.vrapper.testutil.VimTestCase;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.SwitchBufferCommand;

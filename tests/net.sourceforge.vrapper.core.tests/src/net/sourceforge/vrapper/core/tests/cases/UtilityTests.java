@@ -5,14 +5,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import net.sourceforge.vrapper.utils.ExplodedPattern;
-import net.sourceforge.vrapper.utils.StringUtils;
-import net.sourceforge.vrapper.utils.StringUtils.PatternHolder;
-
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
 import org.junit.Test;
+
+import net.sourceforge.vrapper.utils.ExplodedPattern;
+import net.sourceforge.vrapper.utils.StringUtils;
+import net.sourceforge.vrapper.utils.StringUtils.PatternHolder;
 
 public class UtilityTests {
 

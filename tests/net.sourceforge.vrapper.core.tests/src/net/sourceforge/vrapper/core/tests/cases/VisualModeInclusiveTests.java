@@ -1,16 +1,17 @@
 package net.sourceforge.vrapper.core.tests.cases;
 
 import static org.mockito.Mockito.when;
-import net.sourceforge.vrapper.core.tests.utils.VisualTestCase;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import net.sourceforge.vrapper.testutil.VisualTestCase;
 import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.CommandExecutionException;
 import net.sourceforge.vrapper.vim.commands.Selection;
 import net.sourceforge.vrapper.vim.modes.TempVisualMode;
 import net.sourceforge.vrapper.vim.register.StringRegisterContent;
-
-import org.junit.Before;
-import org.junit.Test;
 
 public class VisualModeInclusiveTests extends VisualTestCase {
     

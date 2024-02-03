@@ -10,10 +10,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.Iterator;
 
-import net.sourceforge.vrapper.core.tests.utils.VimTestCase;
 import net.sourceforge.vrapper.keymap.KeyMap;
 import net.sourceforge.vrapper.keymap.KeyStroke;
 import net.sourceforge.vrapper.keymap.Remapping;
+import net.sourceforge.vrapper.testutil.VimTestCase;
 import net.sourceforge.vrapper.vim.commands.Command;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.modes.commandline.CommandLineMode;

@@ -1,6 +1,8 @@
 package net.sourceforge.vrapper.core.tests.cases;
 
-import net.sourceforge.vrapper.core.tests.utils.CommandTestCase;
+import org.junit.Test;
+
+import net.sourceforge.vrapper.testutil.CommandTestCase;
 import net.sourceforge.vrapper.vim.commands.motions.FindCharMotion;
 import net.sourceforge.vrapper.vim.commands.motions.GoToLineMotion;
 import net.sourceforge.vrapper.vim.commands.motions.MethodDeclarationMotion;
@@ -23,8 +25,6 @@ import net.sourceforge.vrapper.vim.commands.motions.ParenthesesMove;
 import net.sourceforge.vrapper.vim.commands.motions.SentenceMotion;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
-
-import org.junit.Test;
 
 public class MotionTests extends CommandTestCase {
 	private final String longWord;

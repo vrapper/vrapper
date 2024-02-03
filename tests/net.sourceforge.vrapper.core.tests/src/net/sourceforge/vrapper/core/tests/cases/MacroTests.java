@@ -2,7 +2,7 @@ package net.sourceforge.vrapper.core.tests.cases;
 
 import org.junit.Test;
 
-import net.sourceforge.vrapper.core.tests.utils.CommandTestCase;
+import net.sourceforge.vrapper.testutil.CommandTestCase;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
 import net.sourceforge.vrapper.vim.register.DefaultRegisterManager;
 
