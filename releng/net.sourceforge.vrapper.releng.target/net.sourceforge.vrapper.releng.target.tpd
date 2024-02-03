@@ -1,5 +1,5 @@
 
-target "Vrapper" with source configurePhase
+target "net.sourceforge.vrapper.releng.target" with source configurePhase
 
 location eclipse_cdt "https://download.eclipse.org/tools/cdt/releases/11.4/" {
 	org.eclipse.cdt.feature.group
@@ -34,6 +34,12 @@ location eclipse_platform "https://download.eclipse.org/releases/2023-12/" {
 	org.apache.felix.scr
 	org.apache.felix.gogo.runtime
 	javax.activation
+	org.eclipse.ecf.core.feature.feature.group
+	org.eclipse.ecf.core.ssl.feature.feature.group
+	org.eclipse.ecf.filetransfer.feature.feature.group
+	org.eclipse.ecf.filetransfer.httpclientjava.feature.feature.group
+	org.eclipse.ecf.filetransfer.httpclient5.feature.feature.group
+	org.eclipse.ecf.filetransfer.ssl.feature.feature.group
 	org.eclipse.ecf
 	org.eclipse.ecf.filetransfer
 	org.eclipse.ecf.provider.filetransfer
@@ -74,6 +80,7 @@ location eclipse_updates "https://download.eclipse.org/eclipse/updates/4.29/" {
 	org.osgi.service.repository
 	biz.aQute.bnd.util
 	biz.aQute.bndlib
+	org.junit
 }
 
 location eclipse_orbit "https://download.eclipse.org/tools/orbit/simrel/orbit-aggregation/release/4.29.0" {
