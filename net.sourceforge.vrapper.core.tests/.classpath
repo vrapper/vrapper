@@ -6,10 +6,10 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
 	<classpathentry kind="src" path="/net.sourceforge.vrapper.core"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Mockito"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/net.sourceforge.vrapper.eclipse"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/net.sourceforge.vrapper.plugin.surround"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
