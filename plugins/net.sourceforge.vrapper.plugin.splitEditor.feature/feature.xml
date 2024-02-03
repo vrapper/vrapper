@@ -861,7 +861,7 @@ Public License instead of this License.  But first, please read
 
    <requires>
       <import plugin="net.sourceforge.vrapper.eclipse" version="0.75.20210730" match="greaterOrEqual"/>
-      <import feature="net.sourceforge.vrapper" version="0.75.20210730"/>
+      <import feature="net.sourceforge.vrapper.feature" version="0.75.20210730"/>
    </requires>
 
    <plugin

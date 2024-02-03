@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="net.sourceforge.vrapper"
+      id="net.sourceforge.vrapper.feature"
       label="Vrapper"
       version="0.74.0"
       provider-name="Vrapper Team">
