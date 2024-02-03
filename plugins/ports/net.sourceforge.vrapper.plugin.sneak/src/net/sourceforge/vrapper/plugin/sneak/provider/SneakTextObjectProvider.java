@@ -16,7 +16,6 @@ public class SneakTextObjectProvider extends AbstractPlatformSpecificTextObjectP
         return SneakTextObjectProvider.class.getName();
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public State<TextObject> textObjects() {
         // [TODO] Implement sneaks of custom length
