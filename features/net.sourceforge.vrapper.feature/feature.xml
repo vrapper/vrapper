@@ -2,7 +2,7 @@
 <feature
       id="net.sourceforge.vrapper.feature"
       label="Vrapper"
-      version="0.74.0"
+      version="0.75.0.qualifier"
       provider-name="Vrapper Team">
 
    <description url="http://vrapper.sourceforge.net/documentation/">
@@ -18,7 +18,7 @@ Vrapper tries to offer Eclipse developers the best of both worlds.
    </copyright>
 
    <license url="http://www.gnu.org/licenses/gpl-3.0.txt">
-                    GNU GENERAL PUBLIC LICENSE
+      GNU GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
 
  Copyright (C) 2007 Free Software Foundation, Inc. &lt;http://fsf.org/&gt;
@@ -703,16 +703,10 @@ Public License instead of this License.  But first, please read
 
    <plugin
          id="net.sourceforge.vrapper.eclipse"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
    <plugin
          id="net.sourceforge.vrapper.core"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
 </feature>

@@ -6,7 +6,7 @@ Bundle-Version: 0.75.0.qualifier
 Export-Package: net.sourceforge.vrapper.plugin.surround.commands,
  net.sourceforge.vrapper.plugin.surround.mode,
  net.sourceforge.vrapper.plugin.surround.state
-Require-Bundle: net.sourceforge.vrapper.core;bundle-version="0.75.0.qualifier";visibility:=reexport,
+Require-Bundle: net.sourceforge.vrapper.core;bundle-version="0.75.0";visibility:=reexport,
  net.sourceforge.vrapper.eclipse
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Eclipse-BuddyPolicy: dependent

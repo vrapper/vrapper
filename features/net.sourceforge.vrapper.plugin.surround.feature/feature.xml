@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="net.sourceforge.vrapper.plugin.surround"
+      id="net.sourceforge.vrapper.plugin.surround.feature"
       label="Vrapper - Surround.vim Plugin (Optional)"
-      version="0.75.20210730"
+      version="0.75.0.qualifier"
       provider-name="Vrapper Team">
 
    <description url="http://vrapper.sourceforge.net/documentation/">
@@ -861,15 +861,12 @@ Public License instead of this License.  But first, please read
    </license>
 
    <requires>
-      <import plugin="net.sourceforge.vrapper.eclipse" version="0.75.20210730" match="greaterOrEqual"/>
-      <import feature="net.sourceforge.vrapper.feature" version="0.75.20210730"/>
+      <import plugin="net.sourceforge.vrapper.eclipse" version="0.75.0" match="greaterOrEqual"/>
+      <import feature="net.sourceforge.vrapper.feature" version="0.75.0"/>
    </requires>
 
    <plugin
          id="net.sourceforge.vrapper.plugin.surround"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
 </feature>
