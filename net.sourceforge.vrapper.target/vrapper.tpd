@@ -1,0 +1,179 @@
+
+target "Vrapper" with source configurePhase
+
+location eclipse_cdt "https://download.eclipse.org/tools/cdt/releases/11.4/" {
+	org.eclipse.cdt.feature.group
+	org.eclipse.launchbar.feature.group
+	org.eclipse.tm.terminal.control.feature.feature.group
+	org.eclipse.tools.templates.core
+	org.eclipse.tools.templates.freemarker
+	org.eclipse.tools.templates.ui
+	org.freemarker.freemarker
+	com.google.gson
+}
+
+location eclipse_platform "https://download.eclipse.org/releases/2023-12/" {
+	org.eclipse.equinox.executable.feature.group
+	org.eclipse.sdk.feature.group
+	org.eclipse.platform.feature.group
+	org.eclipse.help.feature.group
+	org.eclipse.jdt.feature.group
+	org.eclipse.pde.feature.group
+	org.eclipse.emf.sdk.feature.group
+	org.apache.commons.commons-io
+	org.eclipse.core.runtime.feature.feature.group
+	jakarta.annotation-api
+	org.apache.xalan
+	org.apache.xml.resolver
+	org.apache.xml.serializer
+	javax.xml
+	org.eclipse.equinox.p2.discovery.feature.feature.group
+	org.eclipse.equinox.server.p2.source.feature.group
+	org.eclipse.equinox.cm
+	org.eclipse.equinox.event
+	org.apache.felix.scr
+	org.apache.felix.gogo.runtime
+	javax.activation
+	org.eclipse.ecf
+	org.eclipse.ecf.filetransfer
+	org.eclipse.ecf.provider.filetransfer
+	org.eclipse.ecf.provider
+	org.eclipse.ecf.identity
+	org.eclipse.ecf.sharedobject
+	slf4j.api
+	slf4j.simple
+	org.eclipse.search.core
+	org.sat4j.core
+	org.sat4j.pb
+	org.eclipse.jetty.servlet-api
+	org.eclipse.jetty.ee8.servlet
+	org.eclipse.jetty.ee8.server
+	org.eclipse.jetty.ee8.security
+	org.eclipse.jetty.security [12.0.3,12.0.3]
+	org.eclipse.jetty.http [12.0.3,12.0.3]
+	org.eclipse.jetty.server [12.0.3,12.0.3]
+	org.eclipse.jetty.util [12.0.3,12.0.3]
+	org.eclipse.jetty.io [12.0.3,12.0.3]
+	org.eclipse.jetty.session [12.0.3,12.0.3]
+	org.mortbay.jasper.apache-jsp
+	com.sun.xml.bind
+}
+
+location eclipse_pydev "https://www.pydev.org/update_sites/12.0.0/" {
+	org.python.pydev.feature.feature.group
+}
+
+location eclipse_updates "https://download.eclipse.org/eclipse/updates/4.29/" {
+	org.w3c.css.sac
+	org.w3c.dom.svg
+	org.w3c.dom.events
+	org.w3c.dom.smil
+	org.apache.lucene.analysis-common
+	org.apache.lucene.analysis-smartcn
+	org.apache.lucene.core
+	org.osgi.service.repository
+	biz.aQute.bnd.util
+	biz.aQute.bndlib
+}
+
+location eclipse_orbit "https://download.eclipse.org/tools/orbit/simrel/orbit-aggregation/release/4.29.0" {
+	com.sun.jna
+	com.sun.jna.platform
+	jakarta.xml.bind-api
+	jakarta.inject.jakarta.inject-api
+	org.apache.xerces
+	org.apache.commons.logging
+	org.apache.commons.jxpath
+	org.apache.commons.commons-beanutils
+	org.apache.commons.collections
+	org.apache.batik.css
+	org.apache.batik.util
+	org.apache.batik.constants
+	org.apache.batik.i18n
+	javax.servlet-api
+	javax.servlet.jsp-api
+	javax.el-api
+	org.jdom
+	bcpg
+	bcprov
+	com.sun.el.javax.el
+	com.ibm.icu
+	org.hamcrest
+	org.hamcrest.core
+	org.hamcrest.library
+	org.objectweb.asm
+}
+
+maven Mockito
+	scope=compile
+	dependencyDepth=infinite // don't care about bytebuddy
+	missingManifest=error
+	includeSources
+{
+	dependency {
+		groupId="org.mockito"
+		artifactId="mockito-core"
+		version="5.10.0"
+	}
+	dependency {
+		groupId="org.mockito"
+		artifactId="mockito-junit-jupiter"
+		version="5.10.0"
+	}
+	dependency {
+		groupId="org.objenesis"
+		artifactId="objenesis"
+		version="3.3"
+	}
+}
+
+maven ByteBuddy
+	scope=compile
+	dependencyDepth=none
+	missingManifest=error
+	includeSources
+{
+	dependency {
+		groupId="net.bytebuddy"
+		artifactId="byte-buddy"
+		version="1.14.11"
+	}
+	dependency {
+		groupId="net.bytebuddy"
+		artifactId="byte-buddy-agent"
+		version="1.14.11"
+	}
+}
+
+maven Logging scope=compile dependencyDepth=none missingManifest=error includeSources {
+	dependency {
+		groupId="org.apache.aries.spifly"
+		artifactId="org.apache.aries.spifly.dynamic.bundle"
+		version="1.3.7"
+	}
+	dependency {
+		groupId="org.ow2.asm"
+		artifactId="asm-analysis"
+		version="9.6"
+	}
+	dependency {
+		groupId="org.ow2.asm"
+		artifactId="asm-commons"
+		version="9.6"
+	}
+	dependency {
+		groupId="org.ow2.asm"
+		artifactId="asm-tree"
+		version="9.6"
+	}
+	dependency {
+		groupId="org.ow2.asm"
+		artifactId="asm-util"
+		version="9.6"
+	}
+	dependency {
+		groupId="org.ow2.asm"
+		artifactId="asm"
+		version="9.6"
+	}
+}
