@@ -4,7 +4,6 @@ import net.sourceforge.vrapper.utils.Position;
 import net.sourceforge.vrapper.utils.StartEndTextRange;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
-import net.sourceforge.vrapper.vim.commands.motions.CountAwareMotion;
 import net.sourceforge.vrapper.vim.commands.motions.FindQuoteMotion;
 
 public class QuoteDelimitedText implements DelimitedText {

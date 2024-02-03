@@ -1,8 +1,7 @@
 package net.sourceforge.vrapper.vim.commands.motions;
 
 import static net.sourceforge.vrapper.vim.commands.Utils.characterType;
-import net.sourceforge.vrapper.utils.Position;
-import net.sourceforge.vrapper.vim.EditorAdaptor;
+
 import net.sourceforge.vrapper.vim.commands.BorderPolicy;
 
 public class MoveWordEndLeft extends MoveLeftWithBounds {

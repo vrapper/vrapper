@@ -1,6 +1,5 @@
 package net.sourceforge.vrapper.vim;
 
-import java.util.EnumSet;
 import java.util.Set;
 
 import net.sourceforge.vrapper.keymap.KeyStroke;
