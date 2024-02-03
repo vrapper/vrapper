@@ -33,7 +33,6 @@ public class StateAndTransitionTests {
     private final Integer obj2 = 2;
     private final Integer answer = 42;
 
-    @SuppressWarnings("unchecked")
     private final State<Integer> state = state(leafBind('1', obj1), leafBind('2',
             obj2), transitionBind('4', leafBind('2', answer)));
 
@@ -55,7 +54,6 @@ public class StateAndTransitionTests {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void checkThatHashMapStateShouldResolveActionConflictsAsFirstOneWins() {
         State<Integer> s1 = new HashMapState<Integer>(asList(leafBind('a', 1),
                 leafBind('a', 2)));
@@ -64,10 +62,8 @@ public class StateAndTransitionTests {
 
     @Test
     public void unionShouldHandleCommonPrefix() {
-        @SuppressWarnings("unchecked")
         State<Integer> other = state(leafBind('3', 3), transitionBind('4', leafBind('4',
                 1337)));
-        @SuppressWarnings("unchecked")
         State<Integer> sum = union(state, other);
         assertEquals(Integer.valueOf(1), sum.press(key('1')).getValue());
         assertEquals(Integer.valueOf(2), sum.press(key('2')).getValue());
@@ -77,7 +73,6 @@ public class StateAndTransitionTests {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void emptyUnionShouldBeEmpty() {
         assertNull(union().press(key('a')));
     }
@@ -89,14 +84,12 @@ public class StateAndTransitionTests {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void unionOfOneStateShouldBeThisState() {
         State<Object> s = state();
         assertSame(s, union(s));
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void unionShouldResolveActionConflictsAsFirstOneWins() {
         State<Integer> s1 = state(leafBind('a', 1));
         State<Integer> s2 = state(leafBind('a', 2));
@@ -105,7 +98,6 @@ public class StateAndTransitionTests {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void unionShouldJoinValuesAndNextStates() {
         // rationale: it allows implementation of Vim's behavior
         // which is use timer to disambiguate;
@@ -129,7 +121,6 @@ public class StateAndTransitionTests {
     @Test
     public void testConvertingStateTransitions() {
         final String ABC = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        @SuppressWarnings("unchecked")
         State<Integer> bindings = state(transitionBind('1', 0, state(leafBind(
                 '2', 11), leafBind('3', 12))), leafBind('2', 1), leafBind('3',
                 2));
@@ -163,7 +154,6 @@ public class StateAndTransitionTests {
                 throw new UnsupportedOperationException();
             }
         };
-        @SuppressWarnings("unchecked")
         State<Command> inner = state(leafBind('c', command));
         State<Command> outer = CountingState.wrap(inner);
         assertSame(command, outer.press(key('c')).getValue());
@@ -179,7 +169,6 @@ public class StateAndTransitionTests {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void testUnionStateLeaf() {
         State<Integer> state_a1 = state(leafBind('a', 1));
         State<Integer> state_a2 = state(leafBind('a', 2));
@@ -199,7 +188,6 @@ public class StateAndTransitionTests {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void testUnionStateTransition() {
         State<Integer> leaf3 = new HashMapState<Integer>() {
             @Override
@@ -238,7 +226,6 @@ public class StateAndTransitionTests {
     }
     
     @Test
-    @SuppressWarnings("unchecked")
     public void testWrapperState() {
         Function<Integer, Integer> subTwo = new Function<Integer, Integer>() {
             public Integer call(Integer arg) { return arg - 2; }

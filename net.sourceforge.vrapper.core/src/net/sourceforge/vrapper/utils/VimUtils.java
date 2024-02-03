@@ -333,10 +333,12 @@ public class VimUtils {
         return text;
     }
 
-    public static final <T> Set<T> set(final T... content) {
+    @SuppressWarnings("unchecked")
+	public static final <T> Set<T> set(final T... content) {
         return Collections.unmodifiableSet(new HashSet<T>(Arrays.asList(content)));
     }
     
+    @SuppressWarnings("unchecked")
     public static final <T> List<T> list(final T... content) {
     	return Collections.unmodifiableList(new ArrayList<T>(Arrays.asList(content)));
     }

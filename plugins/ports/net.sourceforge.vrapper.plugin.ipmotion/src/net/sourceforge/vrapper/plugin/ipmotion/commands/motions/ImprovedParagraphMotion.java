@@ -21,7 +21,6 @@ public class ImprovedParagraphMotion extends ParagraphMotion {
         final Motion paragraphBackward = ImprovedParagraphMotion.BACKWARD;
         final Motion paragraphForward = ImprovedParagraphMotion.FORWARD;
         
-        @SuppressWarnings("unchecked")
         final State<Motion> ipMotions = state(
                 leafBind('{', paragraphBackward),
                 leafBind('}', paragraphForward));

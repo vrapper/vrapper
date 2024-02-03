@@ -693,6 +693,7 @@ public class CommandLineTests extends VimTestCase {
         assertEquals("let @q=\"iOk<CR>\"jj", adaptor.getCommandLine().getContents());
     }
 
+    @SafeVarargs
     private <T> void assertSetOption(Option<T> o, String invalid, T... values) {
 
         for (String name : o.getAllNames()) {

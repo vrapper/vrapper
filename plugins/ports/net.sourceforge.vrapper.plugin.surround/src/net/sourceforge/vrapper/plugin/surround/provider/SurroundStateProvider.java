@@ -66,7 +66,6 @@ public class SurroundStateProvider extends AbstractEclipseSpecificStateProvider 
     }
     
     @Override
-    @SuppressWarnings("unchecked")
     protected State<Command> normalModeBindings() {
         State<DelimitedText> delimitedTexts = union(
                 state(
@@ -91,7 +90,6 @@ public class SurroundStateProvider extends AbstractEclipseSpecificStateProvider 
     }
     
     @Override
-    @SuppressWarnings("unchecked")
     protected State<KeyMapInfo> normalModeKeymap() {
         return state(
                 transitionBind('d', operatorKeyMap('s')),
@@ -100,7 +98,6 @@ public class SurroundStateProvider extends AbstractEclipseSpecificStateProvider 
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     protected State<Command> visualModeBindings() {
         InsertShiftWidth shift = InsertShiftWidth.INSERT;
         return state(

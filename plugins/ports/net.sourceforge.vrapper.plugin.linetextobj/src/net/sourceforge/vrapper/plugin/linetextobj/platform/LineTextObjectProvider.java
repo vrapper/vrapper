@@ -18,7 +18,6 @@ public class LineTextObjectProvider extends
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public State<TextObject> textObjects() {
         return state(
                 transitionBind('i', leafBind('l', LineTextObject.INNER)),

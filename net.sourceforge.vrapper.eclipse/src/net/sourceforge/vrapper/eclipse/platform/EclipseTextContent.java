@@ -15,7 +15,6 @@ import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.Region;
 import org.eclipse.swt.custom.StyledText;
 
-@SuppressWarnings("nls")
 public class EclipseTextContent {
 
     protected final ITextViewer textViewer;

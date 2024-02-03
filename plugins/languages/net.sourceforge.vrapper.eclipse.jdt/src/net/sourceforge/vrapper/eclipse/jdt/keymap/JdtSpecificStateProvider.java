@@ -22,7 +22,6 @@ import net.sourceforge.vrapper.vim.commands.TextObject;
 
 public class JdtSpecificStateProvider extends AbstractEclipseSpecificStateProvider {
 
-	@SuppressWarnings("unchecked")
 	private static State<Command> getGSomethingBindings() {
 		return state(
 				leafBind('d', gotoDecl()),
@@ -37,7 +36,6 @@ public class JdtSpecificStateProvider extends AbstractEclipseSpecificStateProvid
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     protected State<Command> normalModeBindings() {
         State<TextObject> textObjects = textObjectProvider.textObjects();
 		return union(
@@ -50,7 +48,6 @@ public class JdtSpecificStateProvider extends AbstractEclipseSpecificStateProvid
     
     @Override
     protected State<KeyMapInfo> normalModeKeymap() {
-        @SuppressWarnings("unchecked")
         State<KeyMapInfo> state = state(
                 transitionBind('g', operatorKeyMap('c')),
                 operatorKeyMap('='));
@@ -58,7 +55,6 @@ public class JdtSpecificStateProvider extends AbstractEclipseSpecificStateProvid
     }
 
 	@Override
-	@SuppressWarnings("unchecked")
     protected State<Command> visualModeBindings() {
     	return state(
     			leafBind('=', editJavaAndLeaveVisual("indent")),

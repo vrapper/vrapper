@@ -63,7 +63,6 @@ public class TempNormalMode extends NormalMode implements TemporaryMode {
         return DISPLAY_NAME;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     protected State<Command> buildInitialState() {
         State<Command> switchTempModes = state(

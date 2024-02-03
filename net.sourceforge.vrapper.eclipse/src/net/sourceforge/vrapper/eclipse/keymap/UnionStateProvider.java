@@ -18,7 +18,6 @@ public class UnionStateProvider extends AbstractEclipseSpecificStateProvider {
         }
     }
     
-    @SuppressWarnings("unchecked")
     private static<T> void updateStateMap(Map<String, State<T>> old, Map<String, State<T>> update) {
         for (Entry<String, ? extends State<T>> entry: update.entrySet()) {
             if (!old.containsKey(entry.getKey()))

@@ -49,7 +49,6 @@ public class LinewiseVisualMode extends AbstractVisualMode {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     protected State<Command> buildInitialState() {
         Command doSearchCommand = new VisualMotionCommand(SearchResultMotion.REPEAT);
         State<Command> linewiseSpecific = state(

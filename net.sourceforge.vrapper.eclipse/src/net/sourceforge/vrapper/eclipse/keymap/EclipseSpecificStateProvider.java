@@ -45,7 +45,6 @@ import net.sourceforge.vrapper.vim.modes.InsertMode;
  *
  * @author Matthias Radig
  */
-@SuppressWarnings("unchecked")
 public class EclipseSpecificStateProvider extends AbstractEclipseSpecificStateProvider {
 
     // Loaded on Eclipse start

@@ -18,7 +18,6 @@ public class IndentTextObjectProvider extends
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public State<TextObject> textObjects() {
         return state(
         transitionBind('i',

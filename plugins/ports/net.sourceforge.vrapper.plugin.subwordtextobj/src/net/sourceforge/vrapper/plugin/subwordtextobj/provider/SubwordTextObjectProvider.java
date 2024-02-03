@@ -19,7 +19,6 @@ public class SubwordTextObjectProvider extends AbstractPlatformSpecificTextObjec
     }
 
     public State<TextObject> textObjects() {
-        @SuppressWarnings("unchecked")
         final State<TextObject> argObjects = state(
                 leafBind(new PlugKeyStroke("(subword-inner)"), SubwordTextObject.INSTANCE),
                 leafBind(new PlugKeyStroke("(subword-outer)"), SubwordTextObject.INSTANCE_OUTER),

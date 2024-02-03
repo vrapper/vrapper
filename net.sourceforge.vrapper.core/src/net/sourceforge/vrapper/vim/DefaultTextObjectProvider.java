@@ -50,7 +50,6 @@ public class DefaultTextObjectProvider implements TextObjectProvider {
         final DelimitedText inChar = new QuoteDelimitedText('\'');
         final DelimitedText inTag = new XmlTagDelimitedText();
 
-        @SuppressWarnings("unchecked")
         State<DelimitedText> delimitedTexts = state(
                 leafBind('b', inBracket),
                 leafBind('(', inBracket),
@@ -70,7 +69,6 @@ public class DefaultTextObjectProvider implements TextObjectProvider {
         coreDelimitedTexts = delimitedTexts;
         // override the default motions for a few motions that act differently
         // in text mode
-        @SuppressWarnings("unchecked")
         State<Motion> textMotions = union(
                         state(
                             leafBind('w', MoveWordRightForUpdate.MOVE_WORD_RIGHT_INSTANCE),
@@ -86,7 +84,6 @@ public class DefaultTextObjectProvider implements TextObjectProvider {
         TextObject aParagraph = new ParagraphTextObject(true);
         TextObject innerSentence = new SentenceTextObject(false);
         TextObject aSentence = new SentenceTextObject(true);
-        @SuppressWarnings("unchecked")
         State<TextObject> textObjects = state(
                         transitionBind('g',
                             state(
@@ -133,12 +130,10 @@ public class DefaultTextObjectProvider implements TextObjectProvider {
         return textObjects;
     }
 
-    @SuppressWarnings("unchecked")
     public void updateDelimitedTexts(State<DelimitedText> platformTexts) {
         delimitedTexts = union(platformTexts, coreDelimitedTexts);
     }
     
-    @SuppressWarnings("unchecked")
     public void updateTextObjects(State<TextObject> platformTextObjects) {
 
         textObjects = union(

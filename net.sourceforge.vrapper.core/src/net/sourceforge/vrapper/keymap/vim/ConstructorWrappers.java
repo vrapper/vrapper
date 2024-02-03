@@ -293,7 +293,8 @@ public class ConstructorWrappers {
         return new SimpleTransition<T>(value, state);
     }
 
-    public static<T> State<T> state(KeyBinding<T>... bindings) {
+    @SafeVarargs
+	public static<T> State<T> state(KeyBinding<T>... bindings) {
         return new HashMapState<T>(asList(bindings));
     }
 
@@ -329,30 +330,28 @@ public class ConstructorWrappers {
         return binding(k, transition(value, state));
     }
 
+    @SafeVarargs
     public static<T> KeyBinding<T> transitionBind(char k, KeyBinding<T>... bindings) {
         return binding(k, transition(state(bindings)));
     }
 
+    @SafeVarargs
     public static<T> KeyBinding<T> transitionBind(KeyStroke k, KeyBinding<T>... bindings) {
         return binding(k, transition(state(bindings)));
     }
 
-    @SuppressWarnings("unchecked")
     public static<T> State<T> leafState(char k, T value) {
         return state(leafBind(k, value));
     }
 
-    @SuppressWarnings("unchecked")
     public static<T> State<T> leafState(KeyStroke k, T value) {
         return state(leafBind(k, value));
     }
 
-    @SuppressWarnings("unchecked")
     public static<T> State<T> transitionState(char k, State<T> state) {
         return state(transitionBind(k, state));
     }
 
-    @SuppressWarnings("unchecked")
     public static<T> State<T> transitionState(KeyStroke k, State<T> state) {
         return state(transitionBind(k, state));
     }
@@ -377,7 +376,6 @@ public class ConstructorWrappers {
         return transitionBind(key, operatorInfo, counteater);
     }
 
-    @SuppressWarnings("unchecked")
     public static State<KeyMapInfo> prefixedOperatorKeyMap(char key1, char key2) {
         KeyMapInfo operatorInfo = new KeyMapInfo(KeyMapResolver.OMAP_NAME, "operator");
         State<KeyMapInfo> empty = EmptyState.<KeyMapInfo>getInstance();
@@ -386,14 +384,12 @@ public class ConstructorWrappers {
         return transitionState(key1, state(transitionBind(key2, operatorInfo, counteater)));
     }
 
-    @SuppressWarnings("unchecked")
     private static State<Command> operatorPendingState(char key, State<Command> operatorCommand) {
         return state(binding(key, transition(changeCaret(CaretType.HALF_RECT),
                         operatorCommand)));
     }
 
     /** @see #operatorCmds(char, Command, State) */
-    @SuppressWarnings("unchecked")
     private static State<TextObject> operatorTextObjects(char doublekey, State<TextObject> textObjects) {
         LineEndMotion lineEndMotion = new LineEndMotion(LINE_WISE);
         State<TextObject> toEOL = new TextObjectState(leafState(doublekey, (Motion)lineEndMotion));
@@ -403,7 +399,6 @@ public class ConstructorWrappers {
     }
 
     /** @see ConstructorWrappers#prefixedOperatorCmds(char, char, Command, State) */
-    @SuppressWarnings("unchecked")
     private static State<TextObject> prefixedOperatorTextObjects(char key1, char key2, State<TextObject> textObjects) {
         Motion lineEndMotion = new LineEndMotion(LINE_WISE);
         State<TextObject> toEOL = new TextObjectState(leafState(key2, (Motion)lineEndMotion));
@@ -420,7 +415,6 @@ public class ConstructorWrappers {
      * passed in as uppercase. For example, "dd" deletes the current line, "D"
      * deletes till end of line.
      */
-    @SuppressWarnings("unchecked")
     public static State<Command> operatorCmdsWithUpperCase(char key, TextOperation command, TextObject eolMotion, State<TextObject> textObjects) {
         assert Character.isLowerCase(key);
         Command doToEOL = new TextOperationTextObjectCommand(command, eolMotion);
@@ -434,7 +428,6 @@ public class ConstructorWrappers {
      * repeating the operator character. For example, ">>" shifts the current
      * line.
      */
-    @SuppressWarnings("unchecked")
     public static State<Command> operatorCmds(char key, TextOperation command, State<TextObject> textObjects) {
         State<Command> operatorCmds = union(
                 leafState('/', (Command) new ChangeToSearchModeCommand(false, new PerformOperationOnSearchResultCommand(command, SearchResultMotion.REPEAT))),

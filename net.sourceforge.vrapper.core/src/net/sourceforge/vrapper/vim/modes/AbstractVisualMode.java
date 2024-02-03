@@ -72,7 +72,6 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     protected KeyMapResolver buildKeyMapResolver() {
         final State<KeyMapInfo> state = union(
                 editorAdaptor.getPlatformSpecificStateProvider().getKeyMaps(VisualMode.NAME));
@@ -189,7 +188,6 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
     public abstract void fixCaret();
 
     @Override
-    @SuppressWarnings("unchecked")
     protected State<Command> buildInitialState() {
         final Command leaveVisual = LeaveVisualModeCommand.INSTANCE;
         final Command yank   = new SelectionBasedTextOperationCommand(YankOperation.INSTANCE);
@@ -265,7 +263,6 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
     }
 
     protected VisualMotionState getVisualMotionState() {
-        @SuppressWarnings("unchecked")
         State<Motion> motions = union(
                 leafState(' ', MoveRightAcrossLines.INSTANCE_BEHIND_CHAR),
                 // Shift + Arrows use Vrapper motions rather than SWT handling to have sticky column

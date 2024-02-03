@@ -119,7 +119,6 @@ public class WindowCmdStateProvider extends AbstractEclipseSpecificStateProvider
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     protected State<Command> normalModeBindings() {
         final Command vsplit = SplitEditorCommand.VSPLIT;
         final Command split = SplitEditorCommand.HSPLIT;
