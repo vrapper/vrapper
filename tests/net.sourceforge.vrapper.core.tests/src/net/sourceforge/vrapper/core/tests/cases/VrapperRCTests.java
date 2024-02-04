@@ -8,9 +8,9 @@ import static org.junit.Assert.assertTrue;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import net.sourceforge.vrapper.keymap.KeyMap;
@@ -25,12 +25,11 @@ import net.sourceforge.vrapper.vim.modes.commandline.CommandLineParser;
 public class VrapperRCTests extends VimTestCase {
 
     @Test
-    @Ignore("Failing")
     public void testVrapperRCParsing() throws Exception {
         File config = new File("test-resources/vrapperrc/sample.vrapperrc");
         BufferedReader reader = null;
         try {
-            reader = new BufferedReader(new FileReader(config));
+            reader = new BufferedReader(new FileReader(config, StandardCharsets.UTF_8));
             String line;
             CommandLineMode commandLineMode = new CommandLineMode(adaptor);
             CommandLineParser parser = commandLineMode.createParser();

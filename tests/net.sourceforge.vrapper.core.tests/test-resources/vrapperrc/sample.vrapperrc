@@ -4,84 +4,84 @@ match NbSp? /\%xa0/
 
 
 " """"""""""""""""""""""
-" """"""""BƒPO""""""""""
+" """"""""BÃ‰PO""""""""""
 " """"""""""""""""""""""
 
 
-" {W} -> [ƒ]
+" {W} -> [Ã‰]
 " -------------------
-" On remappe W sur ƒ :
-noremap  w
-noremap ƒ W
-" Corollaire, pour effacer/remplacer un mot quand on n'est pas au dbut
-(da / la).
-" (attention, cela diminue la ractivit du {A}...)
-noremap a aw
-noremap aƒ aW
-" Pour faciliter les manipulations de fentres, on utilise {W} comme un
+" On remappe W sur Ã‰ :
+noremap Ã© w
+noremap Ã‰ W
+" Corollaire, pour effacer/remplacer un mot quand on n'est pas au dÃ©but
+(daÃ© / laÃ©).
+" (attention, cela diminue la rÃ©activitÃ© du {A}...)
+noremap aÃ© aw
+noremap aÃ‰ aW
+" Pour faciliter les manipulations de fenÃªtres, on utilise {W} comme un
 Ctrl+W :
 noremap w <C-w>
 noremap W <C-w><C-w>
 
 " [HJKL] -> {CTSR}
 " ----------------
-" {cr} = Ç gauche / droite È
+" {cr} = Â« gauche / droite Â»
 noremap c h
 noremap r l
-" {ts} = Ç haut / bas È
+" {ts} = Â« haut / bas Â»
 noremap t j
 noremap s k
-" {CR} = Ç haut / bas de l'cran È
+" {CR} = Â« haut / bas de l'Ã©cran Â»
 noremap C H
 noremap R L
-" {TS} = Ç joindre / aide È
+" {TS} = Â« joindre / aide Â»
 noremap T J
 noremap S K
-" Corollaire : repli suivant / prcdent
+" Corollaire : repli suivant / prÃ©cÃ©dent
 noremap zs zj
 noremap zt zk
 
 " {HJKL} <- [CTSR]
 " ----------------
-" {J} = Ç Jusqu'ˆ È (j = suivant, J = prcdant)
+" {J} = Â« Jusqu'Ã  Â» (j = suivant, J = prÃ©cÃ©dant)
 noremap j t
 noremap J T
-" {L} = Ç Change È (h = bloc, H = jusqu'ˆ la fin de ligne)
+" {L} = Â« Change Â» (h = bloc, H = jusqu'Ã  la fin de ligne)
 noremap l c
 noremap L C
-" {H} = Ç Remplace È (l = caractre, L = texte)
+" {H} = Â« Remplace Â» (l = caractÃ¨re, L = texte)
 noremap h r
 noremap H R
-" {K} = Ç Substitue È (k = caractre, K = ligne)
+" {K} = Â« Substitue Â» (k = caractÃ¨re, K = ligne)
 noremap k s
 noremap K S
 " Corollaire : correction orthographique
 noremap ]k ]s
 noremap [k [s
 
-" Dsambiguation de {g}
+" DÃ©sambiguation de {g}
 " ---------------------
-" ligne cran prcdente / suivante (ˆ l'intrieur d'une phrase)
+" ligne Ã©cran prÃ©cÃ©dente / suivante (Ã  l'intÃ©rieur d'une phrase)
 noremap gs gk
 noremap gt gj
-" onglet prcdant / suivant
+" onglet prÃ©cÃ©dant / suivant
 noremap gb gT
-noremap g gt
-" optionnel : {gB} / {gƒ} pour aller au premier / dernier onglet
+noremap gÃ© gt
+" optionnel : {gB} / {gÃ‰} pour aller au premier / dernier onglet
 noremap gB :exe "silent! tabfirst"<CR>
-noremap gƒ :exe "silent! tablast"<CR>
-" optionnel : {g"} pour aller au dbut de la ligne cran
+noremap gÃ‰ :exe "silent! tablast"<CR>
+" optionnel : {g"} pour aller au dÃ©but de la ligne Ã©cran
 noremap g" g0
 
-noremap  dd
-noremap Š zz
-" Chiffres en accs direct
+noremap Ã© dd
+noremap Ã¤ zz
+" Chiffres en accÃ¨s direct
 " ------------------------
 noremap " 1
 noremap 1 "
-noremap Ç 2
+noremap Â« 2
 noremap 2 <
-noremap È 3
+noremap Â» 3
 noremap 3 >
 noremap ( 4
 noremap 4 (
