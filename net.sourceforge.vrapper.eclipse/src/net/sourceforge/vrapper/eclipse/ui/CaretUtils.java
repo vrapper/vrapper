@@ -20,7 +20,7 @@ public class CaretUtils {
      */
     public static Caret createCaret(CaretType caretType, StyledText styledText) {
         GC gc = new GC(styledText);
-        final int width = gc.getFontMetrics().getAverageCharWidth();
+        final int width = (int)Math.round(gc.getFontMetrics().getAverageCharacterWidth());
         final int height = gc.getFontMetrics().getHeight();
         gc.dispose();
 

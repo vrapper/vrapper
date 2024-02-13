@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Tests
+Bundle-SymbolicName: net.sourceforge.vrapper.core.tests
+Bundle-Version: 1.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-17
+Automatic-Module-Name: net.sourceforge.vrapper.core.tests
+Export-Package: net.sourceforge.vrapper.core.tests,
+ net.sourceforge.vrapper.core.tests.cases,
+ net.sourceforge.vrapper.core.tests.utils
+Fragment-Host: net.sourceforge.vrapper.core
+Require-Bundle: org.mockito.junit-jupiter;bundle-version="5.10.0",
+ org.mockito.mockito-core;bundle-version="5.10.0",
+ net.bytebuddy.byte-buddy;bundle-version="1.14.11",
+ net.bytebuddy.byte-buddy-agent;bundle-version="1.14.11",
+ org.objenesis;bundle-version="3.3.0"
+

@@ -142,7 +142,6 @@ public abstract class CommandBasedMode extends AbstractMode {
         return initialStateCache.get(key);
     }
 
-    @SuppressWarnings("unchecked")
     public static State<Motion> motions() {
         if (motions == null) {
             final Motion moveLeft = MoveLeft.INSTANCE;

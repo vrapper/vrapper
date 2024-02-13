@@ -35,7 +35,6 @@ public class CdtSpecificStateProvider extends AbstractEclipseSpecificStateProvid
     }
     
     @Override
-    @SuppressWarnings("unchecked")
     protected State<Command> normalModeBindings() {
         State<TextObject> textObjects = super.textObjectProvider.textObjects();
         return union(
@@ -52,7 +51,6 @@ public class CdtSpecificStateProvider extends AbstractEclipseSpecificStateProvid
 
     @Override
     protected State<KeyMapInfo> normalModeKeymap() {
-        @SuppressWarnings("unchecked")
         State<KeyMapInfo> state = state(
                 transitionBind('g', operatorKeyMap('c')),
                 operatorKeyMap('='));
@@ -60,7 +58,6 @@ public class CdtSpecificStateProvider extends AbstractEclipseSpecificStateProvid
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     protected State<Command> visualModeBindings() {
         return state(
         		leafBind('=', editCAndLeaveVisual("indent")),

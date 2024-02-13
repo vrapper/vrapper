@@ -720,7 +720,7 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
                 } catch (Exception e) {
                     throw new VrapperPlatformException("Failed to get active page of " + multiPage, e);
                 }
-                if (innerEditor != null && innerEditor.getEditorInput().equals(buffer.input)) {
+                if (innerEditor != null && innerEditor.getEditorInput().equals(buffer.input.get())) {
                     EditorInfo innerInfo = parentEditorInfo.getChild(innerEditor);
                     if (innerInfo == null) {
                         throw new VrapperPlatformException("Unknown child editor " + innerEditor);
@@ -739,7 +739,7 @@ public class InputInterceptorManager implements IPartListener2, IPageChangedList
             IEditorPart[] innerEditors = editor.getInnerEditors();
             int i = 0;
             while (i < innerEditors.length
-                    && ! buffer.input.equals(innerEditors[i].getEditorInput())) {
+                    && ! innerEditors[i].getEditorInput().equals(buffer.input.get())) {
                 i++;
             }
             if (i < innerEditors.length) {

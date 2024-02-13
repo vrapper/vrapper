@@ -17,7 +17,6 @@ public class CycleProvider extends AbstractEclipseSpecificStateProvider {
         commands.add("AddCycleGroup", CycleCommand.addCycleGroupEvaluator());
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     protected State<Command> normalModeBindings() {
         return state(

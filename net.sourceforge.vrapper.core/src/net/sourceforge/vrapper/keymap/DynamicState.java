@@ -22,7 +22,8 @@ public class DynamicState<T> implements State<T> {
         }
     }
 
-    public DynamicState(KeyBinding<T>...bindings) {
+    @SuppressWarnings("unchecked")
+	public DynamicState(KeyBinding<T>...bindings) {
         this(Arrays.asList(bindings));
     }
 

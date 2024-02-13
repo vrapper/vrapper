@@ -18,7 +18,6 @@ public class EclipseTextObjectProvider extends AbstractPlatformSpecificTextObjec
         return EmptyState.getInstance();
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public State<TextObject> textObjects() {
         return union(

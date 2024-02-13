@@ -564,7 +564,6 @@ public class InsertMode extends AbstractMode {
         return true;
     }
 
-    @SuppressWarnings("unchecked")
     protected State<Command> buildState() {
         State<Command> platformSpecificState = editorAdaptor.getPlatformSpecificStateProvider().getState(NAME);
         if(platformSpecificState == null) {

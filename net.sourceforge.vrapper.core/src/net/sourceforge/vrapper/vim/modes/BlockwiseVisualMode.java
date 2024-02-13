@@ -277,7 +277,6 @@ public class BlockwiseVisualMode extends AbstractVisualMode {
         return NAME;
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     protected State<Command> buildInitialState() {
         final Motion bol = BlockSelectionMotion.COLUMN_START;

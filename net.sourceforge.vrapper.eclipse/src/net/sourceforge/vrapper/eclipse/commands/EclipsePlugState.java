@@ -26,7 +26,6 @@ public class EclipsePlugState extends AbstractPlugState<Command> {
         if (id.toLowerCase(Locale.ENGLISH).startsWith(COMMANDPREFIX)) {
             // Clip off prefix and last ')'
             String commandId = id.substring(COMMANDPREFIX.length(), id.length() -1);
-            Command result;
             return new SimpleTransition<Command>(
                     new EclipseCommand(commandId).fromVisualMode(fromVisual));
         } else {

@@ -56,7 +56,6 @@ public class VisualMode extends AbstractVisualMode {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     protected State<Command> buildInitialState() {
         Command doSearchCommand = new VisualMotionCommand(SearchResultMotion.REPEAT);
         State<Command> characterwiseSpecific = state(

@@ -77,7 +77,7 @@ public class VimTestCase {
 
     public void initMocks() {
         DefaultEditorAdaptor.SHOULD_READ_RC_FILE = false;
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         cursorAndSelection = spy(new TestCursorAndSelection());
         content = spy(new TestTextContent(cursorAndSelection));
         cursorAndSelection.setContent(content);

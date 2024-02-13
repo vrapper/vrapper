@@ -17,7 +17,6 @@ import net.sourceforge.vrapper.vim.commands.motions.ContinueFindingMotion;
 
 public class SneakStateProvider extends AbstractEclipseSpecificStateProvider {
 
-    @SuppressWarnings("unchecked")
     @Override
     protected State<Command> normalModeBindings() {
 
@@ -45,7 +44,6 @@ public class SneakStateProvider extends AbstractEclipseSpecificStateProvider {
         );
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     protected State<Command> visualModeBindings() {
 

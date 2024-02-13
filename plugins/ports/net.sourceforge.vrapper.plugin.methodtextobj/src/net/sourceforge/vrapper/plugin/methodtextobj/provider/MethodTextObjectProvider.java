@@ -20,7 +20,6 @@ public class MethodTextObjectProvider extends AbstractPlatformSpecificTextObject
         final TextObject innerArgument = MethodTextObject.INNER;
         final TextObject outerArgument = MethodTextObject.OUTER;
 
-        @SuppressWarnings("unchecked")
         final State<TextObject> argObjects = state(
                 transitionBind('i',
                         state(leafBind('f', innerArgument))),

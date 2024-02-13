@@ -13,7 +13,8 @@ public class CollectionUtils {
         return new EmptyQueue<T>();
     }
     
-    public static <T> Queue<T> asQueue(T...contents) {
+    @SafeVarargs
+	public static <T> Queue<T> asQueue(T...contents) {
         LinkedList<T> result = new LinkedList<T>();
         Collections.addAll(result, contents);
         return result;

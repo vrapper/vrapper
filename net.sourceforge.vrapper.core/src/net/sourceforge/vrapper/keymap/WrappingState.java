@@ -43,7 +43,6 @@ public class WrappingState<T> implements State<T> {
         return new SimpleTransition<T>(nextState);
     }
 
-    @SuppressWarnings("unchecked")
     public State<T> union(State<T> other) {
         if (other instanceof EmptyState<?>)
             return this;

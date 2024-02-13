@@ -29,7 +29,6 @@ public class ExchangeProvider extends AbstractEclipseSpecificStateProvider {
         name = "Exchange State Provider";
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     protected State<Command> normalModeBindings() {
         final LineEndMotion lineEndMotion = new LineEndMotion(LINE_WISE);
@@ -42,13 +41,11 @@ public class ExchangeProvider extends AbstractEclipseSpecificStateProvider {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public State<KeyMapInfo> normalModeKeymap() {
         return state(
                 transitionBind('c', operatorKeyMap('x')));
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     protected State<Command> visualModeBindings() {
         final Command exchangeVisual = new SelectionBasedTextOperationCommand(ExchangeOperation.INSTANCE);

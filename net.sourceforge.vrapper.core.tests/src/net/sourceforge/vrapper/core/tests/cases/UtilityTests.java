@@ -10,6 +10,7 @@ import net.sourceforge.vrapper.utils.StringUtils;
 import net.sourceforge.vrapper.utils.StringUtils.PatternHolder;
 
 import org.hamcrest.CoreMatchers;
+import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -67,7 +68,7 @@ public class UtilityTests {
         List<String> contents = (List<String>) contentsRef.get(result);
         List<String> contentsExpected = Arrays.asList("I"," ","w","a","n","t"," ","t","o"," ","\\c",
                 "S","E","E"," ","t","h","i","s"," ","s","p","l","i","t");
-        Assert.assertThat(contents, CoreMatchers.is(contentsExpected));
+        MatcherAssert.assertThat(contents, CoreMatchers.is(contentsExpected));
 
         // Verify that surrogate characters are kept together.
         test = "testing \uCE45 surrogates";
@@ -75,7 +76,7 @@ public class UtilityTests {
         contents = (List<String>) contentsRef.get(result);
         contentsExpected = Arrays.asList("t","e","s","t","i","n","g"," ","\uCE45"," ",
                 "s","u","r","r","o","g","a","t","e","s");
-        Assert.assertThat(contents, CoreMatchers.is(contentsExpected));
+        MatcherAssert.assertThat(contents, CoreMatchers.is(contentsExpected));
 
         test = "test extended \\%V flag";
         result = StringUtils.explodePattern(test);
@@ -83,7 +84,7 @@ public class UtilityTests {
         contents = (List<String>) contentsRef.get(result);
         contentsExpected = Arrays.asList("t","e","s","t"," ","e","x","t","e","n","d","e","d"," ",
                 "\\%V"," ","f","l","a","g");
-        Assert.assertThat(contents, CoreMatchers.is(contentsExpected));
+        MatcherAssert.assertThat(contents, CoreMatchers.is(contentsExpected));
 
         test = "test backslash \\\\";
         result = StringUtils.explodePattern(test);
@@ -91,7 +92,7 @@ public class UtilityTests {
         contents = (List<String>) contentsRef.get(result);
         contentsExpected = Arrays.asList("t","e","s","t"," ","b","a","c","k","s","l","a","s","h",
                 " ","\\\\");
-        Assert.assertThat(contents, CoreMatchers.is(contentsExpected));
+        MatcherAssert.assertThat(contents, CoreMatchers.is(contentsExpected));
 
         test = "test backslash \\\\can't\\\\\\c";
         result = StringUtils.explodePattern(test);
@@ -99,7 +100,7 @@ public class UtilityTests {
         contents = (List<String>) contentsRef.get(result);
         contentsExpected = Arrays.asList("t","e","s","t"," ","b","a","c","k","s","l","a","s","h",
                 " ","\\\\", "c", "a", "n", "'", "t", "\\\\", "\\c");
-        Assert.assertThat(contents, CoreMatchers.is(contentsExpected));
+        MatcherAssert.assertThat(contents, CoreMatchers.is(contentsExpected));
 
         test = "test \\\\replace and reassembly\\c\\%v";
         result = StringUtils.explodePattern(test);
@@ -115,7 +116,7 @@ public class UtilityTests {
         result = StringUtils.explodePattern(test);
         contents = (List<String>) contentsRef.get(result);
         contentsExpected = Collections.emptyList();
-        Assert.assertThat(contents, CoreMatchers.is(contentsExpected));
+        MatcherAssert.assertThat(contents, CoreMatchers.is(contentsExpected));
     }
 
     @Test
@@ -132,11 +133,11 @@ public class UtilityTests {
         List<String> contents = (List<String>) contentsRef.get(result);
         List<String> contentsExpected = Arrays.asList("I"," ","w","a","n","t"," ","t","o"," ","\\c",
                 "S","E","E"," ","t","h","i","s"," ","s","p","l","i","t");
-        Assert.assertThat(contents, CoreMatchers.is(contentsExpected));
+        MatcherAssert.assertThat(contents, CoreMatchers.is(contentsExpected));
         result = holder.patterns.get(1);
         contents = (List<String>) contentsRef.get(result);
         contentsExpected = Arrays.asList("r","e","p","l","a","c","e","d");
-        Assert.assertThat(contents, CoreMatchers.is(contentsExpected));
+        MatcherAssert.assertThat(contents, CoreMatchers.is(contentsExpected));
         Assert.assertEquals("c", holder.remainder);
 
         test = "#I want to \\cSEE this split\\#now\\\\#replaced#c";
@@ -146,11 +147,11 @@ public class UtilityTests {
         contents = (List<String>) contentsRef.get(result);
         contentsExpected = Arrays.asList("I"," ","w","a","n","t"," ","t","o"," ","\\c",
                 "S","E","E"," ","t","h","i","s"," ","s","p","l","i","t","\\#","n","o","w","\\\\");
-        Assert.assertThat(contents, CoreMatchers.is(contentsExpected));
+        MatcherAssert.assertThat(contents, CoreMatchers.is(contentsExpected));
         result = holder.patterns.get(1);
         contents = (List<String>) contentsRef.get(result);
         contentsExpected = Arrays.asList("r","e","p","l","a","c","e","d");
-        Assert.assertThat(contents, CoreMatchers.is(contentsExpected));
+        MatcherAssert.assertThat(contents, CoreMatchers.is(contentsExpected));
         Assert.assertEquals("c", holder.remainder);
 
         test = "##replaced#c";
@@ -158,11 +159,11 @@ public class UtilityTests {
         result = holder.patterns.get(0);
         contents = (List<String>) contentsRef.get(result);
         contentsExpected = Collections.emptyList();
-        Assert.assertThat(contents, CoreMatchers.is(contentsExpected));
+        MatcherAssert.assertThat(contents, CoreMatchers.is(contentsExpected));
         result = holder.patterns.get(1);
         contents = (List<String>) contentsRef.get(result);
         contentsExpected = Arrays.asList("r","e","p","l","a","c","e","d");
-        Assert.assertThat(contents, CoreMatchers.is(contentsExpected));
+        MatcherAssert.assertThat(contents, CoreMatchers.is(contentsExpected));
         Assert.assertEquals("c", holder.remainder);
 
         test = "#replaced";
@@ -171,7 +172,7 @@ public class UtilityTests {
         result = holder.patterns.get(0);
         contents = (List<String>) contentsRef.get(result);
         contentsExpected = Arrays.asList("r","e","p","l","a","c","e","d");
-        Assert.assertThat(contents, CoreMatchers.is(contentsExpected));
+        MatcherAssert.assertThat(contents, CoreMatchers.is(contentsExpected));
         Assert.assertEquals("", holder.remainder);
 
     }

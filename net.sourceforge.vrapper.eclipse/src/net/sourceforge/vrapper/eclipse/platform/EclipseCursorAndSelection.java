@@ -102,7 +102,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         GC gc = null;
         try {
             gc = new GC(tw);
-            averageCharWidth = gc.getFontMetrics().getAverageCharWidth();
+            averageCharWidth = (int)Math.round(gc.getFontMetrics().getAverageCharacterWidth());
         } finally {
             if (gc != null)
                 gc.dispose();
@@ -210,7 +210,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         if (!stickToEOL) {
             try {
                 final int y = tw.getLocationAtOffset(tw.getOffsetAtLine(lineNo)).y;
-                final int offset = tw.getOffsetAtLocation(new Point(stickyColumn - tw.getHorizontalPixel(), y));
+                final int offset = tw.getOffsetAtPoint(new Point(stickyColumn - tw.getHorizontalPixel(), y));
                 return new TextViewerPosition(textViewer, Space.VIEW, offset);
             } catch (final IllegalArgumentException e) {
                 // fall through silently and return line end
@@ -346,7 +346,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         final StyledText styled = textViewer.getTextWidget();
         styled.setBlockSelection(true);
         GC gc = new GC(styled);
-        final int avgCharWidth = gc.getFontMetrics().getAverageCharWidth();
+        final int avgCharWidth = (int)Math.round(gc.getFontMetrics().getAverageCharacterWidth());
         gc.dispose();
         final TextContent viewContent = textContent.getViewContent();
         final int fromOfs = selection.getFrom().getViewOffset();

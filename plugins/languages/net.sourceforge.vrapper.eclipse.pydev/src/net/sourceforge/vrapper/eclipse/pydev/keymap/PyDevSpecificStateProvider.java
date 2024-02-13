@@ -32,7 +32,6 @@ public class PyDevSpecificStateProvider extends AbstractEclipseSpecificStateProv
     }
     
     @Override
-    @SuppressWarnings("unchecked")
     protected State<Command> normalModeBindings() {
         State<TextObject> textObjects = textObjectProvider.textObjects();
         Command toggleCommand = new ToggleFoldingCommand(
@@ -57,7 +56,6 @@ public class PyDevSpecificStateProvider extends AbstractEclipseSpecificStateProv
                 );
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     protected State<KeyMapInfo> normalModeKeymap() {
         return state(
@@ -65,7 +63,6 @@ public class PyDevSpecificStateProvider extends AbstractEclipseSpecificStateProv
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     protected State<Command> visualModeBindings() {
         return state(
         		transitionBind('g',

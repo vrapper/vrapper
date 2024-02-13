@@ -5,5 +5,5 @@ Bundle-SymbolicName: net.sourceforge.vrapper.eclipse.cdt;singleton:=true
 Bundle-Version: 0.75.20210730
 Fragment-Host: net.sourceforge.vrapper.eclipse;bundle-version="0.75.20210730"
 Require-Bundle: org.eclipse.cdt.ui;bundle-version="5.1.1"
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Automatic-Module-Name: net.sourceforge.vrapper.eclipse.cdt

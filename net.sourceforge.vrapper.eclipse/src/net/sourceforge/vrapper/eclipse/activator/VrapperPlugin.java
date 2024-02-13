@@ -125,7 +125,7 @@ public class VrapperPlugin extends AbstractUIPlugin implements /*IStartup,*/ Log
     }
 
     void restoreVimEmulationInActiveEditors() {
-        IWorkbenchWindow[] windows = plugin.getWorkbench().getWorkbenchWindows();
+        IWorkbenchWindow[] windows = PlatformUI.getWorkbench().getWorkbenchWindows();
         for (IWorkbenchWindow window: windows) {
             for (IWorkbenchPage page: window.getPages()) {
                 for (IEditorReference ref: page.getEditorReferences()) {
@@ -144,10 +144,10 @@ public class VrapperPlugin extends AbstractUIPlugin implements /*IStartup,*/ Log
     }
 
     void addEditorListeners() {
-        for (IWorkbenchWindow window: plugin.getWorkbench().getWorkbenchWindows()) {
+        for (IWorkbenchWindow window: PlatformUI.getWorkbench().getWorkbenchWindows()) {
             addInterceptingListener(window);
         }
-        plugin.getWorkbench().addWindowListener(new IWindowListener() {
+        PlatformUI.getWorkbench().addWindowListener(new IWindowListener() {
             public void windowOpened(IWorkbenchWindow window) {
                 addInterceptingListener(window);
             }
@@ -164,7 +164,7 @@ public class VrapperPlugin extends AbstractUIPlugin implements /*IStartup,*/ Log
     }
     
     void addShutdownListener() {
-        getWorkbench().addWorkbenchListener(new IWorkbenchListener() {
+        PlatformUI.getWorkbench().addWorkbenchListener(new IWorkbenchListener() {
             public void postShutdown(IWorkbench arg0) { }
 
             public boolean preShutdown(IWorkbench arg0, boolean arg1) {
@@ -179,7 +179,7 @@ public class VrapperPlugin extends AbstractUIPlugin implements /*IStartup,*/ Log
     }
 
     void activateVrapperShortcutContexts() {
-        final IContextService contextService = (IContextService) getWorkbench().getService(IContextService.class);
+        final IContextService contextService = (IContextService) PlatformUI.getWorkbench().getService(IContextService.class);
 
         contextService.activateContext("net.sourceforge.vrapper.eclipse.enabledOnView", vrapperEnabledOnViewExpression(), true);
 
@@ -260,7 +260,7 @@ public class VrapperPlugin extends AbstractUIPlugin implements /*IStartup,*/ Log
     void toggleVrapper() {
         boolean enable = PREFERENCES_SERVICE.getBoolean(PLUGIN_ID, KEY_VRAPPER_ENABLED, true, null);
         if (enable) {
-            IHandlerService s = (IHandlerService) getWorkbench().getService(IHandlerService.class);
+            IHandlerService s = (IHandlerService) PlatformUI.getWorkbench().getService(IHandlerService.class);
             try {
                 s.executeCommand(COMMAND_TOGGLE_VRAPPER, null);
             } catch (Exception e) {

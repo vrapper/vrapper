@@ -7,6 +7,7 @@ public class StateUtils {
 		return a != null ? a : b;
 	}
 
+    @SafeVarargs
 	public static<T> State<T> union(State<T>... states) {
 		State<T> result = EmptyState.getInstance();
 		for (State<T> state: states)
@@ -15,6 +16,7 @@ public class StateUtils {
 		return result;
 	}
 
+    @SafeVarargs
 	public static<T> State<T> unionOrNull(State<T>... states) {
 		State<T> result = union(states);
 		if (result instanceof EmptyState<?>)

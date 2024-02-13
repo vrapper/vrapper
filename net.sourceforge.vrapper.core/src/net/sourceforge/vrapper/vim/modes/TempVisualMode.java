@@ -36,7 +36,6 @@ public class TempVisualMode extends VisualMode implements TemporaryMode {
         return DISPLAY_NAME;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     protected State<Command> buildInitialState() {
         Command pasteTempVisual = new SelectionBasedTextOperationCommand(

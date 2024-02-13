@@ -95,7 +95,6 @@ public class NormalMode extends CommandBasedMode {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     protected KeyMapResolver buildKeyMapResolver() {
         final State<KeyMapInfo> state = union(
                 state(
@@ -118,7 +117,6 @@ public class NormalMode extends CommandBasedMode {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     protected State<Command> buildInitialState() {
         final Command resumeInsertMode = new ChangeToInsertModeCommand(
                 new MotionCommand(new GoToMarkMotion(false, CursorService.LAST_INSERT_MARK)));

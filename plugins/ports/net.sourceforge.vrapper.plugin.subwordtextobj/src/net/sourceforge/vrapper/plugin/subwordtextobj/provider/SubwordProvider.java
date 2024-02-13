@@ -17,7 +17,6 @@ public class SubwordProvider extends AbstractEclipseSpecificStateProvider {
         commands.add("subwordmappings", new SubwordMappingsSetupEvaluator());
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     protected State<Command> normalModeBindings() {
         return new GoThereState(state(
@@ -26,7 +25,6 @@ public class SubwordProvider extends AbstractEclipseSpecificStateProvider {
                 leafBind(new PlugKeyStroke("(subword-word)"), SubwordMotion.SUB_WORD)));
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     protected State<Command> visualModeBindings() {
         return new VisualMotionState( state(
