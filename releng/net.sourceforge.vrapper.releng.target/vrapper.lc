@@ -1,0 +1,106 @@
+
+explicit eclipse configuration Vrapper {
+	// clear neither workspace nor config (if left away, the config area will be cleared by default)
+	clear;
+	execution-environment 'JavaSE-17';
+
+	favorite run debug; // show only current TP in launch favorites
+	workspace '${workspace_loc}/../runtime-vrapper';
+	product org.eclipse.platform.ide;
+
+	argument '-consoleLog';
+
+	plugin bcpg;
+	plugin bcprov;
+	plugin com.ibm.icu;
+	plugin com.sun.el.javax.el;
+	plugin com.sun.jna.platform;
+	plugin com.sun.jna;
+	plugin jakarta.annotation-api;
+	plugin jakarta.inject.jakarta.inject-api;
+	plugin jakarta.xml.bind-api;
+	plugin javax.activation;
+	plugin javax.el-api;
+	plugin javax.servlet-api;
+	plugin javax.servlet.jsp-api;
+	plugin javax.xml;
+	plugin org.apache.aries.spifly.dynamic.bundle;
+	plugin org.apache.batik.constants;
+	plugin org.apache.batik.css;
+	plugin org.apache.batik.i18n;
+	plugin org.apache.batik.util;
+	plugin org.apache.commons.collections;
+	plugin org.apache.commons.commons-beanutils;
+	plugin org.apache.commons.commons-io;
+	plugin org.apache.commons.jxpath;
+	plugin org.apache.commons.logging;
+	plugin org.apache.felix.scr;
+	plugin org.apache.lucene.analysis-common;
+	plugin org.apache.lucene.analysis-smartcn;
+	plugin org.apache.lucene.core;
+	plugin org.apache.xalan;
+	plugin org.apache.xerces 2.12.2.v20220131-0835;
+	plugin org.apache.xml.resolver;
+	plugin org.apache.xml.serializer;
+	plugin org.eclipse.e4.ui.progress;
+	plugin org.eclipse.ecf.filetransfer;
+	plugin org.eclipse.ecf.identity;
+	plugin org.eclipse.ecf.provider.filetransfer;
+	plugin org.eclipse.ecf.provider;
+	plugin org.eclipse.ecf.sharedobject;
+	plugin org.eclipse.ecf;
+	plugin org.eclipse.jetty.ee8.security;
+	plugin org.eclipse.jetty.ee8.server;
+	plugin org.eclipse.jetty.ee8.servlet;
+	plugin org.eclipse.jetty.http;
+	plugin org.eclipse.jetty.io;
+	plugin org.eclipse.jetty.security;
+	plugin org.eclipse.jetty.server;
+	plugin org.eclipse.jetty.servlet-api;
+	plugin org.eclipse.jetty.session;
+	plugin org.eclipse.jetty.util;
+	plugin org.eclipse.search.core;
+	plugin org.hamcrest;
+	plugin org.jdom;
+	plugin org.mortbay.jasper.apache-jsp;
+	plugin org.objectweb.asm 9.6.0;
+	plugin org.objectweb.asm.commons;
+	plugin org.objectweb.asm.tree.analysis;
+	plugin org.objectweb.asm.tree;
+	plugin org.objectweb.asm.util;
+	plugin org.osgi.service.repository;
+	plugin org.sat4j.core;
+	plugin org.sat4j.pb;
+	plugin org.w3c.css.sac;
+	plugin org.w3c.dom.events;
+	plugin org.w3c.dom.smil;
+	plugin org.w3c.dom.svg;
+	plugin slf4j.api;
+	plugin slf4j.simple;
+	
+	
+	feature net.sourceforge.vrapper.eclipse.jdt.feature;
+	feature org.eclipse.emf.ecore;
+	feature org.eclipse.equinox.executable;
+	feature org.eclipse.jdt;
+	feature org.eclipse.platform;
+	feature org.eclipse.rcp;
+}
+
+
+// 2023-12 not yet supported by CDT
+// blocker is https://github.com/eclipse-cdt/cdt/issues/664
+explicit eclipse configuration VrapperCdt : Vrapper {
+	plugin org.eclipse.tools.templates.core;
+	plugin org.eclipse.tools.templates.freemarker;
+	plugin org.eclipse.tools.templates.ui;
+	plugin org.freemarker.freemarker;
+	plugin com.google.gson;
+	plugin com.sun.xml.bind;
+	plugin jakarta.inject.jakarta.inject-api;
+	
+	feature org.eclipse.launchbar;
+	feature org.eclipse.tm.terminal.control.feature;
+
+	feature org.eclipse.cdt;
+}

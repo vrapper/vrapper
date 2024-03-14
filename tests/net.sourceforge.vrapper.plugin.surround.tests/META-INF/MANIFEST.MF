@@ -1,0 +1,20 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: net.sourceforge.vrapper.plugin.surround.tests
+Bundle-SymbolicName: net.sourceforge.vrapper.plugin.surround.tests
+Bundle-Version: 1.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-17
+Automatic-Module-Name: net.sourceforge.vrapper.plugin.surround.tests
+Fragment-Host: net.sourceforge.vrapper.plugin.surround
+Import-Package: junit.framework;version="4.13.2",
+ org.hamcrest;version="2.2.0",
+ org.junit;version="4.13.2",
+ org.junit.runner;version="4.13.2",
+ org.junit.runners;version="4.13.2"
+Require-Bundle: org.mockito.junit-jupiter;bundle-version="5.10.0",
+ org.mockito.mockito-core;bundle-version="5.10.0",
+ net.bytebuddy.byte-buddy;bundle-version="1.14.11",
+ net.bytebuddy.byte-buddy-agent;bundle-version="1.14.11",
+ org.objenesis;bundle-version="3.3.0",
+ net.sourceforge.vrapper.testutil;bundle-version="1.0.0"
+

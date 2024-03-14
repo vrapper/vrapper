@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <description name="Vrapper" url="http://vrapper.sourceforge.net/update-site/stable">
+      Stable releases of Vrapper.
+   </description>
+   <feature url="features/net.sourceforge.vrapper.plugin.splitEditor.feature_0.75.0.qualifier.jar" id="net.sourceforge.vrapper.plugin.splitEditor.feature" version="0.75.0.qualifier">
+      <category name="Vrapper"/>
+   </feature>
+   <feature url="features/net.sourceforge.vrapper.plugin.linetextobj.feature_0.75.0.qualifier.jar" id="net.sourceforge.vrapper.plugin.linetextobj.feature" version="0.75.0.qualifier">
+      <category name="Optional Vimscript Plugins"/>
+   </feature>
+   <feature url="features/net.sourceforge.vrapper.plugin.sneak.feature_0.75.0.qualifier.jar" id="net.sourceforge.vrapper.plugin.sneak.feature" version="0.75.0.qualifier">
+      <category name="Optional Vimscript Plugins"/>
+   </feature>
+   <feature url="features/net.sourceforge.vrapper.plugin.argtextobj.feature_0.75.0.qualifier.jar" id="net.sourceforge.vrapper.plugin.argtextobj.feature" version="0.75.0.qualifier">
+      <category name="Optional Vimscript Plugins"/>
+   </feature>
+   <feature url="features/net.sourceforge.vrapper.plugin.indenttextobj.feature_0.75.0.qualifier.jar" id="net.sourceforge.vrapper.plugin.indenttextobj.feature" version="0.75.0.qualifier">
+      <category name="Optional Vimscript Plugins"/>
+   </feature>
+   <feature url="features/net.sourceforge.vrapper.plugin.clangformat.feature_0.75.0.qualifier.jar" id="net.sourceforge.vrapper.plugin.clangformat.feature" version="0.75.0.qualifier">
+      <category name="Optional Vimscript Plugins"/>
+   </feature>
+   <feature url="features/net.sourceforge.vrapper.plugin.ipmotion.feature_0.75.0.qualifier.jar" id="net.sourceforge.vrapper.plugin.ipmotion.feature" version="0.75.0.qualifier">
+      <category name="Optional Vimscript Plugins"/>
+   </feature>
+   <feature url="features/net.sourceforge.vrapper.plugin.cycle.feature_0.75.0.qualifier.jar" id="net.sourceforge.vrapper.plugin.cycle.feature" version="0.75.0.qualifier">
+      <category name="Optional Vimscript Plugins"/>
+   </feature>
+   <feature url="features/net.sourceforge.vrapper.plugin.subwordtextobj.feature_0.75.0.qualifier.jar" id="net.sourceforge.vrapper.plugin.subwordtextobj.feature" version="0.75.0.qualifier">
+      <category name="Optional Vimscript Plugins"/>
+   </feature>
+   <feature url="features/net.sourceforge.vrapper.plugin.surround.feature_0.75.0.qualifier.jar" id="net.sourceforge.vrapper.plugin.surround.feature" version="0.75.0.qualifier">
+      <category name="Optional Vimscript Plugins"/>
+   </feature>
+   <feature url="features/net.sourceforge.vrapper.plugin.exchange.feature_0.75.0.qualifier.jar" id="net.sourceforge.vrapper.plugin.exchange.feature" version="0.75.0.qualifier">
+      <category name="Optional Vimscript Plugins"/>
+   </feature>
+   <feature url="features/net.sourceforge.vrapper.plugin.methodtextobj.feature_0.75.0.qualifier.jar" id="net.sourceforge.vrapper.plugin.methodtextobj.feature" version="0.75.0.qualifier">
+      <category name="Optional Vimscript Plugins"/>
+   </feature>
+   <feature url="features/net.sourceforge.vrapper.eclipse.cdt.feature_0.75.0.qualifier.jar" id="net.sourceforge.vrapper.eclipse.cdt.feature" version="0.75.0.qualifier">
+      <category name="Optional Programming Language Plugins"/>
+   </feature>
+   <feature url="features/net.sourceforge.vrapper.eclipse.jdt.feature_0.75.0.qualifier.jar" id="net.sourceforge.vrapper.eclipse.jdt.feature" version="0.75.0.qualifier">
+      <category name="Optional Programming Language Plugins"/>
+   </feature>
+   <feature url="features/net.sourceforge.vrapper.eclipse.pydev.feature_0.75.0.qualifier.jar" id="net.sourceforge.vrapper.eclipse.pydev.feature" version="0.75.0.qualifier">
+      <category name="Optional Programming Language Plugins"/>
+   </feature>
+   <feature id="net.sourceforge.vrapper.feature">
+      <category name="Vrapper"/>
+   </feature>
+   <category-def name="Vrapper" label="Vrapper">
+      <description>
+         Vrapper Core Features.
+      </description>
+   </category-def>
+   <category-def name="Optional Vimscript Plugins" label="Optional Vimscript Plugins">
+      <description>
+         Vrapper ports of various useful vimscripts
+      </description>
+   </category-def>
+   <category-def name="Optional Programming Language Plugins" label="Optional Programming Language Plugins">
+      <description>
+         Extensions for Vrapper which provide features for programming languages.
+      </description>
+   </category-def>
+</site>

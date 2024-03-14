@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pde?>
+<!-- generated with https://github.com/eclipse-cbi/targetplatform-dsl --><target name="net.sourceforge.vrapper.releng.target.target" sequenceNumber="1706994987">
+  <locations>
+    <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+      <unit id="org.eclipse.cdt.feature.group" version="11.4.0.202311271618"/>
+      <unit id="org.eclipse.launchbar.feature.group" version="11.4.0.202309152126"/>
+      <unit id="org.eclipse.tm.terminal.control.feature.feature.group" version="11.4.0.202311142253"/>
+      <unit id="org.eclipse.tools.templates.core" version="2.0.0.202309191802"/>
+      <unit id="org.eclipse.tools.templates.freemarker" version="2.0.0.202309191802"/>
+      <unit id="org.eclipse.tools.templates.ui" version="2.0.0.202309191802"/>
+      <unit id="org.freemarker.freemarker" version="2.3.32.stable"/>
+      <unit id="com.google.gson" version="2.10.1.v20230109-0753"/>
+      <repository id="eclipse_cdt" location="https://download.eclipse.org/tools/cdt/releases/11.4/"/>
+    </location>
+    <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+      <unit id="org.eclipse.equinox.executable.feature.group" version="3.8.2300.v20231106-1826"/>
+      <unit id="org.eclipse.sdk.feature.group" version="4.30.0.v20231201-0512"/>
+      <unit id="org.eclipse.platform.feature.group" version="4.30.0.v20231201-0512"/>
+      <unit id="org.eclipse.help.feature.group" version="2.3.1600.v20231201-0110"/>
+      <unit id="org.eclipse.jdt.feature.group" version="3.19.300.v20231201-0110"/>
+      <unit id="org.eclipse.pde.feature.group" version="3.15.200.v20231201-0110"/>
+      <unit id="org.eclipse.emf.sdk.feature.group" version="2.36.0.v20231107-0612"/>
+      <unit id="org.apache.commons.commons-io" version="2.15.0"/>
+      <unit id="org.eclipse.core.runtime.feature.feature.group" version="1.4.200.v20231110-1900"/>
+      <unit id="jakarta.annotation-api" version="2.1.1"/>
+      <unit id="org.apache.xalan" version="2.7.2.v20230928-1302"/>
+      <unit id="org.apache.xml.resolver" version="1.2.0.v20230928-1222"/>
+      <unit id="org.apache.xml.serializer" version="2.7.1.v201005080400"/>
+      <unit id="javax.xml" version="1.3.4.v201005080400"/>
+      <unit id="org.eclipse.equinox.p2.discovery.feature.feature.group" version="1.3.200.v20231104-1339"/>
+      <unit id="org.eclipse.equinox.server.p2.source.feature.group" version="1.12.1100.v20231112-1314"/>
+      <unit id="org.eclipse.equinox.cm" version="1.5.300.v20231012-1248"/>
+      <unit id="org.eclipse.equinox.event" version="1.6.300.v20231012-1251"/>
+      <unit id="org.apache.felix.scr" version="2.2.6"/>
+      <unit id="org.apache.felix.gogo.runtime" version="1.1.6"/>
+      <unit id="javax.activation" version="1.2.2.v20221203-1659"/>
+      <unit id="org.eclipse.ecf.core.feature.feature.group" version="1.6.2.v20231021-2127"/>
+      <unit id="org.eclipse.ecf.core.ssl.feature.feature.group" version="1.1.501.v20230507-1921"/>
+      <unit id="org.eclipse.ecf.filetransfer.feature.feature.group" version="3.14.1900.v20230715-1945"/>
+      <unit id="org.eclipse.ecf.filetransfer.httpclientjava.feature.feature.group" version="2.0.200.v20231114-1017"/>
+      <unit id="org.eclipse.ecf.filetransfer.httpclient5.feature.feature.group" version="1.1.702.v20231114-1017"/>
+      <unit id="org.eclipse.ecf.filetransfer.ssl.feature.feature.group" version="1.1.402.v20231021-2127"/>
+      <unit id="org.eclipse.ecf" version="3.11.0.v20230507-1923"/>
+      <unit id="org.eclipse.ecf.filetransfer" version="5.1.103.v20230705-0614"/>
+      <unit id="org.eclipse.ecf.provider.filetransfer" version="3.3.0.v20230422-0242"/>
+      <unit id="org.eclipse.ecf.provider" version="4.10.0.v20231021-2015"/>
+      <unit id="org.eclipse.ecf.identity" version="3.10.0.v20230422-0242"/>
+      <unit id="org.eclipse.ecf.sharedobject" version="2.6.200.v20210922-0753"/>
+      <unit id="slf4j.api" version="2.0.9"/>
+      <unit id="slf4j.simple" version="2.0.9"/>
+      <unit id="org.eclipse.search.core" version="3.16.0.v20230921-0933"/>
+      <unit id="org.sat4j.core" version="2.3.6.v20201214"/>
+      <unit id="org.sat4j.pb" version="2.3.6.v20201214"/>
+      <unit id="org.eclipse.jetty.servlet-api" version="4.0.6"/>
+      <unit id="org.eclipse.jetty.ee8.servlet" version="12.0.3"/>
+      <unit id="org.eclipse.jetty.ee8.server" version="12.0.3"/>
+      <unit id="org.eclipse.jetty.ee8.security" version="12.0.3"/>
+      <unit id="org.eclipse.jetty.security" version="12.0.3"/>
+      <unit id="org.eclipse.jetty.http" version="12.0.3"/>
+      <unit id="org.eclipse.jetty.server" version="12.0.3"/>
+      <unit id="org.eclipse.jetty.util" version="12.0.3"/>
+      <unit id="org.eclipse.jetty.io" version="12.0.3"/>
+      <unit id="org.eclipse.jetty.session" version="12.0.3"/>
+      <unit id="org.mortbay.jasper.apache-jsp" version="9.0.52"/>
+      <unit id="com.sun.xml.bind" version="2.3.3.v20221203-1659"/>
+      <repository id="eclipse_platform" location="https://download.eclipse.org/releases/2023-12/"/>
+    </location>
+    <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+      <unit id="org.python.pydev.feature.feature.group" version="12.0.0.202402010911"/>
+      <repository id="eclipse_pydev" location="https://www.pydev.org/update_sites/12.0.0/"/>
+    </location>
+    <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+      <unit id="org.w3c.css.sac" version="1.3.1.v200903091627"/>
+      <unit id="org.w3c.dom.svg" version="1.1.0.v201011041433"/>
+      <unit id="org.w3c.dom.events" version="3.0.0.draft20060413_v201105210656"/>
+      <unit id="org.w3c.dom.smil" version="1.0.1.v200903091627"/>
+      <unit id="org.apache.lucene.analysis-common" version="9.7.0.v20230703-0758"/>
+      <unit id="org.apache.lucene.analysis-smartcn" version="9.7.0.v20230703-0758"/>
+      <unit id="org.apache.lucene.core" version="9.7.0.v20230703-0758"/>
+      <unit id="org.osgi.service.repository" version="1.1.0.201505202024"/>
+      <unit id="biz.aQute.bnd.util" version="6.4.1.202306080939"/>
+      <unit id="biz.aQute.bndlib" version="6.4.1.202306080939"/>
+      <unit id="org.junit" version="4.13.2.v20230809-1000"/>
+      <repository id="eclipse_updates" location="https://download.eclipse.org/eclipse/updates/4.29/"/>
+    </location>
+    <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+      <unit id="com.sun.jna" version="5.13.0.v20230812-1000"/>
+      <unit id="com.sun.jna.platform" version="5.13.0"/>
+      <unit id="jakarta.xml.bind-api" version="2.3.3"/>
+      <unit id="jakarta.inject.jakarta.inject-api" version="2.0.1"/>
+      <unit id="org.apache.xerces" version="2.12.2.v20220131-0835"/>
+      <unit id="org.apache.commons.logging" version="1.2.0"/>
+      <unit id="org.apache.commons.jxpath" version="1.3.0"/>
+      <unit id="org.apache.commons.commons-beanutils" version="1.9.4"/>
+      <unit id="org.apache.commons.collections" version="3.2.2"/>
+      <unit id="org.apache.batik.css" version="1.16.0.v20221027-0840"/>
+      <unit id="org.apache.batik.util" version="1.16.0.v20221027-0840"/>
+      <unit id="org.apache.batik.constants" version="1.16.0.v20221027-0840"/>
+      <unit id="org.apache.batik.i18n" version="1.16.0.v20221027-0840"/>
+      <unit id="javax.servlet-api" version="3.1.0"/>
+      <unit id="javax.servlet.jsp-api" version="2.3.3"/>
+      <unit id="javax.el-api" version="3.0.3"/>
+      <unit id="org.jdom" version="1.1.3.v20230812-1600"/>
+      <unit id="bcpg" version="1.76.0"/>
+      <unit id="bcprov" version="1.76.0"/>
+      <unit id="com.sun.el.javax.el" version="3.0.0"/>
+      <unit id="com.ibm.icu" version="73.2.0"/>
+      <unit id="org.hamcrest" version="2.2.0"/>
+      <unit id="org.hamcrest.core" version="2.2.0.v20230809-1000"/>
+      <unit id="org.hamcrest.library" version="2.2.0.v20230809-1000"/>
+      <unit id="org.objectweb.asm" version="9.5.0"/>
+      <repository id="eclipse_orbit" location="https://download.eclipse.org/tools/orbit/simrel/orbit-aggregation/release/4.29.0"/>
+    </location>
+	  <location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" label="Logging" missingManifest="error" type="Maven">
+		  <dependencies>
+			  <dependency>
+				  <groupId>org.apache.aries.spifly</groupId>
+				  <artifactId>org.apache.aries.spifly.dynamic.bundle</artifactId>
+				  <version>1.3.7</version>
+				  <type>jar</type>
+			  </dependency>
+			  <dependency>
+				  <groupId>org.ow2.asm</groupId>
+				  <artifactId>asm-analysis</artifactId>
+				  <version>9.6</version>
+				  <type>jar</type>
+			  </dependency>
+			  <dependency>
+				  <groupId>org.ow2.asm</groupId>
+				  <artifactId>asm-commons</artifactId>
+				  <version>9.6</version>
+				  <type>jar</type>
+			  </dependency>
+			  <dependency>
+				  <groupId>org.ow2.asm</groupId>
+				  <artifactId>asm-tree</artifactId>
+				  <version>9.6</version>
+				  <type>jar</type>
+			  </dependency>
+			  <dependency>
+				  <groupId>org.ow2.asm</groupId>
+				  <artifactId>asm-util</artifactId>
+				  <version>9.6</version>
+				  <type>jar</type>
+			  </dependency>
+			  <dependency>
+				  <groupId>org.ow2.asm</groupId>
+				  <artifactId>asm</artifactId>
+				  <version>9.6</version>
+				  <type>jar</type>
+			  </dependency>
+		  </dependencies>
+	  </location>
+	  <location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" label="ByteBuddy" missingManifest="error" type="Maven">
+		  <dependencies>
+			  <dependency>
+				  <groupId>net.bytebuddy</groupId>
+				  <artifactId>byte-buddy-agent</artifactId>
+				  <version>1.14.11</version>
+				  <type>jar</type>
+			  </dependency>
+			  <dependency>
+				  <groupId>net.bytebuddy</groupId>
+				  <artifactId>byte-buddy</artifactId>
+				  <version>1.14.11</version>
+				  <type>jar</type>
+			  </dependency>
+		  </dependencies>
+	  </location>
+	  <location includeDependencyDepth="infinite" includeDependencyScopes="compile" includeSource="true" label="Mockito" missingManifest="error" type="Maven">
+		  <dependencies>
+			  <dependency>
+				  <groupId>org.mockito</groupId>
+				  <artifactId>mockito-core</artifactId>
+				  <version>5.10.0</version>
+				  <type>jar</type>
+			  </dependency>
+			  <dependency>
+				  <groupId>org.mockito</groupId>
+				  <artifactId>mockito-junit-jupiter</artifactId>
+				  <version>5.10.0</version>
+				  <type>jar</type>
+			  </dependency>
+			  <dependency>
+				  <groupId>org.objenesis</groupId>
+				  <artifactId>objenesis</artifactId>
+				  <version>3.3</version>
+				  <type>jar</type>
+			  </dependency>
+		  </dependencies>
+	  </location>
+  </locations>
+</target>
