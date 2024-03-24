@@ -1,4 +1,4 @@
-![vrapper](https://github.com/vrapper/vrapper/raw/master/website/img/vrapper_logo.png)
+![vrapper](https://github.com/vrapper/vrapper/raw/master/releng/net.sourceforge.vrapper.releng.website/img/vrapper_logo.png)
 
 Vim-like editing in Eclipse  [![Join the chat at https://gitter.im/vrapper/vrapper](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/vrapper/vrapper?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 ---------------------------
