@@ -58,6 +58,7 @@ public class DeleteOperation extends SimpleTextOperation implements LineWiseOper
                 Position newPosition = region.getLeftBound().addModelOffset(-(position - previousNewlinePos));
                 region = new StartEndTextRange(newPosition, region.getRightBound());
             }
+            yankAndUpdateLastDelete(editorAdaptor, region, contentType);
             doIt(editorAdaptor, region, contentType);
         } finally {
             editorAdaptor.getHistory().endCompoundChange();
@@ -67,18 +68,24 @@ public class DeleteOperation extends SimpleTextOperation implements LineWiseOper
     public TextOperation repetition() {
         return this;
     }
+    
+    public static void yankAndUpdateLastDelete(EditorAdaptor editorAdaptor, TextRange range, ContentType contentType) {
+        if(range == null) {
+            return;
+        }
 
-    public static void doIt(EditorAdaptor editorAdaptor, TextRange range, ContentType contentType) {
-    	if(range == null) {
-    		return;
-    	}
-    	
         YankOperation.doIt(editorAdaptor, range, contentType, false);
         RegisterManager registerManager = editorAdaptor.getRegisterManager();
         if(registerManager.isDefaultRegisterActive()) {
-        	//get what YankOperation just set
-        	RegisterContent register = registerManager.getActiveRegister().getContent();
-        	registerManager.setLastDelete(register);
+            //get what YankOperation just set
+            RegisterContent register = registerManager.getActiveRegister().getContent();
+            registerManager.setLastDelete(register);
+        }
+    }
+
+    public static void doIt(EditorAdaptor editorAdaptor, TextRange range, ContentType contentType) {
+        if(range == null) {
+            return;
         }
 
         TextContent txtContent = editorAdaptor.getModelContent();

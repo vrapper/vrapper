@@ -96,6 +96,49 @@ public class VisualModeTests extends VisualTestCase {
     }
 
     @Test
+    public void testPastingWithoutYankInVisualMode() throws Exception {
+        var defaultRegisterContent = "a series of tubes";
+        defaultRegister.setContent(new StringRegisterContent(ContentType.TEXT, defaultRegisterContent));
+        checkLeavingCommand(forKeySeq("P"),
+                false, "The internet is ","awesome","!",
+                "The internet is a series of tube",'s',"!");
+        assertEquals(NormalMode.NAME, adaptor.getCurrentModeName());
+        assertYanked(ContentType.TEXT, defaultRegisterContent);
+
+        defaultRegisterContent = "\t\ta series of tubes\n";
+        defaultRegister.setContent(new StringRegisterContent(ContentType.LINES, defaultRegisterContent));
+        checkLeavingCommand(forKeySeq("P"),
+                true, "The internet is ","awesome","!",
+                "The internet is \n\t\t",'a'," series of tubes\n!");
+        assertEquals(NormalMode.NAME, adaptor.getCurrentModeName());
+        assertYanked(ContentType.LINES, defaultRegisterContent);
+
+        defaultRegisterContent = "a series of tubes\n";
+        defaultRegister.setContent(new StringRegisterContent(ContentType.LINES, defaultRegisterContent));
+        checkCommand(forKeySeq("P"),
+                false, "The internet is \n","awesome\n","!",
+                false, "The internet is \n","","a series of tubes\n!");
+        assertEquals(NormalMode.NAME, adaptor.getCurrentModeName());
+        assertYanked(ContentType.LINES, defaultRegisterContent);
+
+        defaultRegisterContent = "a series of tubes";
+        defaultRegister.setContent(new StringRegisterContent(ContentType.TEXT, defaultRegisterContent));
+        checkCommand(forKeySeq("P"),
+                false, "The internet is \n","awesome\n","!",
+                false, "The internet is \n","","a series of tubes\n!");
+        assertEquals(NormalMode.NAME, adaptor.getCurrentModeName());
+        assertYanked(ContentType.TEXT, defaultRegisterContent);
+
+        defaultRegisterContent = "a series of tubes";
+        defaultRegister.setContent(new StringRegisterContent(ContentType.TEXT, defaultRegisterContent));
+        checkCommand(forKeySeq("2P"),
+                false, "The internet is ","awesome","!",
+                false, "The internet is a series of tubesa series of tube","","s!");
+        assertEquals(NormalMode.NAME, adaptor.getCurrentModeName());
+        assertYanked(ContentType.TEXT, defaultRegisterContent);
+    }
+
+    @Test
     public void visualModeShouldHaveAName() {
         adaptor.changeModeSafely(VisualMode.NAME);
         assertEquals("visual mode", adaptor.getCurrentModeName());

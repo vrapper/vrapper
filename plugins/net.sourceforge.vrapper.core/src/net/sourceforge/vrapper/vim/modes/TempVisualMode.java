@@ -38,13 +38,15 @@ public class TempVisualMode extends VisualMode implements TemporaryMode {
 
     @Override
     protected State<Command> buildInitialState() {
-        Command pasteTempVisual = new SelectionBasedTextOperationCommand(
-                                        PasteOperation.INSTANCE_TEMPVISUAL);
+        Command replaceYankTempVisual = new SelectionBasedTextOperationCommand(
+                                        PasteOperation.REPLACE_YANK_TEMPVISUAL);
+        Command replaceTempVisual = new SelectionBasedTextOperationCommand(
+                                        PasteOperation.REPLACE_TEMPVISUAL);
 
         return union(super.getPlatformSpecificState(VisualMode.NAME),
                 state(
-                        leafBind('p', pasteTempVisual),
-                        leafBind('P', pasteTempVisual)),
+                        leafBind('p', replaceYankTempVisual),
+                        leafBind('P', replaceTempVisual)),
                 super.buildInitialState());
     }
 }
