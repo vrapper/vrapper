@@ -192,7 +192,8 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
         final Command leaveVisual = LeaveVisualModeCommand.INSTANCE;
         final Command yank   = new SelectionBasedTextOperationCommand(YankOperation.INSTANCE);
         final Command delete = new SelectionBasedTextOperationCommand(DeleteOperation.INSTANCE);
-        final Command paste  = new SelectionBasedTextOperationCommand(PasteOperation.INSTANCE);
+        final Command replaceYank  = new SelectionBasedTextOperationCommand(PasteOperation.REPLACE_YANK);
+        final Command replace  = new SelectionBasedTextOperationCommand(PasteOperation.REPLACE);
         final Command change = new SelectionBasedTextOperationCommand.DontChangeMode(ChangeOperation.INSTANCE);
         final Command format = new SelectionBasedTextOperationCommand(FormatOperation.INSTANCE);
         final Command shiftLeft = new SelectionBasedTextOperationCommand(InsertShiftWidth.REMOVE_VISUAL);
@@ -224,8 +225,8 @@ public abstract class AbstractVisualMode extends CommandBasedMode {
                 leafBind('x', delete),
                 leafBind('X', delete),
                 leafBind(SpecialKey.DELETE, delete),
-                leafBind('p', paste),
-                leafBind('P', paste),
+                leafBind('p', replaceYank),
+                leafBind('P', replace),
                 leafBind('~', swapCase),
                 leafBind('J', joinLines),
                 leafBind(':', commandLineMode),
