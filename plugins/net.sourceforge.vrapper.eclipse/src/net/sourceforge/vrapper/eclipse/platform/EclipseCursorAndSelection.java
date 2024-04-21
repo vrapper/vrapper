@@ -205,15 +205,14 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
 
     @Override
     public Position stickyColumnAtViewLine(final int lineNo) {
-        // FIXME: do this properly
         final StyledText tw = textViewer.getTextWidget();
         if (!stickToEOL) {
-            try {
-                final int y = tw.getLocationAtOffset(tw.getOffsetAtLine(lineNo)).y;
-                final int offset = tw.getOffsetAtPoint(new Point(stickyColumn - tw.getHorizontalPixel(), y));
+            final int y = tw.getLocationAtOffset(tw.getOffsetAtLine(lineNo)).y;
+            final int offset = tw.getOffsetAtPoint(new Point(stickyColumn - tw.getHorizontalPixel(), y));
+            // It is possible that the next line doesn't have enough characters to stay in the "sticky"
+            // column. If so we should instead go the end of that line (see further half of method)
+            if (offset != -1) {
                 return new TextViewerPosition(textViewer, Space.VIEW, offset);
-            } catch (final IllegalArgumentException e) {
-                // fall through silently and return line end
             }
         }
         final int line = converter.widgetLine2ModelLine(lineNo);
@@ -231,21 +230,20 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
 
     @Override
     public Position stickyColumnAtModelLine(final int lineNo) {
-        // FIXME: do this properly
         if (stickToEOL) {
             try {
                 final int lineLength = textViewer.getDocument().getLineLength(lineNo);
-            	//getLineLength includes the line's delimiter
-            	//we need to find the last non-delimiter character
+                //getLineLength includes the line's delimiter
+                //we need to find the last non-delimiter character
                 final int startOffset = textViewer.getDocument().getLineInformation(lineNo).getOffset();
                 int endOffset = startOffset + lineLength;
                 //don't leave the cursor on a newline
-                if(lineLength > 0) {
-                	endOffset--;
+                if (lineLength > 0) {
+                    endOffset--;
                 }
                 //check for multi-byte (windows) line-endings (\r\n)
-                if(endOffset > startOffset && VimUtils.isNewLine(textContent.getModelContent().getText(endOffset, 1))) {
-                	endOffset--;
+                if (endOffset > startOffset && VimUtils.isNewLine(textContent.getModelContent().getText(endOffset, 1))) {
+                    endOffset--;
                 }
                 return new TextViewerPosition(textViewer, Space.MODEL, endOffset);
             } catch (final Exception e) {
@@ -654,18 +652,18 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         }
 
         if (id == LAST_EDIT_MARK) {
-        	changeList.add(p);
-        	if(changeList.size() > 100) {
-        		//remove (and stop tracking changes for) old positions
-        		textViewer.getDocument().removePosition( changeList.remove(0) );
-        	}
-        	//new edit, restart index position
-        	changeListIndex = changeList.size();
+            changeList.add(p);
+            if (changeList.size() > 100) {
+                //remove (and stop tracking changes for) old positions
+                textViewer.getDocument().removePosition( changeList.remove(0) );
+            }
+            //new edit, restart index position
+            changeListIndex = changeList.size();
         }
         else if (marks.containsKey(id)) {
-        	//we're about to overwrite an old position
-        	//no need to track its changes anymore
-        	textViewer.getDocument().removePosition( marks.get(id) );
+            //we're about to overwrite an old position
+            //no need to track its changes anymore
+            textViewer.getDocument().removePosition( marks.get(id) );
         }
 
         //update mark position
@@ -703,21 +701,21 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
                 return getGlobalMarkerPosition(marker);
             }
         }
-    	//`` and '' are the same position, so we need to return that position
-    	//regardless of which way the user accessed it
-    	if(id.equals("`")) {
-    		id = LAST_JUMP_MARK;
-    	}
+        //`` and '' are the same position, so we need to return that position
+        //regardless of which way the user accessed it
+        if (id.equals("`")) {
+            id = LAST_JUMP_MARK;
+        }
 
         final org.eclipse.jface.text.Position p = marks.get(id);
         if (p == null || p.isDeleted) {
-        	if(id.equals(LAST_CHANGE_END)) {
-        		//if a change was deleted, '[ and '] are the same position
-        		//(for whatever reason, '[ has p.isDeleted = false)
-        		return getMark(LAST_CHANGE_START);
-        	}
-        	//leave deleted entries in marks Map
-        	//in case an 'undo' brings it back
+            if (id.equals(LAST_CHANGE_END)) {
+                //if a change was deleted, '[ and '] are the same position
+                //(for whatever reason, '[ has p.isDeleted = false)
+                return getMark(LAST_CHANGE_START);
+            }
+            //leave deleted entries in marks Map
+            //in case an 'undo' brings it back
             return null;
         }
         final int offset = p.getOffset();
@@ -833,41 +831,41 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
 
     @Override
     public Position getNextChangeLocation(final int count) {
-    	final int index = changeListIndex + count;
-    	return getChangeLocation(index);
+        final int index = changeListIndex + count;
+        return getChangeLocation(index);
     }
 
     @Override
     public Position getPrevChangeLocation(final int count) {
-    	final int index = changeListIndex - count;
-    	return getChangeLocation(index);
+        final int index = changeListIndex - count;
+        return getChangeLocation(index);
     }
 
     private Position getChangeLocation(int index) {
-    	if(changeList.size() == 0) {
-    		return null;
-    	}
+        if (changeList.size() == 0) {
+            return null;
+        }
 
-    	if(index < 0) {
-    		index = 0;
-    	}
-    	else if(index >= changeList.size()) {
-    		index = changeList.size() -1;
-    	}
+        if (index < 0) {
+            index = 0;
+        }
+        else if (index >= changeList.size()) {
+            index = changeList.size() -1;
+        }
 
-    	final org.eclipse.jface.text.Position p = changeList.get(index);
-    	if(p == null || p.isDeleted) {
-    		changeList.remove(index);
-    		changeListIndex = changeList.size();
-    		if(p != null) { //deleted
-    			textViewer.getDocument().removePosition(p);
-    		}
-    		return null;
-    	}
-    	else {
-    		changeListIndex = index; //prepare for next invocation
-    		return newPositionForModelOffset(p.getOffset());
-    	}
+        final org.eclipse.jface.text.Position p = changeList.get(index);
+        if (p == null || p.isDeleted) {
+            changeList.remove(index);
+            changeListIndex = changeList.size();
+            if (p != null) { //deleted
+                textViewer.getDocument().removePosition(p);
+            }
+            return null;
+        }
+        else {
+            changeListIndex = index; //prepare for next invocation
+            return newPositionForModelOffset(p.getOffset());
+        }
     }
 
     @Override
