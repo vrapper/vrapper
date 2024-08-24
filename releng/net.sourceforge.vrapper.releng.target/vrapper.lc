@@ -1,11 +1,10 @@
 
-explicit eclipse configuration Vrapper {
+abstract eclipse configuration VrapperBase {
 	// clear neither workspace nor config (if left away, the config area will be cleared by default)
 	clear;
 	execution-environment 'JavaSE-17';
 
 	favorite run debug; // show only current TP in launch favorites
-	workspace '${workspace_loc}/../runtime-vrapper';
 	product org.eclipse.platform.ide;
 
 	argument '-consoleLog';
@@ -78,19 +77,28 @@ explicit eclipse configuration Vrapper {
 	plugin slf4j.api;
 	plugin slf4j.simple;
 	
-	
-	feature net.sourceforge.vrapper.eclipse.jdt.feature;
 	feature org.eclipse.emf.ecore;
 	feature org.eclipse.equinox.executable;
 	feature org.eclipse.jdt;
 	feature org.eclipse.platform;
 	feature org.eclipse.rcp;
+	
+	feature net.sourceforge.vrapper.feature;
+}
+	
+explicit eclipse configuration VrapperJdt : VrapperBase {
+	workspace '${workspace_loc}/../runtime-vrapper-jdt';
+	feature net.sourceforge.vrapper.eclipse.jdt.feature;
 }
 
 
-// 2023-12 not yet supported by CDT
-// blocker is https://github.com/eclipse-cdt/cdt/issues/664
-explicit eclipse configuration VrapperCdt : Vrapper {
+// There is a start warning about org.eclipse.launchbar.controls missing dependencies to javax.inject and javax.annotation
+// This is an issue in the CDT project: https://github.com/eclipse-cdt/cdt/issues/664
+// If that are the only warnings shown, it is save to go on with the "Continue" button
+explicit eclipse configuration VrapperCdt : VrapperBase {
+	workspace '${workspace_loc}/../runtime-vrapper-cdt';
+	vm-argument "-Declipse.e4.inject.javax.warning=false";
+
 	plugin org.eclipse.tools.templates.core;
 	plugin org.eclipse.tools.templates.freemarker;
 	plugin org.eclipse.tools.templates.ui;
