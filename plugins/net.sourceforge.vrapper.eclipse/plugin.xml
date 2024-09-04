@@ -484,6 +484,8 @@
       <textobject command-id="org.eclipse.ui.edit.text.select.wordNext" />
       <textobject command-id="org.eclipse.ui.edit.text.select.lineStart" />
       <textobject command-id="org.eclipse.ui.edit.text.select.lineEnd" />
+      <textobject command-id="org.eclipse.ui.navigate.next" />
+      <textobject command-id="org.eclipse.ui.navigate.previous" />
 
       <motion command-id="org.eclipse.ui.edit.text.goto.lineStart" restricted-to-line="true" />
       <motion command-id="org.eclipse.ui.edit.text.goto.lineEnd" restricted-to-line="true" />
