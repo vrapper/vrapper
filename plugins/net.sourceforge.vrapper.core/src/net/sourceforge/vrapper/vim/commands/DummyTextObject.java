@@ -5,7 +5,7 @@ import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 
-public class DummyTextObject implements TextObject {
+public class DummyTextObject extends AbstractTextObject {
     
     protected TextRange range;
     protected ContentType contentType = ContentType.TEXT;

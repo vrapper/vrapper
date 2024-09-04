@@ -161,4 +161,19 @@ public class SimpleSelection extends AbstractSelection {
             return new SimpleSelection(from, to, StartEndTextRange.exclusive(from, to));
         }
     }
+
+    @Override
+    public Selection syncToTextRange(EditorAdaptor adaptor, TextRange range) {
+        boolean isSelectionInclusive = Selection.INCLUSIVE.equals(
+                adaptor.getConfiguration().get(Options.SELECTION));
+        Position newTo = adaptor.getPosition();
+        // Selection might have shifted away from original 'from' position. Calculate new one.
+        Position newFrom = range.getStart();
+        // newTo is already adjusted for inclusive selection but 'from' might still need adjusting
+        if (isSelectionInclusive && range.isReversed()) {
+            CursorService cs = adaptor.getCursorService();
+            newFrom = cs.shiftPositionForViewOffset(range.getStart().getViewOffset(), -1, true);
+        }
+        return new SimpleSelection(newFrom, newTo, range);
+    }
 }

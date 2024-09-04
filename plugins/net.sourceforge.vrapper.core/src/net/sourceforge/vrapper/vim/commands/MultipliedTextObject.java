@@ -40,4 +40,14 @@ public class MultipliedTextObject implements TextObject {
         return count;
     }
 
+    @Override
+    public TextObject repetition() {
+        TextObject repeatedTextObj = textObject.repetition();
+
+        if (repeatedTextObj == null) {
+            return null;
+        } else {
+            return new MultipliedTextObject(count, repeatedTextObj);
+        }
+    }
 }

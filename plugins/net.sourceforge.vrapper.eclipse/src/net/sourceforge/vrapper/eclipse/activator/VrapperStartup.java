@@ -10,6 +10,7 @@ public class VrapperStartup implements IStartup {
         PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
             public void run() {
                 VrapperPlugin plugin = VrapperPlugin.plugin;
+                plugin.activateExtensions();
                 plugin.restoreVimEmulationInActiveEditors();
                 plugin.addEditorListeners();
                 plugin.addShutdownListener();

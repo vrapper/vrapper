@@ -73,7 +73,7 @@ public class MacroRecorder {
     /**
      * Notifies the recorder that the given key was pressed.
      */
-    void handleKey(KeyStroke stroke) {
+    public void handleKey(KeyStroke stroke) {
         if (recording) {
             strokes.add(stroke);
         }

@@ -5,7 +5,7 @@ import net.sourceforge.vrapper.utils.ContentType;
 import net.sourceforge.vrapper.utils.TextRange;
 import net.sourceforge.vrapper.vim.EditorAdaptor;
 
-public interface TextObject extends Counted<TextObject> {
+public interface TextObject extends Repeatable<TextObject>, Counted<TextObject> {
 	/**
 	 * Get the range of text which would be selected by this text object.
 	 * @return a {@link TextRange} instance or <tt>null</tt> in case a text selection would make

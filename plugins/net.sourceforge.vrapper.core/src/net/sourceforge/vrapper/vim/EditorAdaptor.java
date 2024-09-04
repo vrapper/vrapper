@@ -77,6 +77,10 @@ public interface EditorAdaptor {
     HighlightingService getHighlightingService();
 
     boolean sourceConfigurationFile(String filename);
+    /**
+     * @return the current position in the text, i.e. where the caret is displayed. This position
+     * will be corrected for inclusive selection mode if a selection is present.
+     */
     Position getPosition();
     void setPosition(Position destination, StickyColumnPolicy stickyColumnPolicy);
     void setSelection(Selection selection);

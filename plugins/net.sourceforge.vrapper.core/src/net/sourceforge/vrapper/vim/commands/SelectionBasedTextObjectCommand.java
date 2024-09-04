@@ -31,8 +31,11 @@ public class SelectionBasedTextObjectCommand extends TextObjectCommand {
 	public CountAwareCommand repetition() {
 		Command wrappedRepetition = command.repetition();
 		if (wrappedRepetition != null) {
-            return new SelectionBasedTextObjectCommand(wrappedRepetition, textObject);
-        }
+			TextObject textObjRepetition = textObject.repetition();
+			if (textObjRepetition != null) {
+				return new SelectionBasedTextObjectCommand(wrappedRepetition, textObjRepetition);
+			}
+		}
 		return null;
 	}
 

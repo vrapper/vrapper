@@ -14,7 +14,7 @@ import net.sourceforge.vrapper.vim.EditorAdaptor;
  * Special text object matching the current line from the first non-whitespace charactor to the
  * last non-whitespace character.
  */
-public class InnerLineTextObject implements TextObject {
+public class InnerLineTextObject extends AbstractTextObject {
 
     public TextRange getRegion(EditorAdaptor editorAdaptor, int count) throws CommandExecutionException {
         TextContent model = editorAdaptor.getModelContent();

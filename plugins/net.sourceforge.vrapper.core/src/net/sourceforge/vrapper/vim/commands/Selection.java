@@ -59,4 +59,12 @@ public interface Selection extends TextObject, TextRange {
      * <p>The caller is responsible for making the selection visible.
      */
     public Selection reset(EditorAdaptor adaptor, Position from, Position to);
+
+    /**
+     * Returns a <b>new</b> Selection object of the same type as the current one but using the
+     * boundaries given by a text range. The passed in textrange is exclusive, the returned
+     * Selection depends on the value of the <code>selection</code> setting.
+     * <p> The caller is responsible for making the selection visible.
+     */
+    public Selection syncToTextRange(EditorAdaptor adaptor, TextRange range);
 }

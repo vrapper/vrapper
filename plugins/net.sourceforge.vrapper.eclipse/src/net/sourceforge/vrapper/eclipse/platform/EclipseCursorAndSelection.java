@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.sourceforge.vrapper.utils.TextRange;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
@@ -18,6 +19,7 @@ import org.eclipse.jface.text.BadPositionCategoryException;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.ITextViewerExtension5;
+import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.text.source.IAnnotationModel;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -286,7 +288,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
         }
         return new SimpleSelection(from, to, range);
     }
-    
+
     @Override
     public TextRange getNativeSelection() {
         if (selection != null) {
@@ -317,6 +319,7 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
 
     @Override
     public void setSelection(final Selection newSel) {
+        VrapperLog.debug("Updated selection " + newSel);
         selectionInProgress = true;
         selection = newSel;
         ContentType contentType = newSel == null ? null: newSel.getContentType(configuration);
@@ -513,6 +516,8 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
 
         @Override
         public void widgetSelected(final SelectionEvent arg0) {
+            VrapperLog.debug("Detected selection change; suppressed = " + selectionInProgress +
+                    ", details: " + textViewer.getTextWidget().getSelection());
             if ( ! selectionInProgress) {
                 selection = null;
                 // getPosition() compensates for inclusive visual selection's caret offset.
@@ -529,6 +534,10 @@ public class EclipseCursorAndSelection implements CursorService, SelectionServic
 
         @Override
         public void selectionChanged(SelectionChangedEvent event) {
+            TextSelection textSelection = (TextSelection)event.getSelection();
+            VrapperLog.debug("Detected jface selection change; suppressed = " + selectionInProgress
+                    + ", details: " + textSelection.getOffset() + "," + textSelection.getLength()
+                    + " type: " + textSelection.getClass());
             if ( ! selectionInProgress) {
                 selection = null;
                 // getPosition() compensates for inclusive visual selection's caret offset.

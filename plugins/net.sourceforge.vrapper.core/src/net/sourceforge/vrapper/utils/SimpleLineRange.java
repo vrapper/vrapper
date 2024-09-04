@@ -179,6 +179,11 @@ public class SimpleLineRange implements LineRange {
     }
 
     @Override
+    public TextObject repetition() {
+        return this;
+    }
+
+    @Override
     public Position getFrom() {
         return from;
     }

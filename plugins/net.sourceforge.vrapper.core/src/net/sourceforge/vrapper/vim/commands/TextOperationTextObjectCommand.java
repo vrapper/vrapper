@@ -18,8 +18,11 @@ public class TextOperationTextObjectCommand extends CountAwareCommand {
 	public CountAwareCommand repetition() {
 		TextOperation wrappedRepetition = command.repetition();
 		if (wrappedRepetition != null) {
-            return new TextOperationTextObjectCommand(wrappedRepetition, textObject);
-        }
+			TextObject textObjRepetition = textObject.repetition();
+			if (textObjRepetition != null) {
+				return new TextOperationTextObjectCommand(wrappedRepetition, textObjRepetition);
+			}
+		}
 		return null;
 	}
 

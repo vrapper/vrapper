@@ -1,0 +1,149 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="net.sourceforge.vrapper.eclipse" xmlns="http://www.w3.org/2001/XMLSchema">
+<annotation>
+      <appInfo>
+         <meta.schema plugin="net.sourceforge.vrapper.eclipse" id="net.sourceforge.vrapper.eclipse.commandregistry" name="Eclipse Motions and TextObjects Command Registry"/>
+      </appInfo>
+      <documentation>
+         Extension which registers Eclipse command ids which implement motions or textobjects. Vrapper will watch these to correct its internal state.
+      </documentation>
+   </annotation>
+
+   <element name="extension">
+      <annotation>
+         <appInfo>
+            <meta.element />
+         </appInfo>
+      </annotation>
+      <complexType>
+         <sequence minOccurs="1" maxOccurs="unbounded">
+            <choice>
+               <element ref="command"/>
+               <element ref="motion"/>
+               <element ref="textobject"/>
+            </choice>
+         </sequence>
+         <attribute name="point" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appInfo>
+                  <meta.attribute translatable="true"/>
+               </appInfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="command">
+      <annotation>
+         <documentation>
+            Represents any other command which might need to be recorded for use in a macro.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="command-id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="motion">
+      <annotation>
+         <documentation>
+            Registers an Eclipse Command as a motion. Vrapper will expect that this command sets no selection.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="command-id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="restricted-to-line" type="boolean">
+            <annotation>
+               <documentation>
+                  Whether this motion should move to the next line if it wants to navigato to the end-of-line in Normal mode. Not applicable for Visual mode or operators.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="textobject">
+      <annotation>
+         <documentation>
+            Registers an Eclipse Command as a textobject. The command can have side-effects like moving a line, the only requirement is that it properly updates the current selection.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="command-id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="since"/>
+      </appInfo>
+      <documentation>
+         0.66.0
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="examples"/>
+      </appInfo>
+      <documentation>
+         [Enter extension point usage example here.]
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="apiinfo"/>
+      </appInfo>
+      <documentation>
+         [Enter API information here.]
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="implementation"/>
+      </appInfo>
+      <documentation>
+         [Enter information about supplied implementation of this extension point.]
+      </documentation>
+   </annotation>
+
+
+</schema>

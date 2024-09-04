@@ -11,6 +11,7 @@ import net.sourceforge.vrapper.eclipse.activator.VrapperPlugin;
 import net.sourceforge.vrapper.eclipse.platform.EclipseCursorAndSelection;
 import net.sourceforge.vrapper.log.VrapperLog;
 import net.sourceforge.vrapper.vim.DefaultEditorAdaptor;
+import net.sourceforge.vrapper.vim.LocalConfiguration;
 import net.sourceforge.vrapper.vim.Options;
 import net.sourceforge.vrapper.vim.commands.motions.StickyColumnPolicy;
 import net.sourceforge.vrapper.vim.modes.AbstractVisualMode;
@@ -18,6 +19,7 @@ import net.sourceforge.vrapper.vim.modes.CommandBasedMode;
 import net.sourceforge.vrapper.vim.modes.EditorMode;
 import net.sourceforge.vrapper.vim.modes.InsertMode;
 import net.sourceforge.vrapper.vim.modes.NormalMode;
+import net.sourceforge.vrapper.vim.modes.SelectMode;
 import net.sourceforge.vrapper.vim.modes.TempVisualMode;
 import net.sourceforge.vrapper.vim.modes.TemporaryMode;
 import net.sourceforge.vrapper.vim.modes.VisualMode;
@@ -26,23 +28,27 @@ public class SelectionVisualHandler implements ISelectionChangedListener {
 
     private DefaultEditorAdaptor editorAdaptor;
     private EclipseCursorAndSelection selectionService;
+    private EclipseCommandHandler commandHandler;
     private ITextViewer textViewer;
     private int selectionResetOffset = -1;
 
     public SelectionVisualHandler(DefaultEditorAdaptor editorAdaptor,
-            EclipseCursorAndSelection selectionService, ITextViewer viewer) {
+            EclipseCursorAndSelection selectionService, ITextViewer viewer,
+            EclipseCommandHandler commandHandler) {
         this.editorAdaptor = editorAdaptor;
         this.textViewer = viewer;
         this.selectionService = selectionService;
+        this.commandHandler = commandHandler;
     }
 
     public void selectionChanged(SelectionChangedEvent event) {
         if (!VrapperPlugin.isVrapperEnabled() || !(event.getSelection() instanceof TextSelection)
-                || selectionService.isSelectionInProgress()) {
+                || selectionService.isSelectionInProgress() || commandHandler.isCommandActive()) {
             return;
         }
 
         TextSelection selection = (TextSelection) event.getSelection();
+        LocalConfiguration config = editorAdaptor.getConfiguration();
         // selection.isEmpty() is false even if length == 0, don't use it
         if (selection.getLength() == 0) {
             // Explicitly reset selection. EclipseCursorAndSelection's SelectionChangeListener is
@@ -64,6 +70,9 @@ public class SelectionVisualHandler implements ISelectionChangedListener {
             // User cleared selection or moved caret with mouse in a temporary mode.
             if(currentMode instanceof TemporaryMode) {
                 editorAdaptor.changeModeSafely(InsertMode.NAME);
+            // Selection cleared, most likely some Eclipse motion ( e.g. Home / End )
+            } else if(currentMode instanceof SelectMode) {
+                editorAdaptor.changeModeSafely(InsertMode.NAME, InsertMode.DONT_MOVE_CURSOR);
             } else if(currentMode instanceof AbstractVisualMode){
                 editorAdaptor.changeModeSafely(NormalMode.NAME);
             // Cursor can be after the line if an Eclipse operation cleared the selection, e.g. undo
@@ -71,8 +80,8 @@ public class SelectionVisualHandler implements ISelectionChangedListener {
                 CommandBasedMode commandMode = (CommandBasedMode) currentMode;
                 commandMode.placeCursor(StickyColumnPolicy.RESET_EOL);
             }
-        } else if ( ! VrapperPlugin.isMouseDown()
-                || !editorAdaptor.getConfiguration().get(Options.VISUAL_MOUSE)) {
+        } else if ( ! (VrapperPlugin.isMouseDown() && config.get(Options.VISUAL_MOUSE))
+                && ! ( ! VrapperPlugin.isMouseDown() && config.get(Options.VISUAL_OTHER))) {
             // Mark selection as "conflicted" - we're in Normal mode but somehow a selection exists
             if (editorAdaptor.getCurrentMode() instanceof NormalMode) {
                 ((CommandBasedMode)editorAdaptor.getCurrentMode()).placeCursor(StickyColumnPolicy.NEVER);
@@ -88,8 +97,14 @@ public class SelectionVisualHandler implements ISelectionChangedListener {
                 editorAdaptor.changeModeSafely(VisualMode.NAME, AbstractVisualMode.KEEP_SELECTION_HINT);
             }
             else if (InsertMode.NAME.equals(editorAdaptor.getCurrentModeName())) {
-                editorAdaptor.changeModeSafely(TempVisualMode.NAME,
-                        AbstractVisualMode.KEEP_SELECTION_HINT, InsertMode.DONT_MOVE_CURSOR);
+                // [TODO] Make configurable
+                if (VrapperPlugin.isMouseDown()) {
+                    editorAdaptor.changeModeSafely(TempVisualMode.NAME,
+                            AbstractVisualMode.KEEP_SELECTION_HINT, InsertMode.DONT_MOVE_CURSOR);
+                } else {
+                    editorAdaptor.changeModeSafely(SelectMode.NAME,
+                            AbstractVisualMode.KEEP_SELECTION_HINT, InsertMode.DONT_MOVE_CURSOR);
+                }
             }
             // Store the selection - user might click with mouse and immediately destroy selection
             editorAdaptor.rememberLastActiveSelection();
